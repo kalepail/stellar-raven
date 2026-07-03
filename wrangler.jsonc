@@ -14,9 +14,10 @@
     "nodejs_compat",
     "global_fetch_strictly_public"
   ],
-  // Dynamic Workers / Worker Loader binding for the Phase 3 `execute` tool
+  // Dynamic Workers / Worker Loader binding for the `execute` tool
   // (DynamicWorkerExecutor). Open beta, Workers Paid in production; works in
-  // local dev on any plan. Unused until Phase 3 but declared now per PLAN §6.
+  // local dev on any plan. Load-bearing: Phase 3 shipped, so every `execute`
+  // call loads its sandbox isolate through this binding.
   "worker_loaders": [
     {
       "binding": "LOADER"

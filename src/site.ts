@@ -688,7 +688,7 @@ export const CONSENT_HEADERS: Record<string, string> = {
   "cache-control": "no-store",
   "content-security-policy":
     "default-src 'none'; style-src 'unsafe-inline'; font-src data:; img-src data:; " +
-    "frame-ancestors 'none'; base-uri 'none'",
+    "frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
   "x-frame-options": "DENY",
   "x-content-type-options": "nosniff"
 };

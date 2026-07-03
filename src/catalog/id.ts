@@ -19,3 +19,12 @@ export function lastIdSegment(id: string): string {
   const segments = base.split(".");
   return segments[segments.length - 1] ?? id;
 }
+
+/**
+ * A legal JS identifier — the one place this rule lives. A kind:"operation"
+ * entry's `service` and terminal name segment (`lastIdSegment`) each become a
+ * sandbox namespace/function name in executor/providers.ts, so both MUST match
+ * this. loadManifest (catalog/search.ts) enforces it at load time so a builder
+ * regression THROWS loudly instead of yielding a searchable-but-uncallable op.
+ */
+export const VALID_IDENT = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;

@@ -236,6 +236,11 @@ export function workosAuthenticateBody(
 
 /** Stable pseudonymous user id: hex(SHA-256(`${workosUserId}:${serverSecret}`)). */
 export function deriveSubject(workosUserId: string, serverSecret: string): Promise<string> {
+  // A missing secret would pepper every subject with the literal "undefined"
+  // (silent pepper loss → trivially reversible pseudonyms). Fail loudly instead.
+  if (!serverSecret) {
+    throw new Error("MCP_SERVER_SECRET is unset — cannot derive a peppered subject");
+  }
   return sha256Hex(`${workosUserId}:${serverSecret}`);
 }
 
@@ -275,11 +280,19 @@ function text(body: string, status: number, headers: Record<string, string> = {}
   });
 }
 
+// Decoded once per isolate (the ~200KB base64 is a module constant): undefined
+// = not yet decoded, null = no image bundled, else the PNG bytes.
+let ogPngBytes: Uint8Array | null | undefined;
+
 /** Serve the social-preview image (base64 PNG in ../og). 404 until generated. */
 function ogImageResponse(): Response {
-  if (!OG_PNG_BASE64) return text("not found", 404);
-  const bytes = Uint8Array.from(atob(OG_PNG_BASE64), (c) => c.charCodeAt(0));
-  return new Response(bytes, {
+  if (ogPngBytes === undefined) {
+    ogPngBytes = OG_PNG_BASE64
+      ? Uint8Array.from(atob(OG_PNG_BASE64), (c) => c.charCodeAt(0))
+      : null;
+  }
+  if (!ogPngBytes) return text("not found", 404);
+  return new Response(ogPngBytes, {
     headers: { "content-type": "image/png", "cache-control": "public, max-age=86400" }
   });
 }

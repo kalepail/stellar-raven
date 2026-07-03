@@ -18,7 +18,7 @@
 // and vitest both import this file directly (frozen contract, scratchpad 514).
 import { z } from "zod";
 import { catalogSchema, type Catalog, type CatalogEntry, type CatalogKind } from "./types.ts";
-import { lastIdSegment } from "./id.ts";
+import { lastIdSegment, VALID_IDENT } from "./id.ts";
 import {
   scoreEntryWeighted,
   scoreEntryWeightedUngated,
@@ -68,7 +68,12 @@ export const MAX_SEARCH_LIMIT = 50;
  *      scheme; a dup would make resolution order-dependent);
  *  (b) unique terminal name segments among kind:"operation" entries WITHIN a
  *      service — those segments become sandbox function names in providers.ts,
- *      so a collision would silently shadow one operation with another.
+ *      so a collision would silently shadow one operation with another;
+ *  (c) every kind:"operation" entry's `service` and terminal name segment is a
+ *      legal JS identifier (VALID_IDENT) — providers.ts turns them into sandbox
+ *      namespace/function names and would otherwise SILENTLY skip an op with a
+ *      bad ident, yielding a searchable-but-uncallable operation. Throwing here
+ *      makes a builder regression fail loudly at load, not silently at call.
  */
 const refinedCatalogSchema = catalogSchema.superRefine((catalog, ctx) => {
   const seenIds = new Set<string>();
@@ -81,6 +86,19 @@ const refinedCatalogSchema = catalogSchema.superRefine((catalog, ctx) => {
 
     if (entry.kind !== "operation") continue;
     const name = lastIdSegment(entry.id);
+
+    if (!VALID_IDENT.test(entry.service)) {
+      ctx.addIssue({
+        code: "custom",
+        message: `operation ${entry.id} has service "${entry.service}" which is not a legal JS identifier (sandbox namespace name)`
+      });
+    }
+    if (!VALID_IDENT.test(name)) {
+      ctx.addIssue({
+        code: "custom",
+        message: `operation ${entry.id} has terminal name "${name}" which is not a legal JS identifier (sandbox fn name)`
+      });
+    }
     let names = opNamesByService.get(entry.service);
     if (!names) {
       names = new Map();
@@ -163,9 +181,16 @@ function sectionKeysOf(catalog: Catalog, skillId: string): string[] {
 
 /**
  * One scoring pass over the catalog: filter (deny/kind/service), score with
- * `scoreFn`, sort score desc then id asc, apply skill-twin suppression, and
- * pick a diversified page of `pageLimit`. Shared by both tiers of
- * searchCatalog() so tier 2 is the SAME pipeline under a different scorer.
+ * `scoreFn`, sort score desc then id asc, and pick a diversified page of
+ * `pageLimit`. Shared by both tiers of searchCatalog() so tier 2 is the SAME
+ * pipeline under a different scorer.
+ *
+ * Skill-twin de-dup lives entirely in the deny-list now (2026-07-03): all 14
+ * metadata-only `lumenloop.skill.*` twins are policy.allow:false in the
+ * manifest, so the deny filter below drops them before scoring — there is no
+ * search-time suppression pass (the old one was dead once the twins were
+ * denied). The canonical readable `skills.*` mirror is what surfaces; the
+ * store.ts read alias still resolves `lumenloop.skill.<name>` for reads.
  */
 function selectPage(
   catalog: Catalog,
@@ -195,38 +220,7 @@ function selectPage(
 
   scored.sort((a, b) => b.score - a.score || (a.entry.id < b.entry.id ? -1 : 1));
 
-  // Skill-twin suppression (todo 816): metadata-only `lumenloop.skill.*` entries
-  // (kind "skill", transport null) duplicate the readable `skills.*` mirror
-  // entries with the same terminal name (store.ts aliases reads across by the
-  // same last-id-segment rule as entryName()). Showing both wastes a result
-  // slot and puts the unreadable form first, so the metadata twin is dropped
-  // from search results when its readable twin exists — EXCEPT under an
-  // explicit `service: "lumenloop"` filter, where the readable twin is
-  // ineligible and suppression would make the skill undiscoverable. History:
-  // this dedupe was first measured 2026-07-02 and rejected because the
-  // twin-BLIND grading of that round traded ≥7 legacy graded hits; the grader
-  // now scores twins as one entity (eval/lib/grade.mjs rule v2, mirroring the
-  // store.ts alias), which dissolved that trade — re-measured and shipped
-  // (routing eval, todo 816). Catalog/execute/skill.read are unaffected: the
-  // metadata twin remains a valid catalog entry and read alias.
-  let deduped = scored;
-  if (opts.service !== "lumenloop") {
-    const readableSkillTerminals = new Set<string>();
-    for (const e of catalog.entries) {
-      if (e.kind === "skill" && e.policy.allow && e.service === "skills" && !e.id.includes("#")) {
-        readableSkillTerminals.add(e.id.split(".").pop()!);
-      }
-    }
-    deduped = scored.filter(
-      (s) =>
-        !(
-          s.entry.service === "lumenloop" &&
-          s.entry.kind === "skill" &&
-          readableSkillTerminals.has(s.entry.id.split(".").pop()!)
-        )
-    );
-  }
-  return diversifyByService(deduped, pageLimit, (s) => s.entry.service);
+  return diversifyByService(scored, pageLimit, (s) => s.entry.service);
 }
 
 /**

@@ -15,6 +15,11 @@ const REPLACEMENT = "[REDACTED]";
  * the Worker holds is listed so an accidental upstream echo of ANY of them is
  * scrubbed before it reaches the sandbox/model (MCP_BEARER_TOKEN was retired
  * and is intentionally absent).
+ *
+ * ALGOLIA_APPLICATION_ID is DELIBERATELY absent: it is a semi-public app id
+ * (appears in docs.stellar.org / hostnames by design), not a secret — the
+ * refresh script even asserts it stays OUT of the generated inventory. Adding
+ * it here would scrub a public identifier from legitimate results.
  */
 const SECRET_ENV_NAMES = [
   "LUMENLOOP_API_KEY",
