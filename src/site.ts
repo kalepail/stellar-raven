@@ -9,8 +9,8 @@
  * orange (#ff5500), a Bayer-dithered orange globe rising out of the bottom-left
  * corner (a faithful port of Paper's Dithering `sphere` shader, hand-written in
  * inline WebGL2 so the page stays self-contained). The globe carries the retro /
- * digital signal; the type is deliberately editorial and legible — Fraunces
- * (display), Hanken Grotesk (body), JetBrains Mono (utility) — set on the right
+ * digital signal; the type is the IBM Plex superfamily — Plex Serif (display),
+ * Plex Sans (body), Plex Mono (utility), one shared skeleton — set on the right
  * so the copy never fights the animation. The product is one MCP endpoint with
  * two tools: `search` discovers across the Stellar catalog, `execute` runs
  * model-written JS in a no-network sandbox, so the CTA is per-client install.
@@ -21,12 +21,12 @@
  * helpers); the consent page stays script-free and hardened.
  */
 import {
-  FRAUNCES_600_WOFF2,
-  FRAUNCES_900_WOFF2,
-  HANKEN_400_WOFF2,
-  HANKEN_600_WOFF2,
-  JBMONO_400_WOFF2,
-  JBMONO_500_WOFF2
+  PLEX_SERIF_600_WOFF2,
+  PLEX_SERIF_700_WOFF2,
+  PLEX_SANS_400_WOFF2,
+  PLEX_SANS_600_WOFF2,
+  PLEX_MONO_400_WOFF2,
+  PLEX_MONO_500_WOFF2
 } from "./fonts";
 
 const MCP_ENDPOINT = "https://raven.stellar.buzz/mcp";
@@ -58,21 +58,21 @@ function face(family: string, weight: number, b64: string): string {
 }
 
 const FONT_FACE =
-  face("Fraunces", 600, FRAUNCES_600_WOFF2) +
-  face("Fraunces", 900, FRAUNCES_900_WOFF2) +
-  face("Hanken Grotesk", 400, HANKEN_400_WOFF2) +
-  face("Hanken Grotesk", 600, HANKEN_600_WOFF2) +
-  face("JetBrains Mono", 400, JBMONO_400_WOFF2) +
-  face("JetBrains Mono", 500, JBMONO_500_WOFF2);
+  face("IBM Plex Serif", 600, PLEX_SERIF_600_WOFF2) +
+  face("IBM Plex Serif", 700, PLEX_SERIF_700_WOFF2) +
+  face("IBM Plex Sans", 400, PLEX_SANS_400_WOFF2) +
+  face("IBM Plex Sans", 600, PLEX_SANS_600_WOFF2) +
+  face("IBM Plex Mono", 400, PLEX_MONO_400_WOFF2) +
+  face("IBM Plex Mono", 500, PLEX_MONO_500_WOFF2);
 
 const TOKENS = `:root{
   --bg:#0e150d; --green:#151f14; --green-2:#182617;
   --orange:#ff5500; --orange-2:#ff7a33; --orange-soft:rgba(255,85,0,.13);
   --fog:#eef0e2; --dim:#9aa890; --ash:#71806a;
   --line:rgba(238,240,226,.12); --line-2:rgba(238,240,226,.22);
-  --display:'Fraunces',Georgia,'Times New Roman',serif;
-  --sans:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --display:'IBM Plex Serif',Georgia,'Times New Roman',serif;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --maxw:1200px;
 }`;
 
@@ -133,7 +133,7 @@ body.no-gl .stage{background:
 .hero{position:relative;min-height:calc(100vh - 92px);display:flex;flex-direction:column;
   justify-content:center;padding:32px 0 60px}
 .hero-in{max-width:600px;margin-left:auto}
-h1.title{font-family:var(--display);font-weight:900;margin:22px 0 0;line-height:.98;
+h1.title{font-family:var(--display);font-weight:700;margin:22px 0 0;line-height:.98;
   font-size:clamp(52px,8vw,104px);letter-spacing:-.025em;color:var(--fog)}
 h1.title .r{color:var(--orange);text-shadow:0 0 40px rgba(255,85,0,.35)}
 .lede{font-size:clamp(16px,1.7vw,19px);color:var(--fog);opacity:.94;max-width:46ch;margin:24px 0 0;line-height:1.6}

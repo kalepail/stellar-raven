@@ -5,8 +5,8 @@
  *
  * Requires ImageMagick (`magick`) on PATH. Mirrors the landing hero: an
  * authentic 4x4 Bayer ordered-dither orange globe (matching src/site.ts's WebGL
- * shader) on the left, editorial type (Fraunces / Hanken Grotesk / JetBrains
- * Mono, fetched from google/fonts) set on the right. Deterministic — never
+ * shader) on the left, editorial type (IBM Plex Serif / Plex Sans / Plex Mono,
+ * fetched from google/fonts) set on the right. Deterministic — never
  * hand-edit src/og.ts, rerun this instead.
  */
 import { execFileSync } from "node:child_process";
@@ -25,12 +25,12 @@ async function download(url, dest) {
 }
 const magick = (args) => execFileSync("magick", args, { stdio: ["ignore", "ignore", "inherit"] });
 
-const FRAUNCES = p("Fraunces.ttf");
-const HANKEN = p("Hanken.ttf");
-const MONO = p("JetBrainsMono.ttf");
-await download("https://github.com/google/fonts/raw/main/ofl/fraunces/Fraunces%5BSOFT,WONK,opsz,wght%5D.ttf", FRAUNCES);
-await download("https://github.com/google/fonts/raw/main/ofl/hankengrotesk/HankenGrotesk%5Bwght%5D.ttf", HANKEN);
-await download("https://github.com/google/fonts/raw/main/ofl/jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf", MONO);
+const SERIF = p("PlexSerif.ttf");
+const SANS = p("PlexSans.ttf");
+const MONO = p("PlexMono.ttf");
+await download("https://github.com/google/fonts/raw/main/ofl/ibmplexserif/IBMPlexSerif-Bold.ttf", SERIF);
+await download("https://github.com/google/fonts/raw/main/ofl/ibmplexsans/IBMPlexSans%5Bwdth,wght%5D.ttf", SANS);
+await download("https://github.com/google/fonts/raw/main/ofl/ibmplexmono/IBMPlexMono-Regular.ttf", MONO);
 
 const RAVEN = "path 'M2 14 C8 13 10 9 12 4 C14 9 16 13 22 14 C16 14 13 16 12 20 C11 16 8 14 2 14 Z'";
 
@@ -53,13 +53,13 @@ magick([p("globe.png"),
 const RX = 600;
 magick([p("og_base.png"),
   "-fill", "#ff5500", "-draw", `translate 600,42 scale 1.15,1.15 ${RAVEN}`,
-  "-font", HANKEN, "-weight", "600", "-pointsize", "22", "-fill", "#9aa890", "-annotate", `+${RX + 40}+60`, "STELLAR RAVEN",
+  "-font", SANS, "-weight", "600", "-pointsize", "22", "-fill", "#9aa890", "-annotate", `+${RX + 40}+60`, "STELLAR RAVEN",
   "-font", MONO, "-pointsize", "19", "-fill", "#9aa890", "-annotate", `+${RX}+170`, "REMOTE MCP SERVER",
   "-font", MONO, "-pointsize", "19", "-fill", "#ff5500", "-annotate", `+${RX + 240}+170`, "LIVE",
-  "-font", FRAUNCES, "-weight", "900", "-pointsize", "96", "-fill", "#eef0e2", "-annotate", `+${RX}+270`, "Stellar",
-  "-font", FRAUNCES, "-weight", "900", "-pointsize", "96", "-fill", "#ff5500", "-annotate", `+${RX}+370`, "Raven",
-  "-font", HANKEN, "-weight", "400", "-pointsize", "25", "-fill", "#eef0e2", "-annotate", `+${RX}+440`, "One endpoint, two tools —",
-  "-font", HANKEN, "-weight", "400", "-pointsize", "25", "-fill", "#eef0e2", "-annotate", `+${RX}+476`, "search the catalog, execute in a sandbox.",
+  "-font", SERIF, "-weight", "700", "-pointsize", "96", "-fill", "#eef0e2", "-annotate", `+${RX}+270`, "Stellar",
+  "-font", SERIF, "-weight", "700", "-pointsize", "96", "-fill", "#ff5500", "-annotate", `+${RX}+370`, "Raven",
+  "-font", SANS, "-weight", "400", "-pointsize", "25", "-fill", "#eef0e2", "-annotate", `+${RX}+440`, "One endpoint, two tools —",
+  "-font", SANS, "-weight", "400", "-pointsize", "25", "-fill", "#eef0e2", "-annotate", `+${RX}+476`, "search the catalog, execute in a sandbox.",
   "-font", MONO, "-pointsize", "21", "-fill", "#ff5500", "-annotate", `+${RX}+552`, "raven.stellar.buzz/mcp",
   "-resize", "1200x630!", "-strip", p("og_final.png")]);
 
