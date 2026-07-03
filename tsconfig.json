@@ -18,7 +18,10 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["@cloudflare/workers-types", "node"]
+    // vitest-pool-workers/types declares the `cloudflare:test` module used
+    // by the workerd smoke lane (test/smoke/); it types against the
+    // Cloudflare.Env namespace from env.d.ts (wrangler typegen).
+    "types": ["@cloudflare/workers-types", "node", "@cloudflare/vitest-pool-workers/types"]
   },
   "include": ["src/**/*.ts", "test/**/*.ts", "env.d.ts"]
 }

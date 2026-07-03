@@ -18,7 +18,9 @@ export default defineConfig({
   test: {
     // Agent worktrees under .claude/worktrees/ carry a full copy of test/ —
     // without this exclude their duplicates run too and double the suite.
-    exclude: ["**/node_modules/**", ".claude/**"],
+    // test/smoke/ is the workerd lane (`npm run test:smoke`, its own config):
+    // its tests import `cloudflare:test`, which plain Node cannot load.
+    exclude: ["**/node_modules/**", ".claude/**", "test/smoke/**"],
     server: {
       deps: {
         // Externalized deps resolve through Node's loader, which cannot see

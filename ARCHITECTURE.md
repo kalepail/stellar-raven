@@ -334,7 +334,11 @@ orphaned-note checks break both builders if an upstream tool rename strands a
 operator chain.
 
 CI (`.github/workflows/ci.yml`, Node 24 — build-catalog relies on native TS
-type-stripping): types → tsc → vitest → eval self-test → routing gate
+type-stripping): types → tsc → vitest → workerd smoke lane (`npm run test:smoke`,
+`test/smoke/` via vitest-pool-workers: the assembled router through `SELF` and the real
+Dynamic Worker executor boundary through the LOADER binding; offline enforced by a
+miniflare `outboundService` wall, auth values are test-only fakes) → eval self-test →
+routing gate
 (`eval/run-routing.mjs --gate` against `eval/gates.json`) → the **artifact-sync gate**,
 which rebuilds catalog, super spec, skills bundle, mirror check, both eval compiles, and
 the plan op-classes, then fails on any diff. The daily drift job
