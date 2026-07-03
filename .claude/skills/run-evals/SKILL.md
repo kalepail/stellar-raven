@@ -40,9 +40,9 @@ Decide what changed (or what question you're asking) — that picks the instrume
 | Tool-description / agent-prompt-surface change (tool descriptions, MCP instructions, nudges) | QA sample + plan regrade — behavior shifts, routing math doesn't |
 | Any QA run already stored | + plan regrade (free, offline) |
 | Upstream drift refresh landed | routing `--gate`; refresh `improvements/` statuses (drift is the natural checkpoint for `fixed-upstream` re-checks) and re-check `eval/qa/golden-overrides.json` entries — they cite live facts that rot; update with fresh evidence |
-| Corpus-health cadence (periodic, no code change needed) | cross-question contradiction scan (corpus-internal, no live calls: flag golden pairs whose answers can't both be true — the ancestor corpora's dominant silent-drift failure; results + verified-consistent register in `eval/qa/consistency-register.json`, method in its `$comment`) + a sampled refute-then-repair sweep (skeptic agent attacks 8–10 sampled goldens' claims/citations with real tools, ~70% weighted toward freshness-sensitive + numeric/version claims — the first run's 2 breaks both came from that stratum and both were `confidence: medium`; fixes go through the `golden-truth` skill). Also re-check any date-contingent traps whose expiry has passed (e.g. "P27 not yet live" expires at the 2026-07-08 vote — todo 831). |
+| Corpus-health cadence (periodic, no code change needed) | cross-question contradiction scan (corpus-internal, no live calls: flag golden pairs whose answers can't both be true — the ancestor corpora's dominant silent-drift failure; results + verified-consistent clusters + method all live in `eval/qa/consistency-register.json`) + a sampled refute-then-repair sweep (skeptic agent attacks a small sample of goldens' claims/citations with real tools, weighted toward freshness-sensitive + numeric/version claims and lower `confidence` tags — the strata where breaks concentrate; fixes go through the `golden-truth` skill) + re-verify any `dateContingentTraps` in the register whose trigger has passed. |
 
-Tracking (Solo MCP, project 49): create or claim a todo for the round; open a scratchpad as
+Tracking (Solo MCP — this repo's project binding is in CLAUDE.md): create or claim a todo for the round; open a scratchpad as
 the round's working record (numbers, per-case notes, triage table, findings drafted). Repo
 fixes discovered during the round become **their own Solo todos** — never `improvements/` files.
 
@@ -121,17 +121,17 @@ skills-lane top-1 floor; grading rule v2 twin-aware). On a FAIL:
 **QA verdicts are NOT ground truth — review them agentically before believing them.**
 Known judge failure modes (from `eval/qa/README.md`):
 - The judge can't see tool transcripts; transcript-invisible corpus-grounded specifics get
-  misgraded as fabrication. Rubric addendum (2026-07-03): beyond-golden specifics are
-  "unverified", not wrong — but still **live-verify every `wrong` verdict** by re-executing
-  the claim against the live service before counting it as an agent failure (a prior round
-  proved 4 of 7 wrongs were judge artifacts).
+  misgraded as fabrication. The rubric's unverified-not-wrong rule covers this — but still
+  **live-verify every `wrong` verdict** by re-executing the claim against the live service
+  before counting it as an agent failure (past rounds have overturned the majority of a
+  run's wrongs as judge artifacts).
 - Judge variance: read `wrong` counts before `correct` counts; compare variants only on the
   same sample; re-judging is cheap (`rows[].answer` is saved — feed back through `judgeCase`).
-  Never cross-compare runs judged under different rubric versions without a re-judge.
-  The calibrated baselines LIVE in `eval/qa/README.md` "Calibrated record": the two
-  `rejudge-rubric2` results files (19/8/3 pre-hardening, 17/11/2 post-hardening) are what
-  a new rubric-v2 run compares against — do NOT diff against the stale original verdicts
-  in the same-stamp files.
+  Never cross-compare runs judged under different rubric versions without a re-judge
+  (`JUDGE_RUBRIC` in `judge.mjs` is the current version; verdicts carry a `rubric` stamp).
+  The calibrated baseline of record lives in `eval/qa/README.md` ("Judging rubric" →
+  calibrated record) — compare a new run against the re-judged baseline for the current
+  rubric version, never against stale original verdicts in same-stamp files.
 - Freshness cases: sourced drift from the golden snapshot is fine; confident unsourced
   contradiction is not. Expect a small floor of judge-vs-live disagreements.
 - **Avoid-clause bypass of the rubric-v2 addendum**: a golden whose must-avoid item bans
@@ -161,7 +161,7 @@ For each miss/wrong/partial (and each surprising pass), classify and route:
 |---|---|---|
 | Judge artifact | live re-execution contradicts the verdict | round record; re-judge; rubric note if a new failure mode |
 | Agent failure | tool use / synthesis genuinely wrong in transcript | round record; only actionable if a pattern → Solo todo (prompt/tool-shape) |
-| Own-repo gap: scoring/catalog/executor/adapters/normalizers | search buried the right entry; envelope/normalizer misread a payload | **Solo project 49 todo** — never improvements/ |
+| Own-repo gap: scoring/catalog/executor/adapters/normalizers | search buried the right entry; envelope/normalizer misread a payload | **own-repo Solo todo** — never improvements/ |
 | Eval-side gap: stale golden, mislabeled case, missing lane coverage | golden disagrees with live truth from the service's own mouth | Solo todo (goldens live in this repo); the fix lands as an `eval/qa/golden-overrides.json` entry (the corpus archive is verbatim/read-only) **via the `golden-truth` skill** (`.claude/skills/golden-truth/SKILL.md` — gospel changes need multi-source triangulation, never a single source class); freshness-drifting truth moves to the live-data lane as behavioral golden |
 | **Upstream data/content gap**: missing fields, unordered arrays, empty lanes, extraction quality, stale skill content | correct agent + correct plumbing still can't answer from what the service returns | **`improvements/` finding** |
 | **Upstream semantics/spec gap**: response contracts, error shapes, vocabulary, index tokenization/ranking | the service works but its self-description or behavior misleads any consumer, not just us | **`improvements/` finding** |

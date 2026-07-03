@@ -8,7 +8,11 @@
       "clustersExamined": 102,
       "contradictions": [
         {
-          "cases": ["q-asset-rwa-tokenized-freshness", "q-defi-rwa-overview", "q-eco-stellar-rwa-stablecoin-volume"],
+          "cases": [
+            "q-asset-rwa-tokenized-freshness",
+            "q-defi-rwa-overview",
+            "q-eco-stellar-rwa-stablecoin-volume"
+          ],
           "claims": {
             "q-asset-rwa-tokenized-freshness": "rwa.xyz reported ~$2.84B distributed asset value (2026-06) [1]; SDF announced Stellar \"crossed $2 billion\" in RWAs on ~April 11, 2026 with >4x growth in 12 months [2]; Messari's Q1-2026 report tracked ~$1.2-1.5B excluding stablecoins [2].",
             "q-defi-rwa-overview": "by mid-2026 the tokenized-RWA stack crossed ~$2.8B (Messari Q1 2026)",
@@ -20,7 +24,10 @@
       ],
       "tensions": [
         {
-          "cases": ["q-crp-anchors-by-corridor", "q-hist-remittance-corridors"],
+          "cases": [
+            "q-crp-anchors-by-corridor",
+            "q-hist-remittance-corridors"
+          ],
           "claims": {
             "q-crp-anchors-by-corridor": "MoneyGram's own developer docs put the off-ramp at 174 countries (as of 2026-07; marketing rounds to 170+, older SDF material says 180+) [OVERRIDDEN, deep-verified 2026-07-03]",
             "q-hist-remittance-corridors": "stellar.org/products-and-tools/moneygram and the 'three-years-with-moneygram' SDF blog confirm cash<->USDC on Stellar across 170+ countries (the live product page now says 180+, ~475K locations) [graderNotes, verified 2026-06-29]"
@@ -29,7 +36,10 @@
           "disposition": "grader-caution candidate"
         },
         {
-          "cases": ["q-hist-franklin-templeton-benji", "q-rwa-projects-tokenizing-stellar"],
+          "cases": [
+            "q-hist-franklin-templeton-benji",
+            "q-rwa-projects-tokenizing-stellar"
+          ],
           "claims": {
             "q-hist-franklin-templeton-benji": "$580M+ / 'second-largest RWA on Stellar' figure (Apr 30 2026 anniversary) is fresher vendor-press",
             "q-rwa-projects-tokenizing-stellar": "Franklin Templeton (BENJI/FOBXX, ~$654M AUM on Stellar) ... confirmed"
@@ -38,7 +48,10 @@
           "disposition": "grader-caution candidate"
         },
         {
-          "cases": ["q-sep-catalog-list", "q-sep-8-regulated-assets"],
+          "cases": [
+            "q-sep-catalog-list",
+            "q-sep-8-regulated-assets"
+          ],
           "claims": {
             "q-sep-catalog-list": "| **SEP-8** | Regulated Assets — per-tx issuer approval server | Final |",
             "q-sep-8-regulated-assets": "Status caveat: sep-0008.md preamble says 'Active' (v1.7.4) but the ecosystem README main table lists SEP-8 as 'Final' — the repo is internally inconsistent."
@@ -47,7 +60,11 @@
           "disposition": "grader-caution candidate"
         },
         {
-          "cases": ["q-eco-defi-market-map", "q-scf-category-funded-ratio", "q-scf-funding-by-category"],
+          "cases": [
+            "q-eco-defi-market-map",
+            "q-scf-category-funded-ratio",
+            "q-scf-funding-by-category"
+          ],
           "claims": {
             "q-eco-defi-market-map": "Scout /api/analyze?dimension=categories gives coarse buckets (User-Facing App 204, Tooling 109, Infra 104, Protocol/Contract 78) [undated graderNotes]",
             "q-scf-category-funded-ratio": "Verified 2026-06-25: ... Protocol/Contract 47/78 ... Re-verified 2026-06-29 (counts drift): Protocol/Contract 44/86≈51%, User-Facing App 103/204≈50%, Tooling 42/108, Infrastructure 34/97",
@@ -57,7 +74,11 @@
           "disposition": "grader-caution candidate"
         },
         {
-          "cases": ["q-eco-lobstr-wallet", "q-eco-wallets-overview", "q-eco-wallets-similar"],
+          "cases": [
+            "q-eco-lobstr-wallet",
+            "q-eco-wallets-overview",
+            "q-eco-wallets-similar"
+          ],
           "claims": {
             "q-eco-lobstr-wallet": "the SCF-total disagreement (Scout $232,000 vs Lumenloop $267,463) is unresolvable — official records confirm rounds 2/17/22 but published only ONE amount ($88,000, SCF #22) — never penalize either total, and a candidate saying 'no official cumulative figure exists' is MORE correct than either number [OVERRIDDEN, deep-verified 2026-07-03]",
             "q-eco-wallets-overview": "LOBSTR (Ultra Stellar, SCF ~$232K) — 'All grounded on Scout'",
@@ -70,90 +91,310 @@
       "verifiedConsistent": [
         {
           "cluster": "protocol version history + activation dates (P17/P18/P20/P21/P22/P23/P24/P25/P26/P27)",
-          "cases": ["q-asset-clawback-cap-protocol", "q-protocol-amm-cap-0038", "q-hist-soroban-launch-protocol20", "q-protocol-soroban-launch-version", "q-protocol-passkeys-secp256r1", "q-protocol-bls12-381-cap59", "q-soroban-constructor-lifecycle", "q-protocol-23-whisk-caps", "q-protocol-parallel-execution", "q-protocol-24-whisk-incident", "q-protocol-bn254-poseidon-xray", "q-soroban-zk-bn254-poseidon", "q-protocol-current-mainnet-version", "q-edge-fresh-latest-protocol-version", "q-protocol-latest-stellar-core-release", "q-protocol-version-history-list", "q-pc-protocol-upgrade-timing", "q-protocol-27-cap-0071", "q-soroban-auth-delegation-p27", "q-soroban-current-sdk-cli-version"],
+          "cases": [
+            "q-asset-clawback-cap-protocol",
+            "q-protocol-amm-cap-0038",
+            "q-hist-soroban-launch-protocol20",
+            "q-protocol-soroban-launch-version",
+            "q-protocol-passkeys-secp256r1",
+            "q-protocol-bls12-381-cap59",
+            "q-soroban-constructor-lifecycle",
+            "q-protocol-23-whisk-caps",
+            "q-protocol-parallel-execution",
+            "q-protocol-24-whisk-incident",
+            "q-protocol-bn254-poseidon-xray",
+            "q-soroban-zk-bn254-poseidon",
+            "q-protocol-current-mainnet-version",
+            "q-edge-fresh-latest-protocol-version",
+            "q-protocol-latest-stellar-core-release",
+            "q-protocol-version-history-list",
+            "q-pc-protocol-upgrade-timing",
+            "q-protocol-27-cap-0071",
+            "q-soroban-auth-delegation-p27",
+            "q-soroban-current-sdk-cli-version"
+          ],
           "note": "Checked every dated activation claim: P17 2021-06-01, P18 ~2021-11-03, P20 2024-02-20, P21 2024-06-18, P22 2024-12-05, P23 2025-09-03, P24 2025-10-22, P25 2026-01-22, P26 2026-05-06 (current Mainnet as of the 2026-06-29 snapshot), P27 queued (Testnet 2026-06-18, Mainnet vote 2026-07-08 pending) — identical across all mentions, and every P27 case consistently forbids claiming it live. Version/tooling claims agree too (stellar-core 27.0.0 latest release / 26.1.0 on Mainnet; soroban-sdk v26.1.0 stable; stellar-cli v27.0.0)."
         },
         {
           "cluster": "CAP statuses and protocol assignments (CAP-35/38/46/51/53/58/59/62/63/65/67/71/73/74/75)",
-          "cases": ["q-asset-clawback-cap-protocol", "q-asset-clawback-decentralization", "q-edge-factcheck-soroswap-first-amm", "q-sep-41-token-interface", "q-protocol-passkeys-secp256r1", "q-soroban-constructor-lifecycle", "q-soroban-zk-bls12-381", "q-sor-confidential-tokens", "q-protocol-23-whisk-caps", "q-ti-historical-events-beyond-retention", "q-protocol-27-cap-0071", "q-soroban-auth-delegation-p27", "q-sor-contract-trustlines-c-address", "q-protocol-bn254-poseidon-xray"],
+          "cases": [
+            "q-asset-clawback-cap-protocol",
+            "q-asset-clawback-decentralization",
+            "q-edge-factcheck-soroswap-first-amm",
+            "q-sep-41-token-interface",
+            "q-protocol-passkeys-secp256r1",
+            "q-soroban-constructor-lifecycle",
+            "q-soroban-zk-bls12-381",
+            "q-sor-confidential-tokens",
+            "q-protocol-23-whisk-caps",
+            "q-ti-historical-events-beyond-retention",
+            "q-protocol-27-cap-0071",
+            "q-soroban-auth-delegation-p27",
+            "q-sor-contract-trustlines-c-address",
+            "q-protocol-bn254-poseidon-xray"
+          ],
           "note": "CAP-35 Final/P17, CAP-38 P18, CAP-46 series P20, CAP-51+53 P21, CAP-58+59 Final/P22, CAP-62/63/65/67 P23 (CAP-67 Final), CAP-73 Implemented/P26, CAP-74+75 Final/P25, CAP-71 Accepted/P27 — status and protocol number identical everywhere they appear."
         },
         {
           "cluster": "SEP statuses across the catalog and per-SEP cases",
-          "cases": ["q-sep-catalog-list", "q-sep-10-auth", "q-sep-45-contract-auth", "q-sep-12-kyc", "q-sep-31-cross-border", "q-sep-6-24-deprecation", "q-sep-interactive-deposit-withdraw", "q-sep-1-toml", "q-sep-38-quotes", "q-sep-41-token-interface", "q-soroban-contract-build-verification", "q-ti-contract-verification-explorers", "q-crp-oz-rwa-erc3643-trex", "q-aas-sep30-recoverable-wallets", "q-sor-nft-mint-on-soroban"],
+          "cases": [
+            "q-sep-catalog-list",
+            "q-sep-10-auth",
+            "q-sep-45-contract-auth",
+            "q-sep-12-kyc",
+            "q-sep-31-cross-border",
+            "q-sep-6-24-deprecation",
+            "q-sep-interactive-deposit-withdraw",
+            "q-sep-1-toml",
+            "q-sep-38-quotes",
+            "q-sep-41-token-interface",
+            "q-soroban-contract-build-verification",
+            "q-ti-contract-verification-explorers",
+            "q-crp-oz-rwa-erc3643-trex",
+            "q-aas-sep30-recoverable-wallets",
+            "q-sor-nft-mint-on-soroban"
+          ],
           "note": "SEP-1/9/10/12/24/31/46/48 Active; SEP-6 Active with only interactive components deprecated in favor of SEP-24 (the only-partial-deprecation nuance is stated identically in all 3 cases that touch it); SEP-30/38/39/41/43/45/55/57/58 Draft — consistent everywhere. SEP-8 moved to tensions (upstream repo itself inconsistent)."
         },
         {
           "cluster": "perps/derivatives status — the ancestor corpora's exact failure class",
-          "cases": ["q-defi-perps-whitespace", "q-eco-defi-market-map", "q-defi-named-newer-protocols"],
+          "cases": [
+            "q-defi-perps-whitespace",
+            "q-eco-defi-market-map",
+            "q-defi-named-newer-protocols"
+          ],
           "note": "All three agree on both halves: perps are EMERGING (Noether testnet, Stellars Finance mainnet-targeted, Zenex pre-release — so NOT whitespace) AND no perp DEX is confirmed mainnet-live; all three exclude Turbolong as leveraged spot. The whitespace-vs-live split that silently drifted in the ancestor corpora is coherently pinned here, including the Scout-status-vs-self-description discrepancy (directory 'Live' vs own 'testnet') documented inside q-defi-perps-whitespace."
         },
         {
           "cluster": "SCF program mechanics (v7, caps, tiers, totals)",
-          "cases": ["q-scf-build-award-cap", "q-scf-award-tiers-list", "q-scf-instawards", "q-scf-ambassador-program", "q-scf-regional-india", "q-scf-public-goods-award", "q-scf-audit-bank", "q-scf-growth-hack", "q-scf-v7-changes", "q-scf-current-round", "q-edge-scf-v7-centralization-myths", "q-scf-sdf-marketing-grant", "q-scf-vs-sdf-enterprise-fund", "q-scf-how-to-apply", "q-scf-total-distributed", "q-scf-exhaustive-funding-report", "q-scf-open-rfps", "q-scf-rfp-tooling", "q-scf-nqg-voting", "q-org-sdf-enterprise-fund"],
+          "cases": [
+            "q-scf-build-award-cap",
+            "q-scf-award-tiers-list",
+            "q-scf-instawards",
+            "q-scf-ambassador-program",
+            "q-scf-regional-india",
+            "q-scf-public-goods-award",
+            "q-scf-audit-bank",
+            "q-scf-growth-hack",
+            "q-scf-v7-changes",
+            "q-scf-current-round",
+            "q-edge-scf-v7-centralization-myths",
+            "q-scf-sdf-marketing-grant",
+            "q-scf-vs-sdf-enterprise-fund",
+            "q-scf-how-to-apply",
+            "q-scf-total-distributed",
+            "q-scf-exhaustive-funding-report",
+            "q-scf-open-rfps",
+            "q-scf-rfp-tooling",
+            "q-scf-nqg-voting",
+            "q-org-sdf-enterprise-fund"
+          ],
           "note": "Build cap $150K XLM under v7.0 (launched Jan 2026, first round SCF #41); Instawards <=$15K (replaced Kickstart; the only ambassador funding lever — asserted identically in 3 cases incl. the overridden q-scf-regional-india); Public Goods ~$50K/quarter; Audit Bank up to 100%; Growth Hack $20K base + up to $200K; SDF Marketing/Matching ~$500K explicitly distinct from SCF in 6 cases; Enterprise Fund no-open-application in 5 cases; SCF #45 open, deadline 2026-07-26, in both cases that name it; cumulative ~$19.97M/~223 distinct projects vs ~504 awarded submissions reconciled identically in both totals cases."
         },
         {
           "cluster": "per-project SCF award totals (Scout directory reconstructions)",
-          "cases": ["q-defi-aquarius-scf", "q-scf-history-aquarius", "q-defi-aquarius-av", "q-defi-aquarius-tvl-freshness", "q-defi-soroswap-scf", "q-scf-history-soroswap", "q-defi-soroswap-resolve", "q-defi-soroswap-what-is", "q-defi-phoenix-scf", "q-defi-phoenix-what-is", "q-defi-reflector-resolve", "q-defi-reflector-oracle", "q-scf-funded-similar-oracle", "q-defi-blend-scf-funding", "q-scf-history-blend", "q-defi-blend-content", "q-defi-lending-scf-flagships", "q-eco-hana-wallet-scf", "q-eco-wallets-overview", "q-defi-rwa-scf-similar", "q-defi-x402-projects-discovery"],
+          "cases": [
+            "q-defi-aquarius-scf",
+            "q-scf-history-aquarius",
+            "q-defi-aquarius-av",
+            "q-defi-aquarius-tvl-freshness",
+            "q-defi-soroswap-scf",
+            "q-scf-history-soroswap",
+            "q-defi-soroswap-resolve",
+            "q-defi-soroswap-what-is",
+            "q-defi-phoenix-scf",
+            "q-defi-phoenix-what-is",
+            "q-defi-reflector-resolve",
+            "q-defi-reflector-oracle",
+            "q-scf-funded-similar-oracle",
+            "q-defi-blend-scf-funding",
+            "q-scf-history-blend",
+            "q-defi-blend-content",
+            "q-defi-lending-scf-flagships",
+            "q-eco-hana-wallet-scf",
+            "q-eco-wallets-overview",
+            "q-defi-rwa-scf-similar",
+            "q-defi-x402-projects-discovery"
+          ],
           "note": "Aquarius $391K (rounds 17/23/27/30), Soroswap $346,750 (rounds 15/17/21), Phoenix ~$394.5K, Reflector $444,840 (rounds 15/20/26/29), Band $100K, Lightecho $93,110, Orally $48K, DIA $38K, Blend $50K, Hana $132K, xBull $56.2K, OrbitCDP $280K, ApiCharge $79K — every repeated figure matches exactly across cases, and the Blend/Script3 team-lineage caveat (project row under-counts team history) is carried consistently by all three overridden SCF-lending cases plus their graderNotes."
         },
         {
           "cluster": "YieldBlox/Blend V2 oracle-manipulation incident (Feb 2026)",
-          "cases": ["q-comp-yieldblox-oracle-incident", "q-defi-reflector-content", "q-defi-etherfuse-stablebonds", "q-soroban-oracle-defensive-consumption", "q-comp-security-disclosure-programs"],
+          "cases": [
+            "q-comp-yieldblox-oracle-incident",
+            "q-defi-reflector-content",
+            "q-defi-etherfuse-stablebonds",
+            "q-soroban-oracle-defensive-consumption",
+            "q-comp-security-disclosure-programs"
+          ],
           "note": "Date (Feb 21-22 2026, ~00:25 UTC Feb 22), size (~$10M/~$10.2M), freeze (~48M XLM ≈ $7.2-7.5M by Tier-1 validators), vector (USTRY Etherfuse Stablebond pumped ~$1.06→~$106 on illiquid SDEX poisoning Reflector VWAP), and the app-level-not-protocol-level framing are identical across all five cases."
         },
         {
           "cluster": "Soroswap 'first' claims vs first-AMM factcheck",
-          "cases": ["q-defi-soroswap-what-is", "q-defi-soroswap-content", "q-defi-soroswap-vs-stellarx", "q-edge-factcheck-soroswap-first-amm", "q-protocol-amm-cap-0038"],
+          "cases": [
+            "q-defi-soroswap-what-is",
+            "q-defi-soroswap-content",
+            "q-defi-soroswap-vs-stellarx",
+            "q-edge-factcheck-soroswap-first-amm",
+            "q-protocol-amm-cap-0038"
+          ],
           "note": "Compatible scoping everywhere: Soroswap = first DEX + DEX aggregator on Stellar SOROBAN; explicitly NOT Stellar's first AMM (native AMMs = CAP-38/Protocol 18, 2021); the factcheck case and the what-is cases agree, and StellarX is consistently a trading UI by Ultra Stellar (not an aggregator, no shutdown claim) across 6 cases."
         },
         {
           "cluster": "2025-2026 RWA/stablecoin launch dates and issuers",
-          "cases": ["q-eco-2025-defi-launches", "q-defi-ondo-usdy", "q-defi-wisdomtree-crdt", "q-eco-pyusd-stellar-freshness", "q-eco-stablecoins-on-stellar", "q-asset-usdc-eurc-issuer", "q-token-circle-usdc-on-stellar", "q-tool-cctp-stellar-integration", "q-rwa-projects-tokenizing-stellar", "q-hist-franklin-templeton-benji", "q-defi-benji-franklin-templeton", "q-asset-rwa-tokenized-freshness", "q-hist-wisdomtree-rwa"],
+          "cases": [
+            "q-eco-2025-defi-launches",
+            "q-defi-ondo-usdy",
+            "q-defi-wisdomtree-crdt",
+            "q-eco-pyusd-stellar-freshness",
+            "q-eco-stablecoins-on-stellar",
+            "q-asset-usdc-eurc-issuer",
+            "q-token-circle-usdc-on-stellar",
+            "q-tool-cctp-stellar-integration",
+            "q-rwa-projects-tokenizing-stellar",
+            "q-hist-franklin-templeton-benji",
+            "q-defi-benji-franklin-templeton",
+            "q-asset-rwa-tokenized-freshness",
+            "q-hist-wisdomtree-rwa"
+          ],
           "note": "CRDT=WisdomTree Sep 12 2025, USDY=Ondo Sep 17 2025 (~5.3% APY, non-US), PYUSD=PayPal Sep 18 2025, clustered around Meridian 2025 Rio (Sep 17-18); EURC=Circle 2023-09-26; CCTP live on Stellar 2026-05-19; BENJI=Franklin Templeton since 2021 (first US-registered mutual fund on public blockchain); Figure YLDS live 2026-05-05; DTCC DTC service planned H1 2027 NOT live; Spiko largest / BENJI second-largest RWA — issuer/date/product attributions identical everywhere, with matching cross-issuer must_avoids."
         },
         {
           "cluster": "MoneyGram Ramps core figures",
-          "cases": ["q-pay-moneygram-ramps", "q-anchor-moneygram-ramps", "q-crp-anchors-by-corridor", "q-hist-remittance-corridors"],
+          "cases": [
+            "q-pay-moneygram-ramps",
+            "q-anchor-moneygram-ramps",
+            "q-crp-anchors-by-corridor",
+            "q-hist-remittance-corridors"
+          ],
           "note": "174 (dev docs, exact) with 170+ marketing rounding, SEP-24 + USDC rails, $5-$2,500 off-ramp per tx, launched via Vibrant/LOBSTR 2022 — consistent across all four (the 180+ provenance question is filed under tensions)."
         },
         {
           "cluster": "network constants: fees, reserves, close time, supply, monetary history",
-          "cases": ["q-protocol-fee-model-base-fee", "q-pc-practical-fee-setting", "q-soroban-fee-structure", "q-protocol-base-reserve-min-balance", "q-asset-trustline-basics", "q-asset-establish-trustline-howto", "q-asset-amm-fee-reserve", "q-asset-sdex-vs-amm", "q-pc-account-activation-not-found", "q-edge-1xlm-activation-fee", "q-pc-sponsored-reserves", "q-sor-doc-timestamping-manage-data", "q-protocol-ledger-close-time", "q-asset-path-payment-ops", "q-token-initial-supply-distribution", "q-hot-fee-pool-burn-deflation", "q-edge-noinfo-stellar-pos-staking-rewards"],
+          "cases": [
+            "q-protocol-fee-model-base-fee",
+            "q-pc-practical-fee-setting",
+            "q-soroban-fee-structure",
+            "q-protocol-base-reserve-min-balance",
+            "q-asset-trustline-basics",
+            "q-asset-establish-trustline-howto",
+            "q-asset-amm-fee-reserve",
+            "q-asset-sdex-vs-amm",
+            "q-pc-account-activation-not-found",
+            "q-edge-1xlm-activation-fee",
+            "q-pc-sponsored-reserves",
+            "q-sor-doc-timestamping-manage-data",
+            "q-protocol-ledger-close-time",
+            "q-asset-path-payment-ops",
+            "q-token-initial-supply-distribution",
+            "q-hot-fee-pool-burn-deflation",
+            "q-edge-noinfo-stellar-pos-staking-rewards"
+          ],
           "note": "Base fee 100 stroops, 1 XLM = 10,000,000 stroops, base reserve 0.5 XLM, empty account 2 reserves = 1 XLM, min balance (2+subentries)×reserve, trustline 1 reserve, AMM pool-share 2 reserves, ledger close ~3-5s (~5s average; the '~5 s' one-ledger settle claim sits inside the range), 100B XLM generated 2014, ~1% inflation disabled by vote 2019, ~55B one-time SDF burn 2019 — every repeated constant matches; the two fee cases even declare explicit lane ownership to avoid re-teaching."
         },
         {
           "cluster": "RPC/Horizon roles, rename, retention windows",
-          "cases": ["q-infra-horizon-deprecated", "q-infra-what-is-stellar-rpc", "q-infra-rpc-event-retention", "q-infra-rpc-methods-list", "q-soroban-publish-events", "q-ti-historical-events-beyond-retention", "q-ti-self-host-core-rpc-full-history", "q-ti-self-host-retention-backfill", "q-ti-historical-pointintime-balances", "q-ti-enumerate-holders-airdrop", "q-infra-hubble-vs-rpc-layer", "q-infra-which-indexer", "q-infra-rpc-provider-archive-tier"],
+          "cases": [
+            "q-infra-horizon-deprecated",
+            "q-infra-what-is-stellar-rpc",
+            "q-infra-rpc-event-retention",
+            "q-infra-rpc-methods-list",
+            "q-soroban-publish-events",
+            "q-ti-historical-events-beyond-retention",
+            "q-ti-self-host-core-rpc-full-history",
+            "q-ti-self-host-retention-backfill",
+            "q-ti-historical-pointintime-balances",
+            "q-ti-enumerate-holders-airdrop",
+            "q-infra-hubble-vs-rpc-layer",
+            "q-infra-which-indexer",
+            "q-infra-rpc-provider-archive-tier"
+          ],
           "note": "Horizon NOT deprecated (legacy/no-new-features); 'Soroban RPC' renamed 'Stellar RPC' Nov 2024; getEvents ~24h default / ~7-day max; HISTORY_RETENTION_WINDOW default 120960 ledgers ≈ 7 days; Horizon default ~1 month (518400); archive/data-lake extends only getLedgers; Hubble/BigQuery for point-in-time history — the corpus notes this phrasing was deliberately normalized across tooling-infra and it holds in every case checked."
         },
         {
           "cluster": "oracles: Reflector leading but not sole provider",
-          "cases": ["q-defi-reflector-oracle", "q-defi-reflector-alternatives", "q-defi-reflector-related-projects", "q-defi-oracles-chainlink-band", "q-eco-defi-market-map", "q-scf-funded-similar-oracle"],
+          "cases": [
+            "q-defi-reflector-oracle",
+            "q-defi-reflector-alternatives",
+            "q-defi-reflector-related-projects",
+            "q-defi-oracles-chainlink-band",
+            "q-eco-defi-market-map",
+            "q-scf-funded-similar-oracle"
+          ],
           "note": "All six frame Reflector as the dominant/most-integrated Stellar oracle while explicitly forbidding 'only oracle' claims; Band, RedStone (mainnet since Mar 2026), DIA, Lightecho, Orally named consistently."
         },
         {
           "cluster": "org/founding facts (SDF, SCP, consensus, Tier 1)",
-          "cases": ["q-edge-deep-full-history-report", "q-hist-scp-rewrite-2015", "q-org-mazieres-chief-scientist", "q-org-sdf-structure-mandate", "q-protocol-tier1-requirements", "q-protocol-tier1-org-list", "q-edge-noinfo-stellar-pos-staking-rewards"],
+          "cases": [
+            "q-edge-deep-full-history-report",
+            "q-hist-scp-rewrite-2015",
+            "q-org-mazieres-chief-scientist",
+            "q-org-sdf-structure-mandate",
+            "q-protocol-tier1-requirements",
+            "q-protocol-tier1-org-list",
+            "q-edge-noinfo-stellar-pos-staking-rewards"
+          ],
           "note": "SDF founded 2014 by Jed McCaleb + Joyce Kim; SCP authored by David Mazières, 2015 rewrite replacing Ripple-derived consensus after a fork; CEO Denelle Dixon; Delaware non-stock nonprofit (not 501(c)(3), pays US taxes); not PoS, no staking; Tier 1 = 3 geographically dispersed Full Validators + earned via quorum inclusion, no static canonical list, SDF quorum ~7 orgs — no conflicts."
         },
         {
           "cluster": "moving TVL figures (chain-wide + Aquarius + Blend)",
-          "cases": ["q-eco-defi-tvl-current", "q-defi-aquarius-tvl-freshness", "q-defi-aquarius-what-is", "q-edge-fresh-latest-blend-tvl", "q-edge-noinfo-exact-tvl-figure", "q-defi-defindex-honest"],
+          "cases": [
+            "q-eco-defi-tvl-current",
+            "q-defi-aquarius-tvl-freshness",
+            "q-defi-aquarius-what-is",
+            "q-edge-fresh-latest-blend-tvl",
+            "q-edge-noinfo-exact-tvl-figure",
+            "q-defi-defindex-honest"
+          ],
           "note": "All gate on dated-source + freshness-caveat discipline rather than frozen numbers; the pinned reads agree where they overlap (~$242M chain record May 30 2026, ~$137-140M late-June reads, Aquarius ~$48-52M dossier-era ≈ largest single AMM ~20%); DeFindex TVL honestly declared not-in-corpus."
         },
         {
           "cluster": "wallets and Ultra Stellar product family",
-          "cases": ["q-eco-wallets-overview", "q-eco-wallets-similar", "q-eco-lobstr-wallet", "q-defi-stellarx-what-is", "q-defi-soroswap-vs-stellarx", "q-eco-dex-saturation", "q-tool-passkeykit-smart-wallet", "q-tool-smart-wallet-repos-discovery"],
+          "cases": [
+            "q-eco-wallets-overview",
+            "q-eco-wallets-similar",
+            "q-eco-lobstr-wallet",
+            "q-defi-stellarx-what-is",
+            "q-defi-soroswap-vs-stellarx",
+            "q-eco-dex-saturation",
+            "q-tool-passkeykit-smart-wallet",
+            "q-tool-smart-wallet-repos-discovery"
+          ],
           "note": "Freighter = SDF official; LOBSTR/StellarX/StellarTerm = Ultra Stellar (independent, not SDF); Hana multi-chain; xBull = Creit-Tech; StellarX no-shutdown-claim guard consistent in both cases carrying it; passkey-kit = legacy precursor to OpenZeppelin Smart Accounts with smart-account-kit as current default in both smart-wallet cases. (LOBSTR SCF-total nuance filed under tensions.)"
         },
         {
           "cluster": "Friendbot/testnet funding boundaries",
-          "cases": ["q-infra-friendbot-fund-testnet", "q-edge-send-me-free-xlm", "q-ti-provision-wallet-per-user", "q-infra-testnet-vs-futurenet", "q-tool-cli-testnet-identity-howto", "q-ti-testnet-mainnet-migration", "q-ti-testnet-usdc-faucet", "q-ti-stellar-lab-usage-and-new-ui"],
+          "cases": [
+            "q-infra-friendbot-fund-testnet",
+            "q-edge-send-me-free-xlm",
+            "q-ti-provision-wallet-per-user",
+            "q-infra-testnet-vs-futurenet",
+            "q-tool-cli-testnet-identity-howto",
+            "q-ti-testnet-mainnet-migration",
+            "q-ti-testnet-usdc-faucet",
+            "q-ti-stellar-lab-usage-and-new-ui"
+          ],
           "note": "Friendbot testnet/futurenet-only, mainnet XLM must be acquired, testnet periodically resets (~2-4x/yr, futurenet irregular), Lab can add testnet USDC/EURC trustlines but not mint units, network passphrases distinct — consistent across all eight."
         }
       ]
     }
-  ]
+  ],
+  "dateContingentTraps": {
+    "$comment": "Golden traps/claims that are TRUE now but expire on a known future event. After the trigger passes, re-verify each listed case live (golden-truth skill) — an expired trap punishes the then-true claim and becomes a judge-artifact factory. Entries are removed once re-verified; corpus-health sweeps and eval rounds should check this list for passed expiries.",
+    "entries": [
+      {
+        "trigger": "Protocol 27 Mainnet vote (scheduled 2026-07-08; if it slips, re-date)",
+        "trapWhileTrue": "P27 is NOT live on Mainnet / released does not mean activated",
+        "cases": [
+          "q-protocol-current-mainnet-version",
+          "q-protocol-latest-stellar-core-release",
+          "q-protocol-27-cap-0071",
+          "q-protocol-version-history-list"
+        ],
+        "verify": "live Horizon GET /ledgers?order=desc → protocol_version, plus release/blog confirmation",
+        "tracking": "solo://proj/49/todo/date-contingent-trap--831",
+        "recorded": "2026-07-03 (todo-829 skeptic sweep)"
+      }
+    ]
+  }
 }

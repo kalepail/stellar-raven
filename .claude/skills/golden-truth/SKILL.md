@@ -148,4 +148,10 @@ fields exist; the reviewer checks they're true.
 - Paid Lumenloop research stays gated/off; perplexity/parallel spend is expected and
   appropriate here. Never print or commit secrets.
 - Traps must punish claims that are FALSE per this skill's verification — a trap that
-  punishes a possibly-true claim is a judge artifact factory (exactly what todo 826 fixed).
+  punishes a possibly-true claim is a judge artifact factory (the avoid-clause artifact
+  class the rubric's avoid-binding rules exist to prevent; see "Judging rubric" in
+  `eval/qa/README.md`).
+- Traps that are true only until a known future event (a scheduled vote, a planned release)
+  are **date-contingent**: record them in `eval/qa/consistency-register.json →
+  dateContingentTraps` with their trigger, and re-verify when it passes — an expired trap
+  punishes the then-true claim.
