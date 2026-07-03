@@ -67,7 +67,7 @@ untouched.
 1. *Stopword gate-rescue* — an entry that fails the coverage gate on the full query is
    rescored with closed-class English stopwords removed. Entries that already passed keep
    their exact vendor score (filtering stopwords for all scoring was tried and regressed).
-2. *Kind weighting* — `skill-section` entries are scaled ×0.75 so 278 near-duplicate
+2. *Kind weighting* — `skill-section` entries are scaled ×0.75 so 203 near-duplicate
    fragments don't blanket-outrank the operations on shared topical vocabulary.
 3. *Service diversity* — the returned set is selected with a per-service quota
    (`max(2, ceil(0.4 × limit))`, score order preserved, top hit never displaced,
@@ -228,7 +228,7 @@ paragraph); one `kind: "skill-section"` entry per `##` heading (id `<skillId>#<s
 duplicate slugs deduped `-2`, `-3`…; description = heading + first paragraph, truncated to
 200 chars; low-weight `keywords` extracted from the *section body* so mid-section content —
 error codes, flags, function names — is lexically searchable); and one section-kind entry
-per extra `.md` file (id `<skillId>#file:<relpath>`). Currently 25 skills + 278 sections.
+per extra `.md` file (id `<skillId>#file:<relpath>`). Currently 25 skills + 203 sections.
 
 **Metadata twins.** The Lumenloop API serves 14 skills of its own as zips; the catalog
 carries them as `lumenloop.skill.*` entries with `transport: null` (metadata-only — bodies

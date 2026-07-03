@@ -202,8 +202,8 @@ Honest caveats:
 ## Skills lane (2026-07-02, todo 809)
 
 **Why.** The compiled corpus labels only scout / stellarDocs / lumenloop — there was **no
-case whose expected answer is the `skills` service** (25 mirrored skills + 278 sections,
-303 catalog entries). Under that structure every skills hit graded as a miss, so any
+case whose expected answer is the `skills` service** (25 mirrored skills + 203 sections,
+299 catalog entries). Under that structure every skills hit graded as a miss, so any
 scoring change tuned against this eval was structurally rewarded for burying skills (the
 shipped skill-section × 0.75 kind-weight is exactly such a lever). This lane fixes the
 *measurement*; it does not touch `src/` or the scorer.

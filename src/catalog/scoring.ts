@@ -7,7 +7,7 @@
  * catalog. No per-question special cases, no query→service maps.
  *
  * Three levers, each fixing a measured, structural imbalance
- * (eval/README.md baseline: 278 skill-sections lexically crowding 58
+ * (eval/README.md baseline: 203 skill-sections lexically crowding 57
  * operations; 40/338 questions gated to zero hits; single services flooding
  * all top-5 slots):
  *
@@ -22,8 +22,8 @@
  *
  *  2. Kind weighting — skill-section entries (fragments of a SKILL.md whose
  *     whole-skill entry also ranks) are scaled by 0.75. The search tool
- *     exists to route a model to something it can CALL or open whole; 278
- *     near-duplicate fragments should not blanket-outrank 58 operations on
+ *     exists to route a model to something it can CALL or open whole; 203
+ *     near-duplicate fragments should not blanket-outrank 57 operations on
  *     shared topical vocabulary. Sections still rank — and still win on
  *     strong lexical matches. Whole-skill entries keep full weight.
  *
