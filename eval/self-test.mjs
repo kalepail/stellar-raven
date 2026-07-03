@@ -1,0 +1,248 @@
+#!/usr/bin/env node
+/**
+ * self-test.mjs — standalone fixture test of the grader math in eval/lib/grade.mjs.
+ * No dependency on src/ or catalog/ — runnable before Lane C lands:
+ *   node eval/self-test.mjs
+ *
+ * Fixture: a fake 3-entry catalog (as ranked hit lists) + 3 fake cases + 1 skip,
+ * proving top-1/3/5 semantics, card@5 tolerant matching, skip handling, aggregation.
+ */
+import assert from "node:assert/strict";
+import { aggregate, cardMatches, canonToken, gradeCase, hitServices, tableRows, terminalName } from "./lib/grade.mjs";
+import { deriveExpectedAny, frontmatterRouting, parseFrontmatterList } from "./lib/labels.mjs";
+
+// --- fake catalog: 3 entries across our namespaces --------------------------------
+const E = {
+  scoutProjects: { id: "scout.list_projects", service: "scout", kind: "operation", score: 0, description: "" },
+  docsSearch: { id: "stellarDocs.search_docs", service: "stellarDocs", kind: "operation", score: 0, description: "" },
+  llDirectory: { id: "lumenloop.search_directory", service: "lumenloop", kind: "operation", score: 0, description: "" },
+  skillContracts: { id: "skills.stellar-dev.smart-contracts", service: "skills", kind: "skill", score: 0, description: "" },
+  skillContractsSection: { id: "skills.stellar-dev.smart-contracts#storage", service: "skills", kind: "skill-section", score: 0, description: "" },
+  skillBilling: { id: "skills.lumenloop-api.lumenloop-api-billing", service: "skills", kind: "skill", score: 0, description: "" },
+};
+const rank = (...entries) => entries.map((e, i) => ({ ...e, score: 1 - i * 0.1 }));
+
+let failures = 0;
+const check = (name, fn) => {
+  try {
+    fn();
+    console.log(`  ok  ${name}`);
+  } catch (err) {
+    failures += 1;
+    console.error(`FAIL  ${name}: ${err.message}`);
+  }
+};
+
+// --- canonToken / cardMatches ------------------------------------------------------
+check("canonToken unifies separators + case", () => {
+  assert.equal(canonToken("Lumenloop.Search-Directory"), "lumenloop_search_directory");
+});
+check("cardMatches: exact canonical id match", () => {
+  assert.equal(cardMatches("lumenloop_search_directory", E.llDirectory), true);
+});
+check("cardMatches: stellar_docs_ prefix maps to stellarDocs service, tolerant op containment", () => {
+  // expected op "search_docs" vs hit op "search_docs" via stellar_docs_ prefix
+  assert.equal(cardMatches("stellar_docs_search_docs", E.docsSearch), true);
+  // containment: "projects" (>=4 chars) within "list_projects", same service
+  assert.equal(cardMatches("scout_projects", E.scoutProjects), true);
+});
+check("cardMatches: rejects cross-service and short-token matches", () => {
+  assert.equal(cardMatches("scout_projects", E.llDirectory), false);
+  assert.equal(cardMatches("scout_ls", E.scoutProjects), false); // shorter op < 4 chars
+});
+check("cardMatches: skills_ prefix maps to skills service; terminal name matches skills.<source>.<name>", () => {
+  // catalog skill ids carry a <source> segment ("stellar-dev") the card omits;
+  // rule-3 containment bridges it: "smart_contracts" within "stellar_dev_smart_contracts"
+  assert.equal(cardMatches("skills_smart_contracts", E.skillContracts), true);
+  // a section of the right skill also counts (id carries a #fragment suffix)
+  assert.equal(cardMatches("skills_smart_contracts", E.skillContractsSection), true);
+  assert.equal(cardMatches("skills_lumenloop_api_billing", E.skillBilling), true);
+  // wrong skill under the same service must not match
+  assert.equal(cardMatches("skills_smart_contracts", E.skillBilling), false);
+  // wrong service must not match even with a similar op name
+  assert.equal(cardMatches("skills_search_directory", E.llDirectory), false);
+});
+
+// --- gradeCase: top-1/3/5 semantics ------------------------------------------------
+// case 1: expected service at rank 1 -> all true; expected card present -> cardHit5 true
+check("case1: hit at rank 1", () => {
+  const g = gradeCase(rank(E.scoutProjects, E.docsSearch, E.llDirectory), "scout", ["scout_projects"]);
+  assert.deepEqual(g, { top1: true, top3: true, top5: true, cardHit5: true });
+});
+// case 2: expected service at rank 3 -> top1 false, top3/top5 true; no expected_cards -> cardHit5 null
+check("case2: hit at rank 3, no cards", () => {
+  const g = gradeCase(rank(E.scoutProjects, E.llDirectory, E.docsSearch), "stellarDocs", undefined);
+  assert.deepEqual(g, { top1: false, top3: true, top5: true, cardHit5: null });
+});
+// case 3: expected service never returned -> all false; expected card absent -> cardHit5 false
+check("case3: total miss", () => {
+  const g = gradeCase(rank(E.scoutProjects, E.docsSearch), "lumenloop", ["lumenloop_get_project"]);
+  assert.deepEqual(g, { top1: false, top3: false, top5: false, cardHit5: false });
+});
+check("empty hits -> all false", () => {
+  const g = gradeCase([], "scout", undefined);
+  assert.deepEqual(g, { top1: false, top3: false, top5: false, cardHit5: null });
+});
+
+// --- expected_any (accept-either, todo 809) ----------------------------------------
+check("expected_any: skills hit at rank 1 fails strict but passes accept-either", () => {
+  const g = gradeCase(
+    rank(E.skillContracts, E.docsSearch, E.scoutProjects),
+    "stellarDocs",
+    undefined,
+    ["stellarDocs", "skills"],
+  );
+  // strict fields judge expected_service alone (docs at rank 2)
+  assert.deepEqual(
+    g,
+    { top1: false, top3: true, top5: true, cardHit5: null, any1: true, any3: true, any5: true },
+  );
+});
+check("expected_any: neither accepted service in hits -> any* all false", () => {
+  const g = gradeCase(rank(E.scoutProjects, E.llDirectory), "stellarDocs", undefined, ["stellarDocs", "skills"]);
+  assert.deepEqual(
+    g,
+    { top1: false, top3: false, top5: false, cardHit5: null, any1: false, any3: false, any5: false },
+  );
+});
+check("expected_any: accepted service only past rank 3 -> any5 only", () => {
+  const g = gradeCase(
+    rank(E.scoutProjects, E.llDirectory, E.scoutProjects, E.skillContracts),
+    "stellarDocs",
+    undefined,
+    ["stellarDocs", "skills"],
+  );
+  assert.deepEqual(
+    g,
+    { top1: false, top3: false, top5: false, cardHit5: null, any1: false, any3: false, any5: true },
+  );
+});
+check("no expected_any -> result shape unchanged (no any* fields), strict math identical", () => {
+  const withAny = gradeCase(rank(E.docsSearch, E.skillContracts), "stellarDocs", undefined, ["stellarDocs", "skills"]);
+  const without = gradeCase(rank(E.docsSearch, E.skillContracts), "stellarDocs", undefined);
+  assert.deepEqual(without, { top1: true, top3: true, top5: true, cardHit5: null });
+  assert.equal("any1" in without, false);
+  // strict fields identical with or without the accept set
+  assert.deepEqual(
+    { top1: withAny.top1, top3: withAny.top3, top5: withAny.top5 },
+    { top1: without.top1, top3: without.top3, top5: without.top5 },
+  );
+});
+check("skills-lane case: strict grading with skills as expected_service + skills card@5", () => {
+  const g = gradeCase(rank(E.skillBilling, E.docsSearch), "skills", ["skills_lumenloop_api_billing"]);
+  assert.deepEqual(g, { top1: true, top3: true, top5: true, cardHit5: true });
+  // right service, wrong skill -> service metrics hit, card metric misses
+  const g2 = gradeCase(rank(E.skillContracts), "skills", ["skills_lumenloop_api_billing"]);
+  assert.deepEqual(g2, { top1: true, top3: true, top5: true, cardHit5: false });
+});
+
+// --- aggregation over the 3 graded cases (the skip never reaches the grader:
+// compile-routing.mjs routes unmappable labels to the skipped list, which run-routing
+// only counts — mimic that by grading exactly the 3 usable cases). ------------------
+check("aggregate: overall + per-service math", () => {
+  const results = [
+    { expected_service: "scout", top1: true, top3: true, top5: true, cardHit5: true },
+    { expected_service: "stellarDocs", top1: false, top3: true, top5: true, cardHit5: null },
+    { expected_service: "lumenloop", top1: false, top3: false, top5: false, cardHit5: false },
+  ];
+  const { overall, perService } = aggregate(results);
+  assert.deepEqual(overall, { n: 3, top1: 1, top3: 2, top5: 2, cardN: 2, cardHit5: 1 });
+  assert.deepEqual(perService.scout, { n: 1, top1: 1, top3: 1, top5: 1, cardN: 1, cardHit5: 1 });
+  assert.deepEqual(perService.stellarDocs, { n: 1, top1: 0, top3: 1, top5: 1, cardN: 0, cardHit5: 0 });
+  assert.deepEqual(perService.lumenloop, { n: 1, top1: 0, top3: 0, top5: 0, cardN: 1, cardHit5: 0 });
+});
+check("tableRows renders rates + n/a for zero-denominator card metric", () => {
+  const rows = tableRows(aggregate([
+    { expected_service: "scout", top1: true, top3: true, top5: true, cardHit5: null },
+  ]));
+  assert.equal(rows.length, 2); // scout + OVERALL
+  assert.equal(rows[1].scope, "OVERALL");
+  assert.equal(rows[1]["top-1"], "100.0%");
+  assert.ok(rows[1]["card@5"].startsWith("n/a"));
+});
+
+// --- twin-aware grading, rule v2 (todo 816) -----------------------------------------
+const TWINS = new Set(["scf-submission-radar", "stellar-ecosystem-scout"]);
+const twinMeta = { id: "lumenloop.skill.scf-submission-radar", service: "lumenloop", kind: "skill", score: 0, description: "" };
+const twinReadable = { id: "skills.lumenloop.scf-submission-radar", service: "skills", kind: "skill", score: 0, description: "" };
+const twinSection = { id: "skills.lumenloop.stellar-ecosystem-scout#workflow", service: "skills", kind: "skill-section", score: 0, description: "" };
+
+check("terminalName strips fragments and takes the last segment", () => {
+  assert.equal(terminalName("lumenloop.skill.scf-submission-radar"), "scf-submission-radar");
+  assert.equal(terminalName("skills.lumenloop.stellar-ecosystem-scout#workflow"), "stellar-ecosystem-scout");
+});
+check("hitServices: twin hits satisfy both labels; non-twins are unchanged", () => {
+  assert.deepEqual(hitServices(twinMeta, TWINS), ["lumenloop", "skills"]);
+  assert.deepEqual(hitServices(twinReadable, TWINS), ["skills", "lumenloop"]);
+  assert.deepEqual(hitServices(twinSection, TWINS), ["skills", "lumenloop"]);
+  assert.deepEqual(hitServices(E.llDirectory, TWINS), ["lumenloop"]); // non-twin lumenloop op
+  assert.deepEqual(hitServices(E.skillContracts, TWINS), ["skills"]); // skill not in twin set
+});
+check("gradeCase v2: metadata twin at rank 1 counts for a skills-expected case (and vice versa)", () => {
+  const g = gradeCase(rank(twinMeta, E.docsSearch), "skills", undefined, undefined, TWINS);
+  assert.deepEqual(g, { top1: true, top3: true, top5: true, cardHit5: null });
+  const g2 = gradeCase(rank(twinReadable, E.docsSearch), "lumenloop", undefined, undefined, TWINS);
+  assert.deepEqual(g2, { top1: true, top3: true, top5: true, cardHit5: null });
+});
+check("cardMatches v2: skills_ card matches the metadata twin; non-twin cross-service still rejected", () => {
+  assert.equal(cardMatches("skills_scf_submission_radar", twinMeta, TWINS), true);
+  assert.equal(cardMatches("lumenloop_scf_submission_radar", twinReadable, TWINS), true);
+  assert.equal(cardMatches("skills_search_directory", E.llDirectory, TWINS), false);
+});
+check("gradeCase v2: expected_any also honors twin identity", () => {
+  const g = gradeCase(rank(twinMeta), "stellarDocs", undefined, ["stellarDocs", "skills"], TWINS);
+  assert.equal(g.any1, true); // twin counts as skills for the accept set
+  assert.equal(g.top1, false); // strict vs stellarDocs unaffected
+});
+
+// --- labels.mjs: corpus-label helpers (todo 817) ------------------------------------
+check("deriveExpectedAny: cross-service acceptable_cards produce a sorted accept set", () => {
+  assert.deepEqual(
+    deriveExpectedAny("stellarDocs", ["scout_research", "lumenloop_search_directory", "scout_repos"]),
+    ["stellarDocs", "lumenloop", "scout"],
+  );
+});
+check("deriveExpectedAny: same-service and out-of-catalog cards contribute nothing", () => {
+  // acceptable cards on the expected service itself -> no tolerance to add
+  assert.equal(deriveExpectedAny("scout", ["scout_research", "scout_repos"]), null);
+  // perplexity/parallel aren't in this catalog -> excluded entirely
+  assert.equal(deriveExpectedAny("stellarDocs", ["perplexity_search", "parallel_extract"]), null);
+  assert.equal(deriveExpectedAny("stellarDocs", []), null);
+  assert.equal(deriveExpectedAny("stellarDocs", undefined), null);
+});
+check("parseFrontmatterList: inline style with comments", () => {
+  const txt = "id: q-x\nexpected_cards: [stellar_docs_mcp]  # the docs card\nacceptable_cards: [scout_research, scout_repos]\n";
+  assert.deepEqual(parseFrontmatterList(txt, "expected_cards"), ["stellar_docs_mcp"]);
+  assert.deepEqual(parseFrontmatterList(txt, "acceptable_cards"), ["scout_research", "scout_repos"]);
+  assert.deepEqual(parseFrontmatterList(txt, "forbidden_cards"), []);
+});
+check("parseFrontmatterList: block style", () => {
+  const txt = "expected_cards:\n  - scout_research\nacceptable_cards:\n  - stellar_docs_mcp\n  - lumenloop_search_content_semantic\nforbidden_cards: []\n";
+  assert.deepEqual(parseFrontmatterList(txt, "expected_cards"), ["scout_research"]);
+  assert.deepEqual(parseFrontmatterList(txt, "acceptable_cards"), ["stellar_docs_mcp", "lumenloop_search_content_semantic"]);
+});
+check("frontmatterRouting: extracts service, fire flag, and both card lists", () => {
+  const txt = [
+    "---",
+    "id: q-x",
+    "expected_cards: [stellar_docs_mcp]",
+    "acceptable_cards:",
+    "  - scout_research",
+    "forbidden_cards: []",
+    "expected_service: stellar_docs",
+    "should_fire: true",
+    "---",
+  ].join("\n");
+  assert.deepEqual(frontmatterRouting(txt), {
+    expected_service: "stellar_docs",
+    should_fire: true,
+    expected_cards: ["stellar_docs_mcp"],
+    acceptable_cards: ["scout_research"],
+  });
+});
+
+if (failures > 0) {
+  console.error(`\nself-test: ${failures} failure(s)`);
+  process.exit(1);
+}
+console.log("\nself-test: all checks passed");

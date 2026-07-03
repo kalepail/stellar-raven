@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["es2022"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    // catalog/manifest.json is imported as a module by src/mcp/tools.ts
+    // (wrangler/esbuild bundles JSON natively).
+    "resolveJsonModule": true,
+    // src/catalog/** uses explicit .ts extensions so the frozen search
+    // contract (src/catalog/search.ts) loads under plain Node type stripping
+    // for the eval CLI (scratchpad 514). Legal because noEmit is on.
+    "allowImportingTsExtensions": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["@cloudflare/workers-types", "node"]
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "env.d.ts"]
+}

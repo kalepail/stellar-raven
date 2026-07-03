@@ -1,0 +1,361 @@
+# Stellar Docs — direct Algolia REST Search API (primary integration)
+
+_Measured live on **2026-07-01** with raw curl probes using the dedicated search key in
+`.env`. This doc supersedes the MCP path in `stellar-docs-mcp.md` (retained as fallback)._
+
+## Overview
+
+The Stellar developer docs (`developers.stellar.org` — docs + blog + meeting notes) are indexed by
+the Algolia **DocSearch crawler** into app `VNSJF5AWIZ`, primary index
+**`crawler_Stellar Docs - Docusaurus`** (12,867 records, ~12.9 MB, updated daily — `updatedAt`
+observed `2026-07-01T12:17:18Z`). One record = one page **section/anchor**, not a whole page;
+`distinct: true` on `url` groups results back to ~3,808 distinct URLs. A replica
+`docs_replica_agent` exists (serves the Algolia MCP endpoint) with **byte-identical settings**.
+
+We talk to the Algolia Search REST API directly from a Cloudflare Workers adapter. This is
+strictly more expressive than the MCP tool (full search params, no fake-required analytics args,
+no SSE/double-JSON parsing, `processingTimeMS` present) and equally fast.
+
+## Auth + env vars
+
+| Env var | Value | Notes |
+| --- | --- | --- |
+| `ALGOLIA_APPLICATION_ID` | `VNSJF5AWIZ` | public, appears in hostnames |
+| `ALGOLIA_API_KEY` | (secret, in `.env`) | dedicated search key |
+| `ALGOLIA_DOCS_INDEX` | `crawler_Stellar Docs - Docusaurus` | suggested new env var; note the literal spaces |
+
+Key introspection (`GET /1/keys/$ALGOLIA_API_KEY`, verified live): `acl: ["search",
+"listIndexes", "settings"]`, `validity: 0` (never expires), created 2022-10, **no index
+restriction, no rate cap, no referer/IP restriction, no forced query params**. It can query both
+the primary and the replica, list all 6 indexes on the app, and read index settings.
+
+Headers on every request:
+
+```
+X-Algolia-Application-Id: $ALGOLIA_APPLICATION_ID
+X-Algolia-API-Key: $ALGOLIA_API_KEY
+Content-Type: application/json
+```
+
+(Query-string auth `?x-algolia-application-id=…&x-algolia-api-key=…` also works if headers are
+awkward, but headers are preferred.)
+
+## Endpoints + hosts + retry
+
+### Endpoints (all verified live)
+
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /1/indexes/{index}/query` | single search; body = JSON search params |
+| `POST /1/indexes/*/queries` | multi-query batch; body `{"requests":[{"indexName":"…","query":"…",…},…]}` — index names go **unencoded in the JSON body** |
+| `GET  /1/indexes/{index}/settings` | index settings (key has `settings` ACL) |
+| `GET  /1/indexes` | list indexes + entry counts (drift/corpus tracking) |
+| `GET  /1/indexes/{index}?query=…&…` | GET-style search via URL params (works; POST preferred) |
+
+**URL-encoding the index name**: spaces in the path must be `%20` →
+`/1/indexes/crawler_Stellar%20Docs%20-%20Docusaurus/query`. In JS:
+`encodeURIComponent(indexName)`. Do NOT use `+` in the path.
+
+### Host architecture
+
+- **Read host (use first)**: `https://VNSJF5AWIZ-dsn.algolia.net` — DSN read endpoint.
+- **Fallback hosts**: `https://VNSJF5AWIZ-1.algolianet.com`, `…-2.algolianet.com`,
+  `…-3.algolianet.com`. Fallback `-1` verified live: same results, ~0.5 s cold.
+- (`https://VNSJF5AWIZ.algolia.net` is the write host — irrelevant for a search-only key.)
+
+### Retry strategy (what the official clients do; replicate this)
+
+1. Try `{app}-dsn.algolia.net` with a short timeout (official JS v5 defaults: ~1 s connect,
+   2 s read for search).
+2. On **network error, DNS failure, timeout, or HTTP 5xx** → retry the same request against the
+   fallback hosts in randomized order (`-1`/`-2`/`-3`), bumping the timeout per attempt
+   (timeout × attempt number). Official clients mark a failed host "down" for ~2 minutes.
+3. **Never retry HTTP 4xx** — those are request errors (see error envelope) and will fail
+   identically on every host.
+
+### Client choice: hand-roll, don't depend
+
+**Recommendation: hand-rolled fetch wrapper (~50 lines) for the Workers adapter.** Rationale:
+
+- The official `algoliasearch` v5 client does run on Cloudflare Workers (fetch-based requester;
+  CF Workers support landed in v4.14 via `@algolia/requester-fetch` and carried into v5), so it is
+  a viable option — but it drags in a multi-API bundle (search + analytics + personalization +
+  A/B), its own transporter/host-state machinery, and a dependency to track, all to make one POST.
+- We need exactly: 4 hosts, `AbortSignal.timeout()`, one retry loop, JSON in/out. That is ~50
+  lines with zero deps, full observability, and no version churn.
+
+Sketch of the core loop:
+
+```ts
+const HOSTS = [
+  `${appId}-dsn.algolia.net`,
+  `${appId}-1.algolianet.com`,
+  `${appId}-2.algolianet.com`,
+  `${appId}-3.algolianet.com`,
+];
+async function search(params: object, attempt = 0): Promise<SearchResponse> {
+  const host = HOSTS[attempt];
+  try {
+    const res = await fetch(`https://${host}/1/indexes/${encodeURIComponent(INDEX)}/query`, {
+      method: "POST", headers: HEADERS, body: JSON.stringify(params),
+      signal: AbortSignal.timeout(2000 * (attempt + 1)),
+    });
+    if (res.status >= 500) throw new Error(`algolia ${res.status}`);
+    const body = await res.json();
+    if (!res.ok) throw new AlgoliaError(body.message, body.status); // 4xx: no retry
+    return body;
+  } catch (e) {
+    if (e instanceof AlgoliaError || attempt >= HOSTS.length - 1) throw e;
+    return search(params, attempt + 1);
+  }
+}
+```
+
+## Index settings (verbatim, fetched live 2026-07-01)
+
+`GET /1/indexes/crawler_Stellar%20Docs%20-%20Docusaurus/settings` — relevant fields:
+
+```json
+{
+  "searchableAttributes": [
+    "unordered(hierarchy.lvl0)", "unordered(hierarchy.lvl1)", "unordered(hierarchy.lvl2)",
+    "unordered(hierarchy.lvl3)", "unordered(hierarchy.lvl4)", "unordered(hierarchy.lvl5)",
+    "unordered(hierarchy.lvl6)", "content"
+  ],
+  "attributesForFaceting": ["type", "lang", "language", "version", "docusaurus_tag"],
+  "customRanking": ["desc(weight.pageRank)", "desc(weight.level)", "asc(weight.position)"],
+  "ranking": ["proximity", "exact", "words", "filters", "typo", "attribute", "custom"],
+  "distinct": true,
+  "attributeForDistinct": "url",
+  "attributesToSnippet": ["content:10"],
+  "attributesToHighlight": ["hierarchy", "content"],
+  "attributesToRetrieve": ["hierarchy", "content", "anchor", "url", "url_without_anchor", "type"],
+  "highlightPreTag": "<span class=\"algolia-docsearch-suggestion--highlight\">",
+  "highlightPostTag": "</span>",
+  "advancedSyntax": true,
+  "queryType": "prefixLast",
+  "removeWordsIfNoResults": "allOptional",
+  "ignorePlurals": true,
+  "minWordSizefor1Typo": 3,
+  "minWordSizefor2Typos": 7,
+  "exactOnSingleWordQuery": "attribute",
+  "alternativesAsExact": ["ignorePlurals", "singleWordSynonym"],
+  "camelCaseAttributes": ["hierarchy", "content"],
+  "paginationLimitedTo": 1000,
+  "maxValuesPerFacet": 100,
+  "replicas": ["docs_replica_agent"]
+}
+```
+
+Consequences (all verified by live queries):
+
+- **Facetable attrs are exactly** `type`, `lang`, `language`, `version`, `docusaurus_tag` —
+  plain (not `filterOnly(…)`, not `searchable(…)`). So `filters` **and** `facetFilters` **and**
+  facet counts work on them, but `searchForFacetValues` fails on every facet (needs
+  `searchable()`), which is exactly why the MCP facet-values tool is broken.
+- Observed facet values: `type`: `content`, `lvl1`…`lvl5` (records are typed by their heading
+  depth); `lang`/`language`: `en`; `version`: `current`; `docusaurus_tag`:
+  `docs-default-current` (the docs proper), `default`, `blog_tags_posts`, `blog_posts_list`,
+  `blog_authors_posts`, `blog_tags_list`.
+- **`hierarchy.lvl0` is NOT facetable.** `facetFilters:[["hierarchy.lvl0:Documentation"]]`
+  does not error — it silently returns `nbHits: 0`. Likewise an undeclared attribute in the
+  `facets` request list is silently dropped from the response. Guard the adapter's facet surface
+  to the five real facets.
+- `distinct: true` + `attributeForDistinct: "url"` is on **by default**: results are deduped per
+  URL-with-anchor and `nbHits` counts distinct groups. `distinct: 0` at query time reveals raw
+  record counts (empty query: 3,808 distinct vs 12,867 raw; "soroban storage": 88 vs 92).
+- `advancedSyntax: true` is on by default → quoted phrases just work: `"\"state archival\""` →
+  80 hits vs 94 unquoted.
+- `removeWordsIfNoResults: "allOptional"` → a query with any nonsense word won't zero out if
+  other words match (`"qwzxvbnmasdfgh soroban"` → 581 hits). Only all-garbage queries return
+  `nbHits: 0`. So **zero hits = definitely not in corpus, but nonzero hits ≠ good match** —
+  judge the top hit's snippet/hierarchy.
+- Settings-level defaults (snippeting `content:10`, highlighting, retrieve list, DocSearch
+  highlight tags) apply when you omit the corresponding query param; every one of them is
+  overridable per query. What you **cannot** change at query time: `searchableAttributes`,
+  `attributesForFaceting`, `customRanking`, `attributeForDistinct`.
+- `paginationLimitedTo: 1000` → `page * hitsPerPage` beyond 1000 records is unreachable.
+
+## Search parameters that matter for LLM-driven docs search
+
+| Param | Effect on this index |
+| --- | --- |
+| `query` | keyword query. `queryType: prefixLast` → last word matched as prefix (autocomplete-ish); typo tolerance from 3 chars (1 typo) / 7 chars (2 typos); plurals ignored. |
+| `hitsPerPage` / `page` | default 20 / 0. For LLM use 3–8; each hit can carry multi-KB `content`. Max page depth: 1000 records. |
+| `attributesToRetrieve` | default (from settings) already excludes `content_camel` bloat. Recommended: `["url","url_without_anchor","anchor","hierarchy","type"]` (+ `"content"` only on request). `objectID` is always returned. `[]` = objectID only. |
+| `attributesToSnippet` | e.g. `["content:12"]` (N = words). Populates `_snippetResult`. Settings default `content:10`. |
+| `attributesToHighlight` / `highlightPreTag`/`highlightPostTag` | override the DocSearch `<span class="algolia-docsearch-suggestion--highlight">` tags — set to `**`/`**` or empty for LLM-friendly output instead of stripping HTML. Applies to snippets too. |
+| `restrictSearchableAttributes` | e.g. `["hierarchy.lvl1","hierarchy.lvl2","hierarchy.lvl3"]` = title-only search — verified to surface page-level results ("state archival" → the State Archival pages first). Good "search titles" mode. |
+| `filters` | SQL-ish string: `type:content AND docusaurus_tag:"docs-default-current"` (quote values with spaces/dashes). Verified. Only the 5 facetable attrs. |
+| `facetFilters` | array form: `[["docusaurus_tag:docs-default-current"],["type:content"]]` — inner array = OR, outer = AND; `-value` negates. Verified. Same attrs; silent 0-hit on undeclared attrs. |
+| `facets` | e.g. `["type","docusaurus_tag"]` or `["*"]` → per-facet value counts on the response — the correct replacement for the broken facet-values search. Counts are computed **pre-distinct** (record counts, may exceed `nbHits`). |
+| `distinct` | default true (url grouping). `distinct: 0` for raw per-section records; `distinct: N>1` = N records per URL. |
+| `typoTolerance` | `false` for exact-token search (verified: typo'd query drops 82 → 0 hits); `"min"` keeps only the best typo class. |
+| `queryType` | override `prefixLast` → `prefixNone` to stop prefix-matching the final word (useful when the LLM sends complete words). |
+| `removeWordsIfNoResults` | index default `allOptional` already maximizes recall; set `"none"` for strict AND semantics. |
+| `optionalWords` | mark low-confidence expansion terms optional without losing them entirely. |
+| `advancedSyntax` | already on: `"exact phrase"` and `-exclude` work in `query` directly. |
+| `analytics: false` | **send on every adapter query.** Keeps automated agent traffic out of the DocSearch/Stellar search-analytics dashboards (no skewed "popular searches", no polluted click-analytics). No effect on results or latency. Also skip `clickAnalytics`. |
+| `getRankingInfo: true` | adds `_rankingInfo` (nbTypos, proximityDistance, nbExactWords, words, userScore…) + top-level `serverUsed`. Debug-only; verified working. |
+
+## Record + response shape
+
+Response envelope (verified):
+
+```json
+{
+  "hits": [ … ],
+  "nbHits": 88, "page": 0, "nbPages": 30, "hitsPerPage": 3,
+  "exhaustive": { "nbHits": true, "typo": true },
+  "exhaustiveNbHits": true, "exhaustiveTypo": true,
+  "query": "soroban storage", "params": "…",
+  "processingTimeMS": 2,
+  "facets": { "type": {"content": 89, …}, … }
+}
+```
+
+- `exhaustive.nbHits: false` means `nbHits` is an approximation (seen on the empty-corpus-scan
+  query; real queries on this index came back exhaustive).
+- `processingTimeMS` is server-side engine time (2–3 ms typical here); wall time is network-bound.
+- `facets` present only when requested (single-query endpoint); multi-query results each carry
+  their own full envelope in `results[]` (plus `index`, `processingTimingsMS`).
+
+Hit example (trimmed, real):
+
+```json
+{
+  "url": "https://developers.stellar.org/docs/build/smart-contracts/getting-started/storing-data#summary",
+  "url_without_anchor": "https://developers.stellar.org/docs/build/smart-contracts/getting-started/storing-data",
+  "anchor": "summary",
+  "type": "content",
+  "hierarchy": { "lvl0": "Documentation", "lvl1": "3. Storing Data", "lvl2": null, "lvl3": null,
+                 "lvl4": null, "lvl5": null, "lvl6": null },
+  "content": "…full section text, can be multi-KB…",
+  "objectID": "34-https://developers.stellar.org/docs/build/smart-contracts/getting-started/storing-data",
+  "_snippetResult": { "content": { "value": "made use of <span class=…>Soroban</span>'s <span class=…>storage</span> capabilities…", "matchLevel": "full" } },
+  "_highlightResult": { "hierarchy": { "lvl1": { "value": "…", "matchLevel": "none", "matchedWords": [] } },
+                         "content": { "value": "…", "matchLevel": "full", "fullyHighlighted": false, "matchedWords": ["soroban","storage"] } }
+}
+```
+
+`matchLevel` semantics: `none` (attribute didn't match), `partial` (some query words matched),
+`full` (all query words matched in that attribute). `_highlightResult` additionally carries
+`matchedWords` and `fullyHighlighted`. Full-record fields beyond the settings-default retrieve
+list: `content_camel` (duplicate of `content` — never retrieve), `lang`, `language`, `version[]`,
+`tags[]`, `docusaurus_tag`, `weight{pageRank,level,position}`, `url_without_variables`,
+`recordVersion`.
+
+## Recommended adapter design (codemode surface)
+
+- **Client**: hand-rolled fetch (above). Hosts `-dsn` + `-1/2/3`, 2 s escalating timeout, retry
+  on network/5xx only.
+- **Default params** baked into every search:
+  `analytics: false`, `hitsPerPage: 5`,
+  `attributesToRetrieve: ["url","url_without_anchor","anchor","hierarchy","type"]`,
+  `attributesToSnippet: ["content:20"]`, `highlightPreTag: "**"`, `highlightPostTag: "**"`.
+- **Knobs to expose** to the LLM: `query` (required), `page`, `hitsPerPage` (cap ≤ 20),
+  `facetFilters` restricted to `type` / `docusaurus_tag` (`lang`/`language`/`version` are
+  single-valued — useless), optional `titlesOnly` boolean (→ `restrictSearchableAttributes` on
+  hierarchy levels), optional `includeContent` boolean (adds `"content"` to retrieve list).
+- Offer a `docsOnly` default of `facetFilters: [["docusaurus_tag:docs-default-current"]]` to
+  drop blog/meeting-notes noise, overridable.
+- Post-process: flatten `hierarchy` to a breadcrumb string, surface `_snippetResult.content.value`
+  as `snippet`, return `nbHits`/`nbPages` for the LLM's pagination reasoning.
+- Dedup note: `distinct` already dedupes per anchor-URL; for page-level dedup group client-side
+  by `url_without_anchor`.
+
+## Error envelope
+
+Uniform JSON `{"message": "...", "status": <code>}` with matching HTTP status (all verified):
+
+| Status | Trigger (verified) | Body |
+| --- | --- | --- |
+| 400 | bad param value/type | `{"message":"Value \"three\" outside of the range for \"hitsPerPage\" parameter, expected integer between 0 and 9223372036854775807","status":400}` |
+| 403 | bad/foreign API key | `{"message":"Invalid Application-ID or API key","status":403}` |
+| 404 | unknown index | `{"message":"Index no_such_index_xyz does not exist","status":404}` |
+
+Beware the **silent non-errors**: undeclared facet in `facetFilters` → HTTP 200, `nbHits: 0`;
+undeclared facet in `facets` → HTTP 200, facet omitted. Validate facet names in the adapter.
+
+## Rate limits / quota
+
+- The key itself carries **no rate limit** (`validity: 0`, no `maxQueriesPerIPPerHour`, no
+  `maxHitsPerQuery`) — confirmed via key introspection.
+- This is a DocSearch/crawler app: search traffic on DocSearch apps is Algolia-subsidized;
+  there is no per-key operation quota we can exhaust from an adapter doing interactive LLM
+  searches. Plan-level abuse protection can still surface as HTTP 429 — treat 429 like 5xx
+  minus the host-retry (back off instead).
+- Each search = 1 "search operation" on the app's account; multi-query with N requests = N
+  operations. Be a polite tenant: no empty-query corpus scans in hot paths, always
+  `analytics: false`.
+
+## Replica verdict
+
+`docs_replica_agent` is queryable with this key and its settings are **byte-identical** to the
+primary (live diff of both settings objects: only `primary`/`replicas` fields differ — same
+ranking, customRanking, distinct, facets). Same data (nbHits and top hits matched exactly).
+**Use the primary `crawler_Stellar Docs - Docusaurus`**: it is the canonical index the crawler
+writes to and the name the DocSearch frontend uses; the replica exists to serve the Algolia MCP
+endpoint. The replica is a valid emergency fallback if the primary is ever renamed.
+
+## Latency (measured 2026-07-01, local machine, cold TLS per request)
+
+- Single query via `-dsn`: **0.32–0.33 s** total (connect ~0.08 s, TTFB ~0.32 s,
+  `processingTimeMS` 2–3 ms — wall time is ~all network RTT; a colocated Worker will be similar
+  or better and TLS reuse cuts repeat calls further).
+- Fallback host `-1.algolianet.com`: ~0.5 s cold, works identically.
+- Multi-query batch (2 requests): ~0.4 s — cheaper than 2 round trips when batching.
+
+## Refresh probes (for the inventory-refresh script)
+
+```sh
+set -a; source .env; set +a
+APP=$ALGOLIA_APPLICATION_ID
+IDX='crawler_Stellar%20Docs%20-%20Docusaurus'
+AH1="X-Algolia-Application-Id: $APP"
+AH2="X-Algolia-API-Key: $ALGOLIA_API_KEY"
+
+# 1. Settings drift (diff against the committed snapshot; facets/searchable/distinct are the contract)
+curl -sS "https://$APP-dsn.algolia.net/1/indexes/$IDX/settings" -H "$AH1" -H "$AH2" \
+  | jq -S '{searchableAttributes, attributesForFaceting, customRanking, distinct,
+            attributeForDistinct, advancedSyntax, queryType, removeWordsIfNoResults, replicas}'
+
+# 2. Corpus size + freshness (raw records via /1/indexes entries; updatedAt should be < 48h old)
+curl -sS "https://$APP-dsn.algolia.net/1/indexes" -H "$AH1" -H "$AH2" \
+  | jq '.items[] | select(.name | startswith("crawler_Stellar") or . == "docs_replica_agent")
+        | {name, entries, updatedAt, replicas, primary}'
+
+# 3. Smoke query (expect nbHits > 50, top hit under developers.stellar.org, processingTimeMS present)
+curl -sS -X POST "https://$APP-dsn.algolia.net/1/indexes/$IDX/query" \
+  -H "$AH1" -H "$AH2" -H 'Content-Type: application/json' \
+  -d '{"query":"soroban storage","hitsPerPage":3,"analytics":false,
+       "attributesToRetrieve":["url","hierarchy.lvl1","type"]}' \
+  | jq '{nbHits, processingTimeMS, top:.hits[0].url}'
+
+# 4. nbHits tracking: distinct URLs vs raw records (history: 3781 → 3916 → 3808 distinct; 12867 raw)
+curl -sS -X POST "https://$APP-dsn.algolia.net/1/indexes/$IDX/query" \
+  -H "$AH1" -H "$AH2" -H 'Content-Type: application/json' \
+  -d '{"query":"","hitsPerPage":0,"analytics":false}' | jq '{distinctUrls:.nbHits}'
+curl -sS -X POST "https://$APP-dsn.algolia.net/1/indexes/$IDX/query" \
+  -H "$AH1" -H "$AH2" -H 'Content-Type: application/json' \
+  -d '{"query":"","hitsPerPage":0,"analytics":false,"distinct":0}' | jq '{rawRecords:.nbHits}'
+
+# 5. Fallback-host health
+curl -sS -o /dev/null -w 'fallback_status=%{http_code} time=%{time_total}s\n' \
+  -X POST "https://$APP-1.algolianet.com/1/indexes/$IDX/query" \
+  -H "$AH1" -H "$AH2" -H 'Content-Type: application/json' \
+  -d '{"query":"ping","hitsPerPage":1,"analytics":false}'
+```
+
+Drift markers to alert on: `attributesForFaceting` change (breaks/extends the facet surface),
+`distinct`/`attributeForDistinct` change (changes nbHits semantics), index rename or replica list
+change, `updatedAt` staleness > 48 h, raw-record count swinging > 20%.
+
+## MCP fallback
+
+The Algolia-hosted MCP endpoint (`https://VNSJF5AWIZ.algolia.net/mcp/1/…/mcp`, index
+`docs_replica_agent`) remains available and fully documented in
+`research/services/stellar-docs-mcp.md` — same corpus, one usable tool, SSE-framed responses,
+analytics params required. Fall back to it only if this search key is revoked; note its
+facet-values tool is permanently broken on this index (root cause confirmed here: no
+`searchable()` facets).

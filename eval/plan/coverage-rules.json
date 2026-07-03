@@ -1,0 +1,228 @@
+{
+  "$comment": "Acceptable service-sets for the multi-tool plan eval (eval/plan/grade-plan.mjs). Ordered rules, evaluated top-to-bottom, FIRST MATCH WINS; `overrides` (by case id) beat all rules. Every set is derived from documented service coverage — research/services/lumenloop.md, research/services/stellar-light.md, research/services/stellar-docs-algolia.md, catalog/manifest.json — NEVER from what agents happened to pick in past runs (anti-overfitting, Solo todo 799). Schema: see eval/plan/README.md. plan.required = services a good plan MUST all touch; plan.anyOf = at-least-one-of set (for legitimate overlap where required can't express OR); plan.acceptable = the full on-plan set (superset of required+anyOf); progressionExpected = the question class demands a broad→detail call pair.",
+  "version": 1,
+  "services": ["lumenloop", "scout", "stellarDocs", "skills"],
+  "overrides": {
+    "q-soroban-av-passkeys-talk": {
+      "comment": "Asks for the recorded AV passage, explicitly not a docs page — transcript-passage search is exclusively lumenloop coverage (lumenloop.md: AV videos/podcasts/spaces with transcript-derived summaries; find_av_passages). Category rule (soroban → docs/skills) is wrong here.",
+      "required": [],
+      "anyOf": ["lumenloop"],
+      "acceptable": ["lumenloop", "scout", "stellarDocs"],
+      "progressionExpected": true
+    },
+    "q-ti-video-tutorials": {
+      "comment": "Video/YouTube tutorial discovery — the docs Algolia index covers developers.stellar.org pages, not videos (stellar-docs-algolia.md); AV content + transcripts live in lumenloop (lumenloop.md overview). Category rule (tooling-infra → docs/skills) is wrong here.",
+      "required": [],
+      "anyOf": ["lumenloop"],
+      "acceptable": ["lumenloop", "scout", "stellarDocs"],
+      "progressionExpected": true
+    },
+    "q-asset-rwa-tokenized-freshness": {
+      "comment": "Current tokenized-RWA value + growth rate is live ecosystem data, not protocol docs — lumenloop news/articles + editorial research (lumenloop.md) and scout ecosystem analytics/EC snapshot (stellar-light.md: /api/analyze, /api/leaderboard, research corpus incl. ec-developer-report). Category rule (assets → stellarDocs) is wrong here.",
+      "required": [],
+      "anyOf": ["lumenloop", "scout"],
+      "acceptable": ["lumenloop", "scout", "stellarDocs"],
+      "progressionExpected": true
+    }
+  },
+  "rules": [
+    {
+      "id": "trap-none",
+      "why": "Cases labeled service:none are traps (out-of-scope, injection, scam-check, fabrication bait — eval/qa/README.md): there is no home service, probing any service to confirm absence is legitimate, and refusing with zero calls is equally fine.",
+      "match": { "service": "none" },
+      "plan": {
+        "required": [],
+        "anyOf": [],
+        "acceptable": ["lumenloop", "scout", "stellarDocs", "skills"],
+        "progressionExpected": false
+      }
+    },
+    {
+      "id": "openzeppelin",
+      "why": "OpenZeppelin-on-Stellar knowledge lives primarily in the bundled skills (catalog/manifest.json: skills.openzeppelin-stellar.develop-secure-contracts / setup / upgrade) with a thin docs page (manifest docs taxonomy: /docs/tools/openzeppelin-contracts, 1 page) — the agentic README lists this exact overlap.",
+      "match": { "question": "openzeppelin" },
+      "plan": {
+        "required": [],
+        "anyOf": ["skills", "stellarDocs"],
+        "acceptable": ["skills", "stellarDocs", "scout"],
+        "progressionExpected": false
+      }
+    },
+    {
+      "id": "scf-grants-builders",
+      "why": "SCF/grants coverage legitimately overlaps: scout has structured SCF data (stellar-light.md: rfps SCF-funded, projects/search scfAwarded filter, scf-handbook + scf-proposal research sources, hackathons/builders) AND lumenloop has SCF submissions + semantic SCF content (lumenloop.md: get_scf_submissions, find_similar_scf_submissions, search_content_semantic); the skills bundle ships skills.lumenloop.scf-submission-radar (manifest). Specific-answer questions need list→detail (e.g. getRfps→getHackathon, find_similar_scf_submissions→get_scf_submissions).",
+      "match": { "category": "scf-grants-builders" },
+      "plan": {
+        "required": [],
+        "anyOf": ["scout", "lumenloop"],
+        "acceptable": ["scout", "lumenloop", "skills"],
+        "progressionExpected": true
+      }
+    },
+    {
+      "id": "protocol-core",
+      "why": "Protocol/consensus/core questions are answered by developers.stellar.org docs — the Algolia index (stellar-docs-algolia.md: docs + blog + meeting notes; stellarDocs.search_protocol_concepts_docs). scout's research corpus also carries SEPs/papers/dev-docs (stellar-light.md /api/research sources) and the stellar-dev.standards skill covers SEPs/CAPs (manifest). Algolia records ARE page sections with content, so a broad search alone usually suffices — no progression demanded.",
+      "match": { "category": "protocol-core" },
+      "plan": {
+        "required": ["stellarDocs"],
+        "anyOf": [],
+        "acceptable": ["stellarDocs", "scout", "skills"],
+        "progressionExpected": false
+      }
+    },
+    {
+      "id": "soroban-ecosystem",
+      "why": "Soroban questions labeled scout are ecosystem lookups (audited projects, repos, versions in the wild) — scout's graded repo index + explainRepo + research corpus incl. audits (stellar-light.md). Docs/skills stay acceptable for the how-to half; lumenloop content can corroborate (lumenloop.md articles/AV). Entity answers need search→explain/get detail.",
+      "match": { "category": "soroban", "service": "scout" },
+      "plan": {
+        "required": ["scout"],
+        "anyOf": [],
+        "acceptable": ["scout", "stellarDocs", "skills", "lumenloop"],
+        "progressionExpected": true
+      }
+    },
+    {
+      "id": "soroban",
+      "why": "Soroban how-to/code questions: docs (stellar-docs-algolia.md; stellarDocs.search_soroban_contract_docs, sdk/cli category) OR the bundled skills (manifest: skills.stellar-dev.smart-contracts, skills.openzeppelin-stellar.*) — either is a legitimate primary. scout repos/explainRepo acceptable for example code (stellar-light.md). Docs sections carry content directly — no progression demanded.",
+      "match": { "category": "soroban" },
+      "plan": {
+        "required": [],
+        "anyOf": ["stellarDocs", "skills"],
+        "acceptable": ["stellarDocs", "skills", "scout"],
+        "progressionExpected": false
+      }
+    },
+    {
+      "id": "tooling-ecosystem",
+      "why": "Tooling questions labeled scout ask about the ecosystem tool/skill landscape — scout's AI-skills catalog (stellar-light.md: /api/skills, 30 entries across sdk/cli/mcp-server/tool kinds) and graded repos. Docs sdk/cli sections + stellar-dev skills stay acceptable. Catalog answers need list→get_skill/explainRepo detail.",
+      "match": { "category": "tooling-infra", "service": "scout" },
+      "plan": {
+        "required": ["scout"],
+        "anyOf": [],
+        "acceptable": ["scout", "stellarDocs", "skills"],
+        "progressionExpected": true
+      }
+    },
+    {
+      "id": "tooling-infra",
+      "why": "SDK/CLI/RPC/Horizon/infra how-to: docs (stellar-docs-algolia.md; stellarDocs.search_sdk_cli_tools_docs, search_rpc_horizon_data_docs) OR bundled skills (manifest: skills.stellar-dev.data / dapp / smart-contracts). scout repos/skills catalog acceptable for tool discovery (stellar-light.md). Docs sections carry content — no progression demanded.",
+      "match": { "category": "tooling-infra" },
+      "plan": {
+        "required": [],
+        "anyOf": ["stellarDocs", "skills"],
+        "acceptable": ["stellarDocs", "skills", "scout"],
+        "progressionExpected": false
+      }
+    },
+    {
+      "id": "assets-anchors-ecosystem",
+      "why": "Asset/anchor questions labeled scout are directory lookups — scout partners directory with anchor/on-off-ramp types (stellar-light.md: /api/partners type enum) and projects. lumenloop's project directory + content also covers anchors/assets (lumenloop.md search_directory, find_content_about_project); docs/skills acceptable for the SEP mechanics. Directory answers need list→getPartner/get_project detail.",
+      "match": { "category": "assets-anchors-seps", "service": "scout" },
+      "plan": {
+        "required": ["scout"],
+        "anyOf": [],
+        "acceptable": ["scout", "stellarDocs", "lumenloop", "skills"],
+        "progressionExpected": true
+      }
+    },
+    {
+      "id": "assets-anchors-seps",
+      "why": "Asset issuance / trustlines / SAC / SEP mechanics are docs territory (stellar-docs-algolia.md; stellarDocs.search_asset_token_docs, search_anchor_sep_docs). skills.stellar-dev.assets / standards cover the same ground (manifest); scout research corpus carries SEP texts (stellar-light.md). Docs sections carry content — no progression demanded.",
+      "match": { "category": "assets-anchors-seps" },
+      "plan": {
+        "required": ["stellarDocs"],
+        "anyOf": [],
+        "acceptable": ["stellarDocs", "skills", "scout"],
+        "progressionExpected": false
+      }
+    },
+    {
+      "id": "compliance-ecosystem",
+      "why": "Compliance/RWA/payments questions labeled scout or lumenloop are vendor/corridor/project lookups: scout partners (anchor|on-off-ramp|legal|audit-firm types) + projects (stellar-light.md) AND lumenloop directory + news/content on RWA/payment projects (lumenloop.md) both cover them. Docs/skills acceptable for the regulated-asset mechanics. Vendor answers need list→detail.",
+      "match": { "category": "compliance-rwa-payments", "service": ["scout", "lumenloop"] },
+      "plan": {
+        "required": [],
+        "anyOf": ["scout", "lumenloop"],
+        "acceptable": ["scout", "lumenloop", "stellarDocs", "skills"],
+        "progressionExpected": true
+      }
+    },
+    {
+      "id": "compliance-rwa-payments",
+      "why": "Regulated assets (SEP-8), auth flags, clawback, payment SEPs are docs territory (stellar-docs-algolia.md; search_anchor_sep_docs, search_asset_token_docs); skills.stellar-dev.standards / assets cover the same (manifest); scout research corpus carries SEPs/audits (stellar-light.md). No progression demanded.",
+      "match": { "category": "compliance-rwa-payments" },
+      "plan": {
+        "required": ["stellarDocs"],
+        "anyOf": [],
+        "acceptable": ["stellarDocs", "skills", "scout"],
+        "progressionExpected": false
+      }
+    },
+    {
+      "id": "defi-docs",
+      "why": "DeFi questions labeled stellarDocs are protocol-level (AMM operations, liquidity pools, path payments) — covered by the docs index (stellar-docs-algolia.md). Ecosystem services stay acceptable for protocol/project color (stellar-light.md projects/clusters; lumenloop.md directory/content). No progression demanded.",
+      "match": { "category": "defi-ecosystem", "service": "stellarDocs" },
+      "plan": {
+        "required": ["stellarDocs"],
+        "anyOf": [],
+        "acceptable": ["stellarDocs", "scout", "lumenloop", "skills"],
+        "progressionExpected": false
+      }
+    },
+    {
+      "id": "defi-ecosystem",
+      "why": "DeFi project/protocol lookups legitimately overlap: scout curated projects/clusters/leaderboard (stellar-light.md) AND lumenloop directory + semantic content + find_similar_projects (lumenloop.md) — the agentic README's 'what is Soroswap' example is exactly this overlap. Docs acceptable for underlying mechanics. Project answers need search→get_project/getPartner style detail.",
+      "match": { "category": "defi-ecosystem" },
+      "plan": {
+        "required": [],
+        "anyOf": ["scout", "lumenloop"],
+        "acceptable": ["scout", "lumenloop", "stellarDocs", "skills"],
+        "progressionExpected": true
+      }
+    },
+    {
+      "id": "history-docs",
+      "why": "History/tokenomics questions labeled stellarDocs are protocol-mechanics questions (fee pool, burn, supply) answered by docs + the indexed blog (stellar-docs-algolia.md: docs + blog + meeting notes). Ecosystem services acceptable for corroborating stats. No progression demanded.",
+      "match": { "category": "history-org-tokenomics", "service": "stellarDocs" },
+      "plan": {
+        "required": ["stellarDocs"],
+        "anyOf": [],
+        "acceptable": ["stellarDocs", "scout", "lumenloop"],
+        "progressionExpected": false
+      }
+    },
+    {
+      "id": "history-org-tokenomics",
+      "why": "Org history / ecosystem-evolution questions: scout research corpus (papers, ec-developer-report, incidents) + analytics (stellar-light.md) AND lumenloop news/articles/AV + editorial research (lumenloop.md) both cover them; the docs-indexed blog/meeting notes are acceptable corroboration (stellar-docs-algolia.md). Specific answers need search→detail.",
+      "match": { "category": "history-org-tokenomics" },
+      "plan": {
+        "required": [],
+        "anyOf": ["scout", "lumenloop"],
+        "acceptable": ["scout", "lumenloop", "stellarDocs"],
+        "progressionExpected": true
+      }
+    },
+    {
+      "id": "edge-governance",
+      "why": "Governance/edge questions span three documented surfaces: docs meeting notes + protocol pages (stellar-docs-algolia.md; stellarDocs.search_meeting_notes), lumenloop governance proposals (lumenloop.md overview lists governance proposals as a content type), and scout research corpus incl. incidents (stellar-light.md source enum). Any one is a legitimate anchor. No progression demanded.",
+      "match": { "category": "edge-governance" },
+      "plan": {
+        "required": [],
+        "anyOf": ["stellarDocs", "scout", "lumenloop"],
+        "acceptable": ["stellarDocs", "scout", "lumenloop"],
+        "progressionExpected": false
+      }
+    },
+    {
+      "id": "catch-all",
+      "why": "Unknown/future category — grade nothing as off-plan rather than penalize on a rule gap; every documented service is on-plan.",
+      "match": {},
+      "plan": {
+        "required": [],
+        "anyOf": [],
+        "acceptable": ["lumenloop", "scout", "stellarDocs", "skills"],
+        "progressionExpected": false
+      }
+    }
+  ]
+}

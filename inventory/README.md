@@ -1,0 +1,37 @@
+# inventory/ — service inventory snapshots
+
+Machine-generated snapshots of the three third-party services the unified catalog is built
+from (see `PLAN.md` §§2, 5). `scripts/build-catalog.mjs` consumes these (plus the
+`ecosystem-skills/` mirror) to emit the searchable manifest; catalog assembly itself is
+offline — only this refresh touches the network.
+
+## Refresh
+
+```bash
+node scripts/refresh-inventory.mjs
+```
+
+Plain Node 20+, zero dependencies; reads `LUMENLOOP_API_KEY` / `ALGOLIA_APPLICATION_ID` /
+`ALGOLIA_API_KEY` from `.env` at the repo root. The script is idempotent (a file is only
+rewritten when its content — ignoring `fetchedAt` — changed, so back-to-back runs produce
+zero diff) and deterministic (keys sorted recursively, tool/skill arrays sorted by name),
+so any diff is a real upstream contract change. It refuses to write any output containing
+a `.env` value (Algolia hostnames are written with an `{ALGOLIA_APPLICATION_ID}` placeholder).
+
+## Files
+
+| File | Contents | Drift signal captured |
+| --- | --- | --- |
+| `lumenloop.json` | All 21 tools (18 guest + 3 partner) with full per-tool detail (description, `when_to_use`/`returns`, input/output JSON Schemas, invoke block), built by **unioning** keyless `GET /v1/tools` with per-name detail fetches — the list endpoint hides partner tools even with a partner key, and the union count is validated against `GET /v1/me tools.available`. Plus all 14 skills (metadata + file paths only, never contents; same union quirk), redacted `/v1/me` limits, and the full keyless `GET /v1/openapi.json` spec embedded under `openapi` (33 ops: the 18 guest tool-invoke paths + account/discovery endpoints; partner tools never appear in the spec — the `tools` union is the truth). | `changelogCursor` = latest `GET /v1/changelog` entry (date/title/breaking); `openapiVersion` |
+| `stellar-light.json` | The full `GET /api/openapi.json` spec embedded under `openapi` (24 operations, keyless), plus a `GET /api/status` snapshot with volatile fields (`generatedAt`, `usage`) stripped. | `changelogLatest` = latest `GET /api/changelog` entry; `openapiVersion` |
+| `stellar-docs.json` | Live index settings for Algolia index `crawler_Stellar Docs - Docusaurus` (the facet/ranking/distinct contract), plus the `operations` block — the single `stellarDocs.search_docs` operation descriptor (default params + exposable knobs per `research/services/stellar-docs-algolia.md`). | diff of `settings` (facets, distinct, replicas, searchable attrs) |
+
+## Generated — never hand-edited
+
+Every file here is rebuilt by `scripts/refresh-inventory.mjs`; do not edit them directly
+(per `CLAUDE.md`). **One exception in kind, not in place:** the `operations` block in
+`stellar-docs.json` is authored config, but it lives as the `STELLAR_DOCS_OPERATIONS`
+constant in `scripts/refresh-inventory.mjs` — edit it there and re-run the refresh, which
+regenerates the file losslessly. The same applies to the `LUMENLOOP_PARTNER_TOOLS` name
+list (the partner-lane names hidden from `/v1/tools`); a count mismatch against `/v1/me`
+fails the run loudly.

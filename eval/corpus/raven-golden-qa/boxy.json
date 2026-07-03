@@ -1,0 +1,1142 @@
+{
+    "$comment": "StellarLight DATA-LAYER augmentation set for the cf-flue golden-question eval. These 21 questions are data-discriminating: each one can only be answered correctly by querying the live StellarLight tools (records via search_projects, code via search_repos, funding via get_rfps, hackathons via get_hackathon, ecosystem clusters via get_clusters, builders via get_builders, research/docs/audits/SEPs via search_research) — a guesser working from general crypto/LLM knowledge gets them wrong (e.g. assumes RWA treasury issuers are SCF-funded, name-drops Aave/Chainlink instead of the real Stellar records, mis-orders hackathon placements, or calls a Draft SEP final). It is complementary to the protocol-knowledge cf-flue set, which tests conceptual Stellar/Soroban understanding; this set tests grounded what-exists / who-built / what-got-funded data. Every question is liveSource:true. The answerRegex fields are cheap presence ANCHORS for the harness, NOT the grader — the semantic block (intent / mustInclude / mustAvoid / passIf / failIf / inconclusiveIf / canonicalFacts / discriminator) is the source of truth for scoring. Adapter note: most questions use tools already in Tyler's base StellarLight registry, but two tools may need wiring into the cf-flue adapter — search_repos (used by the three code-data questions) and get_hackathon (singular per-event lookup, used by the three hackathon-data questions); these are distinct from the registry's get_hackathons (list) and compare_hackathons. All canonical facts verified against the live API on 2026-06-22.",
+    "questions": [
+        {
+            "id": "sl-priorart-lending-scf-flagships",
+            "category": "prior-art-data",
+            "question": "I'm scoping a new money-market / lending protocol on Soroban. Has anyone already built lending and borrowing on Stellar, and which of those existing protocols actually got SCF funding (so I know who the serious, backed teams are)?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "blend",
+                    "slender",
+                    "defindex",
+                    "orbitcdp"
+                ],
+                "toolsAll": [
+                    "search_projects"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Establish that lending/borrowing is already a crowded, well-funded vertical on Stellar (not greenfield), name Blend as the flagship/base lending primitive, and identify the SCF-funded flagships from the StellarLight directory.",
+                    "mustInclude": [
+                        "States lending is already heavily built on Stellar (not greenfield).",
+                        "Names Blend as the flagship / base lending primitive other Stellar DeFi apps build on.",
+                        "Identifies at least 2 of Slender, DeFindex, OrbitCDP as SCF-funded flagships."
+                    ],
+                    "mustAvoid": [
+                        "Do not claim no one has built lending on Stellar.",
+                        "Do not invent protocol names not in the directory.",
+                        "Do not list only generic EVM protocols (Aave/Compound) instead of the real Stellar records."
+                    ],
+                    "niceToHave": [
+                        "Notes Slender (by eq-lab) received ~$296,750 SCF.",
+                        "Notes OrbitCDP is a CDP protocol (~$280k SCF) and DeFindex (PaltaLabs) is tokenized-vault yield infra (~$150k SCF).",
+                        "Mentions additional SCF-funded lending projects such as Laina, Alula, Lumen Later, YieldBack.Cash, Lantern, HedgePay.",
+                        "Notes unfunded ones like AssetDesk and XycLoans."
+                    ],
+                    "passIf": [
+                        "Answer states lending is already heavily built (not greenfield) AND names Blend as the flagship/base lending primitive AND identifies at least 2 of Slender, DeFindex, OrbitCDP as SCF-funded."
+                    ],
+                    "failIf": [
+                        "Claims no one has built lending on Stellar.",
+                        "Invents protocol names not in the directory.",
+                        "Lists only generic EVM protocols (Aave/Compound) instead of the real Stellar records."
+                    ],
+                    "inconclusiveIf": [
+                        "Names Blend and some lending protocols but does not establish which are SCF-funded."
+                    ],
+                    "canonicalFacts": [
+                        "The flagship SCF-funded lending protocols are Blend, Slender, DeFindex, and OrbitCDP (all scfAwarded=true, status Live).",
+                        "Blend is the base lending/yield primitive other Stellar DeFi apps build on.",
+                        "Slender (by eq-lab) received ~$296,750 SCF; OrbitCDP is a CDP protocol (~$280k SCF); DeFindex (PaltaLabs) is tokenized-vault yield infra (~$150k SCF).",
+                        "Many more SCF-funded lending projects exist (Laina, Alula, Lumen Later, YieldBack.Cash, Lantern, HedgePay), plus unfunded ones like AssetDesk and XycLoans."
+                    ],
+                    "discriminator": "A guesser claims lending is greenfield or name-drops EVM protocols (Aave/Compound); naming Blend as the base primitive plus the real SCF-funded Stellar flagships (Slender/DeFindex/OrbitCDP) with their funded status proves a real StellarLight query."
+                }
+            }
+        },
+        {
+            "id": "sl-priorart-oracle-reflector-leader",
+            "category": "prior-art-data",
+            "question": "Before I build a price oracle for Soroban, who already provides on-chain price feeds on Stellar, and which of them is the most established / highest-signal one?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "reflector",
+                    "\\bdia\\b",
+                    "\\bband\\b",
+                    "lightecho"
+                ],
+                "toolsAll": [
+                    "search_projects"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Identify that Stellar already has multiple live oracles (well-covered prior art), name Reflector as the most established / highest-signal one, and name the other SCF-funded oracle flagships from the StellarLight directory.",
+                    "mustInclude": [
+                        "Identifies Reflector as the leading / most-established Stellar oracle.",
+                        "Names at least 2 of the other SCF-funded oracles: DIA, Band, Lightecho."
+                    ],
+                    "mustAvoid": [
+                        "Do not return no oracle.",
+                        "Do not name only off-platform oracles (e.g. only Chainlink) without the Stellar-native flagships.",
+                        "Do not invent an oracle name absent from the directory."
+                    ],
+                    "niceToHave": [
+                        "Notes Reflector is a decentralized price-oracle and data-feed network, prominence 90, ~$444,840 SCF awarded (the largest oracle grant).",
+                        "Notes Reflector powers DeFi protocols including Blend, Laina, and Slender.",
+                        "Notes DIA (~$38k), Band (~$100k), Lightecho (~$93,110, by BP Ventures, SEP-40 contract for emerging-market FX feeds).",
+                        "Notes DIA and Band are two of the three oracle providers in the official Stellar Docs.",
+                        "Mentions additional non-SCF oracles (Redstone, Pyth, Orally, Chainlink relayer)."
+                    ],
+                    "passIf": [
+                        "Answer identifies Reflector as the leading/most-established Stellar oracle AND names at least 2 of DIA, Band, Lightecho."
+                    ],
+                    "failIf": [
+                        "Returns no oracle.",
+                        "Names only off-platform oracles (e.g. only Chainlink) without the Stellar-native flagships.",
+                        "Invents an oracle name absent from the directory."
+                    ],
+                    "inconclusiveIf": [
+                        "Names Reflector but fails to name at least 2 of the other SCF-funded oracles (DIA, Band, Lightecho)."
+                    ],
+                    "canonicalFacts": [
+                        "Reflector is the most established / highest-signal Stellar oracle — a decentralized price-oracle and data-feed network, prominence 90, ~$444,840 SCF awarded (the largest oracle grant).",
+                        "Reflector powers DeFi protocols including Blend, Laina, and Slender.",
+                        "The other SCF-funded oracle flagships are DIA (~$38k), Band (~$100k), and Lightecho (~$93,110, by BP Ventures, SEP-40 contract for emerging-market FX feeds).",
+                        "DIA and Band are noted as two of the three oracle providers in the official Stellar Docs; additional non-SCF oracles exist (Redstone, Pyth, Orally, Chainlink relayer)."
+                    ],
+                    "discriminator": "A guesser names only off-platform oracles like Chainlink; naming Reflector as the leader plus the real SCF-funded Stellar oracles (DIA/Band/Lightecho) proves a real StellarLight query against the directory."
+                }
+            }
+        },
+        {
+            "id": "sl-priorart-rwa-treasuries-not-scf",
+            "category": "prior-art-data",
+            "question": "I want to tokenize US Treasuries / money-market funds (RWA) on Stellar. Who has already done this, and are these tokenized-treasury projects SCF grant-funded or are they independent institutional issuers?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "benji|franklin templeton",
+                    "ondo|usdy",
+                    "wisdomtree",
+                    "spiko"
+                ],
+                "toolsAll": [
+                    "search_projects"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Establish that tokenized treasuries on Stellar already exist and are dominated by independent institutional / TradFi issuers (Benji, Ondo, WisdomTree, Spiko), correctly stating these specific flagships are NOT SCF-funded (scfAwarded=false).",
+                    "mustInclude": [
+                        "Names at least 2 of Benji/Franklin Templeton, Ondo/USDY, WisdomTree, Spiko as existing tokenized-treasury RWA projects.",
+                        "Correctly states they are NOT SCF-funded / are independent institutional issuers (scfAwarded=false)."
+                    ],
+                    "mustAvoid": [
+                        "Do not claim no one has tokenized treasuries on Stellar.",
+                        "Do not assert Benji/Ondo/WisdomTree/Spiko are SCF grant-funded.",
+                        "Do not fabricate issuer names not in the directory."
+                    ],
+                    "niceToHave": [
+                        "Notes Benji is Franklin Templeton's FOBXX, the first U.S.-registered mutual fund on a public blockchain.",
+                        "Notes Ondo is USDY, a yield-bearing token backed by short-term US Treasuries.",
+                        "Notes WisdomTree is WisdomTree Prime (incl. WTGXX treasury fund) and Spiko runs regulated EUTBL/USTBL T-bill funds.",
+                        "Notes SCF money in the broader RWA space goes to tooling/infra like Spydra, Dobprotocol, Legasi, Neovestor — not the headline treasury issuers."
+                    ],
+                    "passIf": [
+                        "Answer names at least 2 of {Benji/Franklin Templeton, Ondo/USDY, WisdomTree, Spiko} AND correctly states they are NOT SCF-funded / are institutional issuers (scfAwarded=false)."
+                    ],
+                    "failIf": [
+                        "Claims no one has tokenized treasuries on Stellar.",
+                        "Incorrectly asserts Benji/Ondo/WisdomTree/Spiko are SCF grant-funded.",
+                        "Fabricates issuer names not in the directory."
+                    ],
+                    "inconclusiveIf": [
+                        "Names the issuers but is unclear or silent on whether they are SCF-funded vs independent."
+                    ],
+                    "canonicalFacts": [
+                        "Tokenized treasuries on Stellar are dominated by independent institutional / TradFi issuers, NOT SCF grantees.",
+                        "The flagship records — Benji (Franklin Templeton's FOBXX, the first U.S.-registered mutual fund on a public blockchain), Ondo (USDY, yield-bearing token backed by short-term US Treasuries), WisdomTree (WisdomTree Prime, incl. WTGXX treasury fund), and Spiko (regulated EUTBL/USTBL T-bill funds) — are ALL scfAwarded=false.",
+                        "SCF money in the broader RWA space goes to tooling/infra like Spydra, Dobprotocol, Legasi, Neovestor — not the headline treasury issuers."
+                    ],
+                    "discriminator": "An agent guessing would assume the big-name RWA projects were grant-funded; the data refutes this (all scfAwarded=false), so correctly stating they are independent institutional issuers proves a real StellarLight query rather than a guess."
+                }
+            }
+        },
+        {
+            "id": "sl-code-passkey-wallet-top-repo",
+            "category": "code-data",
+            "question": "I'm building a passkey / smart-wallet flow on Stellar and want to start from the strongest existing open-source code. Which indexed repo is the highest-quality reference for a passkey wallet, and what are the other Stellar-org repos worth looking at?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "stellar/typescript-wallet-sdk",
+                    "\\b56\\b",
+                    "stellar/wallet-backend|stellar/smart-wallet-demo-app|nathanofzion/zi-playground"
+                ],
+                "toolsAll": [
+                    "search_repos"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Identify the highest-repoScore indexed repo for a passkey wallet on Stellar (stellar/typescript-wallet-sdk) and surface the other verified Stellar-org references, using real owner/name repo identifiers rather than a generic passkey explainer.",
+                    "mustInclude": [
+                        "Names stellar/typescript-wallet-sdk as the top/highest-repoScore reference (repoScore 56).",
+                        "Names at least one other repo from the verified set: stellar/wallet-backend (42), stellar/smart-wallet-demo-app (41), or nathanofzion/zi-playground (40)."
+                    ],
+                    "mustAvoid": [
+                        "Do not invent a repo full-name not in the verified set.",
+                        "Do not omit stellar/typescript-wallet-sdk as the leader.",
+                        "Do not answer with only a generic 'use passkeys' explanation with no real repo full-name."
+                    ],
+                    "niceToHave": [
+                        "Notes nathanofzion/zi-playground is the SCF-awarded community repo (40), a passkey-ID smart wallet.",
+                        "Gives full owner/name repo identifiers for each.",
+                        "Leads with typescript-wallet-sdk as the highest-scored rather than just name-dropping a wallet."
+                    ],
+                    "passIf": [
+                        "Names stellar/typescript-wallet-sdk as the top/highest-repoScore reference AND at least one other repo from the verified set (stellar/wallet-backend, stellar/smart-wallet-demo-app, or nathanofzion/zi-playground), with full owner/name repo identifiers."
+                    ],
+                    "failIf": [
+                        "Invents a repo not in the set.",
+                        "Omits typescript-wallet-sdk as the leader.",
+                        "Answers with only a generic 'use passkeys' explanation with no real repo full-name."
+                    ],
+                    "inconclusiveIf": [
+                        "Names typescript-wallet-sdk but is unclear whether it is the highest-scored reference, or gives no second repo."
+                    ],
+                    "canonicalFacts": [
+                        "Top reference by repoScore is stellar/typescript-wallet-sdk (repoScore 56).",
+                        "Other strong Stellar-org references: stellar/wallet-backend (42), stellar/smart-wallet-demo-app (41), and the SCF-awarded community repo nathanofzion/zi-playground (40, a passkey-ID smart wallet)."
+                    ],
+                    "discriminator": "A guesser gives a generic 'use passkeys' answer or name-drops a wallet without the ranked repo full-names; surfacing typescript-wallet-sdk (repoScore 56) as the leader plus a second verified repo proves a real search_repos query."
+                }
+            }
+        },
+        {
+            "id": "sl-code-zk-xray-games-top",
+            "category": "code-data",
+            "question": "What's the best zero-knowledge (ZK) reference implementation on Stellar Soroban right now, and did it actually win a hackathon? Give me the top two ZK repos by quality score.",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "fredericrezeau/xray-games",
+                    "\\b84\\b",
+                    "Shreshtthh/Zk-Seep",
+                    "ZK Gaming"
+                ],
+                "toolsAll": [
+                    "search_repos"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Identify the top ZK repo on Stellar Soroban by repoScore (fredericrezeau/xray-games, 84) including that it won Stellar Hacks: ZK Gaming, and name the second (Shreshtthh/Zk-Seep, 70), with real repo full-names rather than a generic Noir/Circom answer.",
+                    "mustInclude": [
+                        "Names fredericrezeau/xray-games as the #1 ZK repo with repoScore 84 ('high').",
+                        "States it won a hackathon (Stellar Hacks: ZK Gaming).",
+                        "Names Shreshtthh/Zk-Seep as the second ZK repo (repoScore 70)."
+                    ],
+                    "mustAvoid": [
+                        "Do not claim a non-seed repo is the top ZK reference.",
+                        "Do not get the hackathon-winner flag wrong (xray-games did win).",
+                        "Do not give only a generic 'use Noir/Circom' answer with no repo full-names."
+                    ],
+                    "niceToHave": [
+                        "Describes xray-games as a trustless ZK gaming arcade with Soroban contracts + Circom/Noir circuits (judgeScore 0.99).",
+                        "Notes Zk-Seep is a Noir-based ZK card game on Soroban from the same ZK Gaming hackathon (judgeScore 0.81).",
+                        "Reports both repoScores as 'high'."
+                    ],
+                    "passIf": [
+                        "Names fredericrezeau/xray-games as the #1 ZK repo with its high repoScore (84) AND correctly states it won a hackathon (Stellar Hacks: ZK Gaming), AND names Shreshtthh/Zk-Seep as the second."
+                    ],
+                    "failIf": [
+                        "Claims a non-seed repo is the top ZK reference.",
+                        "Gets the winner flag wrong.",
+                        "Gives only a generic 'use Noir/Circom' answer with no repo full-names."
+                    ],
+                    "inconclusiveIf": [
+                        "Names xray-games as top with the win but omits or is unsure about the second repo (Zk-Seep)."
+                    ],
+                    "canonicalFacts": [
+                        "Top ZK repo is fredericrezeau/xray-games (repoScore 84, 'high') — a trustless ZK gaming arcade with Soroban contracts + Circom/Noir circuits — and it won Stellar Hacks: ZK Gaming (judgeScore 0.99).",
+                        "Second is Shreshtthh/Zk-Seep (repoScore 70, 'high'), a Noir-based ZK card game on Soroban from the same ZK Gaming hackathon (judgeScore 0.81)."
+                    ],
+                    "discriminator": "A guesser gives a generic 'use Noir/Circom' answer or invents a top repo; naming xray-games (84) as the winner of Stellar Hacks: ZK Gaming plus Zk-Seep (70) as #2 proves a real search_repos query with the hackathon-winner join."
+                }
+            }
+        },
+        {
+            "id": "sl-code-soroban-oracle-least-bad",
+            "category": "code-data",
+            "question": "I want to study a Soroban oracle / price-feed contract before building my own. The three repos that show up for 'soroban oracle' all look low-quality — which is the least bad to start from, and is there anything better-scored I should look at instead?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "diadata-org/soroban-oracle-feeders",
+                    "bp-ventures/lightecho-stellar-oracle",
+                    "\\b26\\b",
+                    "\\b46\\b"
+                ],
+                "toolsAll": [
+                    "search_repos"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Rank the three low-score 'soroban oracle' seed repos by repoScore (feeders 26 > orally 15 > oracles 9) and surface the higher-scored alternative actually in the index (bp-ventures/lightecho-stellar-oracle, 46), with real repo full-names.",
+                    "mustInclude": [
+                        "Names diadata-org/soroban-oracle-feeders (repoScore 26) as the highest of the three low-scored seed repos.",
+                        "Surfaces bp-ventures/lightecho-stellar-oracle (repoScore 46, 'medium') as the higher-scored alternative that outranks all three."
+                    ],
+                    "mustAvoid": [
+                        "Do not assert one of the low repos is high-quality.",
+                        "Do not fabricate a score or a repo.",
+                        "Do not fail to name a real repo full-name."
+                    ],
+                    "niceToHave": [
+                        "Orders all three seeds: diadata-org/soroban-oracle-feeders 26 > orally-network/soroban-oracle 15 > diadata-org/soroban-oracles 9.",
+                        "Notes all three seed repos are SCF-awarded but low-scored.",
+                        "Describes lightecho-stellar-oracle as a Stellar Soroban Oracle contract by BP Ventures."
+                    ],
+                    "passIf": [
+                        "Correctly orders the three seed repos by repoScore (diadata-org/soroban-oracle-feeders 26 > orally-network/soroban-oracle 15 > diadata-org/soroban-oracles 9) OR names soroban-oracle-feeders as the highest of the three, AND surfaces bp-ventures/lightecho-stellar-oracle (46) as the higher-scored alternative."
+                    ],
+                    "failIf": [
+                        "Asserts one of the low repos is high-quality.",
+                        "Fabricates a score/repo.",
+                        "Cannot name a real repo full-name."
+                    ],
+                    "inconclusiveIf": [
+                        "Names soroban-oracle-feeders as the least bad but omits the better-scored lightecho-stellar-oracle alternative."
+                    ],
+                    "canonicalFacts": [
+                        "Of the three commonly-surfaced low-score repos, diadata-org/soroban-oracle-feeders has the highest repoScore (26), ahead of orally-network/soroban-oracle (15) and diadata-org/soroban-oracles (9) — all three SCF-awarded but low-scored.",
+                        "The better-scored alternative in the index is bp-ventures/lightecho-stellar-oracle (repoScore 46, 'medium'), a Stellar Soroban Oracle contract by BP Ventures, which outranks all three."
+                    ],
+                    "discriminator": "A guesser cannot rank three near-identical low-score repos or know a better alternative exists; producing the 26>15>9 ordering and surfacing lightecho-stellar-oracle (46) proves a real search_repos query against the repoScore index."
+                }
+            }
+        },
+        {
+            "id": "sl-hackathon-blend-winners",
+            "category": "hackathon-data",
+            "question": "Who won the Stellar Hacks: Blend hackathon, and what did the winning projects build?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "blend pool creator",
+                    "comet x hoops",
+                    "yieldback",
+                    "1st|2nd|3rd|first|second|third"
+                ],
+                "toolsAll": [
+                    "get_hackathon"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Identify all three Stellar Hacks: Blend winners in the CORRECT placement order from the StellarLight hackathon record, with what each project built.",
+                    "mustInclude": [
+                        "Names all three winners with correct placement: Blend Pool Creator = 1st, Comet x Hoops Finance = 2nd, YieldBack.Cash = 3rd."
+                    ],
+                    "mustAvoid": [
+                        "Do not mis-order the placements (e.g. naming the projects but swapping 1st/2nd/3rd).",
+                        "Do not invent other winners or guess generic DeFi names.",
+                        "Do not claim there were more than 3 winners."
+                    ],
+                    "niceToHave": [
+                        "Notes all three carry the shared 'Blend Composability Award' track.",
+                        "Notes the event had 39 total submissions and a $6,000 USD prize pool.",
+                        "Notes it was organized by the Stellar Development Foundation.",
+                        "Describes what each built: Blend Pool Creator = wizard web app for creating/deploying custom Blend lending pools; Comet x Hoops Finance = Blend Backstop Swap converting USDC<->BLND into the Backstop via Hoops Finance UI; YieldBack.Cash = bond-coupon/yield product on Blend."
+                    ],
+                    "passIf": [
+                        "Names all three winners with the correct placement order: Blend Pool Creator 1st, Comet x Hoops Finance 2nd, YieldBack.Cash 3rd."
+                    ],
+                    "failIf": [
+                        "Mis-orders the placements while naming the projects.",
+                        "Invents other winners, swaps placements, or guesses generic DeFi names.",
+                        "Claims winners other than these three / more than 3 winners."
+                    ],
+                    "inconclusiveIf": [
+                        "Names the three projects as winners but is unclear or silent on their 1st/2nd/3rd placement order."
+                    ],
+                    "canonicalFacts": [
+                        "Three winners on the single Main Track, all carrying the 'Blend Composability Award': 1st Place — Blend Pool Creator (wizard-style web app for creating/deploying custom Blend lending pools, github.com/ELDEVODE/blend-pool-creator).",
+                        "2nd Place — Comet x Hoops Finance (a 'Blend Backstop Swap' that converts USDC<->BLND and deposits into the Backstop via the Hoops Finance UI, github.com/hoops-finance/cometswap).",
+                        "3rd Place — YieldBack.Cash (a bond-coupon / yield product on Blend, github.com/KBenster/yieldback).",
+                        "The event had 39 total submissions and a $6,000 USD prize pool, organized by the Stellar Development Foundation; these 3 are the only winners (3 of 39 submissions)."
+                    ],
+                    "discriminator": "A guesser names generic DeFi projects or shuffles the placements; reproducing the exact ordered trio (Blend Pool Creator 1st, Comet x Hoops Finance 2nd, YieldBack.Cash 3rd) out of 39 submissions is strong evidence of a real StellarLight query."
+                }
+            }
+        },
+        {
+            "id": "sl-hackathon-kale-reflector-1st",
+            "category": "hackathon-data",
+            "question": "Which project took 1st place at Stellar Hacks: KALE x Reflector?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "xbid",
+                    "1st|first place"
+                ],
+                "toolsAll": [
+                    "get_hackathon"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Identify the actual 1st-place winner of Stellar Hacks: KALE x Reflector from the StellarLight hackathon record, resisting the lure of the obvious KALE-themed names.",
+                    "mustInclude": [
+                        "Names xbid.ai as the 1st-place winner."
+                    ],
+                    "mustAvoid": [
+                        "Do not name Kale Farmers Market (2nd place) or any KALE-themed project as the winner.",
+                        "Do not say the 1st-place result is unavailable."
+                    ],
+                    "niceToHave": [
+                        "Notes 2nd was Kale Farmers Market and 3rd was Not Circle of Trust.",
+                        "Notes 10 total winners and 46 submissions in the 'Composability' track ($12,000 prize pool).",
+                        "Describes xbid.ai as a multi-LLM AI agent born on Stellar with real stake and memory of its own outcomes (repo github.com/xbid-ai, dorahacks.io/buidl/32593)."
+                    ],
+                    "passIf": [
+                        "Answer names xbid.ai (or xbid) as 1st place."
+                    ],
+                    "failIf": [
+                        "Names Kale Farmers Market (the 2nd-place entry) or another KALE-themed entry as the winner.",
+                        "Says the 1st place is not available / unknown."
+                    ],
+                    "inconclusiveIf": [
+                        "Names xbid.ai but is unclear whether it was 1st vs another placement."
+                    ],
+                    "canonicalFacts": [
+                        "1st Place at Stellar Hacks: KALE x Reflector went to xbid.ai (dorahacks.io/buidl/32593), a multi-LLM AI agent born on Stellar with real stake and memory of its own outcomes (repo github.com/xbid-ai).",
+                        "2nd was Kale Farmers Market and 3rd was Not Circle of Trust.",
+                        "There were 10 total winners and 46 submissions in the 'Composability' track ($12,000 prize pool)."
+                    ],
+                    "discriminator": "An agent guessing from the obvious KALE-themed names (Kale Farmers Market, etc.) gets it wrong; the actual winner is an AI-agent project whose name does not reference KALE, so a correct answer is strong evidence of a real StellarLight query."
+                }
+            }
+        },
+        {
+            "id": "sl-hackathon-kale-vs-blend-counts",
+            "category": "hackathon-data",
+            "question": "How many submissions did Stellar Hacks: KALE x Reflector get compared to Stellar Hacks: Blend, and how many winners did each pay out?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "\\b46\\b",
+                    "\\b39\\b",
+                    "\\b10\\b",
+                    "\\b3\\b"
+                ],
+                "toolsAll": [
+                    "get_hackathon"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Compare submission counts and winner counts between Stellar Hacks: KALE x Reflector and Stellar Hacks: Blend using the live get_hackathon stats for both events.",
+                    "mustInclude": [
+                        "States KALE x Reflector had 46 submissions and Blend had 39 submissions.",
+                        "States KALE x Reflector paid out 10 winners and Blend paid out 3 winners."
+                    ],
+                    "mustAvoid": [
+                        "Do not conflate submissions with winners.",
+                        "Do not estimate the numbers instead of using the live get_hackathon stats.",
+                        "Do not get either pair of numbers wrong."
+                    ],
+                    "niceToHave": [
+                        "Notes KALE x Reflector had 7 more submissions (46 vs 39).",
+                        "Notes KALE x Reflector paid out more than triple the winners (10 vs 3).",
+                        "Notes KALE x Reflector = $12,000 'Composability' track (1st-10th) and Blend = $6,000 'Main Track' (1st-3rd)."
+                    ],
+                    "passIf": [
+                        "Gives BOTH submission counts correctly (KALE x Reflector = 46, Blend = 39) AND both winner counts (KALE x Reflector = 10, Blend = 3)."
+                    ],
+                    "failIf": [
+                        "Gets either pair of numbers wrong.",
+                        "Conflates submissions with winners.",
+                        "Estimates the numbers rather than sourcing them from the live get_hackathon stats."
+                    ],
+                    "inconclusiveIf": [
+                        "Gives one pair correctly (e.g. submissions 46 vs 39) but omits or is vague about the other pair (winner counts)."
+                    ],
+                    "canonicalFacts": [
+                        "KALE x Reflector had 46 submissions and paid out 10 winners (1st-10th place, $12,000 pool, 'Composability' track).",
+                        "Stellar Hacks: Blend had 39 submissions and paid out 3 winners (1st-3rd, $6,000 pool, 'Main Track').",
+                        "KALE x Reflector had 7 more submissions (46 vs 39) and more than triple the number of winners (10 vs 3)."
+                    ],
+                    "discriminator": "Precise paired counts (46/39 submissions and 10/3 winners) cannot be guessed and require pulling live get_hackathon stats for both events; a guesser conflates submissions with winners or invents round numbers."
+                }
+            }
+        },
+        {
+            "id": "sl-funding-open-rfps-q2-2026",
+            "category": "funding-data",
+            "question": "I'm a Stellar builder looking for an SCF sponsor brief I can actually submit to and get funded for right now. Which RFPs are open this round, and what are they?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "trustline onboarder",
+                    "passkey ui kit",
+                    "account demolisher",
+                    "contract source verification|oz accounts policy builder",
+                    "5\\s*open|q2-2026"
+                ],
+                "toolsAll": [
+                    "get_rfps"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "List the currently-fundable open RFPs (the q2-2026 active-quarter, status=open set) from the StellarLight RFP record, separating them from past closed rounds.",
+                    "mustInclude": [
+                        "Names the 5 open RFPs: Trustline Onboarder, Passkey UI Kit, Account Demolisher, Contract Source Verification Service, OZ Accounts Policy Builder.",
+                        "Identifies them as the q2-2026 open / currently-fundable set."
+                    ],
+                    "mustAvoid": [
+                        "Do not list any q1-2026 closed RFP (Prices API & Indexing Service, AI-Focused WebIDE, Advanced AMM Framework, Soroban VRF) as open/fundable.",
+                        "Do not invent RFP titles not in the data.",
+                        "Do not state a count other than 5 open / 9 closed / 14 total."
+                    ],
+                    "niceToHave": [
+                        "Notes categories/authors: Trustline Onboarder (payments, Tyler), Passkey UI Kit (developer-tooling, Keeks), Account Demolisher (consumer-dapps, Jake), Contract Source Verification Service (infrastructure, Matej), OZ Accounts Policy Builder (developer-tooling, Ishan).",
+                        "Notes the other 9 of the 14 total RFPs are CLOSED (q1-2026) and not currently fundable."
+                    ],
+                    "passIf": [
+                        "Answer names the 5 open RFPs (at minimum Trustline Onboarder, Passkey UI Kit, Account Demolisher, Contract Source Verification Service, OZ Accounts Policy Builder) AND identifies them as the q2-2026 open/currently-fundable set."
+                    ],
+                    "failIf": [
+                        "Lists any q1-2026 closed RFP (Prices API, AI-Focused WebIDE, Advanced AMM Framework, Soroban VRF, etc.) as open/fundable.",
+                        "Invents RFP titles not in the data.",
+                        "States a count other than 5 open / 9 closed / 14 total."
+                    ],
+                    "inconclusiveIf": [
+                        "Names some of the 5 open RFPs but is unclear whether they are the q2-2026 open set vs. closed."
+                    ],
+                    "canonicalFacts": [
+                        "There are exactly 5 OPEN RFPs, all in active quarter Q2 2026 (q2-2026): Trustline Onboarder (payments, author Tyler), Passkey UI Kit (developer-tooling, Keeks), Account Demolisher (consumer-dapps, Jake), Contract Source Verification Service (infrastructure, Matej), OZ Accounts Policy Builder (developer-tooling, Ishan).",
+                        "The other 9 of the 14 total RFPs are CLOSED (q1-2026, e.g. Prices API & Indexing Service, AI-Focused WebIDE, Advanced AMM Framework, Soroban VRF) and are NOT currently fundable."
+                    ],
+                    "discriminator": "A guesser cannot enumerate the exact 5 open q2-2026 titles or the 5-open/9-closed/14-total split; producing them with correct open-vs-closed status is strong evidence of a real get_rfps query keyed on meta.activeQuarter and status=open."
+                }
+            }
+        },
+        {
+            "id": "sl-funding-smart-account-passkey-rfps",
+            "category": "funding-data",
+            "question": "My team works on Soroban smart accounts / passkey auth. Are there any open sponsor briefs in that space I could go after, and how are they different from each other?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "passkey ui kit",
+                    "oz accounts policy builder",
+                    "two|2 open"
+                ],
+                "toolsAll": [
+                    "get_rfps"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Find the open (q2-2026) RFPs matching the smart-account / passkey theme from the StellarLight RFP record and correctly distinguish them from each other.",
+                    "mustInclude": [
+                        "Names BOTH open RFPs: Passkey UI Kit and OZ Accounts Policy Builder.",
+                        "Draws a correct distinction: Passkey UI Kit is a front-end signing/UX UI component library; OZ Accounts Policy Builder is a no-code/low-code policy-configuration/deployment tool."
+                    ],
+                    "mustAvoid": [
+                        "Do not name only one of the two.",
+                        "Do not invent a brief.",
+                        "Do not present the closed Soroban-First Block Explorer as an open opportunity.",
+                        "Do not claim there are no matching open RFPs."
+                    ],
+                    "niceToHave": [
+                        "Notes Passkey UI Kit (developer-tooling, author Keeks) is a reusable React/React-Native UI component library for passkey registration, authentication, and signing, implementing the OZ smart account standard and WebAuthn spec.",
+                        "Notes OZ Accounts Policy Builder (developer-tooling, author Ishan) is a no-code/low-code visual editor to compose OpenZeppelin-style smart-account signing policies (multisig thresholds, spending limits, time locks) with Rust/Soroban code export and one-click deploy.",
+                        "Notes the Soroban-First Block Explorer mentions the OZ smart account standard but is CLOSED / q1-2026, so it is not an open opportunity."
+                    ],
+                    "passIf": [
+                        "Answer names BOTH open RFPs — Passkey UI Kit AND OZ Accounts Policy Builder — as the open smart-account/passkey briefs, and draws a correct distinction (UI/signing component library vs. policy-builder/no-code config tool)."
+                    ],
+                    "failIf": [
+                        "Names only one of the two open RFPs.",
+                        "Invents a brief.",
+                        "Presents the closed Soroban-First Block Explorer as an open opportunity.",
+                        "Claims there are no matching open RFPs."
+                    ],
+                    "inconclusiveIf": [
+                        "Names both RFPs but does not draw the UI-component-library vs. policy-builder distinction."
+                    ],
+                    "canonicalFacts": [
+                        "Two OPEN (q2-2026) RFPs match smart-accounts/passkeys: Passkey UI Kit (developer-tooling, author Keeks) — a reusable React/React-Native UI component library for passkey registration, authentication, and signing, implementing the OZ smart account standard and WebAuthn spec; and OZ Accounts Policy Builder (developer-tooling, author Ishan) — a no-code/low-code visual editor to compose OpenZeppelin-style smart-account signing policies (multisig thresholds, spending limits, time locks) with Rust/Soroban code export and one-click deploy.",
+                        "They differ in scope: Passkey UI Kit is a front-end signing/UX component library; OZ Accounts Policy Builder is a policy-configuration/deployment tool.",
+                        "The Soroban-First Block Explorer also mentions the OZ smart account standard but is CLOSED / q1-2026, so it is not an open opportunity."
+                    ],
+                    "discriminator": "A guesser would name a single generic passkey brief or miss that the OZ-mentioning Soroban-First Block Explorer is closed; correctly returning exactly these two open RFPs with their distinct scopes proves a real status-filtered get_rfps query."
+                }
+            }
+        },
+        {
+            "id": "sl-funding-hummingbot-kelp-closed",
+            "category": "funding-data",
+            "question": "Was there ever an SCF brief about replacing Kelp / market-making bots on Stellar? What was it called, can I still apply, and which other RFPs were in that same round?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "hummingbot integration",
+                    "kelp",
+                    "closed|q1-2026"
+                ],
+                "toolsAll": [
+                    "get_rfps"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Identify the Kelp-deprecation / market-making-bot RFP from the StellarLight RFP record, report its closed status (no longer fundable), and place it in its q1-2026 round.",
+                    "mustInclude": [
+                        "Names the brief as 'Hummingbot Integration (Trading Engine)'.",
+                        "Identifies it as CLOSED / q1-2026 / no longer fundable.",
+                        "Ties it to the Kelp-deprecation framing (deprecation of Kelp leaving a liquidity gap)."
+                    ],
+                    "mustAvoid": [
+                        "Do not claim the brief is open/fundable.",
+                        "Do not invent a different title.",
+                        "Do not say no such brief exists."
+                    ],
+                    "niceToHave": [
+                        "Notes it is category defi, author Rahim, calling for a Stellar orderbook connector for Hummingbot to enable automated market-making and arbitrage.",
+                        "Lists other q1-2026 closed RFPs: Prices API & Indexing Service, DeFi Positions API, C-Address Tooling & Onboarding, Soroban-First Block Explorer, Advanced AMM Framework (Concentrated Liquidity), Soroban Verifiable Random Function (VRF), Specialized Reverse Engineering Tool, AI-Focused WebIDE, and Hummingbot Integration (Trading Engine)."
+                    ],
+                    "passIf": [
+                        "Answer names the brief as 'Hummingbot Integration (Trading Engine)', identifies it as CLOSED / q1-2026 / no longer fundable, AND ties it to the Kelp-deprecation framing."
+                    ],
+                    "failIf": [
+                        "Claims the brief is open/fundable.",
+                        "Invents a different title.",
+                        "Says no such brief exists."
+                    ],
+                    "inconclusiveIf": [
+                        "Names Hummingbot Integration and the Kelp framing but is unclear about whether it is open or closed."
+                    ],
+                    "canonicalFacts": [
+                        "The 'Hummingbot Integration (Trading Engine)' RFP (category defi, author Rahim) is framed explicitly around the deprecation of Kelp leaving a liquidity gap, calling for a Stellar orderbook connector for Hummingbot to enable automated market-making and arbitrage.",
+                        "It is CLOSED (q1-2026), so it is NO LONGER fundable / cannot be applied to in the current round.",
+                        "It belonged to the Q1 2026 round, whose 9 closed RFPs are: Prices API & Indexing Service, DeFi Positions API, C-Address Tooling & Onboarding, Soroban-First Block Explorer, Advanced AMM Framework (Concentrated Liquidity), Soroban Verifiable Random Function (VRF), Specialized Reverse Engineering Tool, AI-Focused WebIDE, and Hummingbot Integration (Trading Engine)."
+                    ],
+                    "discriminator": "A guesser would not know the exact title 'Hummingbot Integration (Trading Engine)' nor that it is a closed q1-2026 brief tied to Kelp deprecation; naming it with correct closed status proves a real status-aware get_rfps historical lookup rather than a guess."
+                }
+            }
+        },
+        {
+            "id": "sl-ecosystem-crowded-vs-underbuilt-category",
+            "category": "ecosystem-data",
+            "question": "I'm trying to find an underbuilt niche on Stellar. Which project category is the most crowded right now, and which is the most underbuilt — and roughly how many projects are in each?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "user-?facing app",
+                    "\\b204\\b",
+                    "anchor",
+                    "asset"
+                ],
+                "toolsAll": [
+                    "get_clusters"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Identify the most crowded and most underbuilt Stellar project categories with approximate project counts from the StellarLight clusters endpoint, resisting a generic 'DeFi/payments is crowded' guess.",
+                    "mustInclude": [
+                        "Names User-Facing App as the largest/most-crowded category with ~204 projects.",
+                        "Identifies Anchor (1 project) and/or Asset (3 projects) as the most underbuilt with near-zero counts."
+                    ],
+                    "mustAvoid": [
+                        "Do not claim generically that 'DeFi/payments is crowded' without category names/counts.",
+                        "Do not invent categories not in the canonical schema (User-Facing App, Tooling, Infrastructure, Protocol/Contract, Asset, Anchor)."
+                    ],
+                    "niceToHave": [
+                        "Notes User-Facing App has 110 SCF-funded projects.",
+                        "Notes Anchor's single project is Bitso and Asset's three are Ondo, RedSwan, Spiko, both with 0 SCF-funded.",
+                        "Gives the full size ladder: User-Facing App 204 > Tooling 109 > Infrastructure 104 > Protocol/Contract 78 > Asset 3 > Anchor 1."
+                    ],
+                    "passIf": [
+                        "Answer names User-Facing App as the largest/most-crowded with ~204 projects AND identifies Anchor (1) and/or Asset (3) as the most underbuilt."
+                    ],
+                    "failIf": [
+                        "Claims 'DeFi/payments is crowded' generically without the real category names/counts.",
+                        "Invents categories not in the canonical schema (User-Facing App, Tooling, Infrastructure, Protocol/Contract, Asset, Anchor)."
+                    ],
+                    "inconclusiveIf": [
+                        "Names User-Facing App as largest but gives no count and does not identify Anchor or Asset as the underbuilt extreme."
+                    ],
+                    "canonicalFacts": [
+                        "Most crowded category: User-Facing App with 204 projects (110 SCF-funded) — by far the largest.",
+                        "Most underbuilt: Anchor with just 1 project (Bitso) and Asset with 3 projects (Ondo, RedSwan, Spiko), both with 0 SCF-funded.",
+                        "Size ordering: User-Facing App 204 > Tooling 109 > Infrastructure 104 > Protocol/Contract 78 > Asset 3 > Anchor 1.",
+                        "The canonical category set is User-Facing App, Tooling, Infrastructure, Protocol/Contract, Asset, Anchor."
+                    ],
+                    "discriminator": "A guesser claims 'DeFi/payments is crowded' generically or invents categories; producing the canonical category names with the 204-vs-1/3 counts proves a real query against the StellarLight clusters endpoint."
+                }
+            }
+        },
+        {
+            "id": "sl-ecosystem-highest-scf-funded-ratio-category",
+            "category": "ecosystem-data",
+            "question": "If I'm picking a category to build in based on the best odds of getting SCF funding, which category has the highest SCF-funded ratio — not just the most funded projects in absolute terms?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "protocol/?contract",
+                    "47\\s*/\\s*78",
+                    "user-?facing app",
+                    "\\b110\\b"
+                ],
+                "toolsAll": [
+                    "get_clusters"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Distinguish the highest SCF-funded RATIO category from the highest absolute funded count, naming Protocol/Contract (47/78) as the best-odds ratio while acknowledging User-Facing App leads on absolute funded count (110).",
+                    "mustInclude": [
+                        "Names Protocol/Contract (47/78, ~60%) as the highest funded-ratio category.",
+                        "Distinguishes ratio from absolute count and acknowledges User-Facing App leads on absolute funded count (110)."
+                    ],
+                    "mustAvoid": [
+                        "Do not answer only 'User-Facing App, it has the most funding' — that is the absolute-count trap and ignores the ratio question."
+                    ],
+                    "niceToHave": [
+                        "Cites Tooling 45/109 (~41%) and Infrastructure 37/104 (~36%) ratios.",
+                        "Notes Asset (0/3) and Anchor (0/1) have a 0% funded ratio.",
+                        "Notes Protocol/Contract is not the largest category yet has the highest ratio."
+                    ],
+                    "passIf": [
+                        "Answer names Protocol/Contract (47/78, ~60%) as the highest funded-RATIO category AND acknowledges User-Facing App leads on absolute funded count (110)."
+                    ],
+                    "failIf": [
+                        "Answers only 'User-Facing App, it has the most funding' without distinguishing ratio from absolute count.",
+                        "Fabricates per-category funded counts or names a different category as the highest ratio."
+                    ],
+                    "inconclusiveIf": [
+                        "Mentions Protocol/Contract but does not give the 47/78 figures or fails to contrast it with User-Facing App's absolute lead."
+                    ],
+                    "canonicalFacts": [
+                        "Protocol/Contract has the highest funded ratio: 47 of 78 projects are SCF-funded (~60%), even though it is NOT the largest category.",
+                        "User-Facing App has the most funded projects in absolute terms (110) but a lower ratio (110/204 ≈ 54%).",
+                        "Other ratios: Tooling 45/109 (~41%), Infrastructure 37/104 (~36%).",
+                        "Asset (0/3) and Anchor (0/1) have a 0% funded ratio."
+                    ],
+                    "discriminator": "A guesser falls into the absolute-count trap ('User-Facing App has the most funding'); citing the 47/78 ratio and distinguishing it from the 110 absolute lead proves per-category funded counts from a real clusters query that a guesser cannot produce."
+                }
+            }
+        },
+        {
+            "id": "sl-ecosystem-asset-rwa-underbuilt-unfunded",
+            "category": "ecosystem-data",
+            "question": "Tokenized real-world assets are a hot narrative everywhere. On Stellar specifically, is the 'Asset' category a crowded, well-funded lane or an open one — and can you back that with the data?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "asset",
+                    "0 (of )?(3|three)|0%|\\$0",
+                    "ondo",
+                    "spiko"
+                ],
+                "toolsAll": [
+                    "get_clusters"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Show with cluster data that the Stellar 'Asset' category is open and entirely SCF-unfunded despite the global RWA hype, naming the few real issuers as evidence.",
+                    "mustInclude": [
+                        "States the Asset category is underbuilt/open with only ~3 projects.",
+                        "States it has 0 SCF-funded projects ($0 SCF total)."
+                    ],
+                    "mustAvoid": [
+                        "Do not call RWA/Asset 'hot/crowded' on Stellar or assume it is well-funded — that is the opposite of the grounded answer.",
+                        "Do not claim the Asset category is large or SCF-backed."
+                    ],
+                    "niceToHave": [
+                        "Names the actual projects Ondo, RedSwan, and Spiko.",
+                        "Notes they are RWA/tokenized-asset issuers (Ondo's USDY, Spiko's tokenized T-bill funds, RedSwan tokenized real estate) that entered without SCF funding.",
+                        "Frames Asset as one of the smallest, least SCF-supported lanes — an underbuilt opportunity."
+                    ],
+                    "passIf": [
+                        "Answer states Asset is underbuilt/open (only ~3 projects) AND has 0 SCF-funded projects ($0 SCF)."
+                    ],
+                    "failIf": [
+                        "Claims the Asset category is large or SCF-backed.",
+                        "Calls RWA 'hot/crowded' on Stellar and assumes it is funded, contradicting the data."
+                    ],
+                    "inconclusiveIf": [
+                        "Says Asset is small/open but does not state it is 0 SCF-funded / $0 SCF, or vice versa."
+                    ],
+                    "canonicalFacts": [
+                        "The Asset category is wide open and entirely unfunded by SCF: only 3 projects (Ondo, RedSwan, Spiko) and 0 of them are SCF-funded ($0 SCF total).",
+                        "These are notable RWA/tokenized-treasury issuers (Ondo's USDY, Spiko's tokenized T-bill funds, RedSwan tokenized real estate) that exist on Stellar but came in without SCF money.",
+                        "Despite the global RWA hype, Asset is one of the smallest and least SCF-supported lanes on Stellar — an underbuilt opportunity, not a crowded one."
+                    ],
+                    "discriminator": "A guesser working from general crypto knowledge calls RWA 'hot/crowded' and assumes it is funded — the opposite of the grounded answer; stating Asset has only 3 projects and 0 SCF funding is strong evidence of a real StellarLight clusters query."
+                }
+            }
+        },
+        {
+            "id": "sl-builders-pedro-hackathon-winner",
+            "category": "builder-data",
+            "question": "I'm putting together a Stellar team and want someone who has actually WON a Stellar hackathon (not just attended one) to anchor it. Who's in the builder directory that won a Stellar Hackathon category, and what did they win for?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "pedro pelicioni|pedro-pelicioni",
+                    "wonderfully written",
+                    "ultimate stellar supreme tutorial"
+                ],
+                "toolsAll": [
+                    "get_builders"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Identify the builder in the StellarLight directory who actually WON a Stellar hackathon category (not merely participated), and what they won for, resisting the lure of treating all hackathon-tagged builders as winners.",
+                    "mustInclude": [
+                        "Names Pedro Pelicioni Costa (githubUsername pedro-pelicioni).",
+                        "States he won the 'Wonderfully Written' category at the Stellar Hackathon for the project 'The Ultimate Stellar Supreme Tutorial'."
+                    ],
+                    "mustAvoid": [
+                        "Do not present Juan Carlos (Micoh18) or Gabriel Barboza (gabrieIbarboza) as hackathon winners — their bios only say they participated.",
+                        "Do not return all 3 hackathon-tagged builders as winners (over-claim).",
+                        "Do not say no one in the directory won a hackathon."
+                    ],
+                    "niceToHave": [
+                        "Notes the $50,000 prize pool of the Stellar Hackathon global event.",
+                        "Notes a q=hackathon search returns 3 builders total (Pedro, Juan Carlos/Micoh18, Gabriel Barboza) but only Pedro's bio describes actually winning.",
+                        "Notes Pedro's location is Brazil and roleTitle 'Blockchain Specialist at Nearx'."
+                    ],
+                    "passIf": [
+                        "Answer names Pedro Pelicioni Costa (or pedro-pelicioni) AND the specific win: the 'Wonderfully Written' category and/or the project 'The Ultimate Stellar Supreme Tutorial'."
+                    ],
+                    "failIf": [
+                        "Returns all 3 hackathon-tagged builders as 'winners' (over-claim).",
+                        "Presents Juan Carlos/Micoh18 or Gabriel Barboza as hackathon winners.",
+                        "Names no one / says the directory has no hackathon builders."
+                    ],
+                    "inconclusiveIf": [
+                        "Names Pedro Pelicioni Costa but does not specify what he won (neither the 'Wonderfully Written' category nor the tutorial project)."
+                    ],
+                    "canonicalFacts": [
+                        "Pedro Pelicioni Costa (githubUsername pedro-pelicioni, location Brazil, roleTitle 'Blockchain Specialist at Nearx') won the 'Wonderfully Written' category at the Stellar Hackathon (a global event with a $50,000 prize pool) for his tutorial project 'The Ultimate Stellar Supreme Tutorial'.",
+                        "A q=hackathon search returns 3 builders total — Pedro Pelicioni Costa, Juan Carlos (Micoh18), and Gabriel Barboza (gabrieIbarboza) — but only Pedro's bio describes actually winning; the other two only mention participating in / being passionate about hackathons."
+                    ],
+                    "discriminator": "A guesser or count-only reader would treat all 3 hackathon-tagged builders as winners; only Pedro's bio describes an actual win, so distinguishing him by the 'Wonderfully Written' category proves a real StellarLight query that read the bios."
+                }
+            }
+        },
+        {
+            "id": "sl-builders-kenya-location",
+            "category": "builder-data",
+            "question": "I'm looking for a Stellar teammate based in Kenya. Who's in the builder directory from Kenya, and what are they building?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "samuel ogera|samogera",
+                    "asman malika|malika7188",
+                    "matxchange",
+                    "chama"
+                ],
+                "toolsAll": [
+                    "get_builders"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "List the Kenya-based builders in the StellarLight directory (location=Kenya filter) and what each is building.",
+                    "mustInclude": [
+                        "Names Samuel Ogera (githubUsername samogera), building Matxchange.",
+                        "Names Asman Malika (githubUsername Malika7188), building Chama Trust Wallet / Chama Wallet."
+                    ],
+                    "mustAvoid": [
+                        "Do not invent additional 'Kenyan builders' not in the seed.",
+                        "Do not claim the directory has no Kenya builders."
+                    ],
+                    "niceToHave": [
+                        "Notes the count is exactly 2.",
+                        "Ties Matxchange to a circular-economy / blockchain-verified waste tracking / instant M-Pesa payments digital OS for Kenya (status live; repo samogera/matxchange, 11 stars).",
+                        "Ties Chama Wallet to digitizing community savings groups (chamas) for transparent fund management (status live; repo Aureviatech/chama)."
+                    ],
+                    "passIf": [
+                        "Answer names BOTH Kenyan builders — Samuel Ogera (Matxchange) and Asman Malika (Chama Trust/Chama Wallet)."
+                    ],
+                    "failIf": [
+                        "Invents additional 'Kenyan builders' not in the seed.",
+                        "Claims the directory has no Kenya builders."
+                    ],
+                    "inconclusiveIf": [
+                        "Names only one of the two Kenyan builders (partial miss)."
+                    ],
+                    "canonicalFacts": [
+                        "Exactly 2 builders match location=Kenya.",
+                        "Samuel Ogera (githubUsername samogera) is building Matxchange — a 'Digital operating system for Kenya's circular economy' with blockchain-verified waste tracking and instant M-Pesa payments (status live; repo samogera/matxchange, 11 stars).",
+                        "Asman Malika (githubUsername Malika7188) is building Chama Trust Wallet / Chama Wallet — a fintech platform digitizing community savings groups (chamas) for transparent fund management (status live; repo Aureviatech/chama)."
+                    ],
+                    "discriminator": "location=Kenya is a working filter that returns exactly these 2 builders; naming both with their real projects (Matxchange, Chama Wallet) proves a real query, while a guesser would either fabricate names or claim no Kenyan builders exist."
+                }
+            }
+        },
+        {
+            "id": "sl-builders-kale-pau-koh-top-kale",
+            "category": "builder-data",
+            "question": "I want a collaborator who has worked specifically with the KALE token on Stellar. Is there anyone in the builder directory who's built something around KALE, and what is it?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "pau koh|klorenn",
+                    "top kale|top-kale",
+                    "discord bot"
+                ],
+                "toolsAll": [
+                    "get_builders"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Find the builder in the StellarLight directory who has built something around the KALE token on Stellar, and identify the KALE-related project, treating a niche-term hit as a real single match rather than an empty result.",
+                    "mustInclude": [
+                        "Names Pau Koh (githubUsername Klorenn).",
+                        "Identifies the KALE-related project 'Top Kale' (slug top-kale), a Discord bot tracking KALE token top holders on Stellar."
+                    ],
+                    "mustAvoid": [
+                        "Do not respond that 'no KALE builders exist' or that the directory is empty.",
+                        "Do not invent other 'KALE builders' beyond Pau Koh."
+                    ],
+                    "niceToHave": [
+                        "Notes Top Kale auto-posts multilingual verifiable rankings/analytics from real-time on-chain data (repo Klorenn/topkale, JavaScript, 1 star).",
+                        "Notes Pau Koh's location is 'Chile, Temuco', roleTitle 'Web3 Product & Community Builder' at Tellus Cooperative.",
+                        "Notes Pau Koh's other projects include P H A S E, Nurea App, and Cosmic Coder."
+                    ],
+                    "passIf": [
+                        "Answer names Pau Koh (or githubUsername Klorenn) AND identifies the KALE-related project 'Top Kale' (the KALE-holder-tracking Discord bot)."
+                    ],
+                    "failIf": [
+                        "Responds that 'no KALE builders exist' or that the directory is empty.",
+                        "Invents other 'KALE builders' beyond Pau Koh.",
+                        "Returns a guessed list rather than the single matching builder."
+                    ],
+                    "inconclusiveIf": [
+                        "Names Pau Koh / Klorenn but does not identify the 'Top Kale' project as the KALE connection."
+                    ],
+                    "canonicalFacts": [
+                        "Exactly 1 builder matches: Pau Koh (githubUsername Klorenn, location 'Chile, Temuco', roleTitle 'Web3 Product & Community Builder' at Tellus Cooperative).",
+                        "The KALE connection is the project 'Top Kale' (slug top-kale) — an advanced Discord bot that tracks KALE token top holders on Stellar and auto-posts multilingual verifiable rankings/analytics from real-time on-chain data (repo Klorenn/topkale, JavaScript, 1 star).",
+                        "Pau Koh's other projects include P H A S E, Nurea App, and Cosmic Coder."
+                    ],
+                    "discriminator": "q=kale returns exactly 1 real match; a guesser would either treat the niche term as an empty result or fabricate a list, whereas naming Pau Koh and the 'Top Kale' holder-tracking Discord bot proves a real StellarLight query."
+                }
+            }
+        },
+        {
+            "id": "sl-research-x402-stellar-live",
+            "category": "research-data",
+            "question": "Is x402 actually possible on Stellar today, or just theoretical? Can I try it before I build on it?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "x402",
+                    "developers\\.stellar\\.org",
+                    "coinbase|openzeppelin",
+                    "testnet|mainnet|usdc"
+                ],
+                "toolsAll": [
+                    "search_research"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Confirm from the StellarLight research/dev-docs layer that x402 is documented and live on Stellar (not theoretical), and that there is a runnable demo, rather than answering from general knowledge of the Coinbase x402 spec.",
+                    "mustInclude": [
+                        "Answers YES / possible-and-live (not theoretical).",
+                        "Cites the StellarLight dev-docs 'x402 on Stellar' record or its developers.stellar.org/docs/build/agentic-payments/x402 URL."
+                    ],
+                    "mustAvoid": [
+                        "Do not hedge that x402 is merely proposed/unsupported on Stellar.",
+                        "Do not answer only from general LLM knowledge of the Coinbase x402 spec without surfacing the Stellar-specific dev-docs record.",
+                        "Do not invent a different source."
+                    ],
+                    "niceToHave": [
+                        "Mentions the working x402 Demo runnable on Stellar Testnet or Mainnet.",
+                        "Notes supported assets are Testnet/Mainnet USDC.",
+                        "Names a facilitator: Coinbase x402 Facilitator or the Build-on-Stellar Relayer using the OpenZeppelin x402 Facilitator Plugin.",
+                        "Notes the chunks are high confidence (~0.76) with dev-docs authority ~0.95."
+                    ],
+                    "passIf": [
+                        "Answer says x402 is documented and live on Stellar (not theoretical) AND cites the dev-docs 'x402 on Stellar' record or its developers.stellar.org/.../agentic-payments/x402 URL."
+                    ],
+                    "failIf": [
+                        "Answers only from general LLM knowledge of the Coinbase x402 spec without surfacing the Stellar-specific dev-docs record.",
+                        "Hedges that x402 is merely proposed/unsupported on Stellar.",
+                        "Invents a different source."
+                    ],
+                    "inconclusiveIf": [
+                        "Says x402 is live on Stellar but does not cite the dev-docs 'x402 on Stellar' record or its URL.",
+                        "Names x402 support but is unclear whether a runnable demo / named facilitator exists."
+                    ],
+                    "canonicalFacts": [
+                        "x402 is documented and live on Stellar (not theoretical); StellarLight returns the dev-docs page titled 'x402 on Stellar' (developers.stellar.org/docs/build/agentic-payments/x402).",
+                        "The docs include a working x402 Demo runnable on Stellar Testnet or Mainnet, with supported assets Testnet/Mainnet USDC.",
+                        "Documented x402 Facilitators include the Coinbase x402 Facilitator and a Build-on-Stellar Relayer using the OpenZeppelin x402 Facilitator Plugin.",
+                        "The chunks are marked high confidence (~0.76) with dev-docs authority ~0.95."
+                    ],
+                    "discriminator": "A guesser answers from the generic Coinbase x402 spec and may hedge that it is unproven on Stellar; a correct answer surfaces the Stellar-specific dev-docs record with a runnable Testnet/Mainnet demo and named facilitators, proving a real StellarLight query."
+                }
+            }
+        },
+        {
+            "id": "sl-research-soroban-auth-recursion-dos",
+            "category": "research-data",
+            "question": "Are there any known reentrancy or authorization-recursion findings in Soroban's core auth from a security audit? How serious was it?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "veridise",
+                    "V-SOR-VUL-002|require_auth|check_auth",
+                    "critical",
+                    "invalid|not.?exploitable|linear"
+                ],
+                "toolsAll": [
+                    "search_research"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Surface the StellarLight audit record for the Veridise 'Stellar Soroban Core' authorization-recursion (DoS) finding, report its Critical severity, and capture the nuance that Veridise judged it invalid/not-exploitable rather than presenting it as a live exploitable bug.",
+                    "mustInclude": [
+                        "Uses the audit source and names the Veridise 'Stellar Soroban Core' audit.",
+                        "Names the require_auth/check_auth authorization-recursion (DoS) finding.",
+                        "Reports the severity as Critical.",
+                        "Notes it was classified invalid/not-exploitable (recursion is finite/linear, costly to attack)."
+                    ],
+                    "mustAvoid": [
+                        "Do not fabricate a severity.",
+                        "Do not claim a confirmed exploitable reentrancy hole.",
+                        "Do not name a wrong auditor.",
+                        "Do not answer generically about reentrancy without surfacing the StellarLight audit record."
+                    ],
+                    "niceToHave": [
+                        "Cites V-SOR-VUL-002 'Denial of Service During Authorization' in rs-soroban-env/src/auth.rs (require_auth_enforcing()).",
+                        "Cites the report locations sorobansecurity.com/report/28 and the V2.1 report/42.",
+                        "Explains the recursion: a contract whose check_auth calls require_auth on its own address causes repeated require_auth_enforcing invocations.",
+                        "Notes the 'Why Invalid' reasoning: a failed require_auth returns an Err that propagates, so iterations are only linear and constructing many trackers is costly.",
+                        "Notes the related Certora audit of 'Spectra Finance' lists Arbitrary Execution & Reentrancy / 'Confused Deputy' as a covered threat vector."
+                    ],
+                    "passIf": [
+                        "Answer names the Veridise 'Stellar Soroban Core' audit and the require_auth/check_auth authorization-recursion (DoS) finding, reports severity Critical, AND notes it was classified invalid/not-exploitable."
+                    ],
+                    "failIf": [
+                        "Fabricates a severity.",
+                        "Claims a confirmed exploitable reentrancy hole.",
+                        "Names a wrong auditor.",
+                        "Answers generically about reentrancy without surfacing the StellarLight audit record."
+                    ],
+                    "inconclusiveIf": [
+                        "Names the Veridise finding and Critical severity but omits the invalid/not-exploitable nuance.",
+                        "Surfaces an audit record but is unclear whether the finding is Veridise's Soroban Core auth-recursion DoS."
+                    ],
+                    "canonicalFacts": [
+                        "Filtering search_research to source=audit surfaces the Veridise audit of 'Stellar Soroban Core' (sorobansecurity.com/report/28 and the V2.1 report/42).",
+                        "The finding V-SOR-VUL-002 'Denial of Service During Authorization' in rs-soroban-env/src/auth.rs (require_auth_enforcing()) is flagged at severity CRITICAL.",
+                        "It concerns a contract whose check_auth calls require_auth on its own address, causing repeated require_auth_enforcing invocations (the frowned-upon recursion).",
+                        "Veridise marked it 'Why Invalid': a failed require_auth returns an Err that propagates, so iterations are only linear in the number of trackers and constructing many trackers is costly, making the attack not worthwhile — investigated and judged not a real exploit.",
+                        "A related Certora audit of 'Spectra Finance' also lists Arbitrary Execution & Reentrancy / 'Confused Deputy' as a covered threat vector."
+                    ],
+                    "discriminator": "A guesser answers generically about Soroban reentrancy or invents a severity; a correct answer names the specific Veridise 'Stellar Soroban Core' V-SOR-VUL-002 finding as Critical-but-invalid, which only a real StellarLight audit query yields."
+                }
+            }
+        },
+        {
+            "id": "sl-research-sep41-soroban-token-draft",
+            "category": "research-data",
+            "question": "What SEP defines the standard token interface for Soroban smart contracts, and is it finalized yet?",
+            "expect": {
+                "liveSource": true,
+                "answerRegex": [
+                    "sep-?41",
+                    "soroban token interface",
+                    "draft",
+                    "stellar asset contract|cap-?46-?6|sep-?44|sep-?56|mcculloch"
+                ],
+                "toolsAll": [
+                    "search_research"
+                ],
+                "skillsAny": [
+                    "data"
+                ],
+                "semantic": {
+                    "intent": "Identify SEP-41 'Soroban Token Interface' as the Soroban token standard from the StellarLight sep record and state that its status is Draft (not final/active), resisting the assumption that a widely-used standard is finalized.",
+                    "mustInclude": [
+                        "Names SEP-41 / 'Soroban Token Interface' as the Soroban token standard.",
+                        "States its status is Draft (not final/active)."
+                    ],
+                    "mustAvoid": [
+                        "Do not claim SEP-41 is Final/Active.",
+                        "Do not cite the wrong SEP number for the Soroban token interface.",
+                        "Do not answer without retrieving the StellarLight sep record."
+                    ],
+                    "niceToHave": [
+                        "Notes it is a subset of the Stellar Asset Contract and compatible with CAP-46-6.",
+                        "Names an author (e.g., Leigh McCulloch, Jonathan Jove, Siddharth Suresh, or Simon Chow).",
+                        "Names a dependent SEP: SEP-44 (Soroban Token Interface Extension: Memo) or SEP-56 (Tokenized Vault Standard, requiring SEP-41 compliance).",
+                        "Notes it returns as the top, highest-confidence record (~0.80, authority 1.0), file sep-0041.md, version 0.4.1, Created 2023-09-22, last Updated 2025-08-28."
+                    ],
+                    "passIf": [
+                        "Answer names SEP-41 / 'Soroban Token Interface' as the Soroban token standard AND states its status is Draft (not final/active)."
+                    ],
+                    "failIf": [
+                        "Claims SEP-41 is Final/Active.",
+                        "Cites the wrong SEP number for the Soroban token interface.",
+                        "Answers without retrieving the StellarLight sep record."
+                    ],
+                    "inconclusiveIf": [
+                        "Names SEP-41 as the Soroban token interface but does not state its status, or is unclear whether it is Draft vs final.",
+                        "States there is a Draft Soroban token SEP but does not pin it to SEP-41."
+                    ],
+                    "canonicalFacts": [
+                        "SEP-41, titled 'Soroban Token Interface' (sep-0041.md), is returned by search_research (source=sep) as the top, highest-confidence record (~0.80, authority 1.0).",
+                        "It is NOT finalized — its Status is Draft (Created 2023-09-22, last Updated 2025-08-28, version 0.4.1), authored by Jonathan Jove, Siddharth Suresh, Simon Chow, and Leigh McCulloch.",
+                        "It defines a standard contract interface for tokens that is a subset of the Stellar Asset Contract and compatible with CAP-46-6.",
+                        "Other SEPs build on it: SEP-44 (Soroban Token Interface Extension: Memo) and SEP-56 (Tokenized Vault Standard, which requires the underlying asset and the vault to be SEP-41 compliant)."
+                    ],
+                    "discriminator": "A guesser may name the wrong SEP number or assume a heavily-used token standard is Final; a correct answer pins it to SEP-41 'Soroban Token Interface' AND reports its Draft status, which only the StellarLight sep record provides."
+                }
+            }
+        }
+    ]
+}

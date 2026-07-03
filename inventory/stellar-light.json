@@ -1,0 +1,2281 @@
+{
+  "changelogEntryCount": 20,
+  "changelogLatest": {
+    "date": "2026-07-03",
+    "detail": "Attach repoMeta.lastCommitAt / lastActivityAt as the as-of date when citing answers instead of asserting undated facts. All changes additive — no field removed or renamed.",
+    "summary": "Dated freshness on answer surfaces: `/api/repos/explain` now returns `repoMeta` (lastCommitAt, stars, isArchived, repoScoreLabel of the routed repo) so grounded answers carry an as-of date; `/api/projects/search` rows gain `lastActivityAt` (most recent commit across the project's own repos) and each inline repo ref now includes `lastCommitAt`. Also: scout-mcp's search_research `source` enum adds the missing 'incident' value (MCP ⇄ API parity).",
+    "surfaces": [
+      "api",
+      "mcp"
+    ],
+    "type": "added",
+    "version": "openapi 1.3.2"
+  },
+  "fetchedAt": "2026-07-03T14:02:30.658Z",
+  "openapi": {
+    "components": {
+      "parameters": {
+        "limit": {
+          "description": "Max results per page. The default and cap VARY by endpoint (e.g. projects/search 20/100, builders 50/200, leaderboard 50/300, research 8/25). A value below 1 or above the cap is clamped, not rejected.",
+          "in": "query",
+          "name": "limit",
+          "schema": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "offset": {
+          "description": "Number of matching rows to skip before returning (pagination). Page until offset + meta.counts.returned >= meta.counts.total.",
+          "in": "query",
+          "name": "offset",
+          "schema": {
+            "default": 0,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "q": {
+          "description": "Keyword query (free text)",
+          "in": "query",
+          "name": "q",
+          "schema": {
+            "type": "string"
+          }
+        }
+      },
+      "schemas": {
+        "ErrorResponse": {
+          "properties": {
+            "details": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "error": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "error"
+          ],
+          "type": "object"
+        },
+        "FeedbackRequest": {
+          "description": "Optional reporting context is NESTED under `context` (matches the live endpoint + the GET /api/feedback self-schema).",
+          "properties": {
+            "context": {
+              "description": "Optional context about what triggered the feedback.",
+              "properties": {
+                "agentName": {
+                  "type": "string"
+                },
+                "endpoint": {
+                  "type": "string"
+                },
+                "query": {
+                  "type": "string"
+                },
+                "skillVersion": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "kind": {
+              "enum": [
+                "bug",
+                "missing-data",
+                "wrong-answer",
+                "suggestion",
+                "other"
+              ],
+              "type": "string"
+            },
+            "message": {
+              "maxLength": 4000,
+              "minLength": 10,
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "message"
+          ],
+          "type": "object"
+        },
+        "HackathonDetailResponse": {
+          "properties": {
+            "hackathon": {
+              "type": "object"
+            },
+            "meta": {
+              "$ref": "#/components/schemas/Meta"
+            }
+          },
+          "type": "object"
+        },
+        "HackathonsResponse": {
+          "properties": {
+            "hackathons": {
+              "items": {
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "meta": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Meta"
+                },
+                {
+                  "properties": {
+                    "fallbackChannels": {
+                      "description": "Present when the query returns 0 events — a summary plus live announcement channels to point the user at. NOTE: an OBJECT, not an array.",
+                      "properties": {
+                        "channels": {
+                          "items": {
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "url": {
+                                "format": "uri",
+                                "type": "string"
+                              },
+                              "why": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "summary": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              ]
+            }
+          },
+          "type": "object"
+        },
+        "Meta": {
+          "description": "Standard meta block included on every list response",
+          "properties": {
+            "counts": {
+              "properties": {
+                "returned": {
+                  "description": "Rows in this page (post limit/offset slice)",
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "total": {
+                  "description": "Rows matching the filter before slicing (paginated endpoints). Page until offset + returned >= total.",
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "filters": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "generatedAt": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "source": {
+              "format": "uri",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "Project": {
+          "properties": {
+            "builtBy": {
+              "description": "The organization/entity behind this project ('who built X') — e.g. LOBSTR → Ultra Stellar, Soroswap → Paltalabs. Null when no org is linked. Browse the org's portfolio at https://stellarlight.xyz/entities/{slug}.",
+              "nullable": true,
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "category": {
+              "enum": [
+                "Infrastructure",
+                "Tooling",
+                "User-Facing App",
+                "Asset",
+                "Protocol/Contract",
+                "Anchor",
+                "Partner Integration"
+              ],
+              "type": "string"
+            },
+            "confidence": {
+              "description": "Blended confidence for this result: overall score (0-1) + label, decomposed into relevance / freshness / authority sub-signals (each 0-1) and ageDays.",
+              "nullable": true,
+              "properties": {
+                "ageDays": {
+                  "nullable": true,
+                  "type": "integer"
+                },
+                "authority": {
+                  "type": "number"
+                },
+                "freshness": {
+                  "type": "number"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "relevance": {
+                  "type": "number"
+                },
+                "score": {
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            },
+            "hackathon": {
+              "nullable": true,
+              "type": "string"
+            },
+            "hackathonPlacement": {
+              "nullable": true,
+              "type": "string"
+            },
+            "hackathonPrize": {
+              "nullable": true,
+              "type": "number"
+            },
+            "hackathonPrizeTrack": {
+              "nullable": true,
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "lastActivityAt": {
+              "description": "Most recent commit across the project's own indexed repos — attach as the as-of date for 'is this project active?' answers. Null when no repo has a known commit date.",
+              "format": "date-time",
+              "nullable": true,
+              "type": "string"
+            },
+            "links": {
+              "description": "The project OWN canonical homes - cite these as the primary source, not StellarLight or any directory. Only present, non-empty fields are included.",
+              "properties": {
+                "discord": {
+                  "type": "string"
+                },
+                "docs": {
+                  "type": "string"
+                },
+                "github": {
+                  "type": "string"
+                },
+                "twitter": {
+                  "type": "string"
+                },
+                "website": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "logoUrl": {
+              "nullable": true,
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "placementRank": {
+              "description": "Numeric rank parsed from hackathonPlacement (1 = best), handling both digit ('1st Place') and word ('First Place') ordinals — or null when the source gives no ordinal (a flat 'Winners' bucket). winners[] is sorted by placementRank, so winners[0] is the 1st-place entry when the event has ranked placements; unranked winners (placementRank: null) sort last and their order is not significant. Sort/filter on placementRank instead of parsing the label.",
+              "nullable": true,
+              "type": "integer"
+            },
+            "prominence": {
+              "description": "Editorial ranking boost (0-100); higher = more canonical for its category.",
+              "type": "number"
+            },
+            "repos": {
+              "description": "This project’s top indexed GitHub repos, surfaced inline (same shape as /api/repos/search items). Cite as the project’s code references.",
+              "items": {
+                "$ref": "#/components/schemas/Repo"
+              },
+              "type": "array"
+            },
+            "scfAwarded": {
+              "type": "boolean"
+            },
+            "scfTotalAwardedUSD": {
+              "nullable": true,
+              "type": "number"
+            },
+            "score": {
+              "description": "Relevance score for the current query (higher = better match)",
+              "type": "number"
+            },
+            "shortDescription": {
+              "type": "string"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "status": {
+              "description": "Lifecycle status. 'Inactive' = defunct/archived (e.g. product shut down) — such projects stay name-searchable but are heavily down-ranked and excluded from the leaderboard/directory.",
+              "enum": [
+                "Draft",
+                "Development",
+                "Pre-Release",
+                "Live",
+                "Inactive"
+              ],
+              "type": "string"
+            },
+            "types": {
+              "description": "Capability tags (Wallet, DEX, Lending, Oracle, SDK, RPC, Faucet, NFT, RWA, Anchor, Stablecoin, Indexer, Explorer, Security, Gaming).",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "url": {
+              "format": "uri",
+              "type": "string"
+            },
+            "verificationLevel": {
+              "nullable": true,
+              "type": "string"
+            },
+            "via": {
+              "description": "How this result was matched: keyword (token/synonym overlap) or vector (semantic fallback).",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "slug",
+            "category",
+            "status"
+          ],
+          "type": "object"
+        },
+        "ProjectSearchResponse": {
+          "properties": {
+            "codeReferences": {
+              "description": "Top graded repos matching the same query, surfaced inline (max 5, first page only; same shape as /api/repos/search). Cite as existing code references for prior-art questions.",
+              "items": {
+                "$ref": "#/components/schemas/Repo"
+              },
+              "type": "array"
+            },
+            "meta": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Meta"
+                },
+                {
+                  "properties": {
+                    "matchMode": {
+                      "description": "Tier of match relaxation that produced these results",
+                      "enum": [
+                        "strict",
+                        "loose-1",
+                        "loose-2",
+                        "loose-3",
+                        "majority",
+                        "all"
+                      ],
+                      "type": "string"
+                    },
+                    "matchModeLabel": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              ]
+            },
+            "projects": {
+              "items": {
+                "$ref": "#/components/schemas/Project"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "meta",
+            "projects"
+          ],
+          "type": "object"
+        },
+        "Repo": {
+          "description": "An indexed Stellar ecosystem GitHub repository graded by repoScore. Cite the repo's url / homepageUrl as the primary source.",
+          "properties": {
+            "builderReputation": {
+              "type": "number"
+            },
+            "canonical": {
+              "description": "True when surfaced as a curated canonical SDF answer for an infra/protocol query (e.g. error codes → stellar-core/Horizon/SDKs; Horizon → stellar/go). Floated to the top; meta.canonical lists them.",
+              "type": "boolean"
+            },
+            "deepWikiUrl": {
+              "description": "DeepWiki AI-generated wiki of this repo's internals (deepwiki.com/{owner}/{name}). Hand off here for deep 'where/how' code questions — e.g. where error codes / consensus / XDR are defined — beyond which-repo discovery.",
+              "type": "string"
+            },
+            "description": {
+              "nullable": true,
+              "type": "string"
+            },
+            "fullName": {
+              "description": "owner/name",
+              "type": "string"
+            },
+            "hackathonWinner": {
+              "type": "boolean"
+            },
+            "homepageUrl": {
+              "nullable": true,
+              "type": "string"
+            },
+            "isArchived": {
+              "type": "boolean"
+            },
+            "isFork": {
+              "type": "boolean"
+            },
+            "judgeScore": {
+              "nullable": true,
+              "type": "number"
+            },
+            "judgedHackathon": {
+              "nullable": true,
+              "type": "string"
+            },
+            "lastCommitAt": {
+              "format": "date-time",
+              "nullable": true,
+              "type": "string"
+            },
+            "name": {
+              "nullable": true,
+              "type": "string"
+            },
+            "openIssues": {
+              "type": "integer"
+            },
+            "owner": {
+              "nullable": true,
+              "type": "string"
+            },
+            "primaryLanguage": {
+              "nullable": true,
+              "type": "string"
+            },
+            "project": {
+              "description": "The curated project this repo is linked to, if any.",
+              "nullable": true,
+              "properties": {
+                "name": {
+                  "nullable": true,
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "repoScore": {
+              "description": "Quality grade (0–100) = freshness + traction + hackathon/SCF/builder authority. Lead with high-score repos.",
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            "repoScoreLabel": {
+              "nullable": true,
+              "type": "string"
+            },
+            "scfAwarded": {
+              "type": "boolean"
+            },
+            "score": {
+              "description": "Keyword-relevance score for the current query (higher = better match).",
+              "type": "number"
+            },
+            "stars": {
+              "type": "integer"
+            },
+            "topics": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "url": {
+              "format": "uri",
+              "nullable": true,
+              "type": "string"
+            }
+          },
+          "required": [
+            "fullName",
+            "repoScore"
+          ],
+          "type": "object"
+        },
+        "RepoSearchResponse": {
+          "properties": {
+            "meta": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Meta"
+                },
+                {
+                  "properties": {
+                    "canonical": {
+                      "description": "The curated canonical SDF repo floated to the top for an infra/protocol query (e.g. error codes → stellar/stellar-core), or null when the query isn’t a canonical-routed concept.",
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "note": {
+                      "description": "How to read the results (e.g. code references graded by repoScore 0-100).",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              ]
+            },
+            "repos": {
+              "items": {
+                "$ref": "#/components/schemas/Repo"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "meta",
+            "repos"
+          ],
+          "type": "object"
+        },
+        "StatusResponse": {
+          "properties": {
+            "apiVersion": {
+              "description": "API contract (OpenAPI) version — equals /api/openapi.json info.version. Reason about the live contract from this rather than the service version.",
+              "type": "string"
+            },
+            "docs": {
+              "format": "uri",
+              "type": "string"
+            },
+            "endpoints": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "generatedAt": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "ok": {
+              "type": "boolean"
+            },
+            "service": {
+              "const": "Stellar Scout",
+              "type": "string"
+            },
+            "skill": {
+              "format": "uri",
+              "type": "string"
+            },
+            "sources": {
+              "items": {
+                "properties": {
+                  "count": {
+                    "type": "integer"
+                  },
+                  "lastUpdatedAt": {
+                    "format": "date-time",
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "usage": {
+              "properties": {
+                "byEndpoint": {
+                  "items": {
+                    "properties": {
+                      "count": {
+                        "type": "integer"
+                      },
+                      "endpoint": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "last24h": {
+                  "type": "integer"
+                },
+                "last7d": {
+                  "type": "integer"
+                },
+                "total": {
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "version": {
+              "description": "Scout skill/service release line.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "ok",
+            "service",
+            "version",
+            "generatedAt",
+            "endpoints"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    "info": {
+      "contact": {
+        "email": "support@stellarlight.xyz",
+        "name": "Stellar Light",
+        "url": "https://stellarlight.xyz/scout"
+      },
+      "description": "Read-only public API powering Stellar Scout. Aggregators, autonomous agents, and AI tools can call these endpoints directly without auth.\n\nAll endpoints are edge-cached. The same data is available via the @stellar-light/scout-mcp Model Context Protocol server (for human-driven clients) and via the @stellar-light/api-client TypeScript SDK (for autonomous aggregators).\n\nData sources merged behind these endpoints: the Stellarlight directory of curated Stellar projects + an indexed-and-scored GitHub repo index, Stellar Passport builder profiles, Electric Capital developer activity, Soroban audit corpus, SDF skills.stellar.org skill catalog, lumenloop ecosystem data, and primary research (SEPs, papers, dev docs, SCF Handbook). Live collection sizes are in GET /api/status (sources[]) — counts are intentionally not hardcoded here to avoid drift.\n\n## Versioning\nEvery response carries an `X-API-Version` header (currently `1`). The number bumps only on a breaking response-shape change; additive fields don't bump it. Pin to a version by asserting the header. Breaking changes are announced before they ship.\n\n## Rate limits\nNone enforced today — the API is public and unauthenticated. When limits are introduced they will be advertised via `X-RateLimit-*` and `Retry-After` headers and documented here BEFORE enforcement, so autonomous consumers can adopt back-off ahead of time. Be courteous: cache where `Cache-Control` allows, and prefer `offset` pagination over hammering.\n\n## Pagination\nList endpoints (`/api/projects/search`, `/api/builders`, `/api/rfps`) accept `limit` + `offset`. The response `meta.counts` carries `returned` (this page) and `total`/`matched` (all rows matching the filter, pre-slice). Page until `offset + returned >= total`.\n\n## Ordering & relevance\n`/api/projects/search` sorts by descending keyword `score` (token-overlap count) and exposes `meta.matchMode` (`strict` → `loose-1` → `majority`) so you know how much the query was relaxed. `/api/research` sorts by descending vector-similarity `score` (0–1 cosine). Use these for cross-source ranking when merging with other aggregators.",
+      "license": {
+        "identifier": "MIT",
+        "name": "MIT"
+      },
+      "summary": "Agent-native data layer for the Stellar ecosystem — projects, builders, hackathons, SCF, audits, research.",
+      "title": "Stellar Scout API",
+      "version": "1.3.2"
+    },
+    "openapi": "3.1.0",
+    "paths": {
+      "/api/analyze": {
+        "get": {
+          "description": "Returns the **cross-everything ecosystem rollup** — the macro totals that single-event or single-cluster tools can't answer alone. `dimension=all` (default) or slice to `hackathons` (totalEvents, upcoming/active/completed counts, totalPrizePoolUSD, totalRegisteredHackers — live from DoraHacks), `categories` (project-count distribution + scfFunded + hackathon winners per category), or `funding` (scfAwardedProjects, scfTotalDistributedUSD, meanAwardUSD, per-round breakdown, and the post-hackathon Built/In-Progress/Abandoned status funnel). **Use when:** 'what's the overall state of Stellar hackathons/grants', 'total SCF funding distributed / mean award size', 'how much prize money across all hackathons', 'how many projects get built vs abandoned after hackathons'. **Not for:** crowdedness or whitespace per category → use get_clusters; a ranked list of top/active projects → use get_leaderboard; one specific hackathon's details → use get_hackathon; comparing two hackathons head-to-head → use compare_hackathons. Use for ecosystem-wide totals and macro stats — project counts by category, total SCF funding, hackathon totals, and developer-activity aggregates across the whole ecosystem.",
+          "operationId": "analyzeEcosystem",
+          "parameters": [
+            {
+              "description": "Which slice to return",
+              "in": "query",
+              "name": "dimension",
+              "schema": {
+                "default": "all",
+                "enum": [
+                  "all",
+                  "hackathons",
+                  "categories",
+                  "funding"
+                ],
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Analytics rollup"
+            }
+          },
+          "summary": "Cross-event Stellar ecosystem analytics rollup",
+          "tags": [
+            "Analytics"
+          ]
+        }
+      },
+      "/api/builders": {
+        "get": {
+          "description": "The Stellar **people directory** — curated builder PROFILES (synced from Stellar Passport): displayName, githubUsername, bio, roleTitle, location, scfTier, and the projects[] each has shipped. Free-text `q`/`skill` searches across bio + role + project names/descriptions; `location` filters by place; featured builders sort first. **Use when:** 'find me a teammate/collaborator who has shipped X', 'Stellar devs in Lagos who've done Soroban', 'who can I hire for an anchor build' — i.e. you want a PERSON to contact. **Not for:** a funded project/product or 'who built X (the company)' → use search_projects; the GitHub repo/code itself → use search_repos; ecosystem-wide dev *counts*/activity stats → use get_leaderboard. Use for recruiting or hiring: find developers, engineers, contributors, or teammates to recruit or hire by skill, SCF tier, or track record of SCF awards.",
+          "operationId": "getBuilders",
+          "parameters": [
+            {
+              "description": "Free-text filter over bio / role / projects (accepts `skill`/`tech` as aliases)",
+              "in": "query",
+              "name": "q",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Filter by location substring (e.g. 'Lagos', 'Brazil')",
+              "in": "query",
+              "name": "location",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Filter by skill/tech mentioned in bio",
+              "in": "query",
+              "name": "skill",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/components/parameters/limit"
+            },
+            {
+              "$ref": "#/components/parameters/offset"
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Builder list"
+            }
+          },
+          "summary": "Search Stellar builders",
+          "tags": [
+            "Builders"
+          ]
+        }
+      },
+      "/api/changelog": {
+        "get": {
+          "description": "A curated, latest-first feed of contract-affecting changes — new/removed endpoints & tools, param/enum changes, description rewrites. Point an agent here to see what changed lately without reading git history. **Use when:** you cached the API surface earlier and want to know what moved before relying on it, or you're debugging a field/param that changed. **Not for:** the actual ecosystem data → use the relevant search endpoint; current health / source freshness / version → use /api/status.",
+          "operationId": "getChangelog",
+          "parameters": [
+            {
+              "description": "Only entries on/after this ISO date (YYYY-MM-DD).",
+              "in": "query",
+              "name": "since",
+              "required": false,
+              "schema": {
+                "format": "date",
+                "type": "string"
+              }
+            },
+            {
+              "description": "Max entries to return, latest-first (1–100).",
+              "in": "query",
+              "name": "limit",
+              "required": false,
+              "schema": {
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "entries": {
+                        "items": {
+                          "properties": {
+                            "date": {
+                              "format": "date",
+                              "type": "string"
+                            },
+                            "detail": {
+                              "type": "string"
+                            },
+                            "summary": {
+                              "type": "string"
+                            },
+                            "surfaces": {
+                              "items": {
+                                "enum": [
+                                  "api",
+                                  "mcp",
+                                  "api-client",
+                                  "skill"
+                                ],
+                                "type": "string"
+                              },
+                              "type": "array"
+                            },
+                            "type": {
+                              "enum": [
+                                "added",
+                                "changed",
+                                "fixed",
+                                "removed"
+                              ],
+                              "type": "string"
+                            },
+                            "version": {
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "generatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                      },
+                      "meta": {
+                        "type": "object"
+                      },
+                      "ok": {
+                        "type": "boolean"
+                      },
+                      "service": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Changelog feed (latest-first)"
+            }
+          },
+          "summary": "Recent changes to the API, MCP tools, and client",
+          "tags": [
+            "Discovery"
+          ]
+        }
+      },
+      "/api/clusters": {
+        "get": {
+          "description": "Groups the active Stellar **project directory into topic clusters** and scores each on **crowdedness (1–10, log-scaled)** so you can see saturated vs underbuilt lanes — i.e. *where to build*. Each cluster returns `size`, `crowdedness`, `scfFundedCount`, `scfTotalUSD`, `hackathonWinnerCount`, and up to 5 sample projects; cluster by `dimension=category` (coarse 7-cat) or `dimension=types` (finer: Wallet/DEX/Lending/RWA/Oracle…), or pass `key`/`type` to get one cluster. **Use when:** 'what's the most crowded category on Stellar', 'show me an underbuilt/whitespace area', 'how many projects/funded projects are in RWA vs wallets', 'where is the competition thin'. **Not for:** ranking the top projects/repos by stars or activity → use get_leaderboard; ecosystem-wide totals (events + funding + status funnel) → use analyze_ecosystem; finding/looking up an actual named project in a category → use search_projects. Use for 'where should I build', 'what's underbuilt or saturated', 'which categories are crowded' opportunity-gap questions across the project directory.",
+          "operationId": "getClusters",
+          "parameters": [
+            {
+              "description": "Cluster by category (coarse 7-cat) or types (finer)",
+              "in": "query",
+              "name": "dimension",
+              "schema": {
+                "default": "category",
+                "enum": [
+                  "category",
+                  "types"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "description": "Only include clusters with at least N projects",
+              "in": "query",
+              "name": "minSize",
+              "schema": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Cluster list"
+            }
+          },
+          "summary": "Topic clusters with crowdedness scores",
+          "tags": [
+            "Analytics"
+          ]
+        }
+      },
+      "/api/feedback": {
+        "get": {
+          "description": "Returns the expected POST body shape + valid `kind` values, so an agent can self-discover how to submit feedback without guessing. No side effects. **Use when:** you're about to POST feedback and want the schema first — kind enum, required fields, size limits. **Not for:** actually submitting feedback → POST /api/feedback; browsing what's been reported → not exposed (curator queue is private).",
+          "operationId": "getFeedbackSchema",
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Feedback request schema"
+            }
+          },
+          "summary": "Get the feedback request schema (discovery)",
+          "tags": [
+            "Feedback"
+          ]
+        },
+        "post": {
+          "description": "Send a feedback report when the skill returns wrong / missing / misleading information. Lands in the curator queue. Rate-limited to 6/min/IP (IP hashed with PAYLOAD_SECRET, never stored raw). **Use when:** a Scout query returned something wrong / stale / empty that you believe SHOULD exist — file it so the corpus/endpoint gets fixed. **Not for:** discovering the schema first → GET /api/feedback; reading data (this is a write endpoint) → use the relevant search endpoint.",
+          "operationId": "submitFeedback",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "ok": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "ok",
+                      "id"
+                    ],
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Feedback received (a curator-queue row was created)"
+            },
+            "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              },
+              "description": "Validation error"
+            },
+            "429": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              },
+              "description": "Rate limit exceeded"
+            }
+          },
+          "summary": "Submit feedback on Scout's output",
+          "tags": [
+            "Feedback"
+          ],
+          "x-side-effecting": true
+        }
+      },
+      "/api/hackathons": {
+        "get": {
+          "description": "Browse/LIST Stellar hackathon **events** — a merged, de-duplicated feed of curated Payload events (rich detail, internal pages) + live DoraHacks events (SDF org IDs 3096/3853), sorted upcoming→active→completed then newest-first. Each row carries name, slug, dates, status, organizer, source, and (for DoraHacks) prizePoolUSD + hackersCount. Filter by `status` (upcoming|active|completed), `organizer` slug, or `source` (curated|dorahacks). **Use when:** 'what Stellar hackathons are coming up / running now / recently ended', 'list SDF hackathons', or you need the slug of an event before drilling in. When a forward-looking query (status=upcoming|active) returns zero, it adds `meta.fallbackChannels` (BuildOnStellar, stellarlight.xyz, DoraHacks) — surface those rather than dead-ending. **Not for:** one event's winners/submissions/tracks → use get_hackathon; comparing 2+ named events → use compare_hackathons; ecosystem-wide rollups (total prize pools, category/funding totals across ALL events) → use analyze_ecosystem; RFPs/bounties/grants → use get_rfps.",
+          "operationId": "getHackathons",
+          "parameters": [
+            {
+              "description": "Filter by event status",
+              "in": "query",
+              "name": "status",
+              "schema": {
+                "enum": [
+                  "upcoming",
+                  "active",
+                  "completed"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "description": "Filter by organizer slug",
+              "in": "query",
+              "name": "organizer",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Restrict to one feed (curated vs DoraHacks)",
+              "in": "query",
+              "name": "source",
+              "schema": {
+                "enum": [
+                  "curated",
+                  "dorahacks"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/components/parameters/limit"
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HackathonsResponse"
+                  }
+                }
+              },
+              "description": "Hackathon list"
+            }
+          },
+          "summary": "List Stellar hackathons",
+          "tags": [
+            "Hackathons"
+          ]
+        }
+      },
+      "/api/hackathons/compare": {
+        "get": {
+          "description": "Side-by-side comparison of 2–5 named hackathons (by slug). Returns each event's snapshot (dates, status, source, prizePoolUSD, hackersCount, submissionCount, winnerCount, prizePerWinnerUSD where derivable) plus a `deltas` block flagging the spreads agents care about — prize-pool range, submission-count range, prize-per-winner, registered-hacker counts — with human-readable `notes` like '2× spread'. Unresolved slugs come back as `source:\"not-found\"` and are listed in deltas.notes without inflating `returned`. **Use when:** 'which Stellar hackathon should I enter', 'how did [event A] compare to [event B] on prizes/turnout', 'was [A] or [B] bigger'. Requires ≥2 known slugs (max 5; iterate beyond that) — resolve them via get_hackathons first. **Not for:** one event's deep detail/winners → use get_hackathon; discovering/listing events → use get_hackathons; ecosystem-wide totals across ALL events → use analyze_ecosystem.",
+          "operationId": "compareHackathons",
+          "parameters": [
+            {
+              "description": "2–5 hackathon slugs, comma-separated (?slugs=a,b)",
+              "explode": false,
+              "in": "query",
+              "name": "slugs",
+              "required": true,
+              "schema": {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 5,
+                "minItems": 2,
+                "type": "array"
+              },
+              "style": "form"
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Comparison rollup"
+            }
+          },
+          "summary": "Compare 2–5 hackathons side-by-side",
+          "tags": [
+            "Hackathons"
+          ]
+        }
+      },
+      "/api/hackathons/{slug}": {
+        "get": {
+          "description": "Full detail for ONE hackathon by slug — its metadata plus every submission with placement, prize amount, prize track, post-hack status (Built/In Progress/Abandoned), and scfAwarded flag; derives `winners`, per-`tracks` aggregates (prize $ + winner/submission counts), and a `stats` outcome funnel. Dual-shape: curated events return full DB detail; DoraHacks-only events read submissions/winners/tracks live from DoraHacks (degrading to a curated winner roster + `meta.note` when the live feed is unavailable). **Use when:** 'who won [event] / its soroban track', 'what projects were submitted to [event]', 'what tracks did [event] have and what did they pay', 'how many [event] submissions are still being built'. Needs an exact slug — get it from get_hackathons first if unknown. **Not for:** listing/browsing many events → use get_hackathons; comparing stats across 2+ events → use compare_hackathons; ecosystem-wide aggregates → use analyze_ecosystem; a winning project's own repo/funding/status outside the hackathon context → use search_projects / search_repos.",
+          "operationId": "getHackathon",
+          "parameters": [
+            {
+              "description": "Hackathon slug",
+              "in": "path",
+              "name": "slug",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HackathonDetailResponse"
+                  }
+                }
+              },
+              "description": "Hackathon detail"
+            },
+            "404": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              },
+              "description": "Hackathon not found"
+            }
+          },
+          "summary": "Get one hackathon's full detail",
+          "tags": [
+            "Hackathons"
+          ]
+        }
+      },
+      "/api/leaderboard": {
+        "get": {
+          "description": "Returns a **ranked list of active Stellar projects** (default top 50, max 300) sortable by `sort=activity|stars|issues` over a `range` (7d/30d/90d/1y/all), with per-project GitHub rollups (`totalStars`, `openIssuesTotal`, `lastActivityAt`, `repoCount`) and `scfAwarded`; optional `category` filter and `format=csv`. Also bundles an **Electric Capital ecosystem dev macro** block (28-day active / Stellar-only / multichain dev counts, commits28d, full-time/part-time/one-time dev splits). **Use when:** 'who/what are the top/most-active Stellar projects', 'most-starred projects', 'which projects shipped recently (last 30d)', 'how many active Stellar devs / how does Stellar's dev activity look', or you need a CSV/Dune-style export of ranked projects. **Not for:** category counts or crowded-vs-underbuilt whitespace → use get_clusters; ecosystem-wide hackathon/funding/status-funnel totals → use analyze_ecosystem; finding a specific project's profile/funding/competitors → use search_projects; ranking individual developers (this ranks PROJECTS, plus an EC macro snapshot — it does not list named devs) → use get_builders.",
+          "operationId": "getLeaderboard",
+          "parameters": [
+            {
+              "description": "Order the project leaderboard. An unrecognized value returns 400 with the valid list.",
+              "in": "query",
+              "name": "sort",
+              "schema": {
+                "default": "activity",
+                "enum": [
+                  "activity",
+                  "stars",
+                  "issues"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "description": "Activity time-window for the leaderboard. An unrecognized value returns 400.",
+              "in": "query",
+              "name": "range",
+              "schema": {
+                "default": "all",
+                "enum": [
+                  "7d",
+                  "30d",
+                  "90d",
+                  "1y",
+                  "all"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "description": "Filter the leaderboard to one project category (e.g. 'Tooling', 'Infrastructure'). An unrecognized value returns 400 with the valid list.",
+              "in": "query",
+              "name": "category",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Response format.",
+              "in": "query",
+              "name": "format",
+              "schema": {
+                "default": "json",
+                "enum": [
+                  "json",
+                  "csv"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/components/parameters/limit"
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Leaderboard + ecosystem stats"
+            }
+          },
+          "summary": "Stellar ecosystem developer activity",
+          "tags": [
+            "Ecosystem"
+          ]
+        }
+      },
+      "/api/partners": {
+        "get": {
+          "description": "Published ecosystem partners (anchors, on/off ramps, infrastructure, tooling, protocols, wallets, audit firms). Each carries partner-claimed facts AND system-verified signals (GitHub activity, on-chain footprint, SCF involvement) plus a `freshness` object — consumers should down-rank or skip partners flagged `freshness.excludeFromMatching`. Fresh partners sort first. Filter by `type` / `sector` / `region` / `accepting` / `q`. **Use when:** 'who should audit my Soroban contract' (`type=audit-firm`), 'find an anchor or on/off-ramp in {region}', or partner discovery for an integration. **Not for:** projects/products that were BUILT → use search_projects; the people who build them → use get_builders; SCF grant briefs → use get_rfps.",
+          "operationId": "getPartners",
+          "parameters": [
+            {
+              "description": "Filter by partner type",
+              "in": "query",
+              "name": "type",
+              "schema": {
+                "enum": [
+                  "anchor",
+                  "on-off-ramp",
+                  "infrastructure",
+                  "tooling",
+                  "protocol",
+                  "wallet",
+                  "audit-firm",
+                  "legal",
+                  "agency",
+                  "other"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "description": "Filter by sector served (defi, payments, rwa, stablecoins, …)",
+              "in": "query",
+              "name": "sector",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Filter by region served (global, latam, africa, …)",
+              "in": "query",
+              "name": "region",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Set to 1 to return only partners currently accepting new clients",
+              "in": "query",
+              "name": "accepting",
+              "schema": {
+                "enum": [
+                  "1"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/components/parameters/q"
+            },
+            {
+              "$ref": "#/components/parameters/limit"
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Partner directory"
+            }
+          },
+          "summary": "List ecosystem partners",
+          "tags": [
+            "Partners"
+          ]
+        }
+      },
+      "/api/partners/assistant": {
+        "post": {
+          "description": "The chat backend for /partners/chat. Send the running message history; the assistant routes intent — a builder describing a need gets real matched partners back in `matches[]` (deterministically searched, never hallucinated; surfaced partners are logged as leads for the weekly partner digest), a company describing itself gets interviewed and `canList:true` signals the client to offer profile extraction. Returns `{reply, matches?, intent, canList}`. 503 `unavailable:true` without AI configured. **Use when:** building a conversational partner-finding UX. **Not for:** one-shot programmatic ranking → POST /api/partners/match; browsing → GET /api/partners.",
+          "operationId": "partnerAssistant",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "messages": {
+                      "description": "Chat turns, oldest first",
+                      "items": {
+                        "properties": {
+                          "content": {
+                            "type": "string"
+                          },
+                          "role": {
+                            "enum": [
+                              "user",
+                              "assistant"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "role",
+                          "content"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "messages"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Assistant reply (+ matches when a need was searched)"
+            },
+            "429": {
+              "description": "Rate limited"
+            },
+            "503": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "AI backend unavailable"
+            }
+          },
+          "summary": "Conversational partner concierge (find OR get listed)",
+          "tags": [
+            "Partners"
+          ],
+          "x-side-effecting": true
+        }
+      },
+      "/api/partners/match": {
+        "post": {
+          "description": "Describe a builder need in plain language (e.g. 'I need a USDC off-ramp in Mexico with SEP-24') and get the published partners RANKED by fit, each with a one-line reason. Grounded: only real published partners are ranked — nothing is invented. Requires the service to have AI configured; returns 503 `unavailable:true` otherwise (fall back to GET /api/partners filters). **Use when:** an agent needs a scored shortlist for a concrete integration need. **Not for:** browsing the full directory → GET /api/partners; interactive human chat → the /partners/chat page (backed by /api/partners/assistant).",
+          "operationId": "matchPartners",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "need": {
+                      "description": "The builder's need, in plain language",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "need"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Ranked matches with reasons"
+            },
+            "429": {
+              "description": "Rate limited"
+            },
+            "503": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "AI backend unavailable — fall back to GET /api/partners"
+            }
+          },
+          "summary": "AI-rank partners against a plain-language need",
+          "tags": [
+            "Partners"
+          ]
+        }
+      },
+      "/api/partners/onboard": {
+        "post": {
+          "description": "Two modes for the get-listed flow. `{mode:'chat', messages}` → interview-style reply for a company describing itself. `{mode:'extract', messages}` → structures the transcript into partner-profile `fields` (tagline, services, sectors, regions, contact…; null where nothing was stated — nothing invented). 503 `unavailable:true` without AI configured. **Use when:** turning a get-listed conversation into structured profile fields (then submit via POST /api/partners/submit-listing). **Not for:** finding partners → /api/partners/match or /assistant.",
+          "operationId": "partnerOnboard",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "messages": {
+                      "items": {
+                        "properties": {
+                          "content": {
+                            "type": "string"
+                          },
+                          "role": {
+                            "enum": [
+                              "user",
+                              "assistant"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "role",
+                          "content"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "mode": {
+                      "enum": [
+                        "chat",
+                        "extract"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "mode",
+                    "messages"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "`{reply}` (chat mode) or `{fields}` (extract mode)"
+            },
+            "429": {
+              "description": "Rate limited"
+            },
+            "503": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "AI backend unavailable"
+            }
+          },
+          "summary": "AI onboarding helpers: interview chat + profile extraction",
+          "tags": [
+            "Partners"
+          ]
+        }
+      },
+      "/api/partners/submit-listing": {
+        "post": {
+          "description": "Submits a company for directory listing. New companies become a DRAFT partner account reviewed by the Stellar Light team before publication (publishing emails the contact an account invite). If the company is already listed, the submission is recorded as a CLAIM REQUEST on the existing profile instead — no duplicates. Returns `{ok:true, mode:'draft'|'claim'}`. Rate-limited; contactEmail becomes the account login. **Use when:** completing a get-listed flow (fields usually come from /api/partners/onboard extract). **Not for:** editing an existing claimed profile → the partner dashboard.",
+          "operationId": "submitPartnerListing",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "contactEmail": {
+                      "description": "Becomes the partner account login",
+                      "format": "email",
+                      "type": "string"
+                    },
+                    "fields": {
+                      "description": "Profile fields (typically the /api/partners/onboard extract output)",
+                      "type": "object"
+                    },
+                    "orgName": {
+                      "maxLength": 120,
+                      "minLength": 2,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "orgName",
+                    "contactEmail"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "`{ok:true, mode:'draft'|'claim'}`"
+            },
+            "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              },
+              "description": "Missing/invalid orgName or contactEmail"
+            },
+            "429": {
+              "description": "Rate limited"
+            }
+          },
+          "summary": "Submit a new-partner listing (or claim an existing one)",
+          "tags": [
+            "Partners"
+          ],
+          "x-side-effecting": true
+        }
+      },
+      "/api/partners/{slug}": {
+        "get": {
+          "description": "Full published profile for one partner by slug, including verified signals + freshness. 404 for unknown or unpublished slugs. **Use when:** you already know a partner's slug (from /api/partners) and need their full public profile — services, sectors, regions, docs, contact, freshness. **Not for:** discovering partners for a need → use /api/partners with ?type/?sector/?region/?q; a project/product rather than a service provider → use /api/projects/search.",
+          "operationId": "getPartner",
+          "parameters": [
+            {
+              "description": "Partner slug",
+              "in": "path",
+              "name": "slug",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Partner profile"
+            },
+            "404": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              },
+              "description": "Partner not found or not published"
+            }
+          },
+          "summary": "Get one partner's full profile",
+          "tags": [
+            "Partners"
+          ]
+        }
+      },
+      "/api/projects/search": {
+        "get": {
+          "description": "Search the curated Stellar **project/product directory** — what's been *built*, by whom, with SCF-funding and live/inactive status (wallets, DEXes, anchors, lending, oracles, RWAs, tooling). Keyword + synonym match (dex→amm/swap, rosca→susu/chama) ranked by curated **prominence**, SDF/community verification, SCF funding, and Live status; falls back to semantic vector search when keyword hits are thin. Each result carries status, scfAwarded/scfTotalAwardedUSD, `builtBy` (the org/entity behind it — 'who built X'), the project's own links, a confidence score, and its top indexed `repos` inline. **Use when:** 'who/what already exists for X', 'has anyone built X', 'is there a live/funded project for X', or you need a project's funding/status/competitors. **Not for:** raw GitHub source repos ranked by code quality → use search_repos; docs, SEPs, audits, how-to/feasibility knowledge → use search_research; category counts or whitespace → use get_clusters. Use for 'who has built / is there a / which projects / give me a directory of' questions about Stellar apps, products, protocols, dApps, teams, companies and startups by category — DeFi, lending, credit, yield, AMM, DEX, swap, NFT marketplace, wallets, anchors and on/off-ramps, RWA and real-world-asset tokenization, stablecoins, payments, oracles, identity, gaming, infrastructure, tooling. Also 'is there a mature X I could integrate', 'who is building Y', projects operating as anchors, and named products (Etherfuse Stablebonds, Soroswap).",
+          "operationId": "searchProjects",
+          "parameters": [
+            {
+              "$ref": "#/components/parameters/q"
+            },
+            {
+              "description": "Filter by category",
+              "in": "query",
+              "name": "category",
+              "schema": {
+                "enum": [
+                  "Infrastructure",
+                  "Tooling",
+                  "User-Facing App",
+                  "Asset",
+                  "Protocol/Contract",
+                  "Anchor",
+                  "Partner Integration"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "description": "Filter to SCF-funded projects only",
+              "in": "query",
+              "name": "scfAwarded",
+              "schema": {
+                "type": "boolean"
+              }
+            },
+            {
+              "$ref": "#/components/parameters/limit"
+            },
+            {
+              "$ref": "#/components/parameters/offset"
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ProjectSearchResponse"
+                  }
+                }
+              },
+              "description": "Project search results"
+            }
+          },
+          "summary": "Search Stellar projects (prior art / competitor lookup)",
+          "tags": [
+            "Projects"
+          ]
+        }
+      },
+      "/api/repos/explain": {
+        "get": {
+          "description": "Get a source-grounded ANSWER to a deep code question about a Stellar repo — not just a link. StellarLight routes the question to the authoritative repo (error/result codes, consensus/SCP, XDR → stellar/stellar-core; Horizon → stellar/go; RPC → stellar/stellar-rpc; SEP reference impls; SDKs), then DeepWiki answers from that repo's internals with source files. **Use when:** 'where is X defined / how does Y work' for a Stellar internal. **Not for:** which repos/projects exist → use /api/repos/search or /api/projects/search; ecosystem docs / SEP text / audits → use /api/research. Degrades gracefully: if DeepWiki is unavailable you still get the routed authoritative repo + its deepWikiUrl. Also for 'how do I / where is / show me the implementation of' deep code questions answered from the authoritative repo's internals.",
+          "operationId": "explainRepo",
+          "parameters": [
+            {
+              "description": "The deep code question (e.g. 'where are transaction result codes defined').",
+              "in": "query",
+              "name": "q",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Optional owner/name to pin the repo (e.g. stellar/stellar-core). Omit to auto-route.",
+              "in": "query",
+              "name": "repo",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "alternateRepos": {
+                        "description": "Other authoritative repos for this concept. Always present ([] when none).",
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "answer": {
+                        "description": "DeepWiki source-grounded answer; null if DeepWiki had no answer (routed repo still returned).",
+                        "nullable": true,
+                        "type": "string"
+                      },
+                      "answered": {
+                        "description": "Always present, including when routedVia is null (then false).",
+                        "type": "boolean"
+                      },
+                      "meta": {
+                        "description": "Provenance: routing/grounding source + generation time.",
+                        "properties": {
+                          "generatedAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "note": {
+                            "type": "string"
+                          },
+                          "source": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "note": {
+                        "description": "Present when routing failed entirely — a hint to use search_repos or pin ?repo=.",
+                        "nullable": true,
+                        "type": "string"
+                      },
+                      "note2": {
+                        "description": "Present when a repo routed but DeepWiki had no answer.",
+                        "nullable": true,
+                        "type": "string"
+                      },
+                      "ok": {
+                        "type": "boolean"
+                      },
+                      "q": {
+                        "type": "string"
+                      },
+                      "repo": {
+                        "nullable": true,
+                        "type": "string"
+                      },
+                      "repoMeta": {
+                        "description": "Freshness/status of the routed repo from the StellarLight index — attach lastCommitAt as the as-of date when citing the answer. Null when the repo isn't indexed or nothing routed.",
+                        "nullable": true,
+                        "properties": {
+                          "isArchived": {
+                            "type": "boolean"
+                          },
+                          "lastCommitAt": {
+                            "format": "date-time",
+                            "nullable": true,
+                            "type": "string"
+                          },
+                          "repoScoreLabel": {
+                            "nullable": true,
+                            "type": "string"
+                          },
+                          "stars": {
+                            "nullable": true,
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "routedVia": {
+                        "description": "How the repo was chosen: explicit | canonical | search. null when nothing routed.",
+                        "nullable": true,
+                        "type": "string"
+                      },
+                      "sources": {
+                        "description": "Always present; fields are null when nothing was routed.",
+                        "properties": {
+                          "deepWikiSearchUrl": {
+                            "nullable": true,
+                            "type": "string"
+                          },
+                          "deepWikiUrl": {
+                            "nullable": true,
+                            "type": "string"
+                          },
+                          "repoUrl": {
+                            "nullable": true,
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Routed repo + DeepWiki-grounded answer"
+            },
+            "400": {
+              "description": "Missing q"
+            }
+          },
+          "summary": "Deep code answer about a Stellar repo (routing × DeepWiki)",
+          "tags": [
+            "Repos"
+          ]
+        }
+      },
+      "/api/repos/search": {
+        "get": {
+          "description": "Search the indexed Stellar ecosystem **GitHub code repos** — the actual source, graded for quality. Indexes GitHub topics + description + language + README, expands tech synonyms (zk→zero-knowledge/snark, oracle→price-feed), and ranks by **repoScore (0-100) = freshness + traction + hackathon/SCF/builder authority**. Filterable by `language` and `minScore`. **Use when:** 'show me the code / repos for X', 'find a Rust/Soroban implementation of X', 'what GitHub repos exist for X', or you need prior-art source to read, fork, or cite. **Not for:** what products/companies exist or their funding/live status → use search_projects; conceptual docs, SEPs, audits, or how-to/feasibility knowledge → use search_research; a known project's metadata (those repos already ride inline on search_projects results). Use for finding CODE: libraries, SDKs, boilerplate, templates, starters, example and reference contracts (SEP-41 token, SEP reference impls), OpenZeppelin Soroban contracts, and testing tooling (fuzz, property-based, unit tests) for Soroban, Rust, and Stellar.",
+          "operationId": "searchRepos",
+          "parameters": [
+            {
+              "$ref": "#/components/parameters/q"
+            },
+            {
+              "description": "Filter by primary language (case-insensitive substring, e.g. 'Rust', 'TypeScript')",
+              "in": "query",
+              "name": "language",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Only return repos with repoScore ≥ this (0–100). Use 40+ for high-signal references.",
+              "in": "query",
+              "name": "minScore",
+              "schema": {
+                "default": 0,
+                "maximum": 100,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            {
+              "$ref": "#/components/parameters/limit"
+            },
+            {
+              "$ref": "#/components/parameters/offset"
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/RepoSearchResponse"
+                  }
+                }
+              },
+              "description": "Repo search results graded by repoScore"
+            }
+          },
+          "summary": "Search the Stellar GitHub repo / code-reference index",
+          "tags": [
+            "Repos"
+          ]
+        }
+      },
+      "/api/research": {
+        "get": {
+          "description": "Semantic ($vectorSearch over Voyage embeddings) search across the Stellar **knowledge corpus** — SDF blog, SCF Handbook, SEPs/standards, dev docs, papers, SCF proposals, security audits, incident reports, and Lumenloop/EC research. Returns the top matching text chunks with source attribution, section, URL, and a confidence score (relevance + freshness + authority); audit chunks add auditor/protocol/severity. Filterable by `source`; falls back to BM25-lite keyword search if vectors are unavailable. **Use when:** 'how does X work', 'is X possible / has X been discussed on Stellar', 'what does the SEP/spec/audit say about X', or you need primary-source citations for a thesis or design question. **Not for:** what products exist or their funding/status → use search_projects; GitHub source code ranked by quality → use search_repos. Use for ecosystem KNOWLEDGE & explainer questions — 'what is / how does / who / why / is it true that…'. Topics: security & risk (bug bounty, vulnerability disclosure, security audit, exploit, hack, incident, post-mortem, oracle manipulation, YieldBlox, Reflector); compliance & regulation (Travel Rule, FATF, KYC, AML, BSA, sanctions, humanitarian aid); funding & governance (SCF v7.0, award tiers, grant programs, Neural Quorum Governance, community voting, quorum); the Stellar Development Foundation (SDF) — mission, legal structure, org; protocol history (Stellar Consensus Protocol, SCP, whitepaper, authors); ecosystem programs (ambassador program, regional chapters, India, bootcamps); and fact-checking or verifying a claim about Stellar.",
+          "operationId": "searchResearch",
+          "parameters": [
+            {
+              "description": "Natural-language search query",
+              "in": "query",
+              "name": "q",
+              "required": true,
+              "schema": {
+                "minLength": 2,
+                "type": "string"
+              }
+            },
+            {
+              "description": "Optional source filter. Use 'audit' for security questions, 'ec-developer-report' for ecosystem stats, 'paper' for foundational protocol questions.",
+              "in": "query",
+              "name": "source",
+              "schema": {
+                "enum": [
+                  "sdf-blog",
+                  "scf-handbook",
+                  "sep",
+                  "dev-docs",
+                  "paper",
+                  "scf-proposal",
+                  "lumenloop",
+                  "lumenloop-research",
+                  "audit",
+                  "incident",
+                  "ec-developer-report"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "description": "Max results (default 8, max 25)",
+              "in": "query",
+              "name": "limit",
+              "schema": {
+                "default": 8,
+                "maximum": 25,
+                "minimum": 1,
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Research results"
+            }
+          },
+          "summary": "Vector search over the Stellar research corpus",
+          "tags": [
+            "Research"
+          ]
+        }
+      },
+      "/api/rfps": {
+        "get": {
+          "description": "The curated set of Stellar **RFPs / sponsor briefs** (mirrors the /ideas page) — open ones are eligible for **SCF grant funding** when winners are picked; closed ones are past rounds kept for context. Each brief has title, description, technicalRequirements, category, quarter, and a quarter-derived status (open|closed). Filter by `q`, `category`, `quarter`, or `status`; response carries open/closed counts + the activeQuarter. **Use when:** 'what RFPs/bounties match my idea', 'what's the SCF funding asking for this quarter', 'is there a sponsor brief for X I could get funded to build'. **Not for:** projects already BUILT/funded → use search_projects; hackathons + their prizes → use get_hackathons; how-to / SCF Handbook / standards knowledge → use search_research. Use for 'what grants or sponsor briefs or bounties are open', 'what does the ecosystem want built', 'where can I get an SCF grant' funding-opportunity questions.",
+          "operationId": "getRfps",
+          "parameters": [
+            {
+              "description": "Open RFPs are fundable for the current SCF quarter; closed are prior rounds",
+              "in": "query",
+              "name": "status",
+              "schema": {
+                "enum": [
+                  "open",
+                  "closed"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "description": "Filter by quarter slug (e.g. 'q1-2026')",
+              "in": "query",
+              "name": "quarter",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/components/parameters/q"
+            },
+            {
+              "description": "Filter by RFP category (e.g. 'defi', 'payments', 'infrastructure'). An unrecognized value returns 400 with the valid category list.",
+              "in": "query",
+              "name": "category",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/components/parameters/limit"
+            },
+            {
+              "$ref": "#/components/parameters/offset"
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "RFP list"
+            }
+          },
+          "summary": "List Stellar RFPs (SCF-funded sponsor briefs)",
+          "tags": [
+            "Funding"
+          ]
+        }
+      },
+      "/api/skills": {
+        "get": {
+          "description": "Catalog of installable Stellar **AI skills/tools** — a unified, filterable list merging SDF's 7 official skills.stellar.org skills, Stellarlight + lumenloop + trusted third-party curated entries, and approved community submissions. Each entry carries an `install` command, `kind` (skill-md | mcp-server | sdk | cli | agent-kit | tool), `source`, repo/homepage/docs, and `meta.counts.bySource`; filter by `source` or `kind`. **Use when:** 'what Stellar AI skills / MCP servers / SDKs can I install', 'is there a skill for soroban / anchors / payments', or matching a builder's idea to the right installable tool. **Not for:** the full SKILL.md text or install details of ONE named skill → use get_skill; built/funded products in the ecosystem (not installable agent skills) → use search_projects; GitHub source repos → use search_repos; docs/standards/how-to knowledge → use search_research.",
+          "operationId": "listSkills",
+          "parameters": [
+            {
+              "description": "Filter by source",
+              "in": "query",
+              "name": "source",
+              "schema": {
+                "enum": [
+                  "sdf",
+                  "stellarlight",
+                  "lumenloop",
+                  "external",
+                  "community"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "description": "Filter by skill kind",
+              "in": "query",
+              "name": "kind",
+              "schema": {
+                "enum": [
+                  "skill-md",
+                  "mcp-server",
+                  "sdk",
+                  "cli",
+                  "agent-kit",
+                  "tool"
+                ],
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Skills catalog"
+            }
+          },
+          "summary": "List AI skills for Stellar builders",
+          "tags": [
+            "Skills"
+          ]
+        }
+      },
+      "/api/skills/{name}": {
+        "get": {
+          "description": "Full detail for ONE skill by slug or display name — returns its metadata plus, for SDF official skills, the complete raw SKILL.md text under `.skill.content` (fetched live from skills.stellar.org); curated/community entries return metadata (and inlined content for Stellarlight's own skills). Accepts either the slug ('agentic-payments') or display name ('Agentic Payments'); 404s with a hint to list /api/skills if unknown. **Use when:** you already know a skill name and need its actual instructions / install command / SKILL.md body to follow or quote. **Not for:** browsing or discovering which skills exist → use list_skills; conceptual docs or standards behind a topic (not a packaged skill) → use search_research.",
+          "operationId": "getSkill",
+          "parameters": [
+            {
+              "description": "Skill slug (e.g. 'soroban', 'stellar-scout', 'rozo-intent-pay')",
+              "in": "path",
+              "name": "name",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Skill detail with content"
+            },
+            "404": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              },
+              "description": "Skill not found"
+            }
+          },
+          "summary": "Get one skill's full content",
+          "tags": [
+            "Skills"
+          ]
+        }
+      },
+      "/api/status": {
+        "get": {
+          "description": "Self-describe / health endpoint for Stellar Scout — returns service ok + version, `generatedAt`, per-source freshness & size (`sources[]`: projects, hackathons, builders, repos, ecosystemStats, sdfSkills, each with count + lastUpdatedAt + notes), recent `usage` stats, and an enumeration of every available `/api/*` endpoint. Cheap (count-only queries, no params). **Use when:** you need to know how fresh/large the data is before answering ('as of when?', 'how many projects are indexed?'), discover what endpoints exist, or sanity-check the API is up. **Not for:** the actual project/repo/research DATA itself → call the matching search tool (search_projects, search_repos, search_research); ecosystem developer-activity macro stats → use get_leaderboard.",
+          "operationId": "getStatus",
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/StatusResponse"
+                  }
+                }
+              },
+              "description": "Service status"
+            }
+          },
+          "summary": "Service health + endpoint enumeration",
+          "tags": [
+            "Discovery"
+          ]
+        }
+      }
+    },
+    "servers": [
+      {
+        "description": "Production",
+        "url": "https://stellarlight.xyz"
+      }
+    ],
+    "tags": [
+      {
+        "description": "Service health + endpoint enumeration",
+        "name": "Discovery"
+      },
+      {
+        "description": "Curated Stellar project directory",
+        "name": "Projects"
+      },
+      {
+        "description": "Indexed and scored Stellar GitHub repos + code-question answering",
+        "name": "Repos"
+      },
+      {
+        "description": "Stellar Hacks events + DoraHacks feed",
+        "name": "Hackathons"
+      },
+      {
+        "description": "Stellar Passport builder profiles",
+        "name": "Builders"
+      },
+      {
+        "description": "Ecosystem partner directory (anchors, ramps, infra, tooling) with verified signals + freshness",
+        "name": "Partners"
+      },
+      {
+        "description": "SCF history + open RFPs",
+        "name": "Funding"
+      },
+      {
+        "description": "Vector search over the 4,541-chunk corpus (SEPs, audits, papers, dev docs, etc.)",
+        "name": "Research"
+      },
+      {
+        "description": "AI skill marketplace (SKILL.md / MCP / SDK / CLI catalog)",
+        "name": "Skills"
+      },
+      {
+        "description": "Cross-event rollups + topic clusters",
+        "name": "Analytics"
+      },
+      {
+        "description": "Developer activity + ecosystem dev stats",
+        "name": "Ecosystem"
+      },
+      {
+        "description": "Curator feedback loop",
+        "name": "Feedback"
+      }
+    ]
+  },
+  "openapiVersion": "1.3.2",
+  "operationCount": 24,
+  "service": "stellar-light",
+  "source": {
+    "auth": "none (keyless, read-only)",
+    "base": "https://stellarlight.xyz",
+    "changelog": "https://stellarlight.xyz/api/changelog",
+    "openapi": "https://stellarlight.xyz/api/openapi.json",
+    "research": "research/services/stellar-light.md",
+    "status": "https://stellarlight.xyz/api/status"
+  },
+  "status": {
+    "apiVersion": "1.3.2",
+    "docs": "https://stellarlight.xyz/scout",
+    "endpoints": [
+      "/api/status",
+      "/api/changelog",
+      "/api/leaderboard",
+      "/api/hackathons",
+      "/api/hackathons/{slug}",
+      "/api/hackathons/compare",
+      "/api/analyze",
+      "/api/clusters",
+      "/api/builders",
+      "/api/projects/search",
+      "/api/repos/search",
+      "/api/repos/explain",
+      "/api/rfps",
+      "/api/research",
+      "/api/feedback",
+      "/api/skills",
+      "/api/skills/{name}",
+      "/api/partners",
+      "/api/partners/{slug}",
+      "/api/partners/match",
+      "/api/partners/assistant",
+      "/api/partners/onboard",
+      "/api/partners/submit-listing"
+    ],
+    "ok": true,
+    "service": "Stellar Scout",
+    "skill": "https://stellarlight.xyz/skills/stellar-scout.md",
+    "sources": [
+      {
+        "count": 920,
+        "lastUpdatedAt": "2026-07-02T20:41:55.368Z",
+        "name": "projects"
+      },
+      {
+        "count": 0,
+        "lastUpdatedAt": null,
+        "name": "hackathons",
+        "notes": "Curated DB collection only (may be 0). /api/hackathons additionally merges live DoraHacks-sourced events — see its meta.counts for the served total."
+      },
+      {
+        "count": 112,
+        "lastUpdatedAt": "2026-07-03T06:00:07.327Z",
+        "name": "builders",
+        "notes": "Synced from Stellar Passport — small and growing dataset"
+      },
+      {
+        "count": 2413,
+        "lastUpdatedAt": "2026-07-03T01:53:26.551Z",
+        "name": "repos",
+        "notes": "Indexed-and-scored Stellar GitHub repos (powers /api/repos/search)"
+      },
+      {
+        "count": 1,
+        "lastUpdatedAt": "2026-07-02T08:51:19.333706+00:00",
+        "name": "ecosystemStats",
+        "notes": "Electric Capital snapshot, as of 2026-06-23"
+      },
+      {
+        "count": 7,
+        "lastUpdatedAt": null,
+        "name": "sdfSkills",
+        "notes": "Proxied from skills.stellar.org (server-cached 24h). Live freshness shown on the upstream site."
+      }
+    ],
+    "version": "scout-1.0.0"
+  },
+  "statusNote": "volatile fields (generatedAt, usage, dataSources counts/dates/notes) stripped by scripts/refresh-inventory.mjs"
+}

@@ -1,0 +1,575 @@
+{
+  "spec": "stellar-docs-search/1",
+  "service": "stellarDocs",
+  "title": "Stellar Developer Docs search (Algolia DocSearch index)",
+  "description": "Intent-named search operations over the Stellar developer documentation at developers.stellar.org (docs + protocol/developers meeting notes), served by the Algolia DocSearch index 'crawler_Stellar Docs - Docusaurus'. Authored spec-as-data in the spirit of Cloudflare codemode's OpenAPI connector: each operation declares {id, description, params} for the unified catalog plus an `algolia` block recording the exact query mapping for the execute adapter. Every operation was verified live against the index (see per-operation `verified`).",
+  "authoredAt": "2026-07-02T14:03:39Z",
+  "authoredBy": "Lane D (todo 796); design rationale in research/services/stellar-docs-spec-design.md; index research in research/services/stellar-docs-algolia.md",
+
+  "backend": {
+    "type": "algolia",
+    "applicationIdEnv": "ALGOLIA_APPLICATION_ID",
+    "apiKeyEnv": "ALGOLIA_API_KEY",
+    "index": "crawler_Stellar Docs - Docusaurus",
+    "endpoint": "POST /1/indexes/crawler_Stellar%20Docs%20-%20Docusaurus/query",
+    "hosts": [
+      "{ALGOLIA_APPLICATION_ID}-dsn.algolia.net",
+      "{ALGOLIA_APPLICATION_ID}-1.algolianet.com",
+      "{ALGOLIA_APPLICATION_ID}-2.algolianet.com",
+      "{ALGOLIA_APPLICATION_ID}-3.algolianet.com"
+    ],
+    "retry": "network/5xx only, escalating timeout, fallback hosts in order; never retry 4xx; treat 429 as back-off, not host-retry",
+    "auth": "algolia-key",
+    "cost": "free",
+    "baseParams": {
+      "analytics": false,
+      "attributesToRetrieve": ["url", "url_without_anchor", "anchor", "hierarchy", "type"],
+      "attributesToSnippet": ["content:20"],
+      "highlightPreTag": "**",
+      "highlightPostTag": "**"
+    },
+    "constraints": {
+      "facetableAttributes": ["type", "lang", "language", "version", "docusaurus_tag"],
+      "usefulFacets": ["type", "docusaurus_tag"],
+      "hierarchyLvl0NotFacetable": "facetFilters on hierarchy.lvl0 silently return nbHits: 0 (no error). Category restriction must happen adapter-side by url_without_anchor prefix (see per-op `clientFilter`).",
+      "urlNotFilterable": "url / url_without_anchor are not facets; any URL-scoped operation over-fetches and filters client-side.",
+      "apiReferencePagesNotIndexed": "Auto-generated per-method RPC reference pages (e.g. /docs/data/apis/rpc/api-reference/methods/getLedgerEntries) and per-endpoint Horizon reference pages are NOT in the index. Only hand-written structure/errors/admin-guide pages are. Method-specific how-tos live under /docs/build/guides/rpc and /docs/build/guides/transactions.",
+      "distinct": "distinct:true on url by default — hits are deduped per URL+anchor; nbHits counts distinct groups. distinct:0 reveals raw per-section records.",
+      "paginationLimitedTo": 1000,
+      "zeroHitSemantics": "removeWordsIfNoResults: allOptional — zero hits means definitely not in corpus, but nonzero hits are not necessarily a good match; judge the top hit's snippet/hierarchy.",
+      "advancedSyntax": "quoted \"exact phrases\" and -exclusions work directly in `query`; queryType prefixLast matches the final word as a prefix."
+    }
+  },
+
+  "catalogHints": {
+    "kind": "operation",
+    "auth": "algolia-key",
+    "cost": "free",
+    "provenanceSource": "https://{ALGOLIA_APPLICATION_ID}-dsn.algolia.net/1/indexes/crawler_Stellar%20Docs%20-%20Docusaurus/settings",
+    "note": "Wave 2: each operation below maps 1:1 to a CatalogEntry — id/description/params(inputSchema) verbatim; transport from backend + operation.algolia; taxonomy block may additionally be used to enrich descriptions or emit per-category entries."
+  },
+
+  "taxonomy": {
+    "fetchedAt": "2026-07-02T14:03:39Z",
+    "method": "empty-query facet counts (distinct:0 and default) + full dump of all 631 type:lvl1 (page-title) records with hierarchy.lvl0/lvl1 + url, aggregated by URL path. hierarchy.lvl0 is the sidebar section title (repeats across areas, e.g. 'Admin Guide'), NOT the top-nav category — the stable category taxonomy is the URL path prefix.",
+    "totals": {
+      "rawRecords": 12867,
+      "distinctUrlGroups": 3808,
+      "pageTitleRecords_type_lvl1": 631
+    },
+    "facets": {
+      "type": { "content": 6415, "lvl2": 2953, "lvl3": 1520, "lvl5": 925, "lvl1": 631, "lvl4": 423 },
+      "docusaurus_tag": {
+        "docs-default-current": 11784,
+        "default": 349,
+        "blog_tags_posts": 312,
+        "blog_posts_list": 305,
+        "blog_authors_posts": 113,
+        "blog_tags_list": 4
+      },
+      "lang": { "en": 12867 },
+      "language": { "en": 12867 },
+      "version": { "current": 11784 }
+    },
+    "categories": [
+      {
+        "path": "/docs/build",
+        "pages": 189,
+        "subtrees": {
+          "guides": { "pages": 97, "topics": { "transactions": 17, "testing": 13, "conventions": 9, "freighter": 8, "dapps": 7, "archival": 6, "storage": 6, "conversions": 5, "rpc": 4, "events": 4, "basics": 4, "contract-accounts": 4, "tokens": 4, "auth": 3, "fees": 2 } },
+          "apps": { "pages": 42, "topics": { "example-application-tutorial": 15, "wallet": 10, "guestbook": 7, "ingest-sdk": 3, "swift-payment-app": 1, "zk": 1, "privacy": 1, "dapp-frontend": 1, "application-design-considerations": 1, "overview": 1 } },
+          "smart-contracts": { "pages": 34, "topics": { "example-contracts": 25, "getting-started": 7, "overview": 1 } },
+          "security-docs": { "pages": 7 },
+          "agentic-payments": { "pages": 7, "note": "x402 on Stellar, MPP on Stellar" },
+          "building-with-ai": { "pages": 1 }
+        }
+      },
+      {
+        "path": "/docs/data",
+        "pages": 131,
+        "subtrees": {
+          "apis": { "pages": 65, "topics": { "horizon": 49, "rpc": 14, "migrate-from-horizon-to-rpc": 1 }, "note": "horizon/rpc coverage = structure (pagination, streaming, rate limiting, XDR, JSON-RPC, data formats), errors (HTTP status codes, transaction/operation result codes), admin guides, providers. Per-method/per-endpoint generated reference pages are NOT indexed." },
+          "indexers": { "pages": 32, "topics": { "build-your-own": 31 }, "note": "Galexie, ingest SDK, processors, token transfer processor, custom network ingestion pipelines" },
+          "analytics": { "pages": 31, "topics": { "hubble": 29 }, "note": "Hubble BigQuery data warehouse: analyst guide, developer guide, data curation, visualization" },
+          "oracles": { "pages": 2 }
+        }
+      },
+      {
+        "path": "/docs/tools",
+        "pages": 88,
+        "subtrees": {
+          "cli": { "pages": 24, "note": "Stellar CLI: cookbook (deploy-contract etc.), install, plugins" },
+          "lab": { "pages": 20, "note": "Stellar Lab: transaction builder, API explorer (RPC methods, Horizon endpoints), view XDR, saved" },
+          "quickstart": { "pages": 19, "note": "Quickstart docker image: run a local network / local Stellar node" },
+          "developer-tools": { "pages": 13 },
+          "sdks": { "pages": 4, "note": "client SDKs list (JavaScript stellar-sdk, Python, and other language SDKs)" },
+          "infra-tools": { "pages": 2 },
+          "ramps": { "pages": 2 },
+          "scaffold-stellar": { "pages": 1 },
+          "openzeppelin-contracts": { "pages": 1 },
+          "openzeppelin-relayer": { "pages": 1 }
+        }
+      },
+      {
+        "path": "/docs/learn",
+        "pages": 58,
+        "subtrees": {
+          "fundamentals": { "pages": 45, "topics": { "contract-development": 23, "stellar-data-structures": 6, "transactions": 5, "data-format": 3, "anchors": 1, "stellar-consensus-protocol": 1, "lumens": 1, "stellar-ecosystem-proposals": 1, "fees-resource-limits-metering": 1, "liquidity-on-stellar-sdex-liquidity-pools": 1, "stellar-stack": 1 } },
+          "migrate": { "pages": 8, "note": "migrate from EVM networks / other chains" },
+          "interactive": { "pages": 4 },
+          "glossary": { "pages": 1 }
+        }
+      },
+      {
+        "path": "/docs/platforms",
+        "pages": 51,
+        "subtrees": {
+          "anchor-platform": { "pages": 28, "note": "admin guide, SEP guides: hosted deposits & withdrawals (SEP-24), programmatic deposits & withdrawals (SEP-6), cross-border payments (SEP-31), events" },
+          "stellar-disbursement-platform": { "pages": 22, "note": "admin guide, user interface, bulk payouts" }
+        }
+      },
+      {
+        "path": "/docs/validators",
+        "pages": 16,
+        "subtrees": { "admin-guide": { "pages": 14 }, "tier-1-orgs": { "pages": 1 } }
+      },
+      {
+        "path": "/docs/tokens",
+        "pages": 9,
+        "subtrees": {
+          "pages": {
+            "note": "one page each: anatomy-of-an-asset, how-to-issue-an-asset, control-asset-access, publishing-asset-info, quickstart, stellar-asset-contract, token-interface, cross-chain-transfers, index"
+          }
+        }
+      },
+      {
+        "path": "/docs/networks",
+        "pages": 2,
+        "subtrees": { "resource-limits-fees": { "pages": 1 } }
+      },
+      {
+        "path": "/meetings",
+        "pages": 85,
+        "subtrees": { "2024": { "pages": 37 }, "2025": { "pages": 25 }, "2026": { "pages": 10 }, "tags": { "pages": 7 }, "authors": { "pages": 5 }, "archive": { "pages": 1 } },
+        "note": "protocol & developers meeting notes; docusaurus blog plugin — the docusaurus_tag facet values default/blog_* select this slice server-side"
+      }
+    ],
+    "lvl0TopValues": {
+      "note": "hierarchy.lvl0 = sidebar section title of the page (searchable, NOT facetable). Top values across the 631 page-title records:",
+      "values": { "Documentation": 111, "Admin Guide": 58, "Example Contracts": 25, "Stellar CLI": 24, "Transactions": 17, "Operation-Specific Result Codes": 14, "More Developer Tools": 13, "Contract Testing": 13, "Getting Started": 10, "Smart Contracts": 10, "Structure": 10, "Build a Wallet with the Wallet SDK": 10, "Example Usages": 9, "Contract Conventions": 9, "Build a Payment App with the JS SDK": 9, "User Interface": 8, "Core Concepts": 8, "Freighter Wallet": 8, "Hosted Deposits and Withdrawals (SEP-24)": 7, "EVM Networks": 7, "Analyst Guide": 7, "Dapp Development": 7, "Build Applications": 7, "Build a Passkey Powered Guestbook Dapp": 7, "Stellar Data Structures": 6, "Contract Storage": 6, "State Archival": 6, "Anchor Integration": 6, "RPC": 6 }
+    }
+  },
+
+  "operations": [
+    {
+      "id": "stellarDocs.search_docs",
+      "name": "search_docs",
+      "description": "Full-text keyword search across ALL official Stellar developer documentation on developers.stellar.org — every docs page under /docs/build, /docs/learn, /docs/tokens, /docs/data, /docs/tools, /docs/platforms, /docs/validators and /docs/networks. Use for any question about Stellar or Soroban: how do I write, test and deploy a smart contract; how do I issue an asset or create a token, add a trustline, use clawback or authorization flags for regulated assets; how does the protocol work (ledger, accounts, transactions, operations, fees, consensus); which SEP or CAP defines a standard; Stellar RPC and Horizon APIs; the Stellar CLI, Lab, Quickstart and official SDKs; anchor deposits, withdrawals and KYC; building wallets and dapps; testnet, futurenet and mainnet networks; stellar-core and protocol versions. Returns doc sections with URL, breadcrumb hierarchy (lvl0 > lvl1 > ...) and a highlighted content snippet. Zero hits = topic not in the docs corpus; nonzero hits still need judging by snippet.",
+      "params": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["query"],
+        "properties": {
+          "query": { "type": "string", "description": "Keyword query. advancedSyntax is on: quoted \"exact phrases\" and -exclusions work directly. The final word is prefix-matched (queryType prefixLast)." },
+          "hitsPerPage": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5 },
+          "page": { "type": "integer", "minimum": 0, "default": 0, "description": "page * hitsPerPage beyond 1000 records is unreachable (paginationLimitedTo)." },
+          "includeContent": { "type": "boolean", "default": false, "description": "Add full `content` to attributesToRetrieve (can be multi-KB per hit)." },
+          "includeMeetings": { "type": "boolean", "default": false, "description": "Also search the /meetings meeting-notes slice (drops the docs-only facet filter)." }
+        }
+      },
+      "returns": "Array of hits: { url, url_without_anchor, anchor, breadcrumb (flattened hierarchy), type, snippet, content? } plus { nbHits, nbPages, page }.",
+      "algolia": {
+        "paramMap": { "query": "query", "hitsPerPage": "hitsPerPage", "page": "page" },
+        "fixedParams": { "facetFilters": [["docusaurus_tag:docs-default-current"]] },
+        "conditionalParams": {
+          "includeMeetings=true": { "facetFilters": null },
+          "includeContent=true": { "attributesToRetrieve": ["url", "url_without_anchor", "anchor", "hierarchy", "type", "content"] }
+        }
+      },
+      "verified": {
+        "checkedAt": "2026-07-02",
+        "query": "establish a trustline",
+        "params": { "facetFilters": [["docusaurus_tag:docs-default-current"]], "hitsPerPage": 5 },
+        "nbHits": 23,
+        "topHit": "https://developers.stellar.org/docs/tokens/how-to-issue-an-asset"
+      }
+    },
+    {
+      "id": "stellarDocs.search_doc_titles",
+      "name": "search_doc_titles",
+      "description": "Title-only search over Stellar developer docs page and section headings (hierarchy levels 1-3). The fastest way to find the one canonical docs page for a topic when you roughly know what it is called — e.g. 'State Archival', 'Stellar Consensus Protocol', 'How to Issue an Asset', 'Stellar Asset Contract', 'Migrate from Horizon to RPC', 'Anchor Platform', 'Stellar CLI'. Skips body text so results are page-level and precise instead of content-fuzzy; follow up with get_doc_page_sections or includeContent on search_docs to read the page.",
+      "params": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["query"],
+        "properties": {
+          "query": { "type": "string", "description": "Expected page/section title words, e.g. 'state archival' or 'issue asset'." },
+          "hitsPerPage": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5 },
+          "includeMeetings": { "type": "boolean", "default": false }
+        }
+      },
+      "returns": "Array of hits (page/heading level): { url, url_without_anchor, breadcrumb, type } plus { nbHits }.",
+      "algolia": {
+        "paramMap": { "query": "query", "hitsPerPage": "hitsPerPage" },
+        "fixedParams": {
+          "restrictSearchableAttributes": ["hierarchy.lvl1", "hierarchy.lvl2", "hierarchy.lvl3"],
+          "facetFilters": [["docusaurus_tag:docs-default-current"]]
+        },
+        "conditionalParams": { "includeMeetings=true": { "facetFilters": null } }
+      },
+      "verified": {
+        "checkedAt": "2026-07-02",
+        "query": "state archival",
+        "params": { "restrictSearchableAttributes": ["hierarchy.lvl1", "hierarchy.lvl2", "hierarchy.lvl3"], "facetFilters": [["docusaurus_tag:docs-default-current"]] },
+        "nbHits": 47,
+        "topHit": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival"
+      }
+    },
+    {
+      "id": "stellarDocs.search_docs_in_category",
+      "name": "search_docs_in_category",
+      "description": "Keyword search restricted to ONE top-level category of the Stellar developer docs. Categories (measured page counts): build (189 — smart contracts, guides, apps/dapps, security, agentic payments), data (131 — Stellar RPC, Horizon, Hubble analytics, indexers/Galexie, oracles), tools (88 — Stellar CLI, Lab, Quickstart, SDKs, developer tools), learn (58 — protocol fundamentals: ledgers, accounts, transactions, operations, fees, consensus, lumens XLM, anchors, SEPs, migrate from EVM), platforms (51 — Anchor Platform, Stellar Disbursement Platform), validators (16 — running a stellar-core validator node), tokens (9 — issuing assets, asset anatomy, access control, Stellar Asset Contract, token interface), networks (2 — resource limits and fees), meetings (85 — protocol & developers meeting notes). Use when a question clearly belongs to one area and general search returns cross-area noise.",
+      "params": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["query", "category"],
+        "properties": {
+          "query": { "type": "string" },
+          "category": {
+            "type": "string",
+            "enum": ["build", "learn", "tokens", "data", "tools", "platforms", "validators", "networks", "meetings"],
+            "description": "Top-level docs area; maps to the /docs/<category> URL prefix (meetings → the docusaurus_tag blog slice)."
+          },
+          "hitsPerPage": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5, "description": "Number of category-filtered hits to return." },
+          "includeContent": { "type": "boolean", "default": false }
+        }
+      },
+      "returns": "Array of hits limited to the category: { url, url_without_anchor, anchor, breadcrumb, type, snippet } plus counts { rawNbHits, filteredCount }.",
+      "algolia": {
+        "paramMap": { "query": "query" },
+        "fixedParams": { "facetFilters": [["docusaurus_tag:docs-default-current"]], "hitsPerPage": 100 },
+        "conditionalParams": {
+          "category=meetings": { "facetFilters": [["docusaurus_tag:-docs-default-current"]], "clientFilter": null }
+        },
+        "clientFilter": {
+          "field": "url_without_anchor",
+          "prefixesAnyOf": ["https://developers.stellar.org/docs/{category}/", "https://developers.stellar.org/docs/{category}"],
+          "why": "hierarchy.lvl0 is not facetable and URL is not a facet — the adapter over-fetches (hitsPerPage 100) and keeps hits whose URL starts with the category prefix, then truncates to the requested hitsPerPage."
+        }
+      },
+      "verified": {
+        "checkedAt": "2026-07-02",
+        "query": "clawback",
+        "params": { "category": "tokens", "overfetch": 100 },
+        "nbHits": 110,
+        "filteredHits": 7,
+        "topHit": "https://developers.stellar.org/docs/tokens/control-asset-access",
+        "also": { "query": "deploy contract testnet", "category": "build", "nbHits": 30, "filteredHitsInFirst30": 18, "topHit": "https://developers.stellar.org/docs/build/guides/testing/ledger-snapshot-testing" }
+      }
+    },
+    {
+      "id": "stellarDocs.get_doc_page_sections",
+      "name": "get_doc_page_sections",
+      "description": "Fetch all indexed sections (heading anchors + content) of a single Stellar developer docs page identified by its URL path, e.g. /docs/build/smart-contracts/getting-started/storing-data or /docs/learn/fundamentals/stellar-consensus-protocol. Use after a search hit to read a whole page section by section instead of a single snippet — the docs equivalent of opening the page. Returns every section in on-page order with anchor, heading breadcrumb and full content text.",
+      "params": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path"],
+        "properties": {
+          "path": { "type": "string", "pattern": "^/(docs|meetings)/", "description": "URL path of the page on developers.stellar.org, no domain, no anchor — e.g. /docs/build/smart-contracts/getting-started/storing-data. Use url_without_anchor from a previous search hit." },
+          "includeContent": { "type": "boolean", "default": true, "description": "Include each section's full content text (default true — this op exists to read pages)." }
+        }
+      },
+      "returns": "Array of sections of the one requested page, ordered by on-page position: { url, anchor, breadcrumb, type, content }.",
+      "algolia": {
+        "derivedQuery": "tokens of the path's last segment, hyphens split — e.g. 'storing data' from .../storing-data",
+        "paramMap": {},
+        "fixedParams": { "distinct": 0, "hitsPerPage": 100, "facetFilters": [["docusaurus_tag:docs-default-current"]], "attributesToRetrieve": ["url", "url_without_anchor", "anchor", "hierarchy", "type", "content"] },
+        "clientFilter": {
+          "field": "url_without_anchor",
+          "equals": "https://developers.stellar.org{path}",
+          "why": "URL is not a facet; the adapter queries with the derived title words (distinct disabled to get every section record) and keeps only records of the requested page, sorted by weight.position when retrieved."
+        },
+        "fallback": "if the derived query returns no records for the page, retry with the last two path segments as the query; zero matches after that = path not in the index."
+      },
+      "verified": {
+        "checkedAt": "2026-07-02",
+        "query": "storing data (derived from path /docs/build/smart-contracts/getting-started/storing-data)",
+        "params": { "distinct": 0, "hitsPerPage": 100 },
+        "filteredHits": 21,
+        "note": "21 section records of the target page recovered from 100 fetched",
+        "topHit": "https://developers.stellar.org/docs/build/smart-contracts/getting-started/storing-data#summary"
+      }
+    },
+    {
+      "id": "stellarDocs.search_soroban_contract_docs",
+      "name": "search_soroban_contract_docs",
+      "description": "Search Stellar docs about Soroban smart contract development in Rust: getting started (setup, hello world, storing data, deploy to testnet), 25 example contracts, contract storage (persistent vs temporary vs instance, TTL, state archival, restoring archived entries), authorization and custom accounts (__check_auth, contract accounts), cross-contract calls, events (emit and read back), errors and debugging, testing guides (unit tests, mutation, fuzzing, ledger snapshots), conventions (no Rust std, no floating point, wasm build), transaction simulation (simulateTransaction), fees and metering, deploying and invoking with the Stellar CLI, and contract-development fundamentals (environment, host functions, versioning across protocol releases). Covers /docs/build/smart-contracts, /docs/build/guides and /docs/learn/fundamentals/contract-development (~170 pages).",
+      "params": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["query"],
+        "properties": {
+          "query": { "type": "string" },
+          "hitsPerPage": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5 },
+          "includeContent": { "type": "boolean", "default": false }
+        }
+      },
+      "returns": "Array of contract-development hits: { url, url_without_anchor, anchor, breadcrumb, type, snippet }.",
+      "algolia": {
+        "paramMap": { "query": "query" },
+        "fixedParams": { "facetFilters": [["docusaurus_tag:docs-default-current"]], "hitsPerPage": 100 },
+        "clientFilter": {
+          "field": "url_without_anchor",
+          "prefixesAnyOf": [
+            "https://developers.stellar.org/docs/build/smart-contracts",
+            "https://developers.stellar.org/docs/build/guides/",
+            "https://developers.stellar.org/docs/learn/fundamentals/contract-development/",
+            "https://developers.stellar.org/docs/tools/cli/"
+          ]
+        }
+      },
+      "verified": {
+        "checkedAt": "2026-07-02",
+        "query": "persistent storage ttl archived",
+        "nbHits": 20,
+        "filteredHits": 20,
+        "topHit": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival"
+      }
+    },
+    {
+      "id": "stellarDocs.search_asset_token_docs",
+      "name": "search_asset_token_docs",
+      "description": "Search Stellar docs about issuing and managing assets and tokens on the network: how to issue an asset (issuer account, distribution account), anatomy of an asset (asset code + issuer, classic Stellar assets), trustlines and changeTrust, controlling asset access with authorization flags (auth required, auth revocable, auth immutable, clawback enabled — regulated assets and compliance), publishing asset info in stellar.toml (SEP-1), the Stellar Asset Contract (SAC) that exposes classic assets like USDC to Soroban smart contracts, deploying the SAC for an existing asset, the token interface standard (SEP-41 / CAP-46-6) for custom contract tokens, stablecoins, and cross-chain transfers. Covers /docs/tokens and /docs/build/guides/tokens.",
+      "params": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["query"],
+        "properties": {
+          "query": { "type": "string" },
+          "hitsPerPage": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5 },
+          "includeContent": { "type": "boolean", "default": false }
+        }
+      },
+      "returns": "Array of asset/token hits: { url, url_without_anchor, anchor, breadcrumb, type, snippet }.",
+      "algolia": {
+        "paramMap": { "query": "query" },
+        "fixedParams": { "facetFilters": [["docusaurus_tag:docs-default-current"]], "hitsPerPage": 100 },
+        "clientFilter": {
+          "field": "url_without_anchor",
+          "prefixesAnyOf": [
+            "https://developers.stellar.org/docs/tokens",
+            "https://developers.stellar.org/docs/build/guides/tokens/"
+          ]
+        }
+      },
+      "verified": {
+        "checkedAt": "2026-07-02",
+        "query": "issue an asset",
+        "nbHits": 93,
+        "filteredHits": 24,
+        "topHit": "https://developers.stellar.org/docs/tokens/how-to-issue-an-asset"
+      }
+    },
+    {
+      "id": "stellarDocs.search_protocol_concepts_docs",
+      "name": "search_protocol_concepts_docs",
+      "description": "Search Stellar docs explaining core protocol concepts and network fundamentals: ledgers, accounts (balances, base reserve, sequence numbers, signers, thresholds, multisig), transactions and operations (every classic operation type, path payments, claimable balances, sponsored reserves), fees, resource limits and metering, lumens (XLM), the Stellar Consensus Protocol (SCP), Stellar data structures and the XDR data format, liquidity on Stellar (SDEX order books vs AMM liquidity pools), what anchors are, the Stellar Ecosystem Proposals (SEPs) overview, the Stellar stack (stellar-core, Horizon, Stellar RPC and how protocol versions relate), networks (mainnet/pubnet, testnet, futurenet) and network resource limits, migrating from EVM chains like Ethereum, plus interactive learning and the glossary. Covers /docs/learn and /docs/networks (60 pages).",
+      "params": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["query"],
+        "properties": {
+          "query": { "type": "string" },
+          "hitsPerPage": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5 },
+          "includeContent": { "type": "boolean", "default": false }
+        }
+      },
+      "returns": "Array of fundamentals hits: { url, url_without_anchor, anchor, breadcrumb, type, snippet }.",
+      "algolia": {
+        "paramMap": { "query": "query" },
+        "fixedParams": { "facetFilters": [["docusaurus_tag:docs-default-current"]], "hitsPerPage": 100 },
+        "clientFilter": {
+          "field": "url_without_anchor",
+          "prefixesAnyOf": [
+            "https://developers.stellar.org/docs/learn/",
+            "https://developers.stellar.org/docs/networks"
+          ]
+        }
+      },
+      "verified": {
+        "checkedAt": "2026-07-02",
+        "query": "stellar consensus protocol",
+        "nbHits": 26,
+        "filteredHitsInFirst30": 20,
+        "topHit": "https://developers.stellar.org/docs/learn/fundamentals/stellar-consensus-protocol"
+      }
+    },
+    {
+      "id": "stellarDocs.search_rpc_horizon_data_docs",
+      "name": "search_rpc_horizon_data_docs",
+      "description": "Search Stellar docs about querying chain data: Stellar RPC (JSON-RPC API structure, pagination, data formats, running your own RPC node admin guide, RPC providers, guides for getLedgerEntries and simulateTransaction from JavaScript or Python), the Horizon REST API (structure: pagination cursors, streaming, rate limiting, response format, XDR; errors: HTTP status codes, transaction and operation result codes; admin guide: ingestion, scaling, running Horizon), migrating from Horizon to RPC, Hubble — the BigQuery analytics data warehouse for full historical data (analyst guide, history vs state tables), building your own indexer with Galexie and the ingest SDK, and oracles. Covers /docs/data and /docs/build/guides/rpc (~135 pages). Note: auto-generated per-RPC-method and per-Horizon-endpoint reference pages are NOT in the search index — only structure/errors/admin pages and method guides are.",
+      "params": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["query"],
+        "properties": {
+          "query": { "type": "string" },
+          "hitsPerPage": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5 },
+          "includeContent": { "type": "boolean", "default": false }
+        }
+      },
+      "returns": "Array of data/API hits: { url, url_without_anchor, anchor, breadcrumb, type, snippet }.",
+      "algolia": {
+        "paramMap": { "query": "query" },
+        "fixedParams": { "facetFilters": [["docusaurus_tag:docs-default-current"]], "hitsPerPage": 100 },
+        "clientFilter": {
+          "field": "url_without_anchor",
+          "prefixesAnyOf": [
+            "https://developers.stellar.org/docs/data",
+            "https://developers.stellar.org/docs/build/guides/rpc/"
+          ]
+        }
+      },
+      "verified": {
+        "checkedAt": "2026-07-02",
+        "query": "getLedgerEntries",
+        "nbHits": 11,
+        "filteredHits": 6,
+        "topHit": "https://developers.stellar.org/docs/data/analytics/hubble/analyst-guide/queries-for-horizon-like-data",
+        "also": { "query": "horizon pagination cursor", "nbHits": 1, "filteredHits": 1, "topHit": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/structure/pagination/page-arguments" }
+      }
+    },
+    {
+      "id": "stellarDocs.search_anchor_sep_docs",
+      "name": "search_anchor_sep_docs",
+      "description": "Search Stellar docs about anchors and implementing SEP standards: what an anchor is (on/off-ramp connecting Stellar to banking rails and fiat), the Anchor Platform admin guide and SEP guides — hosted deposits and withdrawals (SEP-24 interactive flow), programmatic deposits and withdrawals (SEP-6), cross-border payments (SEP-31), web authentication (SEP-10), KYC customer info (SEP-12), quotes (SEP-38), the stellar.toml info file (SEP-1) — plus event handling/callbacks, and the Stellar Disbursement Platform (SDP) for bulk payouts and disbursements (admin guide, user interface). Covers /docs/platforms/anchor-platform, /docs/platforms/stellar-disbursement-platform and the anchors fundamentals page (52 pages).",
+      "params": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["query"],
+        "properties": {
+          "query": { "type": "string" },
+          "hitsPerPage": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5 },
+          "includeContent": { "type": "boolean", "default": false }
+        }
+      },
+      "returns": "Array of anchor/SEP hits: { url, url_without_anchor, anchor, breadcrumb, type, snippet }.",
+      "algolia": {
+        "paramMap": { "query": "query" },
+        "fixedParams": { "facetFilters": [["docusaurus_tag:docs-default-current"]], "hitsPerPage": 100 },
+        "clientFilter": {
+          "field": "url_without_anchor",
+          "prefixesAnyOf": [
+            "https://developers.stellar.org/docs/platforms",
+            "https://developers.stellar.org/docs/learn/fundamentals/anchors",
+            "https://developers.stellar.org/docs/learn/fundamentals/stellar-ecosystem-proposals"
+          ]
+        }
+      },
+      "verified": {
+        "checkedAt": "2026-07-02",
+        "query": "SEP-24 hosted deposit withdrawal",
+        "nbHits": 96,
+        "filteredHitsInFirst30": 17,
+        "topHit": "https://developers.stellar.org/docs/learn/fundamentals/anchors"
+      }
+    },
+    {
+      "id": "stellarDocs.search_sdk_cli_tools_docs",
+      "name": "search_sdk_cli_tools_docs",
+      "description": "Search Stellar docs about official developer tools and SDKs: the client SDKs list (JavaScript/TypeScript stellar-sdk npm package, Python, and the other language SDKs — which SDK to install for building Stellar and Soroban apps), the Stellar CLI (stellar contract deploy / invoke cookbook, key management, network configuration — the command sequence from new contract project to deployed contract), Stellar Lab (build, sign, simulate and submit transactions in the browser; API explorer for RPC methods and Horizon endpoints; view and decode XDR), the Quickstart docker image (run a full local Stellar network for development and CI), scaffold-stellar, OpenZeppelin contracts and relayer, ramps and infrastructure tools. Covers /docs/tools (88 pages).",
+      "params": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["query"],
+        "properties": {
+          "query": { "type": "string" },
+          "hitsPerPage": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5 },
+          "includeContent": { "type": "boolean", "default": false }
+        }
+      },
+      "returns": "Array of tools/SDK hits: { url, url_without_anchor, anchor, breadcrumb, type, snippet }.",
+      "algolia": {
+        "paramMap": { "query": "query" },
+        "fixedParams": { "facetFilters": [["docusaurus_tag:docs-default-current"]], "hitsPerPage": 100 },
+        "clientFilter": {
+          "field": "url_without_anchor",
+          "prefixesAnyOf": ["https://developers.stellar.org/docs/tools"]
+        }
+      },
+      "verified": {
+        "checkedAt": "2026-07-02",
+        "query": "stellar cli contract deploy",
+        "nbHits": 68,
+        "filteredHitsInFirst30": 14,
+        "topHit": "https://developers.stellar.org/docs/tools/cli/cookbook/deploy-contract",
+        "also": { "query": "python sdk", "nbHits": 19, "filteredHitsInFirst30": 2, "topHit": "https://developers.stellar.org/docs/tools/sdks/client-sdks" }
+      }
+    },
+    {
+      "id": "stellarDocs.search_wallet_dapp_docs",
+      "name": "search_wallet_dapp_docs",
+      "description": "Search Stellar docs about building applications, wallets and dapps: the Build a Wallet with the Wallet SDK tutorial series (including anchor SEP-24 deposit/withdrawal integration), Build a Payment App with the JS SDK tutorial, the passkey-powered guestbook dapp (smart wallets, WebAuthn passkeys, secp256r1 signature verification), dapp frontend guide and dapp development guides (initialization, state archival handling in dapps, working with deployed contracts), Freighter browser-extension wallet integration guides, the Swift payment app, payment tracking with the ingest SDK, ZK (zero-knowledge) apps, privacy considerations and application design considerations. Covers /docs/build/apps, /docs/build/guides/dapps and /docs/build/guides/freighter (~57 pages).",
+      "params": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["query"],
+        "properties": {
+          "query": { "type": "string" },
+          "hitsPerPage": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5 },
+          "includeContent": { "type": "boolean", "default": false }
+        }
+      },
+      "returns": "Array of app/wallet/dapp hits: { url, url_without_anchor, anchor, breadcrumb, type, snippet }.",
+      "algolia": {
+        "paramMap": { "query": "query" },
+        "fixedParams": { "facetFilters": [["docusaurus_tag:docs-default-current"]], "hitsPerPage": 100 },
+        "clientFilter": {
+          "field": "url_without_anchor",
+          "prefixesAnyOf": [
+            "https://developers.stellar.org/docs/build/apps",
+            "https://developers.stellar.org/docs/build/guides/dapps",
+            "https://developers.stellar.org/docs/build/guides/freighter"
+          ]
+        }
+      },
+      "verified": {
+        "checkedAt": "2026-07-02",
+        "query": "build a wallet",
+        "nbHits": 123,
+        "filteredHitsInFirst30": 30,
+        "topHit": "https://developers.stellar.org/docs/build/apps/wallet/stellar"
+      }
+    },
+    {
+      "id": "stellarDocs.search_meeting_notes",
+      "name": "search_meeting_notes",
+      "description": "Search the Stellar protocol & developers meeting notes published at developers.stellar.org/meetings (2024–2026): CAP (Core Advancement Proposal) discussions, protocol upgrade votes and release planning for stellar-core, SEP proposals and ecosystem standards debates, validator coordination. This is the non-docs slice of the index, selected server-side via the docusaurus_tag facet. Useful for history questions — when or why something was decided, which protocol version introduced a change — that regular docs pages do not answer.",
+      "params": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["query"],
+        "properties": {
+          "query": { "type": "string" },
+          "hitsPerPage": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5 },
+          "includeContent": { "type": "boolean", "default": false }
+        }
+      },
+      "returns": "Array of meeting-note hits: { url, url_without_anchor, anchor, breadcrumb, type, snippet }.",
+      "algolia": {
+        "paramMap": { "query": "query", "hitsPerPage": "hitsPerPage" },
+        "fixedParams": { "facetFilters": [["docusaurus_tag:-docs-default-current"]] },
+        "note": "facet negation verified: every hit is under /meetings."
+      },
+      "verified": {
+        "checkedAt": "2026-07-02",
+        "query": "protocol upgrade vote",
+        "params": { "facetFilters": [["docusaurus_tag:-docs-default-current"]] },
+        "nbHits": 10,
+        "allHitsUnderMeetings": true,
+        "topHit": "https://developers.stellar.org/meetings/2026/01/22"
+      }
+    }
+  ]
+}

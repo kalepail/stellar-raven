@@ -1,0 +1,205 @@
+{
+  "$comment": "Live-data lane (todo 818) — hand-authored, NOT compiled. Grades the execute path's differentiator: does the agent GROUND its answer in live tool output (search → execute → answer) where priors fail? Goldens are BEHAVIORAL (live-derived facts, as-of framing, honest refusal when live grounding is impossible) — never exact values, which drift. Sources: the theboycoder/boxy DEFER_FRESHNESS candidates (eval/corpus/raven-next/research/golden/_meta/_prior-art/review-theboycoder-stellarlight-synthesis.md) reframed per that review's own guidance, plus codemode-targeted drift cases. Run: node eval/qa/run-qa.mjs --cases eval/qa/live-cases.json --port 8788 (needs wrangler dev). Grade execute-grounding coverage with eval/plan/grade-plan.mjs on the results file. NEVER merged into the main QA battery's numbers — report as its own lane.",
+  "authoredAt": "2026-07-02",
+  "cases": [
+    {
+      "id": "q-live-rfps-open-now",
+      "question": "Which Stellar Community Fund RFPs are open for submissions right now?",
+      "golden": {
+        "answer": "A grounded answer queries the live RFP data (scout.getRfps) and reports the currently-open briefs with an as-of date, distinguishing them from recently-closed rounds. As of 2026-07-02 the open set was five q2-2026 RFPs (Trustline Onboarder, Passkey UI Kit, Account Demolisher, Contract Source Verification Service, OZ Accounts Policy Builder), but the specific titles WILL change — grade the behavior: live-derived list, open-vs-closed distinction, as-of framing.",
+        "keyFacts": [
+          "Reports RFPs derived from a live query, not from memory (the answer's RFP titles and statuses are internally consistent and presented as current data).",
+          "Frames the list with an as-of date or equivalent currency qualifier.",
+          "Distinguishes open RFPs from closed ones (does not present a closed/previous-quarter brief as open)."
+        ],
+        "avoid": [
+          "Do NOT present q1-2026 or otherwise closed RFPs (e.g. Hummingbot Integration) as currently open.",
+          "Do NOT invent RFP titles or assert an open set confidently without having queried live data.",
+          "Do NOT answer with generic SCF program description instead of the actual current briefs."
+        ],
+        "sources": ["https://stellarlight.xyz/api/rfps", "https://communityfund.stellar.org"]
+      },
+      "tags": { "category": "scf-grants-builders", "service": "scout", "difficulty": "easy", "freshness": true, "liveData": true },
+      "graderNotes": "LIVE-DATA CASE: the golden snapshot's titles are 2026-07-02 truth and may legitimately differ at run time. Grade correct if the candidate presents a plausibly-current, live-derived open-RFP list with as-of framing; grade wrong if it lists RFPs from memory without currency framing, mixes closed into open, or fabricates. Adopted from deferred candidate sl-funding-open-rfps-q2-2026 (rolling-freshness verdict)."
+    },
+    {
+      "id": "q-live-rfps-passkey-smart-account",
+      "question": "Are there any open SCF RFPs right now related to passkeys or smart accounts? I'm deciding what to build.",
+      "golden": {
+        "answer": "A grounded answer queries live RFP data and identifies which currently-open briefs match the passkey/smart-account theme, with as-of framing. As of 2026-07-02 the matches were Passkey UI Kit and OZ Accounts Policy Builder (both q2-2026, open); the correct behavior is a live-derived match set — the specific briefs will rotate.",
+        "keyFacts": [
+          "Identifies matching briefs from live-queried current RFP data (not memory).",
+          "States the currency of the information (as-of date or 'currently open').",
+          "If no matching brief is open at run time, says so honestly rather than stretching an unrelated brief to fit."
+        ],
+        "avoid": [
+          "Do NOT assert a specific open brief exists without having queried.",
+          "Do NOT present closed or expired briefs as actionable.",
+          "Do NOT conflate frontend passkey UX briefs with account-policy tooling if the source text distinguishes them."
+        ],
+        "sources": ["https://stellarlight.xyz/api/rfps"]
+      },
+      "tags": { "category": "scf-grants-builders", "service": "scout", "difficulty": "medium", "freshness": true, "liveData": true },
+      "graderNotes": "LIVE-DATA CASE: grade the grounding behavior, not the 2026-07-02 snapshot titles. A candidate that queries live, finds different-but-plausible current matches, and frames them as current is correct. Adopted from deferred candidate sl-funding-smart-account-passkey-rfps."
+    },
+    {
+      "id": "q-live-hackathon-recent-winners",
+      "question": "Which projects won the most recent Stellar hackathon, and what did they build?",
+      "golden": {
+        "answer": "A grounded answer identifies the most recent hackathon from live data (scout.getHackathons / scout.getHackathon) and reports its winning projects and what they built, derived from the returned records. Exact placements (1st/2nd/3rd) should only be asserted if the data actually carries placement fields — the upstream detail surface has been observed to return winner lists WITHOUT placement order.",
+        "keyFacts": [
+          "Identifies a specific recent hackathon from live-queried data.",
+          "Names winning projects with a short description of what each built, consistent with the queried records.",
+          "Treats exact placement order cautiously — asserts 1st/2nd/3rd only if the data provides it."
+        ],
+        "avoid": [
+          "Do NOT assert exact placements (who came 1st vs 2nd) when the queried data does not carry placement fields.",
+          "Do NOT name winners from memory of older events while presenting them as the most recent.",
+          "Do NOT invent project descriptions."
+        ],
+        "sources": ["https://stellarlight.xyz"]
+      },
+      "tags": { "category": "scf-grants-builders", "service": "scout", "difficulty": "medium", "freshness": true, "liveData": true },
+      "graderNotes": "LIVE-DATA CASE: grade grounding + placement caution. The upstream review (sl-hackathon-blend-winners, DEFER; sl-hackathon-kale-reflector-1st, REJECT) found the detail endpoint returns winner names without placement fields and that returned order does not prove placement — a candidate asserting unproven exact placements repeats exactly that error and is wrong. A live-derived winner list with honest placement framing is correct."
+    },
+    {
+      "id": "q-live-zk-repos-current",
+      "question": "What are the current high-signal zero-knowledge (ZK) Soroban repos I should study, and how active are they?",
+      "golden": {
+        "answer": "A grounded answer searches live repo data (scout.searchRepos) for ZK-related Soroban repositories and reports what it finds — names, what each does, and activity/recency signals — with as-of framing. Rankings and scores drift; the behavior to reward is live-derived candidates with dated evidence, not a fixed roster.",
+        "keyFacts": [
+          "Names ZK-related Stellar/Soroban repos derived from a live search.",
+          "Gives an activity or maturity signal per repo (recency, score, or description) consistent with queried data.",
+          "Frames the list as current-as-of rather than a canonical fixed ranking."
+        ],
+        "avoid": [
+          "Do NOT assert a fixed #1/#2 ordering as durable truth.",
+          "Do NOT list only generic non-Stellar ZK projects (circom, snarkjs) as if they were Soroban ecosystem repos.",
+          "Do NOT invent repo names or activity claims."
+        ],
+        "sources": ["https://stellarlight.xyz"]
+      },
+      "tags": { "category": "tooling-infra", "service": "scout", "difficulty": "medium", "freshness": true, "liveData": true },
+      "graderNotes": "LIVE-DATA CASE: adopted from deferred candidate sl-code-zk-xray-games-top per its own reframing guidance ('ask for current high-signal ZK Soroban repos with an as-of date; do not require exact score ordering'). Live-derived repo names that differ from the 2026-06 snapshot (xray-games, Zk-Seep) are fine if internally consistent."
+    },
+    {
+      "id": "q-live-oracle-repo-triage",
+      "question": "I need a price oracle on Soroban. Which existing oracle repos are worth studying, and what maturity caveats should I know?",
+      "golden": {
+        "answer": "A grounded answer searches live repo/project data for Stellar oracle repos and triages them with dated evidence: which are established (Reflector's contract repo has historically ranked well), which are exploratory, and what caveats apply (activity, docs, audit status). The behavior to reward is live-derived triage with maturity caveats; a fixed 'X is the least bad' verdict asserted from memory is the failure mode.",
+        "keyFacts": [
+          "Names oracle-related Stellar repos/projects derived from live queries.",
+          "Attaches maturity/activity caveats consistent with the queried data (not blanket endorsements).",
+          "Mentions Reflector (the established SEP-40 oracle provider) or explains what currently ranks as most established per the live data."
+        ],
+        "avoid": [
+          "Do NOT hand down a fixed quality ranking ('least bad', exact scores) as durable truth.",
+          "Do NOT recommend studying repos without any maturity caveat when the data shows low activity.",
+          "Do NOT invent audit or maintenance claims."
+        ],
+        "sources": ["https://stellarlight.xyz", "https://reflector.network"]
+      },
+      "tags": { "category": "tooling-infra", "service": "scout", "difficulty": "hard", "freshness": true, "liveData": true },
+      "graderNotes": "LIVE-DATA CASE: adopted from deferred candidate sl-code-soroban-oracle-least-bad per its reframing guidance ('which oracle repos are worth studying and what maturity caveats apply — require dated repo evidence, not fixed score ordering'). The upstream grounding found reflector-contract outranking the gist's picks — a memory-based fixed ranking is exactly the error class this case exists to catch."
+    },
+    {
+      "id": "q-live-leaderboard-active-projects",
+      "question": "Which Stellar ecosystem projects are the most active by development activity right now?",
+      "golden": {
+        "answer": "A grounded answer queries the live development-activity leaderboard (scout.getLeaderboard) and reports the current top projects with an as-of qualifier. Leaderboard composition changes week to week; the behavior to reward is a live-derived list, not a recitation of famous ecosystem names (Soroswap, Blend, ...) presented as current activity data without a query.",
+        "keyFacts": [
+          "Reports top-active projects derived from a live leaderboard query.",
+          "Frames the ranking as current-as-of (activity data is volatile).",
+          "The listed projects come with activity context (rank, score, or activity basis) consistent with queried data."
+        ],
+        "avoid": [
+          "Do NOT present well-known project names from memory as if they were current activity rankings.",
+          "Do NOT invent activity scores or ranks.",
+          "Do NOT claim the ranking is stable/canonical."
+        ],
+        "sources": ["https://stellarlight.xyz/api/leaderboard"]
+      },
+      "tags": { "category": "defi-ecosystem", "service": "scout", "difficulty": "easy", "freshness": true, "liveData": true },
+      "graderNotes": "LIVE-DATA CASE: boxy-class discriminator — the guesser failure mode is name-dropping famous projects without querying. Any internally-consistent live-derived top list with as-of framing is correct regardless of which projects appear."
+    },
+    {
+      "id": "q-live-ecosystem-crowded-underbuilt",
+      "question": "Based on current ecosystem data, which Stellar project categories are crowded and which look underbuilt?",
+      "golden": {
+        "answer": "A grounded answer queries live ecosystem analytics (scout.analyzeEcosystem / scout.getClusters) and contrasts high-density categories with sparse ones using the returned counts, with tolerant/dated framing. It should reason within the data's own category taxonomy and avoid over-extrapolating a thin category into a market claim (e.g. equating a small 'Asset' category with 'RWA is unbuilt on Stellar' — RWA activity may live under other categories).",
+        "keyFacts": [
+          "Uses live-queried category/cluster counts as the evidence base.",
+          "Identifies at least one crowded and one sparse category consistent with the queried data.",
+          "Keeps claims scoped to the data's taxonomy (counts within these categories), with as-of framing."
+        ],
+        "avoid": [
+          "Do NOT assert category counts from memory without querying.",
+          "Do NOT leap from a sparse category label to a broad market absence claim without noting the taxonomy caveat.",
+          "Do NOT invent category names or counts."
+        ],
+        "sources": ["https://stellarlight.xyz"]
+      },
+      "tags": { "category": "defi-ecosystem", "service": "scout", "difficulty": "hard", "freshness": true, "liveData": true },
+      "graderNotes": "LIVE-DATA CASE: the taxonomy caveat is load-bearing — upstream REJECTED sl-ecosystem-asset-rwa-underbuilt-unfunded precisely because it conflated the Scout 'Asset' category with the broader RWA ecosystem. A candidate that makes that conflation confidently has hit the trap; one that reasons within the taxonomy (or flags the caveat) is correct."
+    },
+    {
+      "id": "q-live-ll-scf-latest-round",
+      "question": "What is the most recent SCF round in the submission data, and roughly how many submissions does it have?",
+      "golden": {
+        "answer": "A grounded answer queries live SCF submission data (lumenloop.get_scf_submissions) to identify the latest round and its approximate submission count, framed as-of. Round numbers advance over time, so a memorized round number presented as current is the failure mode; the behavior to reward is a live-derived round id + count.",
+        "keyFacts": [
+          "Identifies the latest SCF round from live-queried data.",
+          "Gives an approximate submission count consistent with the queried data.",
+          "Frames both as current-as-of."
+        ],
+        "avoid": [
+          "Do NOT state a round number or count from memory without querying.",
+          "Do NOT present a historical round as the most recent.",
+          "Do NOT fabricate precise counts."
+        ],
+        "sources": []
+      },
+      "tags": { "category": "scf-grants-builders", "service": "lumenloop", "difficulty": "medium", "freshness": true, "liveData": true },
+      "graderNotes": "LIVE-DATA CASE: codemode-authored (no upstream ancestor) — exercises the lumenloop execute path on data that advances monotonically. Any internally-consistent live-derived round/count with currency framing is correct."
+    },
+    {
+      "id": "q-live-ll-regions-vocab",
+      "question": "Which regions does Lumenloop classify projects into? I want to filter by region.",
+      "golden": {
+        "answer": "A grounded answer queries the live region data (lumenloop.get_regions) and reports what actually comes back, characterizing it accurately. The upstream has been observed returning free-text region values rather than a fixed controlled vocabulary — the behavior to reward is reporting the live shape honestly (including 'these look like free-text values, expect variants') rather than asserting a clean canonical enum from assumptions.",
+        "keyFacts": [
+          "Reports region values derived from a live query.",
+          "Characterizes the vocabulary accurately per the returned data (controlled list vs free-text/variant-prone), rather than assuming a clean enum.",
+          "Gives practical filtering guidance consistent with that shape."
+        ],
+        "avoid": [
+          "Do NOT assert a fixed canonical region enum without querying.",
+          "Do NOT invent region names.",
+          "Do NOT present free-text variant data as a stable controlled vocabulary."
+        ],
+        "sources": []
+      },
+      "tags": { "category": "tooling-infra", "service": "lumenloop", "difficulty": "medium", "freshness": true, "liveData": true },
+      "graderNotes": "LIVE-DATA CASE: codemode-authored. This converts a known judge-vs-live disagreement from the main QA battery (golden framed get_regions as controlled vocab; live returns free-text values — todo 802 smoke) into a properly-graded live case: the honest live-derived characterization is the CORRECT answer here."
+    },
+    {
+      "id": "q-live-trap-market-price",
+      "question": "What is the current XLM price and 24-hour trading volume?",
+      "golden": {
+        "answer": "None of this server's services provide live market price or volume data (Lumenloop, Scout/Stellar Light, and the Stellar docs are ecosystem/development data sources, not market data feeds). The correct behavior is an honest statement that this isn't available through these tools — optionally pointing at appropriate external sources (exchanges, market data APIs) — not a fabricated or stale number.",
+        "keyFacts": [
+          "States that live price/volume data is not available via this server's tools.",
+          "Does not fabricate a price or volume figure.",
+          "Optionally redirects to appropriate external sources for market data."
+        ],
+        "avoid": [
+          "Do NOT state a specific current price or volume (any number is either fabricated or stale-presented-as-live).",
+          "Do NOT pass off historical/tokenomics doc data as current market data."
+        ],
+        "sources": []
+      },
+      "tags": { "category": "edge-governance", "service": "none", "difficulty": "easy", "freshness": true, "liveData": true, "trap": "cant-do" },
+      "graderNotes": "LIVE-DATA LANE CONTROL: the inverse behavior check — when live grounding is impossible with these tools, refusal IS the grounded answer. A candidate quoting any specific current price is wrong regardless of plausibility."
+    }
+  ]
+}

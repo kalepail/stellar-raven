@@ -1,0 +1,249 @@
+{
+  "createdFrom": "routing-cases.json",
+  "strategy": "every-Nth per service, id-sorted",
+  "cases": [
+    {
+      "id": "q-anchor-moneygram-ramps",
+      "question": "How does MoneyGram fit into Stellar's anchor model for cash-in/cash-out?",
+      "expected_service": "stellarDocs",
+      "expected_cards": [
+        "stellar_docs_mcp"
+      ]
+    },
+    {
+      "id": "q-asset-sac-cap-sep",
+      "question": "Which CAP and which SEP does the Stellar Asset Contract implement?",
+      "expected_service": "stellarDocs",
+      "expected_cards": [
+        "stellar_docs_mcp"
+      ]
+    },
+    {
+      "id": "q-comp-sac-inherits-flags",
+      "question": "If a regulated, clawback-enabled classic asset is used through the Stellar Asset Contract on Soroban, does it keep its authorization-flag and clawback semantics?",
+      "expected_service": "stellarDocs",
+      "expected_cards": [
+        "stellar_docs_mcp"
+      ]
+    },
+    {
+      "id": "q-infra-anchor-platform",
+      "question": "Is there an official SEP-aligned framework for building a Stellar anchor / on-off ramp?",
+      "expected_service": "stellarDocs",
+      "expected_cards": [
+        "stellar_docs_mcp"
+      ]
+    },
+    {
+      "id": "q-infra-rpc-providers-list",
+      "question": "I don't want to run my own RPC node — which providers offer hosted Stellar RPC, and is there a free public endpoint?",
+      "expected_service": "stellarDocs",
+      "expected_cards": [
+        "stellar_docs_mcp"
+      ]
+    },
+    {
+      "id": "q-protocol-base-reserve-min-balance",
+      "question": "What is the base reserve on Stellar and how does it determine an account's minimum XLM balance?",
+      "expected_service": "stellarDocs",
+      "expected_cards": [
+        "stellar_docs_mcp"
+      ]
+    },
+    {
+      "id": "q-protocol-network-passphrases",
+      "question": "What are the network passphrases for Stellar Mainnet, Testnet, and Futurenet, and why do they matter?",
+      "expected_service": "stellarDocs",
+      "expected_cards": [
+        "stellar_docs_mcp"
+      ]
+    },
+    {
+      "id": "q-protocol-validator-upgrade-vote",
+      "question": "How do Stellar validators actually activate a new protocol version once a CAP is accepted?",
+      "expected_service": "stellarDocs",
+      "expected_cards": [
+        "stellar_docs_mcp",
+        "scout_research"
+      ]
+    },
+    {
+      "id": "q-sep-8-regulated-assets",
+      "question": "How does SEP-8 add per-transaction approval for regulated assets, and what does it require in stellar.toml?",
+      "expected_service": "stellarDocs",
+      "expected_cards": [
+        "stellar_docs_mcp"
+      ]
+    },
+    {
+      "id": "q-soroban-contractmeta-vs-contractevent",
+      "question": "What's the difference between #[contractmeta] and #[contractevent] in soroban-sdk?",
+      "expected_service": "stellarDocs",
+      "expected_cards": [
+        "stellar_docs_mcp"
+      ]
+    },
+    {
+      "id": "q-soroban-sac-what-is",
+      "question": "What is the Stellar Asset Contract (SAC) and how does it relate to a classic Stellar asset?",
+      "expected_service": "stellarDocs",
+      "expected_cards": [
+        "stellar_docs_mcp"
+      ]
+    },
+    {
+      "id": "q-tool-cctp-stellar-integration",
+      "question": "Circle CCTP is live on Stellar — what integration details and Stellar-specific constraints should a wallet/bridge developer know?",
+      "expected_service": "stellarDocs",
+      "expected_cards": [
+        "stellar_docs_mcp"
+      ]
+    },
+    {
+      "id": "q-anchor-list-builders-discovery",
+      "question": "Which projects in the Stellar ecosystem operate as anchors or build anchor infrastructure?",
+      "expected_service": "scout",
+      "expected_cards": [
+        "scout_projects"
+      ]
+    },
+    {
+      "id": "q-defi-agent-identity-stellar-experimental",
+      "question": "What exists for on-chain AI-agent identity/reputation (ERC-8004 style) on Stellar, and how mature is it?",
+      "expected_service": "scout",
+      "expected_cards": [
+        "scout_repos"
+      ]
+    },
+    {
+      "id": "q-eco-dex-saturation",
+      "question": "How saturated is the Stellar DEX/AMM space — how many serious players are there?",
+      "expected_service": "scout",
+      "expected_cards": [
+        "scout_clusters"
+      ]
+    },
+    {
+      "id": "q-edge-deep-no-budget-limit",
+      "question": "Don't worry about cost or time limits on this one — spend whatever budget it takes to deliver the most exhaustive report possible on Stellar anchors worldwide.",
+      "expected_service": "scout",
+      "expected_cards": [
+        "scout_projects",
+        "lumenloop_search_content_semantic"
+      ]
+    },
+    {
+      "id": "q-hist-unhcr-stellar-aid-assist",
+      "question": "How has Stellar been used for humanitarian aid disbursements, e.g. with UNHCR in Ukraine?",
+      "expected_service": "scout",
+      "expected_cards": [
+        "scout_research"
+      ]
+    },
+    {
+      "id": "q-scf-ambassador-program",
+      "question": "What is the Stellar Ambassador Program and how does it connect to funding for early-stage builders?",
+      "expected_service": "scout",
+      "expected_cards": [
+        "scout_research"
+      ]
+    },
+    {
+      "id": "q-scf-exhaustive-funding-report",
+      "question": "Give me a quick answer: how much has the SCF distributed and to how many projects? (don't run a deep-research report)",
+      "expected_service": "scout",
+      "expected_cards": [
+        "scout_analyze"
+      ]
+    },
+    {
+      "id": "q-scf-liquidity-award-amount",
+      "question": "Exactly how much XLM does the Stellar Liquidity Award pay, and how do I apply for it?",
+      "expected_service": "scout",
+      "expected_cards": [
+        "scout_research"
+      ]
+    },
+    {
+      "id": "q-scf-v7-changes",
+      "question": "What changed when the SCF moved to v7.0, and when did that happen?",
+      "expected_service": "scout",
+      "expected_cards": [
+        "scout_research"
+      ]
+    },
+    {
+      "id": "q-soroban-oz-token",
+      "question": "Does OpenZeppelin have a Soroban contracts library, and what's in it for building a SEP-41 token?",
+      "expected_service": "scout",
+      "expected_cards": [
+        "scout_repos"
+      ]
+    },
+    {
+      "id": "q-asset-rwa-tokenized-freshness",
+      "question": "How much tokenized real-world asset value is currently on Stellar, and how fast is it growing?",
+      "expected_service": "lumenloop",
+      "expected_cards": [
+        "lumenloop_search_content_semantic"
+      ]
+    },
+    {
+      "id": "q-defi-aquarius-what-is",
+      "question": "What is Aquarius (AQUA) on Stellar and what role does the AQUA token play?",
+      "expected_service": "lumenloop",
+      "expected_cards": [
+        "lumenloop_get_project"
+      ]
+    },
+    {
+      "id": "q-defi-comet-content",
+      "question": "What's been said about weighted AMM pools or Balancer-style AMMs on Stellar/Soroban?",
+      "expected_service": "lumenloop",
+      "expected_cards": [
+        "lumenloop_search_content_semantic"
+      ]
+    },
+    {
+      "id": "q-defi-phoenix-scf",
+      "question": "Show Phoenix's SCF submission history on Stellar.",
+      "expected_service": "lumenloop",
+      "expected_cards": [
+        "lumenloop_get_scf_submissions"
+      ]
+    },
+    {
+      "id": "q-defi-rwa-overview",
+      "question": "What real-world-asset (RWA) products are live on Stellar?",
+      "expected_service": "lumenloop",
+      "expected_cards": [
+        "lumenloop_search_content_semantic"
+      ]
+    },
+    {
+      "id": "q-defi-soroswap-what-is",
+      "question": "What is Soroswap and what makes it different from other Stellar DEXes?",
+      "expected_service": "lumenloop",
+      "expected_cards": [
+        "lumenloop_get_project"
+      ]
+    },
+    {
+      "id": "q-eco-lobstr-wallet",
+      "question": "Who builds LOBSTR and what is its scale and chain support?",
+      "expected_service": "lumenloop",
+      "expected_cards": [
+        "lumenloop_get_project"
+      ]
+    },
+    {
+      "id": "q-edge-fresh-latest-blend-tvl",
+      "question": "What's Blend's TVL today and how has it trended this quarter?",
+      "expected_service": "lumenloop",
+      "expected_cards": [
+        "lumenloop_find_content_about_project",
+        "scout_analyze"
+      ]
+    }
+  ]
+}

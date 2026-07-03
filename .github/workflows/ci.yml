@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # Server-side backstop for the pre-commit hook (scripts/scan-secrets.mjs).
+  # Runs on every push/PR regardless of GitHub plan — unlike GitHub push
+  # protection, which needs paid Secret Protection on private repos. Once this
+  # repo is public, GitHub's native secret scanning (+ .github/secret_scanning.yml)
+  # layers on top of this. Zero-dep: no npm install, full history checkout so it
+  # can scan what actually landed.
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: scan tracked files for secrets
+        run: node scripts/scan-secrets.mjs --tree
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # Node 24: build-catalog.mjs relies on native TS type-stripping, stable
+          # since Node 23.6 (see scripts/build-catalog.mjs). Do not drop below 24.
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # wrangler types derives the Env interface from wrangler.jsonc bindings
+      # PLUS .dev.vars names; without the stub, Env loses the secret members and
+      # tsc fails. Names only — never real values.
+      - name: stub .dev.vars for type generation
+        run: printf 'LUMENLOOP_API_KEY=x\nALGOLIA_APPLICATION_ID=x\nALGOLIA_API_KEY=x\nWORKOS_CLIENT_ID=x\nWORKOS_API_KEY=x\nMCP_ADMIN_TOKEN=x\nMCP_SERVER_SECRET=x\nDEV_ALLOW_UNAUTHENTICATED=x\n' > .dev.vars
+      - run: npm run types
+      - run: npm run check
+      - run: npm test
+      # Deterministic eval gates (eval/EVALS.md): the grader's own fixture suite
+      # (eval/lib/*.mjs is not covered by vitest) + the routing gate — legacy 338
+      # within ±1% of eval/gates.json, skills lane top-1 at/above its floor.
+      # Both offline: searchCatalog over the committed manifest, no live services.
+      - run: npm run eval:selftest
+      - run: npm run eval:routing -- --gate
+      # Generated artifacts must match their sources exactly (they are rebuilt,
+      # never hand-edited). Every build here is offline: catalog/spec/skills read
+      # inventory/, specs/stellar-docs.json, and ecosystem-skills/; the eval
+      # compiles read eval/corpus/ (committed in-repo); op-classes reads the
+      # freshly-rebuilt catalog/manifest.json (so it runs after build-catalog).
+      - name: generated artifacts in sync
+        run: |
+          node scripts/build-catalog.mjs
+          npm run spec:build
+          npm run skills:bundle
+          node scripts/check-mirrors.mjs
+          node eval/compile-routing.mjs
+          node eval/qa/compile-qa.mjs
+          node eval/plan/build-op-classes.mjs
+          if ! git diff --exit-code --stat -- catalog specs src/skills/bundle.json eval/routing-cases.json eval/qa/cases.json eval/plan/op-classes.json; then
+            echo "::error::generated artifacts out of sync — run the build scripts locally and commit the result"
+            exit 1
+          fi

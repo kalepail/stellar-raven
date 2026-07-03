@@ -1,0 +1,138 @@
+name: Refresh (live drift check)
+
+# Re-fetches the live service surfaces (Lumenloop /v1/tools + /v1/me union,
+# Stellar Light /api/openapi.json, docs config) and rebuilds the derived
+# artifacts. Any diff = upstream drift → an issue is opened/updated and the run
+# fails so drift is impossible to miss. Diffing op-id sets is the signal —
+# info.version is NOT (Scout has shipped new ops without bumping it).
+#
+# Also checks the ecosystem-skills/ mirror for upstream drift (pinned commit
+# SHAs / API version ref / stellarlight catalog) via check-skills-drift.mjs —
+# detection only; the mirror is never auto-synced from CI.
+
+on:
+  schedule:
+    - cron: "17 6 * * *" # daily 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # Node 24: build-catalog.mjs relies on native TS type-stripping, stable
+          # since Node 23.6 (see scripts/build-catalog.mjs). Do not drop below 24.
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # refresh-inventory.mjs reads .env at the repo root; the runner is
+      # ephemeral and .env is never uploaded anywhere.
+      - name: materialize .env from repo secrets
+        run: |
+          {
+            echo "LUMENLOOP_API_KEY=${{ secrets.LUMENLOOP_API_KEY }}"
+            echo "ALGOLIA_APPLICATION_ID=${{ secrets.ALGOLIA_APPLICATION_ID }}"
+            echo "ALGOLIA_API_KEY=${{ secrets.ALGOLIA_API_KEY }}"
+          } > .env
+      - run: node scripts/refresh-inventory.mjs
+      - run: node scripts/build-catalog.mjs
+      - run: npm run spec:build
+      - run: node scripts/check-mirrors.mjs
+      # Detection only — never runs ecosystem-skills/update.sh from CI (mirrored
+      # skills are prompt input; upstream edits go through human review). Reads
+      # LUMENLOOP_API_KEY from the materialized .env like refresh-inventory.mjs.
+      # Exit codes are a three-way contract: 0 = clean, 1 = drift, 2 = check
+      # error — captured explicitly and mapped to drift=true|false|error so the
+      # detect-drift step consumes an enum, never a truthy/empty guess.
+      - name: check skills-mirror drift
+        id: skills
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          ec=0
+          node scripts/check-skills-drift.mjs 2>&1 | tee skills-drift.txt || ec=$?
+          case "$ec" in
+            0) echo "drift=false" >> "$GITHUB_OUTPUT" ;;
+            1) echo "drift=true" >> "$GITHUB_OUTPUT" ;;
+            *) echo "drift=error" >> "$GITHUB_OUTPUT" ;;
+          esac
+      - name: detect drift
+        id: drift
+        run: |
+          rm .env
+          inventory_drift=false
+          git diff --quiet -- inventory catalog specs || inventory_drift=true
+          # ENUM check (closes the old fail-open): only the literal strings
+          # 'true' and 'false' are valid; anything else — including 'error' and
+          # EMPTY (step didn't write the output) — is a check error. The error
+          # fails the job in a dedicated step below, but never puts the re-pin
+          # remediation into the drift issue; an inventory-only drift issue may
+          # still be created.
+          skills_drift='${{ steps.skills.outputs.drift }}'
+          skills_error=false
+          case "$skills_drift" in
+            true|false) ;;
+            *) skills_error=true ;;
+          esac
+          echo "skills_error=$skills_error" >> "$GITHUB_OUTPUT"
+          if [ "$inventory_drift" = "false" ] && [ "$skills_drift" != "true" ]; then
+            echo "drift=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "drift=true" >> "$GITHUB_OUTPUT"
+            {
+              echo '### Live service drift detected'
+              echo
+              echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              if [ "$inventory_drift" = "true" ]; then
+                echo
+                echo '#### Inventory drift'
+                echo
+                echo '```'
+                git diff --stat -- inventory catalog specs
+                echo '```'
+                echo
+                echo 'Regenerate locally (`node scripts/refresh-inventory.mjs && node scripts/build-catalog.mjs && npm run spec:build && node eval/plan/build-op-classes.mjs`), review the diff — especially new/removed operations, which may need policy (deny/metered) decisions — and commit.'
+              fi
+              if [ "$skills_drift" = "true" ]; then
+                echo
+                echo '#### Skills mirror drift'
+                echo
+                echo '```'
+                cat skills-drift.txt
+                echo '```'
+                echo
+                echo 'Remediation: run `ecosystem-skills/update.sh` locally, review the skill diffs (skills are prompt input — read them), re-pin, commit. Never auto-sync from CI.'
+              fi
+            } > drift-report.md
+          fi
+      - name: open or update drift issue
+        if: steps.drift.outputs.drift == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create drift --description "live service surface drifted from committed inventory" --color D93F0B 2>/dev/null || true
+          existing=$(gh issue list --label drift --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file drift-report.md
+          else
+            gh issue create --title "Live service drift detected" --label drift --body-file drift-report.md
+          fi
+      # Runs after the issue step so an inventory-only drift issue (if any) is
+      # still opened/updated before the job fails on the skills-check error.
+      - name: fail on skills drift check error
+        if: steps.drift.outputs.skills_error == 'true'
+        run: |
+          echo "::error::skills drift check errored — see skills-drift.txt output"
+          exit 1
+      - name: fail on drift
+        if: steps.drift.outputs.drift == 'true'
+        run: |
+          echo "::error::live services drifted from the committed inventory and/or skills mirror — see the drift issue"
+          exit 1

@@ -1,0 +1,24 @@
+# secrets — never commit
+.env
+.dev.vars
+.dev.vars.*
+
+# raw real-user question pool — contains user PII + user-pasted secret keys; never commit
+# (removed for privacy 2026-07-03; see eval/corpus/PROVENANCE.md)
+eval/corpus/raven-golden-qa/jutsu/
+
+# deps / build output
+node_modules/
+dist/
+.wrangler/
+
+# generated types (npm run types)
+env.d.ts
+.claude/
+
+# eval run outputs — local-only; summaries live in the eval READMEs
+eval/results/
+eval/qa/results/
+eval/agentic/results/
+# run-routing's tsc-transpile fallback output (eval/run-routing.mjs)
+eval/.build/

@@ -1,0 +1,41 @@
+{
+  "name": "stellar-raven-codemode",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Remote MCP server exposing search + execute over a unified Stellar service catalog (Cloudflare Workers + Dynamic Worker isolates).",
+  "scripts": {
+    "prepare": "git config core.hooksPath scripts/git-hooks || true",
+    "secrets:scan": "node scripts/scan-secrets.mjs",
+    "dev": "wrangler dev",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "deploy": "wrangler deploy",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "types": "wrangler types --include-runtime=false env.d.ts",
+    "eval:compile": "node eval/compile-routing.mjs",
+    "eval:routing": "node eval/run-routing.mjs",
+    "eval:plan": "node eval/plan/grade-plan.mjs",
+    "skills:bundle": "node scripts/bundle-skills.mjs",
+    "spec:build": "node scripts/build-super-spec.mjs",
+    "eval:selftest": "node eval/self-test.mjs",
+    "eval:qa:compile": "node eval/qa/compile-qa.mjs",
+    "eval:qa:selftest": "node eval/qa/judge.mjs --self-test",
+    "eval:qa": "node eval/qa/run-qa.mjs"
+  },
+  "dependencies": {
+    "@cloudflare/codemode": "0.4.2",
+    "@cloudflare/workers-oauth-provider": "^0.8.1",
+    "@modelcontextprotocol/sdk": "^1.25.0",
+    "acorn": "^8.17.0",
+    "agents": "^0.17.3",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260629.1",
+    "@types/node": "^26.1.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9",
+    "wrangler": "^4.106.0"
+  }
+}

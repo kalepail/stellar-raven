@@ -1,0 +1,502 @@
+/**
+ * Unit tests for the WorkOS-backed OAuth wiring (research/auth-workos.md):
+ *
+ *  - the two bypasses in src/auth/gate.ts (admin token, local-dev var);
+ *  - REAL workers-oauth-provider behavior built from oauthProviderOptions()
+ *    around a stub /mcp handler (401 + WWW-Authenticate, discovery docs,
+ *    the path-suffixed RFC 8414 alias) — `cloudflare:workers` is aliased to
+ *    test/stubs/cloudflare-workers.ts via vitest.config.ts;
+ *  - the WorkOSAuthHandler defaultHandler routes (landing, health, consent
+ *    page + CSRF, WorkOS redirect, callback state binding + code exchange).
+ *
+ * src/server.ts itself cannot load under plain Node (it imports
+ * src/executor/run → cloudflare:workers via @cloudflare/codemode), so its
+ * thin fetch router is exercised through these same building blocks.
+ */
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { OAuthProvider } from "@cloudflare/workers-oauth-provider";
+import type { AuthRequest, OAuthHelpers } from "@cloudflare/workers-oauth-provider";
+import {
+  ACCESS_TOKEN_TTL_SECONDS,
+  CLIENT_REGISTRATION_TTL_SECONDS,
+  allowDevUnauthenticated,
+  isAdminAuthorized,
+  isAuthServerMetadataAlias,
+  oauthProviderOptions,
+  rewritePath,
+  timingSafeEqualBytes
+} from "../src/auth/gate";
+import {
+  LOGIN_STATE_TTL_SECONDS,
+  WorkOSAuthHandler,
+  deriveSubject,
+  workosAuthenticateBody
+} from "../src/auth/workos";
+
+// ---------------------------------------------------------------------------
+// Stubs
+
+function memoryKv(): KVNamespace & { store: Map<string, string> } {
+  const store = new Map<string, string>();
+  return {
+    store,
+    async get(key: string) {
+      return store.get(key) ?? null;
+    },
+    async put(key: string, value: string) {
+      store.set(key, value);
+    },
+    async delete(key: string) {
+      store.delete(key);
+    },
+    async list() {
+      return { keys: [], list_complete: true, cacheStatus: null };
+    }
+  } as unknown as KVNamespace & { store: Map<string, string> };
+}
+
+function testEnv(overrides: Record<string, unknown> = {}): Env {
+  return {
+    OAUTH_KV: memoryKv(),
+    WORKOS_CLIENT_ID: "client_test_123",
+    WORKOS_API_KEY: "sk_test_dummy",
+    MCP_SERVER_SECRET: "unit-test-pepper",
+    MCP_ADMIN_TOKEN: "unit-test-admin-token",
+    ...overrides
+  } as unknown as Env;
+}
+
+function ctx(): ExecutionContext {
+  return {
+    waitUntil() {},
+    passThroughOnException() {},
+    props: {}
+  } as unknown as ExecutionContext;
+}
+
+const AUTH_REQ: AuthRequest = {
+  responseType: "code",
+  clientId: "client-abc",
+  redirectUri: "https://client.example/cb",
+  scope: ["mcp"],
+  state: "client-state",
+  codeChallenge: "challenge",
+  codeChallengeMethod: "S256"
+};
+
+/** Stub provider-helpers for driving WorkOSAuthHandler directly. */
+function stubHelpers(overrides: Partial<OAuthHelpers> = {}): OAuthHelpers {
+  return {
+    parseAuthRequest: vi.fn(async () => AUTH_REQ),
+    lookupClient: vi.fn(async () => ({
+      clientId: "client-abc",
+      clientName: "Test MCP Client",
+      redirectUris: ["https://client.example/cb"],
+      tokenEndpointAuthMethod: "none"
+    })),
+    completeAuthorization: vi.fn(async () => ({
+      redirectTo: "https://client.example/cb?code=xyz&state=client-state"
+    })),
+    ...overrides
+  } as unknown as OAuthHelpers;
+}
+
+function cookieValue(response: Response, name: string): string | undefined {
+  // getSetCookie exists at runtime (Node 20+/Workers); workers-types' Headers wins
+  // in tsconfig and predates it.
+  const setCookies = (response.headers as unknown as { getSetCookie(): string[] }).getSetCookie();
+  for (const header of setCookies) {
+    if (header.startsWith(`${name}=`)) return header.slice(name.length + 1).split(";")[0];
+  }
+  return undefined;
+}
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+// ---------------------------------------------------------------------------
+// Bypass 1: admin token (SHA-256 + timing-safe compare)
+
+describe("isAdminAuthorized", () => {
+  const env = testEnv();
+
+  it("accepts a matching Authorization: Bearer token", async () => {
+    const request = new Request("https://mcp.test/mcp", {
+      headers: { authorization: "Bearer unit-test-admin-token" }
+    });
+    expect(await isAdminAuthorized(request, env)).toBe(true);
+  });
+
+  it("accepts a matching X-MCP-Admin-Token header", async () => {
+    const request = new Request("https://mcp.test/mcp", {
+      headers: { "x-mcp-admin-token": "unit-test-admin-token" }
+    });
+    expect(await isAdminAuthorized(request, env)).toBe(true);
+  });
+
+  it("rejects a mismatched token", async () => {
+    const request = new Request("https://mcp.test/mcp", {
+      headers: { authorization: "Bearer wrong-token" }
+    });
+    expect(await isAdminAuthorized(request, env)).toBe(false);
+  });
+
+  it("rejects when no credential is presented", async () => {
+    expect(await isAdminAuthorized(new Request("https://mcp.test/mcp"), env)).toBe(false);
+  });
+
+  it("returns false when the secret is unset, even with a header", async () => {
+    const request = new Request("https://mcp.test/mcp", {
+      headers: { authorization: "Bearer unit-test-admin-token" }
+    });
+    expect(await isAdminAuthorized(request, testEnv({ MCP_ADMIN_TOKEN: undefined }))).toBe(false);
+    expect(await isAdminAuthorized(request, testEnv({ MCP_ADMIN_TOKEN: "" }))).toBe(false);
+  });
+
+  it("timing-safe comparator: equal, unequal, and length-mismatched digests", () => {
+    const a = new Uint8Array([1, 2, 3, 4]);
+    expect(timingSafeEqualBytes(a, new Uint8Array([1, 2, 3, 4]))).toBe(true);
+    expect(timingSafeEqualBytes(a, new Uint8Array([1, 2, 3, 5]))).toBe(false);
+    expect(timingSafeEqualBytes(a, new Uint8Array([1, 2, 3]))).toBe(false);
+  });
+
+  it("uses the runtime's crypto.subtle.timingSafeEqual when available (Workers path)", () => {
+    const native = vi.fn((x: ArrayBufferView, y: ArrayBufferView) => true);
+    const realSubtle = crypto.subtle;
+    // Node's crypto.subtle lacks timingSafeEqual; graft it on to prove the
+    // Workers branch is taken and delegated to.
+    vi.stubGlobal("crypto", {
+      ...crypto,
+      subtle: new Proxy(realSubtle, {
+        get(target, prop, receiver) {
+          if (prop === "timingSafeEqual") return native;
+          const value = Reflect.get(target, prop, target);
+          return typeof value === "function" ? value.bind(target) : value;
+        }
+      })
+    });
+    expect(timingSafeEqualBytes(new Uint8Array([9]), new Uint8Array([1]))).toBe(true);
+    expect(native).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Bypass 2: local dev var
+
+describe("allowDevUnauthenticated", () => {
+  it('is true only for the exact string "true" AND a loopback hostname', () => {
+    for (const host of ["localhost", "127.0.0.1", "::1", "[::1]", "LOCALHOST"]) {
+      expect(allowDevUnauthenticated({ DEV_ALLOW_UNAUTHENTICATED: "true" }, host)).toBe(true);
+    }
+    // Wrong var value → false even on localhost.
+    expect(allowDevUnauthenticated({ DEV_ALLOW_UNAUTHENTICATED: "TRUE" }, "localhost")).toBe(false);
+    expect(allowDevUnauthenticated({ DEV_ALLOW_UNAUTHENTICATED: "1" }, "localhost")).toBe(false);
+    expect(allowDevUnauthenticated({ DEV_ALLOW_UNAUTHENTICATED: "" }, "localhost")).toBe(false);
+    expect(allowDevUnauthenticated({}, "localhost")).toBe(false);
+  });
+
+  it("is refused on a production-looking hostname even with the var set (deployed var is inert)", () => {
+    for (const host of ["agents.stellar.buzz", "raven.stellar.buzz", "evil.example.com", "127.0.0.1.evil.com"]) {
+      expect(allowDevUnauthenticated({ DEV_ALLOW_UNAUTHENTICATED: "true" }, host)).toBe(false);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Real provider behavior (constructed from our exact wiring options)
+
+describe("OAuthProvider wiring (real @cloudflare/workers-oauth-provider)", () => {
+  const mcpFetch = vi.fn(async () => new Response("mcp-ok"));
+  const provider = new OAuthProvider(oauthProviderOptions({ fetch: mcpFetch }));
+
+  it("pins prior-art token TTLs (access 90d, client registration 365d)", () => {
+    expect(ACCESS_TOKEN_TTL_SECONDS).toBe(90 * 24 * 60 * 60);
+    expect(CLIENT_REGISTRATION_TTL_SECONDS).toBe(365 * 24 * 60 * 60);
+  });
+
+  it("unauthenticated POST /mcp → 401 with WWW-Authenticate resource_metadata pointer", async () => {
+    mcpFetch.mockClear();
+    const response = await provider.fetch(
+      new Request("https://mcp.test/mcp", { method: "POST" }),
+      testEnv(),
+      ctx()
+    );
+    expect(response.status).toBe(401);
+    const wwwAuthenticate = response.headers.get("www-authenticate") ?? "";
+    expect(wwwAuthenticate).toContain("Bearer");
+    expect(wwwAuthenticate).toContain('error="invalid_token"');
+    expect(wwwAuthenticate).toContain(
+      'resource_metadata="https://mcp.test/.well-known/oauth-protected-resource/mcp"'
+    );
+    const body = (await response.json()) as { error: string };
+    expect(body.error).toBe("invalid_token");
+    // The MCP handler must never run without a valid token.
+    expect(mcpFetch).not.toHaveBeenCalled();
+  });
+
+  it("garbage bearer token on /mcp → 401, handler untouched", async () => {
+    mcpFetch.mockClear();
+    const response = await provider.fetch(
+      new Request("https://mcp.test/mcp", {
+        method: "POST",
+        headers: { authorization: "Bearer not-a-real-token" }
+      }),
+      testEnv(),
+      ctx()
+    );
+    expect(response.status).toBe(401);
+    expect(mcpFetch).not.toHaveBeenCalled();
+  });
+
+  it("serves RFC 8414 authorization-server metadata with our endpoints and S256-only PKCE", async () => {
+    const response = await provider.fetch(
+      new Request("https://mcp.test/.well-known/oauth-authorization-server"),
+      testEnv(),
+      ctx()
+    );
+    expect(response.status).toBe(200);
+    const metadata = (await response.json()) as Record<string, unknown>;
+    expect(metadata.authorization_endpoint).toBe("https://mcp.test/authorize");
+    expect(metadata.token_endpoint).toBe("https://mcp.test/token");
+    expect(metadata.registration_endpoint).toBe("https://mcp.test/register");
+    expect(metadata.scopes_supported).toEqual(["mcp"]);
+    expect(metadata.code_challenge_methods_supported).toEqual(["S256"]);
+  });
+
+  it("serves RFC 9728 protected-resource metadata for /mcp", async () => {
+    const response = await provider.fetch(
+      new Request("https://mcp.test/.well-known/oauth-protected-resource/mcp"),
+      testEnv(),
+      ctx()
+    );
+    expect(response.status).toBe(200);
+    const metadata = (await response.json()) as Record<string, unknown>;
+    expect(metadata.resource).toBe("https://mcp.test/mcp");
+    expect(metadata.scopes_supported).toEqual(["mcp"]);
+    expect(metadata.resource_name).toBe("stellar-raven-codemode MCP");
+  });
+
+  it("path-suffixed RFC 8414 form works via the alias rewrite (server.ts quirk)", async () => {
+    const suffixed = new Request("https://mcp.test/.well-known/oauth-authorization-server/mcp");
+    // 0.8.1 only matches the exact path — the suffixed form 404s without the alias…
+    expect(isAuthServerMetadataAlias(new URL(suffixed.url))).toBe(true);
+    // …and the rewrite lands on the real metadata endpoint.
+    const response = await provider.fetch(
+      rewritePath(suffixed, "/.well-known/oauth-authorization-server"),
+      testEnv(),
+      ctx()
+    );
+    expect(response.status).toBe(200);
+    const metadata = (await response.json()) as Record<string, unknown>;
+    expect(metadata.issuer).toBe("https://mcp.test");
+    expect(isAuthServerMetadataAlias(new URL("https://mcp.test/.well-known/oauth-authorization-server"))).toBe(false);
+    expect(isAuthServerMetadataAlias(new URL("https://mcp.test/mcp"))).toBe(false);
+  });
+
+  it("OIDC discovery paths alias onto the RFC 8414 metadata (exact + path-suffixed)", async () => {
+    // RFC 8414 §5: an OAuth-only AS may publish its metadata at the OIDC
+    // discovery path; some MCP clients probe only this one.
+    const exact = new Request("https://mcp.test/.well-known/openid-configuration");
+    const suffixed = new Request("https://mcp.test/.well-known/openid-configuration/mcp");
+    expect(isAuthServerMetadataAlias(new URL(exact.url))).toBe(true);
+    expect(isAuthServerMetadataAlias(new URL(suffixed.url))).toBe(true);
+    // Must not swallow unrelated well-known paths.
+    expect(isAuthServerMetadataAlias(new URL("https://mcp.test/.well-known/oauth-protected-resource/mcp"))).toBe(false);
+    expect(isAuthServerMetadataAlias(new URL("https://mcp.test/.well-known/openid-configuration-extra"))).toBe(false);
+
+    const response = await provider.fetch(
+      rewritePath(exact, "/.well-known/oauth-authorization-server"),
+      testEnv(),
+      ctx()
+    );
+    expect(response.status).toBe(200);
+    const metadata = (await response.json()) as Record<string, unknown>;
+    expect(metadata.issuer).toBe("https://mcp.test");
+    expect(metadata.token_endpoint).toBe("https://mcp.test/token");
+  });
+
+  it("routes / and /health through to the defaultHandler", async () => {
+    const landing = await provider.fetch(new Request("https://mcp.test/"), testEnv(), ctx());
+    expect(landing.status).toBe(200);
+    expect(await landing.text()).toContain("/mcp");
+
+    const health = await provider.fetch(new Request("https://mcp.test/health"), testEnv(), ctx());
+    expect(health.status).toBe(200);
+    expect(await health.json()).toEqual({ status: "ok", service: "stellar-raven-codemode" });
+
+    const missing = await provider.fetch(new Request("https://mcp.test/nope"), testEnv(), ctx());
+    expect(missing.status).toBe(404);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// WorkOSAuthHandler routes (driven directly with stubbed provider helpers)
+
+describe("WorkOSAuthHandler", () => {
+  it("GET /authorize renders a consent page naming the client and scopes, with a CSRF cookie", async () => {
+    const env = testEnv({ OAUTH_PROVIDER: stubHelpers() });
+    const response = await WorkOSAuthHandler.fetch(
+      new Request("https://mcp.test/authorize?client_id=client-abc"),
+      env
+    );
+    expect(response.status).toBe(200);
+    const csrf = cookieValue(response, "__Host-MCP_CONSENT_CSRF");
+    expect(csrf).toBeTruthy();
+    const page = await response.text();
+    expect(page).toContain("Test MCP Client");
+    // Scope is named on the consent page (rendered as a styled scope chip).
+    expect(page).toContain(`<code class="scope-code">mcp</code>`);
+    // Double-submit: the hidden form field carries the same token as the cookie.
+    expect(page).toContain(`name="csrf_token" value="${csrf}"`);
+  });
+
+  it("POST /authorize rejects a missing/mismatched CSRF token", async () => {
+    const env = testEnv({ OAUTH_PROVIDER: stubHelpers() });
+    const form = new URLSearchParams({ csrf_token: "attacker-guess" });
+    const response = await WorkOSAuthHandler.fetch(
+      new Request("https://mcp.test/authorize?client_id=client-abc", {
+        method: "POST",
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+          cookie: "__Host-MCP_CONSENT_CSRF=real-token"
+        },
+        body: form
+      }),
+      env
+    );
+    expect(response.status).toBe(400);
+  });
+
+  it("POST /authorize with a valid CSRF parks state in KV and 302s to WorkOS AuthKit", async () => {
+    const env = testEnv({ OAUTH_PROVIDER: stubHelpers() });
+    const form = new URLSearchParams({ csrf_token: "token-1" });
+    const response = await WorkOSAuthHandler.fetch(
+      new Request("https://mcp.test/authorize?client_id=client-abc", {
+        method: "POST",
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+          cookie: "__Host-MCP_CONSENT_CSRF=token-1"
+        },
+        body: form
+      }),
+      env
+    );
+    expect(response.status).toBe(302);
+    const location = new URL(response.headers.get("location") ?? "");
+    expect(location.origin).toBe("https://api.workos.com");
+    expect(location.pathname).toBe("/user_management/authorize");
+    expect(location.searchParams.get("provider")).toBe("authkit");
+    expect(location.searchParams.get("client_id")).toBe("client_test_123");
+    // redirect_uri is origin-derived — no env switch.
+    expect(location.searchParams.get("redirect_uri")).toBe("https://mcp.test/callback");
+
+    const state = location.searchParams.get("state") ?? "";
+    const kv = env.OAUTH_KV as unknown as { store: Map<string, string> };
+    const parked = JSON.parse(kv.store.get(`login:${state}`) ?? "{}") as {
+      oauthReq: AuthRequest;
+      binding: string;
+    };
+    expect(parked.oauthReq.clientId).toBe("client-abc");
+    // The browser-binding cookie matches what was parked.
+    expect(cookieValue(response, "__Host-MCP_STATE")).toBe(parked.binding);
+    expect(LOGIN_STATE_TTL_SECONDS).toBe(600);
+  });
+
+  it("GET /callback rejects unknown state and binding-cookie mismatches (single-use)", async () => {
+    const env = testEnv({ OAUTH_PROVIDER: stubHelpers() });
+    const unknown = await WorkOSAuthHandler.fetch(
+      new Request("https://mcp.test/callback?code=abc&state=missing"),
+      env
+    );
+    expect(unknown.status).toBe(400);
+
+    const kv = env.OAUTH_KV as unknown as { store: Map<string, string> };
+    kv.store.set("login:st1", JSON.stringify({ oauthReq: AUTH_REQ, binding: "bind-1" }));
+    const mismatch = await WorkOSAuthHandler.fetch(
+      new Request("https://mcp.test/callback?code=abc&state=st1", {
+        headers: { cookie: "__Host-MCP_STATE=wrong" }
+      }),
+      env
+    );
+    expect(mismatch.status).toBe(400);
+    // Consumed on first presentation, even a failed one.
+    expect(kv.store.has("login:st1")).toBe(false);
+  });
+
+  it("GET /callback exchanges the code with WorkOS and completes the authorization", async () => {
+    const helpers = stubHelpers();
+    const env = testEnv({ OAUTH_PROVIDER: helpers });
+    const kv = env.OAUTH_KV as unknown as { store: Map<string, string> };
+    kv.store.set("login:st2", JSON.stringify({ oauthReq: AUTH_REQ, binding: "bind-2" }));
+
+    const workosFetch = vi.fn(async () =>
+      Response.json({ user: { id: "user_wos_1" }, access_token: "never-stored" })
+    );
+    vi.stubGlobal("fetch", workosFetch);
+
+    const response = await WorkOSAuthHandler.fetch(
+      new Request("https://mcp.test/callback?code=code-123&state=st2", {
+        headers: { cookie: "__Host-MCP_STATE=bind-2" }
+      }),
+      env
+    );
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe("https://client.example/cb?code=xyz&state=client-state");
+
+    // The code exchange hits the documented WorkOS endpoint with the pure body.
+    expect(workosFetch).toHaveBeenCalledTimes(1);
+    const [exchangeUrl, exchangeInit] = workosFetch.mock.calls[0] as unknown as [string, RequestInit];
+    expect(exchangeUrl).toBe("https://api.workos.com/user_management/authenticate");
+    expect(JSON.parse(String(exchangeInit.body))).toEqual(workosAuthenticateBody(env, "code-123"));
+
+    // completeAuthorization gets the peppered subject — never the WorkOS id/token.
+    const expectedSubject = await deriveSubject("user_wos_1", "unit-test-pepper");
+    expect(helpers.completeAuthorization).toHaveBeenCalledWith(
+      expect.objectContaining({
+        request: expect.objectContaining({ clientId: "client-abc" }),
+        userId: expectedSubject,
+        scope: ["mcp"],
+        props: { subject: expectedSubject, scopes: ["mcp"] }
+      })
+    );
+    expect(kv.store.has("login:st2")).toBe(false);
+  });
+
+  it("GET /callback surfaces a WorkOS failure as 502 without completing", async () => {
+    const helpers = stubHelpers();
+    const env = testEnv({ OAUTH_PROVIDER: helpers });
+    const kv = env.OAUTH_KV as unknown as { store: Map<string, string> };
+    kv.store.set("login:st3", JSON.stringify({ oauthReq: AUTH_REQ, binding: "bind-3" }));
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("nope", { status: 401 })));
+
+    const response = await WorkOSAuthHandler.fetch(
+      new Request("https://mcp.test/callback?code=bad&state=st3", {
+        headers: { cookie: "__Host-MCP_STATE=bind-3" }
+      }),
+      env
+    );
+    expect(response.status).toBe(502);
+    expect(helpers.completeAuthorization).not.toHaveBeenCalled();
+  });
+
+  it("workosAuthenticateBody builds the exact WorkOS contract", () => {
+    const body = workosAuthenticateBody(
+      { WORKOS_CLIENT_ID: "client_x", WORKOS_API_KEY: "sk_y" } as Env,
+      "the-code"
+    );
+    expect(body).toEqual({
+      client_id: "client_x",
+      client_secret: "sk_y",
+      grant_type: "authorization_code",
+      code: "the-code"
+    });
+  });
+
+  it("subject derivation is hex(SHA-256(`${userId}:${secret}`)) — colon-free, stable", async () => {
+    const subject = await deriveSubject("user_1", "pepper");
+    expect(subject).toMatch(/^[0-9a-f]{64}$/);
+    expect(await deriveSubject("user_1", "pepper")).toBe(subject);
+    expect(await deriveSubject("user_1", "other-pepper")).not.toBe(subject);
+  });
+});

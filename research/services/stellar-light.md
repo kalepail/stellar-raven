@@ -1,0 +1,183 @@
+# Stellar Light / Stellar Scout — service spec
+
+> Verified live 2026-07-02 (UTC; re-fetched ~13:59Z after the 07-02 partner-pipeline release). OpenAPI `info.version: 1.2.1`, status `apiVersion: 1.2.1` (the `X-API-Version` response header stays `1`), scout-mcp npm `1.1.5`.
+> **Inventory refresh 2026-07-03 (~14:02Z): upstream now 1.3.2** — additive freshness release per `/api/changelog` (explicitly no field removed or renamed; still 23 paths / 24 ops): `/api/repos/explain` gains `repoMeta{lastCommitAt, stars, isArchived, repoScoreLabel}`, `/api/projects/search` rows gain `lastActivityAt` and inline repo refs gain `lastCommitAt` — attach as the as-of date when citing answers. (1.3.1, 07-02: `builtBy` org attribution on project search rows; `status` enum gains `Inactive`.) `inventory/stellar-light.json` carries the current spec verbatim; the body below still details 1.2.1.
+> Pretty-printed OpenAPI saved at [`stellar-light-openapi.json`](./stellar-light-openapi.json) (23 paths / 24 operations — **`info.version` did NOT bump when the 4 partner-pipeline ops landed; diff paths, not the version string**).
+> Cross-checked against prior art: `stellar-raven-next/research/capability/stellar-light-scout.md` (measured 2026-06-21→07-01) — live behavior today matches that doc.
+
+## Overview
+
+**Stellar Light** (stellarlight.xyz) is a Stellar ecosystem directory site (projects explorer, blog, market stats) built on Next.js + Payload CMS, hosted on Vercel. **Stellar Scout** is its agent-native product: a read-only public API over curated Stellar-ecosystem data — ~920 projects, ~2,301 graded GitHub repos, 112 builders (Stellar Passport), 24 partners (incl. 5 audit firms), 14 SCF-funded RFPs, hackathons (DoraHacks + curated), an AI-skills catalog (30 entries across 5 sources), ecosystem analytics (Electric Capital), and a ~4,500-chunk vector research corpus (SEPs, audits, papers, dev docs, SCF handbook, incidents, EC reports; voyage-3 embeddings).
+
+Scout ships in three equivalent forms, all backed by the same API:
+1. **HTTP API** — `https://stellarlight.xyz/api/*` (this doc's subject)
+2. **SKILL.md** — `npx skills add Stellar-Light/stellar-scout` (repo: github.com/Stellar-Light/stellar-scout; the skill is prompt guidance + curl recipes against the API)
+3. **MCP server** — `npx @stellar-light/scout-mcp` (repo: github.com/Stellar-Light/scout-mcp; 18 stdio tools, thin 1:1 wrappers over the API)
+
+## Base URL and auth
+
+- Base URL: `https://stellarlight.xyz` (single production server in OpenAPI; no versioned path prefix — versioning via `X-API-Version: 1` response header)
+- **Auth: NONE.** Fully keyless, read-only, public. OpenAPI has no `security` / `securitySchemes`. CORS is wide open (`access-control-allow-origin: *`, methods `GET, POST, OPTIONS`).
+- Write/compute surfaces (all still keyless): `POST /api/feedback` (OpenAPI success = 201, plus 400/429) and, since 2026-07-02, the partner pipeline — `POST /api/partners/submit-listing` (a real write: creates a draft partner account or a claim request) plus three AI-compute POSTs (`/api/partners/match`, `/assistant`, `/onboard`; `assistant` logs surfaced partners as leads, so it is not purely read-only either). Everything else is read-only GET.
+- Caching: `Cache-Control: public`, edge-cached on Vercel (~5 min for ecosystem data, ~24 h for the SDF skill proxy per the api-reference page). Observed latency 2026-07-02: 0.16–0.5 s warm, 1.1–1.9 s on `x-vercel-cache: MISS`.
+- Rate limits: none observed (no `X-RateLimit-*` / `Retry-After` headers). Maintainer has said limits would arrive via those headers, pre-announced. `POST /api/feedback` documents a 429.
+
+## Self-description surfaces (use these in a refresh script)
+
+| Surface | What it gives |
+| --- | --- |
+| `GET /api/openapi.json` | OpenAPI 3.1, full param schemas + enums (23 paths; every operation carries an `operationId` matching the `@stellar-light/api-client` method names, e.g. `getStatus`, `searchProjects`, `matchPartners`) |
+| `GET /api/status` | Live collection sizes, per-source freshness, endpoint enumeration, usage stats |
+| `GET /api/changelog?since=YYYY-MM-DD` | Contract-change feed (API + MCP + skill changes), latest-first |
+| `GET /api/skills` / `GET /api/skills/{name}` | Skills catalog + full SKILL.md markdown (`skill.content`) |
+| `GET /api/feedback` | The POST feedback body schema (discovery) |
+
+## Endpoint inventory (all under `https://stellarlight.xyz`)
+
+Keyless throughout; GET except where marked POST. `*` = required param. Pagination: `limit`+`offset` where listed; page until `offset + meta.counts.returned >= total`. Limits vary per endpoint (projects/search default 20 / cap 100; hackathons default 100 / cap 300; research default 8 / cap 25).
+
+| Endpoint | Purpose | Params (enums) | Rows key |
+| --- | --- | --- | --- |
+| `GET /api/status` | Health + collection sizes + endpoint enumeration + usage | — | `sources[]`, `endpoints[]` |
+| `GET /api/changelog` | API/MCP/skill contract-change feed | `since` (YYYY-MM-DD), `limit` (1–100) | `entries[]` |
+| `GET /api/projects/search` | Prior-art / competitor search over curated project directory | `q` (aliases query/keyword/search), `category` (Infrastructure\|Tooling\|User-Facing App\|Asset\|Protocol/Contract\|Anchor\|Partner Integration), `scfAwarded` (bool), `limit`, `offset` — **requires q or a filter**; bare call → 0 rows + `meta.error:"no_query"` + advisory | `projects[]` |
+| `GET /api/repos/search` | Graded Stellar repo/code index (~2,301; ranked by `repoScore` 0–100) | `q`, `language` (substring), `minScore` (0–100), `limit`, `offset` — browsable bare (top 200) | `repos[]` |
+| `GET /api/repos/explain` | Deep code answer: canonical-repo routing × DeepWiki grounding | `q*`, `repo` (owner/name pin) | `{answer, answered, repo, routedVia, alternateRepos[], sources{}}` |
+| `GET /api/hackathons` | Hackathon feed (curated Payload + DoraHacks) | `status` (upcoming\|active\|completed), `organizer`, `source` (curated\|dorahacks), `limit` — **no `q`** | `hackathons[]` |
+| `GET /api/hackathons/{slug}` | One event: winners (placement-sorted, numeric `placementRank`), submissions, tracks | `slug*` | `{hackathon, winners[], submissions[], tracks[]}` |
+| `GET /api/hackathons/compare` | Side-by-side 2–5 events with computed deltas | `slugs*` (comma-sep, 2–5; also accepts POST `{slugs:[...]}`) | `hackathons[]` + `deltas{}` |
+| `GET /api/builders` | Builder directory (Stellar Passport, 112 profiles) | `q`, `location`, `skill` (all map to same filter lane), `limit`, `offset` — browsable bare; strict term matching (verbose NL phrases → 0 rows) | `builders[]` |
+| `GET /api/partners` | Partner directory (24 curated: anchors, ramps, audit firms…) | `type` (anchor\|on-off-ramp\|infrastructure\|tooling\|protocol\|wallet\|audit-firm\|legal\|agency\|other), `sector`, `region`, `accepting` (=1), `q`, `limit` | `partners[]` |
+| `GET /api/partners/{slug}` | One partner profile w/ `verified{}` signal object | `slug*` | `{partner…}` |
+| `POST /api/partners/match` (new 2026-07-02) | AI-rank published partners against a plain-language need (grounded — only real partners, one-line reason each) | JSON body `{need*}` → 200/429/**503** `unavailable:true` when AI isn't configured (fall back to `GET /api/partners` filters) | ranked partners |
+| `POST /api/partners/assistant` (new 2026-07-02) | Conversational partner concierge (backend of /partners/chat); routes intent: builder-need → `matches[]` (deterministic, never hallucinated; surfaced partners logged as leads), company-self-description → interview + `canList:true` | JSON body `{messages*:[{role: user\|assistant, content}]}` → 200/429/503 | `{reply, matches?, intent, canList}` |
+| `POST /api/partners/onboard` (new 2026-07-02) | Get-listed helpers: `mode:'chat'` interview reply; `mode:'extract'` structures the transcript into partner-profile `fields` (null where unstated) | JSON body `{mode*: chat\|extract, messages*}` → 200/429/503 | reply or `fields{}` |
+| `POST /api/partners/submit-listing` (new 2026-07-02) | **Write**: submit a company for listing → DRAFT partner account (team-reviewed) or CLAIM REQUEST if already listed; `contactEmail` becomes the account login | JSON body `{orgName* (2–120), contactEmail*, fields?}` → 200/400/429 | `{ok:true, mode:'draft'\|'claim'}` |
+| `GET /api/rfps` | SCF-funded sponsor RFP briefs (14; 5 open) | `status` (open\|closed), `quarter` (e.g. q2-2026), `q`, `category` (ai\|consumer-dapps\|defi\|developer-tooling\|gaming\|infrastructure\|nfts\|payments\|scf\|web3-social), `limit`, `offset` | `rfps[]` + top-level `funding` string |
+| `GET /api/research` | Vector (voyage-3) search over the research corpus, keyword fallback per-query | `q*`, `source` (sdf-blog\|scf-handbook\|sep\|dev-docs\|paper\|scf-proposal\|lumenloop\|lumenloop-research\|audit\|incident\|ec-developer-report), `limit` (max 25) | `results[]` (the only endpoint using `results`) |
+| `GET /api/skills` | AI-skill/tool catalog for Stellar builders (30) | `source` (sdf\|stellarlight\|lumenloop\|external\|community), `kind` (skill-md\|mcp-server\|sdk\|cli\|agent-kit\|tool) — no `q` | `skills[]` |
+| `GET /api/skills/{name}` | One skill incl. full markdown at `skill.content` | `name*` (slug) | `{meta, skill{…, content}}` |
+| `GET /api/clusters` | Topic clusters w/ crowdedness 1–10, SCF totals | `dimension` (category\|types, strict → 400), `minSize`; target one cluster via `key`/`category`/`type` | `clusters[]` |
+| `GET /api/analyze` | Ecosystem analytics rollups | `dimension` (all\|hackathons\|categories\|funding, strict) | `{<dimension>{…}}` (no row array) |
+| `GET /api/leaderboard` | Dev-activity leaderboard + EC ecosystem snapshot | `sort` (activity\|stars\|issues), `range` (7d\|30d\|90d\|1y\|all), `category` (validated), `format` (json\|csv), `limit` | `{ecosystem{}, projects[]}` |
+| `GET /api/feedback` | Returns the POST schema | — | `{schema{…}}` |
+| `POST /api/feedback` | Submit feedback (only write) | JSON body `{kind: bug\|missing-data\|wrong-answer\|suggestion\|other, message (10–4000 chars), context{query?, endpoint?, skillVersion?, agentName?}}` → 201/400/429 | — |
+
+### Response envelope conventions (measured)
+
+- Every collection endpoint nests rows under a **named key matching the resource** (`projects[]`, `repos[]`, `builders[]`, `partners[]`, `rfps[]`, `hackathons[]`, `skills[]`, `clusters[]`) — **not** a generic `results[]`. Only `/api/research` uses `results[]`.
+- Every response carries `meta{source, generatedAt, filters, counts{returned,total,…}}` (shape varies slightly per endpoint). `projects/search` adds `meta.matchMode` (strict → loose-1 → majority → all) + `matchModeLabel`; `research` adds `meta.mode` (vector|keyword, deterministic per query), `model`, `scoreModel`.
+- Single-item endpoints nest under `{hackathon|skill|partner}` — e.g. skill markdown is `skill.content`, not top-level.
+- Confidence: `research` rows carry `confidence{score,label,relevance,freshness,authority,ageDays}` (0.65·relevance + 0.15·freshness + 0.20·authority); repos carry `repoScore`/`repoScoreLabel` + `judgeScore`/`builderReputation`.
+
+### Error envelope (verified live 2026-07-02)
+
+Errors are self-describing JSON, `{error, hint?, valid<Thing>?}`:
+
+- Bad enum → **400** with the valid list. Live: `GET /api/research?source=bogus&q=x` → 400 `{"error":"unknown source: 'bogus'","hint":"see validSources for the full list","validSources":[…11…]}` (0.16 s). Same pattern for `analyze`/`clusters` `validDimensions`, `leaderboard` `validSorts`/`validFormats`, `projects/search` + `rfps` `validCategories`.
+- Missing required arg → 400 `{error:"missing required q parameter…", validSources}` (research); `projects/search` instead returns 200 with `meta.error:"no_query"`, 0 rows, and an `advisory{summary, suggestions[]}`.
+- Unknown detail slug → **404**. Live: `GET /api/skills/nope-xyz` → 404 `{"error":"unknown skill: nope-xyz","hint":"Try /api/skills to list all available slugs."}`. Same for `partners/{slug}`, `hackathons/{slug}`.
+- Unknown/removed query params are **silently ignored** (e.g. old `builders?scfTier=`, `projects/search?hackathon=`).
+- AI partner endpoints (`match`/`assistant`/`onboard`) → **503** `{unavailable:true}` when the service has no AI configured — treat as "fall back to `GET /api/partners` filters", not as a retryable outage.
+
+## Live verification log (2026-07-02T01:52Z)
+
+| Call | Result | Latency |
+| --- | --- | --- |
+| `GET /api/status` | 200; `apiVersion:1.2.1`, sources projects 920 / repos 2301 / builders 112 / sdfSkills 7 / hackathons 0 (curated), usage.total 10,828, **23 endpoints enumerated** (incl. the 4 new partner-pipeline POSTs). Headers: `x-api-version: 1`, `cache-control: public`, `server: Vercel`, `x-powered-by: Next.js, Payload`, no rate-limit headers. (Re-checked 13:59Z; earlier 01:52Z probe saw 19 endpoints / 918 projects — the partner pipeline landed in between.) | 1.77 s (edge MISS) |
+| `GET /api/research?q=passkey+smart+wallet&limit=2` | 200; `meta.mode:"vector"`, `model:"voyage-3"`, rows in `results[]` with `confidence{score:0.72,label:"medium",…}` | 1.08 s |
+| `GET /api/projects/search?q=passkey+wallet&limit=2` | 200; `matchMode:"strict"`, top = Stellar Passport (`scfTotalAwardedUSD:150000`), rows in `projects[]` (20 fields/row) | 0.49 s |
+| `GET /api/skills?kind=mcp-server` | 200; returned 2 (`stellar-scout-mcp`, `lumenloop-mcp`), `bySource:{sdf:7,stellarlight:2,lumenloop:9,external:12,community:0}` | 0.25 s |
+| `GET /api/research?source=bogus&q=x` (deliberate 4xx) | **400** `{error,hint,validSources[11]}` | 0.16 s |
+| `GET /api/skills/nope-xyz` (deliberate 404) | **404** `{error,hint}` | 1.88 s |
+
+## Skills catalog shape (`GET /api/skills`)
+
+```json
+{
+  "meta": {
+    "source": "https://stellarlight.xyz/skills",
+    "generatedAt": "…",
+    "filters": {"source": null, "kind": null},
+    "counts": {"returned": 30, "bySource": {"sdf":7,"stellarlight":2,"lumenloop":9,"external":12,"community":0}},
+    "validSources": ["sdf","stellarlight","lumenloop","external","community"],
+    "validKinds": ["skill-md","mcp-server","sdk","cli","agent-kit","tool"]
+  },
+  "skills": [{
+    "slug","name","tagline","description","source","kind",
+    "install","installAlt":[{"label","command"}],
+    "repository","homepage","docs","compatibility":[…],
+    "targetUser":["dev","founder","agent"],"tags":[…],"featured":true
+  }]
+}
+```
+
+`GET /api/skills/{name}` → `{meta, skill{…same fields…, content}}` where `content` is the full SKILL.md markdown (~26.6 kB for stellar-scout). The human page `https://stellarlight.xyz/skills` renders this same catalog; `https://stellarlight.xyz/skills/stellar-scout.md` serves the raw markdown directly.
+
+## The stellar-scout SKILL.md (repo: Stellar-Light/stellar-scout)
+
+Repo contents: `SKILL.md` (v1.1.0, MIT) + `README.md` + `references/`. It is pure prompt guidance over the HTTP API: user-type routing (hackathon entrant / SCF applicant / independent builder → lead endpoints), trigger phrases, two modes (Conversational; 8-step "Deep Dive" idea-vetting workflow with gap classification), and named workflows (Draft SCF Pitch, Find Audit Firm via `partners?type=audit-firm`, Compare RFPs). It explicitly chains into SDF's official skills (skills.stellar.org) via `/api/skills` for the "how to build" layer.
+
+## scout-mcp (repo: Stellar-Light/scout-mcp, npm `@stellar-light/scout-mcp` v1.1.5)
+
+- Node ≥20, stdio transport, `@modelcontextprotocol/sdk` + zod. Run: `npx @stellar-light/scout-mcp`. Env: `SCOUT_API_BASE` (default `https://stellarlight.xyz`), `SCOUT_USER_AGENT`.
+- **18 tools, each a thin 1:1 wrapper over an API endpoint** (URL construction + JSON parse only; no local state, no auth). Errors returned as `isError: true` text `HTTP <status> from <url>: <body slice>`.
+
+| MCP tool | API endpoint | Notes |
+| --- | --- | --- |
+| `search_research` | `GET /api/research` | param named `query` (not `q`); **source enum omits `incident`** (10 vs API's 11 — drift) |
+| `search_projects` | `GET /api/projects/search` | |
+| `search_repos` | `GET /api/repos/search` | |
+| `explain_repo` | `GET /api/repos/explain` | |
+| `get_hackathons` | `GET /api/hackathons` | |
+| `get_hackathon` | `GET /api/hackathons/{slug}` | |
+| `compare_hackathons` | `POST /api/hackathons/compare` | uses the POST body form |
+| `get_builders` | `GET /api/builders` | |
+| `get_partners` | `GET /api/partners` | |
+| `get_rfps` | `GET /api/rfps` | |
+| `list_skills` / `get_skill` | `GET /api/skills` / `/api/skills/{name}` | |
+| `get_clusters` / `analyze_ecosystem` / `get_leaderboard` | `/api/clusters` / `/api/analyze` / `/api/leaderboard` | |
+| `get_status` / `get_changelog` | `/api/status` / `/api/changelog` | |
+| `submit_feedback` | `POST /api/feedback` | the only write tool |
+
+Relationship: **website API = source of truth; SKILL.md and scout-mcp are alternate front-ends to the identical backend.** A codemode wrapper should target the HTTP API directly and skip the MCP server entirely (nothing exists only in the MCP layer; the MCP layer's value is its tool descriptions, which can be harvested from `src/index.ts`).
+
+## Known drift / gotchas
+
+- Marketing copy lags the API: scout page says "14 endpoints", api-reference page says DoraHacks hackathon slugs 404 on detail — live, OpenAPI has 23 paths and DoraHacks detail slugs return populated rosters (e.g. `stellar-agents-x402-stripe-mpp`: 5 winners, 262 submissions). Trust `/api/openapi.json` + `/api/status` + live probes, not page copy.
+- `analyze?dimension=categories` `totalProjects` (889) is active-only and differs from `/api/status` projects (918, full collection) **by design** — the response carries an explicit `scope` string.
+- `research.meta.mode` is per-query (vector-first, keyword fallback), deterministic per query string — never promise a mode.
+- `builders`/`rfps` `q` is strict term matching: send terms ("Rust"), not phrases ("Rust builders on Stellar" → 0 rows).
+- Removed params (`projects/search?hackathon`, `builders?scfTier/featured`, `leaderboard?include`) are silently ignored, not 400s.
+- Counts drift constantly (usage grew ~1,250 calls in ~1 day) — re-read `/api/status`; never hardcode collection sizes.
+- `leaderboard?format=csv` returns `text/csv`, not JSON — special-case it or pin `format=json`.
+
+## Notes for the unified codemode wrapper
+
+- **Auth:** none needed anywhere. Ship it keyless; guard the POST surfaces — `POST /api/feedback` and `POST /api/partners/submit-listing` are writes (human-in-the-loop / deny-by-default for autonomous execution — matches the raven prior-art governance), and `POST /api/partners/assistant` logs surfaced partners as sales leads, so keep it out of the autonomous surface too. `POST /api/partners/match` / `onboard` are stateless AI compute but 503 without AI configured.
+- **Search tool mapping:** the free-text evidence surfaces are `research` (concepts/specs/audits), `projects/search` (products/teams), `repos/search` (code), `builders`, `rfps`, `partners`. Enum/analytics surfaces (`clusters`, `analyze`, `leaderboard`, `hackathons`, `skills`) route by fixed params, not free text.
+- **Execute-tool ergonomics:** all endpoints are plain GET + query string → trivially expressible as `fetch(base + path + qs)`. Rich 400s with `valid*` arrays make retry-with-corrected-enum a safe automatic behavior. 404 on detail slugs means "discover the slug from the list endpoint first".
+- **Drift detection:** poll `GET /api/changelog?since=<last-check>` and diff `GET /api/openapi.json` `info.version` (currently 1.2.1). The changelog covers API + MCP + skill surfaces in one feed.
+- **Refresh script — exact commands to re-inventory:**
+
+```bash
+BASE=https://stellarlight.xyz
+# 1. Contract: full OpenAPI (paths, params, enums)
+curl -s $BASE/api/openapi.json | python3 -c 'import json,sys;json.dump(json.load(sys.stdin),sys.stdout,indent=2)' > stellar-light-openapi.json
+# 2. Live health + collection sizes + endpoint enumeration
+curl -s $BASE/api/status
+# 3. Contract-change feed since last refresh
+curl -s "$BASE/api/changelog?since=2026-07-02"
+# 4. Skills catalog (machine JSON) + one full skill body
+curl -s "$BASE/api/skills"
+curl -s "$BASE/api/skills/stellar-scout"        # full markdown at .skill.content
+# 5. Feedback write schema (discovery only — do not POST autonomously)
+curl -s $BASE/api/feedback
+# 6. Smoke probes (happy path + error envelope)
+curl -s "$BASE/api/research?q=soroban+authorization&limit=2"
+curl -s "$BASE/api/projects/search?q=passkey+wallet&limit=2"
+curl -s -o /dev/null -w '%{http_code}\n' "$BASE/api/research?source=bogus&q=x"   # expect 400
+curl -s -o /dev/null -w '%{http_code}\n' "$BASE/api/skills/nope-xyz"             # expect 404
+# 7. MCP tool descriptions (harvest, don't run)
+gh api repos/Stellar-Light/scout-mcp/contents/src/index.ts --jq .content | base64 -d
+```

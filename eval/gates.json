@@ -1,0 +1,9 @@
+{
+  "$comment": "Mechanically-enforced gate baselines (see EVALS.md rules). run-routing.mjs prints a gate verdict on every run and exits 1 on breach when invoked with --gate (CI does). Re-baselining is an explicit act: update these numbers in the same commit as the change that moves them, with the decision recorded in Solo (EVALS.md rule 1). Counts are absolute hits, not percentages.",
+  "gradingRule": "v2-twin-aware",
+  "baselinedAt": "2026-07-03T13:59:06Z",
+  "baselineResults": "routing-2026-07-03T13-59-06-937Z.json",
+  "note": "re-baselined 2026-07-03 on the onboarding-skills retirement (Solo todo 825): the 7 lumenloop-api/mcp-connect skills left catalog exposure (deny-list-as-data), so the 8 skills-lane cases targeting them moved to retiredCases in eval/skills-cases.json (their questions are direct-consumer transport tasks gateway callers cannot perform). Lane 31→23; top-1 18/23 with the SAME 5 pre-existing misses as the 26/31 baseline — zero hit→miss regressions among surviving cases; card@5 100%. Legacy 338 unchanged at 219/287/313. Prior baseline: routing-2026-07-03T13-16-57-892Z.json (M1 tiered gate-rescue backfill; legacy 208/267/283→219/287/313, extended pass@5 59→120/122).",
+  "legacy": { "n": 338, "top1": 219, "top3": 287, "top5": 313, "bandPct": 1 },
+  "skills": { "n": 23, "minTop1": 18 }
+}

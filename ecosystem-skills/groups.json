@@ -1,0 +1,58 @@
+{
+  "_comment": "Themed grouping for INDEX.md. Each member is a skill id of the form '<source>/<skill>' matching skills/<source>/<skill>/. build-index.mjs renders groups in this order, auto-extracts each skill's name/description from its SKILL.md YAML frontmatter, and lists any manifest skill NOT named here under an 'Uncategorized' section so newly synced skills surface loudly. When a source adds a skill, file its id into the right group below.",
+  "groups": [
+    {
+      "id": "ecosystem-research",
+      "title": "Ecosystem research & routing",
+      "description": "Stellar-ecosystem analyst skills — survey/map a sector, profile a project, digest recent activity, position an SCF idea, audit content, find an integration, or scout prior art. The richest playbooks in the catalog: multi-step gather routines an LLM runs via `execute` over the lumenloop and scout adapters.",
+      "members": [
+        "lumenloop/stellar-ecosystem-scout",
+        "lumenloop/stellar-ecosystem-digest",
+        "lumenloop/stellar-project-dossier",
+        "lumenloop/stellar-integration-finder",
+        "lumenloop/scf-submission-radar",
+        "lumenloop/stellar-content-auditor",
+        "lumenloop/stellar-builder-quickstart",
+        "lumenloop/lumenloop-mcp-connect",
+        "stellar-light/stellar-scout"
+      ]
+    },
+    {
+      "id": "lumenloop-api",
+      "title": "LumenLoop REST API integration",
+      "description": "Partner-tier playbooks for calling the LumenLoop REST API directly (auth, the response envelope, the 18 read tools, metered research, billing, keys). Mirrors the contract the codemode server's lumenloop adapter enforces — read them to understand the envelope and deny-list before authoring `execute` code (deep dive: research/services/lumenloop.md).",
+      "members": [
+        "lumenloop-api/lumenloop-api-connect",
+        "lumenloop-api/lumenloop-api-query",
+        "lumenloop-api/lumenloop-api-research",
+        "lumenloop-api/lumenloop-api-integrate",
+        "lumenloop-api/lumenloop-api-billing",
+        "lumenloop-api/lumenloop-api-keys"
+      ]
+    },
+    {
+      "id": "soroban-contracts",
+      "title": "Soroban & smart contracts",
+      "description": "Writing, securing, and upgrading Stellar smart contracts (SDF smart-contracts skill — formerly branded Soroban — + OpenZeppelin's Stellar contract skills). Execution micro-skill candidates for any contract-aware gather path.",
+      "members": [
+        "stellar-dev/smart-contracts",
+        "openzeppelin-stellar/setup-stellar-contracts",
+        "openzeppelin-stellar/upgrade-stellar-contracts",
+        "openzeppelin-stellar/develop-secure-contracts"
+      ]
+    },
+    {
+      "id": "stellar-appdev",
+      "title": "Stellar app dev & data",
+      "description": "SDF's developer skills for building on Stellar off-chain: dapps/wallets, chain data via RPC/Horizon, classic assets + SAC, agentic payments, SEP/standards, and ZK. Reference + selective execution micro-skill candidates.",
+      "members": [
+        "stellar-dev/dapp",
+        "stellar-dev/data",
+        "stellar-dev/assets",
+        "stellar-dev/agentic-payments",
+        "stellar-dev/standards",
+        "stellar-dev/zk-proofs"
+      ]
+    }
+  ]
+}

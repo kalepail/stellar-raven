@@ -1,0 +1,5 @@
+#!/bin/sh
+# Pre-commit secret guard. Auto-installed by `npm run prepare`
+# (git config core.hooksPath scripts/git-hooks). Blocks commits that introduce
+# secrets; see scripts/scan-secrets.mjs. Bypass (discouraged): git commit --no-verify
+exec node "$(git rev-parse --show-toplevel)/scripts/scan-secrets.mjs" --staged

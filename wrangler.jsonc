@@ -1,0 +1,73 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "stellar-raven-codemode",
+  "main": "src/server.ts",
+  // PLAN §6 pins: compat date ≥ 2026-06-11 + nodejs_compat (matches the
+  // codemode-mcp-openapi reference example).
+  "compatibility_date": "2026-06-11",
+  // global_fetch_strictly_public: all global fetches resolve as public
+  // internet (SSRF-safe), which lets workers-oauth-provider enable CIMD —
+  // URL-based client_ids so MCP clients can skip dynamic registration. Safe
+  // here: every host-side fetch (Lumenloop, Scout, Algolia, WorkOS) is a
+  // public hostname and the execute sandbox has no network at all.
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  // Dynamic Workers / Worker Loader binding for the Phase 3 `execute` tool
+  // (DynamicWorkerExecutor). Open beta, Workers Paid in production; works in
+  // local dev on any plan. Unused until Phase 3 but declared now per PLAN §6.
+  "worker_loaders": [
+    {
+      "binding": "LOADER"
+    }
+  ],
+  // Token/client/grant storage for @cloudflare/workers-oauth-provider
+  // (research/auth-workos.md). The binding MUST be named OAUTH_KV — the
+  // library reads it by that name. Namespace pre-created for this project.
+  "kv_namespaces": [
+    {
+      "binding": "OAUTH_KV",
+      "id": "6a5d8d2c8f8a409882a15f8f32bc3a96"
+    }
+  ],
+  // Production hostnames: raven.stellar.buzz is the default/primary route;
+  // agents.stellar.buzz is retained (keeps the WorkOS redirect-URI
+  // registration valid + back-compat for existing clients). Ignored by local
+  // wrangler dev. workers.dev stays off: the custom domains are the only
+  // front door.
+  "routes": [
+    {
+      "pattern": "agents.stellar.buzz",
+      "custom_domain": true
+    },
+    {
+      "pattern": "raven.stellar.buzz",
+      "custom_domain": true
+    }
+  ],
+  "workers_dev": false,
+  "observability": {
+    "enabled": true,
+    // Traces (open beta): auto-instruments host-side adapter fetches +
+    // handler spans; Worker Loader isolates are NOT auto-instrumented — the
+    // execute boundary gets a custom span (tracing.enterSpan in
+    // src/executor/run.ts). Spans bill as observability events (shared 10M/mo
+    // Paid quota with logs); traffic is low, so 100% sampling. Full survey:
+    // research/observability-cloudflare.md.
+    "traces": {
+      "enabled": true
+    }
+  },
+  // Readable production stack traces in Workers Logs (bundle is esbuild
+  // output; without maps, errors point at minified positions).
+  "upload_source_maps": true
+  // NOTE: stateless server (PLAN §1) — deliberately no Durable Object
+  // bindings/migrations. Secrets (LUMENLOOP_API_KEY, ALGOLIA_APPLICATION_ID,
+  // ALGOLIA_API_KEY, WORKOS_CLIENT_ID, WORKOS_API_KEY, MCP_ADMIN_TOKEN,
+  // MCP_SERVER_SECRET) go via `wrangler secret put` in prod and `.dev.vars`
+  // locally. DEV_ALLOW_UNAUTHENTICATED lives ONLY in `.dev.vars` (auth
+  // bypass for local dev) — never deploy it as a var or secret. Even if it
+  // WERE deployed it is inert: gate.ts honors it only on a loopback hostname
+  // (localhost/127.0.0.1/::1), never on the public domain.
+}
