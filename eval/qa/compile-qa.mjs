@@ -179,6 +179,12 @@ function main() {
     if (!Array.isArray(o.rootCause) || o.rootCause.length === 0) {
       missing.push("rootCause (non-empty array — improvements/ finding path, solo:// ref, or explicit eval-side rationale)");
     }
+    if (!["real-world", "corpus-grounded", "mixed"].includes(o.truthDomain)) {
+      missing.push('truthDomain ("real-world" | "corpus-grounded" | "mixed" — see .claude/skills/golden-truth)');
+    }
+    if (!Array.isArray(o.corroboration) || o.corroboration.length === 0) {
+      missing.push("corroboration (non-empty array — the multi-source verification matrix per .claude/skills/golden-truth; the aggregator never corroborates itself)");
+    }
     if (missing.length > 0) {
       throw new Error(`golden-overrides.json entry "${id}" is missing ${missing.join("; ")}`);
     }

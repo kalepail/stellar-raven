@@ -5,7 +5,8 @@ status: verified
 discovered: 2026-07-03
 evidence:
   - live production execute 2026-07-03 (scout.searchProjects name probes; Solo scratchpad 521 follow-up, todo 826 comment 2224)
-  - consumer-side workaround shipped: eval/qa/golden-overrides.json q-defi-lending-scf-flagships avoid item names both records explicitly
+  - deep verification 2026-07-03 (todo 828): official SCF award pages confirm OrbitCDP awards (SCF #21 incl. 'Part 2 of budget', spring-2024 round, SCF #29; team Zenith Protocols), while a web sweep found NO primary or project-side evidence of a distinct 'Orbit Finance' project — the lineage's own branding oscillates between Orbit / Orbit Protocol / OrbitCDP, so the unfunded row is most plausibly a naming artifact of the same lineage
+  - consumer-side workaround shipped: eval/qa/golden-overrides.json q-defi-lending-scf-flagships (grader instructed not to penalize treating the two rows as one lineage)
 ---
 
 ## Finding

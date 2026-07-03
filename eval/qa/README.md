@@ -92,6 +92,16 @@ per-field replacement of `golden` subfields plus `graderNotesAppend` (preserving
 review trail); applied ids are recorded in `cases.json → overrides`, stale ids warn at compile
 time.
 
+**Gospel changes go through the golden-truth skill.** Any change to golden *content*
+(`answer`/`keyFacts`/`avoid`/`sources`/`graderNotes`) follows
+`.claude/skills/golden-truth/SKILL.md`: classify the truth domain (real-world vs
+corpus-grounded vs freshness), triangulate across independent source classes (primary docs,
+source code, live services, general-web research via perplexity/parallel, docs index — the
+aggregator never corroborates itself), and encode by verdict — confirmed facts may pin
+(with `asOf` when volatile), **disputed facts are never pinned**, unverifiable facts are
+never claimed. Entries must carry `truthDomain` + a `corroboration` matrix (compile-enforced
+alongside `why`/`evidence`/`rootCause`).
+
 **Overrides are stop-gaps, not fixes.** An override corrects the eval's *copy* of the truth;
 the defect that made it necessary lives somewhere else and must be captured where it can
 actually get fixed — an upstream service gap goes to `improvements/`, an eval-side

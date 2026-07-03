@@ -1,0 +1,118 @@
+# Golden gospel-truth verification — how to change the golden corpus without codifying lies
+
+This skill is agent-agnostic: a plain-markdown runbook. Claude Code invokes it as a skill;
+Codex or any other CLI agent can be pointed at this file directly.
+
+## North star
+
+The golden Q→A corpus is the **gospel every eval round is judged against**. A wrong agent
+answer costs one verdict; a wrong golden silently corrupts every future round, every A/B,
+every re-judge — and a golden "corrected" from thin evidence is worse than the error it
+replaced, because it now carries the authority of a review. Therefore:
+
+> **Never change gospel from a single source class.** Live-probing the corpus, or reading
+> one docs page, is discovery — not verification. Gospel changes require multi-source
+> triangulation across independent source classes, and disputed facts are encoded as
+> disputes, never pinned.
+
+This skill governs ANY change to golden content — `answer`, `keyFacts`, `avoid`, `sources`,
+`graderNotes` — all of which land as `eval/qa/golden-overrides.json` entries (the corpus
+archive is verbatim/read-only; see the override doctrine in `eval/qa/README.md`: overrides
+are stop-gaps wearing their provenance, and `compile-qa.mjs` refuses entries missing their
+provenance fields).
+
+## Step 1 — classify the truth domain (this picks the verification standard)
+
+| Domain | What gospel means | Examples |
+|---|---|---|
+| **real-world / protocol** | Authoritative primary sources + source code. The corpus/aggregators may lag or be wrong — that's an `improvements/` finding, never an excuse to weaken the golden. | RPC limits, CLI commands, SEP semantics, build targets |
+| **corpus-grounded** | What the live community corpora (Scout, Lumenloop) support NOW, **cross-checked against the real world**. Distinguish *real-world-confirmed* from *corpus-only* (in the aggregator, no external footprint). Corpus-only facts may appear in goldens but must be labeled so graders treat them as source-relative. A corpus-vs-world contradiction → `improvements/` finding + grade leniently on both sides. | Regional community events, builder directories, project records |
+| **freshness-sensitive** | A *behavior*, never a pinned value. Point-in-time figures require an `asOf` date in the golden text itself. | SCF amounts, country counts, versions, rosters |
+
+Most questions mix domains — classify per CLAIM, not per case.
+
+## Step 2 — know your source classes (independence is between CLASSES)
+
+- **A. Official primary docs/sites** — developers.stellar.org, service owners' own docs
+  (WebFetch, `mcp__parallel-search__web_fetch`).
+- **B. Source code / repos** — the implementation is the ground truth for limits and
+  behavior (`mcp__github__search_code` / `get_file_contents`, `mcp__deepwiki__ask_question`).
+- **C. Live service APIs** — production probes through this server's own `execute`/`search`
+  or direct Lumenloop / Stellar Light calls. **The aggregator being checked NEVER counts as
+  corroboration for its own claims** — if the claim came from Scout, probing Scout again is
+  re-reading the same witness.
+- **D. General-web research** — `mcp__perplexity__perplexity_search/ask/research/reason`;
+  `mcp__parallel-search__web_search_preview`; `mcp__parallel-task__createDeepResearch` for
+  analyst-grade single topics; the `parallel-cli` bin (`~/.local/bin/parallel-cli` —
+  search / research / enrich) for scripted sweeps. These are metered/paid — that is the
+  point: gospel is worth expensive verification. (Paid **Lumenloop** research stays gated
+  and off — that rule is unchanged.)
+- **E. Docs search index** — `mcp__stellar-docs__algolia_*`: checks BOTH the fact and its
+  discoverability; an authoritative page missing from the index is an `improvements/`
+  finding (the sd-003 pattern).
+
+Two perplexity hits are ONE class. Corroboration = agreement across classes.
+
+## Step 3 — corroboration thresholds by claim criticality
+
+| Claim type | Minimum bar |
+|---|---|
+| Numeric limits / versions / amounts / dates | ≥2 independent classes, at least one primary (A or B). Docs + the source constant is the gold standard. |
+| Entity attribution / status (who built X; is X funded) | Primary source + 1 independent class. |
+| Existence / footprint (events, builders, programs) | 1 authoritative source + a no-contradiction web sweep. Corpus-domain: live corpus + a real-world sample check (do ≥5 sampled items have external footprints — lu.ma pages, articles, repos?). |
+| **Negative claims** ("X is NOT funded", "no Y exists") | The hardest class — absence from primary records + an explicit web sweep, and even then phrase as of-date and source-relative ("per SCF records as of <date>") rather than absolute. |
+
+## Step 4 — fan out verification subagents (parallel by claim cluster)
+
+Group claims into clusters (one topic per agent), assign each agent an explicit source-class
+mix, and require a **corroboration matrix** back:
+
+```json
+{"claims":[{"claim":"...","verdict":"confirmed|disputed|contradicted|unverifiable",
+  "sources":[{"class":"A|B|C|D|E","ref":"url or repo path","quote":"exact text","asOf":"date"}],
+  "notes":"nuances"}],"overallNotes":"..."}
+```
+
+Rules for the fan-out: agents research, they do NOT edit files; exact quotes + URLs + dates
+mandatory (a stranger must be able to re-walk the trail); "unverifiable" is an honest,
+useful verdict — never stretch weak evidence; when two agents disagree, run a targeted
+follow-up probe — never coin-flip, never average.
+
+## Step 5 — encode by verdict
+
+| Verdict | What the golden may do |
+|---|---|
+| confirmed | Pin it — with an `asOf` in the golden text if the fact is volatile. |
+| **disputed** | **NEVER pin.** Encode the disagreement: grader caution ("sources disagree — do not penalize either figure"), answer-visible sourcing-guard avoid items instead of number traps, and file the reconciliation upstream (`improvements/`). |
+| contradicted | Fix the golden AND capture the root cause of the original error (how did the wrong fact get in?). |
+| unverifiable | The golden must not claim it. Downgrade to nice-to-have in graderNotes or remove; corpus-only community facts get labeled source-relative ("per the Scout corpus"). |
+
+Every gospel change lands as a `golden-overrides.json` entry carrying `why` + `evidence` +
+`rootCause` (compile-enforced) **plus** `truthDomain` and a `corroboration` block (the
+matrix rows that justified the change — also compile-enforced). The compile checks the
+fields exist; the reviewer checks they're true.
+
+## Step 6 — test and close
+
+- `node eval/qa/compile-qa.mjs --sample 30` — validation passes, exactly the intended cases
+  changed (parsed-JSON diff, not line diff).
+- `npm run eval:qa:lint` — no new judge-blind avoid items.
+- `npm run eval:plan -- <last-results>` — plan grades unchanged (goldens don't affect plan
+  rules, so any change here means something leaked).
+- If a saved run's verdict hinged on the changed golden: re-judge that row
+  (`judgeCase` on `rows[].answer`) and record the flip direction in the round record —
+  a fix that only ever flips verdicts toward "correct" is a smell (see score-laundering
+  note in `eval/qa/README.md`).
+- Solo: record the corroboration matrices in the round/working scratchpad; close the todo
+  with commit refs.
+
+## Hard rules
+
+- The aggregator never corroborates itself; a judge's opinion never justifies a gospel
+  change; a single source class never suffices.
+- Disputed facts are never pinned. Unverifiable facts are never claimed.
+- Volatile facts always carry `asOf` in the golden text.
+- Paid Lumenloop research stays gated/off; perplexity/parallel spend is expected and
+  appropriate here. Never print or commit secrets.
+- Traps must punish claims that are FALSE per this skill's verification — a trap that
+  punishes a possibly-true claim is a judge artifact factory (exactly what todo 826 fixed).
