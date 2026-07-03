@@ -34,10 +34,18 @@ const FACES = [
  */
 async function largestWoff2Base64(cssSpec) {
   const url = `https://fonts.googleapis.com/css2?family=${cssSpec}`;
-  const css = await (await fetch(url, { headers: { "User-Agent": UA } })).text();
+  const cssRes = await fetch(url, { headers: { "User-Agent": UA } });
+  if (!cssRes.ok) throw new Error(`css2 fetch failed ${cssRes.status} ${cssRes.statusText}: ${url}`);
+  const css = await cssRes.text();
   const urls = [...css.matchAll(/url\((https:\/\/fonts\.gstatic\.com\/[^)]+\.woff2)\)/g)].map((m) => m[1]);
   if (!urls.length) throw new Error(`no woff2 in ${url}`);
-  const bufs = await Promise.all(urls.map(async (u) => Buffer.from(await (await fetch(u)).arrayBuffer())));
+  const bufs = await Promise.all(
+    urls.map(async (u) => {
+      const res = await fetch(u);
+      if (!res.ok) throw new Error(`woff2 fetch failed ${res.status} ${res.statusText}: ${u}`);
+      return Buffer.from(await res.arrayBuffer());
+    })
+  );
   return bufs.reduce((a, b) => (b.length > a.length ? b : a)).toString("base64");
 }
 

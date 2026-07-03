@@ -16,9 +16,16 @@
 //     output before writing; URLs use `{ALGOLIA_APPLICATION_ID}` placeholders.
 //
 // Authored config (NOT fetched — preserved verbatim across refreshes):
-//   LUMENLOOP_PARTNER_TOOLS / LUMENLOOP_PARTNER_SKILLS — the partner-lane names
-//   hidden from the list endpoints (the union quirk, research/services/lumenloop.md);
-//   validated against GET /v1/me counts every run so drift fails loudly.
+//   LUMENLOOP_PARTNER_TOOLS — the partner-lane tool names hidden from GET
+//   /v1/tools even with a partner key (the union quirk,
+//   research/services/lumenloop.md); the tool union count is validated against
+//   GET /v1/me `tools.available` every run so drift fails loudly.
+// Skills are NOT authored the same way: GET /v1/skills already LISTS the
+// partner-set skills (marking them available:false), so the union comes from
+// that list plus per-name detail fetches — no name list to maintain. The
+// count guard is tools-only: GET /v1/me carries `tools.available` but exposes
+// NO skills count/list to assert against, so there is nothing to check the
+// skill union against.
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -31,10 +38,11 @@ const INVENTORY_DIR = join(ROOT, "inventory");
 // ---------------------------------------------------------------------------
 // Authored config — Lumenloop partner lane
 // ---------------------------------------------------------------------------
-// GET /v1/tools and GET /v1/skills hide partner-tier items even with a partner
-// key. These names come from research/services/lumenloop.md (verified live
-// 2026-07-01); the script unions them with the list endpoints and asserts the
-// tool union count equals GET /v1/me `tools.available`.
+// GET /v1/tools hides partner-tier tools even with a partner key. These names
+// come from research/services/lumenloop.md (verified live 2026-07-01); the
+// script unions them with GET /v1/tools and asserts the tool union count
+// equals GET /v1/me `tools.available`. (Skills differ — see the header note:
+// GET /v1/skills already lists them, so no authored skill name list exists.)
 const LUMENLOOP_BASE = "https://api.lumenloop.com/v1";
 const LUMENLOOP_PARTNER_TOOLS = ["list_my_research", "request_research", "research_result"];
 
@@ -60,9 +68,24 @@ function stableStringify(value) {
   return `${JSON.stringify(sortDeep(value), null, 2)}\n`;
 }
 
-const SECRET_VALUES = Object.entries(parseEnvFile(join(ROOT, ".env")))
-  .filter(([, v]) => v && v.length >= 6)
-  .map(([k, v]) => [k, v]);
+// Env var names this script reads for auth — asserted absent from every output
+// even on an env-only run (no .env file, e.g. secrets exported into the
+// environment) where parseEnvFile below returns nothing.
+const SECRET_ENV_NAMES = ["LUMENLOOP_API_KEY", "ALGOLIA_APPLICATION_ID", "ALGOLIA_API_KEY"];
+
+// Scrub-check values: the union of .env entries (generic — every value, as
+// before) AND process.env values for the secret key names above, so a run that
+// supplies secrets via the environment instead of .env is still guarded. Keyed
+// by name=value so the two sources dedupe.
+const SECRET_VALUES = (() => {
+  const byPair = new Map();
+  const add = (k, v) => {
+    if (typeof v === "string" && v.length >= 6) byPair.set(`${k}=${v}`, [k, v]);
+  };
+  for (const [k, v] of Object.entries(parseEnvFile(join(ROOT, ".env")))) add(k, v);
+  for (const k of SECRET_ENV_NAMES) add(k, process.env[k]);
+  return [...byPair.values()];
+})();
 
 function assertNoSecrets(fileName, text) {
   for (const [name, value] of SECRET_VALUES) {
@@ -360,14 +383,14 @@ async function refreshStellarDocs() {
 // ---------------------------------------------------------------------------
 async function main() {
   mkdirSync(INVENTORY_DIR, { recursive: true });
-  const [lumenloop, stellarLight] = await Promise.all([
+  const [lumenloop, stellarLight, stellarDocs] = await Promise.all([
     refreshLumenloop(),
     refreshStellarLight(),
     refreshStellarDocs(),
   ]);
   console.log(
     `done: lumenloop ${lumenloop.toolCount} tools (${lumenloop.partnerToolCount} partner, hidden from /v1/tools) + ${lumenloop.skillCount} skills + openapi (${lumenloop.openapiOperationCount} ops); ` +
-      `stellar-light ${stellarLight.operationCount} ops; stellar-docs index settings`,
+      `stellar-light ${stellarLight.operationCount} ops; stellar-docs index settings + ${stellarDocs.pageTitleCount} page titles`,
   );
 }
 

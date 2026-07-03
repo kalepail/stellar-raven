@@ -136,3 +136,31 @@ jobs:
         run: |
           echo "::error::live services drifted from the committed inventory and/or skills mirror — see the drift issue"
           exit 1
+      # Crash guard: if refresh-inventory.mjs / build-catalog.mjs / spec:build /
+      # a mirror or drift check DIED before drift detection completed, the job
+      # would otherwise fail silently (just a red scheduled run). Open/update a
+      # labeled issue so the crash is impossible to miss. Gated on the drift step
+      # NOT having succeeded, so the intentional exit-1 steps above (real drift /
+      # skills-check error — already surfaced via the drift issue) don't also
+      # trip this. Static body only — never echoes .env / secret values.
+      - name: open or update refresh-failure issue
+        if: failure() && steps.drift.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Refresh job crashed'
+            echo
+            echo 'The daily refresh failed BEFORE drift detection completed — a script'
+            echo 'error (refresh-inventory / build-catalog / spec:build / a mirror or'
+            echo 'skills-drift check), not a normal upstream-drift result.'
+            echo
+            echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          } > refresh-failure.md
+          gh label create refresh-failure --description "daily refresh job crashed before drift detection" --color B60205 2>/dev/null || true
+          existing=$(gh issue list --label refresh-failure --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file refresh-failure.md
+          else
+            gh issue create --title "Refresh job crashed" --label refresh-failure --body-file refresh-failure.md
+          fi

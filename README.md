@@ -69,9 +69,9 @@ Token/client/grant state lives in the `OAUTH_KV` namespace (bound in `wrangler.j
 ## Development
 
 ```
-npm run check   # tsc
-npm test        # vitest (offline; auth suite in test/auth.test.ts)
-npm run types   # regenerate env.d.ts after wrangler.jsonc/.dev.vars changes
+npm run typecheck  # tsc
+npm test           # vitest (offline; auth suite in test/auth.test.ts)
+npm run typegen    # regenerate env.d.ts after wrangler.jsonc/.dev.vars changes
 ```
 
 ## Observability

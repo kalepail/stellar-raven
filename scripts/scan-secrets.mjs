@@ -2,18 +2,21 @@
 /**
  * scan-secrets.mjs — zero-dependency secret guard (local pre-commit + CI backstop).
  *
- * Why this exists: GitHub push protection is unavailable on this private,
- * user-owned repo (needs paid GitHub Secret Protection). So the real defense is
- * (1) a pre-commit hook that blocks a secret before it becomes a commit, and
- * (2) a CI job that re-scans the tree as a server-side backstop. This file is
- * the engine for both. No npm deps — runs with `node` alone (Node >= 24, like
- * the other scripts/*.mjs).
+ * Why this exists: this repo is public (since 2026-07-03), so GitHub's native
+ * secret scanning + push protection are active on top (see
+ * .github/secret_scanning.yml for the path exclusions). This engine is
+ * defense-in-depth UNDER that — it catches a secret earlier and works
+ * regardless of GitHub plan/visibility: (1) a pre-commit hook that blocks a
+ * secret before it becomes a commit, and (2) a CI job that re-scans the tree
+ * as a server-side backstop. No npm deps — runs with `node` alone (Node >= 24,
+ * like the other scripts/*.mjs).
  *
  * Modes:
  *   --staged  (default)  scan only lines ADDED in the staged diff. Used by the
  *                        pre-commit hook. Also blocks staging .env / .dev.vars.
- *   --tree               scan all tracked files. Used by CI (npm run secrets:scan
- *                        -- --tree) and for a full local audit.
+ *   --tree               scan all tracked files. Used by CI (which runs
+ *                        `node scripts/scan-secrets.mjs --tree` directly) and
+ *                        for a full local audit (npm run secrets:scan -- --tree).
  *
  * Detection layers (high precision — a noisy hook is a disabled hook):
  *   A. Env files must never be staged/tracked (belt-and-suspenders over .gitignore).
@@ -194,7 +197,12 @@ function scan({ mode }) {
 
   for (const { file, line, text } of rows) {
     if (/secret-scan:allow/.test(text)) continue;
-    const ext = file.slice(file.lastIndexOf("."));
+    // Extension from the BASENAME's last dot — "" for dotless files (e.g.
+    // scripts/git-hooks/pre-commit) so layer D still covers them; a dot in a
+    // parent dir (foo.bar/baz) must not be mistaken for an extension.
+    const base = file.slice(file.lastIndexOf("/") + 1);
+    const dot = base.lastIndexOf(".");
+    const ext = dot === -1 ? "" : base.slice(dot);
 
     // Layer B — live .env/.dev.vars values (applies to ALL file types).
     for (const s of live)

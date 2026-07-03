@@ -698,10 +698,13 @@ function main() {
   }
 
   // generatedAt = newest input snapshot (deterministic; never wall clock).
+  // Includes stellar-docs-titles.json's fetchedAt: its page-title vocabulary
+  // feeds the manifest `keywords`, so a titles-only refresh must move the stamp.
   const generatedAt = [
     lumenloop.fetchedAt,
     stellarLight.fetchedAt,
     stellarDocsSpec.authoredAt,
+    stellarDocsTitles.fetchedAt,
     skillsManifest.synced_at
   ].reduce((max, ts) => (Date.parse(ts) > Date.parse(max) ? ts : max));
 
