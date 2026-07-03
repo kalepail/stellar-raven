@@ -81,22 +81,24 @@ stellarDocs `backend` block **and measured corpus taxonomy**, skills mirror prov
   tree of the docs corpus.
 - **skills (3 ops)** — see §3.
 
-## 3. Skills representation — judicious, not 278 paths
+## 3. Skills representation — judicious, not one path per section
 
-The catalog has 25 skills + 278 skill-sections. Emitting a path per skill (or per section) would
-bloat `paths` with entries that are not operations (nothing is *called* per skill) and drown the
-75 real operations in 300+ pseudo-paths. Instead the skills service is **3 operations + an
-embedded index**, designed around "deliver skill context when and as relevant":
+The catalog has 25 mirrored skills (**18 exposed** after the 2026-07-03 retirement, ADR-0002) +
+203 skill-sections. Emitting a path per skill (or per section) would bloat `paths` with entries
+that are not operations (nothing is *called* per skill) and drown the 75 real operations in
+200+ pseudo-paths. Instead the skills service is **3 operations + an embedded index**, designed
+around "deliver skill context when and as relevant":
 
-- `GET /skills/list_skills` — carries **`x-skill-index`**: all 25 skills as
+- `GET /skills/list_skills` — carries **`x-skill-index`**: the 18 exposed skills as
   `{ id, source, description, sections }`, where `description` is the skill's own frontmatter
   description (its "when to use" text) and `sections` is the **heading list only** (every `##`
   heading of SKILL.md plus `file:<relpath>` keys for extra reference files; bodies are NOT in the
-  spec). 278 section keys total — asserted 1:1 against the catalog's skill-section ids, so every
-  listed section is guaranteed readable. Its `x-execute` shows the trick: the list is satisfied
+  spec). 203 section keys total — asserted 1:1 against the catalog's exposed skill-section ids
+  (the index is policy-filtered from the same manifest deny-list), so every listed section is
+  guaranteed readable. Its `x-execute` shows the trick: the list is satisfied
   from the spec itself, `(await codemode.spec()).paths["/skills/list_skills"].get["x-skill-index"]`
   — works identically in the search sandbox and in execute.
-- `POST /skills/read_skill` — `name` is an **enum of the 25 real skill ids** (no guessing), plus
+- `POST /skills/read_skill` — `name` is an **enum of the 18 exposed skill ids** (no guessing), plus
   optional `sections` (headings, slugs, or `file:` keys) for partial retrieval.
   `x-execute: await codemode.skill.read(name, { sections })` — the real, existing affordance.
 - `POST /skills/search_skill_sections` — ranked lexical search over skills + sections;
@@ -104,19 +106,22 @@ embedded index**, designed around "deliver skill context when and as relevant":
 
 Honesty rule: skills ops never pretend to be `skills.*` sandbox globals (none exist); each op's
 `x-execute` names the actual `codemode.*` call. Lumenloop's 14 API-served skills stay out of this
-index (metadata-only upstream; their mirrored bodies are already among the 25 via the exact-name
-alias in `src/skills/store.ts`).
+index (metadata-only upstream, and all 14 are now deny-listed by the twin de-dup, ADR-0002);
+their mirrored bodies live in the `skills.*` mirror via the exact-name alias in
+`src/skills/store.ts` — the 7 transport-agnostic playbooks among the 18 exposed, the 7
+API-onboarding skills retired.
 
 ## 4. Size — measured, not guessed
 
-From `npm run spec:build` (2026-07-02 inventory snapshots):
+From `npm run spec:build` (current — 2026-07-03 inventory snapshots; sizes drift with each daily
+refresh, so treat exact bytes as as-of-2026-07-03, not invariants):
 
 | Measure | Value |
 |---|---|
 | Paths / operations | 75 paths / 75 operations (36 lumenloop, 24 scout, 12 stellarDocs, 3 skills) |
 | Denied operations | 19 (16 lumenloop, 3 scout) |
-| Pretty (checked-in) | **275,781 bytes** |
-| Compact — what ships into the sandbox per search | **180,291 bytes ≈ 45,073 tokens** (4 chars/token, upstream's own heuristic) |
+| Pretty (checked-in) | **273,899 bytes** |
+| Compact — the serialized in-sandbox form | **179,445 bytes ≈ 44,861 tokens** (4 chars/token, upstream's own heuristic) |
 | Largest single op | `skills.list_skills` (~20 KB — the embedded index), then `lumenloop.research_result` (~5.5 KB) |
 
 Decision: **the full spec ships — no trimmed search view.** The brief's threshold was ~300 KB;
@@ -188,8 +193,8 @@ Deliberate deltas (each with rationale):
 
 - `test/super-spec.test.ts` — determinism (double build byte-identical + artifact freshness),
   per-service counts, path/operationId invariants, x-execute presence rules, policy identity with
-  the catalog, skills index ↔ catalog section 1:1 (all 278), read_skill enum = 25 real ids,
-  stellarDocs x-algolia, scout $ref resolvability, <300 KB compact budget.
+  the catalog, skills index ↔ catalog section 1:1 (all 203 exposed), read_skill enum = 18
+  exposed ids, stellarDocs x-algolia, scout $ref resolvability, <300 KB compact budget.
 - `test/spec-sandbox.test.ts` — generated-source shape, `</` escaping, fence normalization, and
   the wrapper EVALUATED under Node: $ref inlining, `$circular`, external-ref pass-through, lazy
   spec caching, in-sandbox truncation format, host-side helpers, host/sandbox resolver parity,

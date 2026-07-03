@@ -1,7 +1,9 @@
 # Stellar Docs — direct Algolia REST Search API (primary integration)
 
 _Measured live on **2026-07-01** with raw curl probes using the dedicated search key in
-`.env`. This doc supersedes the MCP path in `stellar-docs-mcp.md` (retained as fallback)._
+`.env`. This doc supersedes the MCP path in `stellar-docs-mcp.md` (retained as fallback). For
+the authored spec built on top of this index — why it looks the way it does — see
+[`stellar-docs-spec-design.md`](./stellar-docs-spec-design.md) (design record; the 12 ops shipped)._
 
 ## Overview
 

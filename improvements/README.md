@@ -49,8 +49,9 @@ evidence:
   `fixed-upstream` when a live re-check confirms the fix. Refresh status whenever
   upstream changes (drift refresh is a natural checkpoint).
 - Findings here are for the **services**. Fixes to this repo (adapters,
-  normalizers, catalog, eval golden) go to Solo project 49 todos instead — a
-  finding file may note that a fix landed here, but the repo work is tracked there.
+  normalizers, catalog, eval golden) go to Solo todos instead (the Solo project binding
+  lives in CLAUDE.md) — a finding file may note that a fix landed here, but the repo work
+  is tracked there.
 
 ## When findings get filed
 

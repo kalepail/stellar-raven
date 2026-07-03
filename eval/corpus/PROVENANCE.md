@@ -35,6 +35,15 @@ copy verified byte-identical with `diff -r`).
   2026-06-29 net-new themes doc that produced the +144 expansion (commit `09a9b9e`, 539→538
   after dedupe).
 
+> **Name-collision note (historical scoping).** The vendored doc
+> `raven-next/research/golden/_meta/_prior-art/review-raven-main.md` cites its source as
+> `github.com/kalepail/stellar-raven` @ `main`. At capture time (2026-07-02) that name belonged
+> to the **retired prior-art repo** whose route-card battery it reviews. On 2026-07-02 the
+> repo you are reading was *renamed to* `stellar-raven` (from `stellar-raven-codemode`), so the
+> GitHub name now resolves to a different codebase. The citation is **historically scoped** — it
+> points at the retired repo's contents, not this one. (Vendored content is read-only archival;
+> this note lives in PROVENANCE, not in the vendored file.)
+
 ### `raven-golden-qa/` — the loose corpus exports (was NOT a git repo; no other provenance)
 
 | File | sha256 (source) | What it is |

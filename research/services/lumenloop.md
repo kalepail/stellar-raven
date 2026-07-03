@@ -4,8 +4,8 @@
 > `stellar-raven-codemode/.env` (`LUMENLOOP_API_KEY`, format `llmcp_…` — value redacted
 > everywhere in this doc). **Re-verified 2026-07-02:** OpenAPI byte-identical to the
 > 07-01 save, changelog still 16 entries (latest 2026-06-25), tool union still 18 + 3 = 21
-> (`/v1/me` `tools.available: 21`) — no upstream change since 07-01. Backend truth cross-checked against the local clone at
-> `/Users/kalepail/Desktop/lumenloop-backend/` (service `lumenloop-mcp`) and prior measured
+> (`/v1/me` `tools.available: 21`) — no upstream change since 07-01. Backend truth was cross-checked against the local clone at
+> `/Users/kalepail/Desktop/lumenloop-backend/` (service `lumenloop-mcp`; **clone retired** — no longer on disk) and prior measured
 > characterization in `/Users/kalepail/Desktop/stellar-raven-next/research/capability/lumenloop.md`.
 
 ## Overview
@@ -193,7 +193,7 @@ Partner research tools (tier `partner`; invisible on `/v1/tools`, discoverable p
 | `GET /v1/docs` | **markdown** (text, ~23 KB) | full agent guide: auth, tiers, envelope + `meta.format` rules, error table, rate-limit headers, 3 named workflows (profile-a-project, topic-research, explore-scf-funding), full tool catalog with curl examples |
 | `GET /v1/tools` | JSON | catalog (guest lane only — 18) with `when_to_use`/`returns`/`detail` per tool |
 | `GET /v1/tools/{name}` | JSON | one tool: full JSON Schema in/out, `example_args`, `invoke` block, `cost` (metered tools). Works for partner tools with auth |
-| `GET /v1/openapi.json` | OpenAPI **3.1.0** (~125 KB) | codegen spec — guest tools + account endpoints only. Saved pretty-printed at `research/services/lumenloop-openapi.json` |
+| `GET /v1/openapi.json` | OpenAPI **3.1.0** (~125 KB) | codegen spec — guest tools + account endpoints only. Captured in `inventory/lumenloop.json` (refreshed daily by CI drift job) |
 | `GET /v1/changelog` | JSON | newest-first integration changelog (16 entries live); `?since=YYYY-MM-DD`, `?breaking=true` |
 | `GET /v1/skills` · `/v1/skills/{name}` · `/v1/skills/archive/{set}` | JSON / zip | agent skill playbooks served by the API itself (see below) |
 | `GET /llms.txt` | text | llms.txt index pointing at docs/tools/openapi/MCP |

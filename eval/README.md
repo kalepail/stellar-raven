@@ -381,3 +381,62 @@ Reading notes:
   `q-skill-assets-stablecoin-issuance`) are unchanged.
 - Gate verdict: `--gate` PASSES against the new baseline (legacy within ±3 of 208/267/283,
   skills lane top-1 26 at floor).
+
+## Re-baseline (2026-07-03, todo 825): onboarding-skills retirement + tiered gate-rescue backfill
+
+Two round-4 changes landed in this baseline. (1) The **tiered gate-rescue backfill** (round 4 M1,
+`src/catalog/scoring.ts` lever 5): long multi-clause questions that gate to zero now get an
+ungated tier-2 page appended strictly below the gated tier-1 hits — no gated ranking changed, so
+the legacy lane moved on backfill alone (208→219 top-1). (2) The **onboarding-skills retirement +
+twin de-dup** (ADR-0002): the 7 Lumenloop API-onboarding skills were retired and all 14
+`lumenloop.skill.*` twins deny-listed, and the skills lane was **re-scoped 31→23 cases** — the 8
+cases that targeted the retired onboarding skills moved to `eval/skills-cases.json` `retiredCases`
+(documented-inert, not deleted). The skills floor is re-expressed on the new denominator; the 5
+long-standing lexical-starvation misses are unchanged, so 26/31 → 18/23 is the same real miss set.
+
+Run: `routing-2026-07-03T13-59-06-937Z.json` (grading rule v2, twin-aware).
+
+| scope | rule | top-1 | top-3 | top-5 |
+|---|---|---|---|---|
+| legacy 338 (prior gate, todo 820) | v2 | 208 | 267 | 283 |
+| legacy 338 (**new gate**) | **v2** | **219** | **287** | **313** |
+| skills lane (prior floor, /31) | v2 | 26 | 30 | 30 |
+| skills lane (**new floor, /23**) | **v2** | **18** | — | — |
+
+Reading notes:
+
+- **Legacy +11/+20/+30** is pure tier-2 backfill of previously-zero-hit long questions; the
+  extended (real-user-phrasing) lane is where it shows most — extended zero-hit 65/122 → 0,
+  pass@5 → 120/122, strict top-1 74/122 at this baseline.
+- **Skills 26/31 → 18/23**: the 8 retired cases were all top-1 hits, so both numerator and
+  denominator drop by 8 (26−8=18, 31−8=23); the miss set is unchanged.
+- Gate verdict: `--gate` PASSES against the new baseline.
+
+## Re-baseline (2026-07-03, todo 824): operation keywords (M3/M4)
+
+Operations gained the low-weight `keywords` field, distilled from schema property names / enum
+values plus (for stellarDocs) the page-title snapshot in `inventory/stellar-docs-titles.json`,
+document-frequency-filtered so only op-distinguishing vocabulary survives. This is a catalog +
+scoring change, so the gates are re-baselined in the same commit (`eval/gates.json`, current).
+
+Run: `routing-2026-07-03T15-14-31-853Z.json` (grading rule v2, twin-aware; current baseline).
+
+| scope | rule | top-1 | top-3 | top-5 |
+|---|---|---|---|---|
+| legacy 338 (prior gate, todo 825) | v2 | 219 | 287 | 313 |
+| legacy 338 (**new gate**) | **v2** | **222** | **288** | **318** |
+| extended 122 (prior) | strict | 74 | — | 106 |
+| extended 122 (**new**) | **strict** | **77** | — | **109** |
+| skills lane 23 | v2 | 18 | — | — |
+
+Reading notes:
+
+- **Legacy +3/+1/+5, extended +3 top-1 / +3 top-5**: scout/lumenloop/docs ops now carry
+  op-distinguishing keyword vocabulary, so they rank on questions where they previously lost slots.
+  **Zero per-case hit→miss regressions** in any lane vs `routing-2026-07-03T14-37-46-628Z`
+  (13 case-improvements). **Skills lane unchanged 18/23.**
+- A naive variant **without** the DF filter measured NEGATIVE (extended top-1 74→71, skills top-5
+  23→22) and was rejected — the DF filter (keep only op-distinguishing vocabulary) is what makes
+  the field pay.
+- Gate verdict: this is the current gate — `--gate` enforces legacy within ±1% of 222/288/318 and
+  the skills lane floor 18/23.

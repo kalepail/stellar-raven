@@ -2,7 +2,7 @@
 
 **What this is:** a single remote MCP server (Cloudflare Workers) exposing two tools — `search`
 and `execute` — over a unified catalog covering Lumenloop, Stellar Light/Scout, the Stellar Docs
-MCP, and a selectively-exposed skills directory. `execute` runs LLM-authored JS in a Dynamic
+(Algolia), and a selectively-exposed skills directory. `execute` runs LLM-authored JS in a Dynamic
 Worker isolate with **no network**; all service traffic goes through host-side adapters that hold
 secrets and enforce policy.
 

@@ -51,9 +51,18 @@ derivation) and the admin token.
    `473fc625531d4687b0e353e069092afa` is shared by both old workers and dies with the teardown).
 3. Admin bypass: `MCP_ADMIN_TOKEN` secret, SHA-256 + timing-safe compare, bearer header.
 4. Local bypass: `DEV_ALLOW_UNAUTHENTICATED=true` set ONLY in `.dev.vars` (never a deployed
-   secret) — explicit, not hostname-sniffing.
+   secret).
 
-## Spec-compliance review (2026-07-02, live-verified against agents.stellar.buzz)
+> **Shipped (supersedes the original item 4 design above).** The local bypass that shipped in
+> `src/auth/gate.ts` (`allowDevUnauthenticated`, ~lines 92–98) is stricter than "explicit, not
+> hostname-sniffing": it requires the var to be the exact string `"true"` **AND** the request
+> hostname to be loopback (`localhost` / `127.0.0.1` / `::1`). The hostname check is a hard
+> second factor — the var is inert even if it is ever mistakenly deployed, because the public
+> hosts (`raven.stellar.buzz`, its `agents.stellar.buzz` alias) are not loopback. The historical
+> reasoning above (explicit local-only var, no bypass in prior art) still stands as the *why*;
+> the loopback gate is the belt-and-braces we added on top.
+
+## Spec-compliance review (2026-07-02, live-verified against the deployment — default route raven.stellar.buzz, agents.stellar.buzz alias)
 
 Deep-dive across the MCP authorization spec (2025-06-18 + 2025-11-25 revisions, 2026 release
 candidate), WorkOS docs/blog, and Cloudflare docs. Verdict: **our discovery surface is
@@ -76,7 +85,8 @@ WorkOS-recommended pattern — a deliberate, compliant choice.**
   the OIDC-discovery path onto it (RFC 8414 §5 sanctions an OAuth-only AS publishing there;
   covers clients that only probe OIDC discovery).
 - **Path-suffixed well-known forms**: clients doing RFC 8414 §3.1 path insertion only need
-  them when the issuer has a path component — ours (`https://agents.stellar.buzz`) doesn't,
+  them when the issuer has a path component — ours (`https://raven.stellar.buzz`, and its
+  `agents.stellar.buzz` alias) doesn't,
   so the `/.well-known/oauth-authorization-server/mcp` alias in `src/auth/gate.ts` is purely
   defensive for non-conforming clients that append the resource path. Metadata `issuer` must
   equal the URL used to construct the well-known request (clients reject otherwise) — ours
@@ -124,7 +134,11 @@ Key sources: modelcontextprotocol.io/specification/2025-06-18/basic/authorizatio
 2025-11-25), workos.com/docs/authkit/mcp, workos.com/blog/best-mcp-server-authentication-providers,
 developers.cloudflare.com/agents/model-context-protocol/protocol/authorization/, RFC 9728/8414/9207.
 
-## Teardown facts (for the agents.stellar.buzz cutover)
+## Teardown facts (historical — for the agents.stellar.buzz cutover)
+
+> Current state: this Worker serves the default route **raven.stellar.buzz** with
+> **agents.stellar.buzz** as an alias (both in `wrangler.jsonc` routes). The notes below are the
+> historical cutover record for releasing the domain from the retired prior-art workers.
 
 Account `ba55b7ae9acfb3ed152103e3497c0752`. Two workers: `stellar-raven-next` and
 `stellar-raven`; both declare custom domain `agents.stellar.buzz` (only the last-deployed owns

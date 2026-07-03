@@ -2,7 +2,7 @@
 
 > Verified live 2026-07-02 (UTC; re-fetched ~13:59Z after the 07-02 partner-pipeline release). OpenAPI `info.version: 1.2.1`, status `apiVersion: 1.2.1` (the `X-API-Version` response header stays `1`), scout-mcp npm `1.1.5`.
 > **Inventory refresh 2026-07-03 (~14:02Z): upstream now 1.3.2** — additive freshness release per `/api/changelog` (explicitly no field removed or renamed; still 23 paths / 24 ops): `/api/repos/explain` gains `repoMeta{lastCommitAt, stars, isArchived, repoScoreLabel}`, `/api/projects/search` rows gain `lastActivityAt` and inline repo refs gain `lastCommitAt` — attach as the as-of date when citing answers. (1.3.1, 07-02: `builtBy` org attribution on project search rows; `status` enum gains `Inactive`.) `inventory/stellar-light.json` carries the current spec verbatim; the body below still details 1.2.1.
-> Pretty-printed OpenAPI saved at [`stellar-light-openapi.json`](./stellar-light-openapi.json) (23 paths / 24 operations — **`info.version` did NOT bump when the 4 partner-pipeline ops landed; diff paths, not the version string**).
+> Current OpenAPI lives in [`inventory/stellar-light.json`](../../inventory/stellar-light.json) (refreshed daily by the CI drift job; 23 paths / 24 operations — **`info.version` did NOT bump when the 4 partner-pipeline ops landed; diff paths, not the version string**).
 > Cross-checked against prior art: `stellar-raven-next/research/capability/stellar-light-scout.md` (measured 2026-06-21→07-01) — live behavior today matches that doc.
 
 ## Overview
@@ -163,7 +163,7 @@ Relationship: **website API = source of truth; SKILL.md and scout-mcp are altern
 ```bash
 BASE=https://stellarlight.xyz
 # 1. Contract: full OpenAPI (paths, params, enums)
-curl -s $BASE/api/openapi.json | python3 -c 'import json,sys;json.dump(json.load(sys.stdin),sys.stdout,indent=2)' > stellar-light-openapi.json
+curl -s $BASE/api/openapi.json | python3 -c 'import json,sys;json.dump(json.load(sys.stdin),sys.stdout,indent=2)' > inventory/stellar-light.json  # (CI's refresh-inventory.mjs writes this)
 # 2. Live health + collection sizes + endpoint enumeration
 curl -s $BASE/api/status
 # 3. Contract-change feed since last refresh

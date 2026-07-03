@@ -38,15 +38,19 @@ the raven sibling repos are retired; growth happens in this repo's own formats.
    re-baseline the gates explicitly (results files carry `gradingRule`); rule v2
    (2026-07-03) grades the lumenloop/skills twin pair as one aliased entity, mirroring
    `src/skills/store.ts` — see eval/README.md "Twin-aware grading".
-2. **Lanes never merge.** The legacy 338, skills 31, extended 122, and live-data 10 are
-   separate scopes with separate denominators, forever. Comparability > bigger n.
+2. **Lanes never merge.** The legacy 338, skills 23 (active; +8 documented-inert
+   `retiredCases` in `eval/skills-cases.json` after the 2026-07-03 onboarding-skills
+   retirement, ADR-0002), extended 122, and live-data 10 are separate scopes with separate
+   denominators, forever. Comparability > bigger n.
 3. **No per-question tuning.** Zero-hit cases stay failing until a *general* mechanism
    fixes them (inherited from the raven ADRs; it has held through three scoring rounds).
 4. **Spirit, not schema.** Corpus content is fair input; foreign schemas, judge code, and
    labels built for other systems are not. Concretely: the semantic battery's `skillsAny`
    labels were evaluated and **deliberately not imported** (2026-07-03) — they were
    diagnostic-only in their source system, use cf-flue composite skill names, and every
-   skill family they reference is already covered by the 31 hand-authored skills cases.
+   skill family they reference is already covered by the 23 active hand-authored skills cases
+   (`eval/skills-cases.json`; 8 onboarding-skill cases moved to inert `retiredCases` on
+   2026-07-03 per ADR-0002).
    Adding them would have grown the denominator, not the signal.
 5. **Freshness-sensitive truth is graded as behavior, not values.** Anything that drifts
    (RFPs, leaderboards, rounds, region vocab) belongs in the live-data lane with a
@@ -56,7 +60,9 @@ the raven sibling repos are retired; growth happens in this repo's own formats.
    are committed. Generated files (`routing-cases.json`, `qa/cases.json`) are never
    hand-edited.
 7. **Results are local-only evidence** (`eval/**/results/`, gitignored); READMEs carry the
-   committed record with the exact results-file stamp they cite.
+   committed record with the exact results-file stamp they cite. The results dirs are unbounded
+   — prune them periodically (e.g. drop results older than 30 days), keeping any stamp still
+   referenced by `eval/gates.json` or a committed README record.
 
 ## Primary artifact: service-improvement recommendations
 

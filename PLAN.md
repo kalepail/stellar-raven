@@ -6,10 +6,10 @@ directory. The LLM calling this MCP discovers capabilities via `search`, then au
 that `execute` runs inside a **Dynamic Worker isolate** with no network access; all real traffic
 goes through host-side, secret-holding, policy-enforcing adapters.
 
-Grounding research (all live-verified 2026-07-01):
+Grounding research (live-verified across 2026-07-01…07-03; service specs refreshed daily by CI):
 
-- [`research/services/lumenloop.md`](./research/services/lumenloop.md) (+ `lumenloop-openapi.json`)
-- [`research/services/stellar-light.md`](./research/services/stellar-light.md) (+ `stellar-light-openapi.json`)
+- [`research/services/lumenloop.md`](./research/services/lumenloop.md) (current spec: [`inventory/lumenloop.json`](./inventory/lumenloop.json))
+- [`research/services/stellar-light.md`](./research/services/stellar-light.md) (current spec: [`inventory/stellar-light.json`](./inventory/stellar-light.json))
 - [`research/services/stellar-docs-algolia.md`](./research/services/stellar-docs-algolia.md) (primary; [`stellar-docs-mcp.md`](./research/services/stellar-docs-mcp.md) is the fallback path)
 - [`research/codemode.md`](./research/codemode.md) — Cloudflare codemode / Dynamic Workers implementation reference
 - [`research/prior-art.md`](./research/prior-art.md) — map of prior art in `stellar-raven-next` / `stellar-raven` (references for lessons, not templates)
@@ -119,10 +119,15 @@ callable surface — fields chosen for what search/execute actually consume, not
 }
 ```
 
-Actual catalog (`catalog/manifest.json`, 2026-07-02): **374 searchable entries** — lumenloop 35
-(21 ops + 14 skill-metadata twins of the API-served skills), scout 24, stellarDocs 12 (authored,
-live-verified Algolia ops — the Docs MCP is fallback only), skills 303 (25 skills + 278 `##`
-sections). Entries additionally carry an `outputSchema` wherever the source declares one.
+Actual catalog (`catalog/manifest.json`; counts are authoritative in the manifest — the ADR
+below records the last structural change): **299 searchable entries** — 57 operations (lumenloop
+21, scout 24, stellarDocs 12; the Docs MCP is fallback only) + 39 skill-kind entries (25 `skills.*`
+mirror + 14 metadata-only `lumenloop.skill.*` twins) + 203 skill `##`/file sections. Of these, **25
+are deny-listed** (4 operations + 7 retired mirror skills + 14 `lumenloop.skill.*` twins) and never
+surface in `search` — see [`research/decisions/0002-skills-retirement-twin-dedup.md`](./research/decisions/0002-skills-retirement-twin-dedup.md)
+(ADR-0002: the 2026-07-03 skills retirement + twin de-dup that moved the catalog 374→299,
+25→18 exposed skills, 278→203 sections, 4→25 denied). Entries additionally carry an `outputSchema`
+wherever the source declares one.
 
 Build pipeline: `scripts/build-catalog.mjs` reads the three service inventories + the skills
 index → emits `manifest.json` + a compiled search index bundled into the Worker. Catalog assembly
@@ -151,9 +156,12 @@ pinned upstreams, not a separate runtime dependency.
 
 - **Secrets host-side only.** `LUMENLOOP_API_KEY` via Worker secret; the sandbox sees only
   namespaced function stubs. `globalOutbound: null` — `fetch()` in generated code throws.
-- **Deny-list (machine-checkable, in the manifest):** four denied catalog entries —
-  `lumenloop.request_research` (metered), `scout.submitFeedback`, `scout.submitPartnerListing`
-  (both writes), and `scout.partnerAssistant` (side-effecting — logs surfaced partners as leads).
+- **Deny-list (machine-checkable, in the manifest):** 25 denied catalog entries — **4 denied
+  operations** (`lumenloop.request_research` (metered), `scout.submitFeedback`,
+  `scout.submitPartnerListing` (both writes), and `scout.partnerAssistant` (side-effecting — logs
+  surfaced partners as leads)) plus the **7 retired mirror skills + 14 `lumenloop.skill.*` twins**
+  from the 2026-07-03 skills retirement + twin de-dup (ADR-0002,
+  `research/decisions/0002-skills-retirement-twin-dedup.md`).
   The unified super spec additionally marks **16 lumenloop endpoints denied** (account/billing
   mutations — keys/webhooks/top-up/budget/introspection — plus the host-side discovery surfaces),
   none of which are ever exposed as callable catalog operations. `search` never returns denied
@@ -196,6 +204,8 @@ research doc.
 ```
 src/server.ts            # Worker entry: createMcpHandler → search/execute
 src/auth/                # WorkOS OAuth 2.1 provider + admin-token / local-dev bypasses
+src/site.ts              # public site: landing, OAuth consent, robots.txt, sitemap.xml, JSON-LD, /og.png
+src/fonts.ts src/og.ts   # generated (npm run site:fonts / site:og) — embedded fonts + OG image
 src/mcp/                 # tool registration, descriptions (copy codemode's rules-block prompting)
 src/catalog/             # manifest types, builder, search (vendored searchConnectors/describeTarget)
 src/adapters/            # lumenloop.ts · scout.ts · stellar-docs.ts (own design, per live research)
@@ -208,6 +218,7 @@ specs/                   # super-spec.json (+ authored stellar-docs.json) — fe
 inventory/               # regenerated service inventory JSONs (drift source for build-catalog)
 ecosystem-skills/        # pinned mirror (lifted)
 catalog/manifest.json    # generated — the unified index
+public/                  # GitHub-only assets (README hero banner) — NOT served by the Worker (public/README.md)
 research/                # this research + ADRs (research/decisions/) as decisions accrue
 test/                    # vitest offline suites (adapters, server, super-spec, auth, …)
 eval/                    # routing eval + qa/ (execute Q→A battery) + agentic/ + plan/
@@ -219,17 +230,26 @@ compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders` binding `LOADER`.
 
 ## 7. Phased build
 
-> Status 2026-07-02 (end of Round 4): **all 8 phases shipped and live at
-> https://agents.stellar.buzz** (Solo todos 788–805; evidence: `eval/README.md`,
+> Status (end of Round 4): **all 8 phases shipped and live** on the default route
+> **https://raven.stellar.buzz** (with **https://agents.stellar.buzz** served as an alias — both
+> in `wrangler.jsonc` routes) (Solo todos 788–825; evidence: `eval/README.md`,
 > `eval/agentic/README.md`, `eval/plan/README.md`, `research/decisions/0001-search-tool-shape.md`,
-> `research/auth-workos.md`, README.md “Auth”). CI + daily drift refresh run in
+> `research/decisions/0002-skills-retirement-twin-dedup.md`, `research/auth-workos.md`,
+> README.md “Auth”). CI + daily drift refresh run in
 > github.com/kalepail/stellar-raven (renamed from stellar-raven-codemode 2026-07-02). WorkOS
 > OAuth verified end-to-end incl. human
 > AuthKit sign-in (Tyler, 2026-07-02); CIMD enabled.
+> - **Public site + SEO surface shipped 2026-07-02/03** (`src/site.ts`): landing page, OAuth
+>   consent page, `robots.txt`, `sitemap.xml`, JSON-LD, and `/og.png` — routed via the OAuth
+>   provider's `defaultHandler` (`src/auth/workos.ts`). The OG image and site fonts are generated
+>   code (`src/og.ts`, `src/fonts.ts` via `npm run site:og` / `npm run site:fonts`), not served
+>   from `public/`.
 >
-> Deferred / future work (tracked as Solo backlog todos in project 49):
-> - `codemode.skill.run` (executable skills) — design sketch in §3 and §5 item 4; the sandbox
->   dispatch mechanism it would ride on is described in `research/codemode.md` §"platform global".
+> Deferred / future work (tracked as Solo backlog todos; project binding in CLAUDE.md):
+> - `codemode.skill.run` (executable skills) — **design settled do-not-build-now 2026-07-03**
+>   (`research/skill-run-design.md`, with explicit reopen triggers); the in-code sandbox sketch is
+>   in §3 above and the dispatch mechanism it would ride on is in `research/codemode.md`
+>   §"platform global".
 > - Plan-eval progression weighting — revisit ONLY if a run shows detail-starved wrong answers
 >   (`eval/plan/README.md` “Results — 2026-07-02”, conclusion).
 
@@ -259,5 +279,5 @@ Phases 2–3 are independently parallelizable after 1; 4–6 after 3.
 | Docs search path | **Decided: direct Algolia REST** — dedicated key in hand (`.env` → Worker secrets `ALGOLIA_APPLICATION_ID`/`ALGOLIA_API_KEY`); MCP as documented fallback | MCP-only (slower, protocol overhead) |
 | `request_research` (paid) | off at launch | on with budget gate from day one |
 | Server auth | **Decided: WorkOS OAuth** (`workers-oauth-provider` + AuthKit; admin/dev bypasses — §4, README.md) | plain bearer secret (retired placeholder) |
-| Skills scope at launch | all 25 mirrored skills, read-only sections | curated subset; executable snippets later |
+| Skills scope | **18 of 25 mirrored skills exposed** (7 Lumenloop API-onboarding skills retired 2026-07-03, ADR-0002), read-only sections | re-expose on transport-agnostic rewrite; executable snippets later |
 | Statefulness | stateless `createMcpHandler` | `McpAgent` + CodemodeRuntime DO (approvals/audit) |

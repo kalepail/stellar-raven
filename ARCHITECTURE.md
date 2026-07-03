@@ -22,14 +22,23 @@ For `/mcp` paths the auth gate runs in this order (both bypass checks live in
 2. **Local-dev bypass** — `allowDevUnauthenticated`: requires `DEV_ALLOW_UNAUTHENTICATED`
    to be the exact string `"true"` **and** the request hostname to be loopback
    (`localhost` / `127.0.0.1` / `::1`). The hostname gate is a hard second factor: a var
-   mistakenly deployed to production is inert, because `agents.stellar.buzz` is not a local
-   host. The var itself is only ever set in `.dev.vars`.
+   mistakenly deployed to production is inert, because the public hosts (`raven.stellar.buzz`,
+   its `agents.stellar.buzz` alias) are not local hosts. The var itself is only ever set in
+   `.dev.vars`.
 3. **OAuth** — everything else goes through `@cloudflare/workers-oauth-provider`
    (options built by `oauthProviderOptions` in `src/auth/gate.ts`): the Worker is its own
    OAuth 2.1 authorization server (opaque tokens in `OAUTH_KV`, S256-PKCE only, CIMD
    enabled), with WorkOS AuthKit as the upstream IdP behind `/authorize` → `/callback`
    (`src/auth/workos.ts`). `src/server.ts` also aliases the path-suffixed RFC 8414 and OIDC
    discovery paths onto the lib's exact-path metadata endpoint.
+
+**Non-`/mcp` requests are the public site.** Everything the OAuth provider doesn't claim falls
+through to its `defaultHandler` (`src/auth/workos.ts`), which — besides `/authorize` /
+`/callback` / the consent page — serves the public site from `src/site.ts`: the landing page,
+`robots.txt`, `sitemap.xml`, JSON-LD, and `/og.png`. The OG image and the site/OG fonts are
+**generated code** (`src/og.ts`, `src/fonts.ts`, rebuilt via `npm run site:og` /
+`npm run site:fonts`), embedded in the Worker bundle — nothing is served from `public/`, which
+holds GitHub-only assets (`public/README.md`).
 
 Each authorized request gets a **fresh, stateless `McpServer`** served over streamable HTTP
 by `createMcpHandler` (from `agents/mcp`) — no Durable Objects, no session state. Tool
@@ -77,16 +86,41 @@ untouched.
    with keywords appended to the description) and the keyword-attributable delta blends in
    at 0.4 damping. The routing eval is the guard on this trade; changing the blend requires
    re-running it (`eval/EVALS.md`).
+5. *Ungated backfill* (`scoreEntryWeightedUngated`) — the vendor coverage gate
+   (`search-scoring.ts`, `<60%` token coverage and no exact phrase → `null`) is structurally
+   unreachable for long multi-clause questions: at 20+ query tokens no single entry covers
+   60% of the vocabulary, so the whole catalog gates to zero (the stopword rescue doesn't
+   help — the surplus tokens are content words). `scoreEntryWeightedUngated` runs the same
+   pipeline (keyword blend → stopword rescue → kind weight) over a **gate-free replica of the
+   vendor math** — kept beside the vendor file, byte-for-byte except the coverage gate is
+   dropped (the coverage *bonus* stays), the same way lever 4 double-scores rather than editing
+   the vendor. `searchCatalog` uses it only to **backfill a short page** (below): gated tier-1
+   hits always rank first, so any page the gated tier fills is byte-identical to the pre-lever-5
+   behavior; only long questions that previously returned zero hits change.
 
 **Set shaping** — `src/catalog/search.ts`. `loadManifest` enforces structural invariants at
 load: globally unique entry ids, and unique operation terminal names per service (those
 segments become sandbox function names in `src/executor/providers.ts`, so a collision would
 silently shadow one operation with another). `searchCatalog` never returns denied entries
-(`policy.allow === false` filtered before scoring), sorts score-desc then id-asc, and drops
-**metadata twins**: a `lumenloop.skill.*` entry (metadata-only, `transport: null`) is
-suppressed when its readable `skills.*` twin (same terminal name) exists — except under an
-explicit `service: "lumenloop"` filter, where suppression would make the skill
-undiscoverable.
+(`policy.allow === false` filtered before scoring), sorts score-desc then id-asc, and shapes
+the page in two ways:
+
+- *Metadata twins are handled at build time, not search time.* Every metadata-only
+  `lumenloop.skill.*` entry (`transport: null`) is deny-listed in the manifest by the
+  2026-07-03 twin de-dup (ADR-0002, `research/decisions/0002-skills-retirement-twin-dedup.md`),
+  so all 14 are already filtered by the `policy.allow === false` gate before scoring. There is
+  **no search-time twin-suppression pass** — the earlier suppression branch (with its
+  `service: "lumenloop"` exception) became unreachable once the twins were deny-listed and was
+  removed. Reads are unaffected: `src/skills/store.ts` still resolves the `lumenloop.skill.*`
+  alias to the `skills.*` body.
+- *Tiered gate-rescue backfill* — tier 1 is the pipeline above (levers 1–4). Only when it leaves
+  the page short (fewer than `limit` gate-passing candidates exist — measured on long
+  extended-lane questions that gate to zero) does tier 2 re-run the same pipeline under the
+  ungated scorer (lever 5) and append its novel hits **strictly below** every tier-1 hit. Tier-2
+  hits never displace or outrank a tier-1 hit, so a full page is byte-identical to the
+  pre-tiering behavior; a page mixing tiers is score-sorted within each tier but not necessarily
+  across the seam. Behavior changes only for long multi-clause queries that previously returned
+  a short (or empty) page.
 
 **Hit anatomy**: `{ id, service, kind, score, description }`, plus a rendered **TypeScript
 signature** for operations (`renderSignature` — input/output type declarations from the
@@ -190,7 +224,10 @@ The `codemode` provider (`buildCodemodeProvider`, `src/executor/providers.ts`) i
 
 - **`codemode.spec()`** — the unified super spec (`specs/super-spec.json`: OpenAPI-3.1-style,
   paths keyed `/{service}/{operation}`, operationId = the exact sandbox call, `x-policy` /
-  `x-cost` / `x-execute` / `x-skill-index` vendor extensions), with `$refs` resolved inline
+  `x-cost` / `x-execute` / `x-skill-index` vendor extensions; design record and per-service
+  mapping in [`research/services/stellar-docs-spec-design.md`](./research/services/stellar-docs-spec-design.md)
+  for stellarDocs and [`research/super-spec-design.md`](./research/super-spec-design.md) for the
+  whole document), with `$refs` resolved inline
   (`resolveSpecRefs` in `src/executor/spec-sandbox.ts` — the host-side twin of upstream's
   in-sandbox `__resolveRefs`, cached per spec object). Post-ADR-0001
   (`research/decisions/0001-search-tool-shape.md`) this is the super spec's role: the
@@ -235,8 +272,10 @@ carries them as `lumenloop.skill.*` entries with `transport: null` (metadata-onl
 not fetched from the API). Their bodies *are* in the mirror verbatim, so
 `src/skills/store.ts` supports exactly one alias: `lumenloop.skill.X` resolves to the
 `skills.*` entry with the identical terminal name — an exact equality, refused when
-ambiguous, not a search. On the search side the metadata twin is suppressed when its
-readable twin exists (§2), so the unreadable form doesn't waste a result slot.
+ambiguous, not a search. On the search side all 14 twins are **deny-listed at build time**
+(the 2026-07-03 twin de-dup, ADR-0002), so the unreadable form is filtered before scoring and
+never wastes a result slot — while the read alias above still resolves. (This replaced an
+earlier search-time suppression pass, now removed; see §2.)
 
 **The read path** (`readSkill`, `src/skills/store.ts`) resolves through the **catalog**,
 not the filesystem: `name` must be an exact catalog id (a `#slug` suffix reads that one
