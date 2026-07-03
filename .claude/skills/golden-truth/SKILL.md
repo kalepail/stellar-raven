@@ -50,6 +50,11 @@ Most questions mix domains — classify per CLAIM, not per case.
 - **E. Docs search index** — `mcp__stellar-docs__algolia_*`: checks BOTH the fact and its
   discoverability; an authoritative page missing from the index is an `improvements/`
   finding (the sd-003 pattern).
+- **F. Empirical execution** — for executable claims (CLI commands, address derivation,
+  XDR decoding, API parameters), RUN the thing on testnet/live free ops rather than
+  reading about it. The strongest evidence class for how-to facts — "the command is real,
+  not a doc guess" (prior-art lesson: raven-next's phase-3 pipeline verified commands by
+  executing them; docs can describe behavior that shipped differently).
 
 Two perplexity hits are ONE class. Corroboration = agreement across classes.
 
@@ -78,6 +83,15 @@ mandatory (a stranger must be able to re-walk the trail); "unverifiable" is an h
 useful verdict — never stretch weak evidence; when two agents disagree, run a targeted
 follow-up probe — never coin-flip, never average.
 
+**Independent re-verification lane (high-stakes changes).** The corroboration matrix is
+authored by the agent proposing the change — a matrix review can rubber-stamp its blind
+spots. For overrides touching disputed facts, negative claims, or high-weight/volatile
+truth, add a second agent that re-derives the fact from live sources WITHOUT reading the
+proposer's evidence notes ("do not rely on the prior verification — query the sources
+yourself, list every URL you hit"). Prior-art lesson: raven's RECONCILE lane, run exactly
+this way, caught a wrong incident month and a false "SEP-43 doesn't exist" claim that had
+survived authoring review. Reviewer ≠ author is the invariant.
+
 ## Step 5 — encode by verdict
 
 | Verdict | What the golden may do |
@@ -86,6 +100,25 @@ follow-up probe — never coin-flip, never average.
 | **disputed** | **NEVER pin.** Encode the disagreement: grader caution ("sources disagree — do not penalize either figure"), answer-visible sourcing-guard avoid items instead of number traps, and file the reconciliation upstream (`improvements/`). |
 | contradicted | Fix the golden AND capture the root cause of the original error (how did the wrong fact get in?). |
 | unverifiable | The golden must not claim it. Downgrade to nice-to-have in graderNotes or remove; corpus-only community facts get labeled source-relative ("per the Scout corpus"). |
+
+**Durable-fact gating (authoring rule for volatile/contested facts).** When sources
+genuinely disagree or a number is contested, never gate the golden on the brittle value —
+gate the durable formulation: the protocol version, the CAP/SEP id, "cite a dated primary
+source", the behavior of flagging staleness. Record the disagreement in graderNotes and
+lower the claim's standing. "Honesty > false precision" (prior-art rule that survived two
+generations of the corpus for good reason).
+
+**Sibling-consistency sweep (required on every change).** The dominant drift mechanism
+observed in the ancestor corpora was a correction pass fixing one file while its topical
+sibling kept the old fact — producing goldens that cannot both be true. Before closing a
+gospel change: enumerate other cases touching the same entity/topic (grep the compiled
+cases for the entity names and key numbers), confirm the changed fact doesn't contradict
+them, and record the sweep (cases checked, verdict) in the override entry's evidence.
+
+**Provenance correction.** If the debunked fact came from (or also lives in) the vendored
+corpus snapshots (`eval/corpus/`), do not edit the archive — but record the correction
+pointer in the override entry and, where a finding exists, in `improvements/`, so future
+mining or judge-context use can't silently resurrect the lie.
 
 Every gospel change lands as a `golden-overrides.json` entry carrying `why` + `evidence` +
 `rootCause` (compile-enforced) **plus** `truthDomain` and a `corroboration` block (the

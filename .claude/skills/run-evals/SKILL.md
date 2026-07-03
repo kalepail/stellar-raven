@@ -40,6 +40,7 @@ Decide what changed (or what question you're asking) — that picks the instrume
 | Tool-description / agent-prompt-surface change (tool descriptions, MCP instructions, nudges) | QA sample + plan regrade — behavior shifts, routing math doesn't |
 | Any QA run already stored | + plan regrade (free, offline) |
 | Upstream drift refresh landed | routing `--gate`; refresh `improvements/` statuses (drift is the natural checkpoint for `fixed-upstream` re-checks) and re-check `eval/qa/golden-overrides.json` entries — they cite live facts that rot; update with fresh evidence |
+| Corpus-health cadence (periodic, no code change needed) | cross-question contradiction scan (corpus-internal, no live calls: flag golden pairs whose answers can't both be true — the ancestor corpora's dominant silent-drift failure) + a sampled refute-then-repair sweep (skeptic agent attacks N sampled goldens' claims/citations with real tools, weighted toward freshness-sensitive and defining claims; fixes go through the `golden-truth` skill). Solo todo 829 tracks tooling. |
 
 Tracking (Solo MCP, project 49): create or claim a todo for the round; open a scratchpad as
 the round's working record (numbers, per-case notes, triage table, findings drafted). Repo
@@ -168,6 +169,12 @@ For each miss/wrong/partial (and each surprising pass), classify and route:
 Anti-overfitting rules bind here: zero-hit routing cases stay failing until a *general*
 mechanism fixes them; no query→service maps, no per-question vocabulary. If the only fix
 you can imagine is case-specific, the case stays red and the note says why.
+
+**"Do not act yet" bucket.** A finding backed by a single case goes into a named
+monitor-only list in the round record, not into a fix. The bar for acting: the same
+failure across 2+ unrelated cases, a contract mismatch, a reproducible infra bug, or
+trace evidence the model was asked the wrong thing. (Prior-art rule from both ancestor
+repos; it kept their improvement loops from chasing variance.)
 
 **Override doctrine — overrides are stop-gaps wearing their provenance.** A
 `golden-overrides.json` entry corrects the eval's *copy* of the truth; the defect that made

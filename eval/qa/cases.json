@@ -6,8 +6,10 @@
     "applied": [
       "q-builder-by-region-latam",
       "q-crp-anchors-by-corridor",
+      "q-defi-blend-scf-funding",
       "q-defi-lending-scf-flagships",
       "q-eco-lobstr-wallet",
+      "q-scf-history-blend",
       "q-scf-regional-india",
       "q-ti-rpc-gettransactions-pagination-xdr"
     ]
@@ -2163,7 +2165,7 @@
         "difficulty": "medium",
         "freshness": true
       },
-      "graderNotes": "GROUNDED: live Scout (2026-06-22, /api/projects/search?q=Blend) confirms Blend (Lending, Live) scfAwarded=true, scfTotalAwardedUSD=50000. The Phase-1 dossier had NO confirmed Blend SCF figure; live data fills it in. Rubric now rewards reporting the real ~$50K and forbids fabricating a different amount. Entity-resolution trap (Blend vs blend.com) preserved. REVIEWED 2026-06-29: re-confirmed live (q=Blend → category Protocol/Contract, type Lending, Live, scfTotalAwardedUSD=50000, blend.capital). SCF $ is drift-sensitive, so set freshness_sensitive:true (quarterly) and rubric gates on the discipline (cite the directory SCF record + allow honest restatement if the live figure moved), not the frozen $50K.\nAlso good if the answer: Identifies Blend as the Soroban lending/money-market protocol (independent blend-capital team) when scoping the SCF lookup.\nGolden cites: The SCF submission/funding record for Blend (Lumenloop/Scout directory)."
+      "graderNotes": "GROUNDED: live Scout (2026-06-22, /api/projects/search?q=Blend) confirms Blend (Lending, Live) scfAwarded=true, scfTotalAwardedUSD=50000. The Phase-1 dossier had NO confirmed Blend SCF figure; live data fills it in. Rubric now rewards reporting the real ~$50K and forbids fabricating a different amount. Entity-resolution trap (Blend vs blend.com) preserved. REVIEWED 2026-06-29: re-confirmed live (q=Blend → category Protocol/Contract, type Lending, Live, scfTotalAwardedUSD=50000, blend.capital). SCF $ is drift-sensitive, so set freshness_sensitive:true (quarterly) and rubric gates on the discipline (cite the directory SCF record + allow honest restatement if the live figure moved), not the frozen $50K.\nAlso good if the answer: Identifies Blend as the Soroban lending/money-market protocol (independent blend-capital team) when scoping the SCF lookup.\nGolden cites: The SCF submission/funding record for Blend (Lumenloop/Scout directory).\nSibling-consistency note 2026-07-03 (todo 828): the ~$50,000 figure is the directory's Blend-row reconstruction, not an official cumulative figure (none exists). Do NOT penalize a candidate that additionally reports Script3's team-level SCF history (SCF #7 award in the $200-350K range; 654,628 XLM to OptionBlox/YieldBlox in Seed Fund #1) or that notes project-row totals under-count team lineages — that is more correct than the bare row figure."
     },
     {
       "id": "q-defi-blend-what-is",
@@ -7740,7 +7742,7 @@
         "difficulty": "medium",
         "freshness": true
       },
-      "graderNotes": "Per-project SCF history → lumenloop_get_scf_submissions (resolve→call). Amounts must come from the record, not invented. Verified 2026-06-29 via /api/projects: Blend scf.awarded=true, totalAwarded=$50,000, category Protocol/Contract; record carries no awardedRounds breakdown (rounds null) so round count stays unstated. Funding total is live → freshness-sensitive.\nAlso good if the answer: Distinguishes SCF awards from any SDF-direct funding when reporting Blend's history.\nGolden cites: Blend's SCF submissions record (via Lumenloop get_scf_submissions) / its communityfund project page."
+      "graderNotes": "Per-project SCF history → lumenloop_get_scf_submissions (resolve→call). Amounts must come from the record, not invented. Verified 2026-06-29 via /api/projects: Blend scf.awarded=true, totalAwarded=$50,000, category Protocol/Contract; record carries no awardedRounds breakdown (rounds null) so round count stays unstated. Funding total is live → freshness-sensitive.\nAlso good if the answer: Distinguishes SCF awards from any SDF-direct funding when reporting Blend's history.\nGolden cites: Blend's SCF submissions record (via Lumenloop get_scf_submissions) / its communityfund project page.\nSibling-consistency note 2026-07-03 (todo 828): the $50,000 figure is the directory's Blend-row reconstruction; no official cumulative per-project SCF totals exist, and the team's fuller SCF history (Script3 SCF #7 award in the $200-350K range; 654,628 XLM to OptionBlox/YieldBlox in Seed Fund #1) predates the Blend name. For this HISTORY question, a candidate that surfaces the team-lineage awards or flags the row figure as a name-scoped reconstruction is MORE correct — never grade it as contradicting the golden."
     },
     {
       "id": "q-scf-history-soroswap",

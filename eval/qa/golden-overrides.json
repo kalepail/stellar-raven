@@ -240,6 +240,51 @@
       },
       "graderNotesAppend": "Avoid list re-armed 2026-07-03 (todo 826 residual), then deep-verified and corrected per the golden-truth skill (todo 828). Verified: OrbitCDP (Zenith Protocols) is SCF-funded per official award pages; Slender (SCF #17 + $97,500 in #21) and DeFindex ($50,000 in #32) are officially funded. Do NOT penalize a candidate for treating 'Orbit Finance' and 'OrbitCDP' as the same lineage — no primary evidence of two distinct projects exists; the aggregator's unfunded 'orbit-finance' row is likely a naming artifact (improvements/stellar-light-scout/sls-008). Amount grading: aggregator totals at probe time (Blend $50k, Slender $296,750, DeFindex $150k) are reconstructions, not official figures — never hard-gate them; note Script3's TEAM-level SCF take far exceeds the Blend-name total (SCF #7 award in the $200-350K range to Script3; 654,628 XLM to OptionBlox/YieldBlox in Seed Fund #1), so 'project award ≠ team total' is a legitimate nuance, not an error."
     },
+    "q-defi-blend-scf-funding": {
+      "why": "Sibling-consistency sweep (golden-truth skill, todo 828 comparison round): this golden pins Blend's SCF total at ~$50,000 from the directory record, but deep verification of the lending-flagships case proved cumulative SCF totals are aggregator reconstructions and Script3's team-level take (YieldBlox/Script3/Blend lineage) far exceeds the Blend-row figure. GraderNotes-only change — the answer's source-relative phrasing ('per the directory record') stays; graders must not punish the fuller truth.",
+      "truthDomain": "mixed",
+      "corroboration": [
+        {
+          "claim": "Script3's cumulative SCF funding far exceeds the $50k on the 'Blend' project row",
+          "verdict": "confirmed",
+          "classes": [
+            "A: Stellar Community Medium retrospective — SCF #7 awards '$200-350K in XLM' range to Script3; stellar.org Seed Fund #1 wrap-up — 654,628 XLM to OptionBlox/YieldBlox",
+            "C: live production searchProjects 2026-07-03 — Blend row scfTotalAwardedUSD 50000"
+          ]
+        }
+      ],
+      "rootCause": [
+        "improvements/stellar-light-scout/sls-011 — per-project SCF totals are aggregator reconstructions with no documented counting basis; project-name scoping hides team-level history",
+        "solo://proj/49/todo/golden-gospel-truth-v--828 (deep-verification round + sibling sweep)"
+      ],
+      "evidence": [
+        "Sibling sweep 2026-07-03 across compiled cases for entities touched by the lending-flagships override (scratchpad 521)",
+        "Official SCF sources per the q-defi-lending-scf-flagships corroboration matrix (same day)"
+      ],
+      "graderNotesAppend": "Sibling-consistency note 2026-07-03 (todo 828): the ~$50,000 figure is the directory's Blend-row reconstruction, not an official cumulative figure (none exists). Do NOT penalize a candidate that additionally reports Script3's team-level SCF history (SCF #7 award in the $200-350K range; 654,628 XLM to OptionBlox/YieldBlox in Seed Fund #1) or that notes project-row totals under-count team lineages — that is more correct than the bare row figure."
+    },
+    "q-scf-history-blend": {
+      "why": "Sibling-consistency sweep (golden-truth skill, todo 828): a history question whose golden states Blend's 'total SCF award is $50,000 USD' — misleading for a HISTORY answer, since the Script3 lineage's SCF history (YieldBlox/Script3 awards) far exceeds the Blend-row figure per official sources. GraderNotes-only change.",
+      "truthDomain": "mixed",
+      "corroboration": [
+        {
+          "claim": "The Script3/Blend lineage's SCF history exceeds the Blend project-row total",
+          "verdict": "confirmed",
+          "classes": [
+            "A: Stellar Community Medium SCF #7 retrospective ($200-350K range, Script3); stellar.org Seed Fund #1 wrap-up (654,628 XLM, OptionBlox/YieldBlox)",
+            "C: live production searchProjects 2026-07-03 (Blend row $50k)"
+          ]
+        }
+      ],
+      "rootCause": [
+        "improvements/stellar-light-scout/sls-011 — aggregator-reconstructed totals + project-vs-team scoping gap",
+        "solo://proj/49/todo/golden-gospel-truth-v--828"
+      ],
+      "evidence": [
+        "Sibling sweep 2026-07-03 (scratchpad 521); official SCF sources per the lending-flagships corroboration matrix"
+      ],
+      "graderNotesAppend": "Sibling-consistency note 2026-07-03 (todo 828): the $50,000 figure is the directory's Blend-row reconstruction; no official cumulative per-project SCF totals exist, and the team's fuller SCF history (Script3 SCF #7 award in the $200-350K range; 654,628 XLM to OptionBlox/YieldBlox in Seed Fund #1) predates the Blend name. For this HISTORY question, a candidate that surfaces the team-lineage awards or flags the row figure as a name-scoped reconstruction is MORE correct — never grade it as contradicting the golden."
+    },
     "q-eco-lobstr-wallet": {
       "why": "Judge-blind avoid item ('beyond what the source data states') re-armed as an answer-visible marketing-attribution guard; no concrete number trap is safe because the two live sources disagree on LOBSTR's SCF total. Deep verification (golden-truth skill, todo 828) confirmed the dispute is unresolvable: no official cumulative figure exists.",
       "truthDomain": "mixed",
