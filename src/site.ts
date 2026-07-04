@@ -155,7 +155,8 @@ h1.title .r{color:var(--orange);text-shadow:0 0 40px rgba(255,85,0,.35)}
 /* client tabs: cut from the terminal's own material and joined to it (active tab
    shares the term fill, drops its bottom border, and overlaps the term's top edge
    by 1px so there's no seam). Strip is inset past the term's rounded corner. */
-.tabs{display:flex;gap:3px;overflow-x:auto;padding:14px 12px 0 24px;scrollbar-width:none;position:relative;z-index:1}
+.tabs{display:flex;gap:3px;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;overscroll-behavior-x:contain;
+  padding:14px 12px 0 24px;scrollbar-width:none;position:relative;z-index:1}
 .tabs::-webkit-scrollbar{display:none}
 .tab{font-family:var(--mono);font-size:12px;font-weight:500;padding:8px 15px 11px;border:1px solid transparent;
   border-bottom:0;border-radius:10px 10px 0 0;color:var(--dim);cursor:pointer;white-space:nowrap;
@@ -169,7 +170,7 @@ h1.title .r{color:var(--orange);text-shadow:0 0 40px rgba(255,85,0,.35)}
 .term-copy{margin-left:auto}
 .panel{display:none}.panel.active{display:block}
 pre.code{margin:0;padding:16px 18px;font-family:var(--mono);font-size:12.5px;line-height:1.72;
-  color:#d3dac8;white-space:pre;overflow-x:auto}
+  color:#d3dac8;white-space:pre;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;overscroll-behavior-x:contain}
 pre.code .c{color:var(--ash);font-style:italic}
 pre.code .p{color:var(--fog)}
 pre.code .s{color:var(--orange-2)}
@@ -179,9 +180,9 @@ pre.code .k{color:#93d6a6}
 .copied{color:var(--orange)!important;border-color:var(--orange)!important}
 
 /* ---- footer ---- */
-footer{position:relative;z-index:2;border-top:1px solid var(--line);margin-top:20px;
+footer{position:relative;z-index:2;border-top:1px solid var(--line);margin-top:20px;padding:24px 0 32px;
   background:linear-gradient(0deg,rgba(14,21,13,.96),rgba(14,21,13,.66))}
-.foot{display:flex;flex-wrap:wrap;gap:14px 26px;align-items:center;justify-content:space-between;padding:24px 0 32px}
+.foot{display:flex;flex-wrap:wrap;gap:14px 26px;align-items:center;justify-content:space-between}
 .foot .l{font-family:var(--mono);font-size:12px;color:var(--ash);text-shadow:0 1px 3px rgba(14,21,13,.9)}
 .foot .l b{color:var(--dim);font-weight:400}
 .foot-links{display:flex;gap:24px}
