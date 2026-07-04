@@ -46,25 +46,18 @@ describe("tool registration", () => {
     expect(names).toEqual(["execute", "search"]);
   });
 
-  it("search is the host-side ranked query: { query, kind?, service?, limit?, correlationId? }", async () => {
+  it("search is the host-side ranked query: { query, kind?, service?, limit? }", async () => {
     const { tools } = await client.listTools();
     const search = tools.find((t) => t.name === "search");
     expect(search).toBeDefined();
     const schema = search!.inputSchema as JsonSchema;
     expect(schema.type).toBe("object");
-    expect(Object.keys(schema.properties ?? {}).sort()).toEqual([
-      "correlationId",
-      "kind",
-      "limit",
-      "query",
-      "service"
-    ]);
+    expect(Object.keys(schema.properties ?? {}).sort()).toEqual(["kind", "limit", "query", "service"]);
     expect(schema.required).toEqual(["query"]);
     expect(schema.properties?.query?.type).toBe("string");
     expect(schema.properties?.kind?.enum).toEqual([...SEARCH_KINDS]);
     expect(schema.properties?.service?.type).toBe("string");
     expect(schema.properties?.limit?.type).toBe("integer");
-    expect(schema.properties?.correlationId?.type).toBe("string");
     // The temporary A/B-candidate framing is gone (ADR-0001: this IS the tool).
     expect(search!.description).not.toMatch(/TEMPORARY|A\/B candidate/);
     // …and the description points at execute's in-sandbox discovery affordances.
@@ -79,10 +72,9 @@ describe("tool registration", () => {
     expect(execute).toBeDefined();
     const schema = execute!.inputSchema as JsonSchema;
     expect(schema.type).toBe("object");
-    expect(Object.keys(schema.properties ?? {}).sort()).toEqual(["code", "correlationId"]);
+    expect(Object.keys(schema.properties ?? {}).sort()).toEqual(["code"]);
     expect(schema.required).toEqual(["code"]);
     expect(schema.properties?.code?.type).toBe("string");
-    expect(schema.properties?.correlationId?.type).toBe("string");
     // execute mirrors upstream REQUEST_TYPES: spec + calls in one sandbox.
     expect(execute!.description).toContain("codemode.spec()");
   });
@@ -96,25 +88,13 @@ describe("search behavior (host-side ranked)", () => {
     });
     expect(result.isError).toBeFalsy();
     const structured = result.structuredContent as {
-      correlationId: string;
       hits: Array<{ id: string; score: number; signature?: string }>;
       nextSteps: string;
     };
-    expect(structured.correlationId).toMatch(/^cr_/);
     expect(structured.hits.length).toBeGreaterThan(0);
     expect(structured.hits[0]?.id).toBe("lumenloop.search_directory");
     expect(structured.hits[0]?.signature).toContain("SearchDirectoryInput");
     expect(structured.nextSteps).toMatch(/execute/i);
-  });
-
-  it("reuses a supplied search correlationId instead of minting a new one", async () => {
-    const result = await client.callTool({
-      name: "search",
-      arguments: { query: "search directory", correlationId: "task.demo-1" }
-    });
-    expect(result.isError).toBeFalsy();
-    const structured = result.structuredContent as { correlationId: string };
-    expect(structured.correlationId).toBe("task.demo-1");
   });
 
   it("skill hits cross the tool boundary with availableSections (todo 812)", async () => {
@@ -176,10 +156,10 @@ describe("execute behavior", () => {
   });
 
   it("delegates to the injected runner and renders result + logs", async () => {
-    let seenCorrelationId: string | undefined;
+    let seenCode: string | undefined;
     const execClient = await connectedClient({
-      runExecute: async (code, options) => {
-        seenCorrelationId = options?.correlationId;
+      runExecute: async (code) => {
+        seenCode = code;
         return {
           ok: true,
           result: JSON.stringify({ echoed: code.length }),
@@ -190,10 +170,10 @@ describe("execute behavior", () => {
     });
     const result = await execClient.callTool({
       name: "execute",
-      arguments: { code: "async () => 1", correlationId: "task.demo-1" }
+      arguments: { code: "async () => 1" }
     });
     expect(result.isError).toBeFalsy();
-    expect(seenCorrelationId).toBe("task.demo-1");
+    expect(seenCode).toBe("async () => 1");
     const text = (result.content as Array<{ text: string }>)[0]?.text ?? "";
     expect(text).toContain('{"echoed":13}');
     expect(text).toContain("--- console (1 lines) ---");

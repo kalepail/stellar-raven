@@ -34,7 +34,8 @@ coordinated via Solo MCP project 49 (todos + scratchpads; backlog items tracked 
   binding, McpAgent vs `createMcpHandler`, security/egress model.
 - `research/observability-cloudflare.md` — CF observability survey: Workers Logs, Traces (beta;
   Worker Loader NOT auto-instrumented — custom spans via `tracing.enterSpan`), OTel export,
-  telemetry query API, GraphQL metrics. What we enabled and why.
+  telemetry query API, GraphQL metrics. What we enabled and why. For live production log/trace
+  reviews, use `.claude/skills/cloudflare-observability-review/SKILL.md`.
 - `research/prior-art.md` — map of `../stellar-raven-next` / `../stellar-raven`. **Learn, don't
   clone:** those repos are references, not templates — design this project's own types, formats,
   and adapters; take their *content* (skills mirror, golden corpus) and *lessons* (ADR pitfalls),
@@ -57,6 +58,11 @@ coordinated via Solo MCP project 49 (todos + scratchpads; backlog items tracked 
   `improvements/` (charter there; own-repo fixes go to Solo todos instead). To run a
   round, use the `run-evals` skill (`.claude/skills/run-evals/SKILL.md` — agent-agnostic
   runbook: instrument selection, gates, agentic verdict review, failure triage, filing).
+- **Let independent adversarial reviews finish.** When a Solo/subagent review is requested for
+  design, code, eval, or research work, treat it as a quality gate, not a speed bump. Do not
+  interrupt or close the reviewer merely because it is taking longer than expected; let it run to
+  completion unless the user explicitly cancels it, it clearly errors, or it is blocking on input
+  that only the user can provide. Capture and incorporate the review findings before finalizing.
 
 ## Neighboring repos
 

@@ -144,11 +144,10 @@ function envelopeGuardPrelude(opsByService: Map<string, string[]>): string {
 export function buildProviders(
   catalog: Catalog,
   env: AdapterEnv,
-  deps?: { fetchImpl?: FetchLike; correlationId?: string }
+  deps?: { fetchImpl?: FetchLike }
 ): SandboxProvider[] {
   const secrets = secretsFromEnv(env as Record<string, unknown>);
   const fetchImpl = deps?.fetchImpl;
-  const correlationId = deps?.correlationId;
 
   // --- service namespaces: one fn per operation entry ---------------------
   const byService = new Map<string, Record<string, (...args: unknown[]) => Promise<unknown>>>();
@@ -172,7 +171,6 @@ export function buildProviders(
       if (refused) {
         // guard only ever returns the error variant; narrow for the compiler.
         logEvent("op", {
-          correlationId,
           id: entry.id,
           outcome: refused.ok ? "ok" : refused.error.kind,
           ms: Date.now() - t0
@@ -186,7 +184,6 @@ export function buildProviders(
         fetchImpl
       );
       logEvent("op", {
-        correlationId,
         id: entry.id,
         outcome: result.ok ? "ok" : result.error.kind,
         ms: Date.now() - t0
@@ -250,7 +247,6 @@ export function buildCodemodeProvider(
   bundle: SkillBundle,
   superSpec?: unknown,
   hooks?: {
-    correlationId?: string;
     /**
      * Fired when skill_read successfully returns skill content. ADVICE-ONLY
      * signal: run.ts uses it to append section-read advice to the truncation
@@ -321,7 +317,6 @@ export function buildCodemodeProvider(
           limit: typeof opts.limit === "number" ? opts.limit : undefined
         });
         logEvent("search", {
-          correlationId: hooks?.correlationId,
           source: "codemode",
           query: opts.query,
           kind: typeof opts.kind === "string" ? opts.kind : null,
@@ -391,14 +386,12 @@ export function buildSandbox(
   deps?: {
     fetchImpl?: FetchLike;
     superSpec?: unknown;
-    correlationId?: string;
     onSkillRead?: () => void;
   }
 ): SandboxProvider[] {
   return [
     ...buildProviders(catalog, env, deps),
     buildCodemodeProvider(catalog, bundle, deps?.superSpec, {
-      correlationId: deps?.correlationId,
       onSkillRead: deps?.onSkillRead
     })
   ];

@@ -114,3 +114,73 @@ What this project has enabled is at the bottom.
   ends the span on throw/reject, so local dev and error paths are unaffected.
 - Not doing now: OTel export (no external sink in use), log/trace sampling <1 (traffic too low
   to matter), Logpush/Tail Workers (superseded by OTel destinations for our needs).
+
+## Live query notes (2026-07-04)
+
+Follow-up verification used the Cloudflare API MCP against the live account and the
+production `MCP_ADMIN_TOKEN_PRODUCTION` from `.env` without printing the secret.
+
+An authenticated MCP `initialize` probe:
+
+- `POST https://raven.stellar.buzz/mcp`
+- response `200`
+- response header `cf-ray: a15a1ed37fa5b049-ATL`
+- indexed Cloudflare Ray/request id: `a15a1ed37fa5b049` (the dashboard/API value
+  omits the `-ATL` colo suffix)
+
+The Workers Observability API found the request after normal ingestion delay.
+Querying events by:
+
+```json
+{
+  "view": "events",
+  "parameters": {
+    "filters": [
+      { "key": "$metadata.service", "operation": "eq", "type": "string", "value": "stellar-raven-codemode" },
+      { "key": "$metadata.requestId", "operation": "eq", "type": "string", "value": "a15a1ed37fa5b049" }
+    ]
+  }
+}
+```
+
+returned both:
+
+- the app JSON log: `{ "evt": "mcp_request", "auth": "*****", "method": "POST" }`
+  as `$metadata.type = "cf-worker"`;
+- the platform invocation log: `POST https://raven.stellar.buzz/mcp` with
+  status `200`, path `/mcp`, method `POST`, user-agent, `cf-ray`, colo, country,
+  ASN, and other request metadata as `$metadata.type = "cf-worker-event"`.
+
+The earlier unauthenticated `401` probes that did not appear in `wrangler tail`
+were also present through the API. So the accurate conclusion is: Workers
+Observability ingestion is working; `wrangler tail` was inconclusive for that
+sample and should not be treated as the source of truth.
+
+Traces are present too, but the id mapping is easy to get wrong:
+
+- Workers Logs use the Cloudflare Ray ID as `$metadata.requestId` and
+  `$workers.requestId`.
+- OTel trace spans use their own `traceId`, `spanId`, and `faas.invocation_id`.
+- The reliable log-to-trace bridge is `cloudflare.ray_id` on OTel spans, which
+  matches the Ray ID visible in logs and response headers.
+
+Useful indexed fields observed for `stellar-raven-codemode`:
+
+- `$metadata.service`, `$metadata.requestId`, `$metadata.type`,
+  `$metadata.trigger`, `$metadata.message`
+- `$workers.event.rayId`, `$workers.requestId`,
+  `$workers.event.request.headers.cf-ray`
+- `$workers.event.request.headers.user-agent`
+- `$workers.event.request.headers.mcp-protocol-version`
+- `$workers.event.request.path`, `$workers.event.request.method`,
+  `$workers.event.response.status`
+- OTel span fields: `cloudflare.script_name`, `cloudflare.ray_id`,
+  `cloudflare.colo`, `cloudflare.asn`, `http.response.status_code`,
+  `url.full`, `user_agent.original`, `traceId`, `spanId`
+
+Privacy note: platform invocation logs already index IP-bearing fields such as
+`$workers.event.request.headers.cf-connecting-ip` and `x-real-ip`, plus detailed
+geo/TLS metadata. Do not copy IPs or IP-derived fingerprints into app JSON logs.
+For this project, app logs should add semantic fields Cloudflare cannot infer:
+auth subject/client attribution if production evidence shows user/client
+grouping is needed beyond Ray IDs and controlled eval markers.

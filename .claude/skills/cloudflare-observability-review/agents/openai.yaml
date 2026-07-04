@@ -1,0 +1,11 @@
+interface:
+  display_name: "Cloudflare Observability Review"
+  short_description: "Trace Workers logs and spans safely"
+  default_prompt: "Use $cloudflare-observability-review to investigate live Workers logs, traces, and Ray IDs for stellar-raven-codemode."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "cloudflare-api"
+      description: "Cloudflare API MCP for Workers Observability telemetry queries."
+policy:
+  allow_implicit_invocation: true

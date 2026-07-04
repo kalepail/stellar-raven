@@ -41,21 +41,6 @@ export type SearchKind = (typeof SEARCH_KINDS)[number];
 export const SEARCH_TOOL_NAME = "search";
 export const EXECUTE_TOOL_NAME = "execute";
 
-const CORRELATION_ID_MAX = 128;
-const correlationIdSchema = z
-  .string()
-  .min(1)
-  .max(CORRELATION_ID_MAX)
-  .regex(/^[A-Za-z0-9._:-]+$/)
-  .optional()
-  .describe(
-    "Optional task correlation id. Reuse the correlationId returned by the first search on follow-up search/execute calls for the same user request."
-  );
-
-function createCorrelationId(): string {
-  return `cr_${crypto.randomUUID()}`;
-}
-
 export const rankedSearchInputSchema = {
   query: z
     .string()
@@ -81,8 +66,7 @@ export const rankedSearchInputSchema = {
     .min(1)
     .max(50)
     .optional()
-    .describe("Maximum number of hits to return (default 10, max 50)."),
-  correlationId: correlationIdSchema
+    .describe("Maximum number of hits to return (default 10, max 50).")
 };
 
 export const searchHitSchema = z.object({
@@ -104,9 +88,6 @@ export const searchHitSchema = z.object({
 });
 
 export const rankedSearchOutputSchema = {
-  correlationId: z
-    .string()
-    .describe("Task correlation id. Pass this unchanged to follow-up search and execute calls for the same user request."),
   hits: z
     .array(searchHitSchema)
     .describe(
@@ -121,8 +102,7 @@ export const executeInputSchema = {
     .min(1)
     .describe(
       "JavaScript async arrow function to execute in the sandbox, e.g. async () => { ... return result; }"
-    ),
-  correlationId: correlationIdSchema
+    )
 };
 
 const SEARCH_DESCRIPTION = `Ranked lexical search over the unified catalog of everything this server can do: every service operation (lumenloop.*, scout.*, stellarDocs.*), every skill, and every skill section.
@@ -133,8 +113,7 @@ Returns ranked hits with rendered TypeScript signatures so you can call them fro
 
 1. \`search\` with a short intent phrase (2-6 words) describing what you need.
 2. Read the top hits' signatures and descriptions.
-3. Reuse the returned \`correlationId\` on follow-up \`search\`/\`execute\` calls for the same user request.
-4. Write ONE \`execute\` script that composes SEVERAL relevant operations — hits are composable building blocks, not one-answer routes. Fan out broad calls (often across services) with Promise.all, then make targeted follow-up calls from what comes back.
+3. Write ONE \`execute\` script that composes SEVERAL relevant operations — hits are composable building blocks, not one-answer routes. Fan out broad calls (often across services) with Promise.all, then make targeted follow-up calls from what comes back.
 
 ## Rules
 
@@ -188,7 +167,7 @@ Every service call resolves (never throws) to either { ok: true, data } or { ok:
  */
 export const SERVER_INSTRUCTIONS = `Unified Stellar-ecosystem gateway: \`search\` (ranked discovery over every service operation and skill) and \`execute\` (sandboxed JavaScript composing the discovered operations).
 
-Workflow: \`search\` a short intent phrase → read the hits' TypeScript signatures → reuse the returned \`correlationId\` on follow-up \`search\`/\`execute\` calls for the same user request → write ONE \`execute\` script composing several operations (Promise.all for independent calls, then targeted follow-ups parameterized by their results). Skills are operational playbooks (tested procedures — read sections via \`codemode.skill.read(id, { sections })\`, keys in the hit's \`availableSections\`); stellarDocs is informational reference. Build/integration questions: read matching skill sections AND search the docs; purely factual ones: docs first. Scout research items and lumenloop articles/content are community-aggregated sources — treat protocol-governance, standards-authorship, incident, and audit claims from them as unverified unless corroborated by stellarDocs or skills content.
+Workflow: \`search\` a short intent phrase → read the hits' TypeScript signatures → write ONE \`execute\` script composing several operations (Promise.all for independent calls, then targeted follow-ups parameterized by their results). Skills are operational playbooks (tested procedures — read sections via \`codemode.skill.read(id, { sections })\`, keys in the hit's \`availableSections\`); stellarDocs is informational reference. Build/integration questions: read matching skill sections AND search the docs; purely factual ones: docs first. Scout research items and lumenloop articles/content are community-aggregated sources — treat protocol-governance, standards-authorship, incident, and audit claims from them as unverified unless corroborated by stellarDocs or skills content.
 
 Interpreting \`execute\` results: every service call resolves (never throws) to { ok: true, data } or { ok: false, error: { kind, message, hint? } }. Payload fields live under .data — \`r.data.projects\`, never \`r.projects\`; reading a payload field on the envelope throws an Error naming the correct path, \`r.data\` on a failed call is undefined and logs a one-line \`[envelope]\` warning naming the error, and writes to the envelope are allowed. error.kind is three-way: "error" (call failed), "soft-empty" (the service answered with nothing — inconclusive, NOT evidence of absence), "denied" (policy refused). Operation and skill ids are exact-match — never guess them; discover via \`search\` or \`codemode.search\` mid-script.`;
 
@@ -214,7 +193,6 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
     },
     async (args) => {
       const t0 = Date.now();
-      const correlationId = args.correlationId ?? createCorrelationId();
       const hits = searchCatalog(getCatalog(), {
         query: args.query,
         kind: args.kind,
@@ -223,12 +201,11 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
       });
       const nextSteps =
         hits.length > 0
-          ? "Pass this result's `correlationId` unchanged to follow-up `search`/`execute` calls for the same user request. These hits are composable: write ONE `execute` script that calls the several relevant operations (Promise.all across services for independent calls), then follows up with deeper calls parameterized by their results — e.g. `await lumenloop.search_directory({ query: \"...\" })` then `lumenloop.get_project({ slug })`. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under `.data` (`r.data.projects`, never `r.projects`); check `r.ok` first. Skill hits are operational playbooks — read the sections you need in-script via `codemode.skill.read(id, { sections })` (keys: the hit's `availableSections`), and pair them with stellarDocs searches for current reference truth. Use `codemode.search(...)` mid-script for follow-up discovery; search again here with narrower terms or `kind`/`service` filters if none fit."
+          ? "These hits are composable: write ONE `execute` script that calls the several relevant operations (Promise.all across services for independent calls), then follows up with deeper calls parameterized by their results — e.g. `await lumenloop.search_directory({ query: \"...\" })` then `lumenloop.get_project({ slug })`. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under `.data` (`r.data.projects`, never `r.projects`); check `r.ok` first. Skill hits are operational playbooks — read the sections you need in-script via `codemode.skill.read(id, { sections })` (keys: the hit's `availableSections`), and pair them with stellarDocs searches for current reference truth. Use `codemode.search(...)` mid-script for follow-up discovery; search again here with narrower terms or `kind`/`service` filters if none fit."
           : "No hits. Try fewer, more specific words (e.g. \"account trustlines\" not a full sentence), or drop the `kind`/`service` filters. Do not conclude the capability is missing from one empty result.";
-      const structured = { correlationId, hits, nextSteps };
+      const structured = { hits, nextSteps };
       const text = JSON.stringify(structured);
       logEvent("search", {
-        correlationId,
         source: "tool",
         query: args.query,
         kind: args.kind ?? null,
@@ -256,11 +233,10 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
     },
     async (args) => {
       const runExecute = options.runExecute;
-      const correlationId = args.correlationId;
       if (!runExecute) {
         // No runner injected (plain-Node tests / misconfigured server):
         // error as data, never a throw (PLAN §4).
-        logEvent("execute_unavailable", { correlationId, codeChars: args.code.length });
+        logEvent("execute_unavailable", { codeChars: args.code.length });
         return {
           isError: true,
           content: [
@@ -275,7 +251,7 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
       const t0 = Date.now();
       let outcome;
       try {
-        outcome = await runExecute(args.code, { correlationId });
+        outcome = await runExecute(args.code);
       } catch (e) {
         // The runner is designed never to throw; belt-and-braces anyway.
         outcome = {
@@ -294,7 +270,6 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
       const shapedError = outcome.ok ? null : truncateForModel(outcome.error);
 
       logEvent("execute", {
-        correlationId,
         ok: outcome.ok,
         ms: Date.now() - t0,
         codeChars: args.code.length,

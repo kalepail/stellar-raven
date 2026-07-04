@@ -43,11 +43,7 @@ export type ExecuteOutcome =
   | { ok: true; result: string; truncated: boolean; logs: string[] }
   | { ok: false; error: string; logs: string[] };
 
-export type ExecuteRunnerOptions = {
-  correlationId?: string;
-};
-
-export type ExecuteRunner = (code: string, options?: ExecuteRunnerOptions) => Promise<ExecuteOutcome>;
+export type ExecuteRunner = (code: string) => Promise<ExecuteOutcome>;
 
 export type SpecSearchOutcome =
   | { ok: true; result: string }
@@ -65,7 +61,7 @@ export function createExecuteRunner(env: Env): ExecuteRunner {
   });
   const secrets = secretsFromEnv(env as unknown as Record<string, unknown>);
 
-  return async (code: string, options: ExecuteRunnerOptions = {}): Promise<ExecuteOutcome> => {
+  return async (code: string): Promise<ExecuteOutcome> => {
     // Providers are rebuilt per run so the skill-read flag is run-scoped
     // (never leaks across concurrent executes); the expensive derivations
     // (catalog view, resolved spec) are cached module-level in providers.ts.
@@ -74,7 +70,6 @@ export function createExecuteRunner(env: Env): ExecuteRunner {
     let skillRead = false;
     const providers = buildSandbox(getCatalog(), bundleJson as SkillBundle, env, {
       superSpec: superSpecJson,
-      correlationId: options.correlationId,
       onSkillRead: () => {
         skillRead = true;
       }
@@ -85,7 +80,6 @@ export function createExecuteRunner(env: Env): ExecuteRunner {
     // adapter fetch spans. No-op when tracing is off/unsampled; ends on throw.
     const outcome = await tracing.enterSpan("codemode.execute", async (span) => {
       span.setAttribute("code.chars", code.length);
-      if (options.correlationId) span.setAttribute("correlation.id", options.correlationId);
       const result = await executor.execute(code, providers);
       span.setAttribute("sandbox.ok", result.error === undefined);
       span.setAttribute("sandbox.logLines", result.logs?.length ?? 0);
