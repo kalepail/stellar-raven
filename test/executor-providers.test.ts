@@ -145,20 +145,23 @@ describe("dispatch behavior (error-as-data, policy, parallelism)", () => {
   });
 });
 
+// Mimic codemode's generated evaluate() scope: one mutable namespace object
+// per provider (own-property get/set — same observable behavior as the
+// generated Proxy, whose get trap checks own properties first and whose
+// default set trap lands on the target), then run the concatenated
+// preludes over them exactly as the executor module does. Shared by the
+// envelope-guard and skill.read-guard suites so the scope reconstruction
+// cannot drift from itself.
+function guardedNamespaces(fetchImpl?: FetchLike) {
+  const providers = buildSandbox(catalog, bundle, env, fetchImpl ? { fetchImpl } : undefined);
+  const ns: Record<string, Record<string, unknown>> = {};
+  for (const p of providers) ns[p.name] = { ...p.fns };
+  const preludes = providers.map((p) => p.prelude ?? "").join("\n");
+  new Function(...Object.keys(ns), preludes)(...Object.values(ns));
+  return ns as Record<string, Record<string, (args?: unknown) => Promise<unknown>>>;
+}
+
 describe("envelope guard prelude (fail-loud wrong-level access)", () => {
-  // Mimic codemode's generated evaluate() scope: one mutable namespace object
-  // per provider (own-property get/set — same observable behavior as the
-  // generated Proxy, whose get trap checks own properties first and whose
-  // default set trap lands on the target), then run the concatenated
-  // preludes over them exactly as the executor module does.
-  function guardedNamespaces(fetchImpl?: FetchLike) {
-    const providers = buildSandbox(catalog, bundle, env, fetchImpl ? { fetchImpl } : undefined);
-    const ns: Record<string, Record<string, unknown>> = {};
-    for (const p of providers) ns[p.name] = { ...p.fns };
-    const preludes = providers.map((p) => p.prelude ?? "").join("\n");
-    new Function(...Object.keys(ns), preludes)(...Object.values(ns));
-    return ns as Record<string, Record<string, (args?: unknown) => Promise<unknown>>>;
-  }
 
   const directoryFetch: FetchLike = async () =>
     new Response(
@@ -334,6 +337,83 @@ describe("envelope guard prelude (fail-loud wrong-level access)", () => {
       expect(desc?.writable).toBe(true);
       expect(desc?.enumerable).toBe(true);
     });
+  });
+});
+
+describe("skill.read result-shape guard (.data points at top-level content)", () => {
+  // Shared generated-scope reconstruction (module-level guardedNamespaces),
+  // narrowed to the codemode namespace this suite drives.
+  function guardedCodemode() {
+    return guardedNamespaces().codemode as unknown as {
+      skill: { read: (name: string, opts?: unknown) => Promise<Record<string, unknown>> };
+    };
+  }
+  const SKILL_ID = "skills.lumenloop.stellar-project-dossier";
+
+  it("ok whole-read: .data throws a pointer to content/sections; content/id/availableSections read fine", async () => {
+    const codemode = guardedCodemode();
+    const r = (await codemode.skill.read(SKILL_ID)) as {
+      ok: boolean;
+      content: string;
+      availableSections: string[];
+    };
+    expect(r.ok).toBe(true);
+    expect(r.content).toContain("#"); // top-level content untouched
+    expect(Array.isArray(r.availableSections)).toBe(true);
+    expect(() => (r as Record<string, unknown>).data).toThrow(/skill content sits at the top level/);
+    expect(() => (r as Record<string, unknown>).data).toThrow(/use r\.content .* or r\.sections/);
+  });
+
+  it("ok section-read: .sections reads fine, .data still throws the corrective pointer", async () => {
+    const codemode = guardedCodemode();
+    const whole = (await codemode.skill.read(SKILL_ID)) as { availableSections: string[] };
+    const key = whole.availableSections[0]!;
+    const r = (await codemode.skill.read(SKILL_ID, { sections: [key] })) as {
+      ok: boolean;
+      sections: unknown[];
+    };
+    expect(r.ok).toBe(true);
+    expect(Array.isArray(r.sections)).toBe(true);
+    expect(() => (r as Record<string, unknown>).data).toThrow(/\.data/);
+  });
+
+  it("the .data trap is non-enumerable: keys/JSON stay clean (no phantom key)", async () => {
+    const codemode = guardedCodemode();
+    const r = (await codemode.skill.read(SKILL_ID)) as object;
+    expect(Object.keys(r)).not.toContain("data");
+    expect(JSON.stringify(r)).not.toContain('"data"');
+  });
+
+  it("write-through: assigning .data self-replaces and reads back (decorating the result is legal)", async () => {
+    const codemode = guardedCodemode();
+    const r = (await codemode.skill.read(SKILL_ID)) as Record<string, unknown>;
+    expect(() => r.data).toThrow(/\.data/); // read-before-write still throws
+    r.data = 123; // does not throw
+    expect(r.data).toBe(123);
+    expect(Object.keys(r)).toContain("data"); // enumerable now
+  });
+
+  it("failed read routes through the envelope guard: r.data undefined + one [envelope] warning naming the call", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    try {
+      const codemode = guardedCodemode();
+      const r = (await codemode.skill.read("skills.definitely.not-a-skill")) as {
+        ok: boolean;
+        data?: unknown;
+        error: { kind: string };
+      };
+      expect(r.ok).toBe(false);
+      expect(r.error.kind).toBe("error");
+      expect(r.data).toBeUndefined(); // no bespoke .data trap on failed reads
+      const lines = logSpy.mock.calls
+        .map((c) => String(c[0]))
+        .filter((l) => l.startsWith("[envelope]"));
+      expect(lines).toHaveLength(1);
+      expect(lines[0]).toContain("codemode.skill.read");
+      expect(lines[0]).toContain("Branch on r.ok and read r.error.");
+    } finally {
+      logSpy.mockRestore();
+    }
   });
 });
 

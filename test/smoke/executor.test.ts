@@ -111,6 +111,50 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
     }
   });
 
+  it("guards a skill.read result: reading .data throws a pointer to top-level content", async () => {
+    const outcome = await run(`async () => {
+      const skill = await codemode.skill.read("skills.lumenloop.stellar-project-dossier");
+      let dataReadError = "";
+      try {
+        skill.data; // wrong shape — skill content is top-level, not under .data
+      } catch (e) {
+        dataReadError = String(e && e.message);
+      }
+      return { ok: skill.ok, hasContent: typeof skill.content === "string", dataReadError };
+    }`);
+    expect(outcome.ok).toBe(true);
+    if (outcome.ok) {
+      const parsed = JSON.parse(outcome.result) as {
+        ok: boolean;
+        hasContent: boolean;
+        dataReadError: string;
+      };
+      expect(parsed.ok).toBe(true);
+      expect(parsed.hasContent).toBe(true);
+      expect(parsed.dataReadError).toContain("top level");
+    }
+  });
+
+  it("appends the sandbox globals hint to an 'is not defined' error", async () => {
+    const outcome = await run(`async () => { return nope.doThing(); }`);
+    expect(outcome.ok).toBe(false);
+    if (!outcome.ok) {
+      expect(outcome.error).toMatch(/is not defined/);
+      expect(outcome.error).toContain("the only globals available in the sandbox are:");
+      expect(outcome.error).toContain("lumenloop");
+      expect(outcome.error).toContain("codemode");
+    }
+  });
+
+  it("leaves a non-ReferenceError message unchanged (no globals hint)", async () => {
+    const outcome = await run(`async () => { throw new Error("plain-boom"); }`);
+    expect(outcome.ok).toBe(false);
+    if (!outcome.ok) {
+      expect(outcome.error).toContain("plain-boom");
+      expect(outcome.error).not.toContain("the only globals available");
+    }
+  });
+
   it("in-sandbox discovery works offline: codemode.search + catalog() + skill.read", async () => {
     const outcome = await run(`async () => {
       const found = await codemode.search("search directory");

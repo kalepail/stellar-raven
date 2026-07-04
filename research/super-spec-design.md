@@ -136,7 +136,9 @@ byte-identical, and the checked-in artifact must match a fresh build (both test-
 
 ## 5. Deltas from the upstream pattern (@cloudflare/codemode 0.4.2 mcp.ts)
 
-Mirrored **exactly**:
+Mirrored **exactly** (in the code-shaped search sandbox — retired from the top-level `search`
+slot by ADR-0001 and kept for eval comparison via `src/executor/spec-sandbox.ts`; the live
+top-level `search` is the ranked query tool and embeds none of these templates):
 
 - `search` is LLM-written JS with input `{ code }`, executed in a Dynamic Worker against
   `codemode.spec()`; NO providers in the search sandbox (read-only over spec data, no secrets).

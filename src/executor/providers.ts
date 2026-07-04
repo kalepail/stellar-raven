@@ -60,8 +60,45 @@ export type SandboxProvider = {
   prelude?: string;
 };
 
-const SKILL_PRELUDE =
-  "    codemode.skill = { read: (name, opts) => codemode.skill_read(name, opts) };";
+/**
+ * Skill namespace + result-shape guard. `codemode.skill.read` returns skill
+ * content at the TOP LEVEL ({ ok, id, content | sections, availableSections,
+ * notice? }) — NOT under `.data` like the service-call envelope. Reading
+ * `.data` on an ok read is the one observed failure mode (agents copy the
+ * `r.data.X` service pattern and get a bare TypeError with no corrective
+ * path), so we plant a non-enumerable `.data` trap inside the sandbox exactly
+ * like envelopeGuardPrelude: GET throws the corrective pointer to
+ * content/sections; SET self-replaces (write-through — decorating the result
+ * stays legal). A FAILED read ({ ok:false, error }) routes through the shared
+ * `__guardEnvelope` so `.data` there warns-once-and-undefined identically to
+ * every other failed envelope — one consistent story for `.data` misuse.
+ * (__guardEnvelope is declared by the service prelude and shared via the
+ * concatenated sandbox scope; buildProviders only attaches that prelude when
+ * at least one operation entry exists, so a skills-only/empty-operation
+ * catalog would leave it undeclared — the typeof fallback keeps skill.read
+ * self-contained there, degrading to the pre-guard behavior instead of a
+ * ReferenceError. The inlined trap descriptor below must stay in lock-step
+ * with __trap in envelopeGuardPrelude: same non-enumerable get-throws /
+ * set-write-through contract, or skill results and service envelopes
+ * decorate inconsistently.)
+ */
+const SKILL_PRELUDE = [
+  "    codemode.skill = {",
+  "      read: async (name, opts) => {",
+  "        const raw = await codemode.skill_read(name, opts);",
+  '        const r = typeof __guardEnvelope === "function" ? __guardEnvelope(raw, "codemode.skill.read") : raw;',
+  '        if (r && typeof r === "object" && r.ok === true) {',
+  "          const msg = 'codemode.skill.read result: \".data\" is the service-call envelope shape — skill content sits at the top level: use r.content (whole read) or r.sections (section read); other fields: id, availableSections, notice';",
+  '          try { Object.defineProperty(r, "data", {',
+  "            enumerable: false, configurable: true,",
+  "            get() { throw new Error(msg); },",
+  '            set(value) { Object.defineProperty(this, "data", { value, writable: true, enumerable: true, configurable: true }); }',
+  "          }); } catch {}",
+  "        }",
+  "        return r;",
+  "      }",
+  "    };"
+].join("\n");
 
 /**
  * Sandbox-side envelope guard: fail-loud on wrong-level payload reads,
