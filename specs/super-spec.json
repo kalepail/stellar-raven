@@ -659,54 +659,13 @@
     }
   },
   "info": {
-    "description": "One spec covering every operation this MCP server can execute, across four services: lumenloop, scout (Stellar Light), stellarDocs (Algolia-backed docs search), and skills (bundled agent playbooks). Paths are keyed '/{service}/{operation}' and each operationId is the exact callable name: an operation with operationId 'lumenloop.search_directory' is invoked inside the execute tool's sandbox as `await lumenloop.search_directory(args)` — args is ONE object matching the operation's requestBody schema (POST ops) or its parameter names (GET ops). The exact call line is on each operation as x-execute. Every call resolves (never throws) to { ok: true, data } or { ok: false, error: { service, kind, message } }; the 200 response schema documents `data`. Operations with x-policy.allow=false are deny-listed: visible for completeness (denyReason says why) but refused at execution. x-cost 'metered' marks paid calls. Auth (x-auth) is handled host-side — code never sees keys.",
+    "description": "One spec covering every operation this MCP server can execute, across four services: lumenloop, scout (Stellar Light), stellarDocs (Algolia-backed docs search), and skills (bundled agent playbooks). Paths are keyed '/{service}/{operation}' and each operationId is the exact callable name: an operation with operationId 'lumenloop.search_directory' is invoked inside the execute tool's sandbox as `await lumenloop.search_directory(args)` — args is ONE object matching the operation's requestBody schema (POST ops) or its parameter names (GET ops). The exact call line is on each operation as x-execute. Every call resolves (never throws) to { ok: true, data } or { ok: false, error: { service, kind, message } }; the 200 response schema documents `data`. Every path in this spec is callable — exposure is filtered at build time, so nothing uncallable is described. Auth is handled host-side — code never sees keys.",
     "title": "stellar-raven-codemode — unified super spec",
     "version": "1.0.0",
     "x-generatedAt": "2026-07-03T15:11:15.794Z"
   },
   "openapi": "3.1.0",
   "paths": {
-    "/lumenloop/deleteWebhook": {
-      "delete": {
-        "operationId": "lumenloop.deleteWebhook",
-        "summary": "Remove the research-run callback",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "account/billing surface (keys, webhooks, credits top-up, budget, introspection) — deny-listed per PLAN §4; never callable from the sandbox"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "DELETE",
-          "path": "/v1/me/webhook"
-        }
-      }
-    },
-    "/lumenloop/downloadSkillsArchive": {
-      "get": {
-        "description": "set=public (Stellar-ecosystem MCP skills, no auth) or set=partner (REST API skills, partner tier).",
-        "operationId": "lumenloop.downloadSkillsArchive",
-        "summary": "Prebuilt zip of a skill set",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "host-side inventory/discovery surface — not exposed as a sandbox fn; the same information is in this spec, codemode.catalog(), and codemode.skill.read"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "GET",
-          "path": "/v1/skills/archive/{set}"
-        }
-      }
-    },
     "/lumenloop/find_av_passages": {
       "post": {
         "description": "Find specific passages inside long AV transcripts via per-chunk embedding similarity. Use this when you want to quote what was said, not just \"which video\". Returns the parent video metadata plus the matched chunk text and its start offset.\n\nWhen to use: Find WHERE in videos/podcasts/spaces a topic is discussed — returns AI summaries of the matching passages plus an opaque ordering offset (NOT a playback timestamp). Use when you need \"the part of the talk where they discuss X\".\n\nReturns: Array of AV items with AI summary, created_at (the recording's date — use it to judge and cite how recent the talk is), start_offset (an opaque transcript chunk offset for ordering passages within a recording — NOT playback seconds; do not render it as a timestamp or build a deep-link from it), and link. Transcript text itself is never returned — cite the link + the passage summary.",
@@ -775,13 +734,7 @@
           "lumenloop",
           "discovery"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.find_av_passages(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -915,13 +868,7 @@
           "lumenloop",
           "discovery"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.find_content_about_project(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -1022,13 +969,7 @@
           "lumenloop",
           "discovery"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.find_content_by_entity(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -1097,13 +1038,7 @@
           "lumenloop",
           "directory"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.find_similar_projects_semantic(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -1182,79 +1117,11 @@
           "lumenloop",
           "scf"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.find_similar_scf_submissions(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
           "path": "/v1/tools/find_similar_scf_submissions"
-        }
-      }
-    },
-    "/lumenloop/getChangelog": {
-      "get": {
-        "description": "Public, no auth. Every deploy-worthy API/MCP change, newest first. Filter with ?since=YYYY-MM-DD (entries dated on or after that day; 400 on malformed dates) and ?breaking=true (only changes an integration could parse-depend on).",
-        "operationId": "lumenloop.getChangelog",
-        "summary": "Public platform changelog (newest-first)",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "host-side inventory/discovery surface — not exposed as a sandbox fn; the same information is in this spec, codemode.catalog(), and codemode.skill.read"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "GET",
-          "path": "/v1/changelog"
-        }
-      }
-    },
-    "/lumenloop/getSkill": {
-      "get": {
-        "description": "Public for the public set; partner-set skills require the partner tier (403 insufficient_scope otherwise).",
-        "operationId": "lumenloop.getSkill",
-        "summary": "One skill: every file inline (SKILL.md + reference/)",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "host-side inventory/discovery surface — not exposed as a sandbox fn; the same information is in this spec, codemode.catalog(), and codemode.skill.read"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "GET",
-          "path": "/v1/skills/{name}"
-        }
-      }
-    },
-    "/lumenloop/getWebhook": {
-      "get": {
-        "operationId": "lumenloop.getWebhook",
-        "summary": "Current research-webhook config (secret never returned)",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "account/billing surface (keys, webhooks, credits top-up, budget, introspection) — deny-listed per PLAN §4; never callable from the sandbox"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "GET",
-          "path": "/v1/me/webhook"
         }
       }
     },
@@ -1307,13 +1174,7 @@
           "lumenloop",
           "directory"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.get_categories(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -1408,13 +1269,7 @@
           "lumenloop",
           "content"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.get_document(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -1500,13 +1355,7 @@
           "lumenloop",
           "directory"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.get_project(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -1563,13 +1412,7 @@
           "lumenloop",
           "directory"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.get_project_tags_vocabulary(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -1626,13 +1469,7 @@
           "lumenloop",
           "directory"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.get_regions(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -1711,13 +1548,7 @@
           "lumenloop",
           "directory"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.get_related_projects(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -1783,13 +1614,7 @@
           "lumenloop",
           "scf"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.get_scf_submissions(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -1843,99 +1668,11 @@
           "lumenloop",
           "directory"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.get_tags_vocabulary(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
           "path": "/v1/tools/get_tags_vocabulary"
-        }
-      }
-    },
-    "/lumenloop/listOwnBudgetRequests": {
-      "get": {
-        "operationId": "lumenloop.listOwnBudgetRequests",
-        "summary": "List your account’s budget-increase requests",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "account/billing surface (keys, webhooks, credits top-up, budget, introspection) — deny-listed per PLAN §4; never callable from the sandbox"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "GET",
-          "path": "/v1/me/budget-requests"
-        }
-      }
-    },
-    "/lumenloop/listOwnCredentials": {
-      "get": {
-        "operationId": "lumenloop.listOwnCredentials",
-        "summary": "List your account's keys + OAuth grants (partner tier)",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "account/billing surface (keys, webhooks, credits top-up, budget, introspection) — deny-listed per PLAN §4; never callable from the sandbox"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "GET",
-          "path": "/v1/me/credentials"
-        }
-      }
-    },
-    "/lumenloop/listSkills": {
-      "get": {
-        "description": "Public. Lists the Stellar-ecosystem MCP skills (public set) and the REST API partner skills (partner set) with availability flags for the presented credential.",
-        "operationId": "lumenloop.listSkills",
-        "summary": "Agent Skill playbooks: catalog of both sets",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "host-side inventory/discovery surface — not exposed as a sandbox fn; the same information is in this spec, codemode.catalog(), and codemode.skill.read"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "GET",
-          "path": "/v1/skills"
-        }
-      }
-    },
-    "/lumenloop/listTools": {
-      "get": {
-        "description": "Public. A presented credential personalizes it (availability flags, internal tools for internal tiers). Optional ?tier= filter.",
-        "operationId": "lumenloop.listTools",
-        "summary": "Tool catalog with when-to-use guidance",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "host-side inventory/discovery surface — not exposed as a sandbox fn; the same information is in this spec, codemode.catalog(), and codemode.skill.read"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "GET",
-          "path": "/v1/tools"
         }
       }
     },
@@ -2061,13 +1798,7 @@
           "lumenloop",
           "content"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.list_documents(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -2128,13 +1859,7 @@
           "lumenloop",
           "research"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.list_my_research(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -2231,162 +1956,11 @@
           "lumenloop",
           "content"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.list_research(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
           "path": "/v1/tools/list_research"
-        }
-      }
-    },
-    "/lumenloop/mintOwnKey": {
-      "post": {
-        "description": "Returns the plaintext key exactly once. Minted keys are partner-tier only — self-service can never raise a tier. Max 10 active keys per account.",
-        "operationId": "lumenloop.mintOwnKey",
-        "summary": "Mint a new partner key on your own account (rotation / per-agent keys)",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "account/billing surface (keys, webhooks, credits top-up, budget, introspection) — deny-listed per PLAN §4; never callable from the sandbox"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "POST",
-          "path": "/v1/me/keys"
-        }
-      }
-    },
-    "/lumenloop/requestBudgetIncrease": {
-      "post": {
-        "description": "The relationship path — a human reviews and applies the change. Distinct from POST /billing/topup, which credits your account instantly via x402. At most one open request per account (409 while one is pending). kind=\"quota\" asks to raise the recurring monthly allowance; kind=\"credits\" asks for a one-time allocation.",
-        "operationId": "lumenloop.requestBudgetIncrease",
-        "summary": "Ask an admin to raise your budget",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "account/billing surface (keys, webhooks, credits top-up, budget, introspection) — deny-listed per PLAN §4; never callable from the sandbox"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "POST",
-          "path": "/v1/me/budget-request"
-        }
-      }
-    },
-    "/lumenloop/request_research": {
-      "post": {
-        "description": "Ask Lumen Loop to research a question. A server-side agent runs the research over the full Stellar-ecosystem content corpus (which you do not have direct access to). Four output modes: output_format='report' (default) returns a synthesized, cited editorial report; output_format='sources' skips the synthesis and returns a curated source pack — ranked source links with Lumen Loop's AI summaries and per-source relevance notes — for you to synthesize yourself; output_format='structured' fills YOUR JSON Schema (pass output_schema) and returns the data plus a per-field basis (citations + reasoning + confidence); output_format='answer': a fast, direct, cited answer to a single question — no editorial styling, no report; completes in seconds and costs ~$0.02. Cost, cheapest first: 'answer' is a flat ~$0.02/run; 'sources', 'structured', and 'report' (the default) run the full research agent and are metered in USD per run — typically well under $2, capped near $2 per run, rising with depth; if you only need a quick fact, prefer output_format='answer'. Before commissioning, call list_my_research to check whether your account already paid for this question and reuse that run_id via research_result instead of paying again. Async: returns a run_id to poll with research_result. Metered against your account quota.\n\nWhen to use: Commission server-side research when summaries from the search tools are not enough — a research agent works over the full LumenLoop corpus and returns LumenLoop's own cited synthesis (citations land on the original articles and timestamps, so supporting quotes are one fetch away). output_format='report' (default) writes a synthesized cited report (tweet ≈ 30-60s, thread ≈ 1-2 min, long-form ≈ 3-10 min); output_format='sources' skips synthesis and curates a ranked source pack (links + LumenLoop AI summaries + relevance notes) for you to synthesize yourself (≈ 1-3 min); output_format='structured' fills YOUR JSON Schema (pass output_schema) and returns data + a per-field basis (citations, reasoning, confidence); output_format='answer' returns a fast, direct, cited answer to a single question — no editorial styling, no report; completes in seconds and costs ~$0.02. Before commissioning, call list_my_research — if your account already paid for this question, reuse that run_id via research_result instead of paying again. Async: poll research_result with the returned run_id.\n\nReturns: { run_id, poll_after_s, message, recent_runs? } — the run starts in the background; recent_runs (when present) lists prior completed reports on your account you can reuse via research_result instead of commissioning again.",
-        "operationId": "lumenloop.request_research",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$schema": "http://json-schema.org/draft-07/schema#",
-                "additionalProperties": false,
-                "properties": {
-                  "format": {
-                    "description": "Report shape (report mode only). Defaults to long-form. Rough speeds: tweet ≈ 30-60s, thread ≈ 1-2 min, long-form ≈ 3-10 min. Ignored for 'sources'/'structured'/'answer'.",
-                    "enum": [
-                      "tweet",
-                      "thread",
-                      "long-form"
-                    ],
-                    "type": "string"
-                  },
-                  "output_format": {
-                    "description": "'report' (default): synthesized editorial report. 'sources': curated source pack (links + summaries + notes, no composition) — ≈ 1-3 min. 'structured': data conforming to your output_schema + per-field basis. 'answer': fast cited answer to a single question — ≈ seconds.",
-                    "enum": [
-                      "report",
-                      "sources",
-                      "structured",
-                      "answer"
-                    ],
-                    "type": "string"
-                  },
-                  "output_schema": {
-                    "additionalProperties": {},
-                    "description": "JSON Schema the structured data must conform to (required with output_format='structured'; max ~8KB serialized). Citations are attached server-side per field — do NOT add URL fields to the schema.",
-                    "type": "object"
-                  },
-                  "question": {
-                    "description": "What to research / the report brief.",
-                    "maxLength": 4000,
-                    "minLength": 5,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "question"
-                ],
-                "type": "object"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$schema": "http://json-schema.org/draft-07/schema#",
-                  "additionalProperties": false,
-                  "properties": {
-                    "message": {
-                      "description": "Status note."
-                    },
-                    "poll_after_s": {
-                      "description": "Seconds to wait before the first research_result poll."
-                    },
-                    "recent_runs": {
-                      "description": "When present: prior completed reports on your account ({ run_id, title, created_at, output_format }) you can reuse via research_result instead of commissioning again."
-                    },
-                    "recent_runs_note": {
-                      "description": "Human-readable reuse hint accompanying recent_runs."
-                    },
-                    "run_id": {
-                      "description": "Poll research_result with this id."
-                    },
-                    "text": {
-                      "description": "Present when the tool reports a plain-text message (e.g. quota errors)."
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "{ run_id, poll_after_s, message, recent_runs? } — the run starts in the background; recent_runs (when present) lists prior completed reports on your account you can reuse via research_result instead of commissioning again."
-          }
-        },
-        "summary": "Ask Lumen Loop to research a question.",
-        "tags": [
-          "lumenloop",
-          "research"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "metered",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "metered paid call — disabled at launch (PLAN §8: request_research off by default; enable behind budget gate + dedup)"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "POST",
-          "path": "/v1/tools/request_research"
         }
       }
     },
@@ -2488,37 +2062,11 @@
           "lumenloop",
           "research"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.research_result(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
           "path": "/v1/tools/research_result"
-        }
-      }
-    },
-    "/lumenloop/revokeOwnKey": {
-      "delete": {
-        "operationId": "lumenloop.revokeOwnKey",
-        "summary": "Revoke a key on your own account",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "account/billing surface (keys, webhooks, credits top-up, budget, introspection) — deny-listed per PLAN §4; never callable from the sandbox"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "DELETE",
-          "path": "/v1/me/keys/{id}"
         }
       }
     },
@@ -2649,13 +2197,7 @@
           "lumenloop",
           "discovery"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.search_content_semantic(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -2727,13 +2269,7 @@
           "lumenloop",
           "directory"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.search_directory(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
@@ -2817,79 +2353,11 @@
           "lumenloop",
           "content"
         ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
         "x-execute": "await lumenloop.search_documents(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "lumenloop",
         "x-upstream": {
           "method": "POST",
           "path": "/v1/tools/search_documents"
-        }
-      }
-    },
-    "/lumenloop/setWebhook": {
-      "put": {
-        "operationId": "lumenloop.setWebhook",
-        "summary": "Register/replace the research-run callback; returns the signing secret once",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "account/billing surface (keys, webhooks, credits top-up, budget, introspection) — deny-listed per PLAN §4; never callable from the sandbox"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "PUT",
-          "path": "/v1/me/webhook"
-        }
-      }
-    },
-    "/lumenloop/topupCredits": {
-      "post": {
-        "description": "Paid via the x402 protocol: the first call returns HTTP 402 with payment requirements in the payment-required response header (base64 JSON; exact scheme, USDC on Stellar). Pay with an x402-capable client and retry with the X-PAYMENT header; on settlement the amount is credited to your billing account and the settlement transaction is returned in the X-PAYMENT-RESPONSE header. Requires a billing account on your credential (409 otherwise). 503 when payments are not enabled on this deployment.",
-        "operationId": "lumenloop.topupCredits",
-        "summary": "Top up allocated research credits — pay USDC on Stellar (x402)",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "account/billing surface (keys, webhooks, credits top-up, budget, introspection) — deny-listed per PLAN §4; never callable from the sandbox"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "POST",
-          "path": "/v1/billing/topup"
-        }
-      }
-    },
-    "/lumenloop/whoAmI": {
-      "get": {
-        "description": "Returns the principal, granted tiers, applicable rate limits, tool counts, and — for partner billing accounts — monthly quota, month-to-date spend, and allocated credits (total + remaining).",
-        "operationId": "lumenloop.whoAmI",
-        "summary": "Credential introspection: tier, limits, billing",
-        "tags": [
-          "lumenloop"
-        ],
-        "x-auth": "partner-key",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "account/billing surface (keys, webhooks, credits top-up, budget, introspection) — deny-listed per PLAN §4; never callable from the sandbox"
-        },
-        "x-service": "lumenloop",
-        "x-upstream": {
-          "method": "GET",
-          "path": "/v1/me"
         }
       }
     },
@@ -2931,13 +2399,7 @@
           "scout",
           "Analytics"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.analyzeEcosystem(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -2984,13 +2446,7 @@
           "scout",
           "Hackathons"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.compareHackathons(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -3142,13 +2598,7 @@
           "scout",
           "Repos"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.explainRepo(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -3209,13 +2659,7 @@
           "scout",
           "Builders"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.getBuilders(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -3327,13 +2771,7 @@
           "scout",
           "Discovery"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.getChangelog(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -3386,13 +2824,7 @@
           "scout",
           "Analytics"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.getClusters(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -3421,13 +2853,7 @@
           "scout",
           "Feedback"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.getFeedbackSchema(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -3477,13 +2903,7 @@
           "scout",
           "Hackathons"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.getHackathon(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -3550,13 +2970,7 @@
           "scout",
           "Hackathons"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.getHackathons(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -3641,13 +3055,7 @@
           "scout",
           "Ecosystem"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.getLeaderboard(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -3697,13 +3105,7 @@
           "scout",
           "Partners"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.getPartner(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -3787,13 +3189,7 @@
           "scout",
           "Partners"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.getPartners(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -3861,13 +3257,7 @@
           "scout",
           "Funding"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.getRfps(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -3917,13 +3307,7 @@
           "scout",
           "Skills"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.getSkill(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -3952,13 +3336,7 @@
           "scout",
           "Discovery"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.getStatus(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -4020,13 +3398,7 @@
           "scout",
           "Skills"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.listSkills(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -4087,102 +3459,11 @@
           "scout",
           "Partners"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.matchPartners(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "POST",
           "path": "/api/partners/match"
-        }
-      }
-    },
-    "/scout/partnerAssistant": {
-      "post": {
-        "description": "The chat backend for /partners/chat. Send the running message history; the assistant routes intent — a builder describing a need gets real matched partners back in matches[] (deterministically searched, never hallucinated; surfaced partners are logged as leads for the weekly partner digest), a company describing itself gets interviewed and canList:true signals the client to offer profile extraction. Returns {reply, matches?, intent, canList}. 503 unavailable:true without AI configured. Use when: building a conversational partner-finding UX. Not for: one-shot programmatic ranking → scout.matchPartners; browsing → scout.getPartners.",
-        "operationId": "scout.partnerAssistant",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "messages": {
-                    "description": "Chat turns, oldest first",
-                    "items": {
-                      "properties": {
-                        "content": {
-                          "type": "string"
-                        },
-                        "role": {
-                          "enum": [
-                            "user",
-                            "assistant"
-                          ],
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "role",
-                        "content"
-                      ],
-                      "type": "object"
-                    },
-                    "type": "array"
-                  }
-                },
-                "required": [
-                  "messages"
-                ],
-                "type": "object"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Assistant reply (+ matches when a need was searched)"
-          },
-          "429": {
-            "description": "Rate limited"
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            },
-            "description": "AI backend unavailable"
-          }
-        },
-        "summary": "Conversational partner concierge (find OR get listed)",
-        "tags": [
-          "scout",
-          "Partners"
-        ],
-        "x-auth": "none",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "side-effecting — surfaced partners are logged as leads for the weekly partner digest (per upstream OpenAPI description); use scout.matchPartners for side-effect-free ranking"
-        },
-        "x-service": "scout",
-        "x-upstream": {
-          "method": "POST",
-          "path": "/api/partners/assistant"
         }
       }
     },
@@ -4265,13 +3546,7 @@
           "scout",
           "Partners"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.partnerOnboard(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "POST",
@@ -4336,13 +3611,7 @@
           "scout",
           "Projects"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.searchProjects(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -4401,13 +3670,7 @@
           "scout",
           "Repos"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.searchRepos(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
@@ -4480,173 +3743,11 @@
           "scout",
           "Research"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await scout.searchResearch(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "scout",
         "x-upstream": {
           "method": "GET",
           "path": "/api/research"
-        }
-      }
-    },
-    "/scout/submitFeedback": {
-      "post": {
-        "description": "Send a feedback report when the skill returns wrong / missing / misleading information. Lands in the curator queue. Rate-limited to 6/min/IP (IP hashed with PAYLOAD_SECRET, never stored raw). Use when: a Scout query returned something wrong / stale / empty that you believe SHOULD exist — file it so the corpus/endpoint gets fixed. Not for: discovering the schema first → scout.getFeedbackSchema; reading data (this is a write endpoint) → use the relevant search endpoint.",
-        "operationId": "scout.submitFeedback",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/scout.FeedbackRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    },
-                    "ok": {
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [
-                    "ok",
-                    "id"
-                  ],
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Feedback received (a curator-queue row was created)"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/scout.ErrorResponse"
-                }
-              }
-            },
-            "description": "Validation error"
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/scout.ErrorResponse"
-                }
-              }
-            },
-            "description": "Rate limit exceeded"
-          }
-        },
-        "summary": "Submit feedback on Scout's output",
-        "tags": [
-          "scout",
-          "Feedback"
-        ],
-        "x-auth": "none",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "write-endpoint (submits feedback upstream) — deny-listed per PLAN §4"
-        },
-        "x-service": "scout",
-        "x-upstream": {
-          "method": "POST",
-          "path": "/api/feedback"
-        }
-      }
-    },
-    "/scout/submitPartnerListing": {
-      "post": {
-        "description": "Submits a company for directory listing. New companies become a DRAFT partner account reviewed by the Stellar Light team before publication (publishing emails the contact an account invite). If the company is already listed, the submission is recorded as a CLAIM REQUEST on the existing profile instead — no duplicates. Returns {ok:true, mode:'draft'|'claim'}. Rate-limited; contactEmail becomes the account login. Use when: completing a get-listed flow (fields usually come from scout.partnerOnboard extract). Not for: editing an existing claimed profile → the partner dashboard.",
-        "operationId": "scout.submitPartnerListing",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "contactEmail": {
-                    "description": "Becomes the partner account login",
-                    "format": "email",
-                    "type": "string"
-                  },
-                  "fields": {
-                    "description": "Profile fields (typically the /api/partners/onboard extract output)",
-                    "type": "object"
-                  },
-                  "orgName": {
-                    "maxLength": 120,
-                    "minLength": 2,
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "orgName",
-                  "contactEmail"
-                ],
-                "type": "object"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            },
-            "description": "`{ok:true, mode:'draft'|'claim'}`"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/scout.ErrorResponse"
-                }
-              }
-            },
-            "description": "Missing/invalid orgName or contactEmail"
-          },
-          "429": {
-            "description": "Rate limited"
-          }
-        },
-        "summary": "Submit a new-partner listing (or claim an existing one)",
-        "tags": [
-          "scout",
-          "Partners"
-        ],
-        "x-auth": "none",
-        "x-cost": "free",
-        "x-policy": {
-          "allow": false,
-          "denyReason": "write-endpoint — creates a DRAFT partner account (or a claim request on an existing profile) reviewed by the Stellar Light team; deny-listed per PLAN §4"
-        },
-        "x-service": "scout",
-        "x-upstream": {
-          "method": "POST",
-          "path": "/api/partners/submit-listing"
         }
       }
     },
@@ -4663,13 +3764,7 @@
         "tags": [
           "skills"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "(await codemode.spec()).paths[\"/skills/list_skills\"].get[\"x-skill-index\"]",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "skills",
         "x-skill-index": [
           {
@@ -5064,13 +4159,7 @@
         "tags": [
           "skills"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await codemode.skill.read(name, { sections })",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "skills"
       }
     },
@@ -5113,13 +4202,7 @@
         "tags": [
           "skills"
         ],
-        "x-auth": "none",
-        "x-cost": "free",
         "x-execute": "await codemode.search({ query, service: \"skills\" })",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "skills"
       }
     },
@@ -5189,13 +4272,7 @@
           },
           "paramMap": {}
         },
-        "x-auth": "algolia-key",
-        "x-cost": "free",
         "x-execute": "await stellarDocs.get_doc_page_sections(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "stellarDocs"
       }
     },
@@ -5262,13 +4339,7 @@
             "query": "query"
           }
         },
-        "x-auth": "algolia-key",
-        "x-cost": "free",
         "x-execute": "await stellarDocs.search_anchor_sep_docs(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "stellarDocs"
       }
     },
@@ -5334,13 +4405,7 @@
             "query": "query"
           }
         },
-        "x-auth": "algolia-key",
-        "x-cost": "free",
         "x-execute": "await stellarDocs.search_asset_token_docs(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "stellarDocs"
       }
     },
@@ -5410,13 +4475,7 @@
             "query": "query"
           }
         },
-        "x-auth": "algolia-key",
-        "x-cost": "free",
         "x-execute": "await stellarDocs.search_doc_titles(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "stellarDocs"
       }
     },
@@ -5504,13 +4563,7 @@
             "query": "query"
           }
         },
-        "x-auth": "algolia-key",
-        "x-cost": "free",
         "x-execute": "await stellarDocs.search_docs(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "stellarDocs"
       }
     },
@@ -5604,13 +4657,7 @@
             "query": "query"
           }
         },
-        "x-auth": "algolia-key",
-        "x-cost": "free",
         "x-execute": "await stellarDocs.search_docs_in_category(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "stellarDocs"
       }
     },
@@ -5670,13 +4717,7 @@
             "query": "query"
           }
         },
-        "x-auth": "algolia-key",
-        "x-cost": "free",
         "x-execute": "await stellarDocs.search_meeting_notes(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "stellarDocs"
       }
     },
@@ -5742,13 +4783,7 @@
             "query": "query"
           }
         },
-        "x-auth": "algolia-key",
-        "x-cost": "free",
         "x-execute": "await stellarDocs.search_protocol_concepts_docs(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "stellarDocs"
       }
     },
@@ -5814,13 +4849,7 @@
             "query": "query"
           }
         },
-        "x-auth": "algolia-key",
-        "x-cost": "free",
         "x-execute": "await stellarDocs.search_rpc_horizon_data_docs(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "stellarDocs"
       }
     },
@@ -5885,13 +4914,7 @@
             "query": "query"
           }
         },
-        "x-auth": "algolia-key",
-        "x-cost": "free",
         "x-execute": "await stellarDocs.search_sdk_cli_tools_docs(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "stellarDocs"
       }
     },
@@ -5959,13 +4982,7 @@
             "query": "query"
           }
         },
-        "x-auth": "algolia-key",
-        "x-cost": "free",
         "x-execute": "await stellarDocs.search_soroban_contract_docs(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "stellarDocs"
       }
     },
@@ -6032,13 +5049,7 @@
             "query": "query"
           }
         },
-        "x-auth": "algolia-key",
-        "x-cost": "free",
         "x-execute": "await stellarDocs.search_wallet_dapp_docs(args)",
-        "x-policy": {
-          "allow": true,
-          "denyReason": null
-        },
         "x-service": "stellarDocs"
       }
     }
@@ -6111,7 +5122,7 @@
   ],
   "x-generated": {
     "builder": "scripts/build-super-spec.mjs",
-    "catalogEntries": 299,
+    "catalogEntries": 274,
     "generatedAt": "2026-07-03T15:11:15.794Z"
   },
   "x-services": {
@@ -6119,7 +5130,7 @@
       "authEnv": "LUMENLOOP_API_KEY",
       "base": "https://api.lumenloop.com/v1",
       "fetchedAt": "2026-07-02T13:59:07.782Z",
-      "note": "18 free + 3 partner research tools cataloged; account/billing/discovery endpoints included but always denied (x-policy).",
+      "note": "Exactly the cataloged tools — the account/billing/discovery API surface is host-side only and not described here (ADR-0003: the spec contains only what code can call).",
       "source": "https://api.lumenloop.com/v1/tools"
     },
     "scout": {

@@ -34,34 +34,6 @@ export function splitCard(token) {
 }
 
 /**
- * Skill-twin entity identity (todo 816). `lumenloop.skill.<name>` (metadata-only)
- * and `skills.<source>.<name>` (readable) are the SAME resource — src/skills/store.ts
- * aliases reads across them by terminal-name equality. The grader mirrors that:
- * a hit on either twin form matches BOTH the `lumenloop` and `skills` service labels
- * (and its terminal name matches skills_/lumenloop-side card labels). The twin
- * terminal-name set is data injected by the caller (run-routing derives it from the
- * manifest: terminal names of `lumenloop.skill.*` entries) — nothing is hardcoded.
- */
-
-/** Terminal name of a catalog id: strip any #fragment, take the last dot segment. */
-export function terminalName(id) {
-  return String(id).split("#")[0].split(".").pop();
-}
-
-/**
- * The service labels a hit satisfies. Without a twin set (or for non-twin hits)
- * this is just [hit.service]; twin hits additionally satisfy the sibling service.
- */
-export function hitServices(hit, twinTerminals) {
-  const services = [hit.service];
-  if (twinTerminals && twinTerminals.has(terminalName(hit.id))) {
-    if (hit.service === "lumenloop") services.push("skills");
-    else if (hit.service === "skills") services.push("lumenloop");
-  }
-  return services;
-}
-
-/**
  * Tolerant card match between an expected card label (raven-next naming, e.g.
  * "lumenloop_search_directory") and a catalog hit (id "lumenloop.search_directory",
  * service "lumenloop"). Rules, documented:
@@ -70,36 +42,22 @@ export function hitServices(hit, twinTerminals) {
  *   3. Same service AND one op name contains the other, when the shorter op is
  *      >= 4 chars (tolerates "projects" vs "list_projects"; guards against
  *      trivial substrings like "get").
- * With `twinTerminals`, a skill-twin hit is matched under BOTH of its identities
- * (e.g. `lumenloop.skill.scf-submission-radar` also matches the card
- * `skills_scf_submission_radar` as (service skills, op scf_submission_radar)).
  */
-export function cardMatches(expectedCard, hit, twinTerminals) {
+export function cardMatches(expectedCard, hit) {
   const exp = canonToken(expectedCard);
   const hitCanon = canonToken(hit.id);
   if (exp === hitCanon) return true;
   const e = splitCard(expectedCard);
   const eService = e.service ? canonToken(e.service) : null;
   if (!eService) return false;
-  // Candidate (service, op) identities for the hit: its own, plus (for skill twins)
-  // the sibling-service identity keyed on the terminal name.
   const hitService = canonToken(hit.service);
   const hitOp = hitCanon.startsWith(hitService + "_")
     ? hitCanon.slice(hitService.length + 1)
     : splitCard(hit.id).op;
-  const candidates = [[hitService, hitOp]];
-  if (twinTerminals && twinTerminals.has(terminalName(hit.id))) {
-    const twinOp = canonToken(terminalName(hit.id));
-    if (hit.service === "lumenloop") candidates.push(["skills", twinOp]);
-    else if (hit.service === "skills") candidates.push(["lumenloop", twinOp]);
-  }
-  for (const [svc, op] of candidates) {
-    if (eService !== svc) continue;
-    if (e.op === op) return true;
-    const [shorter, longer] = e.op.length <= op.length ? [e.op, op] : [op, e.op];
-    if (shorter.length >= 4 && longer.includes(shorter)) return true;
-  }
-  return false;
+  if (eService !== hitService) return false;
+  if (e.op === hitOp) return true;
+  const [shorter, longer] = e.op.length <= hitOp.length ? [e.op, hitOp] : [hitOp, e.op];
+  return shorter.length >= 4 && longer.includes(shorter);
 }
 
 /**
@@ -113,22 +71,23 @@ export function cardMatches(expectedCard, hit, twinTerminals) {
  * `expectedService` alone and are unaffected, so legacy strict aggregates stay
  * byte-identical whether or not an overlay is applied.
  *
- * Twin-aware grading (todo 816): when `twinTerminals` is provided, service
- * matching goes through hitServices() — skill-twin hits satisfy both the
- * lumenloop and skills labels (grading-rule v2). Omit it for rule-v1 grading.
+ * Grading rule v3 (ADR-0003): the manifest contains no `lumenloop.skill.*`
+ * twins any more, so the v2 twin-identity layer (todo 816) is gone — a hit's
+ * service label is exactly its own. Cross-service tolerance is expressed only
+ * via expected_any.
  */
-export function gradeCase(hits, expectedService, expectedCards, expectedAny, twinTerminals) {
-  const svc = (h) => hitServices(h, twinTerminals).includes(expectedService);
+export function gradeCase(hits, expectedService, expectedCards, expectedAny) {
+  const svc = (h) => h.service === expectedService;
   const top1 = hits.length > 0 && svc(hits[0]);
   const top3 = hits.slice(0, 3).some(svc);
   const top5 = hits.slice(0, 5).some(svc);
   let cardHit5 = null;
   if (Array.isArray(expectedCards) && expectedCards.length > 0) {
-    cardHit5 = hits.slice(0, 5).some((h) => expectedCards.some((c) => cardMatches(c, h, twinTerminals)));
+    cardHit5 = hits.slice(0, 5).some((h) => expectedCards.some((c) => cardMatches(c, h)));
   }
   const result = { top1, top3, top5, cardHit5 };
   if (Array.isArray(expectedAny) && expectedAny.length > 0) {
-    const anySvc = (h) => hitServices(h, twinTerminals).some((s) => expectedAny.includes(s));
+    const anySvc = (h) => expectedAny.includes(h.service);
     result.any1 = hits.length > 0 && anySvc(hits[0]);
     result.any3 = hits.slice(0, 3).some(anySvc);
     result.any5 = hits.slice(0, 5).some(anySvc);

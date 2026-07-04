@@ -1,6 +1,6 @@
 /**
  * searchCatalog tests — the FROZEN contract (scratchpad 514): ranked hits,
- * deny filtering, kind/service filters, default limit 10, TS signatures on
+ * excluded-op absence, kind/service filters, default limit 10, TS signatures on
  * operation hits. Runs against the real generated manifest.
  */
 import { describe, expect, it, beforeAll } from "vitest";
@@ -117,25 +117,15 @@ describe("loadManifest — structural invariants (F6)", () => {
   });
 });
 
-describe("searchCatalog — deny filtering", () => {
-  it("never returns denied entries, even on exact id queries", () => {
+describe("searchCatalog — excluded ops are absent by construction (ADR-0003)", () => {
+  it("never surfaces build-excluded ops, even on exact id queries", () => {
+    // These are excluded at build time (paid, write, side-effecting) and have
+    // no manifest entry — search cannot surface what does not exist.
     for (const query of [
       "request research",
       "lumenloop.request_research",
       "submit feedback",
       "scout.submitFeedback",
-      "feedback"
-    ]) {
-      const ids = searchCatalog(catalog, { query, limit: 50 }).map((h) => h.id);
-      expect(ids, `query: ${query}`).not.toContain("lumenloop.request_research");
-      expect(ids, `query: ${query}`).not.toContain("scout.submitFeedback");
-    }
-  });
-
-  it("never returns the round-2 denied partner writes (todo 793)", () => {
-    // submitPartnerListing creates draft partner accounts; partnerAssistant
-    // logs surfaced partners as leads — both allow:false in the manifest.
-    for (const query of [
       "submit partner listing",
       "scout.submitPartnerListing",
       "partner assistant chat",
@@ -143,6 +133,8 @@ describe("searchCatalog — deny filtering", () => {
       "get listed as a partner"
     ]) {
       const ids = searchCatalog(catalog, { query, limit: 50 }).map((h) => h.id);
+      expect(ids, `query: ${query}`).not.toContain("lumenloop.request_research");
+      expect(ids, `query: ${query}`).not.toContain("scout.submitFeedback");
       expect(ids, `query: ${query}`).not.toContain("scout.submitPartnerListing");
       expect(ids, `query: ${query}`).not.toContain("scout.partnerAssistant");
     }
@@ -301,11 +293,10 @@ describe("searchCatalog — availableSections on skill hits (todo 812)", () => {
     expect(sectionHits.every((h) => h.availableSections === undefined)).toBe(true);
   });
 
-  it("metadata twins (lumenloop.skill.*) never surface — only the readable skills.* form", () => {
-    // The 14 inventory lumenloop.skill.* twins are deny-listed for de-dup
-    // (2026-07-03): search returns only the canonical readable skills.* form
-    // (which carries availableSections). The store.ts alias still RESOLVES
-    // lumenloop.skill.<survivor> for reads (back-compat), it just isn't a hit.
+  it("skills exist only under the canonical skills.* id — one skill, one hit (ADR-0003)", () => {
+    // The lumenloop.skill.* twin namespace was never emitted into the
+    // manifest; the only discoverable form is the readable skills.* mirror
+    // entry (which carries availableSections).
     const hits = searchCatalog(catalog, {
       query: "lumenloop.skill.stellar-project-dossier",
       kind: "skill",
@@ -314,19 +305,6 @@ describe("searchCatalog — availableSections on skill hits (todo 812)", () => {
     expect(hits.find((h) => h.id === "lumenloop.skill.stellar-project-dossier")).toBeUndefined();
     const readable = hits.find((h) => h.id.startsWith("skills.") && h.id.endsWith("stellar-project-dossier"));
     expect(readable).toBeDefined();
-  });
-
-  it("metadata twins are NOT discoverable under a service:lumenloop filter (de-dup)", () => {
-    // De-dup deny removed the inventory twin, so a service:lumenloop filter no
-    // longer surfaces the playbook — it is a `skills` service resource and is
-    // found via no filter or service:skills. This is the intended de-dup
-    // contract (canonical skills.*); the store.ts alias still resolves reads.
-    const hits = searchCatalog(catalog, {
-      query: "lumenloop.skill.stellar-project-dossier",
-      kind: "skill",
-      service: "lumenloop"
-    });
-    expect(hits.find((h) => h.id === "lumenloop.skill.stellar-project-dossier")).toBeUndefined();
   });
 });
 
@@ -358,7 +336,7 @@ describe("searchCatalog — signatures", () => {
     // The callable line spells out the full result envelope — the signature
     // is the model's primary teaching surface for `r.data.*` access.
     expect(opHit.signature).toContain(
-      "lumenloop.search_directory(input: SearchDirectoryInput): Promise<{ ok: true, data: SearchDirectoryOutput } | { ok: false, error: { kind: \"error\" | \"soft-empty\" | \"denied\", message: string, hint?: string } }>"
+      "lumenloop.search_directory(input: SearchDirectoryInput): Promise<{ ok: true, data: SearchDirectoryOutput } | { ok: false, error: { kind: \"error\" | \"soft-empty\", message: string, hint?: string } }>"
     );
 
     const skillHits = searchCatalog(catalog, { query: "soroban storage" }).filter(

@@ -5,11 +5,12 @@
  * Design (PLAN §4, "soft-empty ≠ error ≠ data"):
  *  - Adapters NEVER throw toward the sandbox. Every outcome is a value:
  *      { ok: true,  data }                — real evidence
- *      { ok: false, error: AdapterError } — error OR soft-empty OR denied
- *  - `error.kind` is the three-way discriminator the model (and tests) branch
+ *      { ok: false, error: AdapterError } — error OR soft-empty
+ *  - `error.kind` is the two-way discriminator the model (and tests) branch
  *    on: "error" (call failed / args invalid), "soft-empty" (the service
  *    answered politely with nothing — unknown slug, zero hits, guidance
- *    text), "denied" (policy refused the call before any network happened).
+ *    text). There is no "denied": exposure is filtered at build time
+ *    (ADR-0003), so nothing callable can be policy-refused at runtime.
  *  - One envelope across three heterogeneous services keeps the `execute`
  *    prompt honest: model code checks `r.ok` and never has to guess whether
  *    a bare array vs `{error}` vs `{text}` means failure.
@@ -28,13 +29,13 @@ export type AdapterEnv = {
 /** Injectable fetch so unit tests run against recorded fixtures, no network. */
 export type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
-export type AdapterErrorKind = "error" | "soft-empty" | "denied";
+export type AdapterErrorKind = "error" | "soft-empty";
 
 export type AdapterError = {
   service: string;
   kind: AdapterErrorKind;
   message: string;
-  /** HTTP status when the upstream answered; absent for policy/network errors. */
+  /** HTTP status when the upstream answered; absent for network/validation errors. */
   status?: number;
   /** Upstream machine code (lumenloop `code`, algolia `status`), when present. */
   code?: string;

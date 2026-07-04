@@ -126,16 +126,6 @@ async function main() {
   const catalog = loadManifest(manifestJson);
   const compiled = JSON.parse(readFileSync(CASES, "utf8"));
 
-  // Twin-aware grading (todo 816, rule v2): lumenloop.skill.<name> and
-  // skills.<source>.<name> are one aliased resource (src/skills/store.ts) — derive
-  // the twin terminal-name set from the manifest and grade twin hits as satisfying
-  // BOTH service labels.
-  const twinTerminals = new Set(
-    (manifestJson.entries ?? [])
-      .filter((e) => typeof e.id === "string" && e.id.startsWith("lumenloop.skill."))
-      .map((e) => e.id.split(".").pop()),
-  );
-
   // --- overlay: attach expected_any to hand-reviewed legacy case ids (load-time, so
   // compile-routing.mjs regenerating routing-cases.json never wipes it) ---------------
   let overlay = null;
@@ -160,7 +150,7 @@ async function main() {
     const union = new Set([...(c.expected_any ?? []), ...(overlayAny ?? [])]);
     const expectedAny = union.size > 0 ? [c.expected_service, ...[...union].filter((s) => s !== c.expected_service).sort()] : undefined;
     const hits = searchCatalog(catalog, { query: c.question, limit: 5 });
-    const grade = gradeCase(hits, c.expected_service, c.expected_cards, expectedAny, twinTerminals);
+    const grade = gradeCase(hits, c.expected_service, c.expected_cards, expectedAny);
     return {
       id: c.id,
       expected_service: c.expected_service,
@@ -174,7 +164,7 @@ async function main() {
   const asAny = (r) =>
     r.any1 === undefined ? r : { expected_service: r.expected_service, top1: r.any1, top3: r.any3, top5: r.any5, cardHit5: r.cardHit5 };
 
-  // --- legacy compiled cases: strict v2 (twin-aware, the gate) ------------------------
+  // --- legacy compiled cases: strict v3 (the gate) -------------------------------------
   const perCase = compiled.cases.map(runCase);
   const agg = aggregate(perCase);
 
@@ -222,8 +212,8 @@ async function main() {
   if (existsSync(GATES)) {
     const g = JSON.parse(readFileSync(GATES, "utf8"));
     const failures = [];
-    if (g.gradingRule !== "v2-twin-aware") {
-      failures.push(`gates.json gradingRule "${g.gradingRule}" is not what this runner grades (v2-twin-aware) — re-baseline`);
+    if (g.gradingRule !== "v3-manifest-exposed") {
+      failures.push(`gates.json gradingRule "${g.gradingRule}" is not what this runner grades (v3-manifest-exposed) — re-baseline`);
     }
     const o = agg.overall;
     if (o.n !== g.legacy.n) {
@@ -254,7 +244,7 @@ async function main() {
     JSON.stringify(
       {
         ranAt: new Date().toISOString(),
-        gradingRule: "v2-twin-aware",
+        gradingRule: "v3-manifest-exposed",
         ...(gate ? { gate } : {}),
         casesFile: { generatedAt: compiled.generatedAt, source: compiled.source, counts: compiled.counts },
         overall: agg.overall,
@@ -273,7 +263,7 @@ async function main() {
     ) + "\n",
   );
 
-  console.log(`\nsearch-routing eval — ${perCase.length} legacy cases (${compiled.counts.skipped} skipped at compile), strict grading (rule v2, twin-aware)\n`);
+  console.log(`\nsearch-routing eval — ${perCase.length} legacy cases (${compiled.counts.skipped} skipped at compile), strict grading (rule v3, manifest-exposed)\n`);
   console.table(tableRows(agg));
   {
     const a = acceptEitherAgg.overall;

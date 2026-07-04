@@ -1,6 +1,7 @@
 /**
  * Skills store tests — bundle read, sectioned retrieval, exact-match
- * discipline, alias handling, deny enforcement.
+ * discipline. Exposure is build-time (ADR-0003): everything cataloged is
+ * readable; anything excluded has no entry and fails exact-match resolution.
  */
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
@@ -77,20 +78,26 @@ describe("readSkill", () => {
     expect(r.sections![0]!.content.length).toBeGreaterThan(0);
   });
 
-  it("resolves the lumenloop.skill.* alias to the canonical mirror body (surviving skill)", () => {
+  it("has no lumenloop.skill.* alias — the twin namespace is dead (ADR-0003)", () => {
+    // Twins were removed from the catalog entirely; the old back-compat read
+    // alias went with them. Unknown ids fail exact-match, with the canonical
+    // mirror id suggested (suggestion only, never a resolution).
     const r = readSkill(catalog, bundle, "lumenloop.skill.stellar-project-dossier");
-    expect(r.ok).toBe(true);
-    if (!r.ok) return;
-    expect(r.id).toBe("skills.lumenloop.stellar-project-dossier");
-  });
-
-  it("denies the alias for a retired onboarding skill (deny-list is data)", () => {
-    // The 7 Lumenloop API-onboarding skills are retired: the alias resolves to
-    // the deny-listed mirror entry, so the read returns denied on every path.
-    const r = readSkill(catalog, bundle, "lumenloop.skill.lumenloop-api-billing");
     expect(r.ok).toBe(false);
     if (r.ok) return;
-    expect(r.error.kind).toBe("denied");
+    expect(r.error.kind).toBe("error");
+    expect(r.error.message).toContain('Did you mean "skills.lumenloop.stellar-project-dossier"?');
+  });
+
+  it("retired onboarding skills simply do not exist (no entry, plain unknown-id error)", () => {
+    // The 7 Lumenloop API-onboarding skills are never emitted into the
+    // manifest — there is nothing to deny; the id is just unknown.
+    expect(catalog.entries.some((e) => e.id.includes("lumenloop-api-billing"))).toBe(false);
+    const r = readSkill(catalog, bundle, "skills.lumenloop-api.lumenloop-api-billing");
+    expect(r.ok).toBe(false);
+    if (r.ok) return;
+    expect(r.error.kind).toBe("error");
+    expect(r.error.message).toContain("exact catalog ids");
   });
 
   it("refuses unknown skills and unknown sections with exact-match messages", () => {
@@ -138,7 +145,7 @@ describe("readSkill", () => {
 
   it("refuses sections passed both in a #-qualified id and via { sections }", () => {
     const sectionEntry = catalog.entries.find(
-      (e) => e.kind === "skill-section" && e.id.includes("#") && !e.id.includes("#file:") && e.policy.allow
+      (e) => e.kind === "skill-section" && e.id.includes("#") && !e.id.includes("#file:")
     );
     const r = readSkill(catalog, bundle, sectionEntry!.id, { sections: ["anything"] });
     expect(r.ok).toBe(false);
@@ -205,9 +212,6 @@ describe("readSkill", () => {
           inputSchema: null,
           outputSchema: null,
           transport: { type: "file", path },
-          auth: "none",
-          cost: "free",
-          policy: { allow: true, denyReason: null },
           provenance: { source: "test", fetchedAt: "2026-01-01T00:00:00Z" }
         }
       ]
@@ -226,110 +230,15 @@ describe("readSkill", () => {
     expect(r.availableSections).toEqual([]);
   });
 
-  it("filters deny-listed section keys out of availableSections, matching search (reads stay denied)", () => {
+  it("availableSections membership is identical across readSkill and search hits", () => {
     const skillId = "skills.lumenloop.stellar-project-dossier";
-    const deniedSlugEntry = catalog.entries.find(
-      (e) => e.kind === "skill-section" && e.id.startsWith(`${skillId}#`) && !e.id.includes("#file:")
-    )!;
-    const deniedFileEntry = catalog.entries.find(
-      (e) => e.kind === "skill-section" && e.id.startsWith(`${skillId}#file:`)
-    )!;
-    const deniedKeys = [deniedSlugEntry, deniedFileEntry].map((e) => e.id.split("#")[1]!);
-    const deniedCatalog: Catalog = {
-      ...catalog,
-      entries: catalog.entries.map((e) =>
-        e.id === deniedSlugEntry.id || e.id === deniedFileEntry.id
-          ? { ...e, policy: { allow: false, denyReason: "test: sensitive section" } }
-          : e
-      )
-    };
-
-    // Absent from readSkill's advertised list …
-    const r = readSkill(deniedCatalog, bundle, skillId);
+    const r = readSkill(catalog, bundle, skillId);
     expect(r.ok).toBe(true);
     if (!r.ok) return;
-    for (const key of deniedKeys) expect(r.availableSections).not.toContain(key);
     expect(r.availableSections.length).toBeGreaterThan(0);
-
-    // … absent from search hits' availableSections, and membership stays
-    // identical across both surfaces WITH the denied entries present.
-    const hit = searchCatalog(deniedCatalog, { query: skillId }).find((h) => h.id === skillId)!;
+    const hit = searchCatalog(catalog, { query: skillId }).find((h) => h.id === skillId)!;
     expect(hit).toBeDefined();
-    for (const key of deniedKeys) expect(hit.availableSections).not.toContain(key);
     expect([...hit.availableSections!].sort()).toEqual([...r.availableSections].sort());
-
-    // Reading a denied key by exact name still returns the denied error.
-    for (const key of deniedKeys) {
-      const dr = readSkill(deniedCatalog, bundle, skillId, { sections: [key] });
-      expect(dr.ok).toBe(false);
-      if (dr.ok) continue;
-      expect(dr.error.kind).toBe("denied");
-    }
-  });
-
-  it("whole-read EXCISES a deny-listed ## section's body, leaving an explicit marker", () => {
-    const skillId = "skills.lumenloop.stellar-project-dossier";
-    const sectionEntry = catalog.entries.find(
-      (e) => e.kind === "skill-section" && e.id.startsWith(`${skillId}#`) && !e.id.includes("#file:")
-    )!;
-    const slug = sectionEntry.id.split("#")[1]!;
-
-    // A whole-body needle that lives ONLY inside the section we will deny.
-    const wholeAllowed = readSkill(catalog, bundle, skillId);
-    if (!wholeAllowed.ok || !wholeAllowed.content) throw new Error("expected ok whole read");
-    const sectionRead = readSkill(catalog, bundle, skillId, { sections: [slug] });
-    if (!sectionRead.ok) throw new Error("expected ok section read");
-    const sectionBody = sectionRead.sections![0]!.content;
-    const needle = sectionBody
-      .split("\n")
-      .slice(1) // skip the "## heading" line
-      .map((l) => l.trim())
-      .filter((l) => l.length > 15)
-      .find((l) => wholeAllowed.content!.split(l).length === 2); // appears exactly once
-    expect(needle, "section has a body line unique to it").toBeTruthy();
-    expect(wholeAllowed.content).toContain(needle!); // present before denial
-
-    const deniedCatalog: Catalog = {
-      ...catalog,
-      entries: catalog.entries.map((e) =>
-        e.id === sectionEntry.id
-          ? { ...e, policy: { allow: false, denyReason: "test: sensitive billing detail" } }
-          : e
-      )
-    };
-
-    const whole = readSkill(deniedCatalog, bundle, skillId);
-    expect(whole.ok).toBe(true);
-    if (!whole.ok) return;
-    // Body excised …
-    expect(whole.content).not.toContain(needle!);
-    // … replaced by an explicit, reason-carrying marker …
-    expect(whole.content).toContain("[section omitted: test: sensitive billing detail]");
-    // … while OTHER sections survive and the denied key is unadvertised.
-    expect(whole.content!.length).toBeGreaterThan(200);
-    expect(whole.availableSections).not.toContain(slug);
-
-    // Section-read of the denied slug still refuses outright.
-    const sr = readSkill(deniedCatalog, bundle, skillId, { sections: [slug] });
-    expect(sr.ok).toBe(false);
-    if (sr.ok) return;
-    expect(sr.error.kind).toBe("denied");
-  });
-
-  it("refuses denied skills (policy is data)", () => {
-    const skill = catalog.entries.find((e) => e.kind === "skill" && e.service === "skills")!;
-    const deniedCatalog: Catalog = {
-      ...catalog,
-      entries: catalog.entries.map((e) =>
-        e.id === skill.id
-          ? { ...e, policy: { allow: false, denyReason: "test: not exposed" } }
-          : e
-      )
-    };
-    const r = readSkill(deniedCatalog, bundle, skill.id);
-    expect(r.ok).toBe(false);
-    if (r.ok) return;
-    expect(r.error.kind).toBe("denied");
   });
 });
 
@@ -344,7 +253,6 @@ describe("builder invariant: read-time sectionize agrees with build-catalog sect
     let skillsChecked = 0;
     for (const e of catalog.entries) {
       if (e.kind !== "skill" || e.service !== "skills") continue;
-      if (!e.policy.allow) continue; // retired skills intentionally expose no sections
       if (e.transport?.type !== "file" || typeof e.transport.path !== "string") continue;
       const raw = bundle.files[e.transport.path];
       expect(raw, `bundle missing ${e.transport.path}`).toBeTypeOf("string");

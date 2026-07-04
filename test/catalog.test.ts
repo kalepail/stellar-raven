@@ -1,7 +1,8 @@
 /**
  * Catalog builder tests — determinism, entry counts, schema validity,
- * deny-list as data. Runs scripts/build-catalog.mjs for real (offline; it
- * only reads inventory/ + ecosystem-skills/).
+ * build-time exposure filtering (ADR-0003: the manifest IS the exposed
+ * surface; exclusions never emit). Runs scripts/build-catalog.mjs for real
+ * (offline; it only reads inventory/ + ecosystem-skills/).
  */
 import { describe, expect, it, beforeAll } from "vitest";
 import { execFileSync } from "node:child_process";
@@ -64,46 +65,37 @@ describe("build-catalog.mjs", () => {
     const count = (pred: (e: Catalog["entries"][number]) => boolean) =>
       catalog.entries.filter(pred).length;
 
-    // Lumenloop: 21 tools (18 guest + 3 partner) as operations…
-    expect(count((e) => e.service === "lumenloop" && e.kind === "operation")).toBe(21);
-    // …of which exactly one (request_research, metered) is denied.
-    const deniedLumenloop = catalog.entries.filter(
-      (e) => e.service === "lumenloop" && e.kind === "operation" && !e.policy.allow
-    );
-    expect(deniedLumenloop.map((e) => e.id)).toEqual(["lumenloop.request_research"]);
-    expect(deniedLumenloop[0]?.cost).toBe("metered");
+    // Lumenloop: 20 exposed operations — the 21st inventory tool
+    // (request_research, metered paid call) is excluded at build time and
+    // never emitted (ADR-0003; PLAN §8: off by default).
+    expect(count((e) => e.service === "lumenloop" && e.kind === "operation")).toBe(20);
+    expect(count((e) => e.id === "lumenloop.request_research")).toBe(0);
 
-    // Lumenloop's 14 API skills: metadata-only skill entries, never sectioned.
-    const lumenloopSkills = catalog.entries.filter(
-      (e) => e.service === "lumenloop" && e.kind === "skill"
-    );
-    expect(lumenloopSkills).toHaveLength(14);
-    expect(lumenloopSkills.every((e) => e.id.startsWith("lumenloop.skill."))).toBe(true);
+    // Lumenloop's 14 API-served skills are never emitted: each duplicates a
+    // canonical skills.* mirror entry (the lumenloop.skill.* twin namespace is
+    // dead — assertLumenloopSkillsMirrored guards the assumption).
+    expect(count((e) => e.service === "lumenloop" && e.kind === "skill")).toBe(0);
+    expect(count((e) => e.id.startsWith("lumenloop.skill."))).toBe(0);
     expect(
       catalog.entries.filter((e) => e.service === "lumenloop" && e.kind === "skill-section")
     ).toHaveLength(0);
 
-    // Scout: 24 OpenAPI operations (20 + the 4 partner-pipeline POSTs added
-    // upstream 2026-07-02). Round 2 deny additions (todo 793): submitFeedback
-    // (round 1), submitPartnerListing (creates draft partner accounts) and
-    // partnerAssistant (logs surfaced partners as leads). matchPartners and
-    // partnerOnboard stay allowed — their OpenAPI descriptions document pure
+    // Scout: 21 exposed of 24 upstream OpenAPI operations — the 3 write/
+    // side-effecting endpoints (submitFeedback, submitPartnerListing,
+    // partnerAssistant) are excluded at build time. matchPartners and
+    // partnerOnboard stay exposed — their OpenAPI descriptions document pure
     // AI ranking/extraction with no persistence.
-    expect(count((e) => e.service === "scout" && e.kind === "operation")).toBe(24);
-    const deniedScout = catalog.entries.filter((e) => e.service === "scout" && !e.policy.allow);
-    expect(deniedScout.map((e) => e.id)).toEqual([
-      "scout.partnerAssistant",
-      "scout.submitFeedback",
-      "scout.submitPartnerListing"
-    ]);
-    expect(count((e) => e.id === "scout.matchPartners" && e.policy.allow)).toBe(1);
-    expect(count((e) => e.id === "scout.partnerOnboard" && e.policy.allow)).toBe(1);
+    expect(count((e) => e.service === "scout" && e.kind === "operation")).toBe(21);
+    expect(count((e) => e.id === "scout.submitFeedback")).toBe(0);
+    expect(count((e) => e.id === "scout.submitPartnerListing")).toBe(0);
+    expect(count((e) => e.id === "scout.partnerAssistant")).toBe(0);
+    expect(count((e) => e.id === "scout.matchPartners")).toBe(1);
+    expect(count((e) => e.id === "scout.partnerOnboard")).toBe(1);
 
-    // Stellar Docs: 12 authored operations from specs/stellar-docs.json
-    // (round 2, was 1 thin op in round 1 — manifest total 363 → 374).
+    // Stellar Docs: 12 authored operations from specs/stellar-docs.json.
     const docs = catalog.entries.filter((e) => e.service === "stellarDocs");
     expect(docs).toHaveLength(12);
-    expect(docs.every((e) => e.kind === "operation" && e.policy.allow)).toBe(true);
+    expect(docs.every((e) => e.kind === "operation")).toBe(true);
     expect(docs.map((e) => e.id)).toContain("stellarDocs.search_docs");
     expect(docs.map((e) => e.id)).toContain("stellarDocs.search_docs_in_category");
     expect(docs.map((e) => e.id)).toContain("stellarDocs.search_meeting_notes");
@@ -111,20 +103,19 @@ describe("build-catalog.mjs", () => {
     for (const op of docs) {
       expect(op.transport?.type, op.id).toBe("algolia");
       expect((op.transport as Record<string, unknown>).algolia, op.id).toBeDefined();
-      expect(op.auth).toBe("algolia-key");
       expect(op.inputSchema).not.toBeNull();
     }
 
-    // Skills mirror: 25 whole-skill entries (the 7 retired Lumenloop
-    // API-onboarding skills stay as deny-listed records; their sections/files
-    // are not emitted — see build-catalog.mjs RETIRED_ONBOARDING_SKILLS).
-    expect(count((e) => e.service === "skills" && e.kind === "skill")).toBe(25);
+    // Skills mirror: 18 whole-skill entries — the 7 retired Lumenloop
+    // API-onboarding skills are never emitted, skill or sections (see
+    // build-catalog.mjs RETIRED_ONBOARDING_SKILLS + the rename-guard).
+    expect(count((e) => e.service === "skills" && e.kind === "skill")).toBe(18);
     expect(count((e) => e.service === "skills" && e.kind === "skill-section")).toBeGreaterThan(0);
-    expect(count((e) => e.service === "skills" && !e.policy.allow)).toBe(7);
+    expect(count((e) => e.id.includes("lumenloop-api-"))).toBe(0);
+    expect(count((e) => e.id.includes("lumenloop-mcp-connect"))).toBe(0);
 
-    // Grand total after retiring the 7 onboarding skills' sections/files and
-    // de-dup denying the 14 inventory lumenloop.skill.* twins: 299.
-    expect(catalog.entries).toHaveLength(299);
+    // Grand total: everything in the manifest is exposed (ADR-0003).
+    expect(catalog.entries).toHaveLength(274);
   });
 
   it("carries exactly version/generatedAt/entries at the top level", () => {
@@ -168,14 +159,12 @@ describe("build-catalog.mjs", () => {
       method: "POST",
       path: "/v1/tools/search_directory"
     });
-    expect(searchDirectory?.auth).toBe("partner-key");
     const searchProjects = ops.find((e) => e.id === "scout.searchProjects");
     expect(searchProjects?.transport).toMatchObject({
       type: "http",
       method: "GET",
       path: "/api/projects/search"
     });
-    expect(searchProjects?.auth).toBe("none");
   });
 });
 
@@ -197,9 +186,6 @@ describe("loadManifest", () => {
             inputSchema: null,
             outputSchema: null,
             transport: null,
-            auth: "none",
-            cost: "free",
-            policy: { allow: true, denyReason: null },
             provenance: { source: "s", fetchedAt: "t" }
           }
         ]
@@ -220,9 +206,6 @@ describe("loadManifest", () => {
           inputSchema: { type: "object", properties: {} },
           outputSchema: null,
           transport: { type: "http", method: "GET", path: "/api/status" },
-          auth: "none",
-          cost: "free",
-          policy: { allow: true, denyReason: null },
           provenance: { source: "https://example.com", fetchedAt: "2026-07-01T00:00:00Z" }
         }
       ]

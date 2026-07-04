@@ -4,17 +4,15 @@
  *
  * `codemode.skill.read(name, { sections? })` resolves through the CATALOG,
  * not the filesystem: `name` must be an exact catalog id (a `skills.*` skill
- * or skill-section id — the ids `search` returns), policy is enforced
- * (unlisted/denied entries never resolve), and content comes from
+ * or skill-section id — the ids `search` returns), and content comes from
  * src/skills/bundle.json (built by scripts/bundle-skills.mjs; keys equal
- * each entry's transport.path).
+ * each entry's transport.path). Exposure is decided at build time (ADR-0003):
+ * everything in the catalog is readable; anything excluded simply has no
+ * entry and fails exact-match resolution here.
  *
  * Exact-match discipline (ADR wrong-entity lesson, CLAUDE.md rules): no
- * fuzzy resolution anywhere. The ONE alias supported is `lumenloop.skill.X`
- * → the `skills.*` entry with the identical terminal name, because those 14
- * lumenloop catalog entries are metadata-only (transport null) while their
- * bodies ARE in the mirror verbatim — the alias is an exact terminal-name
- * equality, not a search.
+ * fuzzy resolution and no aliases anywhere — unknown ids fail with a
+ * suggestion, never a silent redirect.
  *
  * Section addressing matches the catalog builder's slugs: `##`-heading
  * sections by slug (or exact heading text), extra .md files as
@@ -49,13 +47,13 @@ export type SkillReadResult =
        */
       notice?: string;
       /**
-       * Section keys readable on this skill (## slugs + file:<path> keys).
-       * Deny-listed sections are omitted — same membership as search hits'
-       * availableSections (search.ts sectionKeysOf).
+       * Section keys readable on this skill (## slugs + file:<path> keys) —
+       * same membership as search hits' availableSections (search.ts
+       * sectionKeysOf).
        */
       availableSections: string[];
     }
-  | { ok: false; error: { service: "skills"; kind: "error" | "denied"; message: string } };
+  | { ok: false; error: { service: "skills"; kind: "error"; message: string } };
 
 /**
  * Advisory-notice threshold, in estimated tokens (ceil chars/4) over the RAW
@@ -95,8 +93,8 @@ function stripFrontmatter(content: string): string {
   return content.slice(content.indexOf("\n", end + 1) + 1);
 }
 
-function err(kind: "error" | "denied", message: string): SkillReadResult {
-  return { ok: false, error: { service: "skills", kind, message } };
+function err(message: string): SkillReadResult {
+  return { ok: false, error: { service: "skills", kind: "error", message } };
 }
 
 /** Two-row Levenshtein — inputs are catalog ids (tens of chars, ~dozens of candidates). */
@@ -125,7 +123,7 @@ function editDistance(a: string, b: string): number {
  */
 function nearestSkillId(catalog: Catalog, name: string): string | undefined {
   const candidates = catalog.entries.filter(
-    (e) => e.kind === "skill" && e.policy.allow && e.transport?.type === "file"
+    (e) => e.kind === "skill" && e.transport?.type === "file"
   );
   const wanted = lastIdSegment(name);
   const terminal = candidates.filter((e) => lastIdSegment(e.id) === wanted);
@@ -145,8 +143,7 @@ function nearestSkillId(catalog: Catalog, name: string): string | undefined {
 type Section = { heading: string; content: string; start: number; end: number };
 
 /** Split a SKILL.md body into `##` sections keyed by slug. `start`/`end` are
- *  the [heading, next-heading) line range, used to rebuild whole-skill reads
- *  with deny-listed sections excised. */
+ *  the [heading, next-heading) line range. */
 function sectionize(body: string): Map<string, Section> {
   const out = new Map<string, Section>();
   const lines = body.split("\n");
@@ -186,34 +183,6 @@ export function sectionSlugsOf(raw: string): string[] {
   return [...sectionize(stripFrontmatter(raw)).keys()];
 }
 
-/**
- * Reassemble a whole-skill body, excising deny-listed sections: the heading
- * line stays (so the model sees the section exists) but its body is replaced
- * by a `[section omitted: <denyReason>]` marker. The deny-list is a control,
- * not advice — unlike the size notice, denied content is genuinely withheld.
- */
-function assembleWholeBody(
-  body: string,
-  bySlug: Map<string, Section>,
-  deniedReasons: Map<string, string>
-): string {
-  if (deniedReasons.size === 0) return body.trim();
-  const lines = body.split("\n");
-  const sections = [...bySlug.entries()]; // insertion order === document order
-  const firstStart = sections.length > 0 ? sections[0]![1].start : lines.length;
-  const parts: string[] = [lines.slice(0, firstStart).join("\n")]; // preamble
-  for (const [slug, sec] of sections) {
-    const reason = deniedReasons.get(slug);
-    if (reason !== undefined) {
-      parts.push(lines[sec.start] ?? `## ${sec.heading}`); // heading line only
-      parts.push(`[section omitted: ${reason}]`);
-    } else {
-      parts.push(lines.slice(sec.start, sec.end).join("\n"));
-    }
-  }
-  return parts.join("\n").trim();
-}
-
 /** All section entries (`id#…`) belonging to a skill id, from the catalog. */
 function sectionEntriesOf(catalog: Catalog, skillId: string): CatalogEntry[] {
   return catalog.entries.filter(
@@ -223,31 +192,9 @@ function sectionEntriesOf(catalog: Catalog, skillId: string): CatalogEntry[] {
 
 function resolveSkillEntry(catalog: Catalog, name: string): CatalogEntry | SkillReadResult {
   const direct = catalog.entries.find((e) => e.id === name);
-  // A direct hit wins unless it is a body-less metadata entry (the 14
-  // lumenloop.skill.* entries have transport:null) — those fall through to
-  // the alias so their mirrored bodies resolve.
-  if (direct && !(name.startsWith("lumenloop.skill.") && direct.transport === null)) {
-    return direct;
-  }
-
-  // The single exact alias: lumenloop.skill.X → skills.*.X (terminal-name equality).
-  if (name.startsWith("lumenloop.skill.")) {
-    const wanted = lastIdSegment(name);
-    const matches = catalog.entries.filter(
-      (e) => e.kind === "skill" && e.service === "skills" && lastIdSegment(e.id) === wanted
-    );
-    if (matches.length === 1 && matches[0]) return matches[0];
-    return err(
-      "error",
-      matches.length === 0
-        ? `skill "${name}" is metadata-only and has no mirrored body — search kind:"skill" for readable skills`
-        : `skill alias "${name}" is ambiguous — use the exact skills.* id from search`
-    );
-  }
-
+  if (direct) return direct;
   const nearest = nearestSkillId(catalog, name);
   return err(
-    "error",
     `unknown skill "${name}" — names are exact catalog ids (e.g. "skills.stellar-dev.soroban"); discover them with codemode.search or the search tool (kind: "skill")${nearest ? `. Did you mean "${nearest}"?` : ""}`
   );
 }
@@ -259,7 +206,7 @@ export function readSkill(
   opts?: unknown
 ): SkillReadResult {
   if (typeof name !== "string" || name.length === 0) {
-    return err("error", "skill name must be a non-empty string (an exact catalog id)");
+    return err("skill name must be a non-empty string (an exact catalog id)");
   }
 
   // Options are exact-match like ids: unknown keys are refused, never
@@ -268,14 +215,12 @@ export function readSkill(
   if (opts !== undefined && opts !== null) {
     if (typeof opts !== "object" || Array.isArray(opts)) {
       return err(
-        "error",
         `options must be an object like { sections: ["<key>"] } — got ${Array.isArray(opts) ? "an array" : typeof opts}`
       );
     }
     const unknownKeys = Object.keys(opts).filter((k) => k !== "sections");
     if (unknownKeys.length > 0) {
       return err(
-        "error",
         `unknown option${unknownKeys.length > 1 ? "s" : ""} ${unknownKeys.map((k) => `"${k}"`).join(", ")} — the only option is "sections" (an array of section keys); nothing is silently ignored`
       );
     }
@@ -293,71 +238,52 @@ export function readSkill(
   const entry = resolved;
 
   if (entry.kind !== "skill") {
-    return err("error", `"${entry.id}" is a ${entry.kind}, not a skill — pass the skill id (before the #) plus sections`);
-  }
-  if (!entry.policy.allow) {
-    return err("denied", `${entry.id} is deny-listed: ${entry.policy.denyReason ?? "not exposed"}`);
+    return err(`"${entry.id}" is a ${entry.kind}, not a skill — pass the skill id (before the #) plus sections`);
   }
   const path = entry.transport?.type === "file" ? entry.transport.path : undefined;
   if (!path) {
-    return err("error", `${entry.id} has no readable body on this server`);
+    return err(`${entry.id} has no readable body on this server`);
   }
   const raw = bundle.files[path];
   if (raw === undefined) {
-    return err("error", `${entry.id} is cataloged but its body is missing from the bundle (${path}) — rebuild with npm run skills:bundle`);
+    return err(`${entry.id} is cataloged but its body is missing from the bundle (${path}) — rebuild with npm run skills:bundle`);
   }
 
   const body = stripFrontmatter(raw);
   const bySlug = sectionize(body);
   const sectionEntries = sectionEntriesOf(catalog, entry.id);
-  // Advertised keys omit deny-listed sections (a ## slug or file: key whose
-  // catalog section entry has policy.allow=false) — the same membership
-  // search.ts sectionKeysOf surfaces. Reads of a denied key still return the
-  // denied error below; it just isn't advertised.
   const sectionEntryById = new Map(sectionEntries.map((e) => [e.id, e]));
   // Fail-closed: a ## slug is advertised (and readable) ONLY when it has a
-  // catalog section entry that allows it. An un-cataloged slug (section
-  // indexing drift) is neither advertised nor served — the builder-invariant
-  // test guards against that ever happening for real data.
-  const allowedSlugs = [...bySlug.keys()].filter((slug) => {
-    const se = sectionEntryById.get(`${entry.id}#${slug}`);
-    return se !== undefined && se.policy.allow;
-  });
-  // Deny-listed ## sections whose bodies must be excised from whole reads.
-  const deniedSlugReasons = new Map<string, string>();
-  for (const slug of bySlug.keys()) {
-    const se = sectionEntryById.get(`${entry.id}#${slug}`);
-    if (se && !se.policy.allow) deniedSlugReasons.set(slug, se.policy.denyReason ?? "not exposed");
-  }
+  // catalog section entry. An un-cataloged slug (section indexing drift) is
+  // neither advertised nor served — the builder-invariant test guards against
+  // that ever happening for real data.
+  const advertisedSlugs = [...bySlug.keys()].filter((slug) =>
+    sectionEntryById.has(`${entry.id}#${slug}`)
+  );
   const fileKeys = sectionEntries
-    .filter((e) => e.policy.allow)
     .map((e) => e.id.slice(entry.id.length + 1))
     .filter((k) => k.startsWith("file:"));
-  const availableSections = [...allowedSlugs, ...fileKeys];
+  const availableSections = [...advertisedSlugs, ...fileKeys];
 
   if (requestedFromId && optSections !== undefined) {
     return err(
-      "error",
       `"${name}" already names a section — pass sections either in the id (#<slug>) or via { sections }, not both`
     );
   }
   let requested = requestedFromId;
   if (!requested && optSections !== undefined) {
     if (!Array.isArray(optSections) || !optSections.every((s) => typeof s === "string")) {
-      return err("error", "sections must be an array of section keys (strings)");
+      return err("sections must be an array of section keys (strings)");
     }
     requested = optSections as string[];
   }
 
   if (!requested || requested.length === 0) {
-    // Whole-read: return the full body for ALLOWED content — notices are
-    // advice, allowed content is never withheld. The ~6k-token cap applies
-    // only to what a script RETURNS (run.ts truncateForModel), never to data
-    // flowing INTO the sandbox, and scripts legally grep/aggregate full bodies
-    // in-sandbox. The ONE exception is deny-listed sections: their bodies are
-    // excised (heading + `[section omitted: …]` marker) — the deny-list is a
-    // control, not advice, so it holds on whole reads too.
-    const content = assembleWholeBody(body, bySlug, deniedSlugReasons);
+    // Whole-read: return the full body — notices are advice, content is never
+    // withheld. The ~6k-token cap applies only to what a script RETURNS
+    // (run.ts truncateForModel), never to data flowing INTO the sandbox, and
+    // scripts legally grep/aggregate full bodies in-sandbox.
+    const content = body.trim();
     const notice = sizeNotice(entry.id, content.length);
     return notice
       ? { ok: true, id: entry.id, path, content, notice, availableSections }
@@ -372,10 +298,7 @@ export function readSkill(
       const filePath = sectionEntry?.transport?.type === "file" ? sectionEntry.transport.path : undefined;
       const fileRaw = filePath ? bundle.files[filePath] : undefined;
       if (!sectionEntry || fileRaw === undefined) {
-        return err("error", `unknown section "${want}" of ${entry.id}. Available: ${availableSections.join(", ")}`);
-      }
-      if (!sectionEntry.policy.allow) {
-        return err("denied", `${sectionEntry.id} is deny-listed: ${sectionEntry.policy.denyReason ?? "not exposed"}`);
+        return err(`unknown section "${want}" of ${entry.id}. Available: ${availableSections.join(", ")}`);
       }
       found.push({ section: want, content: stripFrontmatter(fileRaw).trim() });
       continue;
@@ -394,21 +317,15 @@ export function readSkill(
     }
     const hit = slug ? bySlug.get(slug) : undefined;
     if (!slug || !hit) {
-      return err("error", `unknown section "${want}" of ${entry.id}. Available: ${availableSections.join(", ")}`);
+      return err(`unknown section "${want}" of ${entry.id}. Available: ${availableSections.join(", ")}`);
     }
-    // Per-section policy: selective exposure is data, not code (PLAN §3).
-    const sectionEntry = sectionEntries.find((e) => e.id === `${entry.id}#${slug}`);
     // Fail-closed: a ## section present in the body but ABSENT from the catalog
     // (build/read sectioning drift) is not served — default-deny, not
     // default-allow. The builder-invariant test asserts this never occurs.
-    if (!sectionEntry) {
+    if (!sectionEntryById.has(`${entry.id}#${slug}`)) {
       return err(
-        "error",
         `section "${want}" of ${entry.id} has no catalog entry — not exposed (section indexing drift; rebuild the catalog)`
       );
-    }
-    if (!sectionEntry.policy.allow) {
-      return err("denied", `${sectionEntry.id} is deny-listed: ${sectionEntry.policy.denyReason ?? "not exposed"}`);
     }
     found.push({ section: want, content: hit.content });
   }

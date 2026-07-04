@@ -49,21 +49,26 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
     }
   });
 
-  it("refuses a deny-listed op in-sandbox with a { kind: 'denied' } envelope", async () => {
+  it("a build-excluded op has NO sandbox fn — calling it fails loudly (ADR-0003)", async () => {
     const outcome = await run(`async () => {
-      const r = await scout.submitPartnerListing({});
-      return { ok: r.ok, kind: r.ok ? null : r.error.kind };
+      try {
+        await scout.submitPartnerListing({});
+        return { threw: false };
+      } catch (e) {
+        return { threw: true, message: String(e && e.message) };
+      }
     }`);
     expect(outcome.ok).toBe(true);
     if (outcome.ok) {
-      expect(JSON.parse(outcome.result)).toEqual({ ok: false, kind: "denied" });
+      const parsed = JSON.parse(outcome.result) as { threw: boolean; message: string };
+      expect(parsed.threw).toBe(true); // unknown name — nothing uncallable exists
     }
   });
 
   it("guards a FAILED envelope: r.data warns undefined, writes go through", async () => {
-    // The denied op produces the { ok: false } envelope entirely offline.
+    // An arg-validation refusal produces the { ok: false } envelope entirely offline.
     const outcome = await run(`async () => {
-      const r = await scout.submitPartnerListing({});
+      const r = await lumenloop.search_directory({ limit: 2 }); // missing required query
       const dataIsUndefined = r.data === undefined; // logs the [envelope] warning
       r.note = "write-through ok"; // decorating the envelope stays legal
       return { dataIsUndefined, note: r.note };
@@ -71,7 +76,7 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
     expect(outcome.ok).toBe(true);
     if (outcome.ok) {
       expect(JSON.parse(outcome.result)).toEqual({ dataIsUndefined: true, note: "write-through ok" });
-      expect(outcome.logs.join("\n")).toContain("[envelope] scout.submitPartnerListing");
+      expect(outcome.logs.join("\n")).toContain("[envelope] lumenloop.search_directory");
     }
   });
 
@@ -162,7 +167,7 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
       const skill = await codemode.skill.read("skills.lumenloop.stellar-project-dossier");
       return {
         topHit: found.ok ? found.hits[0]?.id ?? null : null,
-        catalogHasDenied: catalog.entries.some((e) => e.policy.allow === false),
+        allCallable: catalog.entries.every((e) => !("policy" in e)), // ADR-0003: no policy layer
         skillOk: skill.ok === true && skill.availableSections.length > 0
       };
     }`);
@@ -170,11 +175,11 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
     if (outcome.ok) {
       const parsed = JSON.parse(outcome.result) as {
         topHit: string | null;
-        catalogHasDenied: boolean;
+        allCallable: boolean;
         skillOk: boolean;
       };
       expect(parsed.topHit).toBe("lumenloop.search_directory");
-      expect(parsed.catalogHasDenied).toBe(true);
+      expect(parsed.allCallable).toBe(true);
       expect(parsed.skillOk).toBe(true);
     }
   });

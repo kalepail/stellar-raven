@@ -44,10 +44,16 @@ coordinated via Solo MCP project 49 (todos + scratchpads; backlog items tracked 
 ## Rules
 
 - **Model code never owns endpoints/args/auth** — everything validates against the catalog
-  manifest. Deny-list is data in the manifest, not prose.
-- Exact-match guards on skill/tool id resolution; no fuzzy top-hit acceptance.
+  manifest.
+- **The manifest IS the exposed surface (ADR-0003,
+  `research/decisions/0003-build-time-exposure-filtering.md`)** — exposure is filtered at
+  BUILD time; exclusions are exact-match data in `scripts/build-catalog.mjs` (with fail-loud
+  drift guards), never runtime policy, never prose. Consumers are never told what the gateway
+  cannot do.
+- Exact-match guards on skill/tool id resolution; no fuzzy top-hit acceptance, no aliases.
 - Soft-empty ≠ error ≠ data — keep per-service normalizers.
-- Paid Lumenloop research is gated: dedup via `list_my_research`, budget cap, off by default.
+- Paid Lumenloop research (`request_research`) is not emitted at all; enabling it = remove the
+  build exclusion AND ship the budget gate + `list_my_research` dedup in the same change.
 - Secrets host-side only; sandbox keeps `globalOutbound: null`.
 - Generated artifacts (`catalog/manifest.json`, inventory JSONs) are rebuilt by `scripts/`,
   never hand-edited.

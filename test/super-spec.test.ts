@@ -3,11 +3,10 @@
  * scripts/build-super-spec.mjs (npm run spec:build).
  *
  * Covers: build determinism (byte-identical across runs, and the checked-in
- * artifact is current), per-service operation counts, policy consistency
- * with catalog/manifest.json (single source of truth for the deny-list),
- * callable-name consistency (every cataloged operation appears as an
- * operationId), the judicious skills representation (3 ops + embedded index,
- * NOT one path per skill/section), and the size budget the design doc
+ * artifact is current), per-service operation counts, exposure consistency
+ * with catalog/manifest.json (ADR-0003: spec paths = manifest operations,
+ * every one callable), the judicious skills representation (3 ops + embedded
+ * index, NOT one path per skill/section), and the size budget the design doc
  * records (the compact form ships into a sandbox on every search).
  */
 import { describe, expect, it } from "vitest";
@@ -26,9 +25,6 @@ type Operation = {
   tags?: string[];
   requestBody?: { content?: Record<string, { schema?: Record<string, unknown> }> };
   "x-service": string;
-  "x-policy": { allow: boolean; denyReason: string | null };
-  "x-cost": string;
-  "x-auth": string;
   "x-execute"?: string;
   "x-algolia"?: unknown;
   "x-skill-index"?: Array<{ id: string; source: string; description: string; sections: string[] }>;
@@ -47,7 +43,6 @@ const manifest = JSON.parse(readFileSync(join(ROOT, "catalog", "manifest.json"),
     id: string;
     service: string;
     kind: string;
-    policy: { allow: boolean; denyReason: string | null };
   }>;
 };
 
@@ -84,20 +79,17 @@ describe("shape and counts", () => {
     ]);
   });
 
-  it("has the expected per-service operation counts", () => {
-    const counts: Record<string, { total: number; allowed: number }> = {};
+  it("has the expected per-service operation counts (exposed ops only, ADR-0003)", () => {
+    const counts: Record<string, number> = {};
     for (const [, , op] of allOps()) {
-      counts[op["x-service"]] ??= { total: 0, allowed: 0 };
-      counts[op["x-service"]]!.total += 1;
-      if (op["x-policy"].allow) counts[op["x-service"]]!.allowed += 1;
+      counts[op["x-service"]] = (counts[op["x-service"]] ?? 0) + 1;
     }
-    // lumenloop: 21 cataloged tools (20 allowed; request_research denied) +
-    // 15 account/discovery endpoints, all denied.
-    expect(counts.lumenloop).toEqual({ total: 36, allowed: 20 });
-    // scout: 24 upstream ops, 3 denied (feedback write, submit-listing, assistant).
-    expect(counts.scout).toEqual({ total: 24, allowed: 21 });
-    expect(counts.stellarDocs).toEqual({ total: 12, allowed: 12 });
-    expect(counts.skills).toEqual({ total: 3, allowed: 3 });
+    // Exactly the manifest operations: excluded ops (paid research, account
+    // surface, scout writes) never reach the spec.
+    expect(counts.lumenloop).toBe(20);
+    expect(counts.scout).toBe(21);
+    expect(counts.stellarDocs).toBe(12);
+    expect(counts.skills).toBe(3);
   });
 
   it("every path is '/{service}/{operation}' and operationIds are unique callable ids", () => {
@@ -110,18 +102,13 @@ describe("shape and counts", () => {
     }
   });
 
-  it("allowed ops carry an exact x-execute call line; denied ops carry none", () => {
+  it("every op carries an exact x-execute call line (everything in the spec is callable)", () => {
     for (const [, , op] of allOps()) {
-      if (op["x-policy"].allow) {
-        expect(op["x-execute"], op.operationId).toBeTruthy();
-      } else {
-        expect(op["x-execute"], op.operationId).toBeUndefined();
-        expect(op["x-policy"].denyReason, op.operationId).toBeTruthy();
-      }
+      expect(op["x-execute"], op.operationId).toBeTruthy();
     }
     // Service ops are called as `await <operationId>(args)`.
     for (const [, , op] of allOps()) {
-      if (op["x-execute"] && op["x-service"] !== "skills") {
+      if (op["x-service"] !== "skills") {
         expect(op["x-execute"]).toBe(`await ${op.operationId}(args)`);
       }
     }
@@ -129,23 +116,31 @@ describe("shape and counts", () => {
 });
 
 describe("consistency with the catalog (single source of truth)", () => {
-  it("every cataloged operation id appears as an operationId with the SAME policy", () => {
+  it("every cataloged operation id appears as an operationId (spec = manifest)", () => {
     const byOperationId = new Map(allOps().map(([, , op]) => [op.operationId, op]));
     const catalogOps = manifest.entries.filter((e) => e.kind === "operation");
-    expect(catalogOps.length).toBe(21 + 24 + 12);
+    expect(catalogOps.length).toBe(20 + 21 + 12);
     for (const entry of catalogOps) {
-      const op = byOperationId.get(entry.id);
-      expect(op, `catalog op ${entry.id} missing from super spec`).toBeDefined();
-      expect(op!["x-policy"], entry.id).toEqual(entry.policy);
+      expect(
+        byOperationId.get(entry.id),
+        `catalog op ${entry.id} missing from super spec`
+      ).toBeDefined();
+    }
+    // …and the reverse: no service op in the spec lacks a manifest entry.
+    const manifestIds = new Set(catalogOps.map((e) => e.id));
+    for (const [, , op] of allOps()) {
+      if (op["x-service"] === "skills") continue; // synthetic core service
+      expect(manifestIds.has(op.operationId), `spec-only op ${op.operationId}`).toBe(true);
     }
   });
 
   it("the skills index matches the catalog's exposed (allowed) skills and its section slugs resolve", () => {
     const index = spec.paths["/skills/list_skills"]!.get!["x-skill-index"]!;
-    // Policy-aware: the index advertises only allowed skills — the 7 retired
-    // Lumenloop onboarding skills are deny-listed and must not appear here.
+    // Exposure-aware: the index advertises exactly the cataloged skills — the
+    // 7 retired Lumenloop onboarding skills have no manifest entry (ADR-0003)
+    // and must not appear here.
     const catalogSkillIds = manifest.entries
-      .filter((e) => e.service === "skills" && e.kind === "skill" && e.policy.allow)
+      .filter((e) => e.service === "skills" && e.kind === "skill")
       .map((e) => e.id)
       .sort();
     expect(index.map((s) => s.id)).toEqual(catalogSkillIds);
@@ -181,7 +176,7 @@ describe("consistency with the catalog (single source of truth)", () => {
     expect(checked).toBe(203); // every cataloged section is discoverable in the index (post-retirement)
   });
 
-  it("read_skill's name enum is exactly the 25 real skill ids", () => {
+  it("read_skill's name enum is exactly the exposed skill ids", () => {
     const schema = spec.paths["/skills/read_skill"]!.post!.requestBody!.content![
       "application/json"
     ]!.schema as { properties: { name: { enum: string[] } } };
@@ -214,13 +209,14 @@ describe("service specifics", () => {
     }
   });
 
-  it("lumenloop tool descriptions carry when_to_use/returns; request_research stays denied metered", () => {
+  it("lumenloop tool descriptions carry when_to_use/returns; excluded ops have no path", () => {
     const searchDirectory = spec.paths["/lumenloop/search_directory"]!.post!;
     expect(searchDirectory.description).toContain("When to use:");
     expect(searchDirectory.description).toContain("Returns:");
-    const research = spec.paths["/lumenloop/request_research"]!.post!;
-    expect(research["x-cost"]).toBe("metered");
-    expect(research["x-policy"].allow).toBe(false);
+    // The paid research trigger and the account surface are build-time
+    // excluded (ADR-0003) — they do not exist in the spec at all.
+    expect(spec.paths["/lumenloop/request_research"]).toBeUndefined();
+    expect(JSON.stringify(Object.keys(spec.paths))).not.toContain("webhook");
   });
 });
 

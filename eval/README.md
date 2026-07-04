@@ -419,7 +419,7 @@ values plus (for stellarDocs) the page-title snapshot in `inventory/stellar-docs
 document-frequency-filtered so only op-distinguishing vocabulary survives. This is a catalog +
 scoring change, so the gates are re-baselined in the same commit (`eval/gates.json`, current).
 
-Run: `routing-2026-07-03T15-14-31-853Z.json` (grading rule v2, twin-aware; current baseline).
+Run: `routing-2026-07-03T15-14-31-853Z.json` (grading rule v2, twin-aware).
 
 | scope | rule | top-1 | top-3 | top-5 |
 |---|---|---|---|---|
@@ -438,5 +438,34 @@ Reading notes:
 - A naive variant **without** the DF filter measured NEGATIVE (extended top-1 74→71, skills top-5
   23→22) and was rejected — the DF filter (keep only op-distinguishing vocabulary) is what makes
   the field pay.
-- Gate verdict: this is the current gate — `--gate` enforces legacy within ±1% of 222/288/318 and
-  the skills lane floor 18/23.
+- Gate verdict: was the gate until the 2026-07-04 re-baseline below.
+
+## Re-baseline (2026-07-04, todo 836): ADR-0003 build-time exposure filtering + grading rule v3
+
+The manifest now contains ONLY exposed entries (299→274: the 14 `lumenloop.skill.*` twins, the 7
+retired mirror skills, and the 4 denied operations are never emitted —
+`research/decisions/0003-build-time-exposure-filtering.md`), and the grader moved to **rule v3
+(`v3-manifest-exposed`)**: the v2 twin-identity layer is deleted, a hit's service label is exactly
+its own, and cross-service tolerance is expressed only via `expected_any`.
+
+Run: `routing-2026-07-04T15-46-49-007Z.json` (grading rule v3; current baseline).
+
+| scope | rule | top-1 | top-3 | top-5 |
+|---|---|---|---|---|
+| legacy 338 (prior gate, todo 824) | v2 | 222 | 288 | 318 |
+| legacy 338 (**new gate**) | **v3** | **203** | **265** | **303** |
+| legacy 338 accept-either | v3 | 250 (74.0%) | 310 | 330 |
+| skills lane 23 | v3 | 18 | — | — |
+
+Reading notes:
+
+- **This is a grading-severity change, not a ranking regression.** Of 37 changed cases, 35 have
+  **byte-identical top hits** — lumenloop-expected cases whose top hit is a `skills.lumenloop.*`
+  playbook are no longer credited to the lumenloop service (v2's twin-identity did that; the twins
+  it keyed on no longer exist). That tolerance is the accept-either lane's job (74.0% top-1).
+- The only 2 real ranking changes are both **improvements** (top-1 miss→hit): keyword
+  document-frequency denominators shifted when the excluded ops left the per-service op sets.
+- **Skills lane unchanged 18/23.** Extended lane strict top-1 77/122, top-5 108/122 (−1 top-5,
+  same grading-severity mechanism).
+- Gate verdict: this is the current gate — `--gate` enforces legacy within ±1% of 203/265/303 and
+  the skills lane floor 18/23, under gradingRule `v3-manifest-exposed`.

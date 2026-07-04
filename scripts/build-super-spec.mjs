@@ -17,17 +17,17 @@
  *    identical to the sandbox call `lumenloop.search_directory(args)`;
  *  - standard OpenAPI shapes (summary/description/tags/parameters/
  *    requestBody/responses/components) so generic spec-grepping code works;
- *  - per-operation vendor extensions: x-service, x-policy {allow,denyReason},
- *    x-cost, x-auth, x-execute (exact sandbox call line), x-upstream (real
- *    HTTP method+path), x-algolia (stellarDocs query mapping);
+ *  - per-operation vendor extensions: x-service, x-execute (exact sandbox
+ *    call line), x-upstream (real HTTP method+path), x-algolia (stellarDocs
+ *    query mapping);
  *  - spec-level x-services (per-service metadata incl. the stellarDocs
  *    backend block + measured corpus taxonomy) and x-generated (provenance,
  *    counts, size).
  *
- * Policy consistency: x-policy for every cataloged operation is copied from
- * catalog/manifest.json (the generated deny-list-as-data) — never re-derived
- * here. Lumenloop account/discovery endpoints that are NOT cataloged (no
- * sandbox fn exists) are included for honesty but always denied.
+ * Exposure consistency (ADR-0003): the spec contains EXACTLY the operations
+ * in catalog/manifest.json — the manifest is the exposed surface, filtered at
+ * build time by scripts/build-catalog.mjs, and every path here is callable.
+ * Nothing uncallable is described: no denied paths, no x-policy layer.
  *
  * Determinism: object keys sorted recursively, entries sorted by path,
  * generatedAt taken from the catalog manifest (itself derived from input
@@ -113,29 +113,19 @@ function firstSentence(text, max = 120) {
 }
 
 // ---------------------------------------------------------------------------
-// Policy lookup — the catalog manifest is the single source of truth
+// Exposure lookup — the catalog manifest is the single source of truth: an
+// id is in the spec iff it is in the manifest (ADR-0003 build-time filtering).
 // ---------------------------------------------------------------------------
 
-function policyLookup(manifest) {
-  const byId = new Map();
-  for (const entry of manifest.entries) {
-    byId.set(entry.id, { allow: entry.policy.allow, denyReason: entry.policy.denyReason });
-  }
-  return (id) => {
-    const p = byId.get(id);
-    if (!p) throw new Error(`no catalog policy for ${id} — run node scripts/build-catalog.mjs first`);
-    return p;
-  };
+function exposedIds(manifest) {
+  return new Set(manifest.entries.map((e) => e.id));
 }
 
 // ---------------------------------------------------------------------------
-// lumenloop — 21 cataloged tools (18 free + 3 partner) + non-tool API surface
+// lumenloop — exactly the cataloged tools (exclusions never reach the spec)
 // ---------------------------------------------------------------------------
 
-/** Account/billing mutation endpoints vs read-only discovery endpoints. */
-const LUMENLOOP_ACCOUNT_PATH_RE = /^\/(billing|me)(\/|$)/;
-
-function buildLumenloopPaths(inv, policyOf) {
+function buildLumenloopPaths(inv, exposed) {
   const paths = {};
   const consumedNotes = new Set();
 
@@ -143,7 +133,7 @@ function buildLumenloopPaths(inv, policyOf) {
   // (carries when_to_use / returns), NOT the embedded OpenAPI /tools/* paths.
   for (const tool of inv.tools) {
     const id = `lumenloop.${tool.name}`;
-    const policy = policyOf(id);
+    if (!exposed.has(id)) continue;
     const descriptionParts = [tool.description];
     if (tool.when_to_use) descriptionParts.push(`When to use: ${tool.when_to_use}`);
     if (tool.returns) descriptionParts.push(`Returns: ${tool.returns}`);
@@ -172,11 +162,8 @@ function buildLumenloopPaths(inv, policyOf) {
         }
       },
       "x-service": "lumenloop",
-      "x-policy": policy,
-      "x-cost": tool.metered ? "metered" : "free",
-      "x-auth": "partner-key",
       "x-upstream": { method: "POST", path: `/v1/tools/${tool.name}` },
-      ...(policy.allow ? { "x-execute": `await lumenloop.${tool.name}(args)` } : {})
+      "x-execute": `await lumenloop.${tool.name}(args)`
     };
     if (!op.requestBody) delete op.requestBody;
     paths[`/lumenloop/${tool.name}`] = { post: op };
@@ -194,34 +181,9 @@ function buildLumenloopPaths(inv, policyOf) {
     }
   }
 
-  // Non-tool API surface (account, billing, discovery): included for honesty,
-  // ALWAYS denied — no sandbox fn exists for these; discovery data is already
-  // in this spec / codemode.catalog() / codemode.skill.read. Schemas dropped
-  // (dead weight on uncallable ops); summary + description kept greppable.
-  const HTTP_METHODS = ["get", "post", "put", "patch", "delete"];
-  for (const [path, pathItem] of Object.entries(inv.openapi.paths)) {
-    if (path.startsWith("/tools/")) continue; // cataloged above
-    for (const method of HTTP_METHODS) {
-      const upstream = pathItem[method];
-      if (!upstream) continue;
-      const opName = upstream.operationId ?? `${method}_${slugify(path)}`;
-      const denyReason = LUMENLOOP_ACCOUNT_PATH_RE.test(path)
-        ? "account/billing surface (keys, webhooks, credits top-up, budget, introspection) — deny-listed per PLAN §4; never callable from the sandbox"
-        : "host-side inventory/discovery surface — not exposed as a sandbox fn; the same information is in this spec, codemode.catalog(), and codemode.skill.read";
-      const op = {
-        operationId: `lumenloop.${opName}`,
-        summary: plainText(upstream.summary ?? opName),
-        ...(upstream.description ? { description: plainText(upstream.description) } : {}),
-        tags: ["lumenloop"],
-        "x-service": "lumenloop",
-        "x-policy": { allow: false, denyReason },
-        "x-cost": "free",
-        "x-auth": "partner-key",
-        "x-upstream": { method: method.toUpperCase(), path: `/v1${path}` }
-      };
-      (paths[`/lumenloop/${opName}`] ??= {})[method] = op;
-    }
-  }
+  // The non-tool lumenloop API surface (account, billing, discovery) is NOT
+  // described here: no sandbox fn exists for it, and the spec describes only
+  // what code can call (ADR-0003 — nothing uncallable is delivered).
 
   return paths;
 }
@@ -248,7 +210,7 @@ function namespaceRefs(node, service) {
   return out;
 }
 
-function buildScout(inv, policyOf) {
+function buildScout(inv, exposed) {
   const openapi = inv.openapi;
   const paths = {};
   const HTTP_METHODS = ["get", "post", "put", "patch", "delete"];
@@ -264,7 +226,7 @@ function buildScout(inv, policyOf) {
       if (!upstream) continue;
       const opName = upstream.operationId ?? `${method}_${slugify(path)}`;
       const id = `scout.${opName}`;
-      const policy = policyOf(id);
+      if (!exposed.has(id)) continue;
       // pathItem-level parameters are merged into the op so nothing is lost
       // when re-keying the path to the callable name.
       const parameters = [...(pathItem.parameters ?? []), ...(upstream.parameters ?? [])];
@@ -290,11 +252,8 @@ function buildScout(inv, policyOf) {
         ...(upstream.requestBody ? { requestBody: namespaceRefs(upstream.requestBody, "scout") } : {}),
         ...(upstream.responses ? { responses: namespaceRefs(upstream.responses, "scout") } : {}),
         "x-service": "scout",
-        "x-policy": policy,
-        "x-cost": "free",
-        "x-auth": "none",
         "x-upstream": { method: method.toUpperCase(), path },
-        ...(policy.allow ? { "x-execute": `await scout.${opName}(args)` } : {})
+        "x-execute": `await scout.${opName}(args)`
       };
       (paths[`/scout/${opName}`] ??= {})[method] = op;
     }
@@ -328,10 +287,10 @@ function buildScout(inv, policyOf) {
 // stellarDocs — 12 authored spec-as-data operations (specs/stellar-docs.json)
 // ---------------------------------------------------------------------------
 
-function buildStellarDocs(spec, policyOf) {
+function buildStellarDocs(spec, exposed) {
   const paths = {};
   for (const op of spec.operations) {
-    const policy = policyOf(op.id);
+    if (!exposed.has(op.id)) continue;
     paths[`/stellarDocs/${op.name}`] = {
       post: {
         operationId: op.id,
@@ -344,14 +303,11 @@ function buildStellarDocs(spec, policyOf) {
         },
         responses: { 200: { description: op.returns ?? "Search result" } },
         "x-service": "stellarDocs",
-        "x-policy": policy,
-        "x-cost": spec.catalogHints.cost,
-        "x-auth": spec.catalogHints.auth,
         // The exact Algolia query mapping the host adapter applies — kept as a
         // vendor extension so spec-grepping code can see what each intent op
         // actually does (facet filters, client-side URL-prefix filters, …).
         "x-algolia": op.algolia,
-        ...(policy.allow ? { "x-execute": `await stellarDocs.${op.name}(args)` } : {})
+        "x-execute": `await stellarDocs.${op.name}(args)`
       }
     };
   }
@@ -364,21 +320,17 @@ function buildStellarDocs(spec, policyOf) {
 // discovery via a heading-list index per skill)
 // ---------------------------------------------------------------------------
 
-function buildSkillIndex(manifest, catalogManifest) {
-  // Policy-aware: advertise ONLY skills/sections the catalog exposes. Retired
-  // skills (deny-listed in build-catalog.mjs) have no allowed whole-skill entry
-  // and no section entries, so they — and any per-section denials — drop out
-  // here too. Keeps codemode.spec()'s index consistent with what read_skill
-  // will actually serve (no advertised section that denies on read). Slug
-  // disambiguation MUST match build-catalog.mjs so the candidate ids line up.
-  const allowedIds = new Set(
-    catalogManifest.entries.filter((e) => e.policy.allow).map((e) => e.id)
-  );
+function buildSkillIndex(manifest, exposed) {
+  // Exposure-aware: advertise ONLY skills/sections the catalog contains.
+  // Retired skills are never emitted by build-catalog.mjs (ADR-0003), so they
+  // drop out here too — codemode.spec()'s index stays consistent with what
+  // read_skill will actually serve. Slug disambiguation MUST match
+  // build-catalog.mjs so the candidate ids line up.
   const index = [];
   for (const source of manifest.sources) {
     for (const skill of source.skills) {
       const skillId = `skills.${source.id}.${skill.name}`;
-      if (!allowedIds.has(skillId)) continue; // retired/denied skill — not advertised
+      if (!exposed.has(skillId)) continue; // retired skill — not advertised
       const skillDir = `ecosystem-skills/skills/${source.id}/${skill.name}`;
       const { attrs, body } = parseFrontmatter(readText(`${skillDir}/SKILL.md`));
       const sections = [];
@@ -389,12 +341,12 @@ function buildSkillIndex(manifest, catalogManifest) {
         let slug = slugify(heading);
         for (let n = 2; usedSlugs.has(slug); n++) slug = `${slugify(heading)}-${n}`;
         usedSlugs.add(slug);
-        if (allowedIds.has(`${skillId}#${slug}`)) sections.push(heading);
+        if (exposed.has(`${skillId}#${slug}`)) sections.push(heading);
       }
       for (const file of skill.files ?? []) {
         if (file.path === "SKILL.md" || !file.path.endsWith(".md")) continue;
         const key = `file:${file.path}`;
-        if (allowedIds.has(`${skillId}#${key}`)) sections.push(key);
+        if (exposed.has(`${skillId}#${key}`)) sections.push(key);
       }
       index.push({
         id: skillId,
@@ -425,9 +377,6 @@ function buildSkillsPaths(skillIndex) {
         tags: ["skills"],
         responses: { 200: { description: "The x-skill-index array on this operation." } },
         "x-service": "skills",
-        "x-policy": { allow: true, denyReason: null },
-        "x-cost": "free",
-        "x-auth": "none",
         "x-execute": `(await codemode.spec()).paths["/skills/list_skills"].get["x-skill-index"]`,
         "x-skill-index": skillIndex
       }
@@ -474,9 +423,6 @@ function buildSkillsPaths(skillIndex) {
           }
         },
         "x-service": "skills",
-        "x-policy": { allow: true, denyReason: null },
-        "x-cost": "free",
-        "x-auth": "none",
         "x-execute": `await codemode.skill.read(name, { sections })`
       }
     },
@@ -509,9 +455,6 @@ function buildSkillsPaths(skillIndex) {
           200: { description: "{ ok: true, hits: [{ id, service, kind, score, description }], total }" }
         },
         "x-service": "skills",
-        "x-policy": { allow: true, denyReason: null },
-        "x-cost": "free",
-        "x-auth": "none",
         "x-execute": `await codemode.search({ query, service: "skills" })`
       }
     }
@@ -528,15 +471,15 @@ function main() {
   const stellarDocsSpec = readJson("specs/stellar-docs.json");
   const skillsManifest = readJson("ecosystem-skills/MANIFEST.json");
   const catalogManifest = readJson("catalog/manifest.json");
-  const policyOf = policyLookup(catalogManifest);
+  const exposed = exposedIds(catalogManifest);
 
-  const scout = buildScout(stellarLight, policyOf);
-  const skillIndex = buildSkillIndex(skillsManifest, catalogManifest);
+  const scout = buildScout(stellarLight, exposed);
+  const skillIndex = buildSkillIndex(skillsManifest, exposed);
 
   const paths = {
-    ...buildLumenloopPaths(lumenloop, policyOf),
+    ...buildLumenloopPaths(lumenloop, exposed),
     ...scout.paths,
-    ...buildStellarDocs(stellarDocsSpec, policyOf),
+    ...buildStellarDocs(stellarDocsSpec, exposed),
     ...buildSkillsPaths(skillIndex)
   };
 
@@ -546,6 +489,15 @@ function main() {
     for (const op of Object.values(item)) {
       if (seen.has(op.operationId)) throw new Error(`duplicate operationId: ${op.operationId}`);
       seen.add(op.operationId);
+    }
+  }
+
+  // Exposure completeness (the reverse direction of "spec ⊆ manifest"): every
+  // manifest OPERATION must appear in the spec — a cataloged op the builders
+  // above failed to cover would silently vanish from codemode.spec().
+  for (const entry of catalogManifest.entries) {
+    if (entry.kind === "operation" && !seen.has(entry.id)) {
+      throw new Error(`cataloged operation ${entry.id} missing from the super spec`);
     }
   }
 
@@ -585,9 +537,9 @@ function main() {
         "`await lumenloop.search_directory(args)` — args is ONE object matching the operation's requestBody schema " +
         "(POST ops) or its parameter names (GET ops). The exact call line is on each operation as x-execute. " +
         "Every call resolves (never throws) to { ok: true, data } or { ok: false, error: { service, kind, " +
-        "message } }; the 200 response schema documents `data`. Operations with x-policy.allow=false are " +
-        "deny-listed: visible for completeness (denyReason says why) but refused at execution. x-cost 'metered' " +
-        "marks paid calls. Auth (x-auth) is handled host-side — code never sees keys.",
+        "message } }; the 200 response schema documents `data`. Every path in this spec is callable — exposure " +
+        "is filtered at build time, so nothing uncallable is described. Auth is handled host-side — code never " +
+        "sees keys.",
       "x-generatedAt": catalogManifest.generatedAt
     },
     tags: [...serviceTags, ...scout.tags],
@@ -599,7 +551,7 @@ function main() {
         authEnv: lumenloop.source.authEnv,
         fetchedAt: lumenloop.fetchedAt,
         source: lumenloop.source.tools,
-        note: "18 free + 3 partner research tools cataloged; account/billing/discovery endpoints included but always denied (x-policy)."
+        note: "Exactly the cataloged tools — the account/billing/discovery API surface is host-side only and not described here (ADR-0003: the spec contains only what code can call)."
       },
       scout: {
         base: stellarLight.openapi.servers?.[0]?.url ?? "https://stellarlight.xyz",
@@ -644,14 +596,12 @@ function main() {
   for (const item of Object.values(sorted.paths)) {
     for (const op of Object.values(item)) {
       const svc = op["x-service"];
-      counts[svc] = counts[svc] ?? { operations: 0, denied: 0 };
-      counts[svc].operations += 1;
-      if (!op["x-policy"].allow) counts[svc].denied += 1;
+      counts[svc] = (counts[svc] ?? 0) + 1;
     }
   }
-  console.log(`specs/super-spec.json — ${Object.keys(sorted.paths).length} paths`);
+  console.log(`specs/super-spec.json — ${Object.keys(sorted.paths).length} paths (all callable)`);
   for (const [svc, c] of Object.entries(counts).sort()) {
-    console.log(`  ${svc}: ${c.operations} operations (${c.denied} denied)`);
+    console.log(`  ${svc}: ${c} operations`);
   }
   console.log(`  pretty: ${prettyBytes} bytes; compact (ships into sandbox): ${compactBytes} bytes ≈ ${Math.ceil(compactBytes / 4).toLocaleString()} tokens`);
 }

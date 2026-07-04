@@ -1,9 +1,9 @@
 {
   "$comment": "Mechanically-enforced gate baselines (see EVALS.md rules). run-routing.mjs prints a gate verdict on every run and exits 1 on breach when invoked with --gate (CI does). Re-baselining is an explicit act: update these numbers in the same commit as the change that moves them, with the decision recorded in Solo (EVALS.md rule 1). Counts are absolute hits, not percentages.",
-  "gradingRule": "v2-twin-aware",
-  "baselinedAt": "2026-07-03T15:14:31Z",
-  "baselineResults": "routing-2026-07-03T15-14-31-853Z.json",
-  "note": "re-baselined 2026-07-03 (afternoon) on M3/M4 operation keywords (Solo todo 824 items 4+5): operations gained the low-weight `keywords` field, distilled from schema property names/enum values plus (stellarDocs) the page-title snapshot in inventory/stellar-docs-titles.json, document-frequency-filtered so only op-distinguishing vocabulary survives. Legacy 219/287/313→222/288/318, extended strict top1 74→77 top5 106→109, skills lane unchanged 18/23 — ZERO per-case hit→miss regressions in any lane vs routing-2026-07-03T14-37-46-628Z (13 case-improvements). A naive variant without the DF filter measured NEGATIVE (extended top1 74→71, skills top5 23→22) and was rejected. Prior baseline: routing-2026-07-03T13-59-06-937Z.json (onboarding-skills retirement, todo 825: skills lane 31→23 cases, legacy unchanged 219/287/313).",
-  "legacy": { "n": 338, "top1": 222, "top3": 288, "top5": 318, "bandPct": 1 },
+  "gradingRule": "v3-manifest-exposed",
+  "baselinedAt": "2026-07-04T15:46:49Z",
+  "baselineResults": "routing-2026-07-04T15-46-49-007Z.json",
+  "note": "re-baselined 2026-07-04 on ADR-0003 build-time exposure filtering (Solo todo 836): the manifest now contains ONLY exposed entries (274; twins/retired skills/denied ops never emitted) and the grader dropped the v2 twin-identity layer — a hit's service label is exactly its own. Legacy strict 222/288/318 → 203/265/303. Of 37 changed cases, 35 are pure grading-severity changes on lumenloop-expected cases whose TOP HITS ARE IDENTICAL (skills.lumenloop.* playbook hits no longer credited to the lumenloop service — that tolerance is the accept-either lane's job, 74.0% top1); the only 2 ranking changes are both improvements (top1 miss→hit, from keyword document-frequency denominators shifting when excluded ops left the per-service op sets). Skills lane unchanged 18/23. Prior baseline: routing-2026-07-03T15-14-31-853Z.json (M3/M4 operation keywords, todo 824).",
+  "legacy": { "n": 338, "top1": 203, "top3": 265, "top5": 303, "bandPct": 1 },
   "skills": { "n": 23, "minTop1": 18 }
 }

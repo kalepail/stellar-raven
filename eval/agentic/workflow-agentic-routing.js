@@ -53,35 +53,16 @@ const results = await parallel(jobs.map(({ c, effort }) => () =>
 ))
 
 const rows = results.filter(Boolean).filter(r => r.verdict)
-// Twin-aware grading (routing rule v2 — mirrors eval/lib/grade.mjs hitServices() and the
-// src/skills/store.ts alias): lumenloop.skill.<name> and skills.<source>.<name> are ONE
-// aliased resource, keyed on terminal-name equality. A twin pick satisfies BOTH the
-// lumenloop and skills labels. The sandbox has no fs/imports, so the twin terminal-name
-// set (terminal names of the 14 lumenloop.skill.* entries in catalog/manifest.json) is
-// inlined — keep in sync with the manifest.
-const TWIN_TERMINALS = new Set([
-  'lumenloop-api-billing', 'lumenloop-api-connect', 'lumenloop-api-integrate',
-  'lumenloop-api-keys', 'lumenloop-api-query', 'lumenloop-api-research',
-  'lumenloop-mcp-connect', 'scf-submission-radar', 'stellar-builder-quickstart',
-  'stellar-content-auditor', 'stellar-ecosystem-digest', 'stellar-ecosystem-scout',
-  'stellar-integration-finder', 'stellar-project-dossier',
-])
-const terminalName = id => String(id).split('#')[0].split('.').pop()
-const servicesOf = (id, service) => {
-  const services = [service]
-  if (TWIN_TERMINALS.has(terminalName(id))) {
-    if (service === 'lumenloop') services.push('skills')
-    else if (service === 'skills') services.push('lumenloop')
-  }
-  return services
-}
+// Grading rule v3 (ADR-0003 — mirrors eval/lib/grade.mjs): the manifest contains no
+// lumenloop.skill.* twins, so there is no twin identity — a pick's service label is
+// exactly its own. Cross-service tolerance belongs in expected_any, not the grader.
 const grade = rs => {
   const n = rs.length
-  const primary = r => servicesOf(r.verdict.primaryToolId, r.verdict.primaryService).includes(r.expected)
+  const primary = r => r.verdict.primaryService === r.expected
   const primaryHit = rs.filter(primary).length
   const anyHit = rs.filter(r =>
     primary(r) ||
-    (r.verdict.alternateToolIds || []).some(id => servicesOf(id, String(id).split('.')[0]).includes(r.expected))
+    (r.verdict.alternateToolIds || []).some(id => String(id).split('.')[0] === r.expected)
   ).length
   return { n, primaryHit, primaryPct: n ? +(100 * primaryHit / n).toFixed(1) : 0, anyHit, anyPct: n ? +(100 * anyHit / n).toFixed(1) : 0 }
 }

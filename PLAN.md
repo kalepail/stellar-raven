@@ -49,7 +49,7 @@ Grounding research (live-verified across 2026-07-01…07-03; service specs refre
    consult it to avoid known pitfalls, not to source code.
 4. **The ADR pitfalls carry over:** never let the model own endpoint args/auth (validate against
    the manifest); soft-empty ≠ error ≠ evidence (per-service normalizers); exact-match slug/id
-   guards; machine-checkable deny-lists; paid calls need dedup + budget caps.
+   guards; machine-checkable exclusion lists; paid calls need dedup + budget caps.
 
 ## 1. Architecture
 
@@ -74,7 +74,7 @@ Host Worker  (Workers Paid · wrangler: worker_loaders LOADER · nodejs_compat)
   │       codemode.skill.read(name, {sections})        ← partial skill retrieval
   └─ host-side layers:
         adapters/   per-service clients, designed fresh per the live service research
-        policy/     deny-list · arg validation vs manifest · paid-call budget+dedup · redaction
+        policy/     arg validation vs manifest · redaction (exposure filtered at build, ADR-0003)
         catalog/    manifest → ConnectorDescription[] builder, cached (KV)
         skills/     bundled skill store, section-indexed at build time
 ```
@@ -111,23 +111,21 @@ callable surface — fields chosen for what search/execute actually consume, not
   "description": "...",           // + when_to_use, returns
   "inputSchema": { ... },         // JSON Schema (rendered to TS on demand)
   "transport": { "type": "http", "method": "POST", "path": "/v1/tools/search_directory" },
-  "auth": "partner-key",          // none | partner-key
-  "cost": "free",                 // free | metered (request_research)
-  "policy": { "allow": true, "denyReason": null },
   "provenance": { "source": "https://api.lumenloop.com/v1/tools", "fetchedAt": "..." }
   // further fields only when a concrete consumer exists — no speculative schema
 }
 ```
 
 Actual catalog (`catalog/manifest.json`; counts are authoritative in the manifest — the ADR
-below records the last structural change): **299 searchable entries** — 57 operations (lumenloop
-21, scout 24, stellarDocs 12; the Docs MCP is fallback only) + 39 skill-kind entries (25 `skills.*`
-mirror + 14 metadata-only `lumenloop.skill.*` twins) + 203 skill `##`/file sections. Of these, **25
-are deny-listed** (4 operations + 7 retired mirror skills + 14 `lumenloop.skill.*` twins) and never
-surface in `search` — see [`research/decisions/0002-skills-retirement-twin-dedup.md`](./research/decisions/0002-skills-retirement-twin-dedup.md)
-(ADR-0002: the 2026-07-03 skills retirement + twin de-dup that moved the catalog 374→299,
-25→18 exposed skills, 278→203 sections, 4→25 denied). Entries additionally carry an `outputSchema`
-wherever the source declares one.
+below records the last structural change): **274 entries, all exposed** — 53 operations
+(lumenloop 20, scout 21, stellarDocs 12; the Docs MCP is fallback only) + 18 `skills.*` mirror
+skill entries + 203 skill `##`/file sections. **The manifest IS the exposed surface** — excluded
+surfaces (paid research, account mutations, scout writes, retired onboarding skills, the
+`lumenloop.skill.*` twin namespace) are filtered at build time and never emitted; there is no
+`policy`/`cost`/`auth` field and no runtime deny layer. See
+[`research/decisions/0003-build-time-exposure-filtering.md`](./research/decisions/0003-build-time-exposure-filtering.md)
+(ADR-0003, 2026-07-04: 299→274 entries, 25→0 denied, superseding ADR-0002's deny-list model).
+Entries additionally carry an `outputSchema` wherever the source declares one.
 
 Build pipeline: `scripts/build-catalog.mjs` reads the three service inventories + the skills
 index → emits `manifest.json` + a compiled search index bundled into the Worker. Catalog assembly
@@ -143,9 +141,9 @@ pinned upstreams, not a separate runtime dependency.
 - **Build-time sectioning:** each `SKILL.md` is split on `##` headings (multi-file skills keep
   their file structure); every skill and every section becomes a catalog entry with its own
   description, so `search("soroban storage patterns")` can return *a section*, not a 40 KB skill.
-- **Selective exposure is policy, not code:** an allowlist in the manifest controls which skills
-  and which sections are visible at all; unlisted entries never appear in search results or
-  resolve in the sandbox.
+- **Selective exposure is build-time data (ADR-0003):** the exclusion lists in
+  `scripts/build-catalog.mjs` control which skills exist in the catalog at all; excluded skills
+  are never emitted, so they cannot appear in search or resolve in the sandbox.
 - **Retrieval:** `codemode.skill.read(name, { sections?: string[] })` returns only the requested
   portions (exact-match-guarded names — no fuzzy resolution, per ADR-0019's wrong-entity lesson).
 - **Executable skills (later):** skills that are really playbooks over the service APIs can be
@@ -156,20 +154,19 @@ pinned upstreams, not a separate runtime dependency.
 
 - **Secrets host-side only.** `LUMENLOOP_API_KEY` via Worker secret; the sandbox sees only
   namespaced function stubs. `globalOutbound: null` — `fetch()` in generated code throws.
-- **Deny-list (machine-checkable, in the manifest):** 25 denied catalog entries — **4 denied
-  operations** (`lumenloop.request_research` (metered), `scout.submitFeedback`,
-  `scout.submitPartnerListing` (both writes), and `scout.partnerAssistant` (side-effecting — logs
-  surfaced partners as leads)) plus the **7 retired mirror skills + 14 `lumenloop.skill.*` twins**
-  from the 2026-07-03 skills retirement + twin de-dup (ADR-0002,
-  `research/decisions/0002-skills-retirement-twin-dedup.md`).
-  The unified super spec additionally marks **16 lumenloop endpoints denied** (account/billing
-  mutations — keys/webhooks/top-up/budget/introspection — plus the host-side discovery surfaces),
-  none of which are ever exposed as callable catalog operations. `search` never returns denied
-  entries; `codemode.catalog()` shows them with `policy.allow=false` + `denyReason`
-  (see-but-not-call); `execute` refuses them by id.
-- **Paid-call gate:** `lumenloop.request_research` disabled by default at launch; when enabled —
-  prefer `answer` mode (~$0.02), dedup via `list_my_research` first, per-day budget cap
-  (partner quota is $50/mo). Mirrors old ADR-0018.
+- **Exposure is filtered at build time (ADR-0003,
+  `research/decisions/0003-build-time-exposure-filtering.md`):** the manifest contains only what
+  the sandbox may call or read — excluded surfaces (`lumenloop.request_research` (metered paid),
+  `scout.submitFeedback`/`submitPartnerListing` (writes), `scout.partnerAssistant`
+  (side-effecting — logs surfaced partners as leads), lumenloop account/billing mutations, the 7
+  retired onboarding skills, the 14 `lumenloop.skill.*` twins) are never emitted, by `search`,
+  `codemode.catalog()`, `codemode.spec()`, or anything else. Consumers never see what they
+  cannot use. Exclusions are exact-match data in `scripts/build-catalog.mjs`, each with a
+  fail-loud drift guard; reasons live there and in the ADR, not in runtime entries.
+- **Paid-call gate:** `lumenloop.request_research` is not emitted at all today; enabling it is a
+  deliberate feature — remove the build exclusion AND ship the budget-gate + dedup runtime in
+  the same change (prefer `answer` mode (~$0.02), dedup via `list_my_research` first, per-day
+  budget cap; partner quota is $50/mo). Mirrors old ADR-0018.
 - **Arg validation against the manifest** before any host call — model code never owns URLs,
   headers, or auth.
 - **Result hygiene:** per-service normalizers (soft-empty vs error vs data), redaction pass,
@@ -209,7 +206,7 @@ src/fonts.ts src/og.ts   # generated (npm run site:fonts / site:og) — embedded
 src/mcp/                 # tool registration, descriptions (copy codemode's rules-block prompting)
 src/catalog/             # manifest types, builder, search (vendored searchConnectors/describeTarget)
 src/adapters/            # lumenloop.ts · scout.ts · stellar-docs.ts (own design, per live research)
-src/policy/              # deny-list, arg validation, budget gate, redaction
+src/policy/              # arg validation, redaction, truncation (no runtime deny layer — ADR-0003)
 src/skills/              # skill store, section index, read resolution
 src/executor/            # DynamicWorkerExecutor wiring, providers, super-spec sandbox, truncation
 src/observability.ts     # structured JSON events → Workers Logs; custom execute span
@@ -234,7 +231,8 @@ compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders` binding `LOADER`.
 > **https://raven.stellar.buzz** (with **https://agents.stellar.buzz** served as an alias — both
 > in `wrangler.jsonc` routes) (Solo todos 788–825; evidence: `eval/README.md`,
 > `eval/agentic/README.md`, `eval/plan/README.md`, `research/decisions/0001-search-tool-shape.md`,
-> `research/decisions/0002-skills-retirement-twin-dedup.md`, `research/auth-workos.md`,
+> `research/decisions/0002-skills-retirement-twin-dedup.md`,
+> `research/decisions/0003-build-time-exposure-filtering.md`, `research/auth-workos.md`,
 > README.md “Auth”). CI + daily drift refresh run in
 > github.com/kalepail/stellar-raven (renamed from stellar-raven-codemode 2026-07-02). WorkOS
 > OAuth verified end-to-end incl. human
@@ -279,5 +277,5 @@ Phases 2–3 are independently parallelizable after 1; 4–6 after 3.
 | Docs search path | **Decided: direct Algolia REST** — dedicated key in hand (`.env` → Worker secrets `ALGOLIA_APPLICATION_ID`/`ALGOLIA_API_KEY`); MCP as documented fallback | MCP-only (slower, protocol overhead) |
 | `request_research` (paid) | off at launch | on with budget gate from day one |
 | Server auth | **Decided: WorkOS OAuth** (`workers-oauth-provider` + AuthKit; admin/dev bypasses — §4, README.md) | plain bearer secret (retired placeholder) |
-| Skills scope | **18 of 25 mirrored skills exposed** (7 Lumenloop API-onboarding skills retired 2026-07-03, ADR-0002), read-only sections | re-expose on transport-agnostic rewrite; executable snippets later |
+| Skills scope | **18 of 25 mirrored skills exposed** (7 Lumenloop API-onboarding skills retired 2026-07-03 ADR-0002; never emitted since ADR-0003), read-only sections | re-expose on transport-agnostic rewrite; executable snippets later |
 | Statefulness | stateless `createMcpHandler` | `McpAgent` + CodemodeRuntime DO (approvals/audit) |

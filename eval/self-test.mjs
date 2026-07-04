@@ -8,7 +8,7 @@
  * proving top-1/3/5 semantics, card@5 tolerant matching, skip handling, aggregation.
  */
 import assert from "node:assert/strict";
-import { aggregate, cardMatches, canonToken, gradeCase, hitServices, tableRows, terminalName } from "./lib/grade.mjs";
+import { aggregate, cardMatches, canonToken, gradeCase, tableRows } from "./lib/grade.mjs";
 import { deriveExpectedAny, frontmatterRouting, parseFrontmatterList } from "./lib/labels.mjs";
 
 // --- fake catalog: 3 entries across our namespaces --------------------------------
@@ -161,37 +161,24 @@ check("tableRows renders rates + n/a for zero-denominator card metric", () => {
   assert.ok(rows[1]["card@5"].startsWith("n/a"));
 });
 
-// --- twin-aware grading, rule v2 (todo 816) -----------------------------------------
-const TWINS = new Set(["scf-submission-radar", "stellar-ecosystem-scout"]);
-const twinMeta = { id: "lumenloop.skill.scf-submission-radar", service: "lumenloop", kind: "skill", score: 0, description: "" };
-const twinReadable = { id: "skills.lumenloop.scf-submission-radar", service: "skills", kind: "skill", score: 0, description: "" };
-const twinSection = { id: "skills.lumenloop.stellar-ecosystem-scout#workflow", service: "skills", kind: "skill-section", score: 0, description: "" };
-
-check("terminalName strips fragments and takes the last segment", () => {
-  assert.equal(terminalName("lumenloop.skill.scf-submission-radar"), "scf-submission-radar");
-  assert.equal(terminalName("skills.lumenloop.stellar-ecosystem-scout#workflow"), "stellar-ecosystem-scout");
-});
-check("hitServices: twin hits satisfy both labels; non-twins are unchanged", () => {
-  assert.deepEqual(hitServices(twinMeta, TWINS), ["lumenloop", "skills"]);
-  assert.deepEqual(hitServices(twinReadable, TWINS), ["skills", "lumenloop"]);
-  assert.deepEqual(hitServices(twinSection, TWINS), ["skills", "lumenloop"]);
-  assert.deepEqual(hitServices(E.llDirectory, TWINS), ["lumenloop"]); // non-twin lumenloop op
-  assert.deepEqual(hitServices(E.skillContracts, TWINS), ["skills"]); // skill not in twin set
-});
-check("gradeCase v2: metadata twin at rank 1 counts for a skills-expected case (and vice versa)", () => {
-  const g = gradeCase(rank(twinMeta, E.docsSearch), "skills", undefined, undefined, TWINS);
-  assert.deepEqual(g, { top1: true, top3: true, top5: true, cardHit5: null });
-  const g2 = gradeCase(rank(twinReadable, E.docsSearch), "lumenloop", undefined, undefined, TWINS);
+// --- grading rule v3 (ADR-0003): no twin identity — service labels are exact --------
+check("gradeCase v3: a skills hit does NOT satisfy a lumenloop-expected case", () => {
+  const readable = { id: "skills.lumenloop.scf-submission-radar", service: "skills", kind: "skill", score: 0, description: "" };
+  const g = gradeCase(rank(readable, E.docsSearch), "lumenloop", undefined, undefined);
+  assert.deepEqual(g, { top1: false, top3: false, top5: false, cardHit5: null });
+  const g2 = gradeCase(rank(readable, E.docsSearch), "skills", undefined, undefined);
   assert.deepEqual(g2, { top1: true, top3: true, top5: true, cardHit5: null });
 });
-check("cardMatches v2: skills_ card matches the metadata twin; non-twin cross-service still rejected", () => {
-  assert.equal(cardMatches("skills_scf_submission_radar", twinMeta, TWINS), true);
-  assert.equal(cardMatches("lumenloop_scf_submission_radar", twinReadable, TWINS), true);
-  assert.equal(cardMatches("skills_search_directory", E.llDirectory, TWINS), false);
+check("cardMatches v3: cross-service card never matches", () => {
+  const readable = { id: "skills.lumenloop.scf-submission-radar", service: "skills", kind: "skill", score: 0, description: "" };
+  assert.equal(cardMatches("skills_scf_submission_radar", readable), true);
+  assert.equal(cardMatches("lumenloop_scf_submission_radar", readable), false);
+  assert.equal(cardMatches("skills_search_directory", E.llDirectory), false);
 });
-check("gradeCase v2: expected_any also honors twin identity", () => {
-  const g = gradeCase(rank(twinMeta), "stellarDocs", undefined, ["stellarDocs", "skills"], TWINS);
-  assert.equal(g.any1, true); // twin counts as skills for the accept set
+check("gradeCase v3: cross-service tolerance is expected_any only", () => {
+  const readable = { id: "skills.lumenloop.scf-submission-radar", service: "skills", kind: "skill", score: 0, description: "" };
+  const g = gradeCase(rank(readable), "stellarDocs", undefined, ["stellarDocs", "skills"]);
+  assert.equal(g.any1, true); // skills is in the accept set
   assert.equal(g.top1, false); // strict vs stellarDocs unaffected
 });
 

@@ -10,21 +10,23 @@
  * Field rationale (what earns its place for a two-tool search+execute MCP):
  *  - id / service / kind / description → the search scorer's input fields.
  *  - inputSchema / outputSchema        → rendered into the TS `signature`
- *    returned with operation hits (and later, execute-side arg validation —
- *    the model never owns URLs/args, PLAN §4).
- *  - transport / auth / cost           → what the Phase 3 adapters need to
- *    actually place the call, and what the paid-gate keys off (`cost`).
- *  - policy                            → deny-list as DATA (machine-checkable;
- *    denied entries never leave `searchCatalog`, `execute` refuses by id).
+ *    returned with operation hits, and execute-side arg validation —
+ *    the model never owns URLs/args, PLAN §4.
+ *  - transport                         → what the adapters need to actually
+ *    place the call.
  *  - provenance                        → where the entry came from + snapshot
  *    time, so drift is attributable to an inventory refresh.
  *
- * Deliberately absent: raven-next's `resultShape` (evidence/soft-empty/error
- * paths). Search never reads it, and execute-phase normalizers are per-service
- * code, not per-entry data — dropping it keeps the manifest lean. Likewise
- * the stellarDocs corpus taxonomy: it lives in specs/stellar-docs.json and
- * ships to the model inside the super spec; a manifest-level `docs.taxonomy`
- * copy (removed 2026-07-03) had no consumer anywhere.
+ * Deliberately absent:
+ *  - policy/auth/cost — exposure is filtered at BUILD time (ADR-0003): the
+ *    manifest is the exposed surface, so every entry in it is callable or
+ *    readable and a runtime allow/deny layer has nothing to express.
+ *    Exclusions (paid ops, write endpoints, retired skills, upstream skill
+ *    twins) live as data + reasons in scripts/build-catalog.mjs.
+ *  - raven-next's `resultShape` (evidence/soft-empty/error paths): search
+ *    never reads it, and execute-phase normalizers are per-service code, not
+ *    per-entry data. Likewise the stellarDocs corpus taxonomy: it lives in
+ *    specs/stellar-docs.json and ships to the model inside the super spec.
  */
 import { z } from "zod";
 
@@ -52,11 +54,6 @@ export const transportSchema = z
     base: z.string().optional()
   })
   .catchall(z.unknown());
-
-export const policySchema = z.object({
-  allow: z.boolean(),
-  denyReason: z.string().nullable()
-});
 
 export const provenanceSchema = z
   .object({
@@ -86,9 +83,6 @@ export const catalogEntrySchema = z.object({
   /** JSON Schema for the result where the upstream declares one; else null. */
   outputSchema: jsonSchemaShape.nullable(),
   transport: transportSchema.nullable(),
-  auth: z.enum(["none", "partner-key", "algolia-key"]),
-  cost: z.enum(["free", "metered"]),
-  policy: policySchema,
   provenance: provenanceSchema
 });
 

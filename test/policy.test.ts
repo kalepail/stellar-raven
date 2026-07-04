@@ -1,6 +1,8 @@
 /**
- * Policy tests — deny-list refusals, metered gate, arg validation, secret
- * redaction, and model-boundary truncation. Everything host-side, pure Node.
+ * Policy tests — arg validation, secret redaction, and model-boundary
+ * truncation. Everything host-side, pure Node. There is no runtime deny/
+ * metered layer to test: exposure is filtered at build time (ADR-0003), so
+ * the excluded ops simply do not exist in the manifest.
  */
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
@@ -23,36 +25,16 @@ function entry(id: string): CatalogEntry {
   return e;
 }
 
-describe("guard — deny-list as data", () => {
-  it("refuses scout.submitPartnerListing with its manifest denyReason", () => {
-    const r = guard(entry("scout.submitPartnerListing"), {
-      orgName: "Acme",
-      contactEmail: "a@b.co"
-    });
-    expect(r).not.toBeNull();
-    if (!r || r.ok) throw new Error("expected refusal");
-    expect(r.error.kind).toBe("denied");
-    expect(r.error.message).toContain("DRAFT partner account");
-  });
-
-  it("refuses every denied entry in the manifest, regardless of args", () => {
-    const denied = catalog.entries.filter((e) => !e.policy.allow);
-    expect(denied.length).toBeGreaterThanOrEqual(4); // round-2 deny-list
-    for (const e of denied) {
-      const r = guard(e, {});
-      if (!r || r.ok) throw new Error(`expected denial for ${e.id}`);
-      expect(r.error.kind).toBe("denied");
+describe("guard — arg validation (exposure is build-time, ADR-0003)", () => {
+  it("the excluded write/paid ops do not exist in the manifest at all", () => {
+    for (const id of [
+      "lumenloop.request_research",
+      "scout.submitFeedback",
+      "scout.submitPartnerListing",
+      "scout.partnerAssistant"
+    ]) {
+      expect(catalog.entries.some((e) => e.id === id), id).toBe(false);
     }
-  });
-
-  it("refuses metered entries with a no-charge message (synthetic allow:true case)", () => {
-    // lumenloop.request_research is both denied AND metered; the metered gate
-    // must hold even if the deny flag were ever lifted alone.
-    const metered = { ...entry("lumenloop.request_research"), policy: { allow: true, denyReason: null } };
-    const r = guard(metered as CatalogEntry, { question: "what is soroban and how does it work" });
-    if (!r || r.ok) throw new Error("expected metered refusal");
-    expect(r.error.kind).toBe("denied");
-    expect(r.error.message).toContain("No charge was made");
   });
 
   it("rejects invalid args before any call, with actionable issues", () => {

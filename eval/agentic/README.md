@@ -68,9 +68,9 @@ primary +40/+30pts (the description enrichment paying off agentically); lumenloo
 −12.5/−37.5pts and v1 any-hit −25/−37.5pts — 8 of 12 lumenloop misses routed to
 `scout.searchProjects` on "what is X / who builds X" project-lookup phrasings, i.e. the
 enrichment moved the lumenloop/scout boundary. Twin-aware regrade (2026-07-03): `grade()` in
-`workflow-agentic-routing.js` now mirrors rule v2 (`eval/lib/grade.mjs` `hitServices()` /
-`src/skills/store.ts` alias) — `skills.lumenloop.*` / `skills.lumenloop-api.*` twin-skill picks
-satisfy the lumenloop label. Offline regrade of the saved 60 rows flips 5 run verdicts
+`workflow-agentic-routing.js` mirrored rule v2 at the time (`skills.lumenloop.*` /
+`skills.lumenloop-api.*` twin-skill picks satisfied the lumenloop label). *(Superseded 2026-07-04,
+ADR-0003: the script now grades rule v3 — no twin identity; service labels are exact.)* Offline regrade of the saved 60 rows flips 5 run verdicts
 (1 medium primary — `skills.lumenloop-api.lumenloop-api-research` — plus 4 any-hit alternates),
 lifting lumenloop any-hit to 87.5%/75% and medium primary to 37.5%; the boundary drift vs
 2026-07-02 is real but roughly half the size v1 grading suggested on any-hit.

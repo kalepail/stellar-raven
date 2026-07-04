@@ -101,18 +101,12 @@ untouched.
 **Set shaping** — `src/catalog/search.ts`. `loadManifest` enforces structural invariants at
 load: globally unique entry ids, and unique operation terminal names per service (those
 segments become sandbox function names in `src/executor/providers.ts`, so a collision would
-silently shadow one operation with another). `searchCatalog` never returns denied entries
-(`policy.allow === false` filtered before scoring), sorts score-desc then id-asc, and shapes
-the page in two ways:
+silently shadow one operation with another). `searchCatalog` needs no exposure filter —
+everything in the manifest is exposed by construction (ADR-0003,
+`research/decisions/0003-build-time-exposure-filtering.md`: exclusions, including the old
+`lumenloop.skill.*` twin namespace and the retired onboarding skills, are never emitted by
+`scripts/build-catalog.mjs`). It sorts score-desc then id-asc, and shapes the page in one way:
 
-- *Metadata twins are handled at build time, not search time.* Every metadata-only
-  `lumenloop.skill.*` entry (`transport: null`) is deny-listed in the manifest by the
-  2026-07-03 twin de-dup (ADR-0002, `research/decisions/0002-skills-retirement-twin-dedup.md`),
-  so all 14 are already filtered by the `policy.allow === false` gate before scoring. There is
-  **no search-time twin-suppression pass** — the earlier suppression branch (with its
-  `service: "lumenloop"` exception) became unreachable once the twins were deny-listed and was
-  removed. Reads are unaffected: `src/skills/store.ts` still resolves the `lumenloop.skill.*`
-  alias to the `skills.*` body.
 - *Tiered gate-rescue backfill* — tier 1 is the pipeline above (levers 1–4). Only when it leaves
   the page short (fewer than `limit` gate-passing candidates exist — measured on long
   extended-lane questions that gate to zero) does tier 2 re-run the same pipeline under the
@@ -127,8 +121,7 @@ signature** for operations (`renderSignature` — input/output type declarations
 entry's JSON Schemas via the vendored type generator, and a callable line that spells out
 the *full result envelope union*, because a bare `Promise<Output>` teaches exactly the
 wrong-level access the envelope exists to prevent), plus **`availableSections`** for skill
-hits (`sectionKeysOf` — the same key set `readSkill` advertises; denied sections excluded
-on both surfaces).
+hits (`sectionKeysOf` — the same key set `readSkill` advertises).
 
 ## 3. An `execute` call, end to end
 
@@ -157,15 +150,16 @@ Per call (`src/executor/run.ts`):
    skill-read advice flag is run-scoped; the expensive derivations (catalog view, resolved
    spec) are WeakMap-cached module-level.
 4. **Per-call host RPC** — every service fn runs: manifest entry (closure-captured, never
-   model-supplied) → `guard` (`src/policy/guard.ts`: deny-list → metered gate →
-   `validateArgs` against the entry's `inputSchema`, `src/policy/validate.ts`) → adapter
+   model-supplied) → `guard` (`src/policy/guard.ts`: `validateArgs` against the entry's
+   `inputSchema`, `src/policy/validate.ts` — the only runtime check; exposure is filtered at
+   build time, ADR-0003) → adapter
    dispatch (`src/adapters/index.ts` → `lumenloop.ts` / `scout.ts` / `stellar-docs.ts`;
    secrets read from env host-side, model code never sees a URL, header, or key) →
    per-service normalization into the envelope (soft-empty ≠ error ≠ data; e.g. Scout 404s
    normalize to `soft-empty`, JSON and non-JSON alike) → `redactSecrets`
    (`src/policy/redact.ts` — every secret the Worker holds is scrubbed from serialized
-   results). Denied/metered entries still get a sandbox fn so the model sees a typed
-   `{ kind: "denied" }` refusal instead of a bare not-found. Each dispatch emits an `op`
+   results). Build-excluded surfaces have no sandbox fn at all — an unknown name fails
+   loudly via the per-namespace Proxy. Each dispatch emits an `op`
    telemetry event (`id`, outcome, ms); fan-out via `Promise.all` is safe (no shared
    mutable state per call).
 5. **Tracing** — the sandbox run is wrapped in a custom `codemode.execute` span because
@@ -192,9 +186,9 @@ Per call (`src/executor/run.ts`):
 
 Every service call resolves — never throws — to `{ ok: true, data }` or
 `{ ok: false, error: { service, kind, message, status?, code?, hint? } }`, with `kind`
-three-way: `"error"` (call failed / bad args), `"soft-empty"` (the service answered with
-nothing — *not* evidence of absence), `"denied"` (policy refused before any network)
-(`src/adapters/types.ts`).
+two-way: `"error"` (call failed / bad args) or `"soft-empty"` (the service answered with
+nothing — *not* evidence of absence) (`src/adapters/types.ts`). There is no `"denied"`:
+exposure is filtered at build time (ADR-0003), so nothing callable can be policy-refused.
 
 The observed LLM failure mode is reading payload fields one level too shallow
 (`r.projects` instead of `r.data.projects`), which yields `undefined` and — after a
@@ -223,8 +217,9 @@ The `codemode` provider (`buildCodemodeProvider`, `src/executor/providers.ts`) i
 `execute`'s in-sandbox discovery surface — follow-up discovery at zero extra turn cost:
 
 - **`codemode.spec()`** — the unified super spec (`specs/super-spec.json`: OpenAPI-3.1-style,
-  paths keyed `/{service}/{operation}`, operationId = the exact sandbox call, `x-policy` /
-  `x-cost` / `x-execute` / `x-skill-index` vendor extensions; design record and per-service
+  paths keyed `/{service}/{operation}`, operationId = the exact sandbox call, `x-execute` /
+  `x-skill-index` vendor extensions; exactly the manifest's operations — every path callable
+  (ADR-0003); design record and per-service
   mapping in [`research/services/stellar-docs-spec-design.md`](./research/services/stellar-docs-spec-design.md)
   for stellarDocs and [`research/super-spec-design.md`](./research/super-spec-design.md) for the
   whole document), with `$refs` resolved inline
@@ -239,14 +234,13 @@ The `codemode` provider (`buildCodemodeProvider`, `src/executor/providers.ts`) i
   buildable for future A/Bs.
 - **`codemode.search(queryOrOpts)`** — the same host-side `searchCatalog`, mid-script.
 - **`codemode.catalog()`** — the full manifest as flat data for arbitrary code-grep, with
-  host-only detail (transport, provenance) stripped. Denied entries are *visible* with
-  `policy.allow: false` + `denyReason` — see-but-not-call; the execution guard still
-  refuses.
+  host-only detail (transport, provenance) stripped. Everything in it is callable/readable —
+  the manifest is pre-filtered at build time (ADR-0003), so there is no policy layer to show.
 - **`codemode.describe(id)`** — one entry's docs + signature, exact-match id only.
 - **`codemode.skill.read(name, { sections? })`** — §6. Wired via a one-line prelude
   (`SKILL_PRELUDE`) because nested objects can't cross codemode's flat Proxy dispatch.
 
-## 6. Skill splitting — mirror → sections → twins → reads
+## 6. Skill splitting — mirror → sections → reads
 
 **The mirror.** `ecosystem-skills/` is a pinned mirror of 25 skills from 5 upstreams
 (commit-SHA-pinned in `ecosystem-skills/MANIFEST.json`); `scripts/check-mirrors.mjs`
@@ -265,37 +259,31 @@ paragraph); one `kind: "skill-section"` entry per `##` heading (id `<skillId>#<s
 duplicate slugs deduped `-2`, `-3`…; description = heading + first paragraph, truncated to
 200 chars; low-weight `keywords` extracted from the *section body* so mid-section content —
 error codes, flags, function names — is lexically searchable); and one section-kind entry
-per extra `.md` file (id `<skillId>#file:<relpath>`). Currently 25 skills + 203 sections.
-
-**Metadata twins.** The Lumenloop API serves 14 skills of its own as zips; the catalog
-carries them as `lumenloop.skill.*` entries with `transport: null` (metadata-only — bodies
-not fetched from the API). Their bodies *are* in the mirror verbatim, so
-`src/skills/store.ts` supports exactly one alias: `lumenloop.skill.X` resolves to the
-`skills.*` entry with the identical terminal name — an exact equality, refused when
-ambiguous, not a search. On the search side all 14 twins are **deny-listed at build time**
-(the 2026-07-03 twin de-dup, ADR-0002), so the unreadable form is filtered before scoring and
-never wastes a result slot — while the read alias above still resolves. (This replaced an
-earlier search-time suppression pass, now removed; see §2.)
+per extra `.md` file (id `<skillId>#file:<relpath>`). The 7 retired Lumenloop
+API-onboarding skills are never emitted — no skill entry, no sections (ADR-0003; the
+retirement record is `RETIRED_ONBOARDING_SKILLS` in the builder plus the ADR). The
+Lumenloop-API-served skill metadata (14 skills as zips) is likewise never emitted: each
+duplicates a canonical `skills.*` mirror entry, and `assertLumenloopSkillsMirrored` breaks
+the build if an upstream-served skill ever lacks a mirror counterpart. Currently 18 exposed
+skills + 203 sections; there is no `lumenloop.skill.*` namespace and no read alias —
+unknown ids fail exact-match with a nearest-id suggestion.
 
 **The read path** (`readSkill`, `src/skills/store.ts`) resolves through the **catalog**,
 not the filesystem: `name` must be an exact catalog id (a `#slug` suffix reads that one
-section), the entry must be `kind: "skill"` with `policy.allow`, and content comes from the
+section), the entry must be `kind: "skill"`, and content comes from the
 bundle. The body is re-sectioned at read time with the same slugify as the builder — the
 builder-invariant test (`test/skills.test.ts`, via the exported `sectionSlugsOf`) asserts
-the two sectionings agree for every bundled skill. Policy enforcement is fail-closed on
-both read shapes:
+the two sectionings agree for every bundled skill. Both read shapes are fail-closed on
+drift:
 
-- **Whole reads** return the full body (content is never withheld for *size* — the ~6k cap
-  applies to what a script returns, never to data flowing into the sandbox), **except**
-  deny-listed sections, whose bodies are excised and replaced by the heading plus a
-  `[section omitted: <denyReason>]` marker — the deny-list is a control, not advice.
+- **Whole reads** return the full body — content is never withheld for *size* (the ~6k cap
+  applies to what a script returns, never to data flowing into the sandbox).
 - **Section reads** accept slugs, exact heading text, or `file:` keys; an unknown section
-  fails the whole read and lists what exists (never a silent partial answer); a denied
-  section refuses with `kind: "denied"`; and a `##` section present in the body but
-  **absent from the catalog** (sectioning drift) is refused — default-deny, not
-  default-allow.
+  fails the whole read and lists what exists (never a silent partial answer); and a `##`
+  section present in the body but **absent from the catalog** (sectioning drift) is
+  refused — default-deny, not default-allow.
 - `availableSections` (returned on every ok read, and on search hits) advertises only
-  allowed, cataloged keys.
+  cataloged keys.
 - Reads large enough that returning them whole would hit the model boundary carry an
   advisory `notice` (from ~5,000 estimated tokens) telling the model to request sections —
   advice only, the content is still fully present for in-sandbox grep/aggregate.
@@ -321,17 +309,18 @@ Determinism is a hard property: sorted keys, sorted entries, `generatedAt` deriv
 newest *input* snapshot (never wall clock) — consecutive runs are byte-identical, and
 `test/catalog.test.ts` additionally asserts the *checked-in* manifest matches a fresh
 rebuild (staleness check). The refresh script is idempotent and asserts no key material
-(including the Algolia app id) appears in any output; the deny-list is data applied in
-`build-catalog.mjs` (`lumenloopPolicy` / `scoutPolicy` / `mirrorSkillPolicy` +
-`lumenloopInventorySkillPolicy` — the 2026-07-03 skills retirement and twin de-dup, Solo
-todo 825), and the super spec copies `x-policy` from the manifest rather than re-deriving
-it, marking the ~16 un-cataloged Lumenloop account/billing endpoints always-denied for
-honesty (its skill index is likewise policy-filtered). Two loud-failure guards keep
-refreshes from silently changing exposure: `assertRetirementNamesResolve` breaks the build
-if a mirror sync renames/removes a retired skill (would otherwise un-retire it), and the
-orphaned-note checks break both builders if an upstream tool rename strands a
-`description-notes.mjs` entry. See `ecosystem-skills/README.md` "After a sync" for the
-operator chain.
+(including the Algolia app id) appears in any output. Exposure filtering is build-time data
+in `build-catalog.mjs` (ADR-0003: `EXCLUDED_LUMENLOOP_OPS` + the account-op regex + the
+metered flag, `EXCLUDED_SCOUT_OPS`, `RETIRED_ONBOARDING_SKILLS`, and the never-emitted
+Lumenloop-served skill metadata), and the super spec emits exactly the manifest's
+operations (a completeness assert catches a cataloged op the spec builders miss). Loud-
+failure guards keep refreshes from silently changing exposure: `assertRetirementNamesResolve`
+(a mirror sync renaming/removing a retired skill would otherwise un-retire it),
+`assertLumenloopExclusionsResolve` / `assertScoutExclusionsResolve` (a stale exclusion means
+an excluded surface may have moved upstream), `assertLumenloopSkillsMirrored` (a NEW
+upstream-served skill must be mirrored or excluded, never silently invisible), and the
+orphaned-note checks in both builders for stranded `description-notes.mjs` entries. See
+`ecosystem-skills/README.md` "After a sync" for the operator chain.
 
 CI (`.github/workflows/ci.yml`, Node 24 — build-catalog relies on native TS
 type-stripping): types → tsc → vitest → workerd smoke lane (`npm run test:smoke`,

@@ -134,66 +134,92 @@ function stellarDocsTitleExtras(entries, titlesSnapshot) {
 }
 
 // ---------------------------------------------------------------------------
-// Policy: the deny-list is data (PLAN §4). Machine-checkable, lives here.
+// Exposure filtering — build-time, data-driven (ADR-0003; supersedes the
+// runtime deny-list of ADR-0002). The manifest IS the exposed surface: an
+// entry is either emitted (callable/readable) or it does not exist to
+// consumers. Exclusion reasons live HERE and in ADRs — never in emitted
+// entries, never as runtime policy. Every exclusion list below is guarded by
+// a fail-loud drift check so an upstream rename/removal breaks the build
+// instead of silently changing the surface.
 // ---------------------------------------------------------------------------
 
-/** Lumenloop account-mutation surfaces — deny if they ever appear in inventory. */
+/** Lumenloop account-mutation surfaces — excluded if they ever appear in inventory. */
 const LUMENLOOP_ACCOUNT_OP_RE = /(^|_)(key|keys|webhook|webhooks|topup|top_?up)(_|$)/;
 
-function lumenloopPolicy(tool) {
-  if (tool.name === "request_research") {
-    return {
-      allow: false,
-      denyReason:
-        "metered paid call — disabled at launch (PLAN §8: request_research off by default; enable behind budget gate + dedup)"
-    };
-  }
-  if (LUMENLOOP_ACCOUNT_OP_RE.test(tool.name)) {
-    return {
-      allow: false,
-      denyReason: "account-mutation endpoint (keys/webhooks/topup) — deny-listed per PLAN §4"
-    };
-  }
-  return { allow: true, denyReason: null };
+// request_research is the paid deep-research trigger — excluded until the
+// budget-gate + dedup feature is deliberately built (PLAN §8: off by default).
+// Named explicitly (not just via the metered flag) so an upstream re-pricing
+// cannot silently expose it.
+const EXCLUDED_LUMENLOOP_OPS = new Set(["request_research"]);
+
+/** True when a lumenloop tool must not be emitted: paid/metered, account
+ *  mutation, or explicitly excluded by name. */
+function lumenloopOpExcluded(tool) {
+  return (
+    tool.metered === true ||
+    EXCLUDED_LUMENLOOP_OPS.has(tool.name) ||
+    LUMENLOOP_ACCOUNT_OP_RE.test(tool.name)
+  );
 }
 
-function scoutPolicy(method, path) {
-  if (method === "POST" && path === "/api/feedback") {
-    return {
-      allow: false,
-      denyReason: "write-endpoint (submits feedback upstream) — deny-listed per PLAN §4"
-    };
+// Scout write/side-effecting endpoints — excluded (exact method+path):
+//  POST /api/feedback                 submits feedback upstream
+//  POST /api/partners/submit-listing  creates a DRAFT partner account / claim
+//                                     request reviewed by the Stellar Light team
+//  POST /api/partners/assistant       surfaced partners are logged as leads for
+//                                     the weekly partner digest (per upstream
+//                                     OpenAPI); scout.matchPartners is the
+//                                     side-effect-free ranking alternative
+// POST /api/partners/match and /api/partners/onboard stay exposed: their
+// OpenAPI descriptions declare pure AI ranking/extraction over published
+// partners ("nothing is invented", persistence happens only via the separate
+// submit-listing endpoint) — no write or logging is documented.
+const EXCLUDED_SCOUT_OPS = new Set([
+  "POST /api/feedback",
+  "POST /api/partners/submit-listing",
+  "POST /api/partners/assistant"
+]);
+
+// Drift guard: exclusions are exact-match data, so an upstream rename/removal
+// must break the build (stale exclusion = a write endpoint may have moved),
+// not silently stop matching.
+function assertScoutExclusionsResolve(openapi) {
+  const present = new Set();
+  for (const [path, pathItem] of Object.entries(openapi.paths)) {
+    for (const method of HTTP_METHODS) {
+      if (pathItem[method]) present.add(`${method.toUpperCase()} ${path}`);
+    }
   }
-  if (method === "POST" && path === "/api/partners/submit-listing") {
-    return {
-      allow: false,
-      denyReason:
-        "write-endpoint — creates a DRAFT partner account (or a claim request on an existing profile) reviewed by the Stellar Light team; deny-listed per PLAN §4"
-    };
+  const stale = [...EXCLUDED_SCOUT_OPS].filter((k) => !present.has(k));
+  if (stale.length > 0) {
+    throw new Error(
+      `EXCLUDED_SCOUT_OPS no longer present in the scout OpenAPI: ${stale.join(", ")}. ` +
+        `Upstream renamed or removed them — reconcile the exclusion list in build-catalog.mjs.`
+    );
   }
-  if (method === "POST" && path === "/api/partners/assistant") {
-    return {
-      allow: false,
-      denyReason:
-        "side-effecting — surfaced partners are logged as leads for the weekly partner digest (per upstream OpenAPI description); use scout.matchPartners for side-effect-free ranking"
-    };
+}
+
+function assertLumenloopExclusionsResolve(inv) {
+  const names = new Set(inv.tools.map((t) => t.name));
+  const stale = [...EXCLUDED_LUMENLOOP_OPS].filter((n) => !names.has(n));
+  if (stale.length > 0) {
+    throw new Error(
+      `EXCLUDED_LUMENLOOP_OPS no longer present in the lumenloop inventory: ${stale.join(", ")}. ` +
+        `Upstream renamed or removed them — reconcile the exclusion list in build-catalog.mjs.`
+    );
   }
-  // POST /api/partners/match and /api/partners/onboard stay allowed: their
-  // OpenAPI descriptions declare pure AI ranking/extraction over published
-  // partners ("nothing is invented", persistence happens only via the
-  // separate submit-listing endpoint) — no write or logging is documented.
-  return { allow: true, denyReason: null };
 }
 
 // ---------------------------------------------------------------------------
-// Retired skills — deny-list as DATA (CLAUDE.md rule; decision 2026-07-03).
+// Retired skills — exclusion as DATA (ADR-0003; decision 2026-07-03).
 // The Lumenloop API-onboarding skills teach RAW HTTP/REST access (Bearer
 // llmcp_ auth, key minting, rate limits, the REST response envelope). They are
 // redundant AND misleading here: a model calling `execute` reaches Lumenloop
 // only through the wrapped `lumenloop.*` sandbox globals — no network, secrets
 // stay host-side, and the envelope is {ok,data}, not the REST shape these
 // skills describe. Bodies stay in the ecosystem-skills mirror as the harvest
-// source for operation-description enrichment (Solo todo 825).
+// source for operation-description enrichment (Solo todo 825); they are simply
+// never emitted — no skill entry, no sections.
 const RETIRED_ONBOARDING_SKILLS = new Set([
   "lumenloop-api-billing",
   "lumenloop-api-connect",
@@ -203,33 +229,8 @@ const RETIRED_ONBOARDING_SKILLS = new Set([
   "lumenloop-api-research",
   "lumenloop-mcp-connect"
 ]);
-const RETIRED_SKILL_DENY_REASON =
-  "API-onboarding skill (raw HTTP/REST auth, key management, rate limits) — redundant with the wrapped lumenloop.* sandbox operations and misleading in-sandbox (no network, {ok,data} envelope); retired from exposure 2026-07-03, body retained in mirror as description-harvest source";
 
-// Mirror-side (skills.*) policy: retire the onboarding skills by exact terminal
-// name (only Lumenloop sources carry these names; other sources are untouched).
-function mirrorSkillPolicy(skillName) {
-  return RETIRED_ONBOARDING_SKILLS.has(skillName)
-    ? { allow: false, denyReason: RETIRED_SKILL_DENY_REASON }
-    : { allow: true, denyReason: null };
-}
-
-// Inventory-side (lumenloop.skill.*) policy: every one of the 14 API-served
-// skills DUPLICATES a canonical skills.* mirror entry — store.ts resolves the
-// `lumenloop.skill.X` alias straight to the mirror body (the metadata entry has
-// transport:null and is bypassed on the read path), so this entry only ever
-// double-listed the skill in search. Deny all 14 to collapse to one hit each:
-// retired onboarding skills carry the retirement reason, surviving playbooks a
-// de-dup reason. The store.ts alias stays as back-compat resolution.
-const DEDUP_SKILL_DENY_REASON =
-  "duplicate of the canonical skills.* mirror entry — the lumenloop.skill.* alias resolves to the mirror body via store.ts, so this inventory entry only double-listed the skill in search; de-dup 2026-07-03";
-function lumenloopInventorySkillPolicy(skillName) {
-  return RETIRED_ONBOARDING_SKILLS.has(skillName)
-    ? { allow: false, denyReason: RETIRED_SKILL_DENY_REASON }
-    : { allow: false, denyReason: DEDUP_SKILL_DENY_REASON };
-}
-
-// Refresh-safety guard: the deny-list is pinned to upstream skill NAMES, so an
+// Refresh-safety guard: the retirement is pinned to upstream skill NAMES, so an
 // ecosystem-skills re-sync (update.sh) that RENAMES or REMOVES a retired skill
 // would silently un-retire it (the stale name would stop matching and the skill
 // would leak back into the exposed catalog). Fail the build LOUDLY instead —
@@ -242,8 +243,29 @@ function assertRetirementNamesResolve(skillsManifest) {
   if (stale.length > 0) {
     throw new Error(
       `RETIRED_ONBOARDING_SKILLS names no longer present in the skills mirror: ${stale.join(", ")}. ` +
-        `An upstream sync renamed or removed them — reconcile the deny-list in build-catalog.mjs ` +
+        `An upstream sync renamed or removed them — reconcile the exclusion list in build-catalog.mjs ` +
         `(retire the new name, or drop the entry if the skill is gone) so nothing silently un-retires.`
+    );
+  }
+}
+
+// Lumenloop serves 14 skills of its own via /v1/skills (metadata only; bodies
+// are zips). They are NOT emitted: every one duplicates a canonical skills.*
+// mirror entry — one skill, one id (ADR-0003 kills the lumenloop.skill.* twin
+// namespace entirely). Guard the duplication assumption loudly: a NEW
+// upstream-served skill with no mirror counterpart must break the build (mirror
+// it via ecosystem-skills/update.sh, or exclude it here with a reason), not
+// vanish silently.
+function assertLumenloopSkillsMirrored(inv, skillsManifest) {
+  const mirrorNames = new Set(
+    skillsManifest.sources.flatMap((s) => s.skills.map((sk) => sk.name))
+  );
+  const unmirrored = inv.skills.map((s) => s.name).filter((n) => !mirrorNames.has(n));
+  if (unmirrored.length > 0) {
+    throw new Error(
+      `Lumenloop /v1/skills serves skills with no ecosystem-skills mirror counterpart: ` +
+        `${unmirrored.join(", ")}. Mirror them (ecosystem-skills/update.sh) or exclude them ` +
+        `here with a reason — API-served skills are never emitted directly (ADR-0003).`
     );
   }
 }
@@ -352,7 +374,8 @@ function parseFrontmatter(content) {
 }
 
 // ---------------------------------------------------------------------------
-// Lumenloop — 21 operations + 14 API skills (metadata only)
+// Lumenloop — one entry per exposed tool (exclusions filtered at build time;
+// API-served skills are never emitted — see assertLumenloopSkillsMirrored)
 // ---------------------------------------------------------------------------
 
 function buildLumenloop(inv) {
@@ -361,6 +384,7 @@ function buildLumenloop(inv) {
   const consumedNotes = new Set();
 
   for (const tool of inv.tools) {
+    if (lumenloopOpExcluded(tool)) continue;
     const descriptionParts = [tool.description];
     if (tool.when_to_use) descriptionParts.push(`When to use: ${tool.when_to_use}`);
     if (tool.returns) descriptionParts.push(`Returns: ${tool.returns}`);
@@ -377,9 +401,6 @@ function buildLumenloop(inv) {
       inputSchema: tool.input_schema ?? null,
       outputSchema: tool.output_schema ?? null,
       transport: { type: "http", method: "POST", path: `/v1/tools/${tool.name}`, base: origin },
-      auth: "partner-key",
-      cost: tool.metered ? "metered" : "free",
-      policy: lumenloopPolicy(tool),
       provenance: {
         source: inv.source.tools,
         fetchedAt: inv.fetchedAt,
@@ -394,34 +415,10 @@ function buildLumenloop(inv) {
   for (const key of Object.keys(LUMENLOOP_DESCRIPTION_NOTES)) {
     if (!consumedNotes.has(key)) {
       throw new Error(
-        `LUMENLOOP_DESCRIPTION_NOTES key "${key}" matched no lumenloop tool name — orphaned note ` +
-          `(upstream renamed/removed the tool?); update scripts/description-notes.mjs`
+        `LUMENLOOP_DESCRIPTION_NOTES key "${key}" matched no exposed lumenloop tool name — orphaned note ` +
+          `(upstream renamed/removed the tool, or it is now excluded?); update scripts/description-notes.mjs`
       );
     }
-  }
-
-  // API-served skills: metadata only (bodies are not mirrored) — kind `skill`,
-  // NOT sectioned; provenance says exactly that.
-  for (const skill of inv.skills) {
-    entries.push({
-      id: `lumenloop.skill.${skill.name}`,
-      service: "lumenloop",
-      kind: "skill",
-      description: skill.description || skill.name,
-      inputSchema: null,
-      outputSchema: null,
-      transport: null,
-      auth: skill.tier === "partner" ? "partner-key" : "none",
-      cost: "free",
-      policy: lumenloopInventorySkillPolicy(skill.name),
-      provenance: {
-        source: inv.source.skills,
-        fetchedAt: inv.fetchedAt,
-        tier: skill.tier,
-        note: "metadata-only: skill bodies are served as zips by the Lumenloop API and are not mirrored locally; no sections were generated",
-        files: skill.files ?? []
-      }
-    });
   }
 
   return entries;
@@ -485,6 +482,7 @@ function buildScout(inv) {
       const op = pathItem[method];
       if (!op) continue;
       const httpMethod = method.toUpperCase();
+      if (EXCLUDED_SCOUT_OPS.has(`${httpMethod} ${path}`)) continue;
       const opId = op.operationId ?? `${method}_${slugify(path)}`;
       const rawDescription = [op.summary, op.description]
         .filter(Boolean)
@@ -503,9 +501,6 @@ function buildScout(inv) {
         inputSchema: scoutInputSchema(op, pathItem, openapi),
         outputSchema: scoutOutputSchema(op, openapi),
         transport: { type: "http", method: httpMethod, path, base },
-        auth: "none",
-        cost: "free",
-        policy: scoutPolicy(httpMethod, path),
         provenance: {
           source: `${base}/api/openapi.json`,
           fetchedAt: inv.fetchedAt,
@@ -557,9 +552,6 @@ function buildStellarDocs(spec) {
       constraints: backend.constraints,
       algolia: op.algolia
     },
-    auth: catalogHints.auth,
-    cost: catalogHints.cost,
-    policy: { allow: true, denyReason: null },
     provenance: {
       source: catalogHints.provenanceSource,
       fetchedAt: spec.authoredAt,
@@ -578,9 +570,6 @@ function skillEntryBase(sourceId, skillName, manifestSource, syncedAt) {
     service: "skills",
     inputSchema: null,
     outputSchema: null,
-    auth: "none",
-    cost: "free",
-    policy: { allow: true, denyReason: null }, // PLAN §8: all skills exposed read-only
     provenance: {
       source: manifestSource.url,
       fetchedAt: syncedAt,
@@ -595,6 +584,12 @@ function buildSkills(manifest) {
 
   for (const source of manifest.sources) {
     for (const skill of source.skills) {
+      // Retired skills are not emitted at all — no skill entry, no sections
+      // (ADR-0003; the auditable record is RETIRED_ONBOARDING_SKILLS above +
+      // the ADR, not a manifest entry). Bodies stay in the mirror as the
+      // description-harvest source.
+      if (RETIRED_ONBOARDING_SKILLS.has(skill.name)) continue;
+
       const skillDir = `ecosystem-skills/skills/${source.id}/${skill.name}`;
       const skillId = `skills.${source.id}.${skill.name}`;
       const raw = readText(`${skillDir}/SKILL.md`);
@@ -602,19 +597,13 @@ function buildSkills(manifest) {
       const bodyLines = body.split("\n");
 
       // 1) the whole-skill entry
-      const policy = mirrorSkillPolicy(skill.name);
       entries.push({
         ...skillEntryBase(source.id, skill.name, source, syncedAt),
         id: skillId,
         kind: "skill",
         description: attrs.description || firstParagraph(bodyLines, 0) || skill.name,
-        transport: { type: "file", path: `${skillDir}/SKILL.md` },
-        policy
+        transport: { type: "file", path: `${skillDir}/SKILL.md` }
       });
-
-      // Retired skills expose no section/file entries — the whole-skill entry
-      // above stands as the auditable, deny-listed record (with denyReason).
-      if (!policy.allow) continue;
 
       // 2) one entry per `##` section of SKILL.md
       const usedSlugs = new Set();
@@ -688,6 +677,9 @@ function main() {
   const stellarDocsTitles = readJson("inventory/stellar-docs-titles.json");
   const skillsManifest = readJson("ecosystem-skills/MANIFEST.json");
   assertRetirementNamesResolve(skillsManifest);
+  assertLumenloopExclusionsResolve(lumenloop);
+  assertLumenloopSkillsMirrored(lumenloop, skillsManifest);
+  assertScoutExclusionsResolve(stellarLight.openapi);
 
   const stellarDocsEntries = buildStellarDocs(stellarDocsSpec);
   const entries = [
@@ -734,10 +726,16 @@ function main() {
   for (const entry of entries) {
     counts[`${entry.service}/${entry.kind}`] = (counts[`${entry.service}/${entry.kind}`] ?? 0) + 1;
   }
-  const denied = entries.filter((e) => !e.policy.allow).map((e) => e.id);
+  // Transparency: name what the build filtered out (no silent surface changes).
+  const excludedLumenloop = lumenloop.tools.filter(lumenloopOpExcluded).map((t) => t.name);
   console.log(`catalog/manifest.json — ${entries.length} entries`);
   for (const [key, count] of Object.entries(counts).sort()) console.log(`  ${key}: ${count}`);
-  console.log(`  denied (${denied.length}): ${denied.join(", ")}`);
+  console.log(
+    `  excluded at build: lumenloop ops [${excludedLumenloop.join(", ")}], ` +
+      `scout ops [${[...EXCLUDED_SCOUT_OPS].join(", ")}], ` +
+      `retired skills [${[...RETIRED_ONBOARDING_SKILLS].join(", ")}], ` +
+      `lumenloop-served skill metadata (${lumenloop.skills.length}, all mirrored)`
+  );
 }
 
 main();

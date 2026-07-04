@@ -14,7 +14,7 @@
  * names fail loudly ("Tool not found") rather than fuzzy-resolving —
  * exact-match ids end to end.
  *
- * Every fn: guard (deny/metered/arg-validation) → adapter → redaction, and
+ * Every fn: guard (arg-validation) → adapter → redaction, and
  * ALWAYS returns a value ({ok:...} envelope) — never throws to the sandbox.
  * Calls hold no shared mutable state, so Promise.all fan-out is safe: each
  * dispatch is an independent host RPC. A sandbox-side prelude
@@ -33,9 +33,9 @@
  *   codemode.search(queryOrOpts)      — host-side searchCatalog (ranked)
  *   codemode.catalog()                — the FULL catalog as plain data for
  *     arbitrary code-grep discovery (spec-as-data pattern; strict superset of
- *     the fixed scorer). Denied entries are VISIBLE with policy.allow=false +
- *     denyReason — see-but-not-call; the execution guard still refuses.
- *     Host-only transport/provenance detail is stripped.
+ *     the fixed scorer). Everything in it is callable/readable — exposure is
+ *     filtered at build time (ADR-0003). Host-only transport/provenance
+ *     detail is stripped.
  *   codemode.describe(id)             — one entry's docs + signature, exact id
  *   codemode.skill.read(name, {sections?}) — bundled skill content
  * (`skill.read` needs a sandbox-side prelude: nested objects can't cross the
@@ -200,11 +200,9 @@ export function buildProviders(
       fns = {};
       byService.set(entry.service, fns);
     }
-    // Denied/metered entries get a fn too — so the sandbox sees a typed
-    // {kind:"denied"} refusal (from guard) instead of a bare "not found".
     fns[name] = async (args?: unknown) => {
       const t0 = Date.now();
-      const refused = guard(entry, args);
+      const refused = guard(entry, args); // arg validation only (ADR-0003)
       if (refused) {
         // guard only ever returns the error variant; narrow for the compiler.
         logEvent("op", {
@@ -255,8 +253,8 @@ type SearchArg = string | { query?: unknown; kind?: unknown; service?: unknown; 
  * Sandbox-facing projection of one catalog entry for `codemode.catalog()`:
  * everything the model may reason over, nothing host-only (transport carries
  * base URLs / Algolia mappings / env-var names; provenance is refresh
- * bookkeeping). Policy stays VISIBLE — including allow:false + denyReason —
- * so code can filter denied ops without being able to call them.
+ * bookkeeping). Every entry is callable/readable — exposure is filtered at
+ * build time (ADR-0003), so there is no policy to show.
  */
 function catalogEntryView(entry: CatalogEntry) {
   return {
@@ -265,10 +263,7 @@ function catalogEntryView(entry: CatalogEntry) {
     kind: entry.kind,
     description: entry.description,
     inputSchema: entry.inputSchema,
-    outputSchema: entry.outputSchema,
-    auth: entry.auth,
-    cost: entry.cost,
-    policy: entry.policy
+    outputSchema: entry.outputSchema
   };
 }
 
@@ -384,23 +379,12 @@ export function buildCodemodeProvider(
             }
           };
         }
-        if (!entry.policy.allow) {
-          return {
-            ok: false,
-            error: {
-              service: entry.service,
-              kind: "denied",
-              message: `${entry.id} is deny-listed: ${entry.policy.denyReason ?? "not exposed"}`
-            }
-          };
-        }
         const signature = renderSignature(entry);
         return {
           ok: true,
           id: entry.id,
           service: entry.service,
           kind: entry.kind,
-          cost: entry.cost,
           description: entry.description,
           ...(signature ? { signature } : {})
         };

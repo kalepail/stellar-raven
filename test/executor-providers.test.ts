@@ -71,21 +71,15 @@ describe("sandbox surface shape", () => {
   });
 });
 
-describe("dispatch behavior (error-as-data, policy, parallelism)", () => {
-  it("denied ops are refused from the surface with kind 'denied' (no fetch happens)", async () => {
-    let fetched = 0;
-    const fetchImpl: FetchLike = async () => {
-      fetched += 1;
-      return new Response("{}", { status: 200 });
-    };
-    const providers = buildSandbox(catalog, bundle, env, { fetchImpl });
-    const r = (await fnsOf(providers, "scout").submitPartnerListing!({
-      orgName: "Acme",
-      contactEmail: "a@b.co"
-    })) as { ok: boolean; error: { kind: string } };
-    expect(r.ok).toBe(false);
-    expect(r.error.kind).toBe("denied");
-    expect(fetched).toBe(0);
+describe("dispatch behavior (error-as-data, exposure, parallelism)", () => {
+  it("build-excluded ops have NO sandbox fn at all (ADR-0003: nothing uncallable exists)", () => {
+    const providers = buildSandbox(catalog, bundle, env);
+    const scout = fnsOf(providers, "scout");
+    expect(scout.submitPartnerListing).toBeUndefined();
+    expect(scout.submitFeedback).toBeUndefined();
+    expect(scout.partnerAssistant).toBeUndefined();
+    const lumenloop = fnsOf(providers, "lumenloop");
+    expect(lumenloop.request_research).toBeUndefined();
   });
 
   it("invalid args are refused before any network call", async () => {
@@ -205,29 +199,30 @@ describe("envelope guard prelude (fail-loud wrong-level access)", () => {
       logSpy.mock.calls.map((c) => String(c[0])).filter((l) => l.startsWith("[envelope]"));
     try {
       const ns = guardedNamespaces();
-      const r = (await ns.scout!.submitPartnerListing!({
-        orgName: "Acme",
-        contactEmail: "a@b.co"
-      })) as { ok: boolean; data?: unknown; error: { kind: string } };
-      expect(r.ok).toBe(false);
-      expect(r.error.kind).toBe("denied"); // legit failure introspection untouched
+      const r = (await ns.lumenloop!.search_directory!({ limit: 2 })) as {
+        ok: boolean;
+        data?: unknown;
+        error: { kind: string };
+      };
+      expect(r.ok).toBe(false); // guard refusal: missing required query, no network
+      expect(r.error.kind).toBe("error"); // legit failure introspection untouched
       expect(r.data).toBeUndefined(); // no throw
       expect(envelopeLines()).toHaveLength(1);
-      expect(envelopeLines()[0]).toContain("scout.submitPartnerListing");
-      expect(envelopeLines()[0]).toContain('error.kind="denied"');
+      expect(envelopeLines()[0]).toContain("lumenloop.search_directory");
+      expect(envelopeLines()[0]).toContain('error.kind="error"');
       expect(envelopeLines()[0]).toContain("Branch on r.ok and read r.error.");
       // second read of the same op+kind: deduped, no new line
       expect(r.data).toBeUndefined();
       expect(envelopeLines()).toHaveLength(1);
       // a different op/kind warns once more
-      const r2 = (await ns.lumenloop!.search_directory!({ limit: 2 })) as {
+      const r2 = (await ns.stellarDocs!.search_docs!({})) as {
         ok: boolean;
         data?: unknown;
       };
       expect(r2.ok).toBe(false); // invalid args → guard refusal
       expect(r2.data).toBeUndefined();
       expect(envelopeLines()).toHaveLength(2);
-      expect(envelopeLines()[1]).toContain("lumenloop.search_directory");
+      expect(envelopeLines()[1]).toContain("stellarDocs.search_docs");
     } finally {
       logSpy.mockRestore();
     }
@@ -309,17 +304,17 @@ describe("envelope guard prelude (fail-loud wrong-level access)", () => {
         logSpy.mock.calls.map((c) => String(c[0])).filter((l) => l.startsWith("[envelope]"));
       try {
         const ns = guardedNamespaces();
-        const r = (await ns.scout!.submitPartnerListing!({
-          orgName: "Acme",
-          contactEmail: "a@b.co"
-        })) as Record<string, unknown> & { error: { kind: string } };
+        const r = (await ns.lumenloop!.search_directory!({ limit: 2 })) as Record<
+          string,
+          unknown
+        > & { error: { kind: string } };
         r.data = null; // succeeds
         expect(envelopeLines()).toHaveLength(1); // the unchecked write warned once
-        expect(envelopeLines()[0]).toContain("scout.submitPartnerListing");
+        expect(envelopeLines()[0]).toContain("lumenloop.search_directory");
         expect(r.data).toBeNull(); // subsequent reads return the written value…
         expect(r.data).toBeNull();
         expect(envelopeLines()).toHaveLength(1); // …warn-free
-        expect(r.error.kind).toBe("denied"); // error untouched
+        expect(r.error.kind).toBe("error"); // error untouched
       } finally {
         logSpy.mockRestore();
       }
@@ -421,7 +416,7 @@ describe("codemode fns", () => {
   const providers = buildSandbox(catalog, bundle, env);
   const codemode = fnsOf(providers, "codemode");
 
-  it("search accepts a bare string or options and never returns denied entries", async () => {
+  it("search accepts a bare string or options; excluded ops cannot surface", async () => {
     const r = (await codemode.search!("stellar docs search")) as {
       ok: boolean;
       hits: { id: string }[];
@@ -434,14 +429,15 @@ describe("codemode fns", () => {
     expect(r2.hits.some((h) => h.id === "scout.submitPartnerListing")).toBe(false);
   });
 
-  it("catalog() returns the full manifest view — denied entries visible with reasons, host transport stripped", async () => {
+  it("catalog() returns the full manifest view — every entry callable, host detail stripped", async () => {
     const view = (await codemode.catalog!()) as {
-      entries: { id: string; policy: { allow: boolean; denyReason: string | null }; transport?: unknown }[];
+      entries: { id: string; transport?: unknown }[];
     };
-    expect(view.entries.length).toBe(catalog.entries.length); // 374 incl. denied
-    const denied = view.entries.filter((e) => !e.policy.allow);
-    expect(denied.length).toBeGreaterThanOrEqual(4);
-    expect(denied.every((e) => typeof e.policy.denyReason === "string")).toBe(true);
+    expect(view.entries.length).toBe(catalog.entries.length);
+    // No policy layer exists (ADR-0003): nothing uncallable is in the view.
+    expect(view.entries.every((e) => !("policy" in e) && !("cost" in e) && !("auth" in e))).toBe(
+      true
+    );
     expect(view.entries.every((e) => !("transport" in e) && !("provenance" in e))).toBe(true);
   });
 

@@ -12,8 +12,8 @@
  *     over one free op per service, plus a bundled skill read.
  *  2. progression — broad lumenloop.search_directory, then a deeper
  *     lumenloop.get_project parameterized by the first call's top slug.
- *  3. catalog() grep — filter the full catalog as data (denied/metered counts).
- *  4. denied op — scout.submitPartnerListing refused from inside the sandbox.
+ *  3. catalog() grep — filter the full catalog as data (service/kind counts).
+ *  4. excluded op — scout.submitPartnerListing does not exist; unknown name throws.
  *  5. fetch() — must throw (globalOutbound: null).
  *  6. envelope guard — split contract: payload reads on the envelope
  *     (dir.projects / sp.meta) throw a pointer to r.data.*; r.data on a
@@ -103,24 +103,26 @@ const CASES = [
     }`
   },
   {
-    label: "3. catalog() as data: arbitrary filtering (denied/metered/service counts)",
+    label: "3. catalog() as data: arbitrary filtering (service/kind counts; all callable)",
     code: `async () => {
       const cat = await codemode.catalog();
-      const denied = cat.entries.filter(e => !e.policy.allow);
       return {
         total: cat.entries.length,
         byService: cat.entries.reduce((m, e) => (m[e.service] = (m[e.service] || 0) + 1, m), {}),
-        deniedIds: denied.map(e => e.id),
-        metered: cat.entries.filter(e => e.cost === "metered").map(e => e.id),
+        policyFieldsPresent: cat.entries.some(e => "policy" in e || "cost" in e || "auth" in e),
         operations: cat.entries.filter(e => e.kind === "operation").length
       };
     }`
   },
   {
-    label: "4. denied op refused from inside the sandbox",
+    label: "4. build-excluded op does not exist in the sandbox (unknown name fails loudly)",
     code: `async () => {
-      const r = await scout.submitPartnerListing({ orgName: "Test Org", contactEmail: "test@example.com" });
-      return { ok: r.ok, kind: r.ok ? null : r.error.kind, message: r.ok ? null : r.error.message };
+      try {
+        await scout.submitPartnerListing({ orgName: "Test Org", contactEmail: "test@example.com" });
+        return { threw: false };
+      } catch (e) {
+        return { threw: true, message: String(e.message).slice(0, 120) };
+      }
     }`
   },
   {
@@ -139,12 +141,12 @@ const CASES = [
       "6. envelope guard split contract: payload reads throw a pointer; failed-call r.data is undefined + [envelope] warning; writes are write-through; raw envelope still returns",
     code: `async () => {
       const dir = await lumenloop.search_directory({ query: "soroswap", limit: 2 });
-      const denied = await scout.submitPartnerListing({ orgName: "Test Org", contactEmail: "test@example.com" });
+      const failed = await lumenloop.search_directory({ limit: 2 }); // missing required query -> guard error
       const sp = await scout.searchProjects({ q: "soroban", limit: 1 });
       const out = { okGuard: null, errGuardIsUndefined: null, metaGuard: null, writeBack: null, viaData: dir.ok ? dir.data.count : null, raw: dir };
       try { void dir.projects; out.okGuard = "NOT THROWN — guard missing"; }
       catch (e) { out.okGuard = String(e.message).slice(0, 160); }
-      out.errGuardIsUndefined = typeof denied.data === "undefined";
+      out.errGuardIsUndefined = typeof failed.data === "undefined";
       try { void sp.meta; out.metaGuard = "NOT THROWN — guard missing"; }
       catch (e) { out.metaGuard = String(e.message).slice(0, 160); }
       dir.count = dir.ok ? dir.data.count : -1;
@@ -153,10 +155,10 @@ const CASES = [
     }`,
     check: (text) => {
       if (!text.includes('"errGuardIsUndefined":true')) {
-        return "denied.data was not undefined (errGuardIsUndefined false)";
+        return "failed.data was not undefined (errGuardIsUndefined false)";
       }
-      if (!text.includes("[envelope] scout.submitPartnerListing")) {
-        return "console block missing the [envelope] scout.submitPartnerListing warning";
+      if (!text.includes("[envelope] lumenloop.search_directory")) {
+        return "console block missing the [envelope] lumenloop.search_directory warning";
       }
       if (!text.includes("use r.data.meta")) {
         return "sp.meta did not throw a pointer at r.data.meta";

@@ -6,8 +6,8 @@
  *   type SearchHit = { id, service, kind, score, description, signature? }
  *
  * Pure functions, no I/O — importable from the Worker, vitest, and the eval
- * CLI alike. Denied entries (policy.allow === false) are never returned.
- * Default limit 10.
+ * CLI alike. Everything in the manifest is exposed by construction (ADR-0003:
+ * exclusions are filtered at build time). Default limit 10.
  *
  * Scoring is the vendored @cloudflare/codemode ranked-token scorer
  * (src/catalog/vendor/search-scoring.ts); signatures for operation hits are
@@ -44,9 +44,7 @@ export type SearchHit = {
   /**
    * Skill hits only: section keys readable via `codemode.skill.read(id,
    * { sections })` — `##`-heading slugs first, then `file:<relpath>` keys.
-   * Omitted when the skill has no readable section entries (metadata-only
-   * skills and sectionless bodies). Deny-listed sections are excluded, like
-   * every other denied entry in search output.
+   * Omitted when the skill has no section entries (sectionless bodies).
    */
   availableSections?: string[];
 };
@@ -153,7 +151,7 @@ export function renderSignature(entry: CatalogEntry): string | undefined {
   const outputType = entry.outputSchema ? `${typeBase}Output` : "unknown";
   // Callable line as the model uses it inside `execute` (namespaced global).
   parts.push(
-    `${entry.id}(input: ${typeBase}Input): Promise<{ ok: true, data: ${outputType} } | { ok: false, error: { kind: "error" | "soft-empty" | "denied", message: string, hint?: string } }>`
+    `${entry.id}(input: ${typeBase}Input): Promise<{ ok: true, data: ${outputType} } | { ok: false, error: { kind: "error" | "soft-empty", message: string, hint?: string } }>`
   );
   return parts.join("\n");
 }
@@ -163,16 +161,13 @@ export function renderSignature(entry: CatalogEntry): string | undefined {
  * (`skillId#<key>`): the same key set src/skills/store.ts advertises as
  * `availableSections` (`##` slugs, then `file:<relpath>` keys — catalog
  * entries are id-sorted, store.ts is document-ordered, so ORDER may differ).
- * Denied sections are excluded on BOTH surfaces — search never surfaces
- * denied entries, and readSkill filters them from availableSections too —
- * so membership stays identical even when a section is deny-listed.
  */
 function sectionKeysOf(catalog: Catalog, skillId: string): string[] {
   const prefix = `${skillId}#`;
   const slugs: string[] = [];
   const fileKeys: string[] = [];
   for (const e of catalog.entries) {
-    if (e.kind !== "skill-section" || !e.id.startsWith(prefix) || !e.policy.allow) continue;
+    if (e.kind !== "skill-section" || !e.id.startsWith(prefix)) continue;
     const key = e.id.slice(prefix.length);
     (key.startsWith("file:") ? fileKeys : slugs).push(key);
   }
@@ -180,17 +175,11 @@ function sectionKeysOf(catalog: Catalog, skillId: string): string[] {
 }
 
 /**
- * One scoring pass over the catalog: filter (deny/kind/service), score with
+ * One scoring pass over the catalog: filter (kind/service), score with
  * `scoreFn`, sort score desc then id asc, and pick a diversified page of
  * `pageLimit`. Shared by both tiers of searchCatalog() so tier 2 is the SAME
- * pipeline under a different scorer.
- *
- * Skill-twin de-dup lives entirely in the deny-list now (2026-07-03): all 14
- * metadata-only `lumenloop.skill.*` twins are policy.allow:false in the
- * manifest, so the deny filter below drops them before scoring — there is no
- * search-time suppression pass (the old one was dead once the twins were
- * denied). The canonical readable `skills.*` mirror is what surfaces; the
- * store.ts read alias still resolves `lumenloop.skill.<name>` for reads.
+ * pipeline under a different scorer. The catalog needs no exposure filter:
+ * everything in the manifest is exposed by construction (ADR-0003).
  */
 function selectPage(
   catalog: Catalog,
@@ -200,7 +189,6 @@ function selectPage(
 ): { entry: CatalogEntry; score: number }[] {
   const scored: { entry: CatalogEntry; score: number }[] = [];
   for (const entry of catalog.entries) {
-    if (!entry.policy.allow) continue; // deny-list: never returned
     if (opts.kind && entry.kind !== opts.kind) continue;
     if (opts.service && entry.service !== opts.service) continue;
     const score = scoreFn(
@@ -224,9 +212,8 @@ function selectPage(
 }
 
 /**
- * Ranked search over the catalog. Pure; denied entries never surface;
- * results sorted by score desc, then id asc for determinism (within a tier —
- * see below).
+ * Ranked search over the catalog. Pure; results sorted by score desc, then
+ * id asc for determinism (within a tier — see below).
  *
  * Internal scoring (round 2, todo 793 — contract unchanged): the vendored
  * lexical score is wrapped by src/catalog/scoring.ts (query stopword
