@@ -1,4 +1,4 @@
-# ADR-0002: Drop Model-Facing Correlation Ids
+# ADR-0003: Drop Model-Facing Correlation Ids
 
 Date: 2026-07-03
 Updated: 2026-07-04

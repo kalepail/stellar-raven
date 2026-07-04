@@ -1,6 +1,6 @@
 ---
 name: run-evals
-description: Run a full eval round on stellar-raven-codemode — pick the right instruments (routing gate, QA headline, agentic, plan, live-data), review results agentically against golden answers, triage every failure to its root cause, and file evidence-backed upstream service-improvement findings in improvements/. Use when asked to run evals, check gates, measure a scoring/catalog/executor change, review QA verdicts, or close an eval round. The primary artifact of every round is upstream findings, not the scores.
+description: Run a full eval round on stellar-raven-codemode from Codex, Claude Code, or another CLI agent — pick the right instruments (routing gate, QA headline, agentic, plan, live-data), distinguish the orchestrating agent from the spawned answering and judge agents, record results, review every answer/verdict, triage failures to root cause, and file evidence-backed upstream service-improvement findings in improvements/. Use when asked to run evals, check gates, measure a scoring/catalog/executor change, review QA verdicts, understand eval model roles, or close an eval round. The primary artifact of every round is upstream findings, not the scores.
 ---
 
 # Eval round — stellar-raven-codemode
@@ -24,6 +24,40 @@ any round — they are the current truth; this skill is the orchestration around
    valuable output.
 2. **One headline, two gates, everything else diagnostic.** Never merge lanes, never tune
    per-question, never promote a view to a gate without a Solo-recorded decision.
+
+## Agent roles and model boundaries
+
+Do not conflate the agent running this runbook with the model under test:
+
+- **Orchestrating agent**: Codex/Claude Code/etc. in the repo. It starts servers, runs commands,
+  records result stamps, joins rows with goldens, reviews transcripts, patches code/docs, and
+  files findings. It is not the QA answer model being measured.
+- **Answering agent**: spawned by `eval/qa/run-qa.mjs` once per QA case via headless
+  `claude -p`. It only gets the MCP `search` + `execute` tools and produces the candidate
+  user-facing answer. Default model: `claude-sonnet-5`, override with `--model`.
+- **Judge agent**: spawned by `eval/qa/judge.mjs` to grade the candidate answer against the
+  golden. Default model: `claude-sonnet-5`, override with `--judge-model`. Judge verdicts are
+  evidence to review, not unquestionable truth.
+
+There is no committed multi-model matrix unless the round explicitly creates one. Report the
+answering model, judge model, sample/full-set size, and results-file stamp for every QA run.
+
+## Clean Codex workflow
+
+When asked to run evals "from this Codex agent", use this loop:
+
+1. Run the preflight and selected instruments from this repo.
+2. Let the eval runner spawn the answering and judge agents; do not answer cases manually from
+   the orchestrating session.
+3. Save and name the results file stamp(s).
+4. Systematically review every `wrong` and `partial` row first; for a full closeout, review every
+   row, including surprising passes.
+5. Join each result row with its golden from `eval/qa/cases.json` before analysis.
+6. Classify each issue with the Step 5 root-cause table.
+7. Apply own-repo fixes where appropriate; file upstream findings in `improvements/`; use
+   golden overrides only through the `golden-truth` workflow.
+8. Update the committed eval record and close the round only after failures and learnings are
+   accounted for.
 
 ## Step 0 — scope the round and set up tracking
 
@@ -175,6 +209,27 @@ monitor-only list in the round record, not into a fix. The bar for acting: the s
 failure across 2+ unrelated cases, a contract mismatch, a reproducible infra bug, or
 trace evidence the model was asked the wrong thing. (Prior-art rule from both ancestor
 repos; it kept their improvement loops from chasing variance.)
+
+**Prose-surface check — run it before proposing any prompt/description change.** When an
+agent-failure pattern clears the acting bar and a wording fix looks tempting, first inventory
+what the model was already told at the failure moment. The surfaces, nearest-to-failure first:
+runtime guard/warning messages and `codemode.*` error strings (`src/executor/providers.ts`),
+truncation footers (`src/policy/truncate.ts`), adapter hints (`src/adapters/`), `search`'s
+`nextSteps`, tool descriptions + schema `.describe()` strings + `SERVER_INSTRUCTIONS`
+(`src/mcp/tools.ts`), and catalog entry descriptions (generated — change `scripts/`, never
+the manifest). Then route:
+
+- Prose already teaches the behavior and the transcript shows the agent read past it →
+  prefer a mechanism (fail-loud guard, exact-match error with the fix in the message,
+  schema change) over more words; repeating ignored guidance across surfaces is clutter,
+  not reinforcement.
+- Prose is absent, wrong, or contradicts another surface → smallest wording change in the
+  ONE surface closest to the failure moment.
+- Catalog/manifest descriptions feed the lexical scorer — any change there re-runs the
+  routing gates before landing (Step 0's instrument row for prompt-surface changes applies).
+
+Measure prose changes like code changes: before/after on the same instrument, delta in the
+round record. A prose edit with no measured behavior shift gets reverted, not accumulated.
 
 **Override doctrine — overrides are stop-gaps wearing their provenance.** A
 `golden-overrides.json` entry corrects the eval's *copy* of the truth; the defect that made
