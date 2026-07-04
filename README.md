@@ -55,14 +55,41 @@ the handler with no auth. Never deploy this var.
 
 ### Secrets
 
-Local values go in `.dev.vars` (gitignored); deployed values via `wrangler secret put`:
+Seven credentials, four stores — each store feeds a different runtime, so the same value is
+deliberately mirrored (there is no shared vault; rotation means touching every store that holds
+the key). All local stores are gitignored; nothing secret is ever committed.
 
-| Name | Purpose |
-|---|---|
-| `WORKOS_CLIENT_ID` / `WORKOS_API_KEY` | WorkOS AuthKit app (API key doubles as the `client_secret` in the code exchange) |
-| `MCP_SERVER_SECRET` | pepper for subject hashing — never store raw WorkOS user ids |
-| `MCP_ADMIN_TOKEN` | admin bypass token (optional; unset = OAuth only) |
-| `LUMENLOOP_API_KEY`, `ALGOLIA_APPLICATION_ID`, `ALGOLIA_API_KEY` | upstream service adapters |
+| Key | Purpose | `.env` | `.dev.vars` | Worker secret | GH Actions |
+|---|---|:-:|:-:|:-:|:-:|
+| `WORKOS_CLIENT_ID` / `WORKOS_API_KEY` | WorkOS AuthKit app (API key doubles as the `client_secret` in the code exchange) | ✔ both envs¹ | ✔ staging¹ | ✔ production | — |
+| `MCP_SERVER_SECRET` | pepper for subject hashing — never store raw WorkOS user ids | ✔² | ✔ (dev value) | ✔ | — |
+| `MCP_ADMIN_TOKEN` | admin bypass token (optional; unset = OAuth only) | ✔² | ✔ (dev value) | ✔ | — |
+| `LUMENLOOP_API_KEY` | Lumenloop adapter + `scripts/refresh-inventory.mjs` / `check-skills-drift.mjs` | ✔ | ✔ | ✔ | ✔ |
+| `ALGOLIA_APPLICATION_ID`³ / `ALGOLIA_API_KEY` | stellar-docs Algolia search | ✔ | ✔ | ✔ | ✔ |
+
+Store roles:
+
+- **`.env`** — operator reference copy + what the inventory/drift **scripts** read directly.
+  Holds both WorkOS environments (¹ `WORKOS_STAGING_*` and `WORKOS_PRODUCTION_*`) and the
+  production MCP pair under suffixed names (² `MCP_ADMIN_TOKEN_PRODUCTION` /
+  `MCP_SERVER_SECRET_PRODUCTION`). The suffixes are intentional: the bare names in `.dev.vars`
+  carry *dev* values, so the suffix marks which value you're pasting into a curl against
+  production. Nothing in the codebase reads the suffixed names — they are operator-only.
+- **`.dev.vars`** — what `wrangler dev` injects. The WorkOS pair here should be the **staging**
+  environment (¹): local OAuth-flow testing goes through WorkOS staging, never the production
+  app; `DEV_ALLOW_UNAUTHENTICATED=true` covers auth-less local dev when the flow itself isn't
+  under test.
+- **Worker secrets** (`wrangler secret put`, 7 keys) — production runtime. WorkOS pair =
+  **production** environment.
+- **GitHub Actions secrets** (3 keys) — only what the daily live-drift refresh needs
+  (Lumenloop + Algolia).
+
+³ `ALGOLIA_APPLICATION_ID` isn't actually sensitive (Algolia app ids ship in public frontends);
+it rides along as a secret for uniformity with its key.
+
+**Rotation checklist:** Lumenloop/Algolia → all 4 stores; WorkOS production or the production MCP
+pair → `.env` + Worker secrets; WorkOS staging → `.env` + `.dev.vars`. After
+`wrangler secret put`, allow ~30 s propagation before believing an auth failure.
 
 Token/client/grant state lives in the `OAUTH_KV` namespace (bound in `wrangler.jsonc`).
 
