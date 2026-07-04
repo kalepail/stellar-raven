@@ -28,7 +28,7 @@ import { DynamicWorkerExecutor } from "@cloudflare/codemode";
 import superSpecJson from "../../specs/super-spec.json";
 import bundleJson from "../skills/bundle.json";
 import { getCatalog } from "../catalog/load.ts";
-import { buildSandbox } from "./providers.ts";
+import { buildSandbox, type SandboxProvider } from "./providers.ts";
 import {
   createSpecSandboxCode,
   sandboxResponseText,
@@ -52,6 +52,24 @@ export type SpecSearchOutcome =
 export type SpecSearchRunner = (code: string) => Promise<SpecSearchOutcome>;
 
 const EXECUTE_TIMEOUT_MS = 60_000;
+
+/**
+ * Mirror @cloudflare/codemode's withGlobalsHint (dist/index.js): a sandbox
+ * `ReferenceError` usually means the model invented a global — append the real
+ * sandbox globals so the retry is informed instead of another guess. The
+ * global names are derived from the wired provider set (never hard-coded) so
+ * they cannot drift from what the sandbox actually exposes. Applied before
+ * redaction/truncation so those still run last. Deviates from upstream's
+ * wording by one clause — "and standard JavaScript" — because
+ * EXECUTE_DESCRIPTION's globals rule includes it; without the clause the two
+ * surfaces contradict on whether builtins (console, Promise, Math…) exist.
+ */
+function withGlobalsHint(message: string, providers: SandboxProvider[]): string {
+  if (!/\bis not defined\b/.test(message)) return message;
+  return `${message} (the only globals available in the sandbox are: ${providers
+    .map((p) => p.name)
+    .join(", ")}, and standard JavaScript)`;
+}
 
 export function createExecuteRunner(env: Env): ExecuteRunner {
   const executor = new DynamicWorkerExecutor({
@@ -88,7 +106,8 @@ export function createExecuteRunner(env: Env): ExecuteRunner {
     });
     const logs = shapeLogs(outcome.logs, secrets);
     if (outcome.error !== undefined) {
-      return { ok: false, error: redactSecrets(outcome.error, secrets), logs };
+      const hinted = withGlobalsHint(outcome.error, providers);
+      return { ok: false, error: redactSecrets(hinted, secrets), logs };
     }
     const { text, truncated } = truncateForModel(redactSecrets(outcome.result, secrets), undefined, {
       skillSectionAdvice: skillRead
