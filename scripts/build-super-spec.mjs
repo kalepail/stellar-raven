@@ -37,7 +37,12 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { LUMENLOOP_DESCRIPTION_NOTES, SCOUT_DESCRIPTION_NOTES } from "./description-notes.mjs";
+import {
+  LUMENLOOP_DESCRIPTION_NOTES,
+  SCOUT_DESCRIPTION_NOTES,
+  scoutRefRewrites,
+  rewriteScoutRefs
+} from "./description-notes.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_PATH = join(ROOT, "specs", "super-spec.json");
@@ -248,6 +253,10 @@ function buildScout(inv, policyOf) {
   const paths = {};
   const HTTP_METHODS = ["get", "post", "put", "patch", "delete"];
   const consumedNotes = new Set();
+  // MUST match scripts/build-catalog.mjs buildScout: rewrite raw-REST
+  // cross-references to callable scout.<op> names and strip markdown so the
+  // in-sandbox spec and the manifest present identical model-facing prose.
+  const refPairs = scoutRefRewrites(openapi);
 
   for (const [path, pathItem] of Object.entries(openapi.paths)) {
     for (const method of HTTP_METHODS) {
@@ -263,10 +272,18 @@ function buildScout(inv, policyOf) {
       // in description-notes.mjs) so codemode.spec() readers see it too.
       const note = SCOUT_DESCRIPTION_NOTES[opName];
       if (note !== undefined) consumedNotes.add(opName);
-      const description = [upstream.description, note].filter(Boolean).join("\n\n");
+      const summary = upstream.summary
+        ? plainText(rewriteScoutRefs(upstream.summary, refPairs))
+        : undefined;
+      const cleanDescription = upstream.description
+        ? plainText(rewriteScoutRefs(upstream.description, refPairs))
+        : undefined;
+      const description = [cleanDescription, note ? plainText(note) : undefined]
+        .filter(Boolean)
+        .join("\n\n");
       const op = {
         operationId: id,
-        ...(upstream.summary ? { summary: upstream.summary } : {}),
+        ...(summary ? { summary } : {}),
         ...(description ? { description } : {}),
         tags: ["scout", ...(upstream.tags ?? [])],
         ...(parameters.length > 0 ? { parameters: namespaceRefs(parameters, "scout") } : {}),

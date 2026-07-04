@@ -175,7 +175,7 @@ function scoutPolicy(method, path) {
     return {
       allow: false,
       denyReason:
-        "side-effecting — surfaced partners are logged as leads for the weekly partner digest (per upstream OpenAPI description); use POST /api/partners/match for side-effect-free ranking"
+        "side-effecting — surfaced partners are logged as leads for the weekly partner digest (per upstream OpenAPI description); use scout.matchPartners for side-effect-free ranking"
     };
   }
   // POST /api/partners/match and /api/partners/onboard stay allowed: their
@@ -250,7 +250,12 @@ function assertRetirementNamesResolve(skillsManifest) {
 
 // Description notes shared with build-super-spec.mjs — see that module for
 // rationale (single source so manifest and in-sandbox spec cannot drift).
-import { LUMENLOOP_DESCRIPTION_NOTES, SCOUT_DESCRIPTION_NOTES } from "./description-notes.mjs";
+import {
+  LUMENLOOP_DESCRIPTION_NOTES,
+  SCOUT_DESCRIPTION_NOTES,
+  scoutRefRewrites,
+  rewriteScoutRefs
+} from "./description-notes.mjs";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -469,6 +474,11 @@ function buildScout(inv) {
   const openapi = inv.openapi;
   const base = openapi.servers?.[0]?.url ?? "https://stellarlight.xyz";
   const consumedNotes = new Set();
+  // Rewrite the upstream OpenAPI's raw-REST cross-references to callable
+  // scout.<op> names (map derived from this same spec) and strip markdown —
+  // scout is the only source whose descriptions carry `**`/backticks and dead
+  // "/api/..." pointers the sandbox can never call. See description-notes.mjs.
+  const refPairs = scoutRefRewrites(openapi);
 
   for (const [path, pathItem] of Object.entries(openapi.paths)) {
     for (const method of HTTP_METHODS) {
@@ -476,17 +486,20 @@ function buildScout(inv) {
       if (!op) continue;
       const httpMethod = method.toUpperCase();
       const opId = op.operationId ?? `${method}_${slugify(path)}`;
-      const description = [op.summary, op.description]
+      const rawDescription = [op.summary, op.description]
         .filter(Boolean)
         .join(". ")
         .replace(/\.\.\s/g, ". ");
+      const description = plainText(rewriteScoutRefs(rawDescription, refPairs));
       const note = SCOUT_DESCRIPTION_NOTES[opId];
       if (note !== undefined) consumedNotes.add(opId);
       entries.push({
         id: `scout.${opId}`,
         service: "scout",
         kind: "operation",
-        description: [description || opId, note].filter(Boolean).join("\n\n"),
+        description: [description || opId, note ? plainText(note) : undefined]
+          .filter(Boolean)
+          .join("\n\n"),
         inputSchema: scoutInputSchema(op, pathItem, openapi),
         outputSchema: scoutOutputSchema(op, openapi),
         transport: { type: "http", method: httpMethod, path, base },
