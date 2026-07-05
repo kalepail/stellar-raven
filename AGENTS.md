@@ -13,11 +13,23 @@ duplicate it — it points Codex at it and lists the shared skills. When guidanc
 
 ## Skills — shared, agent-agnostic runbooks
 
-The runbooks in `.claude/skills/<name>/SKILL.md` are plain markdown and **not Claude-specific**.
-Claude Code auto-discovers them as skills; you can read the same `SKILL.md` directly. Each skill
-also carries an OpenAI/Codex-facing manifest at `.claude/skills/<name>/agents/openai.yaml`
-(display name, default prompt, MCP tool dependencies) so it can be surfaced in Codex's own
-structure. To alias a new skill, add both the `SKILL.md` and its `agents/openai.yaml` sidecar.
+The runbooks in `.claude/skills/<name>/SKILL.md` are plain markdown and **not Claude-specific** (a
+skill is just a `SKILL.md` plus optional bundled resources). Claude Code auto-discovers them as
+**project-scoped** skills from this repo's `.claude/skills/`. Codex has no repo-scoped skill
+discovery — its skills are global, auto-loaded from `$CODEX_HOME/skills` (`~/.codex/skills`) — so
+**this `AGENTS.md` is how Codex is pointed at these repo runbooks**: Codex auto-reads it from the
+repo root, sees the index below, and reads the referenced `SKILL.md` directly.
+
+Two ways to expose a runbook to Codex, by scope:
+
+- **Repo-scoped (default, committed, portable):** add the `SKILL.md` under `.claude/skills/<name>/`
+  and list it in the index below. That is the whole job — no per-skill manifest, no sidecar.
+- **First-class global Codex skill (opt-in, machine-local):** symlink the skill dir into the
+  Codex farm, `ln -s "$PWD/.claude/skills/<name>" ~/.codex/skills/<name>` (mirror into
+  `~/.claude/skills/<name>` for user-level Claude too), then restart Codex. This matches the
+  user's shared-store pattern where `~/.codex/skills/*` and `~/.claude/skills/*` symlink into the
+  canonical `~/.agents/skills/` store — but it hoists a repo-specific runbook into every Codex
+  session everywhere, so only do it deliberately.
 
 Current skills:
 
