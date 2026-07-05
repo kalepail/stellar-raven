@@ -1,16 +1,16 @@
 {
-  "changelogEntryCount": 27,
+  "changelogEntryCount": 28,
   "changelogLatest": {
-    "date": "2026-07-04",
-    "detail": "Measured on the lexical spec-routing eval before shipping: the stolen skills case routes back to its skill (skills lane restored to its floor) with ZERO scout top-1 losses — all 1.4.0 routing gains hold (legacy 232/338). Downstream catalogs that gate on routing baselines: after ingesting, the only remaining swing vs a 2026-07-03 baseline is the +10 legacy improvement — re-baseline upward.",
-    "summary": "searchResearch description trim (routing hygiene): the 1.4.0 'Soroban security practice' phrasing ('vulnerability classes auditors find', 'audit findings') was lexically strong enough to capture how-to/checklist questions that belong to the ecosystem SKILLS lane in downstream routers. Reworded to 'Soroban security incidents — reentrancy, soroban-sdk advisories/CVEs, denial-of-service' — topical coverage kept, tutorial-shaped phrasing removed.",
+    "date": "2026-07-05",
+    "detail": "sls-005: placementRank now parses Spanish ordinals + emoji medals and reads the award title, so LatAm/emoji hackathons rank correctly and genuine flat-pool events honestly report winnersRanked=false (was wrong in both directions). sls-009: only an EXACT name/slug match dominates authority now — prefix/whole-word matches drop to a late tiebreaker, so a generic query like 'swap' no longer ranks a 0-prominence 'SwapX' above flagship Soroswap. sls-006: SDF-blog nav/footer boilerplate is stripped at ingest and metadata/related-post stubs are dropped, so retrieval returns article prose not chrome (re-crawl pending). sls-013: countBasis now states byRound[].count is per-round membership (non-additive). sls-011: /api/projects/search meta carries scfCountBasis where the SCF numbers appear. sls-004: /api/skills/{slug} is force-dynamic (GET still CDN-cached via headers) so non-GET returns JSON 405, not a plaintext Vercel error. Schema-only/additive + behavior fixes — no operation-description changes (routing-neutral).",
+    "summary": "Data-quality fixes from an adversarial recheck of the sls-* feedback items: hackathon winner ranking (i18n placement parsing), name-search over-fire, blog chunk hygiene, funding count basis, and JSON errors on the skill-detail route.",
     "surfaces": [
       "api"
     ],
-    "type": "changed",
-    "version": "openapi 1.4.4"
+    "type": "fixed",
+    "version": "openapi 1.4.5"
   },
-  "fetchedAt": "2026-07-04T16:09:14.327Z",
+  "fetchedAt": "2026-07-05T23:11:30.647Z",
   "openapi": {
     "components": {
       "parameters": {
@@ -792,7 +792,7 @@
       },
       "summary": "Agent-native data layer for the Stellar ecosystem — projects, builders, hackathons, SCF, audits, research.",
       "title": "Stellar Scout API",
-      "version": "1.4.4"
+      "version": "1.4.5"
     },
     "openapi": "3.1.0",
     "paths": {
@@ -2361,7 +2361,7 @@
       }
     ]
   },
-  "openapiVersion": "1.4.4",
+  "openapiVersion": "1.4.5",
   "operationCount": 24,
   "service": "stellar-light",
   "source": {
@@ -2373,7 +2373,7 @@
     "status": "https://stellarlight.xyz/api/status"
   },
   "status": {
-    "apiVersion": "1.4.4",
+    "apiVersion": "1.4.5",
     "docs": "https://stellarlight.xyz/scout",
     "endpoints": [
       "/api/status",
@@ -2406,7 +2406,7 @@
     "sources": [
       {
         "count": 920,
-        "lastUpdatedAt": "2026-07-03T21:28:59.295Z",
+        "lastUpdatedAt": "2026-07-05T18:00:18.707Z",
         "name": "projects"
       },
       {
@@ -2416,22 +2416,22 @@
         "notes": "Curated DB collection only (may be 0). /api/hackathons additionally merges live DoraHacks-sourced events — see its meta.counts for the served total."
       },
       {
-        "count": 112,
-        "lastUpdatedAt": "2026-07-04T06:00:57.305Z",
+        "count": 113,
+        "lastUpdatedAt": "2026-07-05T06:00:44.141Z",
         "name": "builders",
         "notes": "Synced from Stellar Passport — small and growing dataset"
       },
       {
-        "count": 2413,
-        "lastUpdatedAt": "2026-07-03T01:53:26.551Z",
+        "count": 2423,
+        "lastUpdatedAt": "2026-07-05T23:00:55.632Z",
         "name": "repos",
         "notes": "Indexed-and-scored Stellar GitHub repos (powers /api/repos/search)"
       },
       {
         "count": 1,
-        "lastUpdatedAt": "2026-07-04T08:33:00.629916+00:00",
+        "lastUpdatedAt": "2026-07-05T16:02:52.177898+00:00",
         "name": "ecosystemStats",
-        "notes": "Electric Capital snapshot, as of 2026-06-25"
+        "notes": "Electric Capital snapshot, as of 2026-06-27"
       },
       {
         "count": 7,
