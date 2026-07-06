@@ -571,3 +571,42 @@ problem the offline grader doesn't score. Discarded.
 rankings exactly), `eval/gates.json` untouched — no gated number moved, so no re-baseline. Next
 step for extended-lane strict (79/122): a live/agentic instrument (5f), not further offline
 lexical levers.
+
+## Round 5f (2026-07-06, todo 843): offline embeddings prototype — no mode shipped
+
+Offline-only experiment (no `src/` change; harness + vectors in session scratchpad, not the
+repo): 271 catalog entries + all 483 eval queries embedded with Workers AI
+`@cf/baai/bge-base-en-v1.5` (768-dim), then four retrieval modes measured at limit 5 through
+the REAL grader with a calibration gate (the harness's pure-lexical mode reproduces the
+official 213/268/305 · 79/104/110 · 18/22/22 numbers exactly before any embedding number is
+trusted). One global config per mode, no per-lane/per-case tuning. Independently verified by a
+second agent, which found and corrected a harness bug (section entry `name` derivation used
+last-`.` instead of `lastIdSegment`'s `#`-stripping — invalidated exact backfill/RRF figures,
+conclusion-neutral) and hand-reproduced example queries.
+
+| mode | legacy strict | extended strict | skills | verdict vs cut* |
+|---|---|---|---|---|
+| lexical (baseline) | 213/268/305 | 79/104/110 | 18/22/22 | reference |
+| semantic-only | 130/205/232 | 36/59/73 | 18/23/23 | fails everywhere |
+| lexical + semantic backfill (corrected) | −8 top-1 | 79→54 top-1 | ≥18 | fails |
+| RRF k=60 (corrected) | −30 top-1 | −25 to −31 top-1 | 17 | fails |
+| semantic rerank of lexical top-20 | 175/259/283 | 78/107/112 | 17/23/23 | fails (legacy −38 top-1, skills < floor) |
+
+\* cut = extended strict up (top-1 or top-5), legacy strict within −3/metric, skills ≥ 18.
+
+Findings that outlive the experiment:
+
+- **The ungated lexical tier-2 backfill beats bge-base semantic backfill outright** (ext strict
+  79 vs 54) on the gate-to-zero queries backfill exists for — the round-4 lever is doing real
+  work, not just filling pages. (Current gate-to-zero count: 43/122 extended, not the stale
+  58/122 in older comments.)
+- Cosine over entry text systematically prefers **skill-section prose** over the docs-search
+  operations rule v3 grades correct — the same structural imbalance lexical lever 2 (0.75 kind
+  weight) suppresses; cosine has no equivalent damping, and adding one would be tuning.
+- rerank20's 24 genuine wins prove semantic signal exists (e.g. `q-crp-become-an-anchor-licensing`
+  → `search_anchor_sep_docs`), but it is churn (25 losses), not lift. The measurable ceiling is
+  the known instrument saturation: extended accept-either top-5 is already 122/122.
+- If ever revisited: bundle build-time entry vectors (~830 KB f32) + a Workers AI query
+  embedding per search (20–100 ms p50 + availability dependency). Revisit only with a stronger
+  embedding model or richer entry text, and ideally a live/agentic instrument (see round 5e's
+  alias finding) — not more fusion math.
