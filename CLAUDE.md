@@ -57,6 +57,11 @@ coordinated via Solo MCP project 49 (todos + scratchpads; backlog items tracked 
   its read half (`research_result`, `list_my_research`; account-scoped dead ends without the
   trigger). Enabling it = remove all three exclusions (`scripts/exposure.mjs`) AND ship the
   budget gate + dedup in the same change. `list_research` (public editorial pieces) stays.
+- **Before ANY side-effecting or paid operation ships** (the research lane above, or future
+  write ops): adopt upstream OpenAPI-MCP-style request-context plumbing — the sandbox calls a
+  host function; the host adapter receives the outer MCP request context and owns
+  approval/elicitation/budget there. Approval state never lives in sandbox code. (Todo 845
+  item 3; design reference: `@cloudflare/codemode` OpenApiMcpServerOptions.request.)
 - Secrets host-side only; sandbox keeps `globalOutbound: null`.
 - Generated artifacts (`catalog/manifest.json`, inventory JSONs) are rebuilt by `scripts/`,
   never hand-edited.
