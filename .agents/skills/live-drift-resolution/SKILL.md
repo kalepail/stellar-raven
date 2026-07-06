@@ -155,6 +155,25 @@ adversarial reviews finish).
 - If the change involved a policy or baseline decision, record it where the project tracks work
   (Solo), so the *why* survives — the artifacts only carry the *what*.
 
+## Step 8 — deploy to production (the drift isn't resolved until prod serves it)
+
+Committing and pushing does NOT update the live service. The catalog and spec are compiled *into*
+the Worker bundle (`catalog/manifest.json` → `src/catalog/load.ts`, `specs/super-spec.json` →
+`src/executor/run.ts`), and CI does **not** deploy — so production keeps serving the OLD upstream
+version until a manual deploy. Closing the drift loop requires shipping:
+
+- `npm run build` (`wrangler deploy --dry-run`) first — confirm the bundle builds and bindings are
+  intact; it's the same check the review step ran.
+- `npm run deploy` (`wrangler deploy`) — pushes the new catalog live to the production routes.
+  Deploying to production is outward-facing: get the owner's go-ahead unless durably authorized.
+- Verify live: the deploy prints a new Version ID and the updated routes; a quick liveness check
+  (the public landing/`/mcp` endpoints return 200) confirms the roll-out. Note the Version ID in
+  the close-out record.
+
+A drift bump that is committed but never deployed is a *silent* stale prod — the catalog says 1.4.5
+while the gateway still answers as 1.4.4. Treat deploy as part of resolving the issue, not a
+separate optional chore.
+
 ## Hard rules
 
 - Derive the drift class from the actual diff, never from the upstream changelog's self-labels.
