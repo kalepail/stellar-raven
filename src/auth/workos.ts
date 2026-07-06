@@ -78,27 +78,29 @@ export const WorkOSAuthHandler = {
     const url = new URL(request.url);
     const provider = env.OAUTH_PROVIDER;
 
-    if (request.method === "GET" && url.pathname === "/") {
+    // Public web resources answer both GET and HEAD: a general-purpose server
+    // MUST support HEAD (RFC 9110 §9.3.2). Each route returns the identical
+    // response for both — workerd drops the body for HEAD and derives an
+    // accurate Content-Length itself (a manually-set one is ignored, so don't).
+    const isRead = request.method === "GET" || request.method === "HEAD";
+
+    if (isRead && url.pathname === "/") {
       return new Response(landingPage(), { headers: LANDING_HEADERS });
     }
 
-    // GET + HEAD: a public web resource, so HEAD is required of a
-    // general-purpose server (RFC 9110 §9.3.2). Return the identical response —
-    // workerd drops the body for HEAD and keeps an accurate Content-Length
-    // (manually setting Content-Length is ignored by the runtime, so don't).
-    if ((request.method === "GET" || request.method === "HEAD") && url.pathname === "/og.png") {
+    if (isRead && url.pathname === "/og.png") {
       return ogImageResponse();
     }
 
-    if (request.method === "GET" && url.pathname === "/robots.txt") {
+    if (isRead && url.pathname === "/robots.txt") {
       return new Response(robotsTxt(), { headers: ROBOTS_HEADERS });
     }
 
-    if (request.method === "GET" && url.pathname === "/sitemap.xml") {
+    if (isRead && url.pathname === "/sitemap.xml") {
       return new Response(sitemapXml(), { headers: SITEMAP_HEADERS });
     }
 
-    if (request.method === "GET" && url.pathname === "/health") {
+    if (isRead && url.pathname === "/health") {
       return Response.json({ status: "ok", service: "stellar-raven-codemode" });
     }
 
