@@ -274,6 +274,29 @@ export function scoreEntryWeightedUngated(
  * least one matched token. Kept here so the vendor file stays byte-identical
  * (same reasoning as lever 4's double-scoring); if the vendor scorer is ever
  * re-vendored, update this replica to match.
+ *
+ * DRIFT GUARD: because the ONLY difference is the gate, the replica must
+ * score identically to the vendor wherever the vendor passes —
+ * test/scoring.test.ts sweeps the real manifest against a query battery and
+ * asserts `scoreEntry(e,q) !== null ⇒ scoreEntryUngated(e,q) === scoreEntry(e,q)`.
+ * A re-vendor that changes upstream math fails that suite loudly instead of
+ * silently desyncing tier 2.
+ *
+ * RE-VENDOR CHECKLIST (todo 845; run when bumping @cloudflare/codemode):
+ *  1. Field weights + tokenization/normalization (vendor FIELD_WEIGHTS,
+ *     normalizeSearchText, tokenize) — mirror any change into this replica,
+ *     then make the drift suite green again.
+ *  2. Coverage-gate semantics (thresholds, exactPhrase escape) — the gate is
+ *     the one line deliberately absent here; if its meaning changes, re-check
+ *     search.ts's tier-2 rationale, not just this file.
+ *  3. Returned search shape upstream ({ results, total, truncated }) — ours
+ *     mirrors it in searchCatalogPage; keep parity.
+ *  4. Newly exported search helpers — prefer composing with upstream over
+ *     maintaining this copy if searchConnectors becomes importable.
+ *  5. Type-gen changes (vendor/json-schema-types.ts) affecting
+ *     renderSignature and the 5d compaction wrapper.
+ *  6. Any native docs/snippet/section weighting upstream grows — may
+ *     supersede our kind-weight lever 2.
  */
 const UNGATED_FIELD_WEIGHTS = { id: 12, name: 10, service: 8, description: 5, kind: 2 } as const;
 
@@ -313,7 +336,9 @@ function scoreFieldUngated(
   return { score, matchedTokens, exactPhrase };
 }
 
-function scoreEntryUngated(entry: ScorableEntry, query: string): number | null {
+// Exported for the drift-guard suite (test/scoring.test.ts) ONLY — product
+// code must go through scoreEntryWeightedUngated, which layers the levers.
+export function scoreEntryUngated(entry: ScorableEntry, query: string): number | null {
   const normalizedQuery = normalizeSearchText(query);
   const queryTokens = tokenize(query);
   if (normalizedQuery.length === 0 || queryTokens.length === 0) return null;
