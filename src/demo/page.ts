@@ -62,6 +62,11 @@ main.play{flex:1;display:flex;flex-direction:column;padding-bottom:34px}
 .msg.assistant.streaming::after{content:"\\258C";color:var(--orange);animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 
+.pulse{display:flex;align-items:center;gap:10px;margin:14px 0;font-family:var(--mono);
+font-size:12px;color:var(--dim)}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);
+animation:pulsebeat 1.2s ease-in-out infinite}
+@keyframes pulsebeat{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
 .stepline{display:flex;align-items:center;gap:12px;margin:20px 0;font-family:var(--mono);
   font-size:10.5px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--ash)}
 .stepline::before,.stepline::after{content:"";flex:1;height:1px;background:var(--line)}
@@ -168,6 +173,35 @@ const DEMO_SCRIPT = `
   var history = [];
   var cards = {};
   var busy = false;
+  // Liveness indicator: a reasoning model can sit silent for tens of seconds
+  // before the first token/tool frame — without this, a working turn is
+  // indistinguishable from a dead one.
+  var pulse = null;
+  var pulseT0 = 0;
+  var pulseTimer = null;
+  function showPulse(label){
+    if (!pulse) {
+      pulse = el("div", "pulse");
+      pulse.appendChild(text("span", "pulse-dot", ""));
+      pulse.appendChild(text("span", "pulse-label", ""));
+      log.appendChild(pulse);
+      pulseT0 = Date.now();
+      pulseTimer = setInterval(function(){
+        if (!pulse) return;
+        var s = Math.floor((Date.now() - pulseT0) / 1000);
+        pulse.lastChild.textContent = pulse.dataset.label + " \\u00b7 " + s + "s";
+      }, 1000);
+    }
+    pulse.dataset.label = label;
+    pulse.lastChild.textContent = label;
+    if (pulse !== log.lastChild) log.appendChild(pulse);
+    scrollEnd();
+  }
+  function hidePulse(){
+    if (pulseTimer) { clearInterval(pulseTimer); pulseTimer = null; }
+    if (pulse && pulse.parentNode) pulse.parentNode.removeChild(pulse);
+    pulse = null;
+  }
   var turnDone = false;
   var current = null;
   var acc = "";
@@ -288,6 +322,7 @@ const DEMO_SCRIPT = `
   }
 
   function finishTurn(){
+    hidePulse();
     if (current) current.classList.remove("streaming");
     if (acc) history.push({ role: "assistant", content: acc });
     current = null;
@@ -300,23 +335,32 @@ const DEMO_SCRIPT = `
 
   function handleFrame(f){
     if (!f || typeof f.type !== "string") return;
-    if (f.type === "token") {
+    if (f.type === "ready") {
+      showPulse("model reasoning");
+    } else if (f.type === "token") {
+      hidePulse();
       if (!current) { current = addBubble("assistant", ""); current.classList.add("streaming"); }
       acc += String(f.text == null ? "" : f.text);
       current.textContent = acc;
       scrollEnd();
     } else if (f.type === "tool-start") {
+      hidePulse();
       startCard(f);
     } else if (f.type === "tool-result") {
       fillCard(f);
+      showPulse("model reasoning over the result");
     } else if (f.type === "step") {
+      hidePulse();
       log.appendChild(text("div", "stepline", "step " + f.index));
+      showPulse("model reasoning");
     } else if (f.type === "done") {
       turnDone = true;
+      hidePulse();
       stallOpenCards();
       finishTurn();
     } else if (f.type === "error") {
       turnDone = true;
+      hidePulse();
       stallOpenCards();
       setNote(String(f.message || "stream error"), "err");
       finishTurn();
@@ -331,6 +375,7 @@ const DEMO_SCRIPT = `
     setNote("");
     history.push({ role: "user", content: msg });
     addBubble("user", msg);
+    showPulse("sending");
     var res;
     try {
       res = await fetch("/demo/chat", {
@@ -339,11 +384,13 @@ const DEMO_SCRIPT = `
         body: JSON.stringify({ messages: history })
       });
     } catch (e) {
+      hidePulse();
       setNote("Network error \\u2014 the message stays in your history; send again to retry.", "err");
       busy = false; sendBtn.disabled = false; input.disabled = false;
       return;
     }
     if (!res.ok || !res.body) {
+      hidePulse();
       setNote(res.status === 401 ? "Session expired \\u2014 reload this page to sign in again."
         : res.status === 429 ? "Hourly chat limit reached \\u2014 try again in a bit."
         : "Request failed (" + res.status + ").", "err");
@@ -401,7 +448,7 @@ const DEMO_SCRIPT = `
 // hard-coded (Web Crypto is async, and these headers are a sync module const);
 // test/demo-page.test.ts recomputes it from the rendered page, so an edit to
 // DEMO_SCRIPT fails the suite with the new value to paste here.
-const DEMO_SCRIPT_SHA256 = "sha256-0uRSgZXI8OIwnzy634Iw9tB/tOY8gpHEAqHaxd6EhCA=";
+const DEMO_SCRIPT_SHA256 = "sha256-VOskVamxHW2g/G2UAFrS3BQRh3yUtCl9LP1TX5DMcFs=";
 
 export const DEMO_PAGE_HEADERS: Record<string, string> = {
   "content-type": "text/html; charset=utf-8",

@@ -50,6 +50,29 @@ type SearchStructured = {
   nextSteps: string;
 };
 
+// Demo deltas over the production page shape: a smaller default page and
+// clipped per-hit prose. Full pages (~16-19KB of hits) blow up the follow-up
+// call's prefill on a reasoning model — live tool turns routinely stalled past
+// the whole-turn timeout before these caps. Signature clipping keeps the head
+// (input type + callable line come first; only oversized output stubs get cut).
+const DEMO_SEARCH_DEFAULT_LIMIT = 5;
+const DEMO_HIT_DESCRIPTION_CHARS = 220;
+const DEMO_HIT_SIGNATURE_CHARS = 400;
+
+function clip(text: string, max: number): string {
+  return text.length <= max ? text : `${text.slice(0, max)}… [clipped for the demo]`;
+}
+
+function compactHitForDemo(hit: SearchHit): SearchHit {
+  return {
+    ...hit,
+    description: clip(hit.description, DEMO_HIT_DESCRIPTION_CHARS),
+    ...(hit.signature !== undefined
+      ? { signature: clip(hit.signature, DEMO_HIT_SIGNATURE_CHARS) }
+      : {})
+  };
+}
+
 export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void }): {
   tools: Record<string, unknown>;
   countersReport: () => { executeCalls: number; searchCalls: number };
@@ -101,14 +124,16 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void })
         });
       }
 
-      const { hits, total, truncated } = searchCatalogPage(catalog, {
+      const page = searchCatalogPage(catalog, {
         query: args.query,
         kind: args.kind,
         service: args.service,
         // Demo delta: page size clamped (the schema still advertises the
         // production max so the tool contract text stays verbatim).
-        limit: Math.min(args.limit ?? DEMO_CAPS.maxSearchLimit, DEMO_CAPS.maxSearchLimit)
+        limit: Math.min(args.limit ?? DEMO_SEARCH_DEFAULT_LIMIT, DEMO_CAPS.maxSearchLimit)
       });
+      const { total, truncated } = page;
+      const hits = page.hits.map(compactHitForDemo);
       const nextSteps =
         hits.length > 0
           ? `These hits are composable: write ONE \`execute\` script that calls the several relevant operations (Promise.all across services for independent calls), then follows up with deeper calls parameterized by their results — e.g. \`await lumenloop.search_directory({ query: "..." })\` then \`lumenloop.get_project({ slug })\`. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under \`.data\` (\`r.data.projects\`, never \`r.projects\`); check \`r.ok\` first. Skill hits are operational playbooks — read the sections you need in-script via \`codemode.skill.read(id, { sections })\` (keys: the hit's \`availableSections\`), and pair them with stellarDocs searches for current reference truth. Scores compare only within the same \`tier\` (gated hits always rank above backfill hits). Signatures with a stubbed output type (\`{ /* N top-level fields: ... */ }\`) list the payload's top-level field names — for the full output shape call \`codemode.describe("<exact id>")\` inside \`execute\`. Use \`codemode.search(...)\` mid-script for follow-up discovery; search again here with narrower terms or \`kind\`/\`service\` filters if none fit.${truncated ? " More entries matched than shown (truncated) — raise `limit` or narrow the query if none of these fit." : ""}`

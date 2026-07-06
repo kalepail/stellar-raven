@@ -80,7 +80,22 @@ handlers use — not an HTTP round-trip to `/mcp` with a token:
 - UI copy states plainly: the playground exercises the same server-side Raven
   tool implementations as `/mcp`; it does not exercise MCP OAuth transport.
 
-## Decision 3 — Model: `@cf/zai-org/glm-4.7-flash` default, via AI binding + AI Gateway
+## Decision 3 — Model: via AI binding + AI Gateway; default `@cf/moonshotai/kimi-k2.6` (revised)
+
+> **Revision 2026-07-06 (live browser testing, workers-ai-provider 3.3.1):**
+> every cheaper candidate failed streaming tool calls in a different way —
+> glm-4.7-flash hung silent to the 120s abort on most tool-enabled calls
+> (no-tools calls answered in ~130ms); mistral-small-3.1 streamed
+> token-duplicated tool args (`{"{"queryquery":":…`) that the SDK rejected;
+> llama-3.3-70b-fast emitted its function JSON as plain text, never as a tool
+> call. `@cf/moonshotai/kimi-k2.6` — the model cloudflare/agents-starter
+> itself ships on this exact stack — completed search→answer turns in ~8s.
+> Pricier ($0.95/$4.00 per M; still <1¢ per capped demo turn), and demo
+> search payloads are compacted (5-hit default page, clipped
+> description/signature) to keep prefill small. The table below records the
+> original price-first ranking for the record; treat "reliable streaming tool
+> calls through workers-ai-provider TODAY" as a hard prerequisite any
+> replacement must prove in a live browser turn first.
 
 Live account catalog (26 text-gen models, `/ai/models/search`, 2026-07-06):
 

@@ -32,7 +32,22 @@ import { encodeFrame, type DemoFrame } from "./frames.ts";
 import { DEMO_SYSTEM_PROMPT } from "./prompt.ts";
 import { buildDemoTools } from "./tools.ts";
 
-const DEMO_MODEL = "@cf/zai-org/glm-4.7-flash";
+// Fourth pick after live testing (2026-07-06, wrangler dev,
+// workers-ai-provider 3.3.1) eliminated every cheaper candidate on a
+// different streaming-tool-call failure each:
+//  - @cf/zai-org/glm-4.7-flash: args parsed fine, but tool-enabled calls
+//    frequently sat silent until the 120s whole-turn abort (steps:0) while
+//    no-tools calls answered in ~130ms — unusable latency variance.
+//  - @cf/mistralai/mistral-small-3.1-24b-instruct: fast, but streamed tool
+//    args arrived token-DUPLICATED ({"{"queryquery":":...) — SDK rejected
+//    every call.
+//  - @cf/meta/llama-3.3-70b-instruct-fp8-fast: emitted its llama-format
+//    function JSON as plain TEXT content; never surfaced as a tool call.
+// kimi-k2.6 is what cloudflare/agents-starter itself ships on this exact
+// stack (provider + streamText + tools). Pricier ($0.95/$4.00 per M) but a
+// demo turn is still <1¢, and a live demo needs reliable tool turns more
+// than cheap ones.
+const DEMO_MODEL = "@cf/moonshotai/kimi-k2.6";
 /** Throttle-bucket subject for loopback dev requests (no cookie, no WorkOS). */
 const DEV_SUBJECT = "dev-loopback";
 /**
@@ -134,6 +149,11 @@ export async function handleDemoChat(
       clientGone.abort();
     }
   };
+
+  // First byte out immediately: a reasoning model can sit silent for tens of
+  // seconds before fullStream yields anything — the ready frame proves the
+  // turn is live (and defeats any intermediary that buffers empty responses).
+  emit({ type: "ready" });
 
   ctx.waitUntil(runTurn(env, emit, history, subject, turnSignal).finally(() => {
     open = false;

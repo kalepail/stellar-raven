@@ -111,13 +111,21 @@ function base64UrlEncode(bytes: Uint8Array): string {
   return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
 }
 
-/** Strict decode: null on any non-base64url input (atob throws on garbage). */
+/**
+ * Strict decode: null on any non-base64url input (atob throws on garbage) and
+ * on non-canonical encodings — the final char of a base64 group carries unused
+ * low bits that decoders silently drop, so without the re-encode check two
+ * distinct strings can decode to the same bytes (e.g. a "tampered" trailing
+ * `A`→`B` flip still verifying).
+ */
 function base64UrlDecode(input: string): Uint8Array | null {
   if (!/^[A-Za-z0-9_-]+$/.test(input)) return null;
   const padded = input.replaceAll("-", "+").replaceAll("_", "/").padEnd(Math.ceil(input.length / 4) * 4, "=");
   try {
     const binary = atob(padded);
-    return Uint8Array.from(binary, (c) => c.charCodeAt(0));
+    const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+    if (base64UrlEncode(bytes) !== input) return null;
+    return bytes;
   } catch {
     return null;
   }
