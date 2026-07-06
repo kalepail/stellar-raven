@@ -242,6 +242,26 @@ partials upheld; root causes: 4 mild agent synthesis/scoping slips, 3 upstream d
 (sls-007 new, sk-001/sk-002 recurrences), 1 upstream retrieval gap pair (ll-006 + sls-006),
 1 wrong golden (todo 827).
 
+**Results — 2026-07-06 post-round-5 checkpoint** (`results/2026-07-06T18-48-22-variantA.json`,
+same 30-case sample, rubric v2.1 native, post-round-5 catalog/tool-surface — tier marker +
+total/truncated + filter validation, describe-as-detail-step + signature stubs, alias lever 6):
+**20 correct / 9 partial / 1 wrong / 0 errors — aggregate-identical to the 07-03 post-nudge
+best run.** Per-case, 9 flips netting zero (4 c→p, 3 p→c, 1 p→w, 1 w→c); rubric moved
+v2→v2.1 between runs, so per-case flips carry judge variance — the aggregate identity is the
+robust signal that round 5 is headline-neutral. Traps 2/2; stellarDocs 13C/5P/0W. Plan regrade:
+29/30 requiredCovered, onPlanRatio 1.00; the 11 progression-expected cases split used 4 →
+3C/1P/0W vs skipped 7 → 3C/3P/1W (small-n, consistent with the progression guidance mattering).
+Agentic review (every wrong/partial live-re-executed by 10 sub-agents, workflow wf_01b3347d-1b8,
+Solo scratchpad 531) **overturned 2 of 10 as judge artifacts** (both RWA-freshness cases:
+transcript-blind fabrication call on a verbatim-sourced roundup quote; an "e.g."-list keyFact
+gated against its own crediting rule) → calibrated read 22C/7P/1W. The 1 wrong stands but is an
+**upstream data gap, not an agent failure** (`q-scf-current-round`: the agent faithfully quoted
+scout's brand-new scfRound meta, which was two rounds stale against its own verifyAt source —
+filed as sls-014). Other root causes: 3 isolated agent slips (no common shape — monitor-only),
+1 mixed truncation-clip (monitor-only, 1 case), upstream gaps filed as sd-005 (AP2/ACP landscape
+absent), sd-006 (Algolia strips code blocks — CLI install commands unanswerable from the index),
+ll-010 (unscoped roundup RWA milestones), sk-001 recurrence.
+
 **Second judge-artifact class (2026-07-03 evening, Solo todo 826):** the rubric-v2 addendum can
 be bypassed by **avoid-clause phrasing** — a golden must-avoid banning claims "beyond corpus
 support" makes a corpus-blind judge read beyond-golden specifics as avoid-matched, wrong again.

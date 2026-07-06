@@ -145,3 +145,31 @@ lifting lumenloop any-hit to 87.5%/75% and medium primary to 37.5%; the boundary
    (`node -e` slim mapping: id/question/expected_service).
 3. Save the returned `{summary, rows}` under `results/` (git-ignored) and update the
    summary tables in this README — the README is the committed record, not the JSON.
+
+## Results — 2026-07-06 (post-round-5 checkpoint; run `wf_b5be4d53-41f`, local-only)
+
+Change under test: round-5 search-surface changes (hit tier/total/truncated fields, filter
+validation, describe-as-detail-step + oversized-signature stubs, alias lever 6) on the
+post-1.5.0 catalog. Same 30 `sample.json` cases, Sonnet 5 low+medium:
+
+| scope | low pri/any | medium pri/any | prior (07-04 drift run) low / med pri |
+|---|---|---|---|
+| stellarDocs (12) | 100 / 100 | 100 / 100 | 100 / 100 |
+| scout (10) | 90 / 100 | 90 / 100 | 80 / 90 |
+| lumenloop (8) | **12.5 / 25** | **12.5 / 25** | 37.5 / 37.5 |
+| **overall (30)** | 73.3 / 80 | 73.3 / 80 | 76.7 / 80 |
+
+Reading (nothing tuned, numbers as-is): first run with **identical low/medium** numbers —
+effort-stable. scout +1 case. The story is lumenloop 37.5 → 12.5: per-case decomposition shows
+6/7 missed cases are the documented lumenloop/scout boundary — `scout.searchProjects`' upstream
+description (1.4.4/1.5.0) now name-drops specific products and claims "what is X / who built X"
+outright, so agents defensibly pick it for product questions labeled editorial
+(`soroswap-what-is`, `lobstr-wallet`, `rwa-overview`, `blend-tvl`, both efforts). One genuine
+misroute (`q-defi-aquarius-what-is` → docs, both efforts) and one skill-twin capture
+(`rwa-tokenized-freshness:low` → the ecosystem-digest section whose heading matches the
+question verbatim). Filed as **sls-015** (description editorial-capture, 8/16 lumenloop-labeled
+runs) rather than re-tuned here — the enrichment legitimately improved scout's own routing and
+the gateway's counter-balancing catalog note did not hold; per-question counter-tuning would
+violate the no-case-tuning rule. QA headline on the same day was aggregate-identical to the
+prior best (see eval/qa/README.md), so the capture costs routing-label accuracy, not answer
+quality on this sample.
