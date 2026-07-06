@@ -26,6 +26,12 @@ export default defineConfig({
       // the process cwd, not this config file. (.href because @types/node 26
       // and lib es2022 disagree on the URL type itself.)
       wrangler: { configPath: fileURLToPath(new URL("../../wrangler.jsonc", import.meta.url).href) },
+      // The demo's `ai` binding is remote-only; with the default
+      // remoteBindings:true the pool opens a Cloudflare remote-proxy session
+      // at startup, which needs credentials CI deliberately lacks (offline
+      // lane). No smoke test calls the model — the /demo/chat tests stop at
+      // the auth/origin gauntlet — so remote bindings stay off.
+      remoteBindings: false,
       miniflare: {
         bindings: {
           // Test-only admin token so server dispatch tests can take the
