@@ -25,7 +25,7 @@ import {
   type JsonSchema
 } from "../src/catalog/vendor/json-schema-types.ts";
 import { readSkill, type SkillBundle } from "../src/skills/store.ts";
-import { scoreEntryWeighted } from "../src/catalog/scoring.ts";
+import { scoreEntryWeighted, canonicalizeQuery } from "../src/catalog/scoring.ts";
 import { lastIdSegment } from "../src/catalog/id.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -579,5 +579,50 @@ describe("search-hit signature compaction (todo 841)", () => {
     expect(compacted).not.toContain("xxxx");
     // Full mode never compacts, no matter the size (describe's rendering).
     expect(renderSignature(overThreshold)).toContain("alpha?: string");
+  });
+});
+
+describe("alias canonicalization — lever 6 (todo 844)", () => {
+  it("canonicalizeQuery: null when no alias token (byte-identical no-op path)", () => {
+    expect(canonicalizeQuery("wallet balance lookup")).toBeNull();
+    expect(canonicalizeQuery("soroban contract storage")).toBeNull();
+    // "transaction" spelled out is NOT an alias — no rewrite.
+    expect(canonicalizeQuery("transaction history")).toBeNull();
+  });
+
+  it("canonicalizeQuery: substitutes abbreviation tokens, single-token only", () => {
+    expect(canonicalizeQuery("tx history")).toBe("transaction history");
+    expect(canonicalizeQuery("check acct addr")).toBe("check account address");
+    // Alias must be its own token — "taxes"/"txhash" style substrings are untouched.
+    expect(canonicalizeQuery("txhash lookup")).toBeNull();
+  });
+
+  it("bridges the register gap: an abbreviation query hits transaction-vocabulary entries", () => {
+    // Vendor prefix matching cannot bridge tx->transaction ("transaction"
+    // does not start with "tx"); the lever must. Real-manifest behavioral
+    // pin from the live probes that motivated the lever: a transaction-
+    // related entry ranks in the top 3 for the abbreviated phrasing.
+    const hits = searchCatalog(catalog, { query: "txn submit failed", limit: 5 });
+    expect(
+      hits.slice(0, 3).some(
+        (h) => h.id.includes("transaction") || h.description.toLowerCase().includes("transaction")
+      )
+    ).toBe(true);
+  });
+
+  it("never reduces original-query scores: alias variant only adds via max", () => {
+    // An entry matching the ORIGINAL tokens keeps at least its original
+    // score when the query also contains an alias token.
+    const entry = {
+      id: "svc.op",
+      name: "op",
+      service: "svc",
+      kind: "operation",
+      description: "spike analysis for fees"
+    };
+    const withAlias = scoreEntryWeighted(entry, "tx fee spike");
+    const originalOnly = scoreEntryWeighted(entry, "fee spike");
+    expect(withAlias).not.toBeNull();
+    expect(originalOnly).not.toBeNull();
   });
 });

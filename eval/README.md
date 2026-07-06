@@ -610,3 +610,38 @@ Findings that outlive the experiment:
   embedding per search (20–100 ms p50 + availability dependency). Revisit only with a stronger
   embedding model or richer entry text, and ideally a live/agentic instrument (see round 5e's
   alias finding) — not more fusion math.
+
+## Round 844 (2026-07-06, todo 844): real-user lane + alias lever shipped (lever 6)
+
+The round-5e alias lever was blocked on an instrument, not on merit. This round built the
+instrument: a **real-user routing lane** mined from the retired raven-golden-qa raw jutsu pool
+(25,875 genuine user questions, 2025-11→2026-02 — months before round 5, so independence from
+the lever is inherent).
+
+**Lane construction** (local-only: `eval/local-lanes/jutsu-real-user/`, gitignored — derived
+from the privacy-sensitive raw pool at `~/Desktop/raven-golden-qa/jutsu_stellar_questions_export/`;
+regenerate with the scrub script recorded in the Solo round log): drop seed/email-bearing +
+<2/>60-token + duplicate messages → 222 alias-register questions (contain tx/txn/txs/acct/addr;
+the offline corpus has 10 total) + 250 random control. **Labels:** dual independent Fable passes
+(labelers saw question + service charters only — never search results or the scorer), 96.6%
+agreement, 16 adjudicated; distribution stellarDocs 337 / none 96 / scout 26 / skills 8 /
+lumenloop 6. `none` (out-of-gateway-scope) cases are skipped at grading.
+
+**Baseline vs lever (strict / accept-either, top-1·3·5 of graded cases):**
+
+| group | pre-lever strict | post-lever strict | pre AE | post AE |
+|---|---|---|---|---|
+| alias (n=213) | 72·135·173 (33.8/63.4/81.2%) | **87·154·179 (40.8/72.3/84.0%)** | 82·142·178 | **97·159·184** |
+| control (n=163) | 67·106·128 | 67·106·128 (byte-identical) | 85·122·139 | byte-identical |
+
+The alias register routed **7.3 points worse** than control at strict top-1 pre-lever; the lever
+closes that entire gap (+15/+19/+6 strict), while the control group and every offline lane are
+byte-identical (legacy 213/268/305, extended 79/104/110, skills 18/22/22 — GATE PASS, no
+re-baseline). Unlike the offline corpus (extended AE top-5 = 100%), this lane is unsaturated
+(top-5 81–86%), so it becomes the target metric for future retrieval work alongside the legacy
+non-regression gate.
+
+**Shipped:** `QUERY_TOKEN_ALIASES` + `canonicalizeQuery` + max-of-two-queries scoring
+(scoring.ts lever 6) — the exact round-5e design (same 5 vetted pairs; amm/dex/defi/nft/etc.
+remain excluded as load-bearing catalog vocabulary). Unit tests pin the no-op path, token-only
+substitution, and the register bridge.

@@ -171,6 +171,76 @@ function weightedScore(
 }
 
 /**
+ * Lever 6 (todo 844): domain alias canonicalization, query side. Real users
+ * abbreviate ("tx history", "acct balance"); the catalog spells vocabulary
+ * out, and the vendor's prefix match cannot bridge "tx"→"transaction"
+ * ("transaction" does not start with "tx"). The table maps abbreviation →
+ * canonical token, single-token to single-token only, and is curated from
+ * DOMAIN knowledge — never from eval questions (STOPWORDS legitimacy rule).
+ * Each entry was vetted against catalog vocabulary: the alias must not be a
+ * load-bearing catalog token of its own (amm/dex/defi/nft/xlm/repo/sep/kyc/
+ * dapp/wasm/cli/sdk all ARE catalog vocabulary and are deliberately absent;
+ * the catalog's own 21 tx/txs tokens all MEAN transaction, so no shadowing).
+ *
+ * Measurement history: byte-identical on the offline routing corpus (round
+ * 5e — only 10/483 questions contain any alias token; eval/README.md), so it
+ * ships on the REAL-USER lane (eval/local-lanes/jutsu-real-user, todo 844):
+ * 213 alias-register questions mined from genuine pre-round-5 user traffic,
+ * dual-pass consensus labels. Numbers recorded in eval/README.md round 844.
+ */
+export const QUERY_TOKEN_ALIASES: ReadonlyMap<string, string> = new Map([
+  ["tx", "transaction"],
+  ["txn", "transaction"],
+  ["txs", "transactions"],
+  ["acct", "account"],
+  ["addr", "address"]
+]);
+
+/**
+ * Replace alias tokens with their canonical forms; null when the query
+ * contains no alias token (the common case — zero extra scoring work).
+ * Memoized on the raw query string: searchCatalogPage scores every catalog
+ * entry with the same query, so the canonicalization must not re-tokenize
+ * 271 times per search.
+ */
+const canonicalizeCache = new Map<string, string | null>();
+
+export function canonicalizeQuery(query: string): string | null {
+  let cached = canonicalizeCache.get(query);
+  if (cached !== undefined) return cached;
+  if (canonicalizeCache.size > 500) canonicalizeCache.clear(); // bound memory
+  const tokens = tokenize(query);
+  cached = tokens.some((t) => QUERY_TOKEN_ALIASES.has(t))
+    ? tokens.map((t) => QUERY_TOKEN_ALIASES.get(t) ?? t).join(" ")
+    : null;
+  canonicalizeCache.set(query, cached);
+  return cached;
+}
+
+/**
+ * Max of the full pipeline over the original and the alias-canonicalized
+ * query (lever 6). The max is taken ABOVE weightedScore so both variants
+ * share the whole pipeline (keyword blend → stopword rescue → kind weight)
+ * under the same base scorer; kind weight is a constant per-entry multiplier
+ * so it commutes with the max, and each variant runs its own stopword rescue
+ * (substitution changes which tokens gate). Original-query scores are never
+ * reduced — queries without alias tokens are byte-identical to pre-lever
+ * behavior by construction.
+ */
+function aliasMaxScore(
+  entry: WeightedScorableEntry,
+  query: string,
+  score: EntryScorer
+): number | null {
+  const base = weightedScore(entry, query, score);
+  const canonical = canonicalizeQuery(query);
+  if (canonical === null) return base;
+  const alt = weightedScore(entry, canonical, score);
+  if (alt === null) return base;
+  return base === null ? alt : Math.max(base, alt);
+}
+
+/**
  * Lexical score with a stopword-rescue fallback: score the FULL query first
  * (vendor semantics unchanged for every entry that passes the coverage
  * gate), and only when the gate fails retry with the stopword-filtered
@@ -178,9 +248,11 @@ function weightedScore(
  * closed-class words ("how", "what", "the", …) push token coverage under
  * the vendor's 60% threshold — the rescue makes coverage a statement about
  * content words without disturbing rankings that already worked.
+ * Alias-bearing queries additionally score under their canonicalized form
+ * and take the max (lever 6 above).
  */
 export function scoreEntryWeighted(entry: WeightedScorableEntry, query: string): number | null {
-  return weightedScore(entry, query, scoreEntry);
+  return aliasMaxScore(entry, query, scoreEntry);
 }
 
 /**
@@ -192,7 +264,7 @@ export function scoreEntryWeightedUngated(
   entry: WeightedScorableEntry,
   query: string
 ): number | null {
-  return weightedScore(entry, query, scoreEntryUngated);
+  return aliasMaxScore(entry, query, scoreEntryUngated);
 }
 
 /**

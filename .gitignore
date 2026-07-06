@@ -30,3 +30,5 @@ eval/.build/
 
 # local probe/measurement artifacts (round-5 adversarial probes etc.)
 /tmp/
+# real-user lane inputs/labels — PII-bearing source, never committed
+/eval/local-lanes/
