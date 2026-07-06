@@ -284,7 +284,13 @@ async function parseChatBody(request: Request): Promise<ChatMessage[] | null> {
     const { role, content } = entry as { role?: unknown; content?: unknown };
     if (role !== "user" && role !== "assistant") return null;
     if (typeof content !== "string") return null;
-    out.push({ role, content: content.slice(0, DEMO_CAPS.maxUserMessageChars) });
+    // The per-message cap is a USER-input cap (mirrors the textarea
+    // maxlength); replayed assistant answers can legitimately exceed it
+    // (maxOutputTokens 4096 ≈ >4000 visible chars), and truncating them
+    // feeds the model corrupted versions of its own prior replies
+    // (PR #5 review). Aggregate prefill stays bounded by MAX_BODY_CHARS
+    // here and clampHistory's total-char budget.
+    out.push({ role, content: role === "user" ? content.slice(0, DEMO_CAPS.maxUserMessageChars) : content });
   }
   return out;
 }
