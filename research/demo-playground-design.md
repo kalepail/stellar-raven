@@ -1,6 +1,9 @@
 # /demo agent playground — research synthesis + design
 
-Status: design accepted 2026-07-06 (pending adversarial review); promoted from
+Status: design accepted 2026-07-06 — adversarial review passed
+(APPROVE-WITH-CHANGES, codex gpt-5.5 high reasoning; findings incorporated
+below, full review archived at
+`research/audits/demo-playground-design-review-2026-07-06.md`); promoted from
 `ideas/agent-playground.md` (Solo todo 847). Research run: 7 parallel lanes
 (live Cloudflare API model catalog, Cloudflare docs sweep, cloudflare/agents +
 agents-starter code inventory, Perplexity + Parallel web sweeps, codex gpt-5.5
@@ -122,40 +125,66 @@ mints MCP OAuth tokens. So:
 - `GET /demo` unauthenticated renders the page in **locked** state with a
   sign-in button (and can show canned example traces).
 - `GET /demo/login` → WorkOS AuthKit redirect, parking state in `OAUTH_KV`
-  with a distinct state-type — **reusing the registered `${origin}/callback`**
-  redirect URI and branching on the parked-state type (a separate
-  `/demo/callback` would require a WorkOS dashboard change; branching avoids
-  it).
+  — **reusing the registered `${origin}/callback`** redirect URI (a separate
+  `/demo/callback` would require a WorkOS dashboard change). Review-required
+  shape: the parked KV value becomes a **validated discriminated union**
+  (`{ type: "mcp", oauthReq, binding } | { type: "demo", binding, returnTo }`;
+  today it is untyped `{ oauthReq, binding }` and the callback parses it
+  unconditionally). Unknown/malformed state is rejected; state is deleted
+  single-use **before** the code exchange; the demo branch redirects only to
+  fixed same-origin paths.
 - Callback (demo branch) exchanges the code, derives the peppered subject
   (same `deriveSubject` pattern), drops WorkOS tokens, sets a signed
-  `__Host-RAVEN_DEMO` cookie (HMAC via `MCP_SERVER_SECRET`, short TTL).
-- `POST /demo/chat` requires that cookie. MCP OAuth paths are untouched.
+  `__Host-RAVEN_DEMO` cookie (HMAC via `MCP_SERVER_SECRET`, short TTL,
+  **`SameSite=Strict`** — the existing MCP-flow cookie is Lax, the demo cookie
+  must be stricter).
+- `POST /demo/chat` requires that cookie **plus explicit CSRF/origin defense**
+  (review finding: a cookie alone is insufficient across two same-site custom
+  domains): require the `Origin` header to equal the request origin, reject
+  unsafe `Sec-Fetch-Site` values where present. MCP OAuth paths are untouched.
 - No anonymous live chat until a rate-limit story exists. Local dev keeps the
   loopback-only `DEV_ALLOW_UNAUTHENTICATED` bypass for the chat endpoint.
 
-## Decision 5 — Cost control: hard per-request caps
+## Decision 5 — Cost control: per-request caps (in-request enforced) + best-effort throttling
 
-Stateless = no cross-request session budget without new state; enforce
-per-request and keep the whole surface cheap:
+Stateless = no cross-request session budget without new state. The real,
+enforceable limits are **in-request closure counters** inside the chat handler;
+everything cross-request is honest best-effort (review finding 3 — Workers KV
+has no atomic consume, and `stepCountIs` alone does not cap multiple tool calls
+emitted in a single model step):
 
-- `stopWhen: stepCountIs(5)`; `maxOutputTokens` ≈ 800.
-- Replayed history clamped (chars + message count) server-side.
-- `search` limit clamped to ≤ 8; ≤ 2 `execute` calls per turn;
-  execute code length capped.
-- Per-subject KV token-bucket (coarse: N chats/hour) using `OAUTH_KV` —
-  cheap, no DO, good enough for a gated demo.
-- AI Gateway spend-limit rule as backstop; every execute is also a Worker
-  Loader isolate spin-up (open beta, Workers Paid) — the step cap bounds it.
+- `stopWhen: stepCountIs(5)`; `maxOutputTokens` ≈ 800; abort/timeout on the
+  whole turn.
+- In-request counters enforced inside the tool `execute:` closures: ≤ 2
+  `execute` calls per turn (counted per call, not per step), `search` limit
+  clamped to ≤ 8, execute code length capped, replayed history clamped (chars +
+  message count) before the model sees it.
+- Per-subject KV token-bucket (N chats/hour on `OAUTH_KV`) — **best-effort
+  coarse throttling only**, racy by design; acceptable because the WorkOS gate
+  bounds the audience.
+- AI Gateway spend-limit rule is a **mandatory backstop**, not optional; every
+  execute is also a Worker Loader isolate spin-up (open beta, Workers Paid) —
+  the per-turn execute counter bounds it.
+- If a hard cross-request cap ever becomes a requirement, that is an explicit
+  new design (atomic limiter: DO or Cloudflare rate-limiting product) — not a
+  KV patch.
 
 ## Implementation map
 
 - `wrangler.jsonc`: add `"ai": { "binding": "AI" }` — the only config change.
   No DO, no migrations, no assets binding. `npm run typegen` regenerates
   `env.d.ts`.
-- `src/server.ts`: intercept `/demo` + `/demo/login` + `/demo/chat` **before
-  `oauthProvider.fetch`** (same pattern as the /mcp bypasses; unrouted paths
-  otherwise 404 inside `WorkOSAuthHandler`). Extend the existing `/callback`
-  handler in `src/auth/workos.ts` with the demo state-type branch.
+- Prerequisite export refactors (review findings 4–5 — these constants are
+  module-private today, the doc previously claimed they were exported):
+  export `SEARCH_DESCRIPTION` / `EXECUTE_DESCRIPTION` from `src/mcp/tools.ts`
+  (`SERVER_INSTRUCTIONS` already is), and export `FONT_FACE` / `TOKENS` /
+  `BASE` from `src/site.ts` (page-specific CSS stays private).
+- `src/server.ts`: intercept demo routes **before `oauthProvider.fetch`** via
+  an `isDemoPath(url)` helper with **exact matching** (`/demo`, `/demo/`,
+  `/demo/login`, `/demo/chat` — no `startsWith` that would catch
+  `/demolition`); GET+HEAD for the page, 405 on unsupported methods. Extend the
+  existing `/callback` handler in `src/auth/workos.ts` with the validated
+  demo state-type branch (Decision 4).
 - `src/demo/page.ts` — server-rendered playground page; reuses `FONT_FACE`,
   `TOKENS`, `BASE`, terminal chrome (`.term`, `pre.code` syntax tints), tabs,
   buttons from `src/site.ts`; **own header set** (LANDING_HEADERS' CSP has
@@ -172,9 +201,15 @@ per-request and keep the whole surface cheap:
 - `src/demo/budget.ts` — cap constants + clamp helpers + KV token bucket.
 - ADR-0003 discipline: demo page copy and the demo system prompt are emitted
   text — they must not reference non-exposed ops or retired skills (e.g. the
-  paid Lumenloop research lane). The build guard does not cover site pages;
-  keep it right by construction and add a test that greps demo copy against
-  the exposure exclusion list.
+  paid Lumenloop research lane). The build guard does not cover site pages
+  and a one-off grep can miss service-qualified names (review finding 7):
+  factor a reusable `assertNoNonExposedRefsInText()` helper backed by
+  `scripts/exposure.mjs` and run it in tests over the rendered demo HTML and
+  the demo system/tool prompt strings.
+- Dependency verification (review finding 8): pin **exact** versions of `ai`
+  and `workers-ai-provider` (no carets initially), run `npm run build`
+  (dry-run deploy) and record bundle size + import-graph warnings in the PR,
+  and add a workerd smoke test that imports the demo route module.
 - Worker-only import discipline: `src/demo/chat.ts`/`tools.ts` import
   `src/executor/run.ts` — keep them out of the plain-Node vitest import graph;
   route dispatch/wiring tests go in `test/smoke/` (workerd lane), pure pieces
