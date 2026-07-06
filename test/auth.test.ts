@@ -347,6 +347,8 @@ describe("WorkOSAuthHandler", () => {
     expect(page).toContain("Test MCP Client");
     // Scope is named on the consent page (rendered as a styled scope chip).
     expect(page).toContain(`<code class="scope-code">mcp</code>`);
+    expect(page).toContain(`action="/authorize?client_id=client-abc"`);
+    expect(response.headers.get("content-security-policy")).not.toContain("form-action");
     // Double-submit: the hidden form field carries the same token as the cookie.
     expect(page).toContain(`name="csrf_token" value="${csrf}"`);
   });

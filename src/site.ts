@@ -860,6 +860,10 @@ export function consentPage(args: {
 // ---------------------------------------------------------------------------
 // Response headers — landing allows inline script (shader + tabs); consent is
 // script-free. Both self-contained: font-src data:, img-src data:, no network.
+// Consent intentionally omits form-action, matching the prior Raven handlers:
+// Chromium can block OAuth consent POST/redirect chains when it is present.
+// The explicit approval click, double-submit CSRF token, and bound single-use
+// state cookie are the protections for that POST.
 // ---------------------------------------------------------------------------
 
 export const LANDING_HEADERS: Record<string, string> = {
@@ -867,7 +871,8 @@ export const LANDING_HEADERS: Record<string, string> = {
   "cache-control": "public, max-age=300",
   "content-security-policy":
     "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; " +
-    "font-src data:; img-src data:; connect-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+    "font-src data:; img-src data:; connect-src 'none'; frame-ancestors 'none'; base-uri 'none'; " +
+    "form-action 'self' https://raven.stellar.buzz https://agents.stellar.buzz",
   "x-content-type-options": "nosniff",
   "referrer-policy": "no-referrer"
 };
@@ -877,7 +882,7 @@ export const CONSENT_HEADERS: Record<string, string> = {
   "cache-control": "no-store",
   "content-security-policy":
     "default-src 'none'; style-src 'unsafe-inline'; font-src data:; img-src data:; " +
-    "frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+    "frame-ancestors 'none'; base-uri 'none'",
   "x-frame-options": "DENY",
   "x-content-type-options": "nosniff"
 };
