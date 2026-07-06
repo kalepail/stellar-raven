@@ -27,7 +27,10 @@
  *   - compiled.extendedCases (net-new 538-corpus ids) grade as their own
  *     "extended lane", never merged into the legacy aggregate.
  *
- * Outputs eval/results/routing-<timestamp>.json and console tables.
+ * Outputs eval/results/routing-<timestamp>.json and console tables. With
+ * `--dump-ranked <file>` also writes { caseId: [hitId, ...] } (ordered top-5 per
+ * graded case, all lanes) for direct rank/membership diffs between builds
+ * (research/skill-run-design.md §10.1a); grading is unchanged by the flag.
  *
  * Gate enforcement (eval/gates.json): every run prints a gate verdict — legacy 338
  * strict within ±bandPct of the baselined top-1/3/5 counts, skills lane top-1 at or
@@ -56,6 +59,19 @@ const OVERLAY = join(EVAL_DIR, "build-question-overlay.json");
 const GATES = join(EVAL_DIR, "gates.json");
 const RESULTS_DIR = join(EVAL_DIR, "results");
 const ENFORCE_GATE = process.argv.includes("--gate");
+// --dump-ranked <file>: additionally write { caseId: [hitId, ...] } — the ordered
+// top-5 hit ids per graded case across ALL lanes (legacy + extended + skills).
+// This is the §10.1a rank/membership-identity artifact (research/skill-run-design.md):
+// diff two dumps (main vs feature build) — empty diff proves the routing invariant
+// directly, which the ±band gate alone cannot. Grading and normal output are
+// byte-identical whether or not the flag is passed.
+const DUMP_RANKED_PATH = (() => {
+  const i = process.argv.indexOf("--dump-ranked");
+  if (i === -1) return null;
+  const p = process.argv[i + 1];
+  if (!p || p.startsWith("--")) throw new Error("--dump-ranked requires a file path argument");
+  return resolve(p);
+})();
 
 async function loadSearchModule() {
   if (!existsSync(SEARCH_TS)) throw new Error(`missing ${SEARCH_TS} — Lane C not landed yet?`);
@@ -234,6 +250,18 @@ async function main() {
     gate = { pass: failures.length === 0, failures, baselinedAt: g.baselinedAt, baselineResults: g.baselineResults };
   } else if (ENFORCE_GATE) {
     throw new Error(`--gate passed but ${GATES} is missing`);
+  }
+
+  // --- ranked-id dump (--dump-ranked): every graded case, every lane, in grade order --
+  if (DUMP_RANKED_PATH) {
+    const ranked = {};
+    for (const r of [...perCase, ...extendedPerCase, ...skillsPerCase]) {
+      if (r.id in ranked) throw new Error(`--dump-ranked: duplicate case id "${r.id}" across lanes — dump would silently drop one`);
+      ranked[r.id] = r.topHits.map((h) => h.id);
+    }
+    mkdirSync(dirname(DUMP_RANKED_PATH), { recursive: true });
+    writeFileSync(DUMP_RANKED_PATH, JSON.stringify(ranked, null, 2) + "\n");
+    console.log(`ranked-id dump (${Object.keys(ranked).length} cases) -> ${DUMP_RANKED_PATH}`);
   }
 
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
