@@ -76,7 +76,12 @@ handlers use — not an HTTP round-trip to `/mcp` with a token:
   `SERVER_INSTRUCTIONS` strings verbatim as tool/system text so the demo drives
   the exact production contract and cannot drift from it. Reproduce the
   handlers' `truncateLogsForModel`/`truncateForModel` shaping and `logEvent`
-  observability calls.
+  observability calls. One deliberate demo-vs-MCP payload delta (added during
+  live testing): search RESULT pages are compacted for the demo model — 5-hit
+  default page, per-hit description/signature clipped (~8KB vs ~19KB) —
+  because full pages blew up a reasoning model's follow-up prefill past the
+  turn timeout. Tool ids, input schemas, and descriptions stay identical; the
+  trace shows the compacted payload the model actually received.
 - UI copy states plainly: the playground exercises the same server-side Raven
   tool implementations as `/mcp`; it does not exercise MCP OAuth transport.
 
@@ -152,7 +157,11 @@ mints MCP OAuth tokens. So:
   (same `deriveSubject` pattern), drops WorkOS tokens, sets a signed
   `__Host-RAVEN_DEMO` cookie (HMAC via `MCP_SERVER_SECRET`, short TTL,
   **`SameSite=Strict`** — the existing MCP-flow cookie is Lax, the demo cookie
-  must be stricter).
+  must be stricter). Implementation note (build review): the callback returns
+  a **same-origin interstitial page** (meta-refresh to `/demo`) rather than a
+  302 — a Strict cookie is not sent on the cross-site redirect chain arriving
+  from WorkOS, so the interstitial starts a fresh same-origin navigation.
+  Needs a real-browser check on first deploy.
 - `POST /demo/chat` requires that cookie **plus explicit CSRF/origin defense**
   (review finding: a cookie alone is insufficient across two same-site custom
   domains): require the `Origin` header to equal the request origin, reject
@@ -168,18 +177,37 @@ everything cross-request is honest best-effort (review finding 3 — Workers KV
 has no atomic consume, and `stepCountIs` alone does not cap multiple tool calls
 emitted in a single model step):
 
-- `stopWhen: stepCountIs(5)`; `maxOutputTokens` ≈ 800; abort/timeout on the
-  whole turn.
+- `stopWhen: stepCountIs(5)`; `maxOutputTokens` 4096 (revised from 800 —
+  kimi's hidden reasoning counts against the budget and burned 800 with zero
+  visible text; worst case ≈ 1.6¢ of output per turn); abort/timeout on the
+  whole turn (120s, tied to client disconnect).
 - In-request counters enforced inside the tool `execute:` closures: ≤ 2
   `execute` calls per turn (counted per call, not per step), `search` limit
-  clamped to ≤ 8, execute code length capped, replayed history clamped (chars +
-  message count) before the model sees it.
+  clamped to ≤ 8 (default page 5, per-hit prose clipped — see Decision 2
+  note), execute code length capped, replayed history clamped (chars +
+  message count) before the model sees it. The per-message 4000-char cap
+  applies to user-role messages only — truncating replayed assistant answers
+  corrupts the model's view of its own replies (PR #5 review); with 4096-token
+  answers, the 24k-char history budget holds roughly one to two long turns of
+  memory, which is the cost guard working as intended.
 - Per-subject KV token-bucket (N chats/hour on `OAUTH_KV`) — **best-effort
   coarse throttling only**, racy by design; acceptable because the WorkOS gate
   bounds the audience.
 - AI Gateway spend-limit rule is a **mandatory backstop**, not optional; every
   execute is also a Worker Loader isolate spin-up (open beta, Workers Paid) —
   the per-turn execute counter bounds it.
+  **⚠ UNMET AS OF 2026-07-06:** the demo now routes through the account's
+  `default` gateway, which has NO rate limit and NO spend rule configured
+  (live-verified: `rate_limiting_limit: 0`), and the model change to kimi
+  raised worst-case turn cost to ~3¢ (~10× the original glm sizing). The API
+  token has AI Gateway read but not write, so this is dashboard work: add a
+  spend-limit rule (and ideally a rate limit) on `default` — or create a
+  dedicated demo gateway — **before /demo ships to the public hostname**.
+  Related, decided-and-accepted for a WorkOS-gated demo: `default` has
+  `collect_logs: true`, so demo prompts/responses persist in the AI Gateway
+  log viewer (bounded by the plan's log cap) even though the app itself never
+  logs full trace payloads; `zdr` is off, which is moot for `@cf/*` models.
+  Revisit both if the gate ever loosens.
 - If a hard cross-request cap ever becomes a requirement, that is an explicit
   new design (atomic limiter: DO or Cloudflare rate-limiting product) — not a
   KV patch.
