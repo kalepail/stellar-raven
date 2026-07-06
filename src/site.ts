@@ -58,7 +58,7 @@ function face(family: string, weight: number, b64: string): string {
   );
 }
 
-const FONT_FACE =
+export const FONT_FACE =
   face("IBM Plex Serif", 600, PLEX_SERIF_600_WOFF2) +
   face("IBM Plex Serif", 700, PLEX_SERIF_700_WOFF2) +
   face("IBM Plex Sans", 400, PLEX_SANS_400_WOFF2) +
@@ -66,7 +66,7 @@ const FONT_FACE =
   face("IBM Plex Mono", 400, PLEX_MONO_400_WOFF2) +
   face("IBM Plex Mono", 500, PLEX_MONO_500_WOFF2);
 
-const TOKENS = `:root{
+export const TOKENS = `:root{
   --bg:#0e150d; --green:#151f14; --green-2:#182617;
   --orange:#ff5500; --orange-2:#ff7a33; --orange-soft:rgba(255,85,0,.13);
   --fog:#eef0e2; --dim:#9aa890; --ash:#71806a;
@@ -77,7 +77,7 @@ const TOKENS = `:root{
   --maxw:1200px;
 }`;
 
-const BASE = `
+export const BASE = `
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--fog);font-family:var(--sans);

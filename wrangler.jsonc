@@ -23,6 +23,14 @@
       "binding": "LOADER"
     }
   ],
+  // Workers AI binding for the /demo agent playground (cheap tool-calling
+  // model, Cloudflare-billed — no BYOK; design:
+  // research/demo-playground-design.md). @cf/* models bill as ordinary
+  // Workers AI Neurons, not Unified Billing credits. Demo-only: the MCP
+  // surface never touches this binding.
+  "ai": {
+    "binding": "AI"
+  },
   // Token/client/grant storage for @cloudflare/workers-oauth-provider
   // (research/auth-workos.md). The binding MUST be named OAUTH_KV — the
   // library reads it by that name. Namespace pre-created for this project.
