@@ -213,12 +213,24 @@ async function completeCallback(
   const subject = await deriveSubject(workosUserId, env.MCP_SERVER_SECRET);
 
   if (parked.type === "demo") {
-    // Browser session, not an OAuth grant: signed cookie + fixed same-origin
-    // redirect (validated at parse time). No completeAuthorization.
-    const headers = new Headers({ location: parked.returnTo });
+    // Browser session, not an OAuth grant: signed cookie + a same-origin
+    // interstitial instead of a 302. The whole navigation chain here was
+    // initiated cross-site (WorkOS → /callback), and browsers withhold
+    // SameSite=Strict cookies on every request in a cross-site-initiated
+    // redirect chain — a direct 302 to /demo would land on the locked page.
+    // The meta-refresh below starts a FRESH navigation initiated by this
+    // same-origin document, so the Strict cookie is sent. returnTo is
+    // allowlisted to fixed paths at parse time (parseDemoParkedState), so
+    // it is safe to interpolate. No completeAuthorization.
+    const headers = new Headers({
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "no-store",
+      "referrer-policy": "no-referrer",
+      "content-security-policy": "default-src 'none'; base-uri 'none'"
+    });
     headers.append("set-cookie", await mintDemoCookie(env.MCP_SERVER_SECRET, subject));
     headers.append("set-cookie", clearCookie(STATE_BINDING_COOKIE));
-    return new Response(null, { status: 302, headers });
+    return new Response(demoSignedInInterstitial(parked.returnTo), { headers });
   }
 
   const scopes = parked.oauthReq.scope ?? [];
@@ -263,6 +275,21 @@ function parseParkedLogin(raw: string): ParkedLogin | null {
     return { type: "demo", binding, returnTo: demo.returnTo };
   }
   return null;
+}
+
+/**
+ * Minimal same-origin hop for the /callback demo branch (see comment at the
+ * call site). Deliberately unstyled — the CSP above is `default-src 'none'`;
+ * meta-refresh and the fallback link are navigations, not resource loads.
+ */
+function demoSignedInInterstitial(returnTo: string): string {
+  return (
+    "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">" +
+    `<meta http-equiv="refresh" content="0;url=${returnTo}">` +
+    "<title>Signed in</title></head><body>" +
+    `<p>Signed in — <a href="${returnTo}">continue to the playground</a>.</p>` +
+    "</body></html>"
+  );
 }
 
 /** The WorkOS AuthKit hop — one URL shape for both the MCP and demo flows. */

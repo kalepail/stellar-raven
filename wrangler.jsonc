@@ -31,6 +31,15 @@
   "ai": {
     "binding": "AI"
   },
+  "vars": {
+    // AI Gateway every /demo model call routes through (design Decisions
+    // 3/5: the gateway spend-limit rule is the MANDATORY account-level cost
+    // backstop — per-request caps alone don't bound aggregate spend).
+    // Deploy prerequisite: create the gateway with this id AND its
+    // spend-limit rule in the "Ecosystem - Stellar" account; until it
+    // exists, demo model calls fail closed.
+    "DEMO_AI_GATEWAY_ID": "stellar-raven-demo"
+  },
   // Token/client/grant storage for @cloudflare/workers-oauth-provider
   // (research/auth-workos.md). The binding MUST be named OAUTH_KV — the
   // library reads it by that name. Namespace pre-created for this project.

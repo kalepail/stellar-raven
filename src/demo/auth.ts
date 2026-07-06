@@ -12,7 +12,7 @@
  * Pure module: WebCrypto only, no cloudflare:workers import — unit-testable
  * under plain Node (test/demo-auth.test.ts).
  */
-import { timingSafeEqualBytes } from "../auth/gate";
+import { timingSafeEqualBytes } from "../auth/timing";
 
 export const DEMO_COOKIE_NAME = "__Host-RAVEN_DEMO";
 /** Demo sessions live 2 hours; re-login is one redirect, so keep it short. */

@@ -5,13 +5,19 @@
  * origin; Sec-Fetch-Site, when present, must be "same-origin" — "same-site"
  * is rejected on purpose, the worker serves two same-site custom domains) →
  * auth (signed demo cookie, or the loopback-only dev bypass shared with
- * /mcp) → best-effort KV throttle → body validation. Only then does a model
- * turn start: streamText over the AI binding with the two demo tools, the
- * production SERVER_INSTRUCTIONS + playground preamble as system prompt, and
- * fullStream translated to DemoFrame SSE events. tool-start/tool-result
- * frames are emitted by the tools themselves (src/demo/tools.ts); here only
- * token/step/done/error mapping remains (part names verified against ai v6:
- * text-delta, start-step, finish, abort, error, tool-error).
+ * /mcp) → body validation (size-capped BEFORE parse; a malformed body must
+ * not burn a throttle slot) → best-effort KV throttle. Only then does a
+ * model turn start: streamText over the AI binding — routed through the AI
+ * Gateway whose spend-limit rule is the mandatory account-level cost
+ * backstop (design Decisions 3/5) — with the two demo tools, the production
+ * SERVER_INSTRUCTIONS + playground preamble as system prompt, and
+ * fullStream translated to DemoFrame SSE events. The whole turn is bounded
+ * by one abort signal: client disconnect (stream cancel) or the turn
+ * timeout stops model + tool spend, not just frame delivery.
+ * tool-start/tool-result frames are emitted by the tools themselves
+ * (src/demo/tools.ts); here only token/step/done/error mapping remains
+ * (part names verified against ai v6: text-delta, start-step, finish,
+ * abort, error, tool-error).
  *
  * WORKER-ONLY MODULE: imports src/demo/tools.ts (→ src/executor/run.ts →
  * cloudflare:workers). Route coverage lives in test/smoke/server.test.ts.
@@ -29,6 +35,19 @@ import { buildDemoTools } from "./tools.ts";
 const DEMO_MODEL = "@cf/zai-org/glm-4.7-flash";
 /** Throttle-bucket subject for loopback dev requests (no cookie, no WorkOS). */
 const DEV_SUBJECT = "dev-loopback";
+/**
+ * Whole-turn ceiling (design Decision 5: "abort/timeout on the whole turn").
+ * Worst legitimate turn: 5 model steps + 2 sandbox executes; generous so it
+ * only trips hung provider streams, not slow-but-live turns.
+ */
+const TURN_TIMEOUT_MS = 120_000;
+/**
+ * Pre-parse request-body cap: well above the worst legitimate replay
+ * (maxHistoryMessages × a full 800-token assistant answer + JSON overhead),
+ * so JSON.parse and the per-entry validation walk are both bounded before
+ * clampHistory ever runs.
+ */
+const MAX_BODY_CHARS = 128 * 1024;
 
 const SSE_HEADERS: Record<string, string> = {
   "content-type": "text/event-stream",
@@ -62,16 +81,12 @@ export async function handleDemoChat(
     return reject(401, "unauthenticated", "No valid demo session — reload /demo and sign in.");
   }
 
-  const throttle = await demoThrottle(env.OAUTH_KV, subject);
-  if (!throttle.allowed) {
-    return reject(
-      429,
-      "rate_limited",
-      `Hourly demo limit (${DEMO_CAPS.chatsPerHour} chats) reached — try again next hour.`,
-      { "retry-after": "3600" }
-    );
+  // Body before throttle: a malformed request must not burn one of the
+  // subject's hourly chats. Size-capped before JSON.parse touches it.
+  const contentLength = Number(request.headers.get("content-length") ?? "0");
+  if (contentLength > MAX_BODY_CHARS) {
+    return reject(413, "payload_too_large", `Request body exceeds ${MAX_BODY_CHARS} bytes.`);
   }
-
   const messages = await parseChatBody(request);
   if (!messages) {
     return reject(
@@ -82,26 +97,45 @@ export async function handleDemoChat(
   }
   const history = clampHistory(messages) as ChatMessage[];
 
+  const throttle = await demoThrottle(env.OAUTH_KV, subject);
+  if (!throttle.allowed) {
+    return reject(
+      429,
+      "rate_limited",
+      `Hourly demo limit (${DEMO_CAPS.chatsPerHour} chats) reached — try again next hour.`,
+      { "retry-after": "3600" }
+    );
+  }
+
   // Response streams while the turn runs; ctx.waitUntil keeps the pump alive
-  // independent of body-consumption timing.
+  // independent of body-consumption timing. One signal bounds the turn's
+  // spend: client disconnect (cancel) or the whole-turn timeout aborts the
+  // model stream — and with it further tool calls — not just frame delivery.
+  const clientGone = new AbortController();
+  const turnSignal = AbortSignal.any([clientGone.signal, AbortSignal.timeout(TURN_TIMEOUT_MS)]);
   const encoder = new TextEncoder();
   let controller!: ReadableStreamDefaultController<Uint8Array>;
+  let open = true;
   const stream = new ReadableStream<Uint8Array>({
     start(c) {
       controller = c;
+    },
+    cancel() {
+      open = false;
+      clientGone.abort();
     }
   });
-  let open = true;
   const emit = (frame: DemoFrame): void => {
     if (!open) return;
     try {
       controller.enqueue(encoder.encode(encodeFrame(frame)));
     } catch {
       open = false; // client went away — keep the turn's tool caps honest, drop frames
+      clientGone.abort();
     }
   };
 
-  ctx.waitUntil(runTurn(env, emit, history, subject).finally(() => {
+  ctx.waitUntil(runTurn(env, emit, history, subject, turnSignal).finally(() => {
     open = false;
     try {
       controller.close();
@@ -117,21 +151,30 @@ async function runTurn(
   env: Env,
   emit: (frame: DemoFrame) => void,
   messages: ChatMessage[],
-  subject: string
+  subject: string,
+  abortSignal: AbortSignal
 ): Promise<void> {
   const t0 = Date.now();
   const { tools, countersReport } = buildDemoTools({ env, emit });
   let steps = 0;
   let finishReason = "none";
   try {
-    const workersai = createWorkersAI({ binding: env.AI });
+    const workersai = createWorkersAI({
+      binding: env.AI,
+      // Mandatory cost backstop (design Decisions 3/5): the gateway's
+      // spend-limit rule is the only cross-request dollar cap. Fail-closed —
+      // the gateway must exist account-side (created, with its spend-limit
+      // rule, before deploy) or model calls error out.
+      gateway: { id: env.DEMO_AI_GATEWAY_ID }
+    });
     const result = streamText({
       model: workersai(DEMO_MODEL),
       system: DEMO_SYSTEM_PROMPT,
       messages,
       tools: tools as ToolSet,
       stopWhen: stepCountIs(DEMO_CAPS.maxSteps),
-      maxOutputTokens: DEMO_CAPS.maxOutputTokens
+      maxOutputTokens: DEMO_CAPS.maxOutputTokens,
+      abortSignal
     });
     for await (const part of result.fullStream) {
       switch (part.type) {
@@ -190,11 +233,19 @@ async function runTurn(
   }
 }
 
-/** null = malformed (caller answers 400). Oversized contents are truncated, not rejected. */
+/**
+ * null = malformed (caller answers 400). Oversized contents are truncated,
+ * not rejected. Reads text first and re-checks the char cap (Content-Length
+ * can lie or be absent on chunked bodies) so JSON.parse and the entry walk
+ * are bounded — within MAX_BODY_CHARS the walk is a few thousand entries at
+ * worst, so no separate messages.length rejection is needed pre-clamp.
+ */
 async function parseChatBody(request: Request): Promise<ChatMessage[] | null> {
   let body: unknown;
   try {
-    body = await request.json();
+    const raw = await request.text();
+    if (raw.length > MAX_BODY_CHARS) return null;
+    body = JSON.parse(raw);
   } catch {
     return null;
   }

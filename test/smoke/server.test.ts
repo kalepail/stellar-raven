@@ -199,8 +199,9 @@ describe("/demo routes", () => {
   });
 
   it("POST /demo/chat: dev bypass on localhost reaches body validation (400 pre-model)", async () => {
-    // Malformed body fails AFTER auth+throttle but BEFORE any AI binding
-    // call — proves the gauntlet order without spending a model turn.
+    // Malformed body fails AFTER auth but BEFORE the throttle (no slot
+    // burned) and BEFORE any AI binding call — proves the gauntlet order
+    // without spending a model turn.
     const res = await SELF.fetch(`${LOCAL}/demo/chat`, {
       method: "POST",
       headers: { origin: LOCAL, "content-type": "application/json" },

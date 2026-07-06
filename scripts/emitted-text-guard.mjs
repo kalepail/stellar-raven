@@ -20,7 +20,10 @@
  */
 import { EXCLUDED_LUMENLOOP_OPS, EXCLUDED_SCOUT_OPS, RETIRED_ONBOARDING_SKILLS } from "./exposure.mjs";
 
-const RETIRED_SKILL_RE = /lumenloop-api-[a-z]+|lumenloop-mcp-connect/;
+// Built from the exclusion data, never hand-written — a future retired skill
+// with a different naming shape must not silently escape the guard.
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const RETIRED_SKILL_RE = new RegExp([...RETIRED_ONBOARDING_SKILLS].map(escapeRe).join("|"));
 const RAW_SCOUT_PATHS = [...EXCLUDED_SCOUT_OPS].map((k) => k.split(" ")[1]);
 const EXCLUDED_LUMENLOOP_RE = new RegExp(`\\b(?:${[...EXCLUDED_LUMENLOOP_OPS].join("|")})\\b`);
 // Service-qualified form ("lumenloop.request_research") — same dotted-token

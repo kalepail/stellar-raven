@@ -15,13 +15,17 @@
  */
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { scoreEntry, type ScorableEntry } from "../src/catalog/vendor/search-scoring.ts";
 import { scoreEntryUngated } from "../src/catalog/scoring.ts";
 import { loadManifest } from "../src/catalog/search.ts";
 import { lastIdSegment } from "../src/catalog/id.ts";
 
+// fileURLToPath over .href: under this dependency graph the global
+// (Workers-typed) URL satisfies neither Node's PathOrFileDescriptor nor its
+// node:url URL — go through the string form explicitly.
 const catalog = loadManifest(
-  JSON.parse(readFileSync(new URL("../catalog/manifest.json", import.meta.url), "utf8"))
+  JSON.parse(readFileSync(fileURLToPath(new URL("../catalog/manifest.json", import.meta.url).href), "utf8"))
 );
 
 /** The same scorable projection searchCatalogPage feeds the scorers (sans keywords — both raw scorers ignore them). */

@@ -569,12 +569,19 @@ describe("login-state union on /callback", () => {
     expect(workosFetch).not.toHaveBeenCalled();
   });
 
-  it("demo branch: exchanges the code, mints the signed cookie, 302s to /demo — no OAuth grant", async () => {
+  it("demo branch: exchanges the code, mints the signed cookie, serves the same-origin interstitial — no OAuth grant", async () => {
     const { response, helpers, kv, workosFetch } = await driveCallback(
       JSON.stringify({ type: "demo", binding: "bind-x", returnTo: "/demo" })
     );
-    expect(response.status).toBe(302);
-    expect(response.headers.get("location")).toBe("/demo");
+    // NOT a 302: the navigation chain is cross-site-initiated (WorkOS →
+    // /callback), so browsers would withhold the SameSite=Strict cookie on a
+    // redirect straight to /demo. The interstitial's meta-refresh starts a
+    // fresh same-origin navigation instead.
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    const body = await response.text();
+    expect(body).toContain('content="0;url=/demo"');
+    expect(body).toContain('href="/demo"');
     expect(workosFetch).toHaveBeenCalledTimes(1);
     // A browser session, not an authorization: the provider is never involved.
     expect(helpers.completeAuthorization).not.toHaveBeenCalled();
