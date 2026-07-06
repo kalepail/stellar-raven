@@ -1,0 +1,235 @@
+# /demo agent playground — research synthesis + design
+
+Status: design accepted 2026-07-06 (pending adversarial review); promoted from
+`ideas/agent-playground.md` (Solo todo 847). Research run: 7 parallel lanes
+(live Cloudflare API model catalog, Cloudflare docs sweep, cloudflare/agents +
+agents-starter code inventory, Perplexity + Parallel web sweeps, codex gpt-5.5
+high-reasoning architecture review against this repo, local repo recon), all
+lanes 2026-07-06. Numbers below are live-verified where marked; re-verify
+before trusting after ~2026-08.
+
+## What we're building
+
+A chat playground at `GET /demo` on the existing worker: the user types intent,
+a cheap Cloudflare-billed tool-calling model drives Raven's real `search` and
+`execute` tools, and every tool call renders as an inspectable trace — search
+query → ranked hits → execute script → response envelope (`ok/data` vs
+`error.kind: "error" | "soft-empty"`; there is **no** "denied" envelope state —
+ADR-0003 removed runtime denial surfaces, correcting a stale line in the
+original idea note).
+
+The point is to *prove what Raven does for an agent*, not to teach users to
+hand-author JSON (per the idea note). A manual console is explicitly out of
+scope for v1.
+
+## Decision 1 — Architecture: same-worker stateless SSE loop, no Durable Object
+
+Verdict shared by four independent lanes (docs, codex-arch, parallel-web, repo
+recon): **do not adopt the Agents SDK chat stack; do not spin a separate demo
+worker.**
+
+- `AIChatAgent`/`useAgentChat` hard-require a Durable Object + SQLite migration
+  (docs state "Agents require Cloudflare Durable Objects"; verified in every
+  example's wrangler.jsonc, and via DeepWiki on cloudflare/agents). This worker
+  deliberately pins **no DOs** (wrangler.jsonc, PLAN §1). The demo needs none of
+  the DO-gated features (server-side persistence, resumable streams, cross-tab
+  sync), so reversing the pin buys nothing we need.
+- A separate demo worker has the best blast-radius story but requires a
+  privileged caller into `/mcp` (admin token or a second OAuth client) — a new
+  internet-facing proxy to the hardened MCP surface. Fallback only if /demo
+  ever becomes high-volume/public enough that isolation beats simplicity.
+- The DO-free path is first-party-documented: plain `fetch` handler +
+  AI SDK `streamText({ model, tools, stopWhen })` (see
+  https://developers.cloudflare.com/agents/tools/codemode/ai-sdk/ — a complete
+  non-Agent, non-DO example that even uses `worker_loaders`, which we already
+  have).
+
+Shape:
+
+- `GET /demo` — server-rendered page (site.ts idiom: vanilla HTML/CSS/JS, fonts
+  and theme reused; **no React/Vite toolchain added** — the repo ships one JS
+  bundle and the trace UI is small enough to hand-roll like site.ts does).
+- `POST /demo/chat` — SSE response. Chat history is client-held and replayed
+  per request; the worker stays stateless per-request.
+- Server iterates `streamText(...).fullStream` and emits **our own small SSE
+  frame schema** (`token`, `tool-start`, `tool-result`, `step`, `done`,
+  `error`) rather than the AI SDK UI-message protocol, since we own both ends
+  and have no `useChat` client. Trace states mirror the AI SDK vocabulary
+  (input-streaming → input-available → output-available / output-error) and the
+  client must render a distinct *stalled* state if a tool-start never resolves
+  (a real, since-fixed vercel/ai bug class — don't trust stream well-formedness).
+
+## Decision 2 — Tools call Raven internals in-process (labeled honestly)
+
+The demo's `search`/`execute` tool definitions call the same functions the MCP
+handlers use — not an HTTP round-trip to `/mcp` with a token:
+
+- search: `searchCatalogPage(getCatalog(), opts)` (`src/catalog/search.ts`,
+  pure/sync) + the same unknown-service validation the tool handler does
+  (`src/mcp/tools.ts`).
+- execute: `createExecuteRunner(env)` (`src/executor/run.ts`, worker-only
+  import; cache one runner per isolate like `src/server.ts` does).
+- Reuse the exported `SEARCH_DESCRIPTION` / `EXECUTE_DESCRIPTION` /
+  `SERVER_INSTRUCTIONS` strings verbatim as tool/system text so the demo drives
+  the exact production contract and cannot drift from it. Reproduce the
+  handlers' `truncateLogsForModel`/`truncateForModel` shaping and `logEvent`
+  observability calls.
+- UI copy states plainly: the playground exercises the same server-side Raven
+  tool implementations as `/mcp`; it does not exercise MCP OAuth transport.
+
+## Decision 3 — Model: `@cf/zai-org/glm-4.7-flash` default, via AI binding + AI Gateway
+
+Live account catalog (26 text-gen models, `/ai/models/search`, 2026-07-06):
+
+| candidate | $/M in/out | ctx | function calling | note |
+|---|---|---|---|---|
+| **`@cf/zai-org/glm-4.7-flash`** | 0.0605 / 0.40 | 131k | yes (+reasoning) | **default** — cheapest credible agentic model; Cloudflare's own current tutorial model |
+| `@cf/openai/gpt-oss-20b` | 0.20 / 0.30 | 128k | yes | cheapest strong output pricing, but binding I/O is Responses-API-shaped (`input`, not `messages`) — verify provider conversion before use |
+| `@cf/google/gemma-4-26b-a4b-it` | 0.10 / 0.30 | 256k | yes | newer, less battle-tested — A/B candidate |
+| `openai/gpt-5.4-nano` / `-mini` | 0.20/1.25 · 0.75/4.50 | ~128k/1.1M | yes | unified-billing "smart lane" — needs prepaid credits (5% purchase fee) + authenticated gateway; deferred to v2 |
+
+Rejected: `@hf/nousresearch/hermes-2-pro-mistral-7b` (**deprecated, gone from
+live catalog** — appears in stale docs/blog posts, do not build on it);
+`@cf/meta/llama-3.3-70b-instruct-fp8-fast` (live ctx only **24k** — Raven trace
+payloads overflow it; $2.25/M out); `qwen2.5-coder-32b` (no function_calling
+property).
+
+Billing facts that matter (live docs 2026-06-22):
+- `env.AI.run()` / `workers-ai-provider` with a `@cf/*` model bills as ordinary
+  Workers AI (Neurons, $0.011/1k, 10k/day free) — **not** Unified Billing, no
+  credits needed. Third-party model strings (`openai/…`) on the same call
+  surface bill via Unified Billing credits (5% purchase fee, list-price
+  pass-through). No BYOK either way — BYOK is structurally unsupported through
+  the binding, which satisfies our constraint by default.
+- Route through an AI Gateway (`gateway: { id }` on the provider) for free
+  per-model cost analytics + spend-limit rules (up to 20/gateway, 429 on trip).
+  Gateway logs cap at 100k–1M/mo with no overage — the gateway log viewer is
+  NOT the durable trace store; our own `logEvent` calls remain the record.
+- There is **no hard dollar cap** primitive — budget enforcement is ours
+  (Decision 5).
+
+Deps (from cloudflare/agents-starter, the only repo with real pinned semver):
+`ai@^6`, `workers-ai-provider@^3.2` (v3.0+ mandatory — earlier versions
+silently fell back to non-streaming when tools were defined and had tool-call
+ID/history bugs), `zod@^4` (already present).
+
+## Decision 4 — Auth: WorkOS-gated, reusing the existing `/callback`
+
+The idea note requires the existing WorkOS posture and no client-side
+credentials. Today there is no browser session concept — the WorkOS flow only
+mints MCP OAuth tokens. So:
+
+- `GET /demo` unauthenticated renders the page in **locked** state with a
+  sign-in button (and can show canned example traces).
+- `GET /demo/login` → WorkOS AuthKit redirect, parking state in `OAUTH_KV`
+  with a distinct state-type — **reusing the registered `${origin}/callback`**
+  redirect URI and branching on the parked-state type (a separate
+  `/demo/callback` would require a WorkOS dashboard change; branching avoids
+  it).
+- Callback (demo branch) exchanges the code, derives the peppered subject
+  (same `deriveSubject` pattern), drops WorkOS tokens, sets a signed
+  `__Host-RAVEN_DEMO` cookie (HMAC via `MCP_SERVER_SECRET`, short TTL).
+- `POST /demo/chat` requires that cookie. MCP OAuth paths are untouched.
+- No anonymous live chat until a rate-limit story exists. Local dev keeps the
+  loopback-only `DEV_ALLOW_UNAUTHENTICATED` bypass for the chat endpoint.
+
+## Decision 5 — Cost control: hard per-request caps
+
+Stateless = no cross-request session budget without new state; enforce
+per-request and keep the whole surface cheap:
+
+- `stopWhen: stepCountIs(5)`; `maxOutputTokens` ≈ 800.
+- Replayed history clamped (chars + message count) server-side.
+- `search` limit clamped to ≤ 8; ≤ 2 `execute` calls per turn;
+  execute code length capped.
+- Per-subject KV token-bucket (coarse: N chats/hour) using `OAUTH_KV` —
+  cheap, no DO, good enough for a gated demo.
+- AI Gateway spend-limit rule as backstop; every execute is also a Worker
+  Loader isolate spin-up (open beta, Workers Paid) — the step cap bounds it.
+
+## Implementation map
+
+- `wrangler.jsonc`: add `"ai": { "binding": "AI" }` — the only config change.
+  No DO, no migrations, no assets binding. `npm run typegen` regenerates
+  `env.d.ts`.
+- `src/server.ts`: intercept `/demo` + `/demo/login` + `/demo/chat` **before
+  `oauthProvider.fetch`** (same pattern as the /mcp bypasses; unrouted paths
+  otherwise 404 inside `WorkOSAuthHandler`). Extend the existing `/callback`
+  handler in `src/auth/workos.ts` with the demo state-type branch.
+- `src/demo/page.ts` — server-rendered playground page; reuses `FONT_FACE`,
+  `TOKENS`, `BASE`, terminal chrome (`.term`, `pre.code` syntax tints), tabs,
+  buttons from `src/site.ts`; **own header set** (LANDING_HEADERS' CSP has
+  `connect-src 'none'` which would block our own SSE — demo needs
+  `connect-src 'self'`, hashed/inline script allowance, `no-store` on the API).
+  `noindex` + `robots.txt` disallow `/demo`. GET+HEAD both answered.
+- `src/demo/auth.ts` — cookie mint/verify + login redirect + callback branch
+  helper.
+- `src/demo/chat.ts` — request validation, history clamp, `streamText` loop,
+  fullStream → SSE frame translation.
+- `src/demo/tools.ts` — the two AI SDK `tool()` defs wrapping in-process
+  internals + trace emission + truncation shaping. (Named to avoid colliding
+  with `src/mcp/tools.ts`.)
+- `src/demo/budget.ts` — cap constants + clamp helpers + KV token bucket.
+- ADR-0003 discipline: demo page copy and the demo system prompt are emitted
+  text — they must not reference non-exposed ops or retired skills (e.g. the
+  paid Lumenloop research lane). The build guard does not cover site pages;
+  keep it right by construction and add a test that greps demo copy against
+  the exposure exclusion list.
+- Worker-only import discipline: `src/demo/chat.ts`/`tools.ts` import
+  `src/executor/run.ts` — keep them out of the plain-Node vitest import graph;
+  route dispatch/wiring tests go in `test/smoke/` (workerd lane), pure pieces
+  (frame encoding, clamps, cookie HMAC) in plain-Node tests.
+
+## Risks (top 5)
+
+1. **Cost abuse** — per-request caps only; mitigated by WorkOS gate + KV bucket
+   + gateway spend limit; no public anonymous access in v1.
+2. **Blast radius on the hardened worker** — new deps (`ai`,
+   `workers-ai-provider`) and a public streaming route beside `/mcp`; keep
+   `src/demo/` isolated, zero changes to MCP auth behavior, review the diff for
+   route-order regressions.
+3. **Cheap-model reliability** — glm-4.7-flash may emit bad JS or mishandle
+   envelopes; strict system prompt, low step cap, failures rendered honestly in
+   the trace (that's arguably the demo working as intended).
+4. **Trace leakage** — traces show model code + tool results; the executor's
+   existing redaction/truncation runs on everything displayed; don't log full
+   trace payloads server-side.
+5. **Demo honesty drift** — in-process calls bypass MCP transport; mitigated by
+   reusing the exact exported descriptions/helpers + honest UI labeling.
+
+## Rejected alternatives (for the record)
+
+- **Agents SDK / agents-starter fork** — DO requirement (see Decision 1); also
+  drags in React/Vite/Kumo, a second frontend toolchain this repo deliberately
+  lacks. Used as UX reference only (its debug-mode JSON inspector and
+  playground's `ToolCard` Code/Result/Console/Error layout inform our trace
+  cards; `extractFunctionCalls`-style regex summarizes execute scripts in
+  collapsed headers).
+- **Separate demo worker** — privileged-caller problem; fallback if traffic
+  justifies it.
+- **MCP-client-to-self (`this.mcp.addMcpServer` or raw MCP HTTP)** — redundant
+  OAuth dance against ourselves, DO-bound anyway via `this.mcp`, and pointless
+  overhead vs in-process calls.
+- **assistant-ui / agent-chat-ui component libraries** — React-bound; their
+  tool-render state machines informed the SSE frame schema instead.
+- **`@cloudflare/ai-utils` `runWithTools`** — leanest loop, but AI SDK v6
+  `streamText` gives us streaming + typed tool parts + `stopWhen` and matches
+  the provider that Cloudflare now actively maintains for exactly this
+  (workers-ai-provider v3).
+
+## Sources
+
+Live account API `/ai/models/search` (2026-07-06); developers.cloudflare.com:
+`agents/examples/chat-agent/`, `agents/communication-channels/chat/chat-agents/`,
+`agents/runtime/agents-api/`, `agents/tools/codemode/ai-sdk/`,
+`agents/model-context-protocol/apis/handler-api/`,
+`workers-ai/features/function-calling/`, `workers-ai/platform/pricing/`,
+`ai-gateway/features/unified-billing/`, `ai-gateway/features/spend-limits/`,
+`ai-gateway/changelog/` (2026-05-21 unified endpoint), `workers/static-assets/`;
+github.com/cloudflare/agents (examples/ai-chat, examples/playground demos/ai/*,
+examples/mcp-client), github.com/cloudflare/agents-starter (pinned dep
+baseline); blog.cloudflare.com `code-mode`, `embedded-function-calling`,
+`building-ai-agents-with-mcp-authn-authz-and-durable-objects`;
+community.cloudflare.com t/871672 (SDK v0.3.0 / AI SDK v6 breaking changes);
+vercel/ai#10980 (tool_result pairing bug class). Full lane reports archived in
+Solo scratchpad `demo-playground-coordination` session notes.

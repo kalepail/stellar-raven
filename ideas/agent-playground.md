@@ -1,6 +1,13 @@
 # Agent Playground
 
-Status: deferred idea, not planned work.
+Status: **promoted to active work 2026-07-06** — research + design in
+[`research/demo-playground-design.md`](../research/demo-playground-design.md),
+tracked as Solo todo 847. The open questions below were resolved there: real
+hosted agent (cheap Workers AI model via the AI binding, Cloudflare-billed, no
+BYOK), model config lives in the worker, cost controlled by hard per-request
+caps + a KV token bucket. One correction: the envelope has no "denied" state
+(ADR-0003 removed runtime denial surfaces) — trace rendering covers `ok/data`
+vs `error.kind: "error" | "soft-empty"`.
 
 Origin: split from Solo todo `solo://proj/49/todo/backlog-playground-i--832` on
 2026-07-03 before removing that backlog todo.
