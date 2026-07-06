@@ -467,5 +467,107 @@ Reading notes:
   document-frequency denominators shifted when the excluded ops left the per-service op sets.
 - **Skills lane unchanged 18/23.** Extended lane strict top-1 77/122, top-5 108/122 (−1 top-5,
   same grading-severity mechanism).
-- Gate verdict: this is the current gate — `--gate` enforces legacy within ±1% of 203/265/303 and
+- Gate verdict: was the gate for minutes — superseded the same day by the stellar-light 1.4.4
+  re-baseline below.
+
+## Re-baseline (2026-07-04, issue #2): stellar-light 1.4.4 drift
+
+Same-day follow-up to the ADR-0003 re-baseline (commit `b62938a`): the daily live-drift CI caught
+the upstream stellar-light OpenAPI 1.3.2 → 1.4.4 refresh — additive response-schema fields on
+existing ops, upstream description rewords (`searchResearch` trimmed to "security incidents"
+phrasing), docs-titles refresh. No operation added/removed, no exposure decisions.
+
+Run: `routing-2026-07-04T15-58-31-434Z.json` (grading rule v3; **current baseline** in
+`eval/gates.json`).
+
+| scope | rule | top-1 | top-3 | top-5 |
+|---|---|---|---|---|
+| legacy 338 (prior gate, ADR-0003 above) | v3 | 203 | 265 | 303 |
+| legacy 338 (**new gate**) | **v3** | **213** | **267** | **303** |
+| skills lane 23 (floor unchanged) | v3 | 18 | — | — |
+
+Reading notes:
+
+- **+10/+2/0 is upstream description quality, not our scoring**: 14 scout improvements from the
+  richer 1.4.4 descriptions vs 8 strict regressions, 7 of which hold under accept-either (grading
+  severity, not ranking); only `q-edge-inject-ignore-instructions` truly drops (top3→top5).
+- Agentic-verified **before** the re-baseline (30-case Sonnet low+med effort): overall primary low
+  70→76.7%, med 73.3→80%; docs 100% unchanged. Full decision record in the `note` field of
+  `eval/gates.json`.
+- Gate verdict: this is the current gate — `--gate` enforces legacy within ±1% of 213/267/303 and
   the skills lane floor 18/23, under gradingRule `v3-manifest-exposed`.
+
+## Round 5e (2026-07-06, todo 842): three ranking levers — all discarded
+
+Rounds 5a–5d (commits `a284417`, `43297d7`) were contract/presentation work on `search` (tier
+marker, filter validation, honest total/truncated, describe + signature stubs), proven
+ranking-neutral (rankings byte-identical, gate unchanged) — no ranking section needed. 5e was the
+round's ranking half: three wrapper-layer levers from the adversarial review (Solo scratchpad
+528), each implemented and measured **separately** per EVALS.md discipline (vendored scorer
+byte-identical throughout). **All three were discarded — no code shipped, gate baseline
+unchanged.** The runs live in git-ignored `eval/results/`, so this section is the durable record;
+don't re-attempt these levers blind.
+
+Baseline for every comparison: the post-5d tree — legacy strict **213/268/305** (accept-either
+265/314/333), extended strict **79/104/110** (accept-either 110/121/122), skills **18/22/22**;
+gate PASS. Reproduced ranking-identically across all three lanes by runs `16-29-58`, `16-41-54`,
+`16-42-57`, `16-50-32` (timestamps = `routing-2026-07-06T*` result files).
+
+**Lever A — curated domain alias table** (build-time manifest data: tx/txn→transaction,
+wallet/address→account, swap/amm/dex, 402/payment-required/x402, staking/rewards; target =
+extended strict top-1, 79/122):
+
+| iteration | legacy strict | ext strict | skills | gate | verdict |
+|---|---|---|---|---|---|
+| baseline (`16-29-58`) | 213/268/305 | 79/104/110 | 18/22/22 | PASS | reference |
+| alias table (`16-33-32`) | 213/268/305 | 79/104/110 | 18/22/22 | PASS | flat everywhere — discarded |
+
+The alias set changed rankings in only 10 cases and moved **zero** graded numbers in any lane —
+not a regression, a null result. Conclusion: whatever value structural aliases have is **not
+measurable on the offline routing instrument**; re-attempt only with a live/agentic instrument
+that can grade result quality, and reuse the vetted alias candidates above rather than
+re-deriving them.
+
+**Lever B — short-token tightening** (no bidirectional prefix-overlap for query tokens under
+3 chars unless alias-listed; evidence: "tx"/"ai"/"ap" false positives, scratchpad 528):
+
+| iteration | legacy strict | ext strict | skills | gate | verdict |
+|---|---|---|---|---|---|
+| 1 — overlap gate only (`16-39-00`) | 214/270/306 | 79/104/110 | 18/22/22 | PASS | target flat — see note |
+| 2 — drop short tokens in primary pass (`16-39-53`) | 214/262/306 | 68/104/108 | 15/23/23 | **FAIL** | hard regression |
+| 3 — softened variant of 2 (`16-40-45`) | 214/271/305 | 74/101/107 | 18/22/22 | **FAIL** | still regressive |
+| revert (`16-41-54`) | 213/268/305 | 79/104/110 | 18/22/22 | PASS | back to baseline |
+
+Failure mechanism (iterations 2–3): dropping short tokens in the **primary** scoring pass changes
+the effective query token count, crossing the vendor gate's ≤2-token 100%-coverage boundary —
+the same failure shape as Round 2's discarded stopwords-everywhere iteration (extended top-1
+−11, skills top-1 −3). Iteration 1 stayed inside the gate but never moved the lever's target
+(extended lane flat); its legacy +1/+2/+1 sits inside the gate's ±1% noise band and is not
+attributable to the intended mechanism, so the whole family was discarded rather than
+re-baselining on noise.
+
+**Lever C — diversity-quota score-ratio guard** (don't evict a same-service candidate scoring
+far above the off-service hit it's traded for; evidence: "wallet" evicts a 124-score passkey
+section for a 75-score `getClusters`, scratchpad 528 finding 4):
+
+| iteration | legacy strict | ext strict | skills | gate | verdict |
+|---|---|---|---|---|---|
+| baseline (`16-42-57`) | 213/268/305 | 79/104/110 | 18/22/22 | PASS | reference |
+| ratio 1.5 (`16-46-22` + `16-47-10`, identical rankings) | 213/267/305 | 79/104/110 | 18/22/22 | PASS | target flat, legacy top-3 −1 |
+| ratio 1.25 (`16-47-43`) | 213/267/301 | 79/104/110 | 18/22/22 | PASS | legacy top-5 −4 |
+| ratio 2.0 (`16-48-09`) | 213/267/305 | 79/104/110 | 18/22/22 | PASS | target flat, legacy top-3 −1 |
+| revert (`16-50-32`) | 213/268/305 | 79/104/110 | 18/22/22 | PASS | back to baseline |
+
+(The ratio-1.5 configuration was run twice — `16-46-22` and `16-47-10` produce byte-identical
+rankings; both listed for measurement-log completeness.) Extended strict is **flat at every
+ratio in [1.25, 2.0]** — the guard cannot move the lane it was aimed at, and every setting costs
+legacy top-3 (−1) with the aggressive end also costing top-5 (−4): the high-scoring same-service
+runs it protects are usually the *wrong* service for the graded question (e.g.
+`q-comp-sep10-auth-role` keeps a 3rd scout hit and pushes the expected `stellarDocs.search_docs`
+out of the top 3). The "wallet" eviction it was built for is real but is a result-*quality*
+problem the offline grader doesn't score. Discarded.
+
+**Round outcome:** tree reverted to post-5d state (closing run `16-50-32` reproduces the baseline
+rankings exactly), `eval/gates.json` untouched — no gated number moved, so no re-baseline. Next
+step for extended-lane strict (79/122): a live/agentic instrument (5f), not further offline
+lexical levers.
