@@ -16,8 +16,13 @@
 export const DEMO_CAPS = {
   /** stepCountIs(5) — model turns per chat request. */
   maxSteps: 5,
-  /** streamText maxOutputTokens per request. */
-  maxOutputTokens: 800,
+  /**
+   * streamText maxOutputTokens per request. Sized for a reasoning-capable
+   * model: kimi-k2.6's hidden thinking counts against this budget, and 800
+   * proved burnable by thinking alone (finishReason "length" with zero
+   * visible text). Worst case ~4096 x $4/M = ~1.6 cents per turn — the KV throttle and gateway rate limit are the aggregate guards.
+   */
+  maxOutputTokens: 4096,
   /** clampHistory: max replayed messages, oldest dropped first. */
   maxHistoryMessages: 20,
   /** clampHistory: max total content chars across replayed history. */

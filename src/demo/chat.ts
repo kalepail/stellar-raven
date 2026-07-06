@@ -201,6 +201,12 @@ async function runTurn(
         case "text-delta":
           emit({ type: "token", text: part.text });
           break;
+        case "reasoning-delta":
+          // kimi thinks at length before answering; stream the reasoning so
+          // the wait is visibly alive (client shows a rolling tail, not a
+          // transcript — reasoning is not part of the answer).
+          emit({ type: "thinking", text: part.text });
+          break;
         case "start-step":
           steps += 1;
           emit({ type: "step", index: steps });

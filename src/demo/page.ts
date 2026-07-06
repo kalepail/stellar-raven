@@ -60,10 +60,31 @@ main.play{flex:1;display:flex;flex-direction:column;padding-bottom:34px}
   background:linear-gradient(180deg,rgba(24,38,23,.82),rgba(14,21,13,.74));
   border:1px solid var(--line);border-bottom-left-radius:4px}
 .msg.assistant.streaming::after{content:"\\258C";color:var(--orange);animation:blink 1s steps(1) infinite}
+.msg.md{white-space:normal}
+.msg.md .mdp{margin:0 0 10px;white-space:pre-wrap}
+.msg.md > :last-child{margin-bottom:0}
+.msg.md code{font-family:var(--mono);font-size:.9em;color:var(--orange-2);
+  background:rgba(255,85,0,.09);border:1px solid rgba(255,85,0,.18);border-radius:5px;padding:1px 5px}
+.msg.md a{color:var(--orange-2);text-decoration:underline;text-underline-offset:3px}
+.msg.md strong{color:var(--fog);font-weight:600}
+.msg.md .mdh{font-weight:600;color:var(--fog);margin:14px 0 8px;font-size:15.5px}
+.msg.md .mdh:first-child{margin-top:0}
+.msg.md .mdcode{font-family:var(--mono);font-size:12.5px;line-height:1.55;color:#d3dac8;
+  background:rgba(0,0,0,.32);border:1px solid var(--line);border-radius:8px;
+  padding:12px 14px;margin:0 0 10px;overflow-x:auto;white-space:pre}
+.msg.md .mdlist{margin:0 0 10px;padding-left:22px}
+.msg.md .mdlist li{margin:3px 0}
+.msg.md .mdtable-wrap{overflow-x:auto;margin:0 0 10px;border:1px solid var(--line);border-radius:8px}
+.msg.md .mdtable{border-collapse:collapse;width:100%;font-size:13px}
+.msg.md .mdtable th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ash);text-align:left;background:rgba(0,0,0,.25)}
+.msg.md .mdtable th,.msg.md .mdtable td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.msg.md .mdtable tr:last-child td{border-bottom:0}
 @keyframes blink{50%{opacity:0}}
 
 .pulse{display:flex;align-items:center;gap:10px;margin:14px 0;font-family:var(--mono);
 font-size:12px;color:var(--dim)}
+.pulse-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:640px}
 .pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);
 animation:pulsebeat 1.2s ease-in-out infinite}
 @keyframes pulsebeat{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
@@ -205,6 +226,7 @@ const DEMO_SCRIPT = `
   var turnDone = false;
   var current = null;
   var acc = "";
+  var thinkTail = "";
 
   function el(tag, cls){ var n = document.createElement(tag); if (cls) n.className = cls; return n; }
   function text(tag, cls, s){ var n = el(tag, cls); n.textContent = s; return n; }
@@ -213,6 +235,112 @@ const DEMO_SCRIPT = `
   function pretty(v){
     if (typeof v === "string") return v;
     try { return JSON.stringify(v, null, 2); } catch (e) { return String(v); }
+  }
+
+  // Tiny safe markdown: DOM nodes only, every piece of model text lands via
+  // textContent / createTextNode — no innerHTML, no sanitizer needed. Kumo /
+  // streamdown are React-bound and this page is a hash-pinned inline script,
+  // so this stays hand-rolled. Coverage: fenced code, tables, lists,
+  // headings, paragraphs; inline code/bold/italic/links (http(s) or
+  // same-origin path only). Unrecognized syntax degrades to plain text.
+  var MD_INLINE = /(\`[^\`\\n]+\`)|(\\*\\*[^*\\n]+\\*\\*)|(\\*[^*\\n]+\\*)|(\\[[^\\]\\n]+\\]\\((?:https?:\\/\\/|\\/)[^\\s)]+\\))/g;
+  function mdInline(node, s){
+    var last = 0, m;
+    MD_INLINE.lastIndex = 0;
+    while ((m = MD_INLINE.exec(s))) {
+      if (m.index > last) node.appendChild(document.createTextNode(s.slice(last, m.index)));
+      var t = m[0];
+      if (m[1]) node.appendChild(text("code", "", t.slice(1, -1)));
+      else if (m[2]) node.appendChild(text("strong", "", t.slice(2, -2)));
+      else if (m[3]) node.appendChild(text("em", "", t.slice(1, -1)));
+      else {
+        var cut = t.lastIndexOf("](");
+        var a = text("a", "", t.slice(1, cut));
+        a.href = t.slice(cut + 2, -1);
+        a.rel = "noopener noreferrer";
+        a.target = "_blank";
+        node.appendChild(a);
+      }
+      last = m.index + t.length;
+    }
+    if (last < s.length) node.appendChild(document.createTextNode(s.slice(last)));
+  }
+  function mdCells(line){
+    var t = line.trim();
+    if (t.charAt(0) === "|") t = t.slice(1);
+    if (t.charAt(t.length - 1) === "|") t = t.slice(0, -1);
+    return t.split("|").map(function(c){ return c.trim(); });
+  }
+  var MD_TABLE_SEP = /^\\s*\\|?[\\s:|-]+\\|[\\s:|-]*$/;
+  var MD_LIST = /^\\s*(?:[-*+]|\\d+[.)])\\s+/;
+  function renderMarkdown(s){
+    var frag = document.createDocumentFragment();
+    var lines = String(s).split("\\n");
+    var i = 0;
+    while (i < lines.length) {
+      var line = lines[i];
+      if (!line.trim()) { i++; continue; }
+      if (line.slice(0, 3) === "\`\`\`") {
+        var buf = [];
+        i++;
+        while (i < lines.length && lines[i].slice(0, 3) !== "\`\`\`") { buf.push(lines[i]); i++; }
+        i++;
+        frag.appendChild(text("pre", "mdcode", buf.join("\\n")));
+        continue;
+      }
+      var h = /^(#{1,4})\\s+(.*)$/.exec(line);
+      if (h) {
+        var hn = el("div", "mdh mdh" + h[1].length);
+        mdInline(hn, h[2]);
+        frag.appendChild(hn);
+        i++;
+        continue;
+      }
+      if (line.indexOf("|") >= 0 && i + 1 < lines.length && MD_TABLE_SEP.test(lines[i + 1])) {
+        var wrap = el("div", "mdtable-wrap");
+        var tbl = el("table", "mdtable");
+        var tr = el("tr");
+        mdCells(line).forEach(function(c){ var n = el("th"); mdInline(n, c); tr.appendChild(n); });
+        tbl.appendChild(tr);
+        i += 2;
+        while (i < lines.length && lines[i].trim() && lines[i].indexOf("|") >= 0) {
+          var row = el("tr");
+          mdCells(lines[i]).forEach(function(c){ var n = el("td"); mdInline(n, c); row.appendChild(n); });
+          tbl.appendChild(row);
+          i++;
+        }
+        wrap.appendChild(tbl);
+        frag.appendChild(wrap);
+        continue;
+      }
+      if (MD_LIST.test(line)) {
+        var lst = el(/^\\s*\\d/.test(line) ? "ol" : "ul", "mdlist");
+        while (i < lines.length && MD_LIST.test(lines[i])) {
+          var li = el("li");
+          mdInline(li, lines[i].replace(MD_LIST, ""));
+          lst.appendChild(li);
+          i++;
+        }
+        frag.appendChild(lst);
+        continue;
+      }
+      var pbuf = [line];
+      i++;
+      while (i < lines.length && lines[i].trim() &&
+             lines[i].slice(0, 3) !== "\`\`\`" && !/^#{1,4}\\s/.test(lines[i]) && !MD_LIST.test(lines[i]) &&
+             !(lines[i].indexOf("|") >= 0 && i + 1 < lines.length && MD_TABLE_SEP.test(lines[i + 1]))) {
+        pbuf.push(lines[i]);
+        i++;
+      }
+      var p = el("p", "mdp");
+      mdInline(p, pbuf.join("\\n"));
+      frag.appendChild(p);
+    }
+    return frag;
+  }
+  function setBubbleMarkdown(node, s){
+    node.textContent = "";
+    node.appendChild(renderMarkdown(s));
   }
 
   function addBubble(role, s){
@@ -337,11 +465,14 @@ const DEMO_SCRIPT = `
     if (!f || typeof f.type !== "string") return;
     if (f.type === "ready") {
       showPulse("model reasoning");
+    } else if (f.type === "thinking") {
+      thinkTail = (thinkTail + String(f.text == null ? "" : f.text)).slice(-90).replace(/\\s+/g, " ");
+      showPulse("thinking \\u00b7 " + thinkTail);
     } else if (f.type === "token") {
       hidePulse();
-      if (!current) { current = addBubble("assistant", ""); current.classList.add("streaming"); }
+      if (!current) { current = addBubble("assistant", ""); current.classList.add("streaming"); current.classList.add("md"); }
       acc += String(f.text == null ? "" : f.text);
-      current.textContent = acc;
+      setBubbleMarkdown(current, acc);
       scrollEnd();
     } else if (f.type === "tool-start") {
       hidePulse();
@@ -357,6 +488,12 @@ const DEMO_SCRIPT = `
       turnDone = true;
       hidePulse();
       stallOpenCards();
+      if (f.reason === "length") {
+        setNote(acc ? "The answer hit the demo's output-token limit and was cut off."
+          : "The model spent its whole output budget reasoning and produced no answer \\u2014 try a simpler question.", "err");
+      } else if (f.reason && f.reason !== "stop" && !acc) {
+        setNote("The turn ended (" + f.reason + ") without a text answer \\u2014 the trace above shows what ran.", "err");
+      }
       finishTurn();
     } else if (f.type === "error") {
       turnDone = true;
@@ -370,6 +507,7 @@ const DEMO_SCRIPT = `
   async function send(msg){
     busy = true;
     turnDone = false;
+    thinkTail = "";
     sendBtn.disabled = true;
     input.disabled = true;
     setNote("");
@@ -448,7 +586,7 @@ const DEMO_SCRIPT = `
 // hard-coded (Web Crypto is async, and these headers are a sync module const);
 // test/demo-page.test.ts recomputes it from the rendered page, so an edit to
 // DEMO_SCRIPT fails the suite with the new value to paste here.
-const DEMO_SCRIPT_SHA256 = "sha256-VOskVamxHW2g/G2UAFrS3BQRh3yUtCl9LP1TX5DMcFs=";
+const DEMO_SCRIPT_SHA256 = "sha256-8sWM6T+NEhg7YrX00pt4h5WmM4tptSBCVkg3WqjCbbQ=";
 
 export const DEMO_PAGE_HEADERS: Record<string, string> = {
   "content-type": "text/html; charset=utf-8",
