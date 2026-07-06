@@ -645,3 +645,24 @@ non-regression gate.
 (scoring.ts lever 6) — the exact round-5e design (same 5 vetted pairs; amm/dex/defi/nft/etc.
 remain excluded as load-bearing catalog vocabulary). Unit tests pin the no-op path, token-only
 substitution, and the register bridge.
+
+### Real-user-lane re-measurement of the discarded 5e levers (2026-07-06, todo 845 follow-on)
+
+With the round-844 lane available (unsaturated, real phrasing), levers B and C were re-measured
+exactly as designed in round 5e, on top of the shipped lever 6. Both discarded AGAIN, now on
+lane evidence rather than instrument blindness:
+
+- **Lever B (short-token damping, rescue-only):** legacy +1/+2/+1 (214/270/306) and lane alias
+  top-1 +2 (clean, 0 lost), but lane alias top-3 net −3 (won 1 / lost 4). The four losses are
+  all the **error-paste register** (users pasting `tx_bad_seq`/`tx_too_late` result-code JSON +
+  XDR blobs, expecting docs): dropping short junk tokens (`v`, `9` from base64) shrinks the
+  rescue coverage denominator for EVERY entry, letting weakly-matching scout/lumenloop entries
+  through the gate to crowd out the docs ops. Structural side effect, systematic register —
+  discarded.
+- **Lever C (diversity quota score-ratio guard, 1.5):** strictly worse on the lane — alias
+  strict top-5 −2, control strict top-3 −1 / top-5 −2, accept-either top-5 −3/−4, nothing up.
+  Consistent with the 5e offline read (legacy top-3 −1 at every ratio). Discarded; the hard
+  quota stays.
+
+Lane numbers to beat (post-lever-6 baseline): alias strict 87/154/179, AE 97/159/184 (n=213);
+control strict 67/106/128, AE 85/122/139 (n=163).
