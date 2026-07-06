@@ -42,6 +42,7 @@ import {
   sitemapXml
 } from "../site";
 import { OG_PNG_BASE64 } from "../og";
+import { mintDemoCookie, parseDemoParkedState } from "../demo/auth";
 
 // env.OAUTH_PROVIDER is injected by OAuthProvider before it invokes the
 // default handler; wrangler types can't see it, so declare it here.
@@ -63,11 +64,16 @@ const CONSENT_CSRF_COOKIE = "__Host-MCP_CONSENT_CSRF";
 const STATE_BINDING_COOKIE = "__Host-MCP_STATE";
 const COOKIE_ATTRS = "HttpOnly; Secure; Path=/; SameSite=Lax";
 
-/** Shape parked in KV under `login:${state}`: parsed request + bound cookie secret. */
-type ParkedLogin = {
-  oauthReq: AuthRequest;
-  binding: string;
-};
+/**
+ * Shape parked in KV under `login:${state}` — a validated discriminated
+ * union (demo-playground review finding 2: the callback must never treat
+ * unknown JSON as an MCP flow). Both branches carry the browser-binding
+ * cookie secret; the demo branch redirects only to fixed same-origin paths
+ * (enforced by parseDemoParkedState in src/demo/auth.ts).
+ */
+type ParkedLogin =
+  | { type: "mcp"; oauthReq: AuthRequest; binding: string }
+  | { type: "demo"; binding: string; returnTo: string };
 
 type WorkOSAuthenticateResponse = {
   user?: { id?: string };
@@ -139,18 +145,11 @@ export const WorkOSAuthHandler = {
       const binding = crypto.randomUUID();
       await env.OAUTH_KV.put(
         `login:${state}`,
-        JSON.stringify({ oauthReq, binding } satisfies ParkedLogin),
+        JSON.stringify({ type: "mcp", oauthReq, binding } satisfies ParkedLogin),
         { expirationTtl: LOGIN_STATE_TTL_SECONDS }
       );
 
-      const authorize = new URL(WORKOS_AUTHORIZE_URL);
-      authorize.searchParams.set("response_type", "code");
-      authorize.searchParams.set("client_id", env.WORKOS_CLIENT_ID);
-      authorize.searchParams.set("redirect_uri", `${url.origin}/callback`);
-      authorize.searchParams.set("provider", "authkit");
-      authorize.searchParams.set("state", state);
-
-      const headers = new Headers({ location: authorize.toString() });
+      const headers = new Headers({ location: workosAuthorizeUrl(env, url.origin, state) });
       headers.append("set-cookie", setCookie(STATE_BINDING_COOKIE, binding));
       headers.append("set-cookie", clearCookie(CONSENT_CSRF_COOKIE));
       return new Response(null, { status: 302, headers });
@@ -181,10 +180,14 @@ async function completeCallback(
   if (!stored) {
     return text("Invalid or expired state", 400, { "set-cookie": clearCookie(STATE_BINDING_COOKIE) });
   }
-  const parked = JSON.parse(stored) as ParkedLogin;
-  const presented = readCookie(request, STATE_BINDING_COOKIE);
-  // Single-use: delete the parked state before any exchange, match or not.
+  // Single-use: delete the parked state before validation and the code
+  // exchange, in every branch — even a malformed value is consumed.
   await env.OAUTH_KV.delete(`login:${state}`);
+  const parked = parseParkedLogin(stored);
+  if (!parked) {
+    return text("Invalid login state", 400, { "set-cookie": clearCookie(STATE_BINDING_COOKIE) });
+  }
+  const presented = readCookie(request, STATE_BINDING_COOKIE);
   if (!presented || presented !== parked.binding) {
     return text("State binding mismatch", 400, { "set-cookie": clearCookie(STATE_BINDING_COOKIE) });
   }
@@ -208,6 +211,16 @@ async function completeCallback(
 
   // WorkOS token dropped here; only the peppered subject hash moves forward.
   const subject = await deriveSubject(workosUserId, env.MCP_SERVER_SECRET);
+
+  if (parked.type === "demo") {
+    // Browser session, not an OAuth grant: signed cookie + fixed same-origin
+    // redirect (validated at parse time). No completeAuthorization.
+    const headers = new Headers({ location: parked.returnTo });
+    headers.append("set-cookie", await mintDemoCookie(env.MCP_SERVER_SECRET, subject));
+    headers.append("set-cookie", clearCookie(STATE_BINDING_COOKIE));
+    return new Response(null, { status: 302, headers });
+  }
+
   const scopes = parked.oauthReq.scope ?? [];
   const { redirectTo } = await provider.completeAuthorization({
     request: parked.oauthReq,
@@ -221,6 +234,73 @@ async function completeCallback(
     status: 302,
     headers: { location: redirectTo, "set-cookie": clearCookie(STATE_BINDING_COOKIE) }
   });
+}
+
+/**
+ * Strict parse of the parked login-state union. Unknown/malformed shapes →
+ * null (callback answers 400); a raw pre-union value (no `type`) is malformed
+ * too — forward-only, no compat parsing. The demo branch delegates to
+ * parseDemoParkedState so the returnTo allowlist lives in one place.
+ */
+function parseParkedLogin(raw: string): ParkedLogin | null {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  if (typeof parsed !== "object" || parsed === null) return null;
+  const { type, binding } = parsed as { type?: unknown; binding?: unknown };
+  if (typeof binding !== "string" || binding.length === 0) return null;
+  if (type === "mcp") {
+    const { oauthReq } = parsed as { oauthReq?: unknown };
+    if (typeof oauthReq !== "object" || oauthReq === null) return null;
+    return { type: "mcp", oauthReq: oauthReq as AuthRequest, binding };
+  }
+  if (type === "demo") {
+    const demo = parseDemoParkedState(raw);
+    if (!demo) return null;
+    return { type: "demo", binding, returnTo: demo.returnTo };
+  }
+  return null;
+}
+
+/** The WorkOS AuthKit hop — one URL shape for both the MCP and demo flows. */
+function workosAuthorizeUrl(
+  env: Pick<Env, "WORKOS_CLIENT_ID">,
+  origin: string,
+  state: string
+): string {
+  const authorize = new URL(WORKOS_AUTHORIZE_URL);
+  authorize.searchParams.set("response_type", "code");
+  authorize.searchParams.set("client_id", env.WORKOS_CLIENT_ID);
+  authorize.searchParams.set("redirect_uri", `${origin}/callback`);
+  authorize.searchParams.set("provider", "authkit");
+  authorize.searchParams.set("state", state);
+  return authorize.toString();
+}
+
+/**
+ * GET /demo/login (routed in src/server.ts) — parks the demo branch of the
+ * login union under the SAME `login:${state}` key scheme and TTL as the MCP
+ * flow, sets the same browser-binding cookie, and redirects to WorkOS
+ * AuthKit with the shared `${origin}/callback` redirect_uri.
+ */
+export async function demoLoginRedirect(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const state = crypto.randomUUID();
+  const binding = crypto.randomUUID();
+  await env.OAUTH_KV.put(
+    `login:${state}`,
+    JSON.stringify({ type: "demo", binding, returnTo: "/demo" } satisfies ParkedLogin),
+    { expirationTtl: LOGIN_STATE_TTL_SECONDS }
+  );
+  const headers = new Headers({
+    location: workosAuthorizeUrl(env, url.origin, state),
+    "cache-control": "no-store"
+  });
+  headers.append("set-cookie", setCookie(STATE_BINDING_COOKIE, binding));
+  return new Response(null, { status: 302, headers });
 }
 
 /**

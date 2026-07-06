@@ -38,12 +38,12 @@ const OG_IMAGE = "https://raven.stellar.buzz/og.png";
 // stellar spark. Inline SVG data URI (favicon) + raw path (in-page marks).
 const RAVEN_PATH =
   "M2 14C8 13 10 9 12 4C14 9 16 13 22 14C16 14 13 16 12 20C11 16 8 14 2 14Z";
-const FAVICON =
+export const FAVICON =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='" +
   RAVEN_PATH +
   "' fill='%23ff5500'/%3E%3C/svg%3E";
 
-function ravenSvg(cls: string): string {
+export function ravenSvg(cls: string): string {
   return `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${RAVEN_PATH}"/></svg>`;
 }
 
@@ -940,6 +940,7 @@ export function robotsTxt(): string {
     "Allow: /",
     "Disallow: /authorize",
     "Disallow: /callback",
+    "Disallow: /demo",
     "Disallow: /mcp",
     `Sitemap: https://${HOST}/sitemap.xml`,
     ""

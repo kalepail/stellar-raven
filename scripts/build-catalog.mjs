@@ -232,6 +232,7 @@ import {
   lumenloopOpExcluded,
   scrubRetiredSkillRefs
 } from "./exposure.mjs";
+import { assertNoNonExposedRefsInText } from "./emitted-text-guard.mjs";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -653,6 +654,13 @@ function buildSkills(manifest) {
 // skill. This is the systemic backstop for the whole leak class — a scrub or
 // rewrite that goes stale fails the build here instead of shipping a pointer
 // to a capability consumers must never learn about.
+//
+// The "any service.op token not in opIds" check needs the full assembled
+// manifest as an allowlist, so it stays here; the other three checks (raw
+// excluded scout path, retired-skill ref, excluded lumenloop op name) are
+// allowlist-free and factored into scripts/emitted-text-guard.mjs so any
+// OTHER emitted text (e.g. the /demo page/prompts) can run them too without
+// a manifest — see assertNoNonExposedRefsInText.
 function assertNoNonExposedRefs(entries) {
   const opIds = new Set(entries.filter((e) => e.kind === "operation").map((e) => e.id));
   // Service-callable tokens ("scout.matchPartners"); the lookbehind skips
@@ -660,13 +668,6 @@ function assertNoNonExposedRefs(entries) {
   // and TLD-shaped tokens ("lumenloop.com" in prose URLs) are ignored.
   const callableRe = /(?<![.\w])(?:lumenloop|scout|stellarDocs)\.[A-Za-z_]\w*/g;
   const TLDS = new Set(["com", "org", "net", "io", "xyz", "dev", "app", "buzz"]);
-  const retiredRe = /lumenloop-api-[a-z]+|lumenloop-mcp-connect/;
-  const rawScoutPaths = [...EXCLUDED_SCOUT_OPS].map((k) => k.split(" ")[1]);
-  // Bare excluded lumenloop tool names ("request_research") are distinctive
-  // snake tokens — catch them even without the service prefix.
-  const excludedLumenloopRe = new RegExp(
-    `\\b(?:${[...EXCLUDED_LUMENLOOP_OPS].join("|")})\\b`
-  );
   for (const entry of entries) {
     const text = [entry.description ?? "", ...(entry.keywords ?? [])].join("\n");
     for (const token of text.match(callableRe) ?? []) {
@@ -679,27 +680,7 @@ function assertNoNonExposedRefs(entries) {
         );
       }
     }
-    for (const path of rawScoutPaths) {
-      if (text.includes(path)) {
-        throw new Error(
-          `ADR-0003 leak: entry "${entry.id}" emits excluded scout endpoint path "${path}" — ` +
-            `add the clause to SCOUT_DESCRIPTION_SCRUBS in scripts/description-notes.mjs.`
-        );
-      }
-    }
-    if (retiredRe.test(text)) {
-      throw new Error(
-        `ADR-0003 leak: entry "${entry.id}" emits a retired-skill reference — ` +
-          `scrubRetiredSkillRefs missed it; see scripts/exposure.mjs.`
-      );
-    }
-    if (excludedLumenloopRe.test(text)) {
-      throw new Error(
-        `ADR-0003 leak: entry "${entry.id}" emits an excluded lumenloop tool name ` +
-          `(${text.match(excludedLumenloopRe)[0]}) — the exclusion in scripts/exposure.mjs ` +
-          `must take its cross-references with it.`
-      );
-    }
+    assertNoNonExposedRefsInText(text, `entry "${entry.id}"`);
   }
 }
 

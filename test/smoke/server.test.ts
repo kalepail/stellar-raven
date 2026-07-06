@@ -112,6 +112,104 @@ describe("/mcp auth dispatch", () => {
   });
 });
 
+describe("/demo routes", () => {
+  it("GET /demo serves the locked playground page with the demo header set", async () => {
+    const res = await SELF.fetch(`${PUBLIC}/demo`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("text/html");
+    expect(res.headers.get("cache-control")).toBe("no-store");
+    expect(res.headers.get("x-robots-tag")).toBe("noindex");
+    expect(res.headers.get("content-security-policy")).toContain("connect-src 'self'");
+    // No demo cookie on the public hostname → locked state.
+    expect(await res.text()).toContain("/demo/login");
+  });
+
+  it("GET /demo/ (trailing slash) is the same page; HEAD works too", async () => {
+    const slash = await SELF.fetch(`${PUBLIC}/demo/`);
+    expect(slash.status).toBe(200);
+    const head = await SELF.fetch(`${PUBLIC}/demo`, { method: "HEAD" });
+    expect(head.status).toBe(200);
+    expect(head.headers.get("content-type")).toContain("text/html");
+  });
+
+  it("GET /demo on localhost takes the dev bypass → authenticated chat UI", async () => {
+    const res = await SELF.fetch(`${LOCAL}/demo`);
+    expect(res.status).toBe(200);
+    expect(await res.text()).toContain("composer-form");
+  });
+
+  it("wrong methods on matched demo paths → 405 with Allow", async () => {
+    const page = await SELF.fetch(`${PUBLIC}/demo`, { method: "DELETE" });
+    expect(page.status).toBe(405);
+    expect(page.headers.get("allow")).toBe("GET, HEAD");
+    const login = await SELF.fetch(`${PUBLIC}/demo/login`, { method: "POST" });
+    expect(login.status).toBe(405);
+    const chat = await SELF.fetch(`${PUBLIC}/demo/chat`);
+    expect(chat.status).toBe(405);
+    expect(chat.headers.get("allow")).toBe("POST");
+  });
+
+  it("non-exact /demo* paths fall through to the provider 404 (/demolition)", async () => {
+    expect((await SELF.fetch(`${PUBLIC}/demolition`)).status).toBe(404);
+    expect((await SELF.fetch(`${PUBLIC}/demo/other`)).status).toBe(404);
+  });
+
+  it("GET /demo/login parks state and 302s to WorkOS with the binding cookie", async () => {
+    const res = await SELF.fetch(`${PUBLIC}/demo/login`, { redirect: "manual" });
+    expect(res.status).toBe(302);
+    const location = new URL(res.headers.get("location") ?? "");
+    expect(location.origin).toBe("https://api.workos.com");
+    expect(location.searchParams.get("state")).toBeTruthy();
+    expect(res.headers.get("set-cookie")).toContain("__Host-MCP_STATE=");
+  });
+
+  it("POST /demo/chat: cross-origin → 403 before anything else", async () => {
+    // Wrong Origin, and absent Origin, both fail the same-origin requirement.
+    const wrong = await SELF.fetch(`${PUBLIC}/demo/chat`, {
+      method: "POST",
+      headers: { origin: "https://evil.example", "content-type": "application/json" },
+      body: "{}"
+    });
+    expect(wrong.status).toBe(403);
+    const absent = await SELF.fetch(`${PUBLIC}/demo/chat`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: "{}"
+    });
+    expect(absent.status).toBe(403);
+    const crossSite = await SELF.fetch(`${PUBLIC}/demo/chat`, {
+      method: "POST",
+      headers: {
+        origin: PUBLIC,
+        "sec-fetch-site": "cross-site",
+        "content-type": "application/json"
+      },
+      body: "{}"
+    });
+    expect(crossSite.status).toBe(403);
+  });
+
+  it("POST /demo/chat: same-origin but no session cookie → 401", async () => {
+    const res = await SELF.fetch(`${PUBLIC}/demo/chat`, {
+      method: "POST",
+      headers: { origin: PUBLIC, "content-type": "application/json" },
+      body: JSON.stringify({ messages: [{ role: "user", content: "hi" }] })
+    });
+    expect(res.status).toBe(401);
+  });
+
+  it("POST /demo/chat: dev bypass on localhost reaches body validation (400 pre-model)", async () => {
+    // Malformed body fails AFTER auth+throttle but BEFORE any AI binding
+    // call — proves the gauntlet order without spending a model turn.
+    const res = await SELF.fetch(`${LOCAL}/demo/chat`, {
+      method: "POST",
+      headers: { origin: LOCAL, "content-type": "application/json" },
+      body: JSON.stringify({ messages: [] })
+    });
+    expect(res.status).toBe(400);
+  });
+});
+
 describe("discovery alias rewrite", () => {
   it("OIDC discovery path serves the RFC 8414 metadata", async () => {
     const res = await SELF.fetch(`${PUBLIC}/.well-known/openid-configuration`);

@@ -29,9 +29,11 @@ import {
 import {
   LOGIN_STATE_TTL_SECONDS,
   WorkOSAuthHandler,
+  demoLoginRedirect,
   deriveSubject,
   workosAuthenticateBody
 } from "../src/auth/workos";
+import { DEMO_COOKIE_NAME, verifyDemoCookie } from "../src/demo/auth";
 
 // ---------------------------------------------------------------------------
 // Stubs
@@ -396,9 +398,12 @@ describe("WorkOSAuthHandler", () => {
     const state = location.searchParams.get("state") ?? "";
     const kv = env.OAUTH_KV as unknown as { store: Map<string, string> };
     const parked = JSON.parse(kv.store.get(`login:${state}`) ?? "{}") as {
+      type: string;
       oauthReq: AuthRequest;
       binding: string;
     };
+    // Discriminated union: the MCP flow parks its branch tag explicitly.
+    expect(parked.type).toBe("mcp");
     expect(parked.oauthReq.clientId).toBe("client-abc");
     // The browser-binding cookie matches what was parked.
     expect(cookieValue(response, "__Host-MCP_STATE")).toBe(parked.binding);
@@ -414,7 +419,7 @@ describe("WorkOSAuthHandler", () => {
     expect(unknown.status).toBe(400);
 
     const kv = env.OAUTH_KV as unknown as { store: Map<string, string> };
-    kv.store.set("login:st1", JSON.stringify({ oauthReq: AUTH_REQ, binding: "bind-1" }));
+    kv.store.set("login:st1", JSON.stringify({ type: "mcp", oauthReq: AUTH_REQ, binding: "bind-1" }));
     const mismatch = await WorkOSAuthHandler.fetch(
       new Request("https://mcp.test/callback?code=abc&state=st1", {
         headers: { cookie: "__Host-MCP_STATE=wrong" }
@@ -430,7 +435,7 @@ describe("WorkOSAuthHandler", () => {
     const helpers = stubHelpers();
     const env = testEnv({ OAUTH_PROVIDER: helpers });
     const kv = env.OAUTH_KV as unknown as { store: Map<string, string> };
-    kv.store.set("login:st2", JSON.stringify({ oauthReq: AUTH_REQ, binding: "bind-2" }));
+    kv.store.set("login:st2", JSON.stringify({ type: "mcp", oauthReq: AUTH_REQ, binding: "bind-2" }));
 
     const workosFetch = vi.fn(async () =>
       Response.json({ user: { id: "user_wos_1" }, access_token: "never-stored" })
@@ -469,7 +474,7 @@ describe("WorkOSAuthHandler", () => {
     const helpers = stubHelpers();
     const env = testEnv({ OAUTH_PROVIDER: helpers });
     const kv = env.OAUTH_KV as unknown as { store: Map<string, string> };
-    kv.store.set("login:st3", JSON.stringify({ oauthReq: AUTH_REQ, binding: "bind-3" }));
+    kv.store.set("login:st3", JSON.stringify({ type: "mcp", oauthReq: AUTH_REQ, binding: "bind-3" }));
     vi.stubGlobal("fetch", vi.fn(async () => new Response("nope", { status: 401 })));
 
     const response = await WorkOSAuthHandler.fetch(
@@ -500,5 +505,131 @@ describe("WorkOSAuthHandler", () => {
     expect(subject).toMatch(/^[0-9a-f]{64}$/);
     expect(await deriveSubject("user_1", "pepper")).toBe(subject);
     expect(await deriveSubject("user_1", "other-pepper")).not.toBe(subject);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Parked-login union + /callback demo branch (demo-playground review finding 2)
+
+describe("login-state union on /callback", () => {
+  function callbackRequest(state: string, binding: string): Request {
+    return new Request(`https://mcp.test/callback?code=code-123&state=${state}`, {
+      headers: { cookie: `__Host-MCP_STATE=${binding}` }
+    });
+  }
+
+  async function driveCallback(parkedRaw: string | null): Promise<{
+    response: Response;
+    helpers: OAuthHelpers;
+    kv: { store: Map<string, string> };
+    workosFetch: ReturnType<typeof vi.fn>;
+  }> {
+    const helpers = stubHelpers();
+    const env = testEnv({ OAUTH_PROVIDER: helpers });
+    const kv = env.OAUTH_KV as unknown as { store: Map<string, string> };
+    if (parkedRaw !== null) kv.store.set("login:stX", parkedRaw);
+    const workosFetch = vi.fn(async () =>
+      Response.json({ user: { id: "user_wos_1" }, access_token: "never-stored" })
+    );
+    vi.stubGlobal("fetch", workosFetch);
+    const response = await WorkOSAuthHandler.fetch(callbackRequest("stX", "bind-x"), env);
+    return { response, helpers, kv, workosFetch };
+  }
+
+  it("rejects malformed (non-JSON) parked state with 400, consumed, no exchange", async () => {
+    const { response, helpers, kv, workosFetch } = await driveCallback("not json at all");
+    expect(response.status).toBe(400);
+    expect(kv.store.has("login:stX")).toBe(false);
+    expect(workosFetch).not.toHaveBeenCalled();
+    expect(helpers.completeAuthorization).not.toHaveBeenCalled();
+  });
+
+  it("rejects an unknown branch type with 400, consumed, no exchange", async () => {
+    const { response, kv, workosFetch } = await driveCallback(
+      JSON.stringify({ type: "weird", binding: "bind-x", oauthReq: AUTH_REQ })
+    );
+    expect(response.status).toBe(400);
+    expect(kv.store.has("login:stX")).toBe(false);
+    expect(workosFetch).not.toHaveBeenCalled();
+  });
+
+  it("rejects legacy pre-union state (no type tag) — forward-only, no compat parsing", async () => {
+    const { response, workosFetch } = await driveCallback(
+      JSON.stringify({ oauthReq: AUTH_REQ, binding: "bind-x" })
+    );
+    expect(response.status).toBe(400);
+    expect(workosFetch).not.toHaveBeenCalled();
+  });
+
+  it("rejects a demo state with a tampered returnTo (open-redirect shape) before any exchange", async () => {
+    const { response, workosFetch } = await driveCallback(
+      JSON.stringify({ type: "demo", binding: "bind-x", returnTo: "https://evil.example/demo" })
+    );
+    expect(response.status).toBe(400);
+    expect(workosFetch).not.toHaveBeenCalled();
+  });
+
+  it("demo branch: exchanges the code, mints the signed cookie, 302s to /demo — no OAuth grant", async () => {
+    const { response, helpers, kv, workosFetch } = await driveCallback(
+      JSON.stringify({ type: "demo", binding: "bind-x", returnTo: "/demo" })
+    );
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe("/demo");
+    expect(workosFetch).toHaveBeenCalledTimes(1);
+    // A browser session, not an authorization: the provider is never involved.
+    expect(helpers.completeAuthorization).not.toHaveBeenCalled();
+    expect(kv.store.has("login:stX")).toBe(false);
+
+    // The Set-Cookie is a verifiable demo session for the peppered subject.
+    const setCookies = (response.headers as unknown as { getSetCookie(): string[] }).getSetCookie();
+    const demoCookie = setCookies.find((h) => h.startsWith(`${DEMO_COOKIE_NAME}=`));
+    expect(demoCookie).toBeTruthy();
+    expect(demoCookie).toContain("SameSite=Strict");
+    const cookieHeader = `${DEMO_COOKIE_NAME}=${demoCookie?.slice(DEMO_COOKIE_NAME.length + 1).split(";")[0]}`;
+    const subject = await verifyDemoCookie("unit-test-pepper", cookieHeader);
+    expect(subject).toBe(await deriveSubject("user_wos_1", "unit-test-pepper"));
+    // The binding cookie is cleared alongside.
+    expect(setCookies.some((h) => h.startsWith("__Host-MCP_STATE=;"))).toBe(true);
+  });
+
+  it("demo branch still enforces the browser-binding cookie (single-use consumption)", async () => {
+    const helpers = stubHelpers();
+    const env = testEnv({ OAUTH_PROVIDER: helpers });
+    const kv = env.OAUTH_KV as unknown as { store: Map<string, string> };
+    kv.store.set("login:stY", JSON.stringify({ type: "demo", binding: "bind-y", returnTo: "/demo" }));
+    const workosFetch = vi.fn(async () => Response.json({ user: { id: "user_wos_1" } }));
+    vi.stubGlobal("fetch", workosFetch);
+    const response = await WorkOSAuthHandler.fetch(callbackRequest("stY", "wrong-binding"), env);
+    expect(response.status).toBe(400);
+    expect(kv.store.has("login:stY")).toBe(false);
+    expect(workosFetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("demoLoginRedirect", () => {
+  it("parks { type: 'demo', returnTo: '/demo' } under login:<state> and 302s to WorkOS AuthKit", async () => {
+    const env = testEnv();
+    const response = await demoLoginRedirect(new Request("https://mcp.test/demo/login"), env);
+    expect(response.status).toBe(302);
+
+    const location = new URL(response.headers.get("location") ?? "");
+    expect(location.origin).toBe("https://api.workos.com");
+    expect(location.pathname).toBe("/user_management/authorize");
+    expect(location.searchParams.get("provider")).toBe("authkit");
+    expect(location.searchParams.get("client_id")).toBe("client_test_123");
+    // Same origin-derived redirect_uri as the MCP flow — one registered URI.
+    expect(location.searchParams.get("redirect_uri")).toBe("https://mcp.test/callback");
+
+    const state = location.searchParams.get("state") ?? "";
+    const kv = env.OAUTH_KV as unknown as { store: Map<string, string> };
+    const parked = JSON.parse(kv.store.get(`login:${state}`) ?? "{}") as {
+      type: string;
+      binding: string;
+      returnTo: string;
+    };
+    expect(parked.type).toBe("demo");
+    expect(parked.returnTo).toBe("/demo");
+    // The browser-binding cookie matches what was parked, like the MCP flow.
+    expect(cookieValue(response, "__Host-MCP_STATE")).toBe(parked.binding);
   });
 });

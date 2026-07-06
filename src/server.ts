@@ -27,6 +27,10 @@ import {
   oauthProviderOptions,
   rewritePath
 } from "./auth/gate";
+import { demoLoginRedirect } from "./auth/workos";
+import { verifyDemoCookie } from "./demo/auth";
+import { handleDemoChat } from "./demo/chat";
+import { DEMO_PAGE_HEADERS, demoPage } from "./demo/page";
 import { logEvent } from "./observability";
 
 const SERVER_INFO = { name: "stellar-raven-codemode", version: "0.1.0" };
@@ -59,6 +63,59 @@ function isMcpPath(url: URL): boolean {
   return url.pathname === "/mcp" || url.pathname.startsWith("/mcp/");
 }
 
+// Exact paths only (review finding 6: no startsWith that would catch
+// /demolition) — anything else under /demo* falls through to the provider's
+// defaultHandler 404.
+function isDemoPath(url: URL): boolean {
+  return (
+    url.pathname === "/demo" ||
+    url.pathname === "/demo/" ||
+    url.pathname === "/demo/login" ||
+    url.pathname === "/demo/chat"
+  );
+}
+
+/**
+ * /demo routes — a browser surface gated by the signed demo cookie (plus the
+ * same loopback dev bypass /mcp honors), never by the OAuth provider. Matched
+ * paths with an unsupported method get 405 here; only unmatched paths fall
+ * through to the provider.
+ */
+async function handleDemoRoute(
+  request: Request,
+  env: Env,
+  ctx: ExecutionContext,
+  url: URL
+): Promise<Response> {
+  const isRead = request.method === "GET" || request.method === "HEAD";
+
+  if (url.pathname === "/demo" || url.pathname === "/demo/") {
+    if (!isRead) return methodNotAllowed("GET, HEAD");
+    // No cookie present → verify returns null without needing the secret.
+    const subject = await verifyDemoCookie(env.MCP_SERVER_SECRET, request.headers.get("cookie"));
+    const authenticated = subject !== null || allowDevUnauthenticated(env, url.hostname);
+    return new Response(demoPage({ authenticated }), { headers: DEMO_PAGE_HEADERS });
+  }
+
+  if (url.pathname === "/demo/login") {
+    // GET only (not HEAD): the redirect parks single-use state in KV — probe
+    // requests must not mint state.
+    if (request.method !== "GET") return methodNotAllowed("GET");
+    return demoLoginRedirect(request, env);
+  }
+
+  // /demo/chat — handleDemoChat owns the full gauntlet (method, origin, auth,
+  // throttle, body) and answers 405 for non-POST itself.
+  return handleDemoChat(request, env, ctx);
+}
+
+function methodNotAllowed(allow: string): Response {
+  return Response.json(
+    { error: "method_not_allowed", hint: `Allowed: ${allow}` },
+    { status: 405, headers: { allow, "cache-control": "no-store" } }
+  );
+}
+
 export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url);
@@ -73,6 +130,12 @@ export default {
         logEvent("mcp_request", { auth: "dev-bypass", method: request.method });
         return mcpHandler.fetch(request, env, ctx);
       }
+    }
+
+    // /demo playground — cookie-gated browser surface, intercepted BEFORE
+    // the provider (it knows nothing about these routes).
+    if (isDemoPath(url)) {
+      return handleDemoRoute(request, env, ctx, url);
     }
 
     // Discovery aliases (path-suffixed RFC 8414 + OIDC-discovery paths) →
