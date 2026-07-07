@@ -39,7 +39,10 @@
     // dedicated demo gateway, whose rate-limit / spend-limit rules are
     // dashboard-side config — keep at least one spend-limit rule on it while
     // /demo is live.
-    "DEMO_AI_GATEWAY_ID": "stellar-raven-demo"
+    "DEMO_AI_GATEWAY_ID": "stellar-raven-demo",
+    // Execute result/log/error model-boundary cap. Default preserves the
+    // original ~6k-token behavior; raise only for measured truncation review.
+    "EXECUTE_MODEL_BOUNDARY_MAX_TOKENS": "6000"
   },
   // Token/client/grant storage for @cloudflare/workers-oauth-provider
   // (research/auth-workos.md). The binding MUST be named OAUTH_KV — the

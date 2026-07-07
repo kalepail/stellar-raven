@@ -78,6 +78,32 @@ describe("sandbox surface shape", () => {
     expect(codemode.prelude).toContain("codemode.skill =");
   });
 
+  it("can expose exact-id describe without broader codemode discovery", async () => {
+    const demoProviders = buildSandbox(catalog, bundle, env, {
+      codemodeDiscovery: false,
+      codemodeDescribe: true
+    });
+    const codemode = demoProviders.find((p) => p.name === "codemode")!;
+    expect(Object.keys(codemode.fns).sort()).toEqual(["describe", "skill_read", "skill_run"]);
+    expect(codemode.fns.search).toBeUndefined();
+    const described = (await codemode.fns.describe!("scout.searchProjects")) as {
+      ok: boolean;
+      id?: string;
+      usage?: string;
+    };
+    expect(described).toMatchObject({ ok: true, id: "scout.searchProjects" });
+    expect(described.usage).toContain("call it exactly as the signature");
+  });
+
+  it("keeps broad codemode discovery enabled by default when describeOnly is omitted", () => {
+    const defaultProviders = buildSandbox(catalog, bundle, env);
+    const codemode = defaultProviders.find((p) => p.name === "codemode")!;
+    expect(codemode.fns.search).toBeTypeOf("function");
+    expect(codemode.fns.catalog).toBeTypeOf("function");
+    expect(codemode.fns.spec).toBeTypeOf("function");
+    expect(codemode.fns.describe).toBeTypeOf("function");
+  });
+
   it("the skill prelude carries the run wrapper: flat skill_run dispatch + the shared envelope guard", () => {
     const codemode = providers.find((p) => p.name === "codemode")!;
     // run is read's sibling over the flat dispatch (design §6) …

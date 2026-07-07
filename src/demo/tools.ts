@@ -33,15 +33,28 @@ import {
 } from "../mcp/tools.ts";
 import { createExecuteRunner, type ExecuteRunner } from "../executor/run.ts";
 import { logEvent, preview, CODE_LOG_MAX } from "../observability.ts";
-import { truncateForModel, truncateLogsForModel } from "../policy/truncate.ts";
+import {
+  modelBoundaryMaxTokensFromEnv,
+  truncateForModel,
+  truncateLogsForModel
+} from "../policy/truncate.ts";
 import { DEMO_CAPS, createDemoToolBudget, type DemoToolBudget } from "./budget.ts";
 import type { DemoFrame } from "./frames.ts";
 
 // One sandbox executor per isolate, exactly like src/server.ts — the runner
 // only closes over env bindings (stable across requests in an isolate).
 let cachedRunner: ExecuteRunner | undefined;
+let cachedRunnerMaxTokens: number | undefined;
 function getRunner(env: Env): ExecuteRunner {
-  cachedRunner ??= createExecuteRunner(env, { codemodeDiscovery: false });
+  const modelBoundaryMaxTokens = modelBoundaryMaxTokensFromEnv(env as unknown as Record<string, unknown>);
+  if (!cachedRunner || cachedRunnerMaxTokens !== modelBoundaryMaxTokens) {
+    cachedRunner = createExecuteRunner(env, {
+      codemodeDiscovery: false,
+      codemodeDescribe: true,
+      modelBoundaryMaxTokens
+    });
+    cachedRunnerMaxTokens = modelBoundaryMaxTokens;
+  }
   return cachedRunner;
 }
 
@@ -80,6 +93,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
   budgetReport: () => DemoToolBudget;
 } {
   const { env, emit } = opts;
+  const modelBoundaryMaxTokens = modelBoundaryMaxTokensFromEnv(env as unknown as Record<string, unknown>);
   // This object is created once by chat.ts and shared across fallback model
   // attempts. If callers omit it, a standalone turn budget is created for
   // direct smoke tests.
@@ -120,7 +134,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
           hits: [],
           total: 0,
           truncated: false,
-          nextSteps: "Search call limit reached for this demo turn. Use the first search result set and move to one execute call, then summarize."
+          nextSteps: "Search call limit reached for this demo turn. Use the earlier search result set(s), move to execute if an execute call remains, then summarize from tool evidence."
         };
         logEvent("demo-search-refused", {
           reason: "call-limit",
@@ -153,10 +167,17 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
       });
       const { total, truncated } = page;
       const hits = page.hits.map(compactHitForDemo);
+      const remainingSearches = Math.max(0, DEMO_CAPS.maxSearchCallsPerTurn - budget.searchCalls);
+      const searchAgain =
+        remainingSearches > 0
+          ? " If these hits are truncated, mismatched, or do not expose the right endpoint shape, spend the second and final `search` now with narrower endpoint-discovery terms or exact `kind`/`service` filters before executing."
+          : " No search calls remain; do not conclude capability absence from mismatched hits alone, and use the best available exact ids.";
       const nextSteps =
         hits.length > 0
-          ? `These hits are composable: write ONE \`execute\` script that calls the several relevant operations from this result set (Promise.all across services for independent calls), then follow up with deeper calls parameterized by their results only when the exact operation was returned here — e.g. \`await lumenloop.search_directory({ query: "..." })\` then \`lumenloop.get_project({ slug })\` only if both ids are present. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under \`.data\` (\`r.data.projects\`, never \`r.projects\`); check \`r.ok\` first. Skill hits are operational playbooks — read the sections you need in-script via \`codemode.skill.read(id, { sections })\` (keys: the hit's \`availableSections\`). Hits whose \`signature\` shows a \`codemode.skill.run("<exact id>", input)\` line are runnable skills — call that line verbatim to run the whole pipeline in one step (payload under \`.data\`, constituent calls audited in \`data.calls\`). Scores compare only within the same \`tier\` (gated hits always rank above backfill hits). Demo rule: in-script discovery helpers are disabled; use this one search result, one execute script, then summarize.${truncated ? " More entries matched than shown (truncated) — use the best visible hits for this demo turn." : ""}`
-          : "No hits. This single-search demo cannot run follow-up discovery; say the search found no matching exposed catalog entries and suggest a shorter query for a new turn. Do not conclude the capability is missing from one empty result.";
+          ? `These hits are composable: write ONE \`execute\` script that calls the several relevant operations from the visible search result sets (Promise.all across services for independent calls), then follow up with deeper calls parameterized by their results only when the exact operation was returned here — e.g. \`await lumenloop.search_directory({ query: "..." })\` then \`lumenloop.get_project({ slug })\` only if both ids are present. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under \`.data\` (\`r.data.projects\`, never \`r.projects\`); check \`r.ok\` first. Skill hits are operational playbooks — read the sections you need in-script via \`codemode.skill.read(id, { sections })\` (keys: the hit's \`availableSections\`). Hits whose \`signature\` shows a \`codemode.skill.run("<exact id>", input)\` line are runnable skills — call that line verbatim to run the whole pipeline in one step (payload under \`.data\`, constituent calls audited in \`data.calls\`). Scores compare only within the same \`tier\` (gated hits always rank above backfill hits). Demo rule: \`codemode.describe("<exact id>")\` is available for exact visible hit ids when a signature is stubbed or row fields are unclear; \`codemode.search\`, \`codemode.catalog\`, and \`codemode.spec\` are disabled in-script. Avoid lossy projection false negatives: inspect row keys or filter against raw row JSON before selecting fields, and include nested/common field variants.${truncated ? " More entries matched than shown (truncated)." : ""}${searchAgain}`
+          : remainingSearches > 0
+            ? "No hits. Use the second and final search with a shorter, broader, or differently phrased endpoint-discovery query; do not conclude the capability is missing from one empty result."
+            : "No hits and no search calls remain. Say the search found no matching exposed catalog entries, suggest a shorter query for a new turn, and do not conclude the capability is missing from one empty result.";
       return respond({ hits, total, truncated, nextSteps });
     }
   });
@@ -208,8 +229,8 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
       // Same model-boundary budgets as the MCP handler: logs and error text
       // are model-authored channels and get the result's ~6k-token cap each
       // (rationale in src/policy/truncate.ts and src/mcp/tools.ts).
-      const shapedLogs = truncateLogsForModel(outcome.logs.join("\n"));
-      const shapedError = outcome.ok ? null : truncateForModel(outcome.error);
+      const shapedLogs = truncateLogsForModel(outcome.logs.join("\n"), modelBoundaryMaxTokens);
+      const shapedError = outcome.ok ? null : truncateForModel(outcome.error, modelBoundaryMaxTokens);
 
       logEvent("demo-execute", {
         ok: outcome.ok,

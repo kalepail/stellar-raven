@@ -16,17 +16,25 @@ describe("demo system prompt", () => {
     expect(DEMO_SYSTEM_PROMPT.endsWith(DEMO_PREAMBLE)).toBe(true);
     // The demo's turn budget is stated to the model (numbers enforced in
     // src/demo/budget.ts; drift here is a lie to the model, not a crash).
-    expect(DEMO_PREAMBLE).toContain("3 steps");
-    expect(DEMO_PREAMBLE).toContain("1 `search` call");
-    expect(DEMO_PREAMBLE).toContain("1 `execute` call");
-    expect(DEMO_PREAMBLE).toContain("do not call `codemode.search` inside `execute`");
+    expect(DEMO_PREAMBLE).toContain("5 steps");
+    expect(DEMO_PREAMBLE).toContain("2 `search` calls");
+    expect(DEMO_PREAMBLE).toContain("2 `execute` calls");
+    expect(DEMO_PREAMBLE).toContain("optional second `search`");
+    expect(DEMO_PREAMBLE).toContain("truncated, mismatched, or need a better endpoint-discovery query");
+    expect(DEMO_PREAMBLE).toContain("optional second `execute`");
+    expect(DEMO_PREAMBLE).toContain("do not call `codemode.search`, `codemode.catalog`, or `codemode.spec`");
+    expect(DEMO_PREAMBLE).toContain('`codemode.describe("<exact id>")` is allowed');
     expect(DEMO_PREAMBLE).toContain("Do not infer per-item detail functions");
     expect(DEMO_PREAMBLE).toContain("named result objects");
+    expect(DEMO_PREAMBLE).toContain("Avoid lossy projection false negatives");
+    expect(DEMO_PREAMBLE).toContain("filter against raw row JSON");
+    expect(DEMO_PREAMBLE).toContain("nested/common variants");
     expect(DEMO_PREAMBLE).toContain("Return compact selected fields only from `execute`");
     expect(DEMO_PREAMBLE).toContain("broad directory, regional, or aggregate questions");
     expect(DEMO_PREAMBLE).toContain("targeted per-country/per-entity fanout");
     expect(DEMO_PREAMBLE).toContain("counts, top 5-8 named rows, and source/provenance fields");
-    expect(DEMO_PREAMBLE).toContain("Aggregate, slice arrays, and project columns inside the sandbox");
+    expect(DEMO_PREAMBLE).toContain("Aggregate, slice arrays, and project columns inside the sandbox after filtering");
+    expect(SERVER_INSTRUCTIONS).toContain("filter raw rows or nested field variants before projecting compact columns");
   });
 
   it("references no non-exposed operations or retired skills (ADR-0003)", () => {

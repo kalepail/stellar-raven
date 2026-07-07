@@ -1,6 +1,6 @@
 /**
- * Result truncation for model-facing output (~6k-token budget with an
- * actionable footer, PLAN §4 / research/codemode.md §9 item 7).
+ * Result truncation for model-facing output (configured token budget, default
+ * ~6k, with an actionable footer; PLAN §4 / research/codemode.md §9 item 7).
  *
  * Why not import codemode's `truncateResult`: it IS importable inside the
  * Worker, but the package's main entry imports `cloudflare:workers`, which
@@ -13,11 +13,15 @@
  * blind truncation made agents re-run whole batches).
  *
  * Applied ONLY at the model boundary (the `execute` tool's final result +
- * logs) — results flowing back INTO sandbox code cost no context tokens and
- * are never truncated, so scripts can post-process big payloads freely.
+ * logs/errors) — results flowing back INTO sandbox code cost no context
+ * tokens and are never truncated, so scripts can post-process big payloads
+ * freely.
  */
 
 export const DEFAULT_MAX_TOKENS = 6000;
+export const MIN_MODEL_BOUNDARY_MAX_TOKENS = 1000;
+export const MAX_MODEL_BOUNDARY_MAX_TOKENS = 32000;
+export const MODEL_BOUNDARY_MAX_TOKENS_ENV = "EXECUTE_MODEL_BOUNDARY_MAX_TOKENS";
 export const CHARS_PER_TOKEN = 4;
 
 export type Truncated = {
@@ -38,13 +42,37 @@ export type Truncated = {
 /**
  * Advice-only options for the truncation footer. SECURITY INVARIANT: these
  * flags may change the ADVICE TEXT appended after the cut, never which bytes
- * of the result are kept or where the cut lands — the ~6k-token cap is a
+ * of the result are kept or where the cut lands — the bounded token cap is a
  * security boundary, and no caller-supplied signal may widen it.
  */
 export type TruncateAdvice = {
   /** Host-set: a skill body/section was read this run — advise section reads. */
   skillSectionAdvice?: boolean;
 };
+
+/**
+ * Host-side cap configuration for the execute model boundary. The default is
+ * deliberately unchanged; all overrides are bounded so this is not an
+ * unbounded payload-dump switch.
+ */
+export function modelBoundaryMaxTokensFromValue(raw: unknown): number {
+  if (raw === undefined || raw === null || raw === "") return DEFAULT_MAX_TOKENS;
+  const value = typeof raw === "number" ? String(raw) : String(raw).trim();
+  if (!/^\d+$/.test(value)) return DEFAULT_MAX_TOKENS;
+  const parsed = Number(value);
+  if (
+    !Number.isSafeInteger(parsed) ||
+    parsed < MIN_MODEL_BOUNDARY_MAX_TOKENS ||
+    parsed > MAX_MODEL_BOUNDARY_MAX_TOKENS
+  ) {
+    return DEFAULT_MAX_TOKENS;
+  }
+  return parsed;
+}
+
+export function modelBoundaryMaxTokensFromEnv(env: Record<string, unknown> = {}): number {
+  return modelBoundaryMaxTokensFromValue(env[MODEL_BOUNDARY_MAX_TOKENS_ENV]);
+}
 
 function footer(
   originalChars: number,
@@ -167,6 +195,7 @@ export function truncateForModel(
   maxTokens = DEFAULT_MAX_TOKENS,
   advice?: TruncateAdvice
 ): Truncated {
+  maxTokens = modelBoundaryMaxTokensFromValue(maxTokens);
   let text: string;
   if (typeof value === "string") {
     text = value;
@@ -225,6 +254,7 @@ function logsFooter(originalChars: number, maxTokens: number): string {
  * tighten only if the data says real sessions hit it.
  */
 export function truncateLogsForModel(text: string, maxTokens = DEFAULT_MAX_TOKENS): Truncated {
+  maxTokens = modelBoundaryMaxTokensFromValue(maxTokens);
   const maxChars = maxTokens * CHARS_PER_TOKEN;
   const approxOriginalTokens = Math.round(text.length / CHARS_PER_TOKEN);
   if (text.length <= maxChars) {

@@ -12,7 +12,14 @@ import { loadManifest, type Catalog, type CatalogEntry } from "../src/catalog/se
 import { guard } from "../src/policy/guard.ts";
 import { validateArgs } from "../src/policy/validate.ts";
 import { redactSecrets, secretsFromEnv } from "../src/policy/redact.ts";
-import { truncateForModel, truncateLogsForModel } from "../src/policy/truncate.ts";
+import {
+  DEFAULT_MAX_TOKENS,
+  MODEL_BOUNDARY_MAX_TOKENS_ENV,
+  modelBoundaryMaxTokensFromEnv,
+  modelBoundaryMaxTokensFromValue,
+  truncateForModel,
+  truncateLogsForModel
+} from "../src/policy/truncate.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog: Catalog = loadManifest(
@@ -130,6 +137,27 @@ describe("redaction", () => {
 });
 
 describe("truncation at the model boundary", () => {
+  it("parses the host-side model-boundary cap with a safe default", () => {
+    expect(modelBoundaryMaxTokensFromEnv({})).toBe(DEFAULT_MAX_TOKENS);
+    expect(modelBoundaryMaxTokensFromEnv({ [MODEL_BOUNDARY_MAX_TOKENS_ENV]: "10000" })).toBe(10000);
+    expect(modelBoundaryMaxTokensFromEnv({ [MODEL_BOUNDARY_MAX_TOKENS_ENV]: 12000 })).toBe(12000);
+  });
+
+  it("rejects invalid or out-of-range model-boundary cap overrides", () => {
+    for (const value of ["", "999", "32001", "12.5", "abc", "-10000"]) {
+      expect(modelBoundaryMaxTokensFromEnv({ [MODEL_BOUNDARY_MAX_TOKENS_ENV]: value })).toBe(
+        DEFAULT_MAX_TOKENS
+      );
+      expect(modelBoundaryMaxTokensFromValue(value)).toBe(DEFAULT_MAX_TOKENS);
+    }
+  });
+
+  it("bounds explicit model-boundary cap arguments too", () => {
+    expect(truncateForModel("x".repeat(10_000), 1000).maxTokens).toBe(1000);
+    expect(truncateForModel("x".repeat(10_000), 999).maxTokens).toBe(DEFAULT_MAX_TOKENS);
+    expect(truncateLogsForModel("x".repeat(10_000), 32001).maxTokens).toBe(DEFAULT_MAX_TOKENS);
+  });
+
   it("passes small results through as compact JSON", () => {
     const { text, truncated } = truncateForModel({ a: 1 });
     expect(text).toBe('{"a":1}');

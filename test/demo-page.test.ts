@@ -46,7 +46,7 @@ describe("demo page CSP", () => {
 describe("demo page states", () => {
   it("locked: sign-in link, static example trace, zero script", () => {
     expect(lockedHtml).toContain('href="/demo/login"');
-    expect(lockedHtml).toContain("Test drive <span class=\"r\">Raven yourself.</span>");
+    expect(lockedHtml).toContain("Test drive <span class=\"r\">Raven</span>");
     expect(lockedHtml).toContain("Example session");
     expect(lockedHtml).toContain("soroban smart contract deploy");
     expect(lockedHtml).toContain("The playground shows the live trace");

@@ -87,6 +87,53 @@ export const EXCLUDED_SCOUT_OPS = new Set([
 // cross-references to them from emitted text.
 export const RETIRED_ONBOARDING_SKILLS = new Set(["lumenloop-mcp-connect"]);
 
+export const RETIRED_PARTNER_ONBOARDING_SKILLS = new Set([
+  "lumenloop-api-billing",
+  "lumenloop-api-connect",
+  "lumenloop-api-integrate",
+  "lumenloop-api-keys",
+  "lumenloop-api-query",
+  "lumenloop-api-research"
+]);
+
+export const SKILL_EXPOSURE_CLASSIFICATION_VALUES = new Set(["internal-guidance", "removed"]);
+
+/**
+ * Review ledger for non-exposed Lumenloop onboarding skills. This is NOT an
+ * emitted model surface; it exists so future syncs/revisits have an auditable
+ * per-skill decision instead of rediscovering why the raw bodies stay out of
+ * catalog exposure.
+ *
+ * classification:
+ * - internal-guidance: raw skill remains non-exposed; safe lessons may be
+ *   distilled into Raven-owned notes or code, but never by mirroring the raw
+ *   connector/key-management playbook.
+ * - removed: raw body is intentionally absent from this public repo and no
+ *   current Raven-facing guidance is accepted from it.
+ */
+export const SKILL_EXPOSURE_CLASSIFICATIONS = [
+  {
+    id: "lumenloop-mcp-connect",
+    classification: "internal-guidance",
+    source: "public lumenloop mirror",
+    rationale:
+      "Connector setup, bearer-token, and raw MCP tool-map instructions are misleading inside Raven execute; any reusable lesson must be distilled into Raven-owned sandbox/search guidance.",
+    emittedSurface: "none"
+  },
+  ...[...RETIRED_PARTNER_ONBOARDING_SKILLS].map((id) => ({
+    id,
+    classification: "removed",
+    source: "former partner-tier lumenloop-api skill",
+    rationale:
+      "Partner-tier onboarding content is not credential-free public repo input; the raw bodies were removed during go-public cleanup and survive only as scrub targets.",
+    emittedSurface: "none"
+  }))
+];
+
+export const SKILL_EXPOSURE_CLASSIFICATION_BY_ID = new Map(
+  SKILL_EXPOSURE_CLASSIFICATIONS.map((entry) => [entry.id, entry])
+);
+
 // Matches any reference to a retired onboarding skill in prose or a relative
 // markdown link (`../lumenloop-mcp-connect/SKILL.md`, "lumenloop-api-query").
 const RETIRED_SKILL_REF_RE = /lumenloop-api-[a-z]+|lumenloop-mcp-connect/;

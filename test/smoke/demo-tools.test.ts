@@ -24,7 +24,7 @@ function makeTools(budget?: DemoToolBudget) {
 }
 
 describe("demo tools at the worker boundary", () => {
-  it("spends the single search budget on an invalid service filter", async () => {
+  it("spends search budget on invalid service filters but allows one recovery search", async () => {
     const { search, budgetReport } = makeTools();
 
     const invalid = (await search.execute({
@@ -35,10 +35,14 @@ describe("demo tools at the worker boundary", () => {
     expect(invalid.nextSteps).toContain("Unknown service");
     expect(budgetReport()).toMatchObject({ searchCalls: 1, unknownServiceSearches: 1 });
 
+    const recovery = (await search.execute({ query: "search directory" })) as { hits: unknown[]; nextSteps: string };
+    expect(recovery.nextSteps).toContain("No search calls remain");
+    expect(budgetReport()).toMatchObject({ searchCalls: 2, unknownServiceSearches: 1 });
+
     const refused = (await search.execute({ query: "search directory" })) as { hits: unknown[]; nextSteps: string };
     expect(refused.hits).toEqual([]);
     expect(refused.nextSteps).toContain("Search call limit reached");
-    expect(budgetReport()).toMatchObject({ searchCalls: 1, searchRefusals: 1, unknownServiceSearches: 1 });
+    expect(budgetReport()).toMatchObject({ searchCalls: 2, searchRefusals: 1, unknownServiceSearches: 1 });
   });
 
   it("shares the turn budget across buildDemoTools calls", async () => {
@@ -50,13 +54,17 @@ describe("demo tools at the worker boundary", () => {
 
     expect(first.budgetReport().searchCalls).toBe(1);
 
+    const allowed = (await second.search.execute({ query: "search directory" })) as { hits: unknown[]; nextSteps: string };
+    expect(allowed.nextSteps).toContain("No search calls remain");
+    expect(second.budgetReport()).toMatchObject({ searchCalls: 2 });
+
     const refused = (await second.search.execute({ query: "search directory" })) as { hits: unknown[]; nextSteps: string };
     expect(refused.hits).toEqual([]);
     expect(refused.nextSteps).toContain("Search call limit reached");
-    expect(second.budgetReport()).toMatchObject({ searchCalls: 1, searchRefusals: 1 });
+    expect(second.budgetReport()).toMatchObject({ searchCalls: 2, searchRefusals: 1 });
   });
 
-  it("disables in-script codemode discovery in demo execute", async () => {
+  it("keeps in-script codemode search disabled in demo execute", async () => {
     const { execute, budgetReport } = makeTools();
     const result = (await execute.execute({
       code: `async () => {
@@ -68,13 +76,36 @@ describe("demo tools at the worker boundary", () => {
     expect(result).toContain('Tool "search" not found');
     expect(budgetReport()).toMatchObject({ executeCalls: 1, executeFailures: 1 });
 
-    const refused = (await execute.execute({
+    const retry = (await execute.execute({
       code: `async () => {
         return "retry";
       }`
+    })) as string;
+    expect(retry).toContain("retry");
+    expect(budgetReport()).toMatchObject({ executeCalls: 2, executeFailures: 1 });
+
+    const refused = (await execute.execute({
+      code: `async () => {
+        return "third";
+      }`
     })) as { ok: false; error: string };
     expect(refused.error).toContain("execute call limit reached");
-    expect(budgetReport()).toMatchObject({ executeCalls: 1, executeFailures: 1, executeRefusals: 1 });
+    expect(budgetReport()).toMatchObject({ executeCalls: 2, executeFailures: 1, executeRefusals: 1 });
+  });
+
+  it("allows exact-id codemode.describe in demo execute", async () => {
+    const { execute, budgetReport } = makeTools();
+    const result = (await execute.execute({
+      code: `async () => {
+        const d = await codemode.describe("scout.searchProjects");
+        return { ok: d.ok, id: d.id, hasOutputSchema: !!d.outputSchema, usage: d.usage };
+      }`
+    })) as string;
+
+    expect(result).toContain("scout.searchProjects");
+    expect(result).toContain("hasOutputSchema");
+    expect(result).toContain("call it exactly as the signature");
+    expect(budgetReport()).toMatchObject({ executeCalls: 1 });
   });
 
   it("adds a demo-only advisory when execute output is truncated", async () => {

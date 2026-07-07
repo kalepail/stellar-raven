@@ -36,7 +36,7 @@ import {
 } from "./spec-sandbox.ts";
 import type { SkillBundle } from "../skills/store.ts";
 import { redactSecrets, secretsFromEnv } from "../policy/redact.ts";
-import { truncateForModel } from "../policy/truncate.ts";
+import { truncateForModel, modelBoundaryMaxTokensFromEnv } from "../policy/truncate.ts";
 import { shapeLogs } from "./shape-logs.ts";
 
 export type ExecuteOutcome =
@@ -57,10 +57,17 @@ export type ExecuteRunner = (code: string) => Promise<ExecuteOutcome>;
 export type ExecuteRunnerOptions = {
   /**
    * Production execute keeps codemode.search/catalog/spec/describe enabled.
-   * The public demo disables them so its single visible search is the whole
-   * discovery step for that turn.
+   * The public demo disables in-script search/catalog/spec so visible search
+   * calls stay the discovery step for that turn.
    */
   codemodeDiscovery?: boolean;
+  /** Allow codemode.describe(id) even when broader codemode discovery is off. */
+  codemodeDescribe?: boolean;
+  /**
+   * Host-side model boundary cap for final execute results. Defaults from
+   * env/config; never controlled by model-authored sandbox code.
+   */
+  modelBoundaryMaxTokens?: number;
 };
 
 export type SpecSearchOutcome =
@@ -96,6 +103,8 @@ export function createExecuteRunner(env: Env, options: ExecuteRunnerOptions = {}
     timeout: EXECUTE_TIMEOUT_MS
   });
   const secrets = secretsFromEnv(env as unknown as Record<string, unknown>);
+  const modelBoundaryMaxTokens =
+    options.modelBoundaryMaxTokens ?? modelBoundaryMaxTokensFromEnv(env as unknown as Record<string, unknown>);
 
   return async (code: string): Promise<ExecuteOutcome> => {
     // Providers are rebuilt per run so the skill-read flag is run-scoped
@@ -117,7 +126,8 @@ export function createExecuteRunner(env: Env, options: ExecuteRunnerOptions = {}
       onSkillRun: () => {
         skillRuns += 1;
       },
-      codemodeDiscovery: options.codemodeDiscovery
+      codemodeDiscovery: options.codemodeDiscovery,
+      codemodeDescribe: options.codemodeDescribe
     });
     // Custom span because the Worker Loader isolate is NOT auto-instrumented
     // (research/observability-cloudflare.md §2) — without it the sandbox run
@@ -137,7 +147,7 @@ export function createExecuteRunner(env: Env, options: ExecuteRunnerOptions = {}
       const hinted = withGlobalsHint(outcome.error, providers);
       return { ok: false, error: redactSecrets(hinted, secrets), logs };
     }
-    const result = truncateForModel(redactSecrets(outcome.result, secrets), undefined, {
+    const result = truncateForModel(redactSecrets(outcome.result, secrets), modelBoundaryMaxTokens, {
       skillSectionAdvice: skillRead
     });
     return {

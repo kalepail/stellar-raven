@@ -133,7 +133,7 @@ body.no-gl .stage{background:
 /* ---- hero: copy in a right-aligned column, clear of the globe ---- */
 .hero{position:relative;min-height:calc(100vh - 92px);display:flex;flex-direction:column;
   justify-content:center;padding:32px 0 60px}
-.hero-in{max-width:600px;margin-left:auto}
+.hero-in{max-width:700px;margin-left:auto}
 h1.title{font-family:var(--display);font-weight:700;margin:22px 0 0;line-height:.98;
   font-size:clamp(52px,8vw,104px);letter-spacing:-.025em;color:var(--fog)}
 h1.title .r{color:var(--orange);text-shadow:0 0 40px rgba(255,85,0,.35)}

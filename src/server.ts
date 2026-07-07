@@ -20,6 +20,7 @@ import { createMcpHandler } from "agents/mcp";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerTools, SERVER_INSTRUCTIONS } from "./mcp/tools";
 import { createExecuteRunner, type ExecuteRunner } from "./executor/run";
+import { modelBoundaryMaxTokensFromEnv } from "./policy/truncate";
 import {
   allowDevUnauthenticated,
   isAdminAuthorized,
@@ -38,8 +39,13 @@ const SERVER_INFO = { name: "stellar-raven-codemode", version: "0.1.0" };
 // One runner per isolate (providers + catalog + spec are env-stable); each
 // `execute` call still gets its own fresh Dynamic Worker via LOADER.load().
 let cachedRunner: ExecuteRunner | undefined;
+let cachedRunnerMaxTokens: number | undefined;
 function getRunner(env: Env): ExecuteRunner {
-  cachedRunner ??= createExecuteRunner(env);
+  const modelBoundaryMaxTokens = modelBoundaryMaxTokensFromEnv(env as unknown as Record<string, unknown>);
+  if (!cachedRunner || cachedRunnerMaxTokens !== modelBoundaryMaxTokens) {
+    cachedRunner = createExecuteRunner(env, { modelBoundaryMaxTokens });
+    cachedRunnerMaxTokens = modelBoundaryMaxTokens;
+  }
   return cachedRunner;
 }
 
@@ -52,7 +58,10 @@ const mcpHandler = {
     // (per-session, unlike tool descriptions which models skim once) — the
     // workflow + result-envelope contract lives there too.
     const server = new McpServer(SERVER_INFO, { instructions: SERVER_INSTRUCTIONS });
-    registerTools(server, { runExecute: getRunner(env) });
+    registerTools(server, {
+      runExecute: getRunner(env),
+      modelBoundaryMaxTokens: modelBoundaryMaxTokensFromEnv(env as unknown as Record<string, unknown>)
+    });
     return createMcpHandler(server, { route: "/mcp" })(request, env, ctx);
   }
 };

@@ -95,6 +95,7 @@ describe("search behavior (host-side ranked)", () => {
     expect(structured.hits[0]?.id).toBe("lumenloop.search_directory");
     expect(structured.hits[0]?.signature).toContain("SearchDirectoryInput");
     expect(structured.nextSteps).toMatch(/execute/i);
+    expect(structured.nextSteps).toContain("filter raw row JSON");
   });
 
   it("skill hits cross the tool boundary with availableSections (todo 812)", async () => {
@@ -243,8 +244,8 @@ describe("execute behavior", () => {
 
   it("budgets the logs block so console output cannot bypass the result cap", async () => {
     // shapeLogs' structural caps still admit ~200k chars of logs; the tool
-    // boundary must clip the joined block to the same ~6k-token budget the
-    // result gets, with the logs-specific footer.
+    // boundary must clip the joined block to the same configured-token budget
+    // the result gets, with the logs-specific footer.
     const execClient = await connectedClient({
       runExecute: async () => ({
         ok: true,
@@ -265,6 +266,36 @@ describe("execute behavior", () => {
     expect(text).toContain("log counts and previews");
   });
 
+  it("uses one configured model-boundary cap for result metadata and logs", async () => {
+    const execClient = await connectedClient({
+      modelBoundaryMaxTokens: 1000,
+      runExecute: async () => {
+        const result = `${"r".repeat(4_000)}\n--- TRUNCATED --- Result was ~25000 tokens (limit: 1000).`;
+        return {
+          ok: true,
+          result,
+          truncated: true,
+          resultOriginalChars: 100_000,
+          resultReturnedChars: result.length,
+          resultMaxTokens: 1000,
+          resultMaxChars: 4_000,
+          resultApproxOriginalTokens: 25_000,
+          logs: Array.from({ length: 100 }, () => "x".repeat(2_000))
+        };
+      }
+    });
+    const result = await execClient.callTool({
+      name: "execute",
+      arguments: { code: "async () => 1" }
+    });
+    expect(result.isError).toBeFalsy();
+    const text = (result.content as Array<{ text: string }>)[0]?.text ?? "";
+    expect(text).toContain("Result was ~25000 tokens (limit: 1000)");
+    expect(text).toContain("console output was");
+    expect(text).toContain("limit: 1000");
+    expect(text.length).toBeLessThan(11_000);
+  });
+
   it("budgets error text so a thrown payload cannot bypass the result cap", async () => {
     // Error text is model-authored (`throw new Error(bigPayload)`) — without
     // its own budget it would be the third smuggling channel after result
@@ -280,6 +311,22 @@ describe("execute behavior", () => {
     const text = (result.content as Array<{ text: string }>)[0]?.text ?? "";
     expect(text.length).toBeLessThan(30_000); // not ~100k
     expect(text).toContain("--- TRUNCATED ---");
+  });
+
+  it("uses the configured model-boundary cap for error text", async () => {
+    const execClient = await connectedClient({
+      modelBoundaryMaxTokens: 1000,
+      runExecute: async () => ({ ok: false, error: "x".repeat(100_000), logs: [] })
+    });
+    const result = await execClient.callTool({
+      name: "execute",
+      arguments: { code: "async () => { throw new Error('big') }" }
+    });
+    expect(result.isError).toBe(true);
+    const text = (result.content as Array<{ text: string }>)[0]?.text ?? "";
+    expect(text).toContain("--- TRUNCATED ---");
+    expect(text).toContain("limit: 1000");
+    expect(text.length).toBeLessThan(7_000);
   });
 
   it("renders runner errors as isError data with logs", async () => {

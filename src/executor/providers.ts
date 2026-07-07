@@ -329,6 +329,74 @@ function catalogEntryView(entry: CatalogEntry) {
   };
 }
 
+function describeCatalogEntry(catalog: Catalog, id?: unknown) {
+  if (typeof id !== "string" || id.length === 0) {
+    return {
+      ok: false,
+      error: { service: "codemode", kind: "error", message: "codemode.describe needs an exact catalog id string" }
+    };
+  }
+  const entry = catalog.entries.find((e) => e.id === id);
+  if (!entry) {
+    return {
+      ok: false,
+      error: {
+        service: "codemode",
+        kind: "error",
+        message: `unknown id "${id}" — ids are exact-match; discover them with codemode.search first`
+      }
+    };
+  }
+  const base = {
+    ok: true as const,
+    id: entry.id,
+    service: entry.service,
+    kind: entry.kind,
+    description: entry.description
+  };
+  if (entry.kind === "skill") {
+    const availableSections = sectionKeysOf(catalog, entry.id);
+    if (entry.runnable === true) {
+      const signature = renderSignature(entry);
+      return {
+        ...base,
+        ...(signature ? { signature } : {}),
+        inputSchema: entry.inputSchema,
+        outputSchema: entry.outputSchema,
+        ...(availableSections.length > 0 ? { availableSections } : {}),
+        usage: `run it via codemode.skill.run(${JSON.stringify(entry.id)}, input) — input per the signature; the result is the service-call envelope ({ ok: true, data } | { ok: false, error }) with a data.calls audit of every constituent call. Read the playbook via codemode.skill.read(${JSON.stringify(entry.id)}${availableSections.length > 0 ? ", { sections: [...] }" : ""}) — run gathers the data, read carries the judgment steps.`
+      };
+    }
+    return {
+      ...base,
+      ...(availableSections.length > 0 ? { availableSections } : {}),
+      usage:
+        availableSections.length > 0
+          ? `read sections via codemode.skill.read(${JSON.stringify(entry.id)}, { sections: [...] }) — section keys in availableSections`
+          : `read the whole skill via codemode.skill.read(${JSON.stringify(entry.id)})`
+    };
+  }
+  if (entry.kind === "skill-section") {
+    const hash = entry.id.indexOf("#");
+    const skillId = hash === -1 ? entry.id : entry.id.slice(0, hash);
+    const section = hash === -1 ? entry.id : entry.id.slice(hash + 1);
+    return {
+      ...base,
+      skillId,
+      section,
+      usage: `read this section via codemode.skill.read(${JSON.stringify(skillId)}, { sections: [${JSON.stringify(section)}] })`
+    };
+  }
+  const signature = renderSignature(entry);
+  return {
+    ...base,
+    ...(signature ? { signature } : {}),
+    inputSchema: entry.inputSchema,
+    outputSchema: entry.outputSchema,
+    usage: "call it exactly as the signature's callable line shows — the payload arrives under r.data ({ ok: true, data } | { ok: false, error }), never at the top level"
+  };
+}
+
 // Module-level caches so buildCodemodeProvider can be called PER EXECUTE RUN
 // (run.ts rebuilds it to get a per-run skill-read flag — see onSkillRead)
 // without redoing the expensive derivations: keyed on the source objects,
@@ -357,9 +425,11 @@ export function buildCodemodeProvider(
   /**
    * Demo-only narrowing: production execute exposes codemode.search/catalog/
    * spec/describe for mid-script discovery; the public playground can disable
-   * those helpers so its visible one-search trace is the whole discovery step.
+   * broad discovery helpers while optionally keeping describe for exact visible
+   * hit ids.
    */
   discovery?: boolean,
+  describeOnly?: boolean,
   /**
    * The skill.run wiring (design §6): the shared ops facade from buildOpsFns
    * — the SAME closures the service namespaces expose, so policy identity
@@ -383,6 +453,7 @@ export function buildCodemodeProvider(
     catalogViewCache.set(catalog, catalogView);
   }
   const enableDiscovery = discovery ?? true;
+  const enableDescribe = enableDiscovery || describeOnly === true;
   const fns: Record<string, (...args: unknown[]) => Promise<unknown>> = {
     ...(enableDiscovery
       ? {
@@ -489,74 +560,11 @@ export function buildCodemodeProvider(
           // response, not the entry.) Every kind also carries a `usage` line:
           // the exact next call, so the model never has to reverse-engineer the
           // read/call pattern from prose.
-          describe: async (id?: unknown) => {
-            if (typeof id !== "string" || id.length === 0) {
-              return {
-                ok: false,
-                error: { service: "codemode", kind: "error", message: "codemode.describe needs an exact catalog id string" }
-              };
-            }
-            const entry = catalog.entries.find((e) => e.id === id);
-            if (!entry) {
-              return {
-                ok: false,
-                error: {
-                  service: "codemode",
-                  kind: "error",
-                  message: `unknown id "${id}" — ids are exact-match; discover them with codemode.search first`
-                }
-              };
-            }
-            const base = {
-              ok: true as const,
-              id: entry.id,
-              service: entry.service,
-              kind: entry.kind,
-              description: entry.description
-            };
-            if (entry.kind === "skill") {
-              const availableSections = sectionKeysOf(catalog, entry.id);
-              if (entry.runnable === true) {
-                const signature = renderSignature(entry);
-                return {
-                  ...base,
-                  ...(signature ? { signature } : {}),
-                  inputSchema: entry.inputSchema,
-                  outputSchema: entry.outputSchema,
-                  ...(availableSections.length > 0 ? { availableSections } : {}),
-                  usage: `run it via codemode.skill.run(${JSON.stringify(entry.id)}, input) — input per the signature; the result is the service-call envelope ({ ok: true, data } | { ok: false, error }) with a data.calls audit of every constituent call. Read the playbook via codemode.skill.read(${JSON.stringify(entry.id)}${availableSections.length > 0 ? ", { sections: [...] }" : ""}) — run gathers the data, read carries the judgment steps.`
-                };
-              }
-              return {
-                ...base,
-                ...(availableSections.length > 0 ? { availableSections } : {}),
-                usage:
-                  availableSections.length > 0
-                    ? `read sections via codemode.skill.read(${JSON.stringify(entry.id)}, { sections: [...] }) — section keys in availableSections`
-                    : `read the whole skill via codemode.skill.read(${JSON.stringify(entry.id)})`
-              };
-            }
-            if (entry.kind === "skill-section") {
-              const hash = entry.id.indexOf("#");
-              const skillId = hash === -1 ? entry.id : entry.id.slice(0, hash);
-              const section = hash === -1 ? entry.id : entry.id.slice(hash + 1);
-              return {
-                ...base,
-                skillId,
-                section,
-                usage: `read this section via codemode.skill.read(${JSON.stringify(skillId)}, { sections: [${JSON.stringify(section)}] })`
-              };
-            }
-            const signature = renderSignature(entry);
-            return {
-              ...base,
-              ...(signature ? { signature } : {}),
-              inputSchema: entry.inputSchema,
-              outputSchema: entry.outputSchema,
-              usage: "call it exactly as the signature's callable line shows — the payload arrives under r.data ({ ok: true, data } | { ok: false, error }), never at the top level"
-            };
-          }
+          describe: async (id?: unknown) => describeCatalogEntry(catalog, id)
         }
+      : {}),
+    ...(enableDescribe && !enableDiscovery
+      ? { describe: async (id?: unknown) => describeCatalogEntry(catalog, id) }
       : {}),
 
     skill_read: async (name?: unknown, opts?: unknown) => {
@@ -609,6 +617,7 @@ export function buildSandbox(
     onSkillRead?: () => void;
     onSkillRun?: () => void;
     codemodeDiscovery?: boolean;
+    codemodeDescribe?: boolean;
   }
 ): SandboxProvider[] {
   // Runner-wiring assertion at provider build (design §5/§6): registry ↔
@@ -630,6 +639,7 @@ export function buildSandbox(
         onSkillRun: deps?.onSkillRun
       },
       deps?.codemodeDiscovery,
+      deps?.codemodeDescribe,
       { facade: ops, secrets: secretsFromEnv(env as Record<string, unknown>) }
     )
   ];

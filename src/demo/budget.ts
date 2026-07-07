@@ -14,8 +14,8 @@
  */
 
 export const DEMO_CAPS = {
-  /** stepCountIs(3) — search, execute, final summary. */
-  maxSteps: 3,
+  /** stepCountIs(5) — search, optional search, execute, optional execute, final summary. */
+  maxSteps: 5,
   /**
    * streamText maxOutputTokens per request. Sized for a reasoning-capable
    * model: kimi-k2.6's hidden thinking counts against this budget, and 800
@@ -30,9 +30,9 @@ export const DEMO_CAPS = {
   /** search tool: input.limit is clamped to this ceiling. */
   maxSearchLimit: 6,
   /** search tool: closure-counted calls allowed per chat turn. */
-  maxSearchCallsPerTurn: 1,
+  maxSearchCallsPerTurn: 2,
   /** execute tool: closure-counted calls allowed per chat turn. */
-  maxExecuteCallsPerTurn: 1,
+  maxExecuteCallsPerTurn: 2,
   /** execute tool: input.code length ceiling. */
   maxExecuteCodeChars: 8000,
   /**

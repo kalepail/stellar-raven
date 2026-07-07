@@ -191,7 +191,8 @@ Every service call resolves (never throws) to either { ok: true, data } or { ok:
 - Do NOT define named functions and then call them — just write the arrow function body directly.
 - Parallelize independent calls with Promise.all; sequence only where a call needs a previous result.
 - Directory/list-style results are summaries: most services pair them with a per-item detail operation (\`lumenloop.get_project\`, \`scout.getHackathon\`, \`lumenloop.get_document\`, …). When the question needs specifics beyond a list row, follow up with the detail call parameterized by the row — answering detail questions from a broad payload alone is a known failure mode.
-- The final return value is truncated at ~6k tokens — select fields, slice arrays, aggregate in-script, and read skills by section rather than returning raw payloads or whole skill bodies. console.log output comes back as logs.`;
+- Avoid lossy list filtering: inspect row keys, call \`codemode.describe\` when output fields are unclear, and filter against raw row JSON or nested/common field variants before projecting compact columns. Projecting first can erase evidence and create false no-match answers.
+- The final return value is truncated at the configured model-boundary cap (default ~6k tokens) — select fields, slice arrays, aggregate in-script, and read skills by section rather than returning raw payloads or whole skill bodies. console.log output comes back as logs.`;
 
 /**
  * MCP initialize-time instructions (SDK ServerOptions.instructions) — clients
@@ -201,7 +202,7 @@ Every service call resolves (never throws) to either { ok: true, data } or { ok:
  */
 export const SERVER_INSTRUCTIONS = `Unified Stellar-ecosystem gateway: \`search\` (ranked discovery over every service operation and skill) and \`execute\` (sandboxed JavaScript composing the discovered operations).
 
-Workflow: \`search\` a short intent phrase → read the hits' TypeScript signatures → write ONE \`execute\` script composing several operations (Promise.all for independent calls, then targeted follow-ups parameterized by their results). Oversized output types are stubbed in search hits — \`codemode.describe("<exact id>")\` inside \`execute\` is the canonical full-detail step (full signature + schemas + a usage line). Skills are operational playbooks (tested procedures — read sections via \`codemode.skill.read(id, { sections })\`, keys in the hit's \`availableSections\`); stellarDocs is informational reference. A few skills are also runnable — \`codemode.skill.run("<exact id>", input)\` (the callable line their hit signatures show) executes the skill's data-gathering pipeline in one call and resolves to the ordinary service-call envelope with a \`data.calls\` audit of its constituent calls. Build/integration questions: read matching skill sections AND search the docs; purely factual ones: docs first. Scout research items and lumenloop articles/content are community-aggregated sources — treat protocol-governance, standards-authorship, incident, and audit claims from them as unverified unless corroborated by stellarDocs or skills content.
+Workflow: \`search\` a short intent phrase → read the hits' TypeScript signatures → write ONE \`execute\` script composing several operations (Promise.all for independent calls, then targeted follow-ups parameterized by their results). Oversized output types are stubbed in search hits — \`codemode.describe("<exact id>")\` inside \`execute\` is the canonical full-detail step (full signature + schemas + a usage line). For list/directory rows, filter raw rows or nested field variants before projecting compact columns so missing convenience fields do not become false negatives. Skills are operational playbooks (tested procedures — read sections via \`codemode.skill.read(id, { sections })\`, keys in the hit's \`availableSections\`); stellarDocs is informational reference. A few skills are also runnable — \`codemode.skill.run("<exact id>", input)\` (the callable line their hit signatures show) executes the skill's data-gathering pipeline in one call and resolves to the ordinary service-call envelope with a \`data.calls\` audit of its constituent calls. Build/integration questions: read matching skill sections AND search the docs; purely factual ones: docs first. Scout research items and lumenloop articles/content are community-aggregated sources — treat protocol-governance, standards-authorship, incident, and audit claims from them as unverified unless corroborated by stellarDocs or skills content.
 
 Interpreting \`execute\` results: every service call resolves (never throws) to { ok: true, data } or { ok: false, error: { kind, message, hint? } }. Payload fields live under .data — \`r.data.projects\`, never \`r.projects\`; reading a payload field on the envelope throws an Error naming the correct path, \`r.data\` on a failed call is undefined and logs a one-line \`[envelope]\` warning naming the error, and writes to the envelope are allowed. error.kind is two-way: "error" (call failed) or "soft-empty" (the service answered with nothing — inconclusive, NOT evidence of absence). Operation and skill ids are exact-match — never guess them; discover via \`search\` or \`codemode.search\` mid-script.`;
 
@@ -212,6 +213,11 @@ export type RegisterToolsOptions = {
    * answers with an error-as-data explaining the sandbox is not wired.
    */
   runExecute?: ExecuteRunner;
+  /**
+   * Host-side token cap for all execute model-boundary channels: final result
+   * is shaped by the runner, logs/errors here.
+   */
+  modelBoundaryMaxTokens?: number;
 };
 
 /**
@@ -282,7 +288,7 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
       });
       const nextSteps =
         hits.length > 0
-          ? `These hits are composable: write ONE \`execute\` script that calls the several relevant operations (Promise.all across services for independent calls), then follows up with deeper calls parameterized by their results — e.g. \`await lumenloop.search_directory({ query: "..." })\` then \`lumenloop.get_project({ slug })\`. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under \`.data\` (\`r.data.projects\`, never \`r.projects\`); check \`r.ok\` first. Skill hits are operational playbooks — read the sections you need in-script via \`codemode.skill.read(id, { sections })\` (keys: the hit's \`availableSections\`), and pair them with stellarDocs searches for current reference truth. Hits whose \`signature\` shows a \`codemode.skill.run("<exact id>", input)\` line are runnable skills — call that line verbatim to run the whole pipeline in one step (payload under \`.data\`, constituent calls audited in \`data.calls\`). Scores compare only within the same \`tier\` (gated hits always rank above backfill hits). Signatures with a stubbed output type (\`{ /* N top-level fields: ... */ }\`) list the payload's top-level field names — for the full output shape call \`codemode.describe("<exact id>")\` inside \`execute\`. Use \`codemode.search(...)\` mid-script for follow-up discovery; search again here with narrower terms or \`kind\`/\`service\` filters if none fit.${truncated ? " More entries matched than shown (truncated) — raise `limit` or narrow the query if none of these fit." : ""}`
+          ? `These hits are composable: write ONE \`execute\` script that calls the several relevant operations (Promise.all across services for independent calls), then follows up with deeper calls parameterized by their results — e.g. \`await lumenloop.search_directory({ query: "..." })\` then \`lumenloop.get_project({ slug })\`. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under \`.data\` (\`r.data.projects\`, never \`r.projects\`); check \`r.ok\` first. Skill hits are operational playbooks — read the sections you need in-script via \`codemode.skill.read(id, { sections })\` (keys: the hit's \`availableSections\`), and pair them with stellarDocs searches for current reference truth. Hits whose \`signature\` shows a \`codemode.skill.run("<exact id>", input)\` line are runnable skills — call that line verbatim to run the whole pipeline in one step (payload under \`.data\`, constituent calls audited in \`data.calls\`). Scores compare only within the same \`tier\` (gated hits always rank above backfill hits). Signatures with a stubbed output type (\`{ /* N top-level fields: ... */ }\`) list the payload's top-level field names — for the full output shape call \`codemode.describe("<exact id>")\` inside \`execute\`. For directory/list rows, inspect keys or filter raw row JSON and nested/common field variants before projecting compact columns. Use \`codemode.search(...)\` mid-script for follow-up discovery; search again here with narrower terms or \`kind\`/\`service\` filters if none fit.${truncated ? " More entries matched than shown (truncated) — raise `limit` or narrow the query if none of these fit." : ""}`
           : "No hits. Try fewer, more specific words (e.g. \"account trustlines\" not a full sentence), or drop the `kind`/`service` filters. Do not conclude the capability is missing from one empty result.";
       return respond({ hits, total, truncated, nextSteps });
     }
@@ -324,13 +330,13 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
         };
       }
       // Logs get their own token budget at the model boundary (equal to the
-      // result's ~6k) — shapeLogs' structural caps alone still admit ~50k
+      // result cap) — shapeLogs' structural caps alone still admit ~50k
       // tokens, which would smuggle payloads past the result cap via
       // console.log. Rationale + tuning note in src/policy/truncate.ts.
-      const shapedLogs = truncateLogsForModel(outcome.logs.join("\n"));
+      const shapedLogs = truncateLogsForModel(outcome.logs.join("\n"), options.modelBoundaryMaxTokens);
       // Error text is model-authored too (`throw new Error(payload)`) — same
       // budget as the result, or it becomes the third smuggling channel.
-      const shapedError = outcome.ok ? null : truncateForModel(outcome.error);
+      const shapedError = outcome.ok ? null : truncateForModel(outcome.error, options.modelBoundaryMaxTokens);
 
       logEvent("execute", {
         ok: outcome.ok,

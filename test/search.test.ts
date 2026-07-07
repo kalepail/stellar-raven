@@ -169,6 +169,18 @@ describe("searchCatalog — routing quality", () => {
     expect(hits.map((h) => h.id)).toContain("lumenloop.search_directory");
   });
 
+  it("surfaces the partner directory for regional asset issuer and service-provider queries", () => {
+    for (const query of [
+      "LatAm asset issuers services",
+      "stablecoin service providers Latin America",
+      "RWA provider partners Africa",
+      "regional on off ramp integration providers"
+    ]) {
+      const hits = searchCatalog(catalog, { query, kind: "operation", limit: 6 });
+      expect(hits.map((h) => h.id), query).toContain("scout.getPartners");
+    }
+  });
+
   it("finds the docs search operation", () => {
     const hits = searchCatalog(catalog, { query: "stellar docs search" });
     expect(hits.map((h) => h.id)).toContain("stellarDocs.search_docs");
