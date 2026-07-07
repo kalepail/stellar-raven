@@ -212,15 +212,16 @@ Two hand-authored files, both loaded by `run-routing.mjs` at run time (NOT by
 `compile-routing.mjs`, so recompiles never wipe them — verified: recompile + rerun
 reproduces all numbers):
 
-**1. `eval/skills-cases.json` — the lane itself.** 31 hand-written questions where a
+**1. `eval/skills-cases.json` — the lane itself.** 23 active hand-written questions where a
 mirrored skill is the uniquely right route, phrased as playbook/walkthrough requests
-(the thing a skill is and a single catalog op isn't). Coverage spans both skill flavors:
-code-operational (stellar-dev smart-contracts ×4 incl. its testing/security companions,
-openzeppelin setup/upgrade/secure ×3, dapp ×2, data ×2, assets, agentic-payments,
-standards, zk-proofs) and non-coding operational (lumenloop-api billing/402-recovery,
-x402 top-up, keys, integrate, query, connect, research ×7; lumenloop ecosystem playbooks
-scout/digest/dossier/integration-finder/scf-radar/content-auditor/builder-quickstart/
-mcp-connect ×8; stellar-light stellar-scout ×1). Cases carry `expected_cards` in the
+(the thing a skill is and a single catalog op isn't), plus 8 retained `retiredCases` for
+the lumenloop-api onboarding/API-surface skills removed from catalog exposure on
+2026-07-03. Active coverage spans both skill flavors: code-operational (stellar-dev
+smart-contracts ×4 incl. its testing/security companions, openzeppelin setup/upgrade/
+secure ×3, dapp ×2, data ×2, assets, agentic-payments, standards, zk-proofs) and
+non-coding operational (lumenloop ecosystem playbooks scout/digest/dossier/integration-
+finder/scf-radar/content-auditor/builder-quickstart/mcp-connect ×8; stellar-light
+stellar-scout ×1). Active cases carry `expected_cards` in the
 `skills_<terminal-name>` form the normalizer maps to the skills service (rule 2 + rule-3
 containment bridges the `<source>` segment in `skills.<source>.<name>` ids). Graded
 strictly as its own scope — **never merged into the legacy 338-case aggregate**.

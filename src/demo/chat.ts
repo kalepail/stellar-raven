@@ -205,10 +205,9 @@ async function runTurn(
   try {
     const workersai = createWorkersAI({
       binding: env.AI,
-      // Mandatory cost backstop (design Decisions 3/5): the gateway's
-      // spend-limit rule is the only cross-request dollar cap. Fail-closed —
-      // the gateway must exist account-side (created, with its spend-limit
-      // rule, before deploy) or model calls error out.
+      // Gateway routing is mandatory: a missing gateway id/config fails model
+      // calls. Spend/rate rules are account-side posture tracked in Solo todo
+      // 848, not something this binding can enforce by itself.
       gateway: { id: env.DEMO_AI_GATEWAY_ID ?? DEMO_GATEWAY_ID_FALLBACK }
     });
     const sessionAffinity = await demoSessionAffinity(subject);

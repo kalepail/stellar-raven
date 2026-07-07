@@ -136,7 +136,7 @@ way:
   novel ungated candidates when the backfill ran; `truncated` = `total > hits.length`.
 
 **Hit anatomy**: `{ id, service, kind, score, tier, description }`, plus a rendered **TypeScript
-signature** for operations *and the two runnable skills* (`renderSignature` — input/output
+signature** for operations *and runnable skills* (`renderSignature` — input/output
 type declarations from the entry's JSON Schemas via the vendored type generator, and a
 callable line that spells out the *full result envelope union*, because a bare
 `Promise<Output>` teaches exactly the wrong-level access the envelope exists to prevent;
@@ -285,13 +285,13 @@ The `codemode` provider (`buildCodemodeProvider`, `src/executor/providers.ts`) i
   (`SKILL_PRELUDE`) because nested objects can't cross codemode's flat Proxy dispatch.
 - **`codemode.skill.run(name, input)`** — runnable-skill dispatch (shipped 2026-07-06,
   todo 806; decision record [`research/skill-run-design.md`](./research/skill-run-design.md)).
-  Exactly two skill entries carry `runnable: true` plus real input/output schemas on their
-  existing `kind: "skill"` entries (one id, two affordances — read the playbook, run its
-  data-gathering core): `skills.lumenloop.stellar-ecosystem-digest` (the sole v1
-  runnable — the project-dossier runner shipped alongside it and was retired on
-  measured evidence the same week: unreachable by its audience's entity-shaped
-  queries, zero adoption across every battery run; Solo todo 849, the design doc
-  §10 postscript is the decision record). The prelude wraps the flat `skill_run`
+  The current manifest has exactly one skill entry carrying `runnable: true` plus real
+  input/output schemas on its existing `kind: "skill"` entry (one id, two affordances —
+  read the playbook, run its data-gathering core): `skills.lumenloop.stellar-ecosystem-digest`.
+  The project-dossier runner shipped alongside it and was retired on measured evidence
+  the same week: unreachable by its audience's entity-shaped queries, zero adoption
+  across every battery run; Solo todo 849, the design doc §10 postscript is the decision
+  record. The prelude wraps the flat `skill_run`
   dispatch fn (same mechanism as `skill.read`); all semantics live host-side in `runSkill`
   (`src/skills/run.ts`): exact-match id resolution (a miss or non-runnable id returns an
   error naming the full runnable set plus a nearest-id *suggestion*, never a resolution),

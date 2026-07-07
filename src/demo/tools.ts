@@ -41,7 +41,7 @@ import type { DemoFrame } from "./frames.ts";
 // only closes over env bindings (stable across requests in an isolate).
 let cachedRunner: ExecuteRunner | undefined;
 function getRunner(env: Env): ExecuteRunner {
-  cachedRunner ??= createExecuteRunner(env);
+  cachedRunner ??= createExecuteRunner(env, { codemodeDiscovery: false });
   return cachedRunner;
 }
 
@@ -116,6 +116,15 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void })
         return structured;
       };
 
+      if (args.service !== undefined && !services.includes(args.service)) {
+        return respond({
+          hits: [],
+          total: 0,
+          truncated: false,
+          nextSteps: `Unknown service "${args.service}" — service filter values are exact-match. Valid services: ${services.join(", ")}. Retry with one of those exact values, or drop the \`service\` filter.`
+        });
+      }
+
       if (searchCalls >= DEMO_CAPS.maxSearchCallsPerTurn) {
         const refusal = {
           hits: [],
@@ -133,15 +142,6 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void })
       }
       searchCalls += 1;
 
-      if (args.service !== undefined && !services.includes(args.service)) {
-        return respond({
-          hits: [],
-          total: 0,
-          truncated: false,
-          nextSteps: `Unknown service "${args.service}" — service filter values are exact-match. Valid services: ${services.join(", ")}. Retry with one of those exact values, or drop the \`service\` filter.`
-        });
-      }
-
       const page = searchCatalogPage(catalog, {
         query: args.query,
         kind: args.kind,
@@ -154,7 +154,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void })
       const hits = page.hits.map(compactHitForDemo);
       const nextSteps =
         hits.length > 0
-          ? `These hits are composable: write ONE \`execute\` script that calls the several relevant operations from this result set (Promise.all across services for independent calls), then follow up with deeper calls parameterized by their results only when the exact operation was returned here — e.g. \`await lumenloop.search_directory({ query: "..." })\` then \`lumenloop.get_project({ slug })\` only if both ids are present. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under \`.data\` (\`r.data.projects\`, never \`r.projects\`); check \`r.ok\` first. Skill hits are operational playbooks — read the sections you need in-script via \`codemode.skill.read(id, { sections })\` (keys: the hit's \`availableSections\`), and pair them with returned stellarDocs operations when present. Hits whose \`signature\` shows a \`codemode.skill.run("<exact id>", input)\` line are runnable skills — call that line verbatim to run the whole pipeline in one step (payload under \`.data\`, constituent calls audited in \`data.calls\`). Scores compare only within the same \`tier\` (gated hits always rank above backfill hits). Signatures with a stubbed output type (\`{ /* N top-level fields: ... */ }\`) list the payload's top-level field names — for the full output shape call \`codemode.describe("<exact id>")\` inside \`execute\`. Demo rule: do not perform follow-up discovery; use this one search result, one execute script, then summarize.${truncated ? " More entries matched than shown (truncated) — use the best visible hits for this demo turn." : ""}`
+          ? `These hits are composable: write ONE \`execute\` script that calls the several relevant operations from this result set (Promise.all across services for independent calls), then follow up with deeper calls parameterized by their results only when the exact operation was returned here — e.g. \`await lumenloop.search_directory({ query: "..." })\` then \`lumenloop.get_project({ slug })\` only if both ids are present. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under \`.data\` (\`r.data.projects\`, never \`r.projects\`); check \`r.ok\` first. Skill hits are operational playbooks — read the sections you need in-script via \`codemode.skill.read(id, { sections })\` (keys: the hit's \`availableSections\`). Hits whose \`signature\` shows a \`codemode.skill.run("<exact id>", input)\` line are runnable skills — call that line verbatim to run the whole pipeline in one step (payload under \`.data\`, constituent calls audited in \`data.calls\`). Scores compare only within the same \`tier\` (gated hits always rank above backfill hits). Demo rule: in-script discovery helpers are disabled; use this one search result, one execute script, then summarize.${truncated ? " More entries matched than shown (truncated) — use the best visible hits for this demo turn." : ""}`
           : "No hits. This single-search demo cannot run follow-up discovery; say the search found no matching exposed catalog entries and suggest a shorter query for a new turn. Do not conclude the capability is missing from one empty result.";
       return respond({ hits, total, truncated, nextSteps });
     }

@@ -54,6 +54,14 @@ export type ExecuteOutcome =
   | { ok: false; error: string; logs: string[] };
 
 export type ExecuteRunner = (code: string) => Promise<ExecuteOutcome>;
+export type ExecuteRunnerOptions = {
+  /**
+   * Production execute keeps codemode.search/catalog/spec/describe enabled.
+   * The public demo disables them so its single visible search is the whole
+   * discovery step for that turn.
+   */
+  codemodeDiscovery?: boolean;
+};
 
 export type SpecSearchOutcome =
   | { ok: true; result: string }
@@ -81,7 +89,7 @@ function withGlobalsHint(message: string, providers: SandboxProvider[]): string 
     .join(", ")}, and standard JavaScript)`;
 }
 
-export function createExecuteRunner(env: Env): ExecuteRunner {
+export function createExecuteRunner(env: Env, options: ExecuteRunnerOptions = {}): ExecuteRunner {
   const executor = new DynamicWorkerExecutor({
     loader: env.LOADER,
     globalOutbound: null, // default, pinned explicitly: sandbox has NO network
@@ -108,7 +116,8 @@ export function createExecuteRunner(env: Env): ExecuteRunner {
       },
       onSkillRun: () => {
         skillRuns += 1;
-      }
+      },
+      codemodeDiscovery: options.codemodeDiscovery
     });
     // Custom span because the Worker Loader isolate is NOT auto-instrumented
     // (research/observability-cloudflare.md §2) — without it the sandbox run

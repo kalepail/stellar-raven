@@ -355,6 +355,12 @@ export function buildCodemodeProvider(
     onSkillRun?: () => void;
   },
   /**
+   * Demo-only narrowing: production execute exposes codemode.search/catalog/
+   * spec/describe for mid-script discovery; the public playground can disable
+   * those helpers so its visible one-search trace is the whole discovery step.
+   */
+  discovery?: boolean,
+  /**
    * The skill.run wiring (design §6): the shared ops facade from buildOpsFns
    * — the SAME closures the service namespaces expose, so policy identity
    * holds by construction — plus the redaction-belt secrets. Threaded by
@@ -376,229 +382,219 @@ export function buildCodemodeProvider(
     };
     catalogViewCache.set(catalog, catalogView);
   }
-  return {
-    name: "codemode",
-    prelude: SKILL_PRELUDE,
-    fns: {
-      spec: async () => {
-        if (superSpec === undefined) {
-          return {
-            ok: false,
-            error: {
-              service: "codemode",
-              kind: "error",
-              message:
-                "the unified super spec is not wired on this server instance — use codemode.catalog() / codemode.search instead"
+  const enableDiscovery = discovery ?? true;
+  const fns: Record<string, (...args: unknown[]) => Promise<unknown>> = {
+    ...(enableDiscovery
+      ? {
+          spec: async () => {
+            if (superSpec === undefined) {
+              return {
+                ok: false,
+                error: {
+                  service: "codemode",
+                  kind: "error",
+                  message:
+                    "the unified super spec is not wired on this server instance — use codemode.catalog() / codemode.search instead"
+                }
+              };
             }
-          };
-        }
-        // $refs resolved lazily on first use, then cached per spec object
-        // (mirrors the search sandbox's lazy `__resolvedSpec ??= …`).
-        if (typeof superSpec !== "object" || superSpec === null) return resolveSpecRefs(superSpec);
-        let resolved = resolvedSpecCache.get(superSpec);
-        if (resolved === undefined) {
-          resolved = resolveSpecRefs(superSpec);
-          resolvedSpecCache.set(superSpec, resolved);
-        }
-        return resolved;
-      },
+            // $refs resolved lazily on first use, then cached per spec object
+            // (mirrors the search sandbox's lazy `__resolvedSpec ??= …`).
+            if (typeof superSpec !== "object" || superSpec === null) return resolveSpecRefs(superSpec);
+            let resolved = resolvedSpecCache.get(superSpec);
+            if (resolved === undefined) {
+              resolved = resolveSpecRefs(superSpec);
+              resolvedSpecCache.set(superSpec, resolved);
+            }
+            return resolved;
+          },
 
-      catalog: async () => catalogView,
+          catalog: async () => catalogView,
 
-      search: async (arg?: unknown) => {
-        const t0 = Date.now();
-        const opts = (typeof arg === "string" ? { query: arg } : (arg ?? {})) as Exclude<
-          SearchArg,
-          string
-        >;
-        if (typeof opts.query !== "string" || opts.query.length === 0) {
-          return {
-            ok: false,
-            error: {
-              service: "codemode",
-              kind: "error",
-              message: 'codemode.search needs a query: search("intent phrase") or search({ query, kind?, service?, limit? })'
+          search: async (arg?: unknown) => {
+            const t0 = Date.now();
+            const opts = (typeof arg === "string" ? { query: arg } : (arg ?? {})) as Exclude<
+              SearchArg,
+              string
+            >;
+            if (typeof opts.query !== "string" || opts.query.length === 0) {
+              return {
+                ok: false,
+                error: {
+                  service: "codemode",
+                  kind: "error",
+                  message: 'codemode.search needs a query: search("intent phrase") or search({ query, kind?, service?, limit? })'
+                }
+              };
             }
-          };
-        }
-        // Filter validation (todo 839): searchCatalog's filters are silent
-        // exact-matches by (frozen) contract, so a near-miss like service
-        // "stellardocs" or kind "operations" returns ZERO hits and reads as
-        // "the capability is missing". Reject unknown filter values as an
-        // error-envelope that names the bad value AND the real ones. The
-        // service set comes from the catalog itself (catalogServices), never
-        // a hand-maintained list. Explicit null means "no filter" (idiomatic
-        // LLM code passes `maybeService ?? null`), same as `limit: null`.
-        const kindFilter = opts.kind ?? undefined;
-        const serviceFilter = opts.service ?? undefined;
-        if (kindFilter !== undefined && !(CATALOG_KINDS as readonly unknown[]).includes(kindFilter)) {
-          return {
-            ok: false,
-            error: {
-              service: "codemode",
-              kind: "error",
-              message: `codemode.search: unknown kind ${JSON.stringify(kindFilter)} — valid kinds (exact-match): ${CATALOG_KINDS.join(", ")}`
+            // Filter validation (todo 839): searchCatalog's filters are silent
+            // exact-matches by (frozen) contract, so a near-miss like service
+            // "stellardocs" or kind "operations" returns ZERO hits and reads as
+            // "the capability is missing". Reject unknown filter values as an
+            // error-envelope that names the bad value AND the real ones. The
+            // service set comes from the catalog itself (catalogServices), never
+            // a hand-maintained list. Explicit null means "no filter" (idiomatic
+            // LLM code passes `maybeService ?? null`), same as `limit: null`.
+            const kindFilter = opts.kind ?? undefined;
+            const serviceFilter = opts.service ?? undefined;
+            if (kindFilter !== undefined && !(CATALOG_KINDS as readonly unknown[]).includes(kindFilter)) {
+              return {
+                ok: false,
+                error: {
+                  service: "codemode",
+                  kind: "error",
+                  message: `codemode.search: unknown kind ${JSON.stringify(kindFilter)} — valid kinds (exact-match): ${CATALOG_KINDS.join(", ")}`
+                }
+              };
             }
-          };
-        }
-        const services = catalogServices(catalog);
-        if (serviceFilter !== undefined && !(services as readonly unknown[]).includes(serviceFilter)) {
-          return {
-            ok: false,
-            error: {
-              service: "codemode",
-              kind: "error",
-              message: `codemode.search: unknown service ${JSON.stringify(serviceFilter)} — valid services (exact-match): ${services.join(", ")}`
+            const services = catalogServices(catalog);
+            if (serviceFilter !== undefined && !(services as readonly unknown[]).includes(serviceFilter)) {
+              return {
+                ok: false,
+                error: {
+                  service: "codemode",
+                  kind: "error",
+                  message: `codemode.search: unknown service ${JSON.stringify(serviceFilter)} — valid services (exact-match): ${services.join(", ")}`
+                }
+              };
             }
-          };
-        }
-        const { hits, total, truncated } = searchCatalogPage(catalog, {
-          query: opts.query,
-          kind: kindFilter as CatalogKind | undefined,
-          service: serviceFilter as string | undefined,
-          limit: typeof opts.limit === "number" ? opts.limit : undefined
-        });
-        logEvent("search", {
-          source: "codemode",
-          query: opts.query,
-          kind: typeof opts.kind === "string" ? opts.kind : null,
-          service: typeof opts.service === "string" ? opts.service : null,
-          hits: hits.length,
-          total,
-          truncated,
-          top: hits.slice(0, 3).map((h) => h.id),
-          responseChars: JSON.stringify(hits).length,
-          ms: Date.now() - t0
-        });
-        return { ok: true, hits, total, truncated };
-      },
+            const { hits, total, truncated } = searchCatalogPage(catalog, {
+              query: opts.query,
+              kind: kindFilter as CatalogKind | undefined,
+              service: serviceFilter as string | undefined,
+              limit: typeof opts.limit === "number" ? opts.limit : undefined
+            });
+            logEvent("search", {
+              source: "codemode",
+              query: opts.query,
+              kind: typeof opts.kind === "string" ? opts.kind : null,
+              service: typeof opts.service === "string" ? opts.service : null,
+              hits: hits.length,
+              total,
+              truncated,
+              top: hits.slice(0, 3).map((h) => h.id),
+              responseChars: JSON.stringify(hits).length,
+              ms: Date.now() - t0
+            });
+            return { ok: true, hits, total, truncated };
+          },
 
-      // The canonical detail-on-demand step (todo 841, mirroring upstream
-      // codemode's search → describe → call): a describe result carries
-      // everything DETAIL-shaped a search hit has and more — search hits
-      // stub oversized output types (COMPACT_OUTPUT_THRESHOLD,
-      // src/catalog/search.ts) and point here for the full shape, so this is
-      // the one place the FULL signature is always rendered. (Ranking facts
-      // — score, tier — stay on hits: they describe a hit's place in one
-      // response, not the entry.) Every kind also carries a `usage` line:
-      // the exact next call, so the model never has to reverse-engineer the
-      // read/call pattern from prose.
-      describe: async (id?: unknown) => {
-        if (typeof id !== "string" || id.length === 0) {
-          return {
-            ok: false,
-            error: { service: "codemode", kind: "error", message: "codemode.describe needs an exact catalog id string" }
-          };
-        }
-        const entry = catalog.entries.find((e) => e.id === id);
-        if (!entry) {
-          return {
-            ok: false,
-            error: {
-              service: "codemode",
-              kind: "error",
-              message: `unknown id "${id}" — ids are exact-match; discover them with codemode.search first`
+          // The canonical detail-on-demand step (todo 841, mirroring upstream
+          // codemode's search → describe → call): a describe result carries
+          // everything DETAIL-shaped a search hit has and more — search hits
+          // stub oversized output types (COMPACT_OUTPUT_THRESHOLD,
+          // src/catalog/search.ts) and point here for the full shape, so this is
+          // the one place the FULL signature is always rendered. (Ranking facts
+          // — score, tier — stay on hits: they describe a hit's place in one
+          // response, not the entry.) Every kind also carries a `usage` line:
+          // the exact next call, so the model never has to reverse-engineer the
+          // read/call pattern from prose.
+          describe: async (id?: unknown) => {
+            if (typeof id !== "string" || id.length === 0) {
+              return {
+                ok: false,
+                error: { service: "codemode", kind: "error", message: "codemode.describe needs an exact catalog id string" }
+              };
             }
-          };
-        }
-        const base = {
-          ok: true as const,
-          id: entry.id,
-          service: entry.service,
-          kind: entry.kind,
-          description: entry.description
-        };
-        if (entry.kind === "skill") {
-          // Same section-key derivation as search hits (sectionKeysOf) —
-          // omitted when the skill has no readable sections, like the hit.
-          // A sectionless skill (anticipated by the SearchHit doc; none in
-          // the current manifest) gets the whole-body read form instead: a
-          // `{ sections: [...] }` usage line there would invite invented
-          // section keys against a skill that has none.
-          const availableSections = sectionKeysOf(catalog, entry.id);
-          // Runnable skill (design §5): one id, two affordances — describe
-          // carries BOTH. The FULL rendered signature (never the search-hit
-          // compaction — same split as operations) + both raw schemas as
-          // data, availableSections as ever, and a usage line naming BOTH
-          // calls so neither affordance shadows the other.
-          if (entry.runnable === true) {
+            const entry = catalog.entries.find((e) => e.id === id);
+            if (!entry) {
+              return {
+                ok: false,
+                error: {
+                  service: "codemode",
+                  kind: "error",
+                  message: `unknown id "${id}" — ids are exact-match; discover them with codemode.search first`
+                }
+              };
+            }
+            const base = {
+              ok: true as const,
+              id: entry.id,
+              service: entry.service,
+              kind: entry.kind,
+              description: entry.description
+            };
+            if (entry.kind === "skill") {
+              const availableSections = sectionKeysOf(catalog, entry.id);
+              if (entry.runnable === true) {
+                const signature = renderSignature(entry);
+                return {
+                  ...base,
+                  ...(signature ? { signature } : {}),
+                  inputSchema: entry.inputSchema,
+                  outputSchema: entry.outputSchema,
+                  ...(availableSections.length > 0 ? { availableSections } : {}),
+                  usage: `run it via codemode.skill.run(${JSON.stringify(entry.id)}, input) — input per the signature; the result is the service-call envelope ({ ok: true, data } | { ok: false, error }) with a data.calls audit of every constituent call. Read the playbook via codemode.skill.read(${JSON.stringify(entry.id)}${availableSections.length > 0 ? ", { sections: [...] }" : ""}) — run gathers the data, read carries the judgment steps.`
+                };
+              }
+              return {
+                ...base,
+                ...(availableSections.length > 0 ? { availableSections } : {}),
+                usage:
+                  availableSections.length > 0
+                    ? `read sections via codemode.skill.read(${JSON.stringify(entry.id)}, { sections: [...] }) — section keys in availableSections`
+                    : `read the whole skill via codemode.skill.read(${JSON.stringify(entry.id)})`
+              };
+            }
+            if (entry.kind === "skill-section") {
+              const hash = entry.id.indexOf("#");
+              const skillId = hash === -1 ? entry.id : entry.id.slice(0, hash);
+              const section = hash === -1 ? entry.id : entry.id.slice(hash + 1);
+              return {
+                ...base,
+                skillId,
+                section,
+                usage: `read this section via codemode.skill.read(${JSON.stringify(skillId)}, { sections: [${JSON.stringify(section)}] })`
+              };
+            }
             const signature = renderSignature(entry);
             return {
               ...base,
               ...(signature ? { signature } : {}),
               inputSchema: entry.inputSchema,
               outputSchema: entry.outputSchema,
-              ...(availableSections.length > 0 ? { availableSections } : {}),
-              usage: `run it via codemode.skill.run(${JSON.stringify(entry.id)}, input) — input per the signature; the result is the service-call envelope ({ ok: true, data } | { ok: false, error }) with a data.calls audit of every constituent call. Read the playbook via codemode.skill.read(${JSON.stringify(entry.id)}${availableSections.length > 0 ? ", { sections: [...] }" : ""}) — run gathers the data, read carries the judgment steps.`
+              usage: "call it exactly as the signature's callable line shows — the payload arrives under r.data ({ ok: true, data } | { ok: false, error }), never at the top level"
             };
           }
-          return {
-            ...base,
-            ...(availableSections.length > 0 ? { availableSections } : {}),
-            usage:
-              availableSections.length > 0
-                ? `read sections via codemode.skill.read(${JSON.stringify(entry.id)}, { sections: [...] }) — section keys in availableSections`
-                : `read the whole skill via codemode.skill.read(${JSON.stringify(entry.id)})`
-          };
         }
-        if (entry.kind === "skill-section") {
-          // Section ids are `<skillId>#<key>` by build construction
-          // (scripts/build-catalog.mjs); the read call targets the PARENT
-          // skill with the key as a section selector.
-          const hash = entry.id.indexOf("#");
-          const skillId = hash === -1 ? entry.id : entry.id.slice(0, hash);
-          const section = hash === -1 ? entry.id : entry.id.slice(hash + 1);
-          return {
-            ...base,
-            skillId,
-            section,
-            usage: `read this section via codemode.skill.read(${JSON.stringify(skillId)}, { sections: [${JSON.stringify(section)}] })`
-          };
-        }
-        // Operation: ALWAYS the full signature — never the search-hit
-        // compaction — plus the raw schemas as plain data (the same
-        // projection codemode.catalog() serves, catalogEntryView above).
-        const signature = renderSignature(entry);
+      : {}),
+
+    skill_read: async (name?: unknown, opts?: unknown) => {
+      const r = readSkill(catalog, bundle, name, opts);
+      if (r.ok) hooks?.onSkillRead?.();
+      return r;
+    },
+
+    // The flat dispatch behind `codemode.skill.run` (SKILL_PRELUDE wraps it
+    // — nested objects can't cross the Proxy dispatch, same mechanism as
+    // skill_read). All semantics live host-side in runSkill (src/skills/
+    // run.ts): exact-id resolution, guard validation, the declared-ops
+    // sub-facade, the host-owned call ledger, deadline, warn belts. The
+    // envelope goes back through __guardEnvelope in the prelude, so
+    // .data-level misuse traps behave identically to every operation call.
+    skill_run: async (name?: unknown, input?: unknown) => {
+      hooks?.onSkillRun?.();
+      if (!skillRun) {
         return {
-          ...base,
-          ...(signature ? { signature } : {}),
-          inputSchema: entry.inputSchema,
-          outputSchema: entry.outputSchema,
-          usage: "call it exactly as the signature's callable line shows — the payload arrives under r.data ({ ok: true, data } | { ok: false, error }), never at the top level"
+          ok: false,
+          error: {
+            service: "skills",
+            kind: "error",
+            message:
+              "codemode.skill.run is not wired on this server instance — the ops facade was not threaded into the sandbox build; use the service operations directly"
+          }
         };
-      },
-
-      skill_read: async (name?: unknown, opts?: unknown) => {
-        const r = readSkill(catalog, bundle, name, opts);
-        if (r.ok) hooks?.onSkillRead?.();
-        return r;
-      },
-
-      // The flat dispatch behind `codemode.skill.run` (SKILL_PRELUDE wraps it
-      // — nested objects can't cross the Proxy dispatch, same mechanism as
-      // skill_read). All semantics live host-side in runSkill (src/skills/
-      // run.ts): exact-id resolution, guard validation, the declared-ops
-      // sub-facade, the host-owned call ledger, deadline, warn belts. The
-      // envelope goes back through __guardEnvelope in the prelude, so
-      // .data-level misuse traps behave identically to every operation call.
-      skill_run: async (name?: unknown, input?: unknown) => {
-        hooks?.onSkillRun?.();
-        if (!skillRun) {
-          return {
-            ok: false,
-            error: {
-              service: "skills",
-              kind: "error",
-              message:
-                "codemode.skill.run is not wired on this server instance — the ops facade was not threaded into the sandbox build; use the service operations directly"
-            }
-          };
-        }
-        return runSkill(catalog, skillRun.registry ?? RUNNERS, skillRun.facade, name, input, {
-          secrets: skillRun.secrets
-        });
       }
+      return runSkill(catalog, skillRun.registry ?? RUNNERS, skillRun.facade, name, input, {
+        secrets: skillRun.secrets
+      });
     }
+  };
+
+  return {
+    name: "codemode",
+    prelude: SKILL_PRELUDE,
+    fns
   };
 }
 
@@ -612,6 +608,7 @@ export function buildSandbox(
     superSpec?: unknown;
     onSkillRead?: () => void;
     onSkillRun?: () => void;
+    codemodeDiscovery?: boolean;
   }
 ): SandboxProvider[] {
   // Runner-wiring assertion at provider build (design §5/§6): registry ↔
@@ -632,6 +629,7 @@ export function buildSandbox(
         onSkillRead: deps?.onSkillRead,
         onSkillRun: deps?.onSkillRun
       },
+      deps?.codemodeDiscovery,
       { facade: ops, secrets: secretsFromEnv(env as Record<string, unknown>) }
     )
   ];

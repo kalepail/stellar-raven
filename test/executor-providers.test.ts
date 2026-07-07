@@ -71,6 +71,13 @@ describe("sandbox surface shape", () => {
     expect(codemode.prelude).toContain("codemode.skill =");
   });
 
+  it("can disable codemode discovery helpers for the public demo while leaving skills wired", () => {
+    const demoProviders = buildSandbox(catalog, bundle, env, { codemodeDiscovery: false });
+    const codemode = demoProviders.find((p) => p.name === "codemode")!;
+    expect(Object.keys(codemode.fns).sort()).toEqual(["skill_read", "skill_run"]);
+    expect(codemode.prelude).toContain("codemode.skill =");
+  });
+
   it("the skill prelude carries the run wrapper: flat skill_run dispatch + the shared envelope guard", () => {
     const codemode = providers.find((p) => p.name === "codemode")!;
     // run is read's sibling over the flat dispatch (design §6) …

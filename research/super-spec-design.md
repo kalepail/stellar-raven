@@ -106,9 +106,12 @@ around "deliver skill context when and as relevant" plus the two vetted runnable
   `x-execute: await codemode.skill.read(name, { sections })` — the real, existing affordance.
 - `POST /skills/search_skill_sections` — ranked lexical search over skills + sections;
   `x-execute: await codemode.search({ query, service: "skills" })` — again a real affordance.
-- `POST /skills/run_skill` — executes one of the two runnable skills host-side through
-  `codemode.skill.run(name, input)`. It carries **`x-runnable-index`** with exact runnable ids and
-  their input/output schemas, so callers do not infer runnable status from prose.
+- `POST /skills/run_skill` — executes a runnable skill host-side through
+  `codemode.skill.run(name, input)`. Current shipped state has one runnable id
+  (`skills.lumenloop.stellar-ecosystem-digest`); the original two-runner design
+  was narrowed when the project-dossier runner was retired on measured evidence.
+  It carries **`x-runnable-index`** with exact runnable ids and their input/output
+  schemas, so callers do not infer runnable status from prose.
 
 Honesty rule: skills ops never pretend to be `skills.*` sandbox globals (none exist); each op's
 `x-execute` names the actual `codemode.*` call. Lumenloop's 14 API-served skills stay out of this

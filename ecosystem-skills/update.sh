@@ -23,8 +23,8 @@
 #
 # Each GitHub source also vendors its upstream LICENSE/NOTICE files (fetched
 # at the same pinned commit) into skills/<source>/ so redistribution notices
-# survive every sync. stellar-light has no upstream license file — see
-# THIRD-PARTY-NOTICES.md at the repo root.
+# survive every sync. See THIRD-PARTY-NOTICES.md at the repo root for the
+# source-by-source license map.
 #
 # It also snapshots the stellarlight.xyz/api/skills DIRECTORY (≈30 ecosystem
 # entries across sources/kinds) into catalog.json + MANIFEST.catalog — the
