@@ -46,11 +46,13 @@ describe("demo page CSP", () => {
 describe("demo page states", () => {
   it("locked: sign-in link, static example trace, zero script", () => {
     expect(lockedHtml).toContain('href="/demo/login"');
+    expect(lockedHtml).toContain("Use Raven <span class=\"r\">for yourself.</span>");
     expect(lockedHtml).toContain("Example session");
     expect(lockedHtml).toContain("soroban smart contract deploy");
     expect(lockedHtml).toContain("The playground shows the live trace");
     expect(lockedHtml).toContain("connect an MCP client to <code>/mcp</code>");
     expect(lockedHtml).not.toContain("<script>");
+    expect(lockedHtml).not.toContain("Watch an agent");
     expect(lockedHtml).not.toContain('class="flow"');
   });
 

@@ -706,7 +706,7 @@ function demoHead(): string {
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Playground &middot; Stellar Raven</title>
-<meta name="description" content="Watch an agent drive Stellar Raven's search and execute tools live."/>
+<meta name="description" content="Try Stellar Raven's live agent playground for Stellar ecosystem questions."/>
 <meta name="robots" content="noindex"/>
 <meta name="theme-color" content="#0e150d"/>
 <meta name="color-scheme" content="dark"/>
@@ -729,7 +729,7 @@ function lockedBody(): string {
   return (
     `<main class="play pwrap"><section class="gate">` +
     `<p class="eyebrow">Agent playground <span class="live"><span class="dot"></span>live tools</span></p>` +
-    `<h1>Watch an agent <span class="r">work Raven.</span></h1>` +
+    `<h1>Use Raven <span class="r">for yourself.</span></h1>` +
     `<p class="lede">${esc(EXPLAINER)}</p>` +
     `<div class="cta"><a class="btn btn-primary" href="/demo/login">Sign in to try it</a>` +
     `<span class="hint">WorkOS sign-in &middot; no API keys &middot; rate-limited</span></div>` +
