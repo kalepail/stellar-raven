@@ -200,11 +200,13 @@ emitted in a single model step):
   Updated 2026-07-07: the demo routes through the dedicated
   `stellar-raven-demo` gateway (`DEMO_AI_GATEWAY_ID` in `wrangler.jsonc`, with
   the same fallback in code) so rate-limit / spend-limit posture can live on a
-  demo-specific control plane. The API token has AI Gateway read but not write,
-  so changing those rules remains dashboard work. Gateway logging persists
-  prompts/responses in the AI Gateway log viewer (bounded by the plan's log
-  cap) even though the app itself never logs full trace payloads; revisit log
-  retention if the gate ever loosens.
+  demo-specific control plane. Read-only Cloudflare verification on
+  2026-07-07 found authentication enabled, `collect_logs: false`, no stored
+  provider configs, no dynamic routes, a gateway rate limit of 50 requests per
+  60 seconds, one enabled gateway spend-limit rule (`cost` limit 100 over a
+  86400-second sliding window), and the account-level daily sliding spending
+  limit still enabled. The public-demo logging policy is no retained AI
+  Gateway prompt/response logs; revisit that posture if the gate ever loosens.
 - If a hard cross-request cap ever becomes a requirement, that is an explicit
   new design (atomic limiter: DO or Cloudflare rate-limiting product) — not a
   KV patch.
