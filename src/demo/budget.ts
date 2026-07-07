@@ -14,8 +14,8 @@
  */
 
 export const DEMO_CAPS = {
-  /** stepCountIs(5) — model turns per chat request. */
-  maxSteps: 5,
+  /** stepCountIs(7) — model turns per chat request. */
+  maxSteps: 7,
   /**
    * streamText maxOutputTokens per request. Sized for a reasoning-capable
    * model: kimi-k2.6's hidden thinking counts against this budget, and 800

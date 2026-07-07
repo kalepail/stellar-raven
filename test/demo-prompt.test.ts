@@ -16,8 +16,11 @@ describe("demo system prompt", () => {
     expect(DEMO_SYSTEM_PROMPT.endsWith(DEMO_PREAMBLE)).toBe(true);
     // The demo's turn budget is stated to the model (numbers enforced in
     // src/demo/budget.ts; drift here is a lie to the model, not a crash).
-    expect(DEMO_PREAMBLE).toContain("5 steps");
+    expect(DEMO_PREAMBLE).toContain("7 steps");
     expect(DEMO_PREAMBLE).toContain("2 `execute` calls");
+    expect(DEMO_PREAMBLE).toContain("fixable JavaScript typo");
+    expect(DEMO_PREAMBLE).toContain("Do not infer per-item detail functions");
+    expect(DEMO_PREAMBLE).toContain("named result objects");
   });
 
   it("references no non-exposed operations or retired skills (ADR-0003)", () => {

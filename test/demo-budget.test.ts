@@ -39,7 +39,7 @@ function msg(role: string, content: string) {
 describe("DEMO_CAPS", () => {
   it("matches the accepted design's cap values exactly", () => {
     expect(DEMO_CAPS).toEqual({
-      maxSteps: 5,
+      maxSteps: 7,
       maxOutputTokens: 4096,
       maxHistoryMessages: 20,
       maxHistoryChars: 24000,

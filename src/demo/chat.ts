@@ -29,12 +29,28 @@ import { logEvent } from "../observability.ts";
 import { verifyDemoCookie } from "./auth.ts";
 import { DEMO_CAPS, clampHistory, demoThrottle } from "./budget.ts";
 import { encodeFrame, type DemoFrame } from "./frames.ts";
+import {
+  DEMO_GATEWAY_ID_FALLBACK,
+  DEMO_MODELS,
+  DEMO_REASONING_EFFORT,
+  DEMO_TEMPERATURE,
+  demoSessionAffinity
+} from "./model-config.ts";
 import { DEMO_SYSTEM_PROMPT } from "./prompt.ts";
 import { buildDemoTools } from "./tools.ts";
 
-// Fourth pick after live testing (2026-07-06, wrangler dev,
-// workers-ai-provider 3.3.1) eliminated every cheaper candidate on a
-// different streaming-tool-call failure each:
+declare global {
+  interface Env {
+    AI: Ai;
+    DEMO_AI_GATEWAY_ID?: string;
+  }
+}
+
+// Grok 4.3 is available through the Cloudflare AI binding via AI Gateway
+// Unified Billing. Kimi K2.7 Code stays as a pre-output fallback because it is
+// optimized for coding/tooling workloads and has been reliable for demo tool
+// turns. Earlier live testing eliminated cheaper candidates on
+// streaming-tool-call reliability:
 //  - @cf/zai-org/glm-4.7-flash: args parsed fine, but tool-enabled calls
 //    frequently sat silent until the 120s whole-turn abort (steps:0) while
 //    no-tools calls answered in ~130ms — unusable latency variance.
@@ -43,11 +59,7 @@ import { buildDemoTools } from "./tools.ts";
 //    every call.
 //  - @cf/meta/llama-3.3-70b-instruct-fp8-fast: emitted its llama-format
 //    function JSON as plain TEXT content; never surfaced as a tool call.
-// kimi-k2.6 is what cloudflare/agents-starter itself ships on this exact
-// stack (provider + streamText + tools). Pricier ($0.95/$4.00 per M) but a
-// demo turn is still <1¢, and a live demo needs reliable tool turns more
-// than cheap ones.
-const DEMO_MODEL = "@cf/moonshotai/kimi-k2.6";
+// A live demo needs reliable tool turns more than the absolute cheapest model.
 /** Throttle-bucket subject for loopback dev requests (no cookie, no WorkOS). */
 const DEV_SUBJECT = "dev-loopback";
 /**
@@ -178,6 +190,18 @@ async function runTurn(
   const { tools, countersReport } = buildDemoTools({ env, emit });
   let steps = 0;
   let finishReason = "none";
+  let selectedModel = DEMO_MODELS[0]?.model ?? "unknown";
+  const attemptedModels: string[] = [];
+  let usage:
+    | {
+        inputTokens: number | undefined;
+        cacheReadTokens: number | undefined;
+        cacheWriteTokens: number | undefined;
+        outputTokens: number | undefined;
+        reasoningTokens: number | undefined;
+        totalTokens: number | undefined;
+      }
+    | undefined;
   try {
     const workersai = createWorkersAI({
       binding: env.AI,
@@ -185,60 +209,106 @@ async function runTurn(
       // spend-limit rule is the only cross-request dollar cap. Fail-closed —
       // the gateway must exist account-side (created, with its spend-limit
       // rule, before deploy) or model calls error out.
-      gateway: { id: env.DEMO_AI_GATEWAY_ID }
+      gateway: { id: env.DEMO_AI_GATEWAY_ID ?? DEMO_GATEWAY_ID_FALLBACK }
     });
-    const result = streamText({
-      model: workersai(DEMO_MODEL),
-      system: DEMO_SYSTEM_PROMPT,
-      messages,
-      tools: tools as ToolSet,
-      stopWhen: stepCountIs(DEMO_CAPS.maxSteps),
-      maxOutputTokens: DEMO_CAPS.maxOutputTokens,
-      abortSignal
-    });
-    for await (const part of result.fullStream) {
-      switch (part.type) {
-        case "text-delta":
-          emit({ type: "token", text: part.text });
-          break;
-        case "reasoning-delta":
-          // kimi thinks at length before answering; stream the reasoning so
-          // the wait is visibly alive (client shows a rolling tail, not a
-          // transcript — reasoning is not part of the answer).
-          emit({ type: "thinking", text: part.text });
-          break;
-        case "start-step":
-          steps += 1;
-          emit({ type: "step", index: steps });
-          break;
-        case "tool-error":
-          // A call that never reached our execute (e.g. invalid input) — the
-          // tools' own emit didn't fire, so trace it here instead of hiding it.
-          if (part.toolName === "search" || part.toolName === "execute") {
-            emit({ type: "tool-start", id: part.toolCallId, tool: part.toolName, input: part.input });
-            emit({
-              type: "tool-result",
-              id: part.toolCallId,
-              tool: part.toolName,
-              ok: false,
-              output: errorText(part.error)
-            });
+    const sessionAffinity = await demoSessionAffinity(subject);
+    for (let index = 0; index < DEMO_MODELS.length; index += 1) {
+      const config = DEMO_MODELS[index];
+      if (!config) continue;
+      selectedModel = config.model;
+      attemptedModels.push(config.model);
+      let emittedModelOutput = false;
+      try {
+        const result = streamText({
+          model: workersai(config.model, {
+            // Cloudflare prompt caching is automatic; session affinity routes a
+            // demo subject's turns to the same backend to improve prefix cache
+            // hit rate. Keep the raw auth subject out of the model header.
+            sessionAffinity,
+            reasoning_effort: DEMO_REASONING_EFFORT
+          }),
+          system: DEMO_SYSTEM_PROMPT,
+          messages,
+          tools: tools as ToolSet,
+          stopWhen: stepCountIs(DEMO_CAPS.maxSteps),
+          maxOutputTokens: DEMO_CAPS.maxOutputTokens,
+          temperature: DEMO_TEMPERATURE,
+          abortSignal
+        });
+        for await (const part of result.fullStream) {
+          switch (part.type) {
+            case "text-delta":
+              emittedModelOutput = true;
+              emit({ type: "token", text: part.text });
+              break;
+            case "reasoning-delta":
+              emittedModelOutput = true;
+              // Reasoning models can sit silent before answering; stream the
+              // reasoning tail so the wait is visibly alive (client shows a
+              // rolling tail, not a transcript).
+              emit({ type: "thinking", text: part.text });
+              break;
+            case "start-step":
+              emittedModelOutput = true;
+              steps += 1;
+              emit({ type: "step", index: steps });
+              break;
+            case "tool-error":
+              emittedModelOutput = true;
+              // A call that never reached our execute (e.g. invalid input) —
+              // the tools' own emit didn't fire, so trace it here.
+              if (part.toolName === "search" || part.toolName === "execute") {
+                emit({ type: "tool-start", id: part.toolCallId, tool: part.toolName, input: part.input });
+                emit({
+                  type: "tool-result",
+                  id: part.toolCallId,
+                  tool: part.toolName,
+                  ok: false,
+                  output: errorText(part.error)
+                });
+              }
+              break;
+            case "abort":
+              finishReason = "abort";
+              if (!emittedModelOutput && index < DEMO_MODELS.length - 1) throw new Error("model aborted before output");
+              emittedModelOutput = true;
+              emit({ type: "error", message: "The turn was aborted before finishing." });
+              break;
+            case "error":
+              finishReason = "error";
+              if (!emittedModelOutput && index < DEMO_MODELS.length - 1) throw new Error(errorText(part.error));
+              emittedModelOutput = true;
+              emit({ type: "error", message: errorText(part.error) });
+              break;
+            case "finish":
+              finishReason = part.finishReason;
+              usage = {
+                inputTokens: part.totalUsage.inputTokens,
+                cacheReadTokens: part.totalUsage.inputTokenDetails.cacheReadTokens,
+                cacheWriteTokens: part.totalUsage.inputTokenDetails.cacheWriteTokens,
+                outputTokens: part.totalUsage.outputTokens,
+                reasoningTokens: part.totalUsage.outputTokenDetails.reasoningTokens,
+                totalTokens: part.totalUsage.totalTokens
+              };
+              if (!emittedModelOutput && index < DEMO_MODELS.length - 1) {
+                finishReason = "empty-fallback";
+                break;
+              }
+              emit({ type: "done", reason: part.finishReason });
+              return;
+            default:
+              break; // source/raw/tool-call etc. — no frame mapping
           }
-          break;
-        case "abort":
-          finishReason = "abort";
-          emit({ type: "error", message: "The turn was aborted before finishing." });
-          break;
-        case "error":
-          finishReason = "error";
-          emit({ type: "error", message: errorText(part.error) });
-          break;
-        case "finish":
-          finishReason = part.finishReason;
-          emit({ type: "done", reason: part.finishReason });
-          break;
-        default:
-          break; // reasoning/source/raw/tool-call etc. — no frame mapping
+        }
+        if (emittedModelOutput || index === DEMO_MODELS.length - 1) return;
+      } catch (error) {
+        finishReason = "exception";
+        if (emittedModelOutput || index === DEMO_MODELS.length - 1) throw error;
+        logEvent("demo-model-fallback", {
+          fromModel: config.model,
+          toModel: DEMO_MODELS[index + 1]?.model,
+          reason: errorText(error)
+        });
       }
     }
   } catch (e) {
@@ -249,6 +319,17 @@ async function runTurn(
     const counters = countersReport();
     logEvent("demo-chat", {
       auth: subject === DEV_SUBJECT ? "dev-bypass" : "cookie",
+      model: selectedModel,
+      attemptedModels,
+      temperature: DEMO_TEMPERATURE,
+      reasoningEffort: DEMO_REASONING_EFFORT,
+      sessionAffinity: true,
+      inputTokens: usage?.inputTokens,
+      cacheReadTokens: usage?.cacheReadTokens,
+      cacheWriteTokens: usage?.cacheWriteTokens,
+      outputTokens: usage?.outputTokens,
+      reasoningTokens: usage?.reasoningTokens,
+      totalTokens: usage?.totalTokens,
       messages: messages.length,
       steps,
       finishReason,
