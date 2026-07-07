@@ -62,6 +62,12 @@ current process state before using raw shell commands.
 
 ## Rules
 
+- **Forward-only; the service has no users to protect (Tyler, reaffirmed 2026-07-07).** When
+  options are ranked, pick the best design even when it breaks contracts — no legacy formats, no
+  dual paths, no deprecation shims, no "least disruptive" weighting. The fact that this service is
+  deployed must carry ZERO weight in design decisions; breaking deployed behavior is fine and
+  preferred over compat code. Deviations from upstream codemode still need conviction or a golden
+  A/B win — forward-only is not careless.
 - **Model code never owns endpoints/args/auth** — everything validates against the catalog
   manifest.
 - **The manifest IS the exposed surface (ADR-0003,
