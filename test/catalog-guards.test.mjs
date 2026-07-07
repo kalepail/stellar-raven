@@ -17,7 +17,7 @@ import { attachRunnableSkills, assertNoNonExposedRefs } from "../scripts/build-c
 import { RUNNERS } from "../src/skills/runners/index.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const DOSSIER = "skills.lumenloop.stellar-project-dossier";
+const DIGEST = "skills.lumenloop.stellar-ecosystem-digest";
 
 /**
  * The committed manifest's entries with the runnable attachment UNDONE —
@@ -49,23 +49,23 @@ describe("attachRunnableSkills — fail-loud drift guards (design §5)", () => {
   });
 
   it("throws when a registry key has no emitted skill entry (renamed/retired skill)", () => {
-    const withoutSkill = preAttachEntries().filter((e) => e.id !== DOSSIER);
+    const withoutSkill = preAttachEntries().filter((e) => e.id !== DIGEST);
     expect(() => attachRunnableSkills(withoutSkill, RUNNERS)).toThrow(
       /matched no emitted skill entry/
     );
   });
 
   it("throws when a registry key resolves to a non-skill entry", () => {
-    const registry = { "lumenloop.get_project": RUNNERS[DOSSIER] };
+    const registry = { "lumenloop.get_project": RUNNERS[DIGEST] };
     expect(() => attachRunnableSkills(preAttachEntries(), registry)).toThrow(
       /matched no emitted skill entry/
     );
   });
 
   it("throws when a declared op resolves to no emitted operation entry (upstream retirement)", () => {
-    const withoutOp = preAttachEntries().filter((e) => e.id !== "lumenloop.get_project");
+    const withoutOp = preAttachEntries().filter((e) => e.id !== "lumenloop.search_content_semantic");
     expect(() => attachRunnableSkills(withoutOp, RUNNERS)).toThrow(
-      /declares op "lumenloop\.get_project" which resolves to no emitted operation entry/
+      /declares op "lumenloop\.search_content_semantic" which resolves to no emitted operation entry/
     );
   });
 });
@@ -77,7 +77,7 @@ describe("assertNoNonExposedRefs — runnable schema JSON is guarded emitted tex
 
   it("a planted non-exposed op reference inside a runnable inputSchema description trips the build", () => {
     const planted = attachRunnableSkills(preAttachEntries(), RUNNERS).map((entry) => {
-      if (entry.id !== DOSSIER) return entry;
+      if (entry.id !== DIGEST) return entry;
       return {
         ...entry,
         inputSchema: {
@@ -91,7 +91,7 @@ describe("assertNoNonExposedRefs — runnable schema JSON is guarded emitted tex
 
   it("a planted excluded lumenloop tool name inside a runnable outputSchema description trips it too", () => {
     const planted = attachRunnableSkills(preAttachEntries(), RUNNERS).map((entry) => {
-      if (entry.id !== DOSSIER) return entry;
+      if (entry.id !== DIGEST) return entry;
       return {
         ...entry,
         outputSchema: {

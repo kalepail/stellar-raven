@@ -16,21 +16,13 @@ import type { AdapterResult } from "../src/adapters/types.ts";
 import { validateArgs } from "../src/policy/validate.ts";
 import type { OpsFacade, SkillRunner } from "../src/skills/runners/types.ts";
 import { RUNNERS } from "../src/skills/runners/index.ts";
-import { stellarProjectDossier } from "../src/skills/runners/stellar-project-dossier.ts";
 import { stellarEcosystemDigest } from "../src/skills/runners/stellar-ecosystem-digest.ts";
-import fxGetProjectCompact from "./fixtures/skill-runners/lumenloop.get_project.compact.ts";
-import fxGetProject from "./fixtures/skill-runners/lumenloop.get_project.ts";
-import fxSearchDirectory from "./fixtures/skill-runners/lumenloop.search_directory.ts";
-import fxScf from "./fixtures/skill-runners/lumenloop.get_scf_submissions.ts";
-import fxContent from "./fixtures/skill-runners/lumenloop.find_content_about_project.ts";
-import fxSimilar from "./fixtures/skill-runners/lumenloop.find_similar_projects_semantic.ts";
 import fxSemantic from "./fixtures/skill-runners/lumenloop.search_content_semantic.ts";
 import fxListDocs from "./fixtures/skill-runners/lumenloop.list_documents.ts";
 import fxEntity from "./fixtures/skill-runners/lumenloop.find_content_by_entity.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-const DOSSIER_ID = "skills.lumenloop.stellar-project-dossier";
 const DIGEST_ID = "skills.lumenloop.stellar-ecosystem-digest";
 
 // ---------------------------------------------------------------------------
@@ -64,15 +56,6 @@ const hardError = (message = "upstream 500"): AdapterResult => ({
 });
 const okData = (data: unknown): AdapterResult => ({ ok: true, data });
 
-/** The live-fixture happy map for the dossier (probe compact vs full split). */
-const dossierHappy = (): Record<string, StubValue> => ({
-  "lumenloop.get_project": (args) => (args["compact"] === true ? fxGetProjectCompact : fxGetProject),
-  "lumenloop.search_directory": fxSearchDirectory,
-  "lumenloop.get_scf_submissions": fxScf,
-  "lumenloop.find_content_about_project": fxContent,
-  "lumenloop.find_similar_projects_semantic": fxSimilar
-});
-
 const digestHappy = (): Record<string, StubValue> => ({
   "lumenloop.search_content_semantic": fxSemantic,
   "lumenloop.list_documents": fxListDocs,
@@ -91,221 +74,6 @@ const asRecord = (v: unknown) => v as Record<string, any>;
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.useRealTimers();
-});
-
-// ===========================================================================
-// stellar-project-dossier
-// ===========================================================================
-describe("stellar-project-dossier runner", () => {
-  it("happy path on live fixtures: input-slug resolution, all sections projected", async () => {
-    const recorded: Recorded[] = [];
-    const out = asRecord(
-      await stellarProjectDossier.run({ project: "blend" }, stubFacade(dossierHappy(), recorded))
-    );
-
-    expect(out.slug).toBe("blend");
-    expect(out.resolvedBy).toBe("input-slug");
-    // profile: array-valued upstream fields joined into the declared strings
-    expect(out.profile.title).toBe("Blend Capital");
-    expect(out.profile.category).toBe("Financial Protocols");
-    expect(out.profile.tags).toEqual(["DeFi", "Lending & Borrowing"]);
-    expect(out.profile.basedIn).toBe("United States");
-    expect(out.profile.operatingRegion).toBe("Global");
-    expect(out.profile.links.website).toBe("blend.capital");
-    expect(out.profile.description.length).toBeLessThanOrEqual(400);
-    // scf
-    expect(out.scf).toEqual({
-      count: 1,
-      softEmpty: false,
-      submissions: [
-        { round: "Liquidity Award - '24 Q1", awardType: "Liquidity Award", title: "Blend Capital", status: null }
-      ]
-    });
-    // content: flattened across the four types; research rows carry no url
-    expect(out.content.softEmpty).toBe(false);
-    expect(out.content.items).toHaveLength(6);
-    const research = out.content.items.filter((i: any) => i.type === "research");
-    expect(research).toHaveLength(1);
-    expect(research[0].url).toBeNull();
-    for (const item of out.content.items) {
-      expect(["articles", "av", "events", "research"]).toContain(item.type);
-      expect(item.summary.length).toBeLessThanOrEqual(200);
-    }
-    // similar (bare-array payload)
-    expect(out.similar.items).toEqual([
-      { slug: "yieldblox", title: "Yieldblox", category: "Financial Protocols" },
-      { slug: "turbolong", title: "Turbolong", category: "Financial Protocols" }
-    ]);
-    // the runner NEVER authors the audit trail
-    expect("calls" in out).toBe(false);
-    // probe (compact) + 4-way fan-out = 5 constituent calls
-    expect(recorded).toHaveLength(5);
-    expectValidates(stellarProjectDossier, out, recorded.map((r) => r.op));
-  });
-
-  it("applies its own defaults (schema `default` is documentation only): contentLimit 8, similarLimit 5", async () => {
-    const recorded: Recorded[] = [];
-    await stellarProjectDossier.run({ project: "blend" }, stubFacade(dossierHappy(), recorded));
-    const content = recorded.find((r) => r.op === "lumenloop.find_content_about_project")!;
-    expect(content.args).toEqual({
-      slug: "blend",
-      limit: 8,
-      types: ["articles", "av", "events", "research"],
-      response_format: "concise"
-    });
-    const similar = recorded.find((r) => r.op === "lumenloop.find_similar_projects_semantic")!;
-    expect(similar.args).toEqual({ slug: "blend", limit: 5 });
-  });
-
-  it("propagates explicit limits instead of the defaults", async () => {
-    const recorded: Recorded[] = [];
-    await stellarProjectDossier.run(
-      { project: "blend", contentLimit: 3, similarLimit: 2 },
-      stubFacade(dossierHappy(), recorded)
-    );
-    expect(recorded.find((r) => r.op === "lumenloop.find_content_about_project")!.args["limit"]).toBe(3);
-    expect(recorded.find((r) => r.op === "lumenloop.find_similar_projects_semantic")!.args["limit"]).toBe(2);
-  });
-
-  it('resolves "exact-slug" when the direct probe fails but the directory has the exact slug', async () => {
-    const map = dossierHappy();
-    map["lumenloop.get_project"] = (args) =>
-      args["compact"] === true ? hardError("probe down") : fxGetProject;
-    map["lumenloop.search_directory"] = okData({
-      count: 2,
-      projects: [
-        { slug: "blend", title: "Blend Capital" },
-        { slug: "blender", title: "Blender" }
-      ]
-    });
-    const out = asRecord(await stellarProjectDossier.run({ project: "blend" }, stubFacade(map)));
-    expect(out.resolvedBy).toBe("exact-slug");
-    expect(out.slug).toBe("blend");
-  });
-
-  it('resolves "exact-title" case-insensitively', async () => {
-    const map = dossierHappy();
-    map["lumenloop.search_directory"] = okData({
-      count: 2,
-      projects: [
-        { slug: "blend", title: "Blend Capital" },
-        { slug: "other", title: "Other Project" }
-      ]
-    });
-    // "blend capital" fails the slug regex (space) → search → exact title (ci)
-    const out = asRecord(await stellarProjectDossier.run({ project: "blend capital" }, stubFacade(map)));
-    expect(out.resolvedBy).toBe("exact-title");
-    expect(out.slug).toBe("blend");
-  });
-
-  it('resolves "single-hit" when the directory returns exactly one project', async () => {
-    const map = dossierHappy();
-    map["lumenloop.search_directory"] = okData({
-      count: 1,
-      projects: [{ slug: "blend", title: "Blend Capital" }]
-    });
-    const out = asRecord(
-      await stellarProjectDossier.run({ project: "Blendy Lending Thing" }, stubFacade(map))
-    );
-    expect(out.resolvedBy).toBe("single-hit");
-    expect(out.slug).toBe("blend");
-  });
-
-  it("fails AS DATA on ambiguous multi-hit, listing the candidates (live fixture: substring noise)", async () => {
-    // The live "Blend" directory search surfaces OTHER projects mentioning
-    // Blend — no exact slug/title match, two hits → ambiguous, never fuzzy.
-    const out = asRecord(await stellarProjectDossier.run({ project: "Blend" }, stubFacade(dossierHappy())));
-    expect(out.ok).toBe(false);
-    expect(out.error.kind).toBe("error");
-    expect(out.error.message).toContain('ambiguous project "Blend"');
-    expect(out.error.message).toContain("pass the exact slug");
-    expect(out.error.hint).toContain("backyard — Backyard");
-    expect(out.error.hint).toContain("bexo — Bexo");
-    // The ambiguity branch is ALSO the live fabrication-trap path (upstream
-    // fuzzy-matches nonexistent names into candidates), so the hint must
-    // carry the absence-is-not-evidence framing and forbid substitution.
-    expect(out.error.hint).toContain('none matches "Blend" exactly');
-    expect(out.error.hint).toContain("do not substitute a similar-sounding one");
-    expect(out.error.hint).toContain("is not evidence the project does not exist");
-  });
-
-  it("zero directory hits → soft-empty with the honesty hint (empty-array form)", async () => {
-    const map = dossierHappy();
-    map["lumenloop.search_directory"] = okData({ count: 0, projects: [] });
-    const out = asRecord(await stellarProjectDossier.run({ project: "Quasarswap DEX" }, stubFacade(map)));
-    expect(out.ok).toBe(false);
-    expect(out.error.kind).toBe("soft-empty");
-    expect(out.error.message).toBe('no directory project matched "Quasarswap DEX"');
-    expect(out.error.hint).toContain("is not evidence the project does not exist");
-  });
-
-  it("zero directory hits → soft-empty (upstream soft-empty envelope form)", async () => {
-    const map = dossierHappy();
-    map["lumenloop.search_directory"] = softEmpty();
-    const out = asRecord(await stellarProjectDossier.run({ project: "Quasarswap DEX" }, stubFacade(map)));
-    expect(out.ok).toBe(false);
-    expect(out.error.kind).toBe("soft-empty");
-  });
-
-  it("anchor get_project error → run fails with the anchor's kind and hint", async () => {
-    const map = dossierHappy();
-    map["lumenloop.get_project"] = (args) =>
-      args["compact"] === true ? fxGetProjectCompact : hardError("row fetch exploded");
-    const out = asRecord(await stellarProjectDossier.run({ project: "blend" }, stubFacade(map)));
-    expect(out.ok).toBe(false);
-    expect(out.error.kind).toBe("error");
-    expect(out.error.message).toContain("anchor lumenloop.get_project failed");
-    expect(out.error.message).toContain("row fetch exploded");
-  });
-
-  it("non-anchor constituent errors degrade per-section to null (scf / content / similar)", async () => {
-    const map = dossierHappy();
-    map["lumenloop.get_scf_submissions"] = hardError();
-    map["lumenloop.find_content_about_project"] = hardError();
-    map["lumenloop.find_similar_projects_semantic"] = hardError();
-    const recorded: Recorded[] = [];
-    const out = asRecord(await stellarProjectDossier.run({ project: "blend" }, stubFacade(map, recorded)));
-    expect(out.scf).toBeNull();
-    expect(out.content).toBeNull();
-    expect(out.similar).toBeNull();
-    expect(out.profile).not.toBeNull(); // the anchor still succeeded
-    expectValidates(stellarProjectDossier, out, recorded.map((r) => r.op));
-  });
-
-  it("soft-empty constituents stay PRESENT with softEmpty: true (a finding, not a failure)", async () => {
-    const map = dossierHappy();
-    map["lumenloop.get_scf_submissions"] = softEmpty();
-    map["lumenloop.find_content_about_project"] = softEmpty();
-    map["lumenloop.find_similar_projects_semantic"] = softEmpty();
-    const recorded: Recorded[] = [];
-    const out = asRecord(await stellarProjectDossier.run({ project: "blend" }, stubFacade(map, recorded)));
-    expect(out.scf).toEqual({ count: 0, softEmpty: true, submissions: [] });
-    expect(out.content).toEqual({ softEmpty: true, items: [] });
-    expect(out.similar).toEqual({ softEmpty: true, items: [] });
-    expectValidates(stellarProjectDossier, out, recorded.map((r) => r.op));
-  });
-
-  it("shape drift (none of the expected keys) → section null, never guessed fields", async () => {
-    const map = dossierHappy();
-    map["lumenloop.get_scf_submissions"] = okData({ totally: "different-shape" });
-    const out = asRecord(await stellarProjectDossier.run({ project: "blend" }, stubFacade(map)));
-    expect(out.scf).toBeNull();
-    expect(out.profile).not.toBeNull();
-  });
-
-  it("truncates per-field: description ≤ 400, summaries ≤ 200", async () => {
-    const map = dossierHappy();
-    map["lumenloop.get_project"] = (args) =>
-      args["compact"] === true
-        ? fxGetProjectCompact
-        : okData({ title: "Blend Capital", category: "x", tags: [], description: "d".repeat(1000) });
-    map["lumenloop.find_content_about_project"] = okData({
-      articles: [{ title: "t", url: "https://u", publishing_date: "2026-01-01", summary: "s".repeat(999) }]
-    });
-    const out = asRecord(await stellarProjectDossier.run({ project: "blend" }, stubFacade(map)));
-    expect(out.profile.description).toHaveLength(400);
-    expect(out.content.items[0].summary).toHaveLength(200);
-  });
 });
 
 // ===========================================================================
@@ -533,7 +301,6 @@ describe("runner confinement belts", () => {
       throw new Error("network egress attempted from a runner — facade-only rule violated");
     });
     const inputs: Record<string, { input: Record<string, unknown>; map: Record<string, StubValue> }> = {
-      [DOSSIER_ID]: { input: { project: "blend" }, map: dossierHappy() },
       [DIGEST_ID]: { input: { subject: "RWA tokenization" }, map: digestHappy() }
     };
     for (const [id, runner] of Object.entries(RUNNERS)) {
@@ -550,7 +317,7 @@ describe("runner confinement belts", () => {
 // ===========================================================================
 describe("RUNNERS registry", () => {
   it("is keyed by exact catalog ids with declared ops on every runner", () => {
-    expect(Object.keys(RUNNERS).sort()).toEqual([DIGEST_ID, DOSSIER_ID].sort());
+    expect(Object.keys(RUNNERS).sort()).toEqual([DIGEST_ID]);
     for (const runner of Object.values(RUNNERS)) {
       expect(runner.ops.length).toBeGreaterThan(0);
       for (const op of runner.ops) expect(op).toMatch(/^[a-z][a-zA-Z]*\.[a-z_]+$/);
@@ -570,14 +337,11 @@ describe("RUNNERS registry", () => {
   });
 
   it("rejects unknown input keys and out-of-range limits via validateArgs (unknown keys refused, never ignored)", () => {
-    const dossier = RUNNERS[DOSSIER_ID]!;
-    expect(validateArgs(dossier.inputSchema, { project: "blend", section: "x" })).not.toEqual([]);
-    expect(validateArgs(dossier.inputSchema, { project: "blend", contentLimit: 999 })).not.toEqual([]);
-    expect(validateArgs(dossier.inputSchema, {})).not.toEqual([]);
-    expect(validateArgs(dossier.inputSchema, { project: "blend" })).toEqual([]);
     const digest = RUNNERS[DIGEST_ID]!;
+    expect(validateArgs(digest.inputSchema, { subject: "x", section: "y" })).not.toEqual([]);
     expect(validateArgs(digest.inputSchema, { subject: "x", subjectType: "both" })).not.toEqual([]);
     expect(validateArgs(digest.inputSchema, { subject: "x", days: 365 })).not.toEqual([]);
+    expect(validateArgs(digest.inputSchema, {})).not.toEqual([]);
     expect(validateArgs(digest.inputSchema, { subject: "x" })).toEqual([]);
   });
 });

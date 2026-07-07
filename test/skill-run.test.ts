@@ -16,17 +16,10 @@ import type { OpsFacade, SkillRunner } from "../src/skills/runners/types.ts";
 import { RUNNERS } from "../src/skills/runners/index.ts";
 import { runSkill, assertRunnersWired, RUNNER_DEADLINE_MS } from "../src/skills/run.ts";
 import { nearestSkillId } from "../src/skills/store.ts";
-import fxGetProjectCompact from "./fixtures/skill-runners/lumenloop.get_project.compact.ts";
-import fxGetProject from "./fixtures/skill-runners/lumenloop.get_project.ts";
-import fxSearchDirectory from "./fixtures/skill-runners/lumenloop.search_directory.ts";
-import fxScf from "./fixtures/skill-runners/lumenloop.get_scf_submissions.ts";
-import fxContent from "./fixtures/skill-runners/lumenloop.find_content_about_project.ts";
-import fxSimilar from "./fixtures/skill-runners/lumenloop.find_similar_projects_semantic.ts";
 import fxSemantic from "./fixtures/skill-runners/lumenloop.search_content_semantic.ts";
 import fxListDocs from "./fixtures/skill-runners/lumenloop.list_documents.ts";
 import fxEntity from "./fixtures/skill-runners/lumenloop.find_content_by_entity.ts";
 
-const DOSSIER_ID = "skills.lumenloop.stellar-project-dossier";
 const DIGEST_ID = "skills.lumenloop.stellar-ecosystem-digest";
 
 // ---------------------------------------------------------------------------
@@ -108,26 +101,20 @@ const softEmpty = (message = "nothing matched"): AdapterResult => ({
   error: { service: "lumenloop", kind: "soft-empty", message }
 });
 
-/** The real-registry catalog: both runnable entries + every declared op. */
+/** The real-registry catalog: the runnable entry + every declared op. */
 function realCatalog(): Catalog {
   const declaredOps = [...new Set(Object.values(RUNNERS).flatMap((r) => r.ops))];
   return makeCatalog([
     ...declaredOps.map(opEntry),
-    runnableEntry(DOSSIER_ID, RUNNERS[DOSSIER_ID]!),
     runnableEntry(DIGEST_ID, RUNNERS[DIGEST_ID]!),
     proseSkillEntry("skills.lumenloop.stellar-content-auditor"),
-    sectionEntry(`${DOSSIER_ID}#pipeline`)
+    sectionEntry(`${DIGEST_ID}#pipeline`)
   ]);
 }
 
-/** Live-fixture facade covering every declared op of both real runners. */
+/** Live-fixture facade covering every declared op of the real runner. */
 function realFacade(overrides?: Record<string, StubValue>): OpsFacade {
   return stubFacade({
-    "lumenloop.get_project": (args) => (args["compact"] === true ? fxGetProjectCompact : fxGetProject),
-    "lumenloop.search_directory": fxSearchDirectory,
-    "lumenloop.get_scf_submissions": fxScf,
-    "lumenloop.find_content_about_project": fxContent,
-    "lumenloop.find_similar_projects_semantic": fxSimilar,
     "lumenloop.search_content_semantic": fxSemantic,
     "lumenloop.list_documents": fxListDocs,
     "lumenloop.find_content_by_entity": fxEntity,
@@ -196,15 +183,16 @@ describe("runSkill resolution ladder", () => {
   });
 
   it("unknown id: names ALL runnable ids plus the nearest-id suggestion (never a resolution)", async () => {
-    const r = await runSkill(catalog, RUNNERS, realFacade(), "skills.lumenloop.stellar-project-dosier", {
-      project: "blend"
+    const r = await runSkill(catalog, RUNNERS, realFacade(), "skills.lumenloop.stellar-ecosystem-diges", {
+      subject: "RWA"
     });
     expect(r.ok).toBe(false);
     const e = errOf(r);
-    expect(e.message).toContain('unknown runnable skill "skills.lumenloop.stellar-project-dosier"');
-    expect(e.message).toContain(DOSSIER_ID);
+    expect(e.message).toContain('unknown runnable skill "skills.lumenloop.stellar-ecosystem-diges"');
     expect(e.message).toContain(DIGEST_ID);
-    expect(e.message).toContain(`Did you mean "${DOSSIER_ID}"?`);
+    expect(e.message).toContain(`Did you mean "${DIGEST_ID}"?`);
+    // The retired dossier runner must not be advertised as runnable.
+    expect(e.message).not.toContain("stellar-project-dossier");
   });
 
   it("suggestion pool is runnable entries ONLY (prose skills never suggested)", async () => {
@@ -224,33 +212,32 @@ describe("runSkill resolution ladder", () => {
     expect(r.ok).toBe(false);
     const e = errOf(r);
     expect(e.message).toContain('"skills.lumenloop.stellar-content-auditor" is not runnable');
-    expect(e.message).toContain(DOSSIER_ID);
     expect(e.message).toContain(DIGEST_ID);
     expect(e.message).toContain("codemode.skill.read");
   });
 
   it("a skill-section id is not runnable either", async () => {
-    const r = await runSkill(catalog, RUNNERS, realFacade(), `${DOSSIER_ID}#pipeline`, {});
+    const r = await runSkill(catalog, RUNNERS, realFacade(), `${DIGEST_ID}#pipeline`, {});
     expect(r.ok).toBe(false);
     expect(errOf(r).message).toContain("is not runnable");
   });
 
   it("invalid input surfaces validateArgs issues — identical UX to operation misuse", async () => {
-    const r = await runSkill(catalog, RUNNERS, realFacade(), DOSSIER_ID, {});
+    const r = await runSkill(catalog, RUNNERS, realFacade(), DIGEST_ID, {});
     expect(r.ok).toBe(false);
     const e = errOf(r);
-    expect(e.message).toBe(`invalid arguments for ${DOSSIER_ID} — no call was made`);
-    expect(e.details).toEqual([{ path: "project", message: "required" }]);
+    expect(e.message).toBe(`invalid arguments for ${DIGEST_ID} — no call was made`);
+    expect(e.details).toEqual([{ path: "subject", message: "required" }]);
   });
 
   it("unknown input keys are refused, never ignored", async () => {
-    const r = await runSkill(catalog, RUNNERS, realFacade(), DOSSIER_ID, { project: "blend", sections: ["x"] });
+    const r = await runSkill(catalog, RUNNERS, realFacade(), DIGEST_ID, { subject: "RWA", sections: ["x"] });
     expect(r.ok).toBe(false);
     expect(JSON.stringify(errOf(r).details)).toContain("sections");
   });
 
   it("registry-miss belt: runnable in the catalog but no bundled runner", async () => {
-    const r = await runSkill(catalog, {}, realFacade(), DOSSIER_ID, { project: "blend" });
+    const r = await runSkill(catalog, {}, realFacade(), DIGEST_ID, { subject: "RWA" });
     expect(r.ok).toBe(false);
     expect(errOf(r).message).toContain("runner is missing from this build");
   });
@@ -260,25 +247,25 @@ describe("runSkill resolution ladder", () => {
 // execution: envelope, ledger, deadline, belts
 // ===========================================================================
 describe("runSkill execution", () => {
-  it("happy dossier run: service envelope out, host-attached calls, output validates", async () => {
+  it("happy digest run (theme mode): service envelope out, host-attached calls, output validates", async () => {
     const { lines } = captureEvents();
-    const r = await runSkill(realCatalog(), RUNNERS, realFacade(), DOSSIER_ID, { project: "blend" });
+    const r = await runSkill(realCatalog(), RUNNERS, realFacade(), DIGEST_ID, { subject: "RWA tokenization" });
     expect(r.ok).toBe(true);
     const data = dataOf(r);
-    // probe (compact) + 4-way fan-out, host-recorded
-    expect(data.calls).toHaveLength(5);
+    // theme mode: primary semantic search + upcoming-events list, host-recorded
+    expect(data.calls).toHaveLength(2);
     for (const c of data.calls) {
       expect(c.ok).toBe(true);
       expect(c.op).toMatch(/^lumenloop\./);
       expect(typeof c.ms).toBe("number");
     }
-    expect(validateArgs(RUNNERS[DOSSIER_ID]!.outputSchema, data)).toEqual([]);
+    expect(validateArgs(RUNNERS[DIGEST_ID]!.outputSchema, data)).toEqual([]);
     const evt = lines.find((l) => l["evt"] === "skill_run")!;
     expect(evt).toMatchObject({
-      id: DOSSIER_ID,
+      id: DIGEST_ID,
       outcome: "ok",
-      calls: 5,
-      callsOk: 5,
+      calls: 2,
+      callsOk: 2,
       callsError: 0,
       callsSoftEmpty: 0,
       outputSchemaOk: true
@@ -286,7 +273,7 @@ describe("runSkill execution", () => {
     expect(typeof evt["ms"]).toBe("number");
   });
 
-  it("happy digest run through the same dispatcher", async () => {
+  it("happy digest run (entity mode) through the same dispatcher", async () => {
     const r = await runSkill(realCatalog(), RUNNERS, realFacade(), DIGEST_ID, {
       subject: "Soroswap",
       subjectType: "entity"
@@ -300,24 +287,33 @@ describe("runSkill execution", () => {
   });
 
   it("runner error-as-data passes through with the LEDGER attached as error.details", async () => {
-    const facade = realFacade({
-      "lumenloop.get_project": (args) => (args["compact"] === true ? fxGetProjectCompact : hardError("boom"))
-    });
-    const r = await runSkill(realCatalog(), RUNNERS, facade, DOSSIER_ID, { project: "blend" });
+    const facade = realFacade({ "lumenloop.search_content_semantic": hardError("boom") });
+    const r = await runSkill(realCatalog(), RUNNERS, facade, DIGEST_ID, { subject: "RWA tokenization" });
     expect(r.ok).toBe(false);
     const e = errOf(r);
     expect(e.kind).toBe("error");
-    expect(e.message).toContain("anchor lumenloop.get_project failed");
+    expect(e.message).toContain("digest primary call lumenloop.search_content_semantic failed");
     const details = e.details as { op: string; ok: boolean }[];
-    expect(details).toHaveLength(5);
+    expect(details).toHaveLength(2); // the parallel upcoming-events call is ledgered too
     expect(details.filter((c) => !c.ok)).toHaveLength(1);
-    expect(details.find((c) => !c.ok)!.op).toBe("lumenloop.get_project");
+    expect(details.find((c) => !c.ok)!.op).toBe("lumenloop.search_content_semantic");
   });
 
-  it("zero-hit resolution propagates soft-empty (the fabrication-trap honesty path)", async () => {
+  it("a runner's soft-empty error envelope propagates kind + hint and logs outcome soft-empty", async () => {
     const { lines } = captureEvents();
-    const facade = realFacade({ "lumenloop.search_directory": softEmpty() });
-    const r = await runSkill(realCatalog(), RUNNERS, facade, DOSSIER_ID, { project: "Quasarswap DEX" });
+    const runner = fakeRunner({
+      run: async () => ({
+        ok: false,
+        error: {
+          service: "skills",
+          kind: "soft-empty",
+          message: "nothing matched",
+          hint: "absence is not evidence of absence"
+        }
+      })
+    });
+    const { catalog, registry, facade } = fakeWorld(runner);
+    const r = await runSkill(catalog, registry, facade, FAKE_ID, {});
     expect(r.ok).toBe(false);
     expect(errOf(r).kind).toBe("soft-empty");
     expect(errOf(r).hint).toContain("is not evidence");
@@ -414,20 +410,10 @@ describe("runSkill execution", () => {
     expect(lines.find((l) => l["evt"] === "skill_run")!["outcome"]).toBe("error");
   });
 
-  it("shape-drifted dossier constituent: section null AND the drifted call still in the host ledger/calls", async () => {
+  it("shape-drifted digest upcoming-events call: section null, call still ledgered", async () => {
     // §12 row 1 ("shape-drift fixture → section null + ledger entry") at the
     // dispatcher level: the audit guarantee is that a call whose payload the
     // runner discarded as drift can never disappear from the calls report.
-    const facade = realFacade({ "lumenloop.get_scf_submissions": okData({ totally: "different-shape" }) });
-    const r = await runSkill(realCatalog(), RUNNERS, facade, DOSSIER_ID, { project: "blend" });
-    expect(r.ok).toBe(true);
-    const data = dataOf(r);
-    expect(data.scf).toBeNull();
-    const drifted = data.calls.filter((c: { op: string }) => c.op === "lumenloop.get_scf_submissions");
-    expect(drifted).toEqual([{ op: "lumenloop.get_scf_submissions", ok: true, ms: expect.any(Number) }]);
-  });
-
-  it("shape-drifted digest upcoming-events call: section null, call still ledgered", async () => {
     const facade = realFacade({ "lumenloop.list_documents": okData({ weird: 1 }) });
     const r = await runSkill(realCatalog(), RUNNERS, facade, DIGEST_ID, { subject: "RWA tokenization" });
     expect(r.ok).toBe(true);
@@ -501,25 +487,25 @@ describe("assertRunnersWired", () => {
 
   it("throws when a registry key has no runnable skill entry (renamed/retired skill)", () => {
     const catalog = realCatalog();
-    catalog.entries = catalog.entries.filter((e) => e.id !== DOSSIER_ID);
+    catalog.entries = catalog.entries.filter((e) => e.id !== DIGEST_ID);
     expect(() => assertRunnersWired(catalog, RUNNERS)).toThrow(/no runnable skill entry/);
   });
 
   it("throws when the entry exists but is not flagged runnable", () => {
     const catalog = realCatalog();
-    const entry = catalog.entries.find((e) => e.id === DOSSIER_ID)! as CatalogEntry & { runnable?: true };
+    const entry = catalog.entries.find((e) => e.id === DIGEST_ID)! as CatalogEntry & { runnable?: true };
     delete entry.runnable;
     expect(() => assertRunnersWired(catalog, RUNNERS)).toThrow(/no runnable skill entry/);
   });
 
   it("throws when the manifest marks a skill runnable but no runner is bundled", () => {
-    const registry = { [DIGEST_ID]: RUNNERS[DIGEST_ID]! }; // dossier missing
+    const registry = {}; // digest runner missing
     expect(() => assertRunnersWired(realCatalog(), registry)).toThrow(/no runner is bundled/);
   });
 
   it("throws on inputSchema inequality (stale manifest vs bundled runner)", () => {
     const catalog = structuredClone(realCatalog());
-    const entry = catalog.entries.find((e) => e.id === DOSSIER_ID)!;
+    const entry = catalog.entries.find((e) => e.id === DIGEST_ID)!;
     entry.inputSchema = { ...entry.inputSchema, extraKeyword: true } as Record<string, unknown>;
     expect(() => assertRunnersWired(catalog, RUNNERS)).toThrow(/inputSchema differs/);
   });
@@ -533,9 +519,9 @@ describe("assertRunnersWired", () => {
 
   it("throws when a declared op is not an emitted operation entry (upstream retirement drift)", () => {
     const catalog = realCatalog();
-    catalog.entries = catalog.entries.filter((e) => e.id !== "lumenloop.find_similar_projects_semantic");
+    catalog.entries = catalog.entries.filter((e) => e.id !== "lumenloop.find_content_by_entity");
     expect(() => assertRunnersWired(catalog, RUNNERS)).toThrow(
-      /declares op "lumenloop\.find_similar_projects_semantic"/
+      /declares op "lumenloop\.find_content_by_entity"/
     );
   });
 });

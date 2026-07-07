@@ -17,12 +17,15 @@
  * it describes. Node-clean by construction: runner modules import only
  * ./types.ts (design §12 lint), so `node` type stripping loads this registry
  * exactly the way build-catalog.mjs already loads extract-keywords.ts.
+ *
+ * Retiring a runner = delete its module + registry entry and rebuild
+ * (design §11 row-13 rule: affordance text leaves with the feature); the
+ * skill entry itself stays in the catalog as a plain readable skill
+ * (stellar-project-dossier retired this way — todo 849).
  */
 import type { SkillRunner } from "./types.ts";
-import { stellarProjectDossier } from "./stellar-project-dossier.ts";
 import { stellarEcosystemDigest } from "./stellar-ecosystem-digest.ts";
 
 export const RUNNERS: Record<string, SkillRunner> = {
-  "skills.lumenloop.stellar-project-dossier": stellarProjectDossier,
   "skills.lumenloop.stellar-ecosystem-digest": stellarEcosystemDigest
 };

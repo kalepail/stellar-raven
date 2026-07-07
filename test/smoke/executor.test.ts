@@ -15,10 +15,6 @@
 import { env } from "cloudflare:test";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createExecuteRunner, createSpecSearchRunner } from "../../src/executor/run";
-import fxGetProject from "../fixtures/skill-runners/lumenloop.get_project.ts";
-import fxScf from "../fixtures/skill-runners/lumenloop.get_scf_submissions.ts";
-import fxContent from "../fixtures/skill-runners/lumenloop.find_content_about_project.ts";
-import fxSimilar from "../fixtures/skill-runners/lumenloop.find_similar_projects_semantic.ts";
 import fxSemantic from "../fixtures/skill-runners/lumenloop.search_content_semantic.ts";
 import fxListDocs from "../fixtures/skill-runners/lumenloop.list_documents.ts";
 
@@ -236,28 +232,26 @@ describe("codemode.skill.run at the real worker boundary (design §12 smoke)", (
     });
   };
 
-  it("dossier run: service envelope, all sections non-null, host `calls` ledger all ok, guard traps live", async () => {
+  it("digest run (theme mode): envelope, sections non-null, host `calls` ledger all ok, guard traps live", async () => {
     stubLumenloop({
-      // the compact probe and the fan-out fetch both route here — the probe
-      // only checks ok, so serving the full row twice is shape-safe
-      get_project: fxGetProject.data,
-      get_scf_submissions: fxScf.data,
-      find_content_about_project: fxContent.data,
-      find_similar_projects_semantic: fxSimilar.data
+      search_content_semantic: fxSemantic.data,
+      list_documents: fxListDocs.data
     });
     const outcome = await run(`async () => {
-      const r = await codemode.skill.run("skills.lumenloop.stellar-project-dossier", { project: "blend" });
+      const r = await codemode.skill.run("skills.lumenloop.stellar-ecosystem-digest", { subject: "RWA tokenization" });
       let envelopeTrap = "";
       try {
-        r.profile; // payload read on the envelope — must throw an r.data.* pointer
+        r.items; // payload read on the envelope — must throw an r.data.* pointer
       } catch (e) {
         envelopeTrap = String(e && e.message);
       }
       return {
         ok: r.ok,
-        slug: r.data.slug,
-        resolvedBy: r.data.resolvedBy,
-        sectionsNonNull: [r.data.profile, r.data.scf, r.data.content, r.data.similar].every((s) => s !== null),
+        window: r.data.window,
+        softEmpty: r.data.softEmpty,
+        sectionsNonNull: [r.data.items, r.data.upcomingEvents].every((s) => s !== null),
+        itemCount: r.data.items === null ? null : r.data.items.length,
+        upcomingCount: r.data.upcomingEvents === null ? null : r.data.upcomingEvents.length,
         calls: r.data.calls.map((c) => ({ op: c.op, ok: c.ok })),
         envelopeTrap
       };
@@ -266,56 +260,19 @@ describe("codemode.skill.run at the real worker boundary (design §12 smoke)", (
     if (outcome.ok) {
       const parsed = JSON.parse(outcome.result) as {
         ok: boolean;
-        slug: string;
-        resolvedBy: string;
-        sectionsNonNull: boolean;
-        calls: { op: string; ok: boolean }[];
-        envelopeTrap: string;
-      };
-      expect(parsed.ok).toBe(true);
-      expect(parsed.slug).toBe("blend");
-      expect(parsed.resolvedBy).toBe("input-slug");
-      expect(parsed.sectionsNonNull).toBe(true);
-      // compact probe + 4-way fan-out, every constituent ok
-      expect(parsed.calls).toHaveLength(5);
-      for (const c of parsed.calls) {
-        expect(c.op).toMatch(/^lumenloop\./);
-        expect(c.ok).toBe(true);
-      }
-      expect(parsed.envelopeTrap).toContain("r.data.profile");
-    }
-  });
-
-  it("digest run (theme mode): window framing, items + upcoming projected, both calls ledgered ok", async () => {
-    stubLumenloop({
-      search_content_semantic: fxSemantic.data,
-      list_documents: fxListDocs.data
-    });
-    const outcome = await run(`async () => {
-      const r = await codemode.skill.run("skills.lumenloop.stellar-ecosystem-digest", { subject: "RWA tokenization" });
-      return {
-        ok: r.ok,
-        window: r.data.window,
-        softEmpty: r.data.softEmpty,
-        itemCount: r.data.items === null ? null : r.data.items.length,
-        upcomingCount: r.data.upcomingEvents === null ? null : r.data.upcomingEvents.length,
-        calls: r.data.calls.map((c) => ({ op: c.op, ok: c.ok }))
-      };
-    }`);
-    expect(outcome.ok).toBe(true);
-    if (outcome.ok) {
-      const parsed = JSON.parse(outcome.result) as {
-        ok: boolean;
         window: { dateStart: string; dateEnd: string };
         softEmpty: boolean;
+        sectionsNonNull: boolean;
         itemCount: number | null;
         upcomingCount: number | null;
         calls: { op: string; ok: boolean }[];
+        envelopeTrap: string;
       };
       expect(parsed.ok).toBe(true);
       expect(parsed.window.dateStart).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(parsed.window.dateEnd).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(parsed.softEmpty).toBe(false);
+      expect(parsed.sectionsNonNull).toBe(true);
       expect(parsed.itemCount).toBeGreaterThan(0);
       expect(parsed.upcomingCount).toBeGreaterThan(0);
       expect(parsed.calls.map((c) => c.op).sort()).toEqual([
@@ -323,12 +280,13 @@ describe("codemode.skill.run at the real worker boundary (design §12 smoke)", (
         "lumenloop.search_content_semantic"
       ]);
       expect(parsed.calls.every((c) => c.ok)).toBe(true);
+      expect(parsed.envelopeTrap).toContain("r.data.items");
     }
   });
 
   it("unknown runnable name fails AS DATA naming the runnable set + nearest suggestion (no fetch needed)", async () => {
     const outcome = await run(`async () => {
-      const r = await codemode.skill.run("skills.lumenloop.stellar-project-dosier", { project: "blend" });
+      const r = await codemode.skill.run("skills.lumenloop.stellar-ecosystem-diges", { subject: "RWA" });
       const dataIsUndefined = r.data === undefined; // ok:false envelope — logs the [envelope] warning
       return { ok: r.ok, message: r.error.message, dataIsUndefined };
     }`);
@@ -336,10 +294,11 @@ describe("codemode.skill.run at the real worker boundary (design §12 smoke)", (
     if (outcome.ok) {
       const parsed = JSON.parse(outcome.result) as { ok: boolean; message: string; dataIsUndefined: boolean };
       expect(parsed.ok).toBe(false);
-      expect(parsed.message).toContain('unknown runnable skill "skills.lumenloop.stellar-project-dosier"');
-      expect(parsed.message).toContain("skills.lumenloop.stellar-project-dossier");
+      expect(parsed.message).toContain('unknown runnable skill "skills.lumenloop.stellar-ecosystem-diges"');
       expect(parsed.message).toContain("skills.lumenloop.stellar-ecosystem-digest");
-      expect(parsed.message).toContain('Did you mean "skills.lumenloop.stellar-project-dossier"?');
+      expect(parsed.message).toContain('Did you mean "skills.lumenloop.stellar-ecosystem-digest"?');
+      // The retired dossier runner must not be advertised as runnable.
+      expect(parsed.message).not.toContain("stellar-project-dossier");
       expect(parsed.dataIsUndefined).toBe(true);
     }
   });

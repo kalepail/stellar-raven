@@ -457,8 +457,8 @@ describe("searchCatalog — signatures", () => {
       "lumenloop.search_directory(input: SearchDirectoryInput): Promise<{ ok: true, data: SearchDirectoryOutput } | { ok: false, error: { kind: \"error\" | \"soft-empty\", message: string, hint?: string } }>"
     );
 
-    // Non-operation hits carry no signature UNLESS runnable (the two skills
-    // carrying bundled runners are the only exception, asserted separately).
+    // Non-operation hits carry no signature UNLESS runnable (skills carrying
+    // a bundled runner are the only exception, asserted separately).
     const proseHits = searchCatalog(catalog, { query: "soroban storage" }).filter(
       (h) => h.kind !== "operation" && !(h.id in RUNNERS)
     );
@@ -586,22 +586,32 @@ describe("search-hit signature compaction (todo 841)", () => {
 });
 
 describe("runnable skills — loadManifest refinements (design §5)", () => {
-  const DOSSIER = "skills.lumenloop.stellar-project-dossier";
+  const DIGEST = "skills.lumenloop.stellar-ecosystem-digest";
   const rawManifest = (): { entries: Record<string, unknown>[] } =>
     JSON.parse(readFileSync(join(ROOT, "catalog", "manifest.json"), "utf8"));
 
   it("accepts the real manifest and carries the runnable flag through the parse", () => {
     const parsed = loadManifest(rawManifest());
-    const entry = parsed.entries.find((e) => e.id === DOSSIER)!;
+    const entry = parsed.entries.find((e) => e.id === DIGEST)!;
     expect(entry.runnable).toBe(true);
     expect(entry.inputSchema).not.toBeNull();
     expect(entry.outputSchema).not.toBeNull();
   });
 
+  it("keeps the retired dossier runner's skill entry a plain readable skill (todo 849)", () => {
+    const parsed = loadManifest(rawManifest());
+    const entry = parsed.entries.find((e) => e.id === "skills.lumenloop.stellar-project-dossier")!;
+    expect(entry).toBeDefined();
+    expect(entry.kind).toBe("skill");
+    expect(entry.runnable).toBeUndefined();
+    expect(entry.inputSchema).toBeNull();
+    expect(entry.outputSchema).toBeNull();
+  });
+
   it("rejects a runnable entry missing either schema", () => {
     for (const field of ["inputSchema", "outputSchema"] as const) {
       const raw = rawManifest();
-      const entry = raw.entries.find((e) => e.id === DOSSIER)!;
+      const entry = raw.entries.find((e) => e.id === DIGEST)!;
       entry[field] = null;
       expect(() => loadManifest(raw), field).toThrow(/must carry both schemas/);
     }
@@ -616,15 +626,15 @@ describe("runnable skills — loadManifest refinements (design §5)", () => {
 });
 
 describe("runnable-skill signatures (design §5)", () => {
-  const dossier = () =>
-    catalog.entries.find((e) => e.id === "skills.lumenloop.stellar-project-dossier")!;
+  const digest = () =>
+    catalog.entries.find((e) => e.id === "skills.lumenloop.stellar-ecosystem-digest")!;
 
   it("renders the exact codemode.skill.run callable line with the same envelope union operations use", () => {
-    const sig = renderSignature(dossier())!;
-    expect(sig).toContain("type StellarProjectDossierInput");
-    expect(sig).toContain("type StellarProjectDossierOutput");
+    const sig = renderSignature(digest())!;
+    expect(sig).toContain("type StellarEcosystemDigestInput");
+    expect(sig).toContain("type StellarEcosystemDigestOutput");
     expect(sig).toContain(
-      'codemode.skill.run("skills.lumenloop.stellar-project-dossier", input: StellarProjectDossierInput): Promise<{ ok: true, data: StellarProjectDossierOutput } | { ok: false, error: { kind: "error" | "soft-empty", message: string, hint?: string } }>'
+      'codemode.skill.run("skills.lumenloop.stellar-ecosystem-digest", input: StellarEcosystemDigestInput): Promise<{ ok: true, data: StellarEcosystemDigestOutput } | { ok: false, error: { kind: "error" | "soft-empty", message: string, hint?: string } }>'
     );
   });
 
@@ -698,7 +708,8 @@ describe("runnable byte-stability — the §10.1 invariant, pinned offline (desi
   it("every pre-existing hit field is byte-identical to a non-runnable build; signature on the runnable entries is the only delta", () => {
     const stripped = strippedCatalog();
     const queries: { query: string; limit?: number }[] = [
-      // Queries that surface the runnable entries (exact ids + topical)…
+      // Queries that surface the runnable entry (exact id + topical), plus
+      // the retired-runner dossier skill (now a plain hit on both sides)…
       { query: "skills.lumenloop.stellar-project-dossier" },
       { query: "skills.lumenloop.stellar-ecosystem-digest" },
       { query: "project dossier scf funding history", limit: 20 },

@@ -24,7 +24,7 @@
  *     "skill.run" (skillId captured); when the runner registry exists
  *     (src/skills/runners/index.ts — research/skill-run-design.md §10), each
  *     skill.run is EXPANDED with that runner's declared constituent ops so
- *     coverage credits a dossier/digest run with the services it actually
+ *     coverage credits a runnable-skill run (e.g. the digest) with the services it actually
  *     touched. Registry absent (pre-feature builds) → no expansion, noted.
  *   codemode.search|catalog|spec|describe          → service "meta-discovery"
  * meta-discovery (and the top-level MCP search tool) is always on-plan and

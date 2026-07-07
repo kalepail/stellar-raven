@@ -572,8 +572,9 @@ describe("codemode fns", () => {
   });
 
   it("describe on a prose skill: availableSections (same derivation as search hits) + skill.read usage (todo 841)", async () => {
-    // A NON-runnable skill — the dossier moved to the runnable branch below.
-    const skillId = "skills.lumenloop.stellar-content-auditor";
+    // A NON-runnable skill — the dossier's runner was retired (todo 849), so
+    // its entry is back to read-only and pins the reversion here.
+    const skillId = "skills.lumenloop.stellar-project-dossier";
     expect(catalog.entries.find((e) => e.id === skillId)?.runnable).toBeUndefined();
     const r = (await codemode.describe!(skillId)) as {
       ok: boolean;
@@ -598,7 +599,7 @@ describe("codemode fns", () => {
   });
 
   it("describe on a RUNNABLE skill: full skill.run signature + both schemas + dual usage naming both calls (design §5)", async () => {
-    const skillId = "skills.lumenloop.stellar-project-dossier";
+    const skillId = "skills.lumenloop.stellar-ecosystem-digest";
     const entry = catalog.entries.find((e) => e.id === skillId)!;
     expect(entry.runnable).toBe(true); // manifest precondition (Phase B build)
     const r = (await codemode.describe!(skillId)) as {
@@ -614,9 +615,9 @@ describe("codemode fns", () => {
     expect(r.kind).toBe("skill");
     // FULL rendered signature — the exact callable line + the envelope union.
     expect(r.signature).toContain(
-      `codemode.skill.run("${skillId}", input: StellarProjectDossierInput)`
+      `codemode.skill.run("${skillId}", input: StellarEcosystemDigestInput)`
     );
-    expect(r.signature).toContain("{ ok: true, data: StellarProjectDossierOutput }");
+    expect(r.signature).toContain("{ ok: true, data: StellarEcosystemDigestOutput }");
     // Both raw schemas as data — same projection codemode.catalog() serves.
     expect(r.inputSchema).toEqual(entry.inputSchema);
     expect(r.outputSchema).toEqual(entry.outputSchema);
@@ -745,32 +746,22 @@ describe("codemode fns", () => {
  * sub-facade → guard → adapter → redact runs for real; only HTTP is fake.
  */
 describe("codemode.skill.run through the provider path (end-to-end, stub adapters)", () => {
-  const DOSSIER_ID = "skills.lumenloop.stellar-project-dossier";
+  const DIGEST_ID = "skills.lumenloop.stellar-ecosystem-digest";
 
   // Per-op payloads in the lumenloop wire shape ({ success, data, error,
   // meta }) — the adapter unwraps `data`, the runner projects it.
   const payloadByPath: Record<string, unknown> = {
-    "/v1/tools/get_project": {
-      slug: "soroswap",
-      title: "Soroswap",
-      category: "DeFi",
-      tags: ["amm", "dex"],
-      links: { website: "https://soroswap.finance" },
-      description: "AMM protocol on Stellar"
-    },
-    "/v1/tools/search_directory": { count: 1, projects: [{ slug: "soroswap", title: "Soroswap" }] },
-    "/v1/tools/get_scf_submissions": {
-      count: 1,
-      submissions: [{ round: "SCF #12", award_type: "Build", title: "Soroswap AMM", status: "awarded" }]
-    },
-    "/v1/tools/find_content_about_project": {
+    "/v1/tools/search_content_semantic": {
       articles: [
         { title: "Soroswap ships v2", url: "https://x.example/a", publishing_date: "2026-06-01", summary: "release" }
-      ]
+      ],
+      research: [{ id: 7, title: "AMM depth study", summary: "liquidity", created_at: "2026-06-10" }]
     },
-    "/v1/tools/find_similar_projects_semantic": [{ slug: "phoenix", title: "Phoenix", category: "DeFi" }]
+    "/v1/tools/list_documents": {
+      items: [{ title: "Meridian 2026", url: "https://x.example/meridian", start_at: "2026-09-01" }]
+    }
   };
-  const dossierFetch: FetchLike = async (url) => {
+  const digestFetch: FetchLike = async (url) => {
     const path = new URL(url).pathname;
     if (!(path in payloadByPath)) throw new Error(`unexpected adapter fetch: ${url}`);
     return new Response(
@@ -787,62 +778,60 @@ describe("codemode.skill.run through the provider path (end-to-end, stub adapter
     };
   }
 
-  it("runs the dossier: envelope shape, host-recorded calls, guard traps on the result", async () => {
-    const codemode = skillNs(dossierFetch);
-    const r = (await codemode.skill.run(DOSSIER_ID, { project: "soroswap" })) as {
+  it("runs the digest: envelope shape, host-recorded calls, guard traps on the result", async () => {
+    const codemode = skillNs(digestFetch);
+    const r = (await codemode.skill.run(DIGEST_ID, { subject: "AMM liquidity" })) as {
       ok: boolean;
       data: {
-        slug: string;
-        resolvedBy: string;
-        profile: { title: string } | null;
-        scf: { submissions: unknown[] } | null;
-        similar: { items: { slug: string }[] } | null;
+        subject: string;
+        subjectType: string;
+        softEmpty: boolean;
+        items: { type: string; title: string }[] | null;
+        upcomingEvents: { title: string }[] | null;
         calls: { op: string; ok: boolean; ms: number }[];
       };
     };
     expect(r.ok).toBe(true);
-    expect(r.data.slug).toBe("soroswap");
-    expect(r.data.resolvedBy).toBe("input-slug"); // slug-direct probe, no directory search
-    expect(r.data.profile?.title).toBe("Soroswap");
-    expect(r.data.scf?.submissions).toHaveLength(1);
-    expect(r.data.similar?.items[0]?.slug).toBe("phoenix");
-    // Host-owned ledger: compact probe + 4-way fan-out, search_directory
-    // never consulted (exact-slug resolution succeeded).
+    expect(r.data.subject).toBe("AMM liquidity");
+    expect(r.data.subjectType).toBe("theme"); // runner-applied default
+    expect(r.data.softEmpty).toBe(false);
+    expect(r.data.items?.map((i) => i.type).sort()).toEqual(["articles", "research"]);
+    expect(r.data.upcomingEvents?.[0]?.title).toBe("Meridian 2026");
+    // Host-owned ledger: theme mode = primary semantic search + the parallel
+    // upcoming-events list, nothing else.
     expect(r.data.calls.map((c) => c.op).sort()).toEqual([
-      "lumenloop.find_content_about_project",
-      "lumenloop.find_similar_projects_semantic",
-      "lumenloop.get_project",
-      "lumenloop.get_project",
-      "lumenloop.get_scf_submissions"
+      "lumenloop.list_documents",
+      "lumenloop.search_content_semantic"
     ]);
     expect(r.data.calls.every((c) => c.ok)).toBe(true);
     // The run result rides __guardEnvelope like every operation call:
     // wrong-level payload reads throw the corrective pointer.
-    expect(() => (r as unknown as Record<string, unknown>).slug).toThrow(/use r\.data\.slug/);
+    expect(() => (r as unknown as Record<string, unknown>).items).toThrow(/use r\.data\.items/);
     expect(() => (r as unknown as Record<string, unknown>).calls).toThrow(/use r\.data\.calls/);
   });
 
   it("unknown name fails as data naming the runnable ids + a nearest suggestion (exact-match discipline)", async () => {
     const codemode = skillNs();
-    const r = (await codemode.skill.run("skills.lumenloop.stellar-project-dosier", {})) as {
+    const r = (await codemode.skill.run("skills.lumenloop.stellar-ecosystem-diges", {})) as {
       ok: boolean;
       error: { kind: string; message: string };
     };
     expect(r.ok).toBe(false);
     expect(r.error.kind).toBe("error");
-    expect(r.error.message).toContain("skills.lumenloop.stellar-project-dossier");
     expect(r.error.message).toContain("skills.lumenloop.stellar-ecosystem-digest");
     expect(r.error.message).toContain("Did you mean");
+    // The retired dossier runner is not advertised as runnable.
+    expect(r.error.message).not.toContain("stellar-project-dossier");
   });
 
   it("invalid input is refused by the manifest schema before any adapter call (unknown keys rejected)", async () => {
     let fetched = 0;
     const countingFetch: FetchLike = async (url) => {
       fetched += 1;
-      return dossierFetch(url);
+      return digestFetch(url);
     };
     const codemode = skillNs(countingFetch);
-    const r = (await codemode.skill.run(DOSSIER_ID, { project: "soroswap", bogus: true })) as {
+    const r = (await codemode.skill.run(DIGEST_ID, { subject: "AMM liquidity", bogus: true })) as {
       ok: boolean;
       error: { kind: string };
     };

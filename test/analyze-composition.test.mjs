@@ -19,7 +19,7 @@ import {
 import { loadRunnerOps } from "../eval/plan/grade-plan.mjs";
 import { RUNNERS } from "../src/skills/runners/index.ts";
 
-const DOSSIER_ID = "skills.lumenloop.stellar-project-dossier";
+const DIGEST_ID = "skills.lumenloop.stellar-ecosystem-digest";
 
 /** Transcript entries store execute inputs JSON-stringified, per run-qa.mjs. */
 const executeEntry = (code, result, extra = {}) => ({
@@ -29,14 +29,14 @@ const executeEntry = (code, result, extra = {}) => ({
   ...extra
 });
 
-const dossierEnvelope = {
+const digestEnvelope = {
   ok: true,
   data: {
-    slug: "blend",
-    resolvedBy: "input-slug",
+    subject: "RWA tokenization",
+    subjectType: "theme",
     calls: [
-      { op: "lumenloop.get_project", ok: true, ms: 120 },
-      { op: "lumenloop.get_scf_submissions", ok: false, errorKind: "soft-empty", ms: 45 }
+      { op: "lumenloop.search_content_semantic", ok: true, ms: 120 },
+      { op: "lumenloop.list_documents", ok: false, errorKind: "soft-empty", ms: 45 }
     ]
   }
 };
@@ -46,11 +46,11 @@ const skillRunRow = {
   verdict: { score: "correct" },
   agent: { turns: 4, costUsd: 0.12 },
   transcript: [
-    { tool: "mcp__stellar-raven__search", input: JSON.stringify({ query: "project dossier" }) },
+    { tool: "mcp__stellar-raven__search", input: JSON.stringify({ query: "ecosystem digest" }) },
     executeEntry(
-      `const r = await codemode.skill.run("${DOSSIER_ID}", { project: "blend" });\nreturn r;`,
+      `const r = await codemode.skill.run("${DIGEST_ID}", { subject: "RWA tokenization" });\nreturn r;`,
       // whole execute result (the run-qa.mjs instrument) with a truncation footer
-      `${JSON.stringify(dossierEnvelope)}\n--- TRUNCATED ---\n(output capped)`
+      `${JSON.stringify(digestEnvelope)}\n--- TRUNCATED ---\n(output capped)`
     )
   ]
 };
@@ -99,10 +99,10 @@ describe("analyzeRow — fixture transcript", () => {
     expect(r.executeScripts).toBe(1); // the search entry is not an execute entry
     expect(r.adoption).toBe(true);
     expect(r.skillRunCalls).toBe(1);
-    // the dossier's 5 declared ops are inserted after the skill.run entry
-    expect(r.expandedOps).toBe(RUNNERS[DOSSIER_ID].ops.length);
+    // the digest's declared ops are inserted after the skill.run entry
+    expect(r.expandedOps).toBe(RUNNERS[DIGEST_ID].ops.length);
     expect(r.opCounts["skills.skill.run"]).toBe(1);
-    for (const op of RUNNERS[DOSSIER_ID].ops) expect(r.opCounts[op]).toBe(1);
+    for (const op of RUNNERS[DIGEST_ID].ops) expect(r.opCounts[op]).toBe(1);
     // results side: captured whole, footer detected, host-ledger entries tallied
     expect(r.resultsCaptured).toBe(1);
     expect(r.truncatedResults).toBe(1);
@@ -151,7 +151,7 @@ describe("summarizeComposition + formatCompositionTable", () => {
     expect(summary.executeScripts).toBe(2);
     expect(summary.adoptionCases).toBe(1);
     expect(summary.skillRunCalls).toBe(1);
-    expect(summary.expandedOps).toBe(RUNNERS[DOSSIER_ID].ops.length);
+    expect(summary.expandedOps).toBe(RUNNERS[DIGEST_ID].ops.length);
     expect(summary.truncatedResultCases).toBe(1);
     expect(summary.calls).toMatchObject({ arrays: 1, calls: 2, ok: 1, softEmpty: 1, error: 0 });
     expect(summary.totalCostUsd).toBeCloseTo(0.2);
