@@ -53,6 +53,14 @@
       "id": "6a5d8d2c8f8a409882a15f8f32bc3a96"
     }
   ],
+  // Auth-bound execute result artifacts. Host code enforces 7-day logical
+  // expiry; the bucket lifecycle is the 30-day GC backstop.
+  "r2_buckets": [
+    {
+      "binding": "ARTIFACTS",
+      "bucket_name": "stellar-raven-artifacts"
+    }
+  ],
   // Production hostnames: raven.stellar.buzz is the default/primary route;
   // agents.stellar.buzz is retained (keeps the WorkOS redirect-URI
   // registration valid + back-compat for existing clients). Ignored by local
