@@ -48,27 +48,31 @@ describe("demo page states", () => {
     expect(lockedHtml).toContain('href="/demo/login"');
     expect(lockedHtml).toContain("Example session");
     expect(lockedHtml).toContain("soroban smart contract deploy");
-    expect(lockedHtml).toContain("search</span><span><b>2</b>execute");
-    expect(lockedHtml).toContain("connect your own agent to <code>/mcp</code>");
+    expect(lockedHtml).toContain("The playground shows the live trace");
+    expect(lockedHtml).toContain("connect an MCP client to <code>/mcp</code>");
     expect(lockedHtml).not.toContain("<script>");
+    expect(lockedHtml).not.toContain('class="flow"');
   });
 
   it("authenticated: composer + trace client wired to /demo/chat", () => {
     expect(chatHtml).toContain('id="composer-form"');
     expect(chatHtml).toContain('id="log"');
     expect(chatHtml).toContain('fetch("/demo/chat"');
-    expect(chatHtml).toContain("one search, one execute, then a short summary");
+    expect(chatHtml).toContain("Ask about Stellar and Raven will search its connected sources");
     expect(chatHtml).not.toContain("full power and glory of Stellar Raven");
-    expect(chatHtml).toContain("connect your own agent to <code>/mcp</code>");
+    expect(chatHtml).toContain("connect an MCP client to <code>/mcp</code>");
     expect(chatHtml).toContain("backdrop-filter:none");
+    expect(chatHtml).not.toContain('class="flow"');
     for (const t of ["token", "tool-start", "tool-result", "step", "done", "error"]) {
       expect(chatHtml).toContain(`"${t}"`);
     }
     expect(chatHtml).toContain("stalled"); // the no-result-by-done state
   });
 
-  it("renders envelope kinds honestly — error and soft-empty only, never denied", () => {
-    expect(chatHtml).toContain("soft-empty");
+  it("keeps demo-facing copy free of transport and envelope jargon", () => {
+    expect(chatHtml).not.toContain("MCP OAuth transport");
+    expect(chatHtml).not.toContain("error.kind");
+    expect(chatHtml).not.toContain("soft-empty");
     expect(chatHtml).not.toMatch(/denied/i);
   });
 });

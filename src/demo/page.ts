@@ -49,12 +49,6 @@ main.play{display:flex;flex-direction:column;padding-bottom:18px}
   border-left:2px solid rgba(255,85,0,.28);padding-left:12px;margin:6px 0 18px}
 .fineprint b{color:var(--dim);font-weight:500}
 .fineprint code{color:var(--orange);font-size:.95em}
-.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 18px}
-.flow span{display:flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:7px 10px;
-  border:1px solid rgba(255,255,255,.08);border-radius:8px;background:rgba(255,255,255,.035);
-  color:var(--dim);font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.16em;text-transform:uppercase}
-.flow b{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:rgba(255,85,0,.13);
-  color:var(--orange);font-size:10px;font-weight:600}
 
 /* ---- transcript ---- */
 #log{flex:1}
@@ -179,7 +173,6 @@ details.tcard[open]>summary::before{transform:rotate(90deg)}
   .pwrap{padding:0 16px}
   .msg{max-width:90%}
   .tcard .tlabel{display:none}
-  .flow{grid-template-columns:1fr}
   .composer .btn-primary{padding:12px 14px}
   .site-foot{padding:8px 16px 24px}
 }
@@ -703,13 +696,10 @@ function sampleTrace(): string {
 // ---------------------------------------------------------------------------
 
 const EXPLAINER =
-  "Type a question and a small tool-calling model works it the way any connected agent " +
-  "would: one search across Raven’s unified catalog, one JavaScript script against the " +
-  "operations it finds, and one grounded summary — every call rendered as an " +
-  "inspectable trace. The playground runs the same server-side search and execute " +
-  "implementations that back /mcp (same catalog, same sandbox, same result envelopes); it " +
-  "does not exercise the MCP OAuth transport — signing in starts an ordinary browser " +
-  "session.";
+  "Ask a question about Stellar and Raven will search across docs, ecosystem data, " +
+  "and bundled playbooks, run a focused lookup, then answer from what it found. " +
+  "The playground shows the live trace, so you can see the sources behind each " +
+  "answer before connecting your own agent.";
 
 function demoHead(): string {
   return `<!doctype html><html lang="en"><head>
@@ -741,7 +731,6 @@ function lockedBody(): string {
     `<p class="eyebrow">Agent playground <span class="live"><span class="dot"></span>live tools</span></p>` +
     `<h1>Watch an agent <span class="r">work Raven.</span></h1>` +
     `<p class="lede">${esc(EXPLAINER)}</p>` +
-    flowHtml() +
     `<div class="cta"><a class="btn btn-primary" href="/demo/login">Sign in to try it</a>` +
     `<span class="hint">WorkOS sign-in &middot; no API keys &middot; rate-limited</span></div>` +
     `</section>` +
@@ -755,13 +744,10 @@ function lockedBody(): string {
 function chatBody(): string {
   return (
     `<main class="play pwrap">` +
-    `<p class="fineprint"><b>Live tools.</b> Every card below is a real call into the same ` +
-    `server-side <code>search</code> and <code>execute</code> implementations that back ` +
-    `<code>/mcp</code> (MCP OAuth transport not exercised). Envelopes render as returned: ` +
-    `<code>ok/data</code> or <code>error.kind</code> of <code>"error"</code> or ` +
-    `<code>"soft-empty"</code> &mdash; soft-empty means the service answered with nothing, ` +
-    `which is inconclusive, not proof of absence.</p>` +
-    flowHtml() +
+    `<p class="fineprint"><b>Live trace.</b> Ask about Stellar and Raven will search its ` +
+    `connected sources, run a focused lookup, and summarize what it found. The cards below ` +
+    `show the real work behind the answer, using the same core tools available to agents ` +
+    `through <code>/mcp</code>.</p>` +
     `<div id="log" aria-live="polite"></div>` +
     `<div class="composer"><form id="composer-form">` +
     // maxlength mirrors DEMO_CAPS.maxUserMessageChars (src/demo/budget.ts);
@@ -780,19 +766,10 @@ export function demoPage(opts: { authenticated: boolean }): string {
   return demoHead() + topBar() + (opts.authenticated ? chatBody() : lockedBody() + demoFooter()) + `</body></html>`;
 }
 
-function flowHtml(): string {
-  return (
-    `<div class="flow" aria-label="Demo turn flow">` +
-    `<span><b>1</b>search</span><span><b>2</b>execute</span><span><b>3</b>summary</span>` +
-    `</div>`
-  );
-}
-
 function demoFooter(): string {
   return (
-    `<footer class="site-foot"><b>Public playground.</b> Demo mode runs one search, one execute, ` +
-    `then a short summary. It is intentionally narrow and rate-limited; connect your own agent to ` +
-    `<code>/mcp</code> for longer runs, transport auth, and the full production tool surface.</footer>`
+    `<footer class="site-foot"><b>Public playground.</b> Demo mode keeps each turn short and ` +
+    `rate-limited. For longer agent runs, connect an MCP client to <code>/mcp</code>.</footer>`
   );
 }
 
