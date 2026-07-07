@@ -15,6 +15,7 @@
       "q-protocol-latest-stellar-core-release",
       "q-scf-exhaustive-funding-report",
       "q-scf-history-blend",
+      "q-scf-history-soroswap",
       "q-scf-regional-india",
       "q-scf-total-distributed",
       "q-ti-rpc-gettransactions-pagination-xdr"
@@ -8142,13 +8143,13 @@
       "id": "q-scf-history-soroswap",
       "question": "Has Soroswap been funded by the SCF, and across how many rounds?",
       "golden": {
-        "answer": "- Resolve the named project **Soroswap** (the Stellar/Soroban DEX/AMM, live on mainnet) and pull its SCF history via `lumenloop_get_scf_submissions`. [Lumenloop / stellarlight.xyz/project/soroswap]\n- **Yes, Soroswap is SCF-funded.** Per the live record (`scfAwarded: true`), its total SCF award is **$346,750 USD**, category Protocol/Contract. State that this total comes FROM the record. [stellarlight.xyz/project/soroswap]\n- **Round count:** the live record now lists the awarded rounds — Soroswap was funded across **3 SCF rounds (15, 17, 21)** for the **$346,750** cumulative total. Report the round count from the record; do NOT invent a per-round dollar split or specific award types beyond what the record shows. Confirm exact per-round figures/types on Soroswap's communityfund project page. [communityfund.stellar.org]\n- Report award type(s) (e.g. Build) and amounts only where the record shows them; don't fabricate figures.\n- Don't confuse Soroswap (the DEX) with Soroban (the smart-contract platform) or with another DEX.",
+        "answer": "- Resolve the named project **Soroswap** (the Stellar/Soroban DEX/AMM, live on mainnet) and pull its SCF history via `lumenloop_get_scf_submissions`. [Lumenloop / stellarlight.xyz/project/soroswap]\n- **Yes, Soroswap is SCF-funded.** Total SCF-related funding is **$346,750 USD** (as of 2026-07-06; awards are XLM-denominated — USD is the payment-day valuation, and the official site displays rounded figures like $346.8K). [communityfund.stellar.org/project/soroswapfinance-yax]\n- **Structure (4 awarded submissions):** three numbered SCF rounds — **SCF #15 ($57,600, Legacy v4.0 Award)**, **SCF #17 ($139,150, Legacy v4.0 Award)**, **SCF #21 ($100,000, Legacy v5.0 Community Award, the Aggregator submission)** — plus a **Liquidity Award ('24 Q1, $50,000)**. The four figures sum exactly to the $346,750 total. The submissions record carries the same rows (per-submission `award_type` and `budget` fields).\n- Per-submission figures should be sourced (submissions record or communityfund.stellar.org); the numbered-round count is 3 and the awarded-submission count is 4 — both statements are correct with their respective framings.\n- Don't confuse Soroswap (the DEX) with Soroban (the smart-contract platform) or with another DEX.",
         "keyFacts": [
           "Resolves Soroswap (the Stellar/Soroban DEX/AMM) and returns its SCF submission history.",
-          "Answers whether it was SCF-funded and across how many rounds, grounded in the submissions record."
+          "Answers whether it was SCF-funded and the shape of the history — 3 numbered rounds (15, 17, 21) and/or 4 awarded submissions including the '24 Q1 Liquidity Award — grounded in the submissions record."
         ],
         "avoid": [
-          "Do NOT fabricate a round count or award amount not in the SCF submissions record.",
+          "Do NOT state per-round dollar figures without sourcing them to the submissions record or communityfund.stellar.org (unsourced figures that contradict the record's 57,600 / 139,150 / 100,000 / 50,000 are wrong).",
           "Do NOT confuse Soroswap with Soroban (the smart-contract platform) or with another DEX."
         ],
         "sources": [
@@ -8164,7 +8165,7 @@
         "freshness": true,
         "freshnessHorizon": "quarterly"
       },
-      "graderNotes": "Per-project SCF history. 'Has X been funded' phrasing borders on find_similar_scf_submissions, but a named project → get_scf_submissions. Verified 2026-06-29 via /api/projects: Soroswap scf.awarded=true, totalAwarded=$346,750, category Protocol/Contract, awardedRounds [15,17,21] (3 rounds). Funding total is live → freshness-sensitive.\nAlso good if the answer: Reports the award type(s) (e.g. Build) where the record shows them.\nGolden cites: Soroswap's SCF submissions record (Lumenloop) / its communityfund project page."
+      "graderNotes": "Per-project SCF history. 'Has X been funded' phrasing borders on find_similar_scf_submissions, but a named project → get_scf_submissions. Verified 2026-06-29 via /api/projects: Soroswap scf.awarded=true, totalAwarded=$346,750, category Protocol/Contract, awardedRounds [15,17,21] (3 rounds). Funding total is live → freshness-sensitive.\nAlso good if the answer: Reports the award type(s) (e.g. Build) where the record shows them.\nGolden cites: Soroswap's SCF submissions record (Lumenloop) / its communityfund project page.\nThe live submissions record carries per-submission award_type and budget fields (verified against the official SCF site 2026-07-06): SCF #15 $57,600 + SCF #17 $139,150 + SCF #21 $100,000 + Liquidity Award '24 Q1 $50,000 = $346,750 exactly. Record-consistent per-submission detail is corpus-grounded, NOT fabrication — do not penalize richer-than-golden detail that matches these figures/labels. '3 rounds' (numbered) and '4 awarded submissions' are both correct framings. Rounded variants ($57.6K etc.) are fine; the official site itself rounds."
     },
     {
       "id": "q-scf-how-to-apply",
