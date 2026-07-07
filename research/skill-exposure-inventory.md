@@ -34,7 +34,8 @@ Six read-only shards were reviewed sequentially.
 4. Stellar Light/Scout and legacy research/application skills: `stellar-scout` remains exposed.
    Current upstream HEAD has drifted from the local pin and adds partner/provider lookup guidance;
    that is recorded as an orchestrator-review candidate, not emitted text. The unique legacy
-   `stellar-developer-activity` skill is internal-guidance only.
+   `stellar-developer-activity` skill is internal-guidance only; any upstream Scout companion
+   cross-link to that non-exposed id is scrubbed from emitted skill text at build time.
 5. Repo-operational/project skills: `cloudflare-agents`, `ecosystem-skills`, `eval-improvement`,
    `raven-golden-evals`, `service-skills-updater`, `flue-docs-sync`, `mastra`, and `flue` are
    repo-agent/process guidance, not MCP-delivered user resources.
@@ -59,11 +60,12 @@ Accepted Raven-safe lessons that are not already emitted:
 | id | lesson | target |
 | --- | --- | --- |
 | `skills.stellar-light.stellar-scout` | Upstream Scout now has partner/provider lookup guidance: use returned partner directory results only, never invent providers. | Orchestrator review before any mirror refresh, description-note change, or focused eval case. |
-| `stellar-developer-activity` | Developer-activity answers should pair numeric activity/leaderboard evidence with a second project/content corroboration hop, and avoid provider-hosted internal URLs. | Orchestrator review only; no hidden endpoint or emitted text in this pass. |
+| `stellar-developer-activity` | Developer-activity answers should pair numeric activity/leaderboard evidence with a second project/content corroboration hop, and avoid provider-hosted internal URLs. | Recorded only; no hidden endpoint or emitted guidance. Its upstream Scout companion cross-link is scrubbed because the id is not exposed. |
 
-Note: the existing exposed Scout body already names `stellar-developer-activity` as an external
-companion skill. This shard records that as an orchestrator-review finding but does not change
-generated/emitted text or broaden `scripts/exposure.mjs`, per the scope guard for this worker.
+Evidence portability note: legacy sibling-tree and generated/cache/source-class reviews that have
+no public or repo-relative source use an explicit `localOnlyEvidence` marker in the JSON inventory.
+Normal `evidenceRefs` are portable refs: upstream URLs, pinned commits, Solo comment ids, or
+repo-relative paths.
 
 Rejected lesson classes:
 
@@ -78,9 +80,10 @@ Rejected lesson classes:
 
 ## Exposure Outcome
 
-No entries were promoted into `scripts/exposure.mjs`. The existing v1 LumenLoop ledger remains the
-only build-adjacent classification data because this pass found no new build-time exposure rule.
+The existing v1 LumenLoop classification ledger in `scripts/exposure.mjs` remains unchanged. The
+only build-time rule added after this inventory is a scrub target for the non-exposed
+`stellar-developer-activity` id, so the mirrored Scout companion-skills section cannot advertise a
+skill Raven does not expose.
 
-No emitted text was changed, so no routing gate is required for this pass. The follow-up work, if
-accepted by the orchestrator, is a separate mirror-refresh/eval/design change for the two candidate
-lessons above.
+Because emitted text changes when the mirror artifacts are regenerated, the routing gate is required
+for this follow-up scrub.

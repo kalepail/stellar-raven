@@ -134,13 +134,17 @@ export const SKILL_EXPOSURE_CLASSIFICATION_BY_ID = new Map(
   SKILL_EXPOSURE_CLASSIFICATIONS.map((entry) => [entry.id, entry])
 );
 
-// Matches any reference to a retired onboarding skill in prose or a relative
-// markdown link (`../lumenloop-mcp-connect/SKILL.md`, "lumenloop-api-query").
-const RETIRED_SKILL_REF_RE = /lumenloop-api-[a-z]+|lumenloop-mcp-connect/;
+// Matches any reference to a non-exposed skill in prose or a relative markdown
+// link (`../lumenloop-mcp-connect/SKILL.md`, "lumenloop-api-query"). The
+// stellar-developer-activity id is internal-guidance only; Scout upstream links
+// it as a companion skill, but ADR-0003 says non-exposed ids cannot appear in
+// emitted model-facing text.
+const RETIRED_SKILL_REF_RE = /lumenloop-api-[a-z]+|lumenloop-mcp-connect|stellar-developer-activity/;
 
 /**
- * Remove retired-skill cross-references from EMITTED skill text (bodies served
- * via codemode.skill.read and the section descriptions derived from them).
+ * Remove non-exposed skill cross-references from EMITTED skill text (bodies
+ * served via codemode.skill.read and the section descriptions derived from
+ * them).
  *
  * The exposed lumenloop playbooks were authored for the upstream MCP-connector
  * context and cross-link the retired onboarding skills ("Connect first →
@@ -151,9 +155,9 @@ const RETIRED_SKILL_REF_RE = /lumenloop-api-[a-z]+|lumenloop-mcp-connect/;
  * list item, so the scrub drops the WHOLE item (bullet line + indented
  * continuation lines) — never a partial sentence.
  *
- * Fail-loud drift guard: if an upstream re-sync ever introduces a retired-skill
- * reference OUTSIDE a list item, the scrub cannot remove it cleanly and throws
- * instead of emitting the leak.
+ * Fail-loud drift guard: if an upstream re-sync ever introduces a non-exposed
+ * skill reference OUTSIDE a list item, the scrub cannot remove it cleanly and
+ * throws instead of emitting the leak.
  */
 export function scrubRetiredSkillRefs(text, context) {
   if (!RETIRED_SKILL_REF_RE.test(text)) return text;
@@ -178,7 +182,7 @@ export function scrubRetiredSkillRefs(text, context) {
   const scrubbed = out.join("\n");
   if (RETIRED_SKILL_REF_RE.test(scrubbed)) {
     throw new Error(
-      `Retired-skill reference survives outside a markdown list item in ${context} — ` +
+      `Non-exposed skill reference survives outside a markdown list item in ${context} — ` +
         `an upstream re-sync changed the reference shape; extend scrubRetiredSkillRefs ` +
         `in scripts/exposure.mjs so the leak cannot be emitted.`
     );
