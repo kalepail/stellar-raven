@@ -104,6 +104,12 @@ npx wrangler dev --port 8788 --host localhost
 as agents.stellar.buzz, so the `DEV_ALLOW_UNAUTHENTICATED` loopback gate never fires and
 every request 401s. Routing/plan lanes need no server.
 
+Loopback dev-bypass sessions carry a fixed `dev-local` artifact owner, so eval runs exercise
+the full artifact lane (writes go to the local simulated R2 binding, never production).
+Truncated execute results end in a `--- SOURCE BASIS ---` block (shape, op ledger, artifact
+handle, guidance) — transcript reviewers should expect that block, not a bare truncation
+footer, and answering agents may issue follow-up executes that call `codemode.artifact.read`.
+
 Readiness check before launching any lane (a plain GET on `/mcp` is not meaningful — probe
 with a real MCP initialize):
 
@@ -154,13 +160,19 @@ skills-lane top-1 floor; current grading rule v3, manifest-exposed entries only)
 
 **QA verdicts are NOT ground truth — review them agentically before believing them.**
 Known judge failure modes (from `eval/qa/README.md`):
-- The judge can't see tool transcripts; transcript-invisible corpus-grounded specifics get
-  misgraded as fabrication. The rubric's unverified-not-wrong rule covers this — but still
-  **live-verify every `wrong` verdict** by re-executing the claim against the live service
-  before counting it as an agent failure (past rounds have overturned the majority of a
-  run's wrongs as judge artifacts).
-- Judge variance: read `wrong` counts before `correct` counts; compare variants only on the
-  same sample; re-judging is cheap (`rows[].answer` is saved — feed back through `judgeCase`).
+- Transcript visibility is conditional: cases tagged live-data/freshness (or explicitly
+  transcript-tagged) get a deterministic transcript source-basis evidence pack in the judge
+  input; untagged cases are still judged corpus-blind, where transcript-invisible
+  corpus-grounded specifics get misgraded as fabrication. The rubric's unverified-not-wrong
+  rule covers the blind lane — but still **live-verify every `wrong` verdict** by
+  re-executing the claim against the live service before counting it as an agent failure
+  (past rounds have overturned the majority of a run's wrongs as judge artifacts).
+- Judge variance: verdicts are single samples. Before treating an isolated or flipped
+  `wrong` as real, re-judge the identical row once — a verdict that flips on identical
+  input is variance: record it monitor-only, don't chase it. Read `wrong` counts before
+  `correct` counts; compare variants only on the
+  same sample; re-judging is cheap (`rows[].answer` is saved — feed back through `judgeCase`:
+  `judgeCase({ ...caseFromCasesFile, candidateAnswer: row.answer, transcript: row.transcript })`).
   Never cross-compare runs judged under different rubric versions without a re-judge
   (`JUDGE_RUBRIC` in `judge.mjs` is the current version; verdicts carry a `rubric` stamp).
   The calibrated baseline of record lives in `eval/qa/README.md` ("Judging rubric" →
