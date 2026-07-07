@@ -72,6 +72,8 @@ Host Worker  (Workers Paid · wrangler: worker_loaders LOADER · nodejs_compat)
   │       codemode.search / codemode.describe          ← mid-script ranked discovery
   │       codemode.catalog()                           ← full manifest as flat data (arbitrary code-grep)
   │       codemode.skill.read(name, {sections})        ← partial skill retrieval
+  │       codemode.skill.run(name, input)              ← runnable-skill dispatch (host-side runners
+  │                                                      over the same op closures — §3)
   └─ host-side layers:
         adapters/   per-service clients, designed fresh per the live service research
         policy/     arg validation vs manifest · redaction (exposure filtered at build, ADR-0003)
@@ -149,9 +151,16 @@ pinned upstreams, not a separate runtime dependency.
   are never emitted, so they cannot appear in search or resolve in the sandbox.
 - **Retrieval:** `codemode.skill.read(name, { sections?: string[] })` returns only the requested
   portions (exact-match-guarded names — no fuzzy resolution, per ADR-0019's wrong-entity lesson).
-- **Executable skills (later):** skills that are really playbooks over the service APIs can be
-  authored as parameterized snippets (`async (input) => {...}` using the same service globals) and
-  run via `codemode.skill.run` — identical runtime mechanism to codemode's snippets layer.
+- **Executable skills (BUILT 2026-07-06, todo 806):** two composite playbooks are additionally
+  *runnable* — `skills.lumenloop.stellar-project-dossier` and
+  `skills.lumenloop.stellar-ecosystem-digest` carry `runnable: true` + real input/output schemas
+  on their existing `kind: "skill"` entries (one skill, one id, two affordances: read + run) and
+  dispatch via `codemode.skill.run(id, input)` to repo-authored TypeScript runners executed
+  **host-side** over the same per-op closures the sandbox namespaces use. The original sketch
+  ("parameterized snippets over the service globals") did not survive contact with the corpus —
+  no mirrored skill body is a program, so v1 runners are build-time repo modules, not
+  model-promoted snippets. Design + ship decision record: `research/skill-run-design.md`;
+  mechanics in `ARCHITECTURE.md` §5.
 
 ## 4. Policy & security
 
@@ -247,10 +256,13 @@ compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders` binding `LOADER`.
 >   from `public/`.
 >
 > Deferred / future work (tracked as Solo backlog todos; project binding in CLAUDE.md):
-> - `codemode.skill.run` (executable skills) — **design settled do-not-build-now 2026-07-03**
->   (`research/skill-run-design.md`, with explicit reopen triggers); the in-code sandbox sketch is
->   in §3 above and the dispatch mechanism it would ride on is in `research/codemode.md`
->   §"platform global".
+> - `codemode.skill.run` (executable skills) — **BUILT 2026-07-06, ship-approved** (todo 806;
+>   the 2026-07-03 do-not-build decision's reopen triggers fired). Two v1 runners (project
+>   dossier, ecosystem digest) passed the design's §10 A/B gate — retrieval-neutral by
+>   ranked-id proof, verdict improvement on the targeted battery, digest-runner adoption
+>   demonstrated (dossier adoption is the named follow-up). Decision record:
+>   `research/skill-run-design.md` (§10 outcome, §14.1 as-built deviations); eval record:
+>   `eval/README.md` todo-806 section; surface summary in §3 above.
 > - Plan-eval progression weighting — revisit ONLY if a run shows detail-starved wrong answers
 >   (`eval/plan/README.md` “Results — 2026-07-02”, conclusion).
 
@@ -261,7 +273,8 @@ compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders` binding `LOADER`.
    research docs (raven code consulted only for pitfalls),
    wire `DynamicWorkerExecutor` with namespaced providers + `codemode.search/describe` sandbox
    globals; live smoke against all three services. *(the other core)*
-4. **Skills store** — sectioned retrieval (`skill.read`), allowlist policy; `skill.run` stub.
+4. **Skills store** — sectioned retrieval (`skill.read`), allowlist policy; `skill.run`
+   (deferred here, built 2026-07-06 — see the status note above).
 5. **Policy + observability** — deny-list enforcement, paid gate, redaction, truncation,
    per-execution `{code, result, logs}` logging.
 6. **Inventory refresh** — refresh script + drift CI + adapted surface smoke check.

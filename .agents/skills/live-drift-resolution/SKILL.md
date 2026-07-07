@@ -61,6 +61,23 @@ into one of three classes **per service**:
 | **Provenance/data** | `fetchedAt`, version strings, changelog entries, data-source counts, snapshot dates | Absorb as-is. No policy, no routing decision. |
 | **Operation surface** | An operation was **added, removed, or renamed** in `openapi.paths` (check the path/method set, NOT just `operationCount` — a rename holds the count constant) | **Policy decision** (Step 3) before commit. |
 | **Routing-relevant text** | An operation `summary`/`description`/`operationId` changed | **Routing-baseline decision** (Step 4) before commit. |
+| **Runner-affecting** | ANY of the above touches an operation that a runnable-skill runner declares in its `ops` (schema/response-shape drift on such an op counts too — runners project those payloads) | **Runner re-verification** (Step 4b) before closing. This class stacks on top of the others, it never replaces them. |
+
+Runner-affecting is machine-checkable, never eyeballed — the runner registry
+(`src/skills/runners/index.ts`, `RUNNERS`) is the allowlist-as-data:
+
+```
+# declared op ids per runnable skill (node-clean by construction):
+node -e 'import("./src/skills/runners/index.ts").then(m => {
+  for (const [id, r] of Object.entries(m.RUNNERS)) console.log(id, JSON.stringify(r.ops));
+})'
+# intersect those op ids with the ops the inventory diff touched (added/removed/renamed,
+# schema or description changed) — a non-empty intersection = runner-affecting.
+```
+
+A **removed/renamed** declared op will already fail `scripts/build-catalog.mjs` loudly (the
+declared-ops drift guard) — that failure is the signal, not a nuisance; reconcile the runner's
+declared `ops` as part of the policy decision, never by loosening the guard.
 
 A single bump can be pure-provenance (the common daily case) or mix classes. Never infer the
 class from the upstream changelog's self-description ("routing-neutral", "additive") — the
@@ -117,6 +134,28 @@ npm run eval:compile && npm run eval:routing
 
 If you do re-baseline, it is a deliberate, separately-justified part of the change, not a
 side effect — capture why (Solo/commit body), same as an exposure decision.
+
+## Step 4b — runner-affecting drift → live runner re-verification
+
+When the Step 2 machine check found a non-empty intersection between the drift diff and any
+runner's declared `ops`, the resolution is not closable on regeneration + guards alone. The
+runners' output projections are self-authored schemas — they can only prove the projection
+matches itself, so upstream shape drift on a declared op must be re-verified against the live
+service, not against the runner's own contract:
+
+- **Re-run the affected runners' live smoke**: against a live-serving instance (e.g. wrangler
+  dev with the local-auth gotcha from `CLAUDE.md`), `execute` a `codemode.skill.run(...)` call
+  for each affected runnable id with a representative input, and confirm the envelope: `ok`
+  as expected, `data.calls[].ok` all true, no section unexpectedly `null` or `softEmpty`.
+- **Re-verify projections against the observed shapes**: compare the fields each runner
+  projects with what the live payloads actually carry now. A defensive projection that
+  half-handles a shape change surfaces as a `null` section, a spurious `softEmpty`, or an
+  `outputSchemaOk: false` warn-belt event — treat any of those as drift to reconcile in the
+  runner, not noise.
+- **Refresh the live-captured fixtures** the offline test lanes share
+  (`test/fixtures/skill-runners/`) if observed shapes moved, in the same change.
+
+Only after both the live smoke and the projection re-check pass does the drift close.
 
 ## Step 5 — verify before committing
 
@@ -184,6 +223,10 @@ resolving the issue, not a separate optional chore.
   non-exposed op or retired skill — the build guard enforces this; a guard failure is the signal.
 - Re-baseline the routing gate only for an intended routing-relevant text change, and justify it
   separately. Never re-baseline to hide a provenance/data-bump regression.
+- Drift touching any op in a runner's declared `ops` (machine-check against `RUNNERS`,
+  `src/skills/runners/index.ts`) is runner-affecting: re-run the runner live smoke and
+  re-verify projections against observed shapes before closing (Step 4b). Never close on the
+  runner's own output schema as evidence — it is self-authored.
 - Generated artifacts (`catalog/manifest.json`, `inventory/*.json`, `specs/super-spec.json`,
   `eval/plan/op-classes.json`) are rebuilt by scripts, never hand-edited.
 - Never print or commit a secret; `secrets:scan --tree` before every drift commit.

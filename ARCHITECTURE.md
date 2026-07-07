@@ -1,6 +1,7 @@
 # Architecture — how `search` and `execute` actually work
 
-The end-to-end mechanics of the two tools, verified against the code as of 2026-07-03. Read
+The end-to-end mechanics of the two tools, verified against the code as of 2026-07-03
+(`codemode.skill.run` surface added and code-verified 2026-07-06). Read
 [`PLAN.md`](./PLAN.md) first for *why* the design is shaped this way; this doc is the *how*,
 with file paths for every claim. Nothing here is aspirational — if the code moves, this doc
 is wrong until refreshed.
@@ -135,11 +136,14 @@ way:
   novel ungated candidates when the backfill ran; `truncated` = `total > hits.length`.
 
 **Hit anatomy**: `{ id, service, kind, score, tier, description }`, plus a rendered **TypeScript
-signature** for operations (`renderSignature` — input/output type declarations from the
-entry's JSON Schemas via the vendored type generator, and a callable line that spells out
-the *full result envelope union*, because a bare `Promise<Output>` teaches exactly the
-wrong-level access the envelope exists to prevent), plus **`availableSections`** for skill
-hits (`sectionKeysOf` — the same key set `readSkill` advertises). Search hits render
+signature** for operations *and the two runnable skills* (`renderSignature` — input/output
+type declarations from the entry's JSON Schemas via the vendored type generator, and a
+callable line that spells out the *full result envelope union*, because a bare
+`Promise<Output>` teaches exactly the wrong-level access the envelope exists to prevent;
+for a runnable skill the callable line is the exact `codemode.skill.run("<id>", …)` form —
+§5), plus **`availableSections`** for skill hits (`sectionKeysOf` — the same key set
+`readSkill` advertises; runnable-skill hits carry both). Non-runnable skills and sections
+render no signature — their affordance is `skill.read`, not a call. Search hits render
 signatures in **compact mode**: the input type and callable line are always full, but an
 output type block over `COMPACT_OUTPUT_THRESHOLD` (2,000 chars — measured to trim only the
 three Scout monsters, `searchProjects`/`searchRepos`/`explainRepo`, whose output types ran
@@ -279,6 +283,57 @@ The `codemode` provider (`buildCodemodeProvider`, `src/executor/providers.ts`) i
   operations, the precise `codemode.skill.read(...)` invocation for skills and sections).
 - **`codemode.skill.read(name, { sections? })`** — §6. Wired via a one-line prelude
   (`SKILL_PRELUDE`) because nested objects can't cross codemode's flat Proxy dispatch.
+- **`codemode.skill.run(name, input)`** — runnable-skill dispatch (shipped 2026-07-06,
+  todo 806; decision record [`research/skill-run-design.md`](./research/skill-run-design.md)).
+  Exactly two skill entries carry `runnable: true` plus real input/output schemas on their
+  existing `kind: "skill"` entries (one id, two affordances — read the playbook, run its
+  data-gathering core): `skills.lumenloop.stellar-project-dossier` and
+  `skills.lumenloop.stellar-ecosystem-digest`. The prelude wraps the flat `skill_run`
+  dispatch fn (same mechanism as `skill.read`); all semantics live host-side in `runSkill`
+  (`src/skills/run.ts`): exact-match id resolution (a miss or non-runnable id returns an
+  error naming the full runnable set plus a nearest-id *suggestion*, never a resolution),
+  input validated through the same `guard`/`validateArgs` path operations use, then the
+  runner from the `RUNNERS` registry (`src/skills/runners/index.ts` — the
+  allowlist-as-data) executes. `assertRunnersWired` throws at provider build
+  (`buildSandbox`) on any registry↔manifest drift: id sets both ways, canonical-JSON schema
+  equality per id, declared ops ⊆ emitted operation ids.
+  - *Policy identity by construction*: the runner's ops facade is built by the **same
+    `buildOpsFns`** (`src/executor/providers.ts`) that builds the sandbox service
+    namespaces — `buildSandbox` builds the closures once and threads them to both — so
+    every constituent call runs the identical guard → adapter → normalize → redact path
+    and emits its own `op` event. A build-excluded op has no entry, hence no closure,
+    hence nothing a runner can call (ADR-0003, structurally).
+  - *Declared-ops sub-facade, host-owned audit trail*: `runSkill` hands the runner a
+    sub-facade containing **only its declared `ops`**, each wrapped to append
+    `{ op, ok, errorKind?, ms }` to a host-owned ledger. `data.calls`, the error path's
+    `error.details`, and the `skill_run` event counts all come from that ledger, never
+    from runner output (a runner-set `calls` key is overwritten unconditionally) — a
+    buggy runner can project a section wrongly, but it cannot make a failed call
+    disappear from the report or corroborate its own lie.
+  - *Envelope + partial failure*: run is a **call** and returns the standard service-call
+    envelope (`{ ok: true, data } | { ok: false, error }`), routed through
+    `__guardEnvelope` so `.data`-misuse traps behave identically to operation calls — no
+    `skill.read`-style top-level shape, no third shape to teach. Constituent failures
+    never fail the run by themselves: an errored call's output section is `null`, a
+    soft-emptied call's section is present with `softEmpty: true` (the three-way
+    data ≠ soft-empty ≠ error distinction, in aggregate form); only the runner's declared
+    **anchor** failing makes the run `ok: false`, with the ledger attached as
+    `error.details`.
+  - *Deadline*: `Promise.race` against a **30 s host deadline** (`RUNNER_DEADLINE_MS`,
+    `src/skills/run.ts`) returns a timeout error envelope on expiry — NOT cancellation:
+    in-flight facade calls continue detached (free read-only ops, each still logging its
+    own `op` event); the executor's 60 s wall clock stays the hard stop. After the `calls`
+    attach, the output is validated against the runner's `outputSchema` as a warn-only
+    belt — a mismatch logs `outputSchemaOk: false` without failing the run.
+  - *Trust framing, stated honestly*: runners are first-party, reviewed, repo-committed
+    TypeScript at the **adapter trust tier** (`src/adapters/*`), executed **host-side —
+    NOT sandbox-confined**. `globalOutbound: null` confines the isolate only; the rule
+    "runners use only the facade" is enforced by first-party review backed by two drift
+    *belts* (an import/token lint over runner sources and a behavioral CI test that runs
+    every runner with `globalThis.fetch` stubbed to throw) — belts, not a sandbox, and
+    this doc doesn't claim one. Manifest-only ops and no-env **are** structural: the
+    facade is built from emitted entries only, and runners receive exactly
+    `(input, ops)` — no env parameter exists to leak.
 
 ## 6. Skill splitting — mirror → sections → reads
 

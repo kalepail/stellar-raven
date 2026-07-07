@@ -646,6 +646,20 @@ The gate, in order:
 6. Per the evals charter, the round files any upstream findings it surfaces in
    `improvements/` (e.g. lumenloop shape drift the defensive projection catches).
 
+**Outcome (2026-07-06): SHIP-APPROVED under the §10.5 rule.** Feature commit `f99be10`;
+full record with stamps and honest reading notes in `eval/README.md` ("Round 806"). The
+gate, as read: ranked-id diff EMPTY vs the settled-main baseline
+(`eval/results/ranked-baseline-806.json`) and routing gate PASS (no re-baseline); ids
+battery 4C/1P/1W → **6C/0P/0W** (`2026-07-06T20-41-52` → `2026-07-07T00-38-53`); live lane
+11C/0P/1W → 11C/0P/1W, same pre-existing unrelated wrong (`2026-07-06T20-51-40` →
+`2026-07-07T00-47-30`); composition delta real on the targeted battery (mean turns
+4.83→4.5, op calls 24→21, scripts 8→7). Adoption split honestly: **digest 2/3**
+digest-shaped cases (both single-script, both correct); **dossier 0/5** — those five were
+answered correctly by manual composition, so the verdict flips are NOT attributed to the
+feature. The §10.4 zero-adoption rule was cleared by digest adoption; the dossier
+surfacing gap is the named follow-up round. Deploy was held at decision time for an
+unrelated merge-train window — approval and deploy timing are separate facts.
+
 ## 11. File-by-file implementation plan
 
 | # | File | Change |

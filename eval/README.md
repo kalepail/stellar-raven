@@ -666,3 +666,54 @@ lane evidence rather than instrument blindness:
 
 Lane numbers to beat (post-lever-6 baseline): alias strict 87/154/179, AE 97/159/184 (n=213);
 control strict 67/106/128, AE 85/122/139 (n=163).
+
+## Round 806 (2026-07-06, todo 806): codemode.skill.run A/B — ship decision
+
+The `codemode.skill.run` ship gate from `research/skill-run-design.md` §10, run exactly as
+designed: instruments first (commit `eb412bd` — ranked-id dump, whole execute results,
+composition analyzer, plan-grader recognition, the two live-lane digest cases), BEFORE lanes on
+that instrumented main, feature commit `f99be10`, AFTER lanes same day, same judge, same
+rubric (v2.1). QA result stamps live in `eval/qa/results/`, routing runs in `eval/results/`
+(both git-ignored/local-only, so this section is the durable record).
+
+**Routing neutrality (gate part 1, both halves green):** the per-case ranked-id dump on the
+feature build diffs **EMPTY** against the settled-main baseline
+(`eval/results/ranked-baseline-806.json`) — rank/membership identity proven directly, the true
+invariant (runnable-skill hits gain `signature` by design, so byte identity was never the
+claim). `eval:routing -- --gate` **PASS** against the unchanged 2026-07-04 baseline
+(`routing-2026-07-07T00-34-41-282Z.json`), no re-baseline.
+
+**QA verdicts (gate parts 2–4):**
+
+| lane | BEFORE | AFTER |
+|---|---|---|
+| targeted `--ids` battery (6 cases: 5 dossier-shaped incl. the fabrication trap + 1 digest-shaped) | 4 correct / 1 partial / 1 wrong (`2026-07-06T20-41-52-variantA`) | **6 / 0 / 0** (`2026-07-07T00-38-53-variantA`) |
+| live lane (12 cases, behavioral goldens, reported separately per EVALS.md rule 2) | 11 / 0 / 1 (`2026-07-06T20-51-40-variantA`) | 11 / 0 / 1 (`2026-07-07T00-47-30-variantA`) — the **same pre-existing wrong** (`q-live-hackathon-recent-winners`), unrelated to the feature |
+
+**Composition** (`analyze-composition.mjs`, ids battery): mean turns 4.83 → 4.5, execute
+scripts 8 → 7, constituent op calls 24 → 21 (skill.run calls expanded through declared ops for
+comparability), truncated-input cases 1 → 0. Live lane: mean turns 5.83 → 5.0, op calls
+60 → 53, execution failures 2 → 0 — but execute scripts went **up** 22 → 25, so read the
+live-lane composition delta as mixed, not a win.
+
+**Adoption, per runner — the honest split:**
+
+- **Digest: 2 of 3 digest-shaped cases adopted** `codemode.skill.run`, both single-script,
+  both correct: `q-edge-fresh-most-recent-news` (ids battery) and `q-live-digest-rwa-recent`
+  (live lane). The third (`q-live-digest-blend-coverage`) answered correctly without it.
+- **Dossier: 0 of 5 dossier-shaped cases adopted.** All 5 were answered correctly via manual
+  op composition in the AFTER run — which means the ids-battery verdict flips
+  (`q-defi-phoenix-scf` wrong→correct, `q-scf-history-soroswap` partial→correct; both were
+  fabricated per-round SCF breakdowns in the BEFORE) are **NOT attributable to the feature**.
+  Stated plainly: the 6/0/0 headline satisfies the non-regression + improvement gate, but the
+  improvement rides on run-to-run agent/judge behavior on the fabrication traps, not on
+  dossier-runner usage.
+
+**Verdict (design §10.5 ship rule): SHIP-APPROVED.** Ranked-id diff empty AND gate green AND
+verdict non-regression AND a real composition delta on the targeted battery (fewer scripts,
+fewer op calls, fewer turns) — with adoption demonstrated for one of the two runners. The
+**per-runner adoption gap is the named follow-up**: dossier-runner surfacing (description /
+signature prominence for dossier-shaped questions) needs its own round; §10.4's zero-adoption
+do-not-ship rule was cleared by digest adoption, not blanket adoption. Deploy was held at
+decision time for an unrelated merge-train window — ship approval and deploy timing are
+separate facts.
