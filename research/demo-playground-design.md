@@ -196,7 +196,9 @@ emitted in a single model step):
 - AI Gateway spend-limit rule is a **mandatory backstop**, not optional; every
   execute is also a Worker Loader isolate spin-up (open beta, Workers Paid) —
   the per-turn execute counter bounds it.
-  **⚠ UNMET AS OF 2026-07-06:** the demo now routes through the account's
+  **⚠ UNMET AS OF 2026-07-06** (accepted as a merge non-blocker; tracked as
+  Solo todo 848 — required before public traffic): the demo now routes
+  through the account's
   `default` gateway, which has NO rate limit and NO spend rule configured
   (live-verified: `rate_limiting_limit: 0`), and the model change to kimi
   raised worst-case turn cost to ~3¢ (~10× the original glm sizing). The API
