@@ -35,9 +35,9 @@ the raven sibling repos are retired; growth happens in this repo's own formats.
    `eval:selftest` + `eval:routing -- --gate` on every push/PR — so re-baselining means
    changing `gates.json` in the same commit as the change that moved the numbers.
    Grading-rule changes
-   re-baseline the gates explicitly (results files carry `gradingRule`); rule v2
-   (2026-07-03) grades the lumenloop/skills twin pair as one aliased entity, mirroring
-   `src/skills/store.ts` — see eval/README.md "Twin-aware grading".
+   re-baseline the gates explicitly (results files carry `gradingRule`). Current rule: v3,
+   manifest-exposed entries only, no lumenloop/skills twin identity; cross-service tolerance
+   belongs in `expected_any`, not in the strict headline.
 2. **Lanes never merge.** The legacy 338, skills 23 (active; +8 documented-inert
    `retiredCases` in `eval/skills-cases.json` after the 2026-07-03 onboarding-skills
    retirement, ADR-0002), extended 122, and live-data 10 are separate scopes with separate

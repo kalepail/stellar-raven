@@ -52,6 +52,7 @@ Built by `scripts/build-super-spec.mjs` (`npm run spec:build`); asserted by
 | `x-upstream` | real HTTP `{method, path}` behind the callable (lumenloop/scout) |
 | `x-algolia` | stellarDocs only: the exact Algolia query mapping the adapter applies |
 | `x-skill-index` | only on `GET /skills/list_skills`: the full skill index (see §3) |
+| `x-runnable-index` | only on `POST /skills/run_skill`: runnable skill ids and their input/output schemas |
 
 Spec-level: `x-services` (per-service metadata — lumenloop base/authEnv, scout origin, the full
 stellarDocs `backend` block **and measured corpus taxonomy**, skills mirror provenance) and
@@ -81,15 +82,15 @@ stellarDocs `backend` block **and measured corpus taxonomy**, skills mirror prov
   as `x-algolia`, and the shared backend block + measured taxonomy under
   `x-services.stellarDocs`. The taxonomy (~5 KB) earns its bytes: it is the greppable category
   tree of the docs corpus.
-- **skills (3 ops)** — see §3.
+- **skills (4 ops)** — see §3.
 
 ## 3. Skills representation — judicious, not one path per section
 
-The catalog has 25 mirrored skills (**18 exposed** after the 2026-07-03 retirement, ADR-0002) +
+The catalog has 19 mirrored public skills (**18 exposed** after the onboarding-skill retirement) +
 203 skill-sections. Emitting a path per skill (or per section) would bloat `paths` with entries
 that are not operations (nothing is *called* per skill) and drown the 50 real operations in
-200+ pseudo-paths. Instead the skills service is **3 operations + an embedded index**, designed
-around "deliver skill context when and as relevant":
+200+ pseudo-paths. Instead the skills service is **4 operations + embedded indexes**, designed
+around "deliver skill context when and as relevant" plus the two vetted runnable skills:
 
 - `GET /skills/list_skills` — carries **`x-skill-index`**: the 18 exposed skills as
   `{ id, source, description, sections }`, where `description` is the skill's own frontmatter
@@ -105,24 +106,27 @@ around "deliver skill context when and as relevant":
   `x-execute: await codemode.skill.read(name, { sections })` — the real, existing affordance.
 - `POST /skills/search_skill_sections` — ranked lexical search over skills + sections;
   `x-execute: await codemode.search({ query, service: "skills" })` — again a real affordance.
+- `POST /skills/run_skill` — executes one of the two runnable skills host-side through
+  `codemode.skill.run(name, input)`. It carries **`x-runnable-index`** with exact runnable ids and
+  their input/output schemas, so callers do not infer runnable status from prose.
 
 Honesty rule: skills ops never pretend to be `skills.*` sandbox globals (none exist); each op's
 `x-execute` names the actual `codemode.*` call. Lumenloop's 14 API-served skills stay out of this
 index (metadata-only upstream; since ADR-0003 they are simply never emitted — the
-`lumenloop.skill.*` twin namespace and the store read-alias are both gone); their mirrored bodies
-live under canonical `skills.*` ids — the 7 transport-agnostic playbooks among the 18 exposed,
-the 7 API-onboarding skills retired.
+`lumenloop.skill.*` twin namespace and the store read-alias are both gone). Public mirrored bodies
+live under canonical `skills.*` ids; partner-set skills remain name-only inventory stubs and are
+not mirrored.
 
 ## 4. Size — measured, not guessed
 
-From `npm run spec:build` (current — 2026-07-04, post-ADR-0003 exposure filtering; sizes drift
-with each daily refresh, so treat exact bytes as as-of-2026-07-04, not invariants):
+From `npm run spec:build` (current — 2026-07-06, after runnable skills shipped; sizes drift with
+each daily refresh, so treat exact bytes as as-of values, not invariants):
 
 | Measure | Value |
 |---|---|
-| Paths / operations | 53 paths / 53 operations, all callable (18 lumenloop, 20 scout, 12 stellarDocs, 3 skills) |
-| Pretty (checked-in) | **235,785 bytes** |
-| Compact — the serialized in-sandbox form | **152,948 bytes ≈ 38,237 tokens** (4 chars/token, upstream's own heuristic) |
+| Paths / operations | 54 paths / 54 operations, all callable (18 lumenloop, 20 scout, 12 stellarDocs, 4 skills) |
+| Pretty (checked-in) | drift-checked by `test/super-spec.test.ts` |
+| Compact — the serialized in-sandbox form | must stay under the test-enforced 300 KB budget |
 | Largest single op | `skills.list_skills` (~20 KB — the embedded index) |
 
 Decision: **the full spec ships — no trimmed search view.** The brief's threshold was ~300 KB;
@@ -158,7 +162,7 @@ Deliberate deltas (each with rationale):
 
 1. **Multi-service super spec, not one upstream OpenAPI doc.** Four services merged under
    namespaced paths + components; vendor extensions (§1) carry what a single-API spec never
-   needed (policy, cost, cross-sandbox call lines, the skills index).
+   needed (cross-sandbox call lines, the skills index, and the runnable-skill index).
 2. **No `codemode.request()` — per-operation fns instead.** Upstream's execute funnels every call
    through a generic `request({method, path, ...})`. Our execute already exposes exact-named fns
    (`lumenloop.search_directory(args)`…) behind guard/validation/redaction — the model never owns
@@ -199,8 +203,8 @@ Deliberate deltas (each with rationale):
 - `test/super-spec.test.ts` — determinism (double build byte-identical + artifact freshness),
   per-service counts (exposed ops only, ADR-0003), path/operationId invariants, x-execute on
   every op, spec = manifest consistency both directions, skills index ↔ catalog section 1:1
-  (all 203 exposed), read_skill enum = 18 exposed ids, stellarDocs x-algolia, scout $ref
-  resolvability, <300 KB compact budget.
+  (all 203 exposed), read_skill enum = 18 exposed ids, run_skill enum/index = runnable manifest
+  entries, stellarDocs x-algolia, scout $ref resolvability, <300 KB compact budget.
 - `test/spec-sandbox.test.ts` — generated-source shape, `</` escaping, fence normalization, and
   the wrapper EVALUATED under Node: $ref inlining, `$circular`, external-ref pass-through, lazy
   spec caching, in-sandbox truncation format, host-side helpers, host/sandbox resolver parity,

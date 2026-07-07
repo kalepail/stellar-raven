@@ -287,8 +287,11 @@ The `codemode` provider (`buildCodemodeProvider`, `src/executor/providers.ts`) i
   todo 806; decision record [`research/skill-run-design.md`](./research/skill-run-design.md)).
   Exactly two skill entries carry `runnable: true` plus real input/output schemas on their
   existing `kind: "skill"` entries (one id, two affordances — read the playbook, run its
-  data-gathering core): `skills.lumenloop.stellar-project-dossier` and
-  `skills.lumenloop.stellar-ecosystem-digest`. The prelude wraps the flat `skill_run`
+  data-gathering core): `skills.lumenloop.stellar-ecosystem-digest` (the sole v1
+  runnable — the project-dossier runner shipped alongside it and was retired on
+  measured evidence the same week: unreachable by its audience's entity-shaped
+  queries, zero adoption across every battery run; Solo todo 849, the design doc
+  §10 postscript is the decision record). The prelude wraps the flat `skill_run`
   dispatch fn (same mechanism as `skill.read`); all semantics live host-side in `runSkill`
   (`src/skills/run.ts`): exact-match id resolution (a miss or non-runnable id returns an
   error naming the full runnable set plus a nearest-id *suggestion*, never a resolution),
@@ -337,15 +340,17 @@ The `codemode` provider (`buildCodemodeProvider`, `src/executor/providers.ts`) i
 
 ## 6. Skill splitting — mirror → sections → reads
 
-**The mirror.** `ecosystem-skills/` is a pinned mirror of 25 skills from 5 upstreams
+**The mirror.** `ecosystem-skills/` is a pinned mirror of 19 public skills from 4 upstreams
 (commit-SHA-pinned in `ecosystem-skills/MANIFEST.json`); `scripts/check-mirrors.mjs`
 verifies integrity offline, `scripts/check-skills-drift.mjs` checks the pins against
-upstream in the daily refresh (detection only — the mirror is never auto-synced).
+upstream in the daily refresh (detection only — the mirror is never auto-synced). The former
+credentialed Lumenloop API skill source is intentionally absent; partner skills remain visible
+only as name-only inventory stubs.
 
 **The bundle.** Workers have no filesystem, so `scripts/bundle-skills.mjs` packs every
-exposed skill's `.md` files (markdown only — that's the exposed surface; 30 files — the
-7 retired skills contribute zero bytes, and retired-skill cross-references are scrubbed
-from the packed bodies via `scrubRetiredSkillRefs` in `scripts/exposure.mjs`) into
+exposed skill's `.md` files (markdown only — that's the exposed surface; 30 files, with
+retired-skill cross-references scrubbed from the packed bodies via `scrubRetiredSkillRefs`
+in `scripts/exposure.mjs`) into
 `src/skills/bundle.json`, keyed by repo-root-relative path — chosen to equal catalog
 entries' `transport.path` exactly, so the store resolves transport → content with no path
 arithmetic. `generatedAt` comes from the mirror manifest's `synced_at`, never wall clock.
@@ -356,14 +361,12 @@ paragraph); one `kind: "skill-section"` entry per `##` heading (id `<skillId>#<s
 duplicate slugs deduped `-2`, `-3`…; description = heading + first paragraph, truncated to
 200 chars; low-weight `keywords` extracted from the *section body* so mid-section content —
 error codes, flags, function names — is lexically searchable); and one section-kind entry
-per extra `.md` file (id `<skillId>#file:<relpath>`). The 7 retired Lumenloop
-API-onboarding skills are never emitted — no skill entry, no sections, no bundle bytes
-(ADR-0003; the retirement record is `RETIRED_ONBOARDING_SKILLS` in `scripts/exposure.mjs`
-plus the ADR). The
-Lumenloop-API-served skill metadata (14 skills as zips) is likewise never emitted: each
-duplicates a canonical `skills.*` mirror entry, and `assertLumenloopSkillsMirrored` breaks
-the build if an upstream-served skill ever lacks a mirror counterpart. Currently 18 exposed
-skills + 203 sections; there is no `lumenloop.skill.*` namespace and no read alias —
+per extra `.md` file (id `<skillId>#file:<relpath>`). Retired onboarding skills are never
+emitted — no skill entry, no sections, no bundle bytes (ADR-0003; the retirement record is
+`RETIRED_ONBOARDING_SKILLS` in `scripts/exposure.mjs` plus the ADR). Lumenloop-API-served
+skill metadata (14 skills as zips) is likewise never emitted: public skills duplicate
+canonical `skills.*` mirror entries, and partner skills are deliberately non-mirrored.
+Currently 18 exposed skills + 203 sections; there is no `lumenloop.skill.*` namespace and no read alias —
 unknown ids fail exact-match with a nearest-id suggestion.
 
 **The read path** (`readSkill`, `src/skills/store.ts`) resolves through the **catalog**,
@@ -408,9 +411,10 @@ newest *input* snapshot (never wall clock) — consecutive runs are byte-identic
 `test/catalog.test.ts` additionally asserts the *checked-in* manifest matches a fresh
 rebuild (staleness check). The refresh script is idempotent and asserts no key material
 (including the Algolia app id) appears in any output. Exposure filtering is build-time data
-in `build-catalog.mjs` (ADR-0003: `EXCLUDED_LUMENLOOP_OPS` + the account-op regex + the
-metered flag, `EXCLUDED_SCOUT_OPS`, `RETIRED_ONBOARDING_SKILLS`, and the never-emitted
-Lumenloop-served skill metadata), and the super spec emits exactly the manifest's
+in `scripts/exposure.mjs` (ADR-0003: excluded Lumenloop ops + the account-op regex + the
+metered flag, excluded Scout ops, retired onboarding skills, and the never-emitted
+Lumenloop-served skill metadata), consumed by `scripts/build-catalog.mjs` and the other
+emitters. The super spec emits exactly the manifest's
 operations (a completeness assert catches a cataloged op the spec builders miss). Loud-
 failure guards keep refreshes from silently changing exposure: `assertRetirementNamesResolve`
 (a mirror sync renaming/removing a retired skill would otherwise un-retire it),

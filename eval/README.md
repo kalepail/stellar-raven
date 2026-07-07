@@ -717,3 +717,15 @@ signature prominence for dossier-shaped questions) needs its own round; §10.4's
 do-not-ship rule was cleared by digest adoption, not blanket adoption. Deploy was held at
 decision time for an unrelated merge-train window — ship approval and deploy timing are
 separate facts.
+
+### Round 806 postscript (2026-07-07, todo 849): dossier runner retired, digest confirmed
+
+The adoption follow-up resolved by measurement (full trail in todo 849 + the design doc §10
+postscript): three surfacing levers all failed the no-regression bar, the dossier runner was
+retired (962a71c, retrieval-neutral by ranked-id proof), and a third 6-case battery run
+(`2026-07-07T02-28-31-variantA`) confirmed the digest runner's adoption reproduces (1/6 = the
+digest-shaped case, single-script, both keyFacts) while no transcript ever touched the dossier.
+That run's headline 4C/1P/1W calibrates to ~5–6C: the wrong is a live-proven judge artifact —
+every "fabricated" award label and the "invented" fourth submission are verbatim
+`get_scf_submissions` rows (todo 853; transcript-blindness class) — and the partial dinged the
+adopting case only for a missing honesty-caveat phrase with both keyFacts satisfied.

@@ -850,3 +850,18 @@ Rejected, with reasons:
   alternative remedy inside the routing-gate major) — rejected in favor of restating the
   invariant: the callable line in search hits is the adoption surface the §10.4 ship
   criterion depends on; hiding it would manufacture the zero-adoption failure mode.
+
+### §10 outcome postscript — dossier runner retired (2026-07-07, todo 849)
+
+The adoption follow-up the ship note named ran its course within a day. Replaying the A/B
+transcripts' real agent queries showed the dossier runnable ABSENT from 6 of 7 result pages
+(entity-shaped queries a generic playbook cannot lexically match). Three surfacing levers were
+implemented and measured: an enumerated description note (4 graded routing regressions, 0
+improvements), a trimmed cue-only note (bisected — the note alone lifts the digest skill from
+gated-out to rank 3 on an unrelated oracle query), and schema-derived distinctive keywords at
+the 0.4 blend (zero surfacing effect; sub-gate). All reverted. Per this document's own
+standard — an unused affordance is catalog noise — the dossier runner was retired (commit
+962a71c): registry, module, tests, and fixtures removed; the mirrored skill stays readable;
+ranked-id diff vs baseline EMPTY; zero dossier touches in any battery transcript, so the
+removal is behaviorally invisible. The digest runner remains the sole v1 runnable, with
+adoption reproduced in three consecutive battery runs on its unmodified description.

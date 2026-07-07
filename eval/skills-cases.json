@@ -3,7 +3,7 @@
   "authoredAt": "2026-07-02",
   "author": "todo-809",
   "expected_service_note": "all cases expect service `skills`",
-  "retired_note": "retiredCases are INERT (run-routing.mjs reads only `cases`): the 8 ll-family cases targeted the lumenloop-api onboarding skills + lumenloop-mcp-connect, retired from catalog exposure 2026-07-03 (Solo todo 825; deny-list-as-data in scripts/build-catalog.mjs). Their questions are direct-consumer transport tasks (key rotation, REST 401 onboarding, credit top-ups, connector install) that gateway callers cannot perform by design — no route in the exposed catalog is a right answer. Kept here for auditability; if the skills are ever re-exposed, move them back into `cases` and re-baseline the gate.",
+  "retired_note": "retiredCases are INERT (run-routing.mjs reads only `cases`): the 8 ll-family cases targeted the lumenloop-api onboarding skills + lumenloop-mcp-connect, retired from catalog exposure 2026-07-03 (Solo todo 825; exposure data in scripts/exposure.mjs, enforced by scripts/build-catalog.mjs). Their questions are direct-consumer transport tasks (key rotation, REST 401 onboarding, credit top-ups, connector install) that gateway callers cannot perform by design — no route in the exposed catalog is a right answer. Kept here for auditability; if the skills are ever re-exposed, move them back into `cases` and re-baseline the gate.",
   "retiredAt": "2026-07-03",
   "cases": [
     {

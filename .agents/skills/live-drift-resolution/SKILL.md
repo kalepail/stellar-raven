@@ -47,9 +47,11 @@ node eval/plan/build-op-classes.mjs     # catalog → eval/plan/op-classes.json 
 `refresh-inventory.mjs` only rewrites a service file when its live surface actually moved (it
 prints `unchanged (kept fetchedAt …)` otherwise), so the working tree isolates the real drift.
 
-Confirm the working tree touched **only generated artifacts** (`git status --short`). Anything
-else — a hand-editable source file, a doc, a script — means something is wrong; stop and
-investigate. Generated artifacts are never hand-edited (`CLAUDE.md` rule).
+Confirm the working tree touched **only generated artifacts** (`git status --short`) unless the
+classification below explicitly requires an intentional policy, runner, or baseline-source edit
+(for example `scripts/exposure.mjs`, runner `ops`, or `eval/gates.json`). Any other hand-editable
+source, doc, or script means something is wrong; stop and investigate. Generated artifacts are
+never hand-edited (`CLAUDE.md` rule).
 
 ## Step 2 — classify the drift (this picks the rest of the path)
 
@@ -185,9 +187,10 @@ adversarial reviews finish).
 
 ## Step 7 — close out
 
-- Commit only the regenerated artifacts. Match the house prefix and name the upstream version and
-  the class of change, e.g. `catalog: absorb <service> <version> drift — <one-line class>`. State
-  in the body what was verified (op count, description-identity, gate result, guards, secrets) and
+- Commit the regenerated artifacts plus any explicitly justified policy, runner, or baseline-source
+  edits required by the drift class. Match the house prefix and name the upstream version and the
+  class of change, e.g. `catalog: absorb <service> <version> drift — <one-line class>`. State in
+  the body what was verified (op count, description-identity, gate result, guards, secrets) and
   that an independent review agreed. Push.
 - Close the drift issue with a comment that records the same evidence and the resolving commit
   sha (`gh issue close <n> --comment …`).

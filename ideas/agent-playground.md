@@ -19,7 +19,7 @@ The original backlog item proposed an authenticated playground for trying Raven'
 debugging, but it probably would not demonstrate the product well unless the user
 already understood the protocol.
 
-If this comes back, the stronger product shape is an agent/chat playground:
+The stronger product shape was an agent/chat playground:
 
 - User enters intent in a chat-like interface.
 - The playground uses the existing WorkOS OAuth session; it must not embed or proxy
@@ -27,7 +27,7 @@ If this comes back, the stronger product shape is an agent/chat playground:
 - Raven calls are shown as an inspectable trace: `search` query, ranked hits,
   selected operation or skill, `execute` request, and the response envelope.
 - Envelope rendering should preserve the real contract: `ok/data` versus
-  `error.kind`, including denied, soft-empty, and validation failures.
+  `error.kind: "error" | "soft-empty"`; validation failures are ordinary error envelopes.
 - A manual `search` / `execute` console can exist as an advanced tab, but should not
   be the primary onboarding experience.
 
@@ -38,7 +38,7 @@ If this comes back, the stronger product shape is an agent/chat playground:
 - Paid Lumenloop research remains disabled by default in any playground path.
 - Prefer proving what Raven does for an agent over teaching users to hand-author JSON.
 
-## Open Questions
+## Resolved Questions
 
 - Should the chat surface run a real hosted agent, or a deterministic demo flow that
   only exercises Raven `search` and `execute`?

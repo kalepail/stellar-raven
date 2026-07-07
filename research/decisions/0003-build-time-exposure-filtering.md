@@ -109,8 +109,8 @@ in the model-facing world.
 - ADR-0002's "Reads are unaffected" line was already stale before this change (reads were
   policy-gated in the shipped code); under ADR-0003 the question is moot — there is nothing
   denied to read.
-- Correction discipline for future exclusions: add the surface to the relevant exclusion list in
-  `build-catalog.mjs` with a comment naming the reason, extend the drift guard if the list is
+- Correction discipline for future exclusions: add the surface to the relevant exclusion data in
+  `scripts/exposure.mjs` with a comment naming the reason, extend the drift guard if the list is
   keyed on upstream names, rebuild (`build-catalog` → `build-super-spec` → `build-op-classes`),
   and record the decision in an ADR/Solo todo. Never reintroduce runtime allow/deny.
 

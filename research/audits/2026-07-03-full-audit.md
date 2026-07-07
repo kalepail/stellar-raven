@@ -1,5 +1,9 @@
 # Full-project audit — 2026-07-03
 
+> Historical audit snapshot. Several policy details below predate ADR-0003's build-time exposure
+> filtering and later runnable-skill work; use `CLAUDE.md`, `PLAN.md`, `ARCHITECTURE.md`, and
+> `research/decisions/0003-build-time-exposure-filtering.md` for current invariants.
+
 Durable record of the full-repo audit run 2026-07-02/03 (Solo project 49). Four parallel
 audit lanes: **src/** (runtime code + security invariants), **tests/scripts/CI**
 (determinism + gate mechanics), **docs** (truth vs tree), and **artifacts/cruft**

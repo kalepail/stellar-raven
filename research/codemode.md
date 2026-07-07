@@ -671,10 +671,12 @@ Concrete recommendations:
    globals are …; never guess method names; search first; no fetch; plain JS, no TS syntax") and
    `openApiMcpServer`'s worked examples in `search`. Use `normalizeCode` (exported path: it's
    applied inside the executor already) so fenced/`export default` code just works.
-9. **Cost/limits awareness:** every `execute` (and code-shaped `search`) = one `.load()` = one
-   billable Dynamic Worker beyond 1,000/month (+$0.002/worker/day) — another reason to make top-level
-   `search` a host-side string query. Set `limits: { cpuMs, subRequests }` on the loaded worker to
-   cap runaway scripts below plan defaults.
+9. **Cost/limits awareness:** every `execute` (and the retired code-shaped `search`) = one
+   `.load()` = one billable Dynamic Worker beyond 1,000/month (+$0.002/worker/day) — another
+   reason the shipped top-level `search` is a host-side string query. Worker Loader supports
+   resource controls in principle, but `@cloudflare/codemode@0.4.2` does not expose those knobs
+   through `DynamicWorkerExecutor`; the current implementation relies on `globalOutbound: null`
+   plus the 60s wall-clock timeout.
 10. **Version pins:** `@cloudflare/codemode@^0.4`, peer `ai ^6`, `zod ^4`,
     `@modelcontextprotocol/sdk ^1.25`; wrangler compat date ≥ 2026-06-11 with `nodejs_compat`;
     child isolates loaded with `compatibilityDate: "2025-06-01"` internally. The package is

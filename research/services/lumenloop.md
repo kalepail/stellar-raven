@@ -264,8 +264,9 @@ Wrapper guidance:
    (`json`/`text`/`blocks`), and treat `data.text` under `success:true` as
    soft-empty/guidance, never evidence.
 3. **Catalog union**: an inventory refresh must merge keyless `GET /v1/tools` (18) with
-   authed `GET /v1/tools/{request_research,research_result,list_my_research}` and
-   `GET /v1/me` (`tools.available`) — the list endpoint hides the partner lane.
+   the partner names from `GET /v1/me` (`tools.available`) — the list endpoint hides the
+   partner lane. In this public repo those partner tools remain **name-only stubs**; do not
+   persist partner schemas/descriptions unless the paid research lane is deliberately enabled.
 4. **Cost gating**: only `request_research` is metered (`metered:true` + `cost` string in
    its detail). Gate it (dedup via `list_my_research` first, default `output_format:"answer"`,
    respect `research_quota_usd` − `month_spend_usd` from `/v1/me`). All 20 other tools are free.
@@ -293,11 +294,10 @@ curl -s https://api.lumenloop.com/llms.txt
 curl -s "https://api.lumenloop.com/v1/changelog?since=2026-07-02"
 curl -s https://api.lumenloop.com/v1/skills
 
-# authed: account/limits/budget + partner-tool schemas (union with /v1/tools)
+# authed: account/limits/budget + partner tool names only (schemas are not persisted)
 curl -s -H "Authorization: Bearer $LUMENLOOP_API_KEY" https://api.lumenloop.com/v1/me
-for t in request_research research_result list_my_research; do
-  curl -s -H "Authorization: Bearer $LUMENLOOP_API_KEY" "https://api.lumenloop.com/v1/tools/$t"
-done
+# Do not fetch/persist partner tool detail in the normal refresh. Restoring those schemas
+# belongs only in the deliberate paid-lane enablement change with budget/dedup gating.
 
 # per-tool schema (works keyless for guest tools)
 curl -s https://api.lumenloop.com/v1/tools/search_content_semantic

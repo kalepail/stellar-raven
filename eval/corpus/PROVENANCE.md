@@ -35,6 +35,11 @@ copy verified byte-identical with `diff -r`).
   2026-06-29 net-new themes doc that produced the +144 expansion (commit `09a9b9e`, 539→538
   after dedupe).
 
+> **Vendored README scope.** `raven-next/research/golden/README.md` is preserved verbatim from
+> the retired prior-art system. Its references to that system's runtime files, reviewers, and
+> answer shape are historical, not operating instructions for this codemode repo. Current eval
+> operation lives in `eval/README.md`, `eval/EVALS.md`, and `eval/qa/README.md`.
+
 > **Name-collision note (historical scoping).** The vendored doc
 > `raven-next/research/golden/_meta/_prior-art/review-raven-main.md` cites its source as
 > `github.com/kalepail/stellar-raven` @ `main`. At capture time (2026-07-02) that name belonged

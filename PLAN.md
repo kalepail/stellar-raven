@@ -63,7 +63,7 @@ Host Worker  (Workers Paid · wrangler: worker_loaders LOADER · nodejs_compat)
   │     every service operation + every skill + every skill section
   │     top-k hits returned WITH rendered TS signatures (describeTarget)
   ├─ tool "execute" { code }                                   [one Dynamic Worker per call]
-  │     DynamicWorkerExecutor · globalOutbound: null · limits{cpuMs, subRequests} · 60s
+  │     DynamicWorkerExecutor · globalOutbound: null · 60s wall-clock timeout
   │     sandbox globals:
   │       lumenloop.*   scout.*   stellarDocs.*        ← host RPC stubs (secrets stay host-side)
   │       codemode.spec()                              ← the unified super spec as data
@@ -138,22 +138,23 @@ is deterministic and offline-testable; only the inventory *refresh* touches the 
 
 ## 3. Skills directory — selective + partial exposure
 
-Source: `ecosystem-skills/` mirror lifted from raven-next (25 skills, 5 pinned upstreams:
-lumenloop ×8, lumenloop-api ×6, openzeppelin ×3, stellar-dev ×7, stellar-light ×1), synced by an
-adapted `update.sh` + `check-mirrors.mjs`. Lumenloop's own `/v1/skills` zips are one of those
-pinned upstreams, not a separate runtime dependency.
+Source: `ecosystem-skills/`, a pinned mirror of 19 public skills across 4 upstreams:
+lumenloop ×8, openzeppelin ×3, stellar-dev ×7, stellar-light ×1. The mirror is synced by
+`ecosystem-skills/update.sh` and verified by `scripts/check-mirrors.mjs`. Lumenloop's partner
+skill set is not mirrored; it is represented only as name-only inventory stubs so credentialed
+content cannot re-enter the public repo.
 
 - **Build-time sectioning:** each `SKILL.md` is split on `##` headings (multi-file skills keep
   their file structure); every skill and every section becomes a catalog entry with its own
   description, so `search("soroban storage patterns")` can return *a section*, not a 40 KB skill.
 - **Selective exposure is build-time data (ADR-0003):** the exclusion lists in
-  `scripts/build-catalog.mjs` control which skills exist in the catalog at all; excluded skills
+  `scripts/exposure.mjs` control which skills exist in the catalog at all; excluded skills
   are never emitted, so they cannot appear in search or resolve in the sandbox.
 - **Retrieval:** `codemode.skill.read(name, { sections?: string[] })` returns only the requested
   portions (exact-match-guarded names — no fuzzy resolution, per ADR-0019's wrong-entity lesson).
 - **Executable skills (BUILT 2026-07-06, todo 806):** two composite playbooks are additionally
-  *runnable* — `skills.lumenloop.stellar-project-dossier` and
-  `skills.lumenloop.stellar-ecosystem-digest` carry `runnable: true` + real input/output schemas
+  *runnable* — `skills.lumenloop.stellar-ecosystem-digest` carries `runnable: true` + real
+  input/output schemas (the dossier runner was retired on measured evidence, todo 849)
   on their existing `kind: "skill"` entries (one skill, one id, two affordances: read + run) and
   dispatch via `codemode.skill.run(id, input)` to repo-authored TypeScript runners executed
   **host-side** over the same per-op closures the sandbox namespaces use. The original sketch
@@ -173,8 +174,9 @@ pinned upstreams, not a separate runtime dependency.
   (side-effecting — logs surfaced partners as leads), lumenloop account/billing mutations, the 7
   retired onboarding skills, the 14 `lumenloop.skill.*` twins) are never emitted, by `search`,
   `codemode.catalog()`, `codemode.spec()`, or anything else. Consumers never see what they
-  cannot use. Exclusions are exact-match data in `scripts/build-catalog.mjs`, each with a
-  fail-loud drift guard; reasons live there and in the ADR, not in runtime entries.
+  cannot use. Exclusions are exact-match data in `scripts/exposure.mjs`, consumed by
+  `scripts/build-catalog.mjs` and the other emitters with fail-loud drift guards; reasons live
+  there and in the ADR, not in runtime entries.
 - **Paid-call gate:** `lumenloop.request_research` is not emitted at all today; enabling it is a
   deliberate feature — remove the build exclusion AND ship the budget-gate + dedup runtime in
   the same change (prefer `answer` mode (~$0.02), dedup via `list_my_research` first, per-day
@@ -190,7 +192,7 @@ pinned upstreams, not a separate runtime dependency.
   upstream IdP behind `/authorize` → `/callback`, its tokens dropped after the code exchange).
   Two bypasses only: the `MCP_ADMIN_TOKEN` secret (SHA-256 + timing-safe compare) and
   `DEV_ALLOW_UNAUTHENTICATED=true` from `.dev.vars` (never deployed). Connection guide:
-  README.md “Auth”.
+  README.md “Connect”.
 
 ## 5. Inventory refresh — keeping the catalog honest
 
@@ -245,7 +247,7 @@ compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders` binding `LOADER`.
 > `eval/agentic/README.md`, `eval/plan/README.md`, `research/decisions/0001-search-tool-shape.md`,
 > `research/decisions/0002-skills-retirement-twin-dedup.md`,
 > `research/decisions/0003-build-time-exposure-filtering.md`, `research/auth-workos.md`,
-> README.md “Auth”). CI + daily drift refresh run in
+> README.md “Connect”). CI + daily drift refresh run in
 > github.com/kalepail/stellar-raven (renamed from stellar-raven-codemode 2026-07-02). WorkOS
 > OAuth verified end-to-end incl. human
 > AuthKit sign-in (Tyler, 2026-07-02); CIMD enabled.
@@ -255,34 +257,34 @@ compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders` binding `LOADER`.
 >   code (`src/og.ts`, `src/fonts.ts` via `npm run site:og` / `npm run site:fonts`), not served
 >   from `public/`.
 >
-> Deferred / future work (tracked as Solo backlog todos; project binding in CLAUDE.md):
+> Follow-ups and former deferrals (tracked as Solo backlog todos; project binding in CLAUDE.md):
 > - `codemode.skill.run` (executable skills) — **BUILT 2026-07-06, ship-approved** (todo 806;
 >   the 2026-07-03 do-not-build decision's reopen triggers fired). Two v1 runners (project
 >   dossier, ecosystem digest) passed the design's §10 A/B gate — retrieval-neutral by
 >   ranked-id proof, verdict improvement on the targeted battery, digest-runner adoption
->   demonstrated (dossier adoption is the named follow-up). Decision record:
+>   demonstrated. The dossier follow-up (todo 849) then measured three surfacing levers
+>   (all net-negative or no-effect) and retired that runner; the digest remains the sole
+>   runnable. Decision record:
 >   `research/skill-run-design.md` (§10 outcome, §14.1 as-built deviations); eval record:
 >   `eval/README.md` todo-806 section; surface summary in §3 above.
 > - Plan-eval progression weighting — revisit ONLY if a run shows detail-starved wrong answers
 >   (`eval/plan/README.md` “Results — 2026-07-02”, conclusion).
 
-1. **Scaffold** — wrangler + pinned deps + CLAUDE.md + hygiene checks. *(small)*
+1. **Scaffold** — wrangler + pinned deps + CLAUDE.md + hygiene checks. *(shipped)*
 2. **Catalog + `search`** — manifest types, builder over the three inventories + skills,
-   host-side search with TS signatures in results. Fully offline-testable. *(the core)*
-3. **Adapters + `execute`** — write clean per-service clients in `src/adapters/` from the
-   research docs (raven code consulted only for pitfalls),
-   wire `DynamicWorkerExecutor` with namespaced providers + `codemode.search/describe` sandbox
-   globals; live smoke against all three services. *(the other core)*
-4. **Skills store** — sectioned retrieval (`skill.read`), allowlist policy; `skill.run`
-   (deferred here, built 2026-07-06 — see the status note above).
-5. **Policy + observability** — deny-list enforcement, paid gate, redaction, truncation,
-   per-execution `{code, result, logs}` logging.
-6. **Inventory refresh** — refresh script + drift CI + adapted surface smoke check.
-7. **Evals** — recompile the golden corpus **keeping `expected_service`/`expected_cards` labels**
-   (the current compile step drops them); grade `search` top-k routing accuracy; a small
-   end-to-end `execute` battery.
-8. **Deploy + auth** — WorkOS-backed OAuth at `/mcp` with admin-token + local-dev bypasses
-   (shipped; §4 “Server auth”, README.md “Auth”); deploy + connector quickstart.
+   host-side search with TS signatures in results. Fully offline-testable. *(shipped)*
+3. **Adapters + `execute`** — per-service clients in `src/adapters/`, `DynamicWorkerExecutor`
+   with namespaced providers, and `codemode.search/describe` sandbox globals. *(shipped)*
+4. **Skills store** — sectioned retrieval (`skill.read`), build-time exposure policy, and
+   `skill.run` for the runnable skill set (v1 shipped two; the dossier runner was
+   retired on measured evidence — design doc §10 postscript). *(shipped)*
+5. **Policy + observability** — build-time exposure filtering, paid lane excluded, redaction,
+   truncation, structured logs, and execute spans. *(shipped)*
+6. **Inventory refresh** — refresh script + drift CI + adapted surface smoke check. *(shipped)*
+7. **Evals** — routing, QA, plan, agentic, and live-data lanes with committed gate baselines and
+   own-repo formats. *(shipped; see `eval/EVALS.md`)*
+8. **Deploy + auth** — WorkOS-backed OAuth at `/mcp` with admin-token + local-dev bypasses;
+   deployed on the default route and alias. *(shipped)*
 
 Phases 2–3 are independently parallelizable after 1; 4–6 after 3.
 
@@ -293,5 +295,5 @@ Phases 2–3 are independently parallelizable after 1; 4–6 after 3.
 | Docs search path | **Decided: direct Algolia REST** — dedicated key in hand (`.env` → Worker secrets `ALGOLIA_APPLICATION_ID`/`ALGOLIA_API_KEY`); MCP as documented fallback | MCP-only (slower, protocol overhead) |
 | `request_research` (paid) | off at launch | on with budget gate from day one |
 | Server auth | **Decided: WorkOS OAuth** (`workers-oauth-provider` + AuthKit; admin/dev bypasses — §4, README.md) | plain bearer secret (retired placeholder) |
-| Skills scope | **18 of 25 mirrored skills exposed** (7 Lumenloop API-onboarding skills retired 2026-07-03 ADR-0002; never emitted since ADR-0003), read-only sections | re-expose on transport-agnostic rewrite; executable snippets later |
+| Skills scope | **18 of 19 mirrored public skills exposed**; retired onboarding surfaces never emitted, and two composite skills are runnable via `codemode.skill.run` | re-expose an onboarding skill only after a transport-agnostic rewrite and a fresh ADR |
 | Statefulness | stateless `createMcpHandler` | `McpAgent` + CodemodeRuntime DO (approvals/audit) |

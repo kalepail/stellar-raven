@@ -86,7 +86,7 @@ fixes discovered during the round become **their own Solo todos** — never `imp
 npm run eval:selftest           # grader math sanity — no src/ or catalog needed
 npm run eval:compile            # corpus → eval/routing-cases.json (deterministic)
 npm run eval:qa:compile         # only if running QA; add --sample 30 for the stratified sample
-npm run eval:qa:selftest        # only if judging — 3 candidates vs 1 case, ~3 CLI calls
+npm run eval:qa:selftest        # only if judging — 4 candidates vs 1 case
 ```
 
 Compiles are deterministic and never touch the hand-authored supplements
@@ -145,7 +145,7 @@ if parallelizing across shards, keep one results file per shard and report lanes
 ## Step 4 — gate verdicts and agentic review of results
 
 **Gates first.** `eval/gates.json` holds the baselines (legacy 338 top-1/3/5 within ±1%,
-skills-lane top-1 floor; grading rule v2 twin-aware). On a FAIL:
+skills-lane top-1 floor; current grading rule v3, manifest-exposed entries only). On a FAIL:
 - If the change is a regression → fix or revert; don't rationalize.
 - If the numbers moved legitimately (drift, deliberate policy change) → re-baseline:
   update `gates.json` **in the same commit** as the change that moved the numbers, decision

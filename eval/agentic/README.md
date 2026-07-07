@@ -11,8 +11,8 @@ right tool for a golden question.
 
 - 30 stratified cases from `eval/routing-cases.json` (12 stellarDocs / 10 scout / 8 lumenloop;
   selection = every-Nth per service, id-sorted → `sample.json`).
-- Each case posed to a `claude-sonnet-5` sub-agent at **low** and **medium** reasoning effort
-  (60 runs), via the Workflow harness `workflow-agentic-routing.js`.
+- Each case posed to the Workflow model alias `sonnet` (Sonnet 5 for this run) at **low** and
+  **medium** reasoning effort (60 runs), via the Workflow harness `workflow-agentic-routing.js`.
 - Agent gets only the question + a curl recipe for `tools/call search` against a local
   `wrangler dev` server; must return structured `{queriesUsed, primaryToolId, primaryService,
   alternateToolIds, reasoning}`.
