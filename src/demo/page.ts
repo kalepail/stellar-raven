@@ -729,7 +729,7 @@ function lockedBody(): string {
   return (
     `<main class="play pwrap"><section class="gate">` +
     `<p class="eyebrow">Agent playground <span class="live"><span class="dot"></span>live tools</span></p>` +
-    `<h1>Use Raven <span class="r">for yourself.</span></h1>` +
+    `<h1>Test drive <span class="r">Raven yourself.</span></h1>` +
     `<p class="lede">${esc(EXPLAINER)}</p>` +
     `<div class="cta"><a class="btn btn-primary" href="/demo/login">Sign in to try it</a>` +
     `<span class="hint">WorkOS sign-in &middot; no API keys &middot; rate-limited</span></div>` +
