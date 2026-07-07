@@ -2,19 +2,18 @@
 
 # Stellar/Soroban ecosystem skills — index
 
-Mirror of **25 agent skills** across **5 sources** · synced 2026-07-03T14:01:13Z. Each skill lives under [`skills/<source>/<skill>/`](./skills/). Large SKILL.md files are best **grepped** for the section you need.
+Mirror of **19 agent skills** across **4 sources** · synced 2026-07-06T21:16:02Z. Each skill lives under [`skills/<source>/<skill>/`](./skills/). Large SKILL.md files are best **grepped** for the section you need.
 
 ## Sources (pinned)
 
 | Source | Origin | Pinned | Skills |
 | --- | --- | --- | --- |
 | `lumenloop` | [`lumenloop/lumenloop-skills`](https://github.com/lumenloop/lumenloop-skills) `skills/` | [`d92c56bda17a`](https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills) | 8 |
-| `lumenloop-api` | `lumenloop/lumenloop-api-skills` (partner archive, private) | api `9433bcc` · zip `sha256:760cdd15b3aa…` | 6 |
 | `openzeppelin-stellar` | [`OpenZeppelin/openzeppelin-skills`](https://github.com/OpenZeppelin/openzeppelin-skills) `skills/` | [`d72005b53b6d`](https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills) | 3 |
 | `stellar-dev` | [`stellar/stellar-dev-skill`](https://github.com/stellar/stellar-dev-skill) `skills/` | [`54e469abe6ba`](https://github.com/stellar/stellar-dev-skill/tree/54e469abe6ba3ae80992fd17381ee933280b7127/skills) | 7 |
-| `stellar-light` | [`Stellar-Light/stellar-scout`](https://github.com/Stellar-Light/stellar-scout) (root) | [`b95a7435dadc`](https://github.com/Stellar-Light/stellar-scout/tree/b95a7435dadcaa9e37d48eaeeb0a2ed7a0bc5f45) | 1 |
+| `stellar-light` | [`Stellar-Light/stellar-scout`](https://github.com/Stellar-Light/stellar-scout) (root) | [`da9b6e5d6f32`](https://github.com/Stellar-Light/stellar-scout/tree/da9b6e5d6f32e132eeb585e0af8ef6220e7ee927) | 1 |
 
-_GitHub sources are pinned to full commit SHAs (independently verifiable). The `lumenloop-api` partner archive comes from a **private** repo behind a credentialed, mutable endpoint: it is **API-versioned + archive-digested** (a short API ref + a SHA256 of the exact zip), not git-commit-reproducible. See `MANIFEST.json` → that source's `reproducibility` field._
+_Every source is public GitHub, pinned to a full commit SHA (independently verifiable); each source's upstream LICENSE/NOTICE files are vendored alongside its skills (see `THIRD-PARTY-NOTICES.md` at the repo root)._
 
 ## Ecosystem research & routing
 
@@ -31,19 +30,6 @@ _Stellar-ecosystem analyst skills — survey/map a sector, profile a project, di
 | [`stellar-builder-quickstart`](./skills/lumenloop/stellar-builder-quickstart/) | `lumenloop` | 12 KB | Go from a Stellar product idea to a build path: pick the right Stellar primitives, check ecosystem prior art via LumenLoop, and route to the relevant build skill (Soroban, SDK/dapp, assets, oracles). Use when the user wants to start building something on Stellar and needs orientation on approach and existing work. |
 | [`lumenloop-mcp-connect`](./skills/lumenloop/lumenloop-mcp-connect/) | `lumenloop` | 16 KB | Connect your AI assistant (Claude, ChatGPT, Gemini, Cursor, or any MCP client) to LumenLoop's free read-only Stellar ecosystem MCP at https://mcp.lumenloop.com and learn its 18 query tools. Use when the user wants to set up or troubleshoot the lumenloop connector, asks what Stellar ecosystem data is available, or needs to know which lumenloop skill fits a task. |
 | [`stellar-scout`](./skills/stellar-light/stellar-scout/) | `stellar-light` | 67 KB | Scouts the Stellar ecosystem before you build. Validates ideas against existing projects, matches open SCF-funded RFPs, drafts SCF pitches, finds audit firms, compares RFPs, recommends Soroban SDK skills, and cites primary sources (audits, SEPs, papers). Use whenever someone asks what to build on Stellar, vets an idea, preps an SCF grant application or hackathon entry, needs an auditor, or needs prior-art / security findings on a Soroban protocol. |
-
-## LumenLoop REST API integration
-
-_Partner-tier playbooks for calling the LumenLoop REST API directly (auth, the response envelope, the 18 read tools, metered research, billing, keys). Mirrors the contract the codemode server's lumenloop adapter enforces — read them to understand the envelope and deny-list before authoring `execute` code (deep dive: research/services/lumenloop.md)._
-
-| Skill | Source | Size | What it does |
-| --- | --- | --- | --- |
-| [`lumenloop-api-connect`](./skills/lumenloop-api/lumenloop-api-connect/) | `lumenloop-api` | 26 KB | Onboard to the LumenLoop REST API for the Stellar ecosystem at api.lumenloop.com/v1 — Bearer authentication, the guest/partner tier ladder, rate limits, the deterministic response envelope, and a first smoke test. Use when the user wants to call the LumenLoop API over plain HTTP/REST, needs orientation on auth, tiers, or the envelope, is troubleshooting a 401, 402, 403, 404, or 429 response, or is picking which lumenloop-api skill fits the task. |
-| [`lumenloop-api-query`](./skills/lumenloop-api/lumenloop-api-query/) | `lumenloop-api` | 24 KB | Query LumenLoop's Stellar ecosystem data — the project directory, AI content summaries, SCF funding history, and semantic search — through 18 guest-tier read tools on the REST API at https://api.lumenloop.com/v1. Use when querying Stellar ecosystem projects, content, or SCF data over HTTP, building scripts or agents that browse the directory, resolving project names to slugs, or finding content about a topic or project via the REST API. |
-| [`lumenloop-api-research`](./skills/lumenloop-api/lumenloop-api-research/) | `lumenloop-api` | 31 KB | Commissions metered server-side research over LumenLoop's full Stellar-ecosystem corpus through the REST API at https://api.lumenloop.com/v1 (partner tier, billed in USD against the account budget) via request_research, research_result, and list_my_research. Use when commissioning a cited research report over the LumenLoop corpus, getting a fast cited answer to a single question, getting a curated source pack to synthesize yourself, filling a JSON Schema with cited per-field data, or polling and retrieving a commissioned research run. |
-| [`lumenloop-api-integrate`](./skills/lumenloop-api/lumenloop-api-integrate/) | `lumenloop-api` | 33 KB | Build production clients, scripts, and agents on the LumenLoop REST API at https://api.lumenloop.com/v1 — agent-first tool wiring from the machine-readable catalog, typed clients generated from the OpenAPI spec, hand-rolled thin clients, and robust envelope, error, and rate-limit handling. Use when writing a script, service, or agent that calls the LumenLoop API, generating a typed client from the OpenAPI spec, handling envelopes, errors, or rate limits robustly, or wiring the API into an agent framework as a tool. |
-| [`lumenloop-api-billing`](./skills/lumenloop-api/lumenloop-api-billing/) | `lumenloop-api` | 18 KB | Manages budgets, metering, and top-ups for the LumenLoop REST API partner tier — reading research budgets and spend, adding prepaid credits, and asking an admin for more. Use when checking a LumenLoop account's research budget or spend, recovering from HTTP 402 on research calls, topping up credits with USDC on Stellar via x402, or requesting a quota increase. |
-| [`lumenloop-api-keys`](./skills/lumenloop-api/lumenloop-api-keys/) | `lumenloop-api` | 9 KB | Self-service API-key management for LumenLoop partner accounts over the REST API at https://api.lumenloop.com/v1 — list every credential on the account, mint new llmcp_ keys with labels and expiries, and revoke keys instantly with no admin round-trip. Use when minting or rotating LumenLoop API keys, listing the credentials on an account, revoking a leaked or stale key, or giving each agent or service its own key against a shared partner account. |
 
 ## Soroban & smart contracts
 
@@ -71,7 +57,7 @@ _SDF's developer skills for building on Stellar off-chain: dapps/wallets, chain 
 
 ## Ecosystem directory (stellarlight.xyz catalog snapshot)
 
-_The broader map of what exists across the Stellar agent-skill ecosystem — 30 entries from [`https://stellarlight.xyz/api/skills`](https://stellarlight.xyz/api/skills), fetched 2026-07-03T14:01:13Z. Only `skill-md` entries are downloadable SKILL.md skills; `mcp-server` / `sdk` / `cli` / `tool` entries are pointers to runtime tools, not skills. Not all are mirrored here._
+_The broader map of what exists across the Stellar agent-skill ecosystem — 30 entries from [`https://stellarlight.xyz/api/skills`](https://stellarlight.xyz/api/skills), fetched 2026-07-06T21:16:02Z. Only `skill-md` entries are downloadable SKILL.md skills; `mcp-server` / `sdk` / `cli` / `tool` entries are pointers to runtime tools, not skills. Not all are mirrored here._
 
 | Entry | Source | Kind |
 | --- | --- | --- |

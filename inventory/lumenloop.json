@@ -5,13 +5,9 @@
     "title": "get_scf_submissions now returns the full application/proposal text"
   },
   "changelogEntryCount": 16,
-  "fetchedAt": "2026-07-02T13:59:07.782Z",
+  "fetchedAt": "2026-07-06T21:16:56.676Z",
   "me": {
     "lane": "external",
-    "limits": {
-      "requests_per_day": 30000,
-      "requests_per_minute": 240
-    },
     "tier": "partner",
     "tools": {
       "available": 21,
@@ -9030,78 +9026,49 @@
   },
   "openapiOperationCount": 33,
   "openapiVersion": "1.0.0",
-  "quirk": "GET /v1/tools and GET /v1/skills hide (or mark unavailable) partner-tier items even with a partner key. This inventory unions the list endpoints with per-name detail fetches and validates the tool count against GET /v1/me tools.available.",
+  "quirk": "GET /v1/tools and GET /v1/skills hide (or mark unavailable) partner-tier items even with a partner key. This inventory unions the list endpoints and validates the tool count against GET /v1/me tools.available. Partner-tier items are persisted as name-only stubs (partner_stub: true) — detail is never committed.",
   "service": "lumenloop",
   "skillCount": 14,
   "skills": [
     {
-      "description": "Manages budgets, metering, and top-ups for the LumenLoop REST API partner tier — reading research budgets and spend, adding prepaid credits, and asking an admin for more. Use when checking a LumenLoop account's research budget or spend, recovering from HTTP 402 on research calls, topping up credits with USDC on Stellar via x402, or requesting a quota increase.",
-      "detail_available": true,
-      "files": [
-        "SKILL.md",
-        "reference/x402-topup-walkthrough.md"
-      ],
       "listed_available": true,
       "name": "lumenloop-api-billing",
+      "partner_stub": true,
       "set": "partner",
       "tier": "partner"
     },
     {
-      "description": "Onboard to the LumenLoop REST API for the Stellar ecosystem at api.lumenloop.com/v1 — Bearer authentication, the guest/partner tier ladder, rate limits, the deterministic response envelope, and a first smoke test. Use when the user wants to call the LumenLoop API over plain HTTP/REST, needs orientation on auth, tiers, or the envelope, is troubleshooting a 401, 402, 403, 404, or 429 response, or is picking which lumenloop-api skill fits the task.",
-      "detail_available": true,
-      "files": [
-        "SKILL.md",
-        "reference/endpoint-catalog.md"
-      ],
       "listed_available": true,
       "name": "lumenloop-api-connect",
+      "partner_stub": true,
       "set": "partner",
       "tier": "partner"
     },
     {
-      "description": "Build production clients, scripts, and agents on the LumenLoop REST API at https://api.lumenloop.com/v1 — agent-first tool wiring from the machine-readable catalog, typed clients generated from the OpenAPI spec, hand-rolled thin clients, and robust envelope, error, and rate-limit handling. Use when writing a script, service, or agent that calls the LumenLoop API, generating a typed client from the OpenAPI spec, handling envelopes, errors, or rate limits robustly, or wiring the API into an agent framework as a tool.",
-      "detail_available": true,
-      "files": [
-        "SKILL.md",
-        "reference/client-snippets.md"
-      ],
       "listed_available": true,
       "name": "lumenloop-api-integrate",
+      "partner_stub": true,
       "set": "partner",
       "tier": "partner"
     },
     {
-      "description": "Self-service API-key management for LumenLoop partner accounts over the REST API at https://api.lumenloop.com/v1 — list every credential on the account, mint new llmcp_ keys with labels and expiries, and revoke keys instantly with no admin round-trip. Use when minting or rotating LumenLoop API keys, listing the credentials on an account, revoking a leaked or stale key, or giving each agent or service its own key against a shared partner account.",
-      "detail_available": true,
-      "files": [
-        "SKILL.md"
-      ],
       "listed_available": true,
       "name": "lumenloop-api-keys",
+      "partner_stub": true,
       "set": "partner",
       "tier": "partner"
     },
     {
-      "description": "Query LumenLoop's Stellar ecosystem data — the project directory, AI content summaries, SCF funding history, and semantic search — through 18 guest-tier read tools on the REST API at https://api.lumenloop.com/v1. Use when querying Stellar ecosystem projects, content, or SCF data over HTTP, building scripts or agents that browse the directory, resolving project names to slugs, or finding content about a topic or project via the REST API.",
-      "detail_available": true,
-      "files": [
-        "SKILL.md",
-        "reference/tool-cheatsheet.md"
-      ],
       "listed_available": true,
       "name": "lumenloop-api-query",
+      "partner_stub": true,
       "set": "partner",
       "tier": "partner"
     },
     {
-      "description": "Commissions metered server-side research over LumenLoop's full Stellar-ecosystem corpus through the REST API at https://api.lumenloop.com/v1 (partner tier, billed in USD against the account budget) via request_research, research_result, and list_my_research. Use when commissioning a cited research report over the LumenLoop corpus, getting a fast cited answer to a single question, getting a curated source pack to synthesize yourself, filling a JSON Schema with cited per-field data, or polling and retrieving a commissioned research run.",
-      "detail_available": true,
-      "files": [
-        "SKILL.md",
-        "reference/output-formats.md"
-      ],
       "listed_available": true,
       "name": "lumenloop-api-research",
+      "partner_stub": true,
       "set": "partner",
       "tier": "partner"
     },
@@ -10187,53 +10154,9 @@
       "when_to_use": "Browse/page through a content collection (articles, events, videos/av, research) with filters and sorting. For text matching use search_documents; for meaning-based discovery use search_content_semantic."
     },
     {
-      "available": true,
-      "category": "research",
-      "description": "List your account's past research reports, most recent first. Returns metadata plus a run_id you can pass to research_result for the full report.",
-      "detail": "/v1/tools/list_my_research",
-      "example_args": {
-        "limit": 10
-      },
-      "input_schema": {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "additionalProperties": false,
-        "properties": {
-          "limit": {
-            "description": "Max rows (default 25).",
-            "maximum": 100,
-            "minimum": 1,
-            "type": "number"
-          }
-        },
-        "type": "object"
-      },
-      "invoke": {
-        "auth": "Authorization: Bearer <llmcp_ key or OAuth token>",
-        "content_type": "application/json",
-        "method": "POST",
-        "path": "/api/v1/tools/list_my_research"
-      },
       "listed_in_catalog": false,
-      "metered": false,
       "name": "list_my_research",
-      "output_schema": {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "additionalProperties": false,
-        "properties": {
-          "results": {
-            "description": "Array of your commissioned reports: run_id, title, status, created_at.",
-            "items": {},
-            "type": "array"
-          },
-          "text": {
-            "description": "Present instead of the data fields when the tool reports a plain-text message."
-          }
-        },
-        "type": "object"
-      },
-      "returns": "{ results: [{ run_id, status ('completed'/'failed'/'running'), started_at, title, slug, format, summary, created_at }] } — legacy rows can carry nulls. Pass run_id to research_result for the report.",
-      "tier": "partner",
-      "when_to_use": "List YOUR account's commissioned reports (most recent first) — e.g. to avoid re-commissioning a question you already paid for. LumenLoop's public research is list_research."
+      "partner_stub": true
     },
     {
       "available": true,
@@ -10321,191 +10244,14 @@
       "when_to_use": "Browse LumenLoop's own published research/editorial pieces (previews) — id, title, summary, links."
     },
     {
-      "async_flow": {
-        "note": "Honor progress.poll_after_s (or pass wait_s=30 to long-poll). While running you get { status: \"running\", progress: { phase, steps, searches_run, sources_read, elapsed_s, last_activity_s, stalled, eta_s, pct, poll_after_s, message } } — relay progress.message to your user. Terminal statuses are \"completed\" / \"failed\"; completed runs return { status: \"completed\", output_format, report | pack | data+basis, sources, citations }.",
-        "poll_tool": "research_result"
-      },
-      "available": true,
-      "category": "research",
-      "cost": "output_format='answer' is a flat ~$0.02/run. The metered modes (sources/structured/report, report is the default) are billed per run in USD against your account research quota — depth-dependent, typically well under $2 and capped near $2 per run. Requires a partner billing account — returns HTTP 402 without one.",
-      "description": "Ask Lumen Loop to research a question. A server-side agent runs the research over the full Stellar-ecosystem content corpus (which you do not have direct access to). Four output modes: output_format='report' (default) returns a synthesized, cited editorial report; output_format='sources' skips the synthesis and returns a curated source pack — ranked source links with Lumen Loop's AI summaries and per-source relevance notes — for you to synthesize yourself; output_format='structured' fills YOUR JSON Schema (pass output_schema) and returns the data plus a per-field basis (citations + reasoning + confidence); output_format='answer': a fast, direct, cited answer to a single question — no editorial styling, no report; completes in seconds and costs ~$0.02. Cost, cheapest first: 'answer' is a flat ~$0.02/run; 'sources', 'structured', and 'report' (the default) run the full research agent and are metered in USD per run — typically well under $2, capped near $2 per run, rising with depth; if you only need a quick fact, prefer output_format='answer'. Before commissioning, call list_my_research to check whether your account already paid for this question and reuse that run_id via research_result instead of paying again. Async: returns a run_id to poll with research_result. Metered against your account quota.",
-      "detail": "/v1/tools/request_research",
-      "example_args": {
-        "format": "long-form",
-        "question": "Summarize institutional adoption of Stellar in 2026 so far"
-      },
-      "input_schema": {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "additionalProperties": false,
-        "properties": {
-          "format": {
-            "description": "Report shape (report mode only). Defaults to long-form. Rough speeds: tweet ≈ 30-60s, thread ≈ 1-2 min, long-form ≈ 3-10 min. Ignored for 'sources'/'structured'/'answer'.",
-            "enum": [
-              "tweet",
-              "thread",
-              "long-form"
-            ],
-            "type": "string"
-          },
-          "output_format": {
-            "description": "'report' (default): synthesized editorial report. 'sources': curated source pack (links + summaries + notes, no composition) — ≈ 1-3 min. 'structured': data conforming to your output_schema + per-field basis. 'answer': fast cited answer to a single question — ≈ seconds.",
-            "enum": [
-              "report",
-              "sources",
-              "structured",
-              "answer"
-            ],
-            "type": "string"
-          },
-          "output_schema": {
-            "additionalProperties": {},
-            "description": "JSON Schema the structured data must conform to (required with output_format='structured'; max ~8KB serialized). Citations are attached server-side per field — do NOT add URL fields to the schema.",
-            "type": "object"
-          },
-          "question": {
-            "description": "What to research / the report brief.",
-            "maxLength": 4000,
-            "minLength": 5,
-            "type": "string"
-          }
-        },
-        "required": [
-          "question"
-        ],
-        "type": "object"
-      },
-      "invoke": {
-        "auth": "Authorization: Bearer <llmcp_ key or OAuth token>",
-        "content_type": "application/json",
-        "method": "POST",
-        "path": "/api/v1/tools/request_research"
-      },
       "listed_in_catalog": false,
-      "metered": true,
       "name": "request_research",
-      "output_schema": {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "additionalProperties": false,
-        "properties": {
-          "message": {
-            "description": "Status note."
-          },
-          "poll_after_s": {
-            "description": "Seconds to wait before the first research_result poll."
-          },
-          "recent_runs": {
-            "description": "When present: prior completed reports on your account ({ run_id, title, created_at, output_format }) you can reuse via research_result instead of commissioning again."
-          },
-          "recent_runs_note": {
-            "description": "Human-readable reuse hint accompanying recent_runs."
-          },
-          "run_id": {
-            "description": "Poll research_result with this id."
-          },
-          "text": {
-            "description": "Present when the tool reports a plain-text message (e.g. quota errors)."
-          }
-        },
-        "type": "object"
-      },
-      "returns": "{ run_id, poll_after_s, message, recent_runs? } — the run starts in the background; recent_runs (when present) lists prior completed reports on your account you can reuse via research_result instead of commissioning again.",
-      "tier": "partner",
-      "when_to_use": "Commission server-side research when summaries from the search tools are not enough — a research agent works over the full LumenLoop corpus and returns LumenLoop's own cited synthesis (citations land on the original articles and timestamps, so supporting quotes are one fetch away). output_format='report' (default) writes a synthesized cited report (tweet ≈ 30-60s, thread ≈ 1-2 min, long-form ≈ 3-10 min); output_format='sources' skips synthesis and curates a ranked source pack (links + LumenLoop AI summaries + relevance notes) for you to synthesize yourself (≈ 1-3 min); output_format='structured' fills YOUR JSON Schema (pass output_schema) and returns data + a per-field basis (citations, reasoning, confidence); output_format='answer' returns a fast, direct, cited answer to a single question — no editorial styling, no report; completes in seconds and costs ~$0.02. Before commissioning, call list_my_research — if your account already paid for this question, reuse that run_id via research_result instead of paying again. Async: poll research_result with the returned run_id."
+      "partner_stub": true
     },
     {
-      "available": true,
-      "category": "research",
-      "description": "Fetch the result of a request_research run. While running, returns status + a partner-safe progress summary: phase, steps, searches_run, sources_read, elapsed_s, last_activity_s (heartbeat), stalled, eta_s + pct (estimates from historical run durations), poll_after_s (when to check back), and a ready-to-relay message — surface progress.message to your user verbatim. Pass wait_s (max 45) to long-poll: the call holds until the run finishes, the phase changes, or the window expires, then returns the current state. When complete: report runs return the report + sources + citations; source-pack runs (output_format='sources') return pack (title + overview) + sources; structured runs (output_format='structured') return data (conforming to your schema) + basis (per-field citations, reasoning, confidence) + sources; answer runs (output_format='answer') return answer + citations + confidence — these complete in seconds, so the first poll usually returns the completed result (wait_s works as-is). Each source carries title, url, author, date, tags, and Lumen Loop's AI summaries. You can only read research your own account triggered.",
-      "detail": "/v1/tools/research_result",
-      "example_args": {
-        "run_id": "5fde21e9-2034-4e90-b132-b05d059bb36e",
-        "wait_s": 30
-      },
-      "input_schema": {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "additionalProperties": false,
-        "properties": {
-          "run_id": {
-            "description": "The run_id (a UUID) returned by request_research.",
-            "format": "uuid",
-            "type": "string"
-          },
-          "wait_s": {
-            "description": "Long-poll: hold the request up to this many seconds, returning early when the run completes or the phase changes. 0/omitted = answer immediately.",
-            "maximum": 45,
-            "minimum": 0,
-            "type": "integer"
-          }
-        },
-        "required": [
-          "run_id"
-        ],
-        "type": "object"
-      },
-      "invoke": {
-        "auth": "Authorization: Bearer <llmcp_ key or OAuth token>",
-        "content_type": "application/json",
-        "method": "POST",
-        "path": "/api/v1/tools/research_result"
-      },
       "listed_in_catalog": false,
-      "metered": false,
       "name": "research_result",
-      "output_schema": {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "additionalProperties": false,
-        "properties": {
-          "answer": {
-            "description": "The cited answer text (answer runs, when complete)."
-          },
-          "basis": {
-            "description": "Per-field evidence: [{field, citations, reasoning, confidence}] (structured runs)."
-          },
-          "citations": {
-            "description": "Flat {title,url} citations (when complete)."
-          },
-          "confidence": {
-            "description": "'high' | 'low' (answer runs)."
-          },
-          "data": {
-            "description": "Object conforming to your output_schema (structured runs)."
-          },
-          "output_format": {
-            "description": "'report', 'sources', 'structured', or 'answer' (when complete)."
-          },
-          "pack": {
-            "description": "{ title, overview } (source-pack runs, when complete)."
-          },
-          "progress": {
-            "description": "Coarse progress while running (phase, steps, elapsed)."
-          },
-          "reason": {
-            "description": "Failure/skip reason, if any."
-          },
-          "report": {
-            "description": "The synthesized report (report runs, when complete)."
-          },
-          "schema": {
-            "description": "Echo of the output_schema the data conforms to (structured runs)."
-          },
-          "sources": {
-            "description": "Resolved sources: type, id/slug, title, url, author, date, tags, AI summaries, note."
-          },
-          "status": {
-            "description": "running | complete | failed."
-          },
-          "text": {
-            "description": "Present instead of the data fields when the tool reports a plain-text message."
-          },
-          "title": {
-            "description": "Dataset title (structured runs)."
-          }
-        },
-        "type": "object"
-      },
-      "returns": "While running: { status: 'running', progress } — progress carries phase, step counts (searches_run/sources_read), elapsed_s, a last_activity_s heartbeat + stalled flag, eta_s/pct estimates, poll_after_s (when to check back), and a relay-ready message. When done (status 'completed'): report runs return { status, output_format: 'report', report, sources, citations }; source-pack runs return { output_format: 'sources', pack: { title, overview }, sources, citations }; structured runs return { output_format: 'structured', data, schema, basis: [{field, citations, reasoning, confidence}], sources, citations }; answer runs return { output_format: 'answer', answer, citations, confidence } and complete in seconds — the first poll usually returns the completed result. Each source: type, id/slug, title, url, author, date, tags, summary, long_summary, and (packs) the curator's note. You can only read research your own account commissioned.",
-      "tier": "partner",
-      "when_to_use": "Poll a request_research run by run_id (pass wait_s, max 45, to long-poll — returns early on completion or a phase change), and re-fetch past reports you own."
+      "partner_stub": true
     },
     {
       "available": true,

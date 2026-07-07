@@ -1,8 +1,8 @@
 {
-  "synced_at": "2026-07-03T14:01:13Z",
+  "synced_at": "2026-07-06T21:16:02Z",
   "status": "complete",
   "missing_sources": [],
-  "skill_count": 25,
+  "skill_count": 19,
   "sources": [
     {
       "id": "lumenloop",
@@ -14,6 +14,9 @@
       "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
       "commit_date": "2026-06-16T03:06:57Z",
       "url": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills",
+      "license_files": [
+        "LICENSE"
+      ],
       "skills": [
         {
           "name": "lumenloop-mcp-connect",
@@ -133,111 +136,6 @@
       ]
     },
     {
-      "id": "lumenloop-api",
-      "type": "lumenloop-archive",
-      "set": "partner",
-      "repo": "lumenloop/lumenloop-api-skills",
-      "reproducibility": "api-versioned+archive-digested",
-      "commit_ref": "9433bcc",
-      "commit_ref_note": "short ref reported by the API for a PRIVATE repo — not an independently-verifiable git SHA",
-      "api_version": {
-        "repo": "lumenloop-api-skills",
-        "commit": "9433bcc"
-      },
-      "archive_sha256": "760cdd15b3aae6ff44acba982e953e793662ff3af32692cab5b09581a549d18c",
-      "archive_bytes": 58256,
-      "archive_fetched_at": "2026-07-03T14:01:13Z",
-      "endpoint": "https://api.lumenloop.com/v1/skills/archive/partner",
-      "url": "https://api.lumenloop.com/v1/skills",
-      "skills": [
-        {
-          "name": "lumenloop-api-billing",
-          "files": [
-            {
-              "path": "SKILL.md",
-              "size": 11733,
-              "sha": "81466740e51c784d8a04f134da61e3607debb715"
-            },
-            {
-              "path": "reference/x402-topup-walkthrough.md",
-              "size": 6625,
-              "sha": "4ca876229c74c55579f64aa14405212be47e379d"
-            }
-          ]
-        },
-        {
-          "name": "lumenloop-api-connect",
-          "files": [
-            {
-              "path": "SKILL.md",
-              "size": 11899,
-              "sha": "e07549a1fc261a14e080e42515508fe3537b383c"
-            },
-            {
-              "path": "reference/endpoint-catalog.md",
-              "size": 14966,
-              "sha": "b5bcf2e9e9c2308e213b315a35b3c8ff70cc371e"
-            }
-          ]
-        },
-        {
-          "name": "lumenloop-api-integrate",
-          "files": [
-            {
-              "path": "SKILL.md",
-              "size": 15883,
-              "sha": "2de30f4103c870e3e851c145dcdf686ccd05a12d"
-            },
-            {
-              "path": "reference/client-snippets.md",
-              "size": 17707,
-              "sha": "2d41386565d6e5e1f78d6a36caff68bf12f30ce7"
-            }
-          ]
-        },
-        {
-          "name": "lumenloop-api-keys",
-          "files": [
-            {
-              "path": "SKILL.md",
-              "size": 8927,
-              "sha": "d49035ee1de3c5f3cfd0a5070eb3f3f5f9ebb11e"
-            }
-          ]
-        },
-        {
-          "name": "lumenloop-api-query",
-          "files": [
-            {
-              "path": "SKILL.md",
-              "size": 15307,
-              "sha": "6607e0f9ca18a12fafebb82aad9829af6685343f"
-            },
-            {
-              "path": "reference/tool-cheatsheet.md",
-              "size": 9222,
-              "sha": "3855327aa7ec750c94f6a113df9130063d6538b9"
-            }
-          ]
-        },
-        {
-          "name": "lumenloop-api-research",
-          "files": [
-            {
-              "path": "SKILL.md",
-              "size": 19822,
-              "sha": "ec28a4e8738a34270928a07997788c0bbe65a92f"
-            },
-            {
-              "path": "reference/output-formats.md",
-              "size": 12370,
-              "sha": "944be3cd68a30f5cb21ced41761abcb500d15e3f"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "openzeppelin-stellar",
       "type": "github",
       "owner": "OpenZeppelin",
@@ -247,6 +145,10 @@
       "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
       "commit_date": "2026-04-14T17:22:39Z",
       "url": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills",
+      "license_files": [
+        "LICENSE",
+        "NOTICE"
+      ],
       "skills": [
         {
           "name": "develop-secure-contracts",
@@ -290,6 +192,9 @@
       "commit": "54e469abe6ba3ae80992fd17381ee933280b7127",
       "commit_date": "2026-06-29T15:04:45Z",
       "url": "https://github.com/stellar/stellar-dev-skill/tree/54e469abe6ba3ae80992fd17381ee933280b7127/skills",
+      "license_files": [
+        "LICENSE"
+      ],
       "skills": [
         {
           "name": "agentic-payments",
@@ -385,9 +290,12 @@
       "repo": "stellar-scout",
       "path": "",
       "ref": "main",
-      "commit": "b95a7435dadcaa9e37d48eaeeb0a2ed7a0bc5f45",
-      "commit_date": "2026-07-01T00:49:22Z",
-      "url": "https://github.com/Stellar-Light/stellar-scout/tree/b95a7435dadcaa9e37d48eaeeb0a2ed7a0bc5f45",
+      "commit": "da9b6e5d6f32e132eeb585e0af8ef6220e7ee927",
+      "commit_date": "2026-07-06T21:13:24Z",
+      "url": "https://github.com/Stellar-Light/stellar-scout/tree/da9b6e5d6f32e132eeb585e0af8ef6220e7ee927",
+      "license_files": [
+        "LICENSE"
+      ],
       "skills": [
         {
           "name": "stellar-scout",
@@ -419,7 +327,7 @@
   ],
   "catalog": {
     "source": "https://stellarlight.xyz/api/skills",
-    "fetched_at": "2026-07-03T14:01:13Z",
+    "fetched_at": "2026-07-06T21:16:02Z",
     "counts": {
       "returned": 30,
       "bySource": {

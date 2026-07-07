@@ -10,6 +10,7 @@ import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadManifest, type Catalog } from "../src/catalog/search.ts";
+import { RUNNERS } from "../src/skills/runners/index.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MANIFEST_PATH = join(ROOT, "catalog", "manifest.json");
@@ -174,6 +175,45 @@ describe("build-catalog.mjs", () => {
       method: "GET",
       path: "/api/projects/search"
     });
+  });
+});
+
+describe("runnable skills — flag + schemas attached from the RUNNERS registry (design §5)", () => {
+  it("exactly the registry's ids carry runnable: true, kind skill, with the registry's schemas", () => {
+    const runnable = catalog.entries.filter((e) => e.runnable === true);
+    expect(runnable.map((e) => e.id).sort()).toEqual(Object.keys(RUNNERS).sort());
+    for (const entry of runnable) {
+      expect(entry.kind, entry.id).toBe("skill");
+      // JSON round-trip equality (key order aside — the manifest is
+      // sortKeysDeep'd): the same pinning assertRunnersWired makes at
+      // provider build, checked here at the artifact level.
+      expect(entry.inputSchema, entry.id).toEqual(
+        JSON.parse(JSON.stringify(RUNNERS[entry.id]!.inputSchema))
+      );
+      expect(entry.outputSchema, entry.id).toEqual(
+        JSON.parse(JSON.stringify(RUNNERS[entry.id]!.outputSchema))
+      );
+    }
+  });
+
+  it("every other entry is untouched: non-runnable skills keep null schemas; no flag leaks elsewhere", () => {
+    for (const entry of catalog.entries) {
+      if (entry.runnable === true) continue;
+      expect(entry.runnable, entry.id).toBeUndefined();
+      if (entry.kind === "skill" || entry.kind === "skill-section") {
+        expect(entry.inputSchema, entry.id).toBeNull();
+        expect(entry.outputSchema, entry.id).toBeNull();
+      }
+    }
+  });
+
+  it("declared ops all resolve to emitted operation entries (the drift guard's steady state)", () => {
+    const opIds = new Set(catalog.entries.filter((e) => e.kind === "operation").map((e) => e.id));
+    for (const [id, runner] of Object.entries(RUNNERS)) {
+      for (const op of runner.ops) {
+        expect(opIds.has(op), `${id} declares ${op}`).toBe(true);
+      }
+    }
   });
 });
 

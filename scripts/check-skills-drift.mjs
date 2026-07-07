@@ -11,10 +11,11 @@
 //
 // Plain Node 20+ (global fetch, node:fs only — no deps). Like
 // scripts/refresh-inventory.mjs it reads .env at the repo root and overlays
-// process.env on top. LUMENLOOP_API_KEY is required to verify the lumenloop-api
-// partner source; without it that source is marked SKIPPED with a loud warning
-// (never silently ok). GITHUB_TOKEN / GH_TOKEN are used for GitHub API rate
-// limits when present; unauthenticated works too. No secret is ever printed.
+// process.env on top. No API keys are required: every mirrored source is
+// public (the credentialed lumenloop-api partner source was removed from the
+// mirror 2026-07-06 — go-public cleanup). GITHUB_TOKEN / GH_TOKEN are used for
+// GitHub API rate limits when present; unauthenticated works too. No secret is
+// ever printed.
 //
 // What is checked, per MANIFEST.json source:
 //   - github sources: latest commit touching the source's pinned path
@@ -24,10 +25,6 @@
 //     content itself moved (openzeppelin-stellar cherry-picks 3 of a multi-chain
 //     skills/ dir, so repo-path drift can be entirely in non-mirrored skills —
 //     still drift, since re-running update.sh would re-pin, but the note says so).
-//   - lumenloop-api (partner archive, private repo): GET /v1/skills with the
-//     bearer key; compare data.versions.partner.{repo,commit} against the pinned
-//     api_version. The zip SHA256 in the manifest digests a past download and is
-//     not re-verifiable without re-downloading, so the version ref is the signal.
 //   - stellarlight catalog: GET the live directory and project it through the
 //     same field mapping update.sh's fetch_catalog uses, then deep-compare with
 //     ecosystem-skills/catalog.json. Volatile fields never enter the compare by
@@ -136,47 +133,6 @@ async function checkGithubSource(source) {
 }
 
 // ---------------------------------------------------------------------------
-// lumenloop-api partner archive (private repo — version ref via GET /v1/skills)
-// ---------------------------------------------------------------------------
-async function checkLumenloopArchive(source) {
-  const pinned = source.api_version?.commit ?? source.commit_ref ?? "?";
-  const key = ENV.LUMENLOOP_API_KEY;
-  if (!key) {
-    console.error(
-      `warning: LUMENLOOP_API_KEY not set — source "${source.id}" was NOT checked (partner version ` +
-        `ref unverified). Set the key in .env or the environment to close this gap.`,
-    );
-    return {
-      id: source.id,
-      status: "skipped",
-      pinned,
-      upstream: "-",
-      note: "LUMENLOOP_API_KEY missing — partner version NOT verified",
-    };
-  }
-
-  const body = await fetchJson(source.url ?? "https://api.lumenloop.com/v1/skills", {
-    headers: { Authorization: `Bearer ${key}` },
-    label: "lumenloop /v1/skills",
-  });
-  if (body.success !== true) {
-    throw new Error(`lumenloop /v1/skills: envelope error ${body.code ?? ""} ${body.error ?? ""}`.trim());
-  }
-  const live = body.data?.versions?.[source.set] ?? {};
-  const upstream = live.commit ?? "unknown";
-  const pinnedRepo = source.api_version?.repo;
-  const repoMatches = !live.repo || !pinnedRepo || live.repo === pinnedRepo;
-
-  if (upstream === pinned && repoMatches) {
-    return { id: source.id, status: "ok", pinned, upstream };
-  }
-  const parts = [];
-  if (upstream !== pinned) parts.push(`api version ref ${pinned} → ${upstream}`);
-  if (!repoMatches) parts.push(`repo ${pinnedRepo} → ${live.repo}`);
-  return { id: source.id, status: "DRIFT", pinned, upstream, note: parts.join("; ") };
-}
-
-// ---------------------------------------------------------------------------
 // stellarlight.xyz/api/skills directory vs ecosystem-skills/catalog.json
 // ---------------------------------------------------------------------------
 const canon = (value) => JSON.stringify(sortDeep(value));
@@ -245,7 +201,8 @@ async function checkStellarlightCatalog(localCatalog) {
 // ---------------------------------------------------------------------------
 async function checkSource(source) {
   if (source.type === "github") return checkGithubSource(source);
-  if (source.type === "lumenloop-archive") return checkLumenloopArchive(source);
+  // "lumenloop-archive" (the credentialed partner source) is deliberately NOT
+  // supported anymore — its reappearance in MANIFEST.json should fail here.
   throw new Error(`unknown source type "${source.type}" — teach scripts/check-skills-drift.mjs about it`);
 }
 

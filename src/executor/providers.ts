@@ -47,9 +47,16 @@
  *     skills get availableSections; skill sections get parent id + key —
  *     every kind carries a `usage` line naming the exact next call.
  *   codemode.skill.read(name, {sections?}) — bundled skill content
- * (`skill.read` needs a sandbox-side prelude: nested objects can't cross the
- * Proxy dispatch, so the prelude assigns `codemode.skill` wrapping the flat
- * `skill_read` dispatch fn — codemode's documented prelude mechanism.)
+ *   codemode.skill.run(name, input)   — runnable-skill dispatch (research/
+ *     skill-run-design.md §6): exact catalog id, input validated host-side
+ *     against the entry's schema, first-party runner executed HOST-side over
+ *     the same wrapped op closures the service namespaces expose (policy
+ *     identity by construction — buildOpsFns below); returns the service-call
+ *     envelope with a host-recorded `data.calls` audit trail.
+ * (`skill.read`/`skill.run` need a sandbox-side prelude: nested objects can't
+ * cross the Proxy dispatch, so the prelude assigns `codemode.skill` wrapping
+ * the flat `skill_read`/`skill_run` dispatch fns — codemode's documented
+ * prelude mechanism.)
  */
 import { CATALOG_KINDS, type Catalog, type CatalogEntry, type CatalogKind } from "../catalog/types.ts";
 import {
@@ -64,6 +71,9 @@ import type { AdapterEnv, FetchLike } from "../adapters/types.ts";
 import { guard } from "../policy/guard.ts";
 import { redactSecrets, secretsFromEnv } from "../policy/redact.ts";
 import { readSkill, type SkillBundle } from "../skills/store.ts";
+import { runSkill, assertRunnersWired } from "../skills/run.ts";
+import { RUNNERS } from "../skills/runners/index.ts";
+import type { OpsFacade, SkillRunner } from "../skills/runners/types.ts";
 import { resolveSpecRefs } from "./spec-sandbox.ts";
 import { logEvent } from "../observability.ts";
 
@@ -95,6 +105,14 @@ export type SandboxProvider = {
  * with __trap in envelopeGuardPrelude: same non-enumerable get-throws /
  * set-write-through contract, or skill results and service envelopes
  * decorate inconsistently.)
+ *
+ * `codemode.skill.run` (design §6) is read's sibling over the flat
+ * `skill_run` dispatch. NO .data-trap inversion for run: unlike skill.read,
+ * run is a CALL and RETURNS the service-call envelope
+ * ({ ok: true, data } | { ok: false, error }), so the shared __guardEnvelope
+ * plants exactly the right traps — ok:true payload-key traps pointing at
+ * r.data.<field>, ok:false warn-once `.data` — identical treatment to every
+ * operation call. Same typeof fallback for operation-less test catalogs.
  */
 const SKILL_PRELUDE = [
   "    codemode.skill = {",
@@ -110,6 +128,10 @@ const SKILL_PRELUDE = [
   "          }); } catch {}",
   "        }",
   "        return r;",
+  "      },",
+  "      run: async (name, input) => {",
+  "        const raw = await codemode.skill_run(name, input);",
+  '        return typeof __guardEnvelope === "function" ? __guardEnvelope(raw, "codemode.skill.run") : raw;',
   "      }",
   "    };"
 ].join("\n");
@@ -192,16 +214,26 @@ function envelopeGuardPrelude(opsByService: Map<string, string[]>): string {
   ].join("\n");
 }
 
-export function buildProviders(
+/**
+ * The per-op wrapped-closure builder — extracted from buildProviders (design
+ * §11 row 6) so the SAME closures serve BOTH consumers: the sandbox service
+ * namespaces (buildProviders) and the skill-run ops facade (runSkill's
+ * sub-facade wraps these for the host call ledger). Policy identity holds by
+ * construction: there is exactly one guard → callService → logEvent →
+ * redactSecrets path, so a runner cannot reach an op the sandbox couldn't,
+ * skip validation the sandbox gets, or leak a secret the sandbox wouldn't.
+ * One fn per emitted operation entry — a build-excluded op has no entry,
+ * hence no closure, hence nothing to call (ADR-0003, structurally).
+ */
+export function buildOpsFns(
   catalog: Catalog,
   env: AdapterEnv,
   deps?: { fetchImpl?: FetchLike }
-): SandboxProvider[] {
+): OpsFacade {
   const secrets = secretsFromEnv(env as Record<string, unknown>);
   const fetchImpl = deps?.fetchImpl;
 
-  // --- service namespaces: one fn per operation entry ---------------------
-  const byService = new Map<string, Record<string, (...args: unknown[]) => Promise<unknown>>>();
+  const byService: OpsFacade = {};
   for (const entry of catalog.entries) {
     if (entry.kind !== "operation") continue;
     const name = lastIdSegment(entry.id);
@@ -209,12 +241,7 @@ export function buildProviders(
     // real manifest can't reach here with a bad one; this stays as a belt for
     // hand-built test catalogs that skip loadManifest.
     if (!VALID_IDENT.test(entry.service) || !VALID_IDENT.test(name)) continue;
-    let fns = byService.get(entry.service);
-    if (!fns) {
-      fns = {};
-      byService.set(entry.service, fns);
-    }
-    fns[name] = async (args?: unknown) => {
+    (byService[entry.service] ??= {})[name] = async (args?: unknown) => {
       const t0 = Date.now();
       const refused = guard(entry, args); // arg validation only (ADR-0003)
       if (refused) {
@@ -240,8 +267,25 @@ export function buildProviders(
       return redactSecrets(result, secrets);
     };
   }
+  return byService;
+}
 
-  const providers: SandboxProvider[] = [...byService.entries()].map(([name, fns]) => ({
+export function buildProviders(
+  catalog: Catalog,
+  env: AdapterEnv,
+  deps?: { fetchImpl?: FetchLike },
+  /**
+   * Pre-built ops from buildOpsFns — buildSandbox builds the closures ONCE
+   * and passes them here AND to the skill-run facade, so the two surfaces
+   * cannot diverge even by accidental double construction with different
+   * deps. Omitted (direct callers, tests): built internally, same builder.
+   */
+  ops?: OpsFacade
+): SandboxProvider[] {
+  const opsFns = ops ?? buildOpsFns(catalog, env, deps);
+
+  // --- service namespaces: one fn per operation entry ---------------------
+  const providers: SandboxProvider[] = Object.entries(opsFns).map(([name, fns]) => ({
     name,
     fns
   }));
@@ -277,7 +321,11 @@ function catalogEntryView(entry: CatalogEntry) {
     kind: entry.kind,
     description: entry.description,
     inputSchema: entry.inputSchema,
-    outputSchema: entry.outputSchema
+    outputSchema: entry.outputSchema,
+    // Runnable-skill affordance flag (design §5): present-and-true only, same
+    // as the manifest — code-grep discovery (`entries.filter(e => e.runnable)`)
+    // sees exactly what the catalog says, no third truth value.
+    ...(entry.runnable === true ? { runnable: true as const } : {})
   };
 }
 
@@ -299,7 +347,24 @@ export function buildCodemodeProvider(
      * footer — it must never affect which result bytes are kept.
      */
     onSkillRead?: () => void;
-  }
+    /**
+     * Fired on every skill_run dispatch (attempted runs, whatever the
+     * outcome — the span attribute counts skill.run USAGE; per-run outcomes
+     * live in the skill_run log event). Observability-only, like onSkillRead.
+     */
+    onSkillRun?: () => void;
+  },
+  /**
+   * The skill.run wiring (design §6): the shared ops facade from buildOpsFns
+   * — the SAME closures the service namespaces expose, so policy identity
+   * holds by construction — plus the redaction-belt secrets. Threaded by
+   * buildSandbox; when absent (a direct caller that never built ops),
+   * skill_run answers with the standard not-wired error envelope, the same
+   * degradation pattern as spec() without a super spec. `registry` defaults
+   * to the bundled RUNNERS; overridable only so tests can pin dispatch
+   * behavior against synthetic runners.
+   */
+  skillRun?: { facade: OpsFacade; secrets: string[]; registry?: Record<string, SkillRunner> }
 ): SandboxProvider {
   // Derived once per catalog object, shared across runs (read-only data).
   let catalogView = catalogViewCache.get(catalog);
@@ -451,6 +516,22 @@ export function buildCodemodeProvider(
           // `{ sections: [...] }` usage line there would invite invented
           // section keys against a skill that has none.
           const availableSections = sectionKeysOf(catalog, entry.id);
+          // Runnable skill (design §5): one id, two affordances — describe
+          // carries BOTH. The FULL rendered signature (never the search-hit
+          // compaction — same split as operations) + both raw schemas as
+          // data, availableSections as ever, and a usage line naming BOTH
+          // calls so neither affordance shadows the other.
+          if (entry.runnable === true) {
+            const signature = renderSignature(entry);
+            return {
+              ...base,
+              ...(signature ? { signature } : {}),
+              inputSchema: entry.inputSchema,
+              outputSchema: entry.outputSchema,
+              ...(availableSections.length > 0 ? { availableSections } : {}),
+              usage: `run it via codemode.skill.run(${JSON.stringify(entry.id)}, input) — input per the signature; the result is the service-call envelope ({ ok: true, data } | { ok: false, error }) with a data.calls audit of every constituent call. Read the playbook via codemode.skill.read(${JSON.stringify(entry.id)}${availableSections.length > 0 ? ", { sections: [...] }" : ""}) — run gathers the data, read carries the judgment steps.`
+            };
+          }
           return {
             ...base,
             ...(availableSections.length > 0 ? { availableSections } : {}),
@@ -491,6 +572,31 @@ export function buildCodemodeProvider(
         const r = readSkill(catalog, bundle, name, opts);
         if (r.ok) hooks?.onSkillRead?.();
         return r;
+      },
+
+      // The flat dispatch behind `codemode.skill.run` (SKILL_PRELUDE wraps it
+      // — nested objects can't cross the Proxy dispatch, same mechanism as
+      // skill_read). All semantics live host-side in runSkill (src/skills/
+      // run.ts): exact-id resolution, guard validation, the declared-ops
+      // sub-facade, the host-owned call ledger, deadline, warn belts. The
+      // envelope goes back through __guardEnvelope in the prelude, so
+      // .data-level misuse traps behave identically to every operation call.
+      skill_run: async (name?: unknown, input?: unknown) => {
+        hooks?.onSkillRun?.();
+        if (!skillRun) {
+          return {
+            ok: false,
+            error: {
+              service: "skills",
+              kind: "error",
+              message:
+                "codemode.skill.run is not wired on this server instance — the ops facade was not threaded into the sandbox build; use the service operations directly"
+            }
+          };
+        }
+        return runSkill(catalog, skillRun.registry ?? RUNNERS, skillRun.facade, name, input, {
+          secrets: skillRun.secrets
+        });
       }
     }
   };
@@ -505,12 +611,28 @@ export function buildSandbox(
     fetchImpl?: FetchLike;
     superSpec?: unknown;
     onSkillRead?: () => void;
+    onSkillRun?: () => void;
   }
 ): SandboxProvider[] {
+  // Runner-wiring assertion at provider build (design §5/§6): registry ↔
+  // manifest id sets both ways, deep schema equality per id, declared ops ⊆
+  // emitted operation ids — THROWS so the first execute fails loudly instead
+  // of validating input against a schema the bundled runner doesn't expect.
+  assertRunnersWired(catalog, RUNNERS);
+  // Ops built ONCE, fed to BOTH the sandbox service namespaces and the
+  // skill-run facade — the policy-identity-by-construction point (design §2).
+  const ops = buildOpsFns(catalog, env, deps);
   return [
-    ...buildProviders(catalog, env, deps),
-    buildCodemodeProvider(catalog, bundle, deps?.superSpec, {
-      onSkillRead: deps?.onSkillRead
-    })
+    ...buildProviders(catalog, env, deps, ops),
+    buildCodemodeProvider(
+      catalog,
+      bundle,
+      deps?.superSpec,
+      {
+        onSkillRead: deps?.onSkillRead,
+        onSkillRun: deps?.onSkillRun
+      },
+      { facade: ops, secrets: secretsFromEnv(env as Record<string, unknown>) }
+    )
   ];
 }

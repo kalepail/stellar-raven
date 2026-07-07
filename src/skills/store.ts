@@ -120,8 +120,12 @@ function editDistance(a: string, b: string): number {
  * Terminal-segment equality wins (catches "skills.soroban" for
  * "skills.stellar-dev.soroban"); otherwise smallest edit distance within a
  * typo-sized bound.
+ *
+ * Exported for src/skills/run.ts (design §6/§11 row 9): skill.run's
+ * unknown-id error reuses the same suggestion logic over the runnable subset
+ * (run.ts passes a catalog narrowed to runnable entries). Behavior unchanged.
  */
-function nearestSkillId(catalog: Catalog, name: string): string | undefined {
+export function nearestSkillId(catalog: Catalog, name: string): string | undefined {
   const candidates = catalog.entries.filter(
     (e) => e.kind === "skill" && e.transport?.type === "file"
   );

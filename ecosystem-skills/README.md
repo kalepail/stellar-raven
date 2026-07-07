@@ -33,15 +33,23 @@ non-`skill-md` SDKs/MCP servers/CLIs that are *not* mirrored here).
 | Source id | Origin | What | How |
 | --- | --- | --- | --- |
 | `lumenloop` | [`lumenloop/lumenloop-skills`](https://github.com/lumenloop/lumenloop-skills) `skills/` | 8 public Stellar-ecosystem analyst skills | `gh` raw download @ pinned commit |
-| `lumenloop-api` | `lumenloop/lumenloop-api-skills` (partner) | 6 partner skills for the LumenLoop REST API (not on public GitHub) | `curl` the `/v1/skills/archive/partner` zip @ pinned commit |
 | `openzeppelin-stellar` | [`OpenZeppelin/openzeppelin-skills`](https://github.com/OpenZeppelin/openzeppelin-skills) `skills/` | 3 Stellar/Soroban contract skills (cherry-picked from a multi-chain repo) | `gh` raw download @ pinned commit |
 | `stellar-dev` | [`stellar/stellar-dev-skill`](https://github.com/stellar/stellar-dev-skill) `skills/` | 7 SDF developer skills (soroban, dapp, data, assets, agentic-payments, standards, zk-proofs) | `gh` raw download @ pinned commit |
 | `stellar-light` | [`Stellar-Light/stellar-scout`](https://github.com/Stellar-Light/stellar-scout) (root) | 1 ecosystem-analyst skill | `gh` raw download @ pinned commit |
 | _catalog_ | [`stellarlight.xyz/api/skills`](https://stellarlight.xyz/api/skills) | ~30-entry ecosystem directory (sdf / stellarlight / lumenloop / external) | `curl` snapshot → `catalog.json` (NOT downloaded as skills) |
 
+Every source is **public** and every sync also vendors the source's upstream `LICENSE`/`NOTICE`
+files (same pinned commit) into `skills/<source>/` — see `THIRD-PARTY-NOTICES.md` at the repo
+root for the license map.
+
 The LumenLoop API exposes 14 skills total (`GET /v1/skills`): the 8 public ones (identical to the
-GitHub repo) and 6 partner ones. We mirror the public set from GitHub and fill the partner gap from
-the API archive, so all 14 are present and each set is pinned to the commit the API reports.
+GitHub repo) and 6 partner-set ones. Only the public set is mirrored. The partner set (the
+`lumenloop-api-*` onboarding family, served from a private repo via a credentialed archive
+endpoint) was retired from catalog exposure 2026-07-03 and its mirror source was **removed
+entirely 2026-07-06**: partner-tier content must not live in this public repo, and this mirror
+staying credential-free is what guarantees future (including agent-run) syncs can never pull it
+back in. The partner skills survive only as name-only stubs in `inventory/lumenloop.json` so the
+`/v1/skills` union stays observable.
 
 ## Design choices
 
@@ -54,25 +62,20 @@ the API archive, so all 14 are present and each set is pinned to the commit the 
 - **The ecosystem is bigger than what we mirror.** `catalog.json` captures the full stellarlight
   directory — including SDKs/MCP servers/CLIs that aren't `SKILL.md` skills — so the map of "what
   exists" stays complete without dragging in non-skill artifacts.
-- **Fail closed, swap atomically.** `update.sh` validates required credentials *before* touching
-  disk, builds the whole mirror in a temp staging tree, and only swaps it into `skills/` (plus
-  `MANIFEST.json` / `catalog.json`) on full success. A mid-run failure leaves the existing mirror
-  untouched — it never produces a half-written or silently-downgraded tree.
+- **Swap atomically.** `update.sh` builds the whole mirror in a temp staging tree and only swaps
+  it into `skills/` (plus `MANIFEST.json` / `catalog.json`) on full success. A mid-run failure
+  leaves the existing mirror untouched — it never produces a half-written tree.
 - **Deterministic except timestamps.** Back-to-back runs against the same upstream produce
   byte-identical output **except the timestamp fields**: `MANIFEST.synced_at`,
-  `catalog.fetched_at`, the per-source `archive_fetched_at`, and their rendered copies in `INDEX.md`
+  `catalog.fetched_at`, and their rendered copies in `INDEX.md`
   (the "synced …" / "fetched …" text). Nothing else changes.
-- **Honest provenance per source.** The four GitHub sources pin full commit SHAs (independently
-  verifiable). The `lumenloop-api` partner source is a **private** repo behind a credentialed,
-  mutable archive endpoint, so it can't be git-pinned: the manifest instead records the API version
-  ref **plus a SHA256 of the exact downloaded zip** and labels it
-  `reproducibility: "api-versioned+archive-digested"`.
+- **Honest provenance per source.** Every GitHub source pins a full commit SHA (independently
+  verifiable) in `MANIFEST.json`.
 
 ## Updating
 
 ```bash
-./update.sh                    # sync every source, rebuild INDEX.md (fails closed if creds missing)
-ALLOW_PARTIAL=1 ./update.sh    # accept an explicitly-marked PARTIAL mirror (skips lumenloop-api)
+./update.sh                    # sync every source, rebuild INDEX.md (no credentials needed)
 node build-index.mjs           # just rebuild the index (e.g. after editing groups.json)
 ```
 
@@ -106,10 +109,11 @@ Two guard classes can fail the catalog build loudly — both mean "a human must 
 nothing silently changes exposure":
 
 - **Retirement guard** (`assertRetirementNamesResolve`, `scripts/build-catalog.mjs`): the
-  deny-listed skills (`RETIRED_ONBOARDING_SKILLS` — the lumenloop-api onboarding family +
-  `lumenloop-mcp-connect`, retired from catalog exposure 2026-07-03, Solo todo 825) are pinned by
-  upstream NAME. If a sync renames or removes one, the build fails instead of silently
-  un-retiring it: retire the new name, or drop the entry if the skill is gone.
+  deny-listed skills (`RETIRED_ONBOARDING_SKILLS` — now only `lumenloop-mcp-connect`; the
+  lumenloop-api onboarding family was retired 2026-07-03 and then removed from the mirror
+  entirely 2026-07-06, surviving only in the scrub regex) are pinned by upstream NAME. If a
+  sync renames or removes one, the build fails instead of silently un-retiring it: retire the
+  new name, or drop the entry if the skill is gone.
 - **Orphaned description notes** (`scripts/description-notes.mjs`): catalog notes are exact-match
   data keyed on upstream tool/operation names; a rename orphans the note and fails both builders.
 
@@ -120,25 +124,18 @@ Solo (EVALS.md rule 1).
 
 **Automated drift detection (CI):** the daily `refresh.yml` workflow runs
 `node scripts/check-skills-drift.mjs`, which compares every pin in `MANIFEST.json` against upstream
-— latest commit touching each GitHub source's pinned path, the LumenLoop API's partner version ref
-(`GET /v1/skills`), and a volatile-field-free re-projection of the live stellarlight directory
-against `catalog.json`. Any drift fails the run and lands in the same drift issue as the inventory
-checks. It is **detection only** — CI never runs `update.sh`, because mirrored skills are prompt
-input and upstream edits must be human-reviewed: on drift, run `./update.sh` locally, read the
-skill diffs, re-pin, and commit. The script also runs standalone
-(`node scripts/check-skills-drift.mjs [--json]`, exit 1 on drift); without `LUMENLOOP_API_KEY` the
-`lumenloop-api` source is loudly marked skipped, never silently ok.
+— latest commit touching each GitHub source's pinned path, and a volatile-field-free re-projection
+of the live stellarlight directory against `catalog.json`. Any drift fails the run and lands in the
+same drift issue as the inventory checks. It is **detection only** — CI never runs `update.sh`,
+because mirrored skills are prompt input and upstream edits must be human-reviewed: on drift, run
+`./update.sh` locally, read the skill diffs, re-pin, and commit. The script also runs standalone
+(`node scripts/check-skills-drift.mjs [--json]`, exit 1 on drift).
 
-Requires an authenticated `gh` CLI, plus `jq`, `node`, `curl`, `unzip`, and `git`. The
-`lumenloop-api` source additionally needs `LUMENLOOP_API_KEY` in the environment (or in a sibling
-`../.env` / `../.dev.vars`). **Without the key the script fails closed** (exits non-zero, touches nothing) so a
-keyless refresh can't silently downgrade the mirror to 19 of 25 skills. To deliberately produce a
-partial mirror, set `ALLOW_PARTIAL=1`; the result is stamped `"status": "partial"` with
-`missing_sources` in `MANIFEST.json` and a ⚠️ banner in `INDEX.md`, so it can't be mistaken for
-complete.
+Requires an authenticated `gh` CLI, plus `jq`, `node`, `curl`, and `git`. **No API keys** — every
+source is public, and keeping the sync credential-free is a deliberate publish-safety property
+(see the Sources note above).
 
 ## Source of truth
 
-Each source's pin is recorded in [`MANIFEST.json`](./MANIFEST.json): a full commit SHA for the
-GitHub sources, and the API version ref + zip SHA256 for the `lumenloop-api` partner archive
-(`reproducibility: "api-versioned+archive-digested"`). Re-run `update.sh` to reconcile with upstream.
+Each source's pin is recorded in [`MANIFEST.json`](./MANIFEST.json): a full commit SHA per GitHub
+source. Re-run `update.sh` to reconcile with upstream.

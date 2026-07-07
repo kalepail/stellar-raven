@@ -4,9 +4,9 @@
 > `stellar-raven-codemode/.env` (`LUMENLOOP_API_KEY`, format `llmcp_…` — value redacted
 > everywhere in this doc). **Re-verified 2026-07-02:** OpenAPI byte-identical to the
 > 07-01 save, changelog still 16 entries (latest 2026-06-25), tool union still 18 + 3 = 21
-> (`/v1/me` `tools.available: 21`) — no upstream change since 07-01. Backend truth was cross-checked against the local clone at
-> `/Users/kalepail/Desktop/lumenloop-backend/` (service `lumenloop-mcp`; **clone retired** — no longer on disk) and prior measured
-> characterization in `/Users/kalepail/Desktop/stellar-raven-next/research/capability/lumenloop.md`.
+> (`/v1/me` `tools.available: 21`) — no upstream change since 07-01. Some behaviors were
+> additionally cross-checked against non-public upstream sources during research (access since
+> retired); such details are cited here only where the live API confirms them.
 
 ## Overview
 
@@ -45,20 +45,20 @@ and 404 for external credentials.
 {
   "success": true,
   "data": {
-    "principal": "key:16",
+    "principal": "key:REDACTED",
     "auth_method": "api_key",
     "tier": "partner",
     "tiers": ["guest", "partner"],
     "lane": "external",
-    "limits": { "requests_per_minute": 240, "requests_per_day": 30000 },
+    "limits": { "requests_per_minute": "REDACTED", "requests_per_day": "REDACTED" },
     "tools": { "available": 21, "visible": 21 },
     "billing": {
       "billing_state": "attached",
       "account": "user_REDACTED",
-      "research_quota_usd": 50,
-      "month_spend_usd": 3.49,
-      "credits_total_usd": 0,
-      "credits_remaining_usd": 0,
+      "research_quota_usd": "REDACTED",
+      "month_spend_usd": "REDACTED",
+      "credits_total_usd": "REDACTED",
+      "credits_remaining_usd": "REDACTED",
       "research_enabled": true
     }
   },
@@ -66,10 +66,13 @@ and 404 for external credentials.
 }
 ```
 
-Budget model: only `request_research` is metered — billed in USD against a **$50/month
-research quota** (`month_spend_usd` accounting), plus optional prepaid credits
-(`credits_*`, top-up via x402 USDC on Stellar at `POST /v1/billing/topup`). Everything
-else is free within rate limits.
+(Numeric limit/quota/spend values are our partner account's detail and are deliberately not
+republished — read them live from `/v1/me`. The SHAPE above is what matters for the wrapper.)
+
+Budget model: only `request_research` is metered — billed in USD against a monthly research
+quota (`month_spend_usd` accounting), plus optional prepaid credits (`credits_*`, top-up via
+x402 USDC on Stellar at `POST /v1/billing/topup` — documented in the keyless public OpenAPI).
+Everything else is free within rate limits.
 
 ## Response envelope (all tools)
 
@@ -110,19 +113,13 @@ Validation errors are non-retryable and self-describing (field names in the mess
 ## Rate limits (verified live + backend source)
 
 Every response carries `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `X-RateLimit-Reset`
-(unix seconds); 429 adds `Retry-After` (seconds). Observed live: `/v1/me` returned
-`x-ratelimit-limit: 300` (the per-principal minute limiter), tool invocations returned
-`x-ratelimit-limit: 30000` with `remaining` counting down (the partner **daily** bucket) —
-i.e. the header reflects whichever bucket is binding, so refresh scripts should pace off
-`Remaining`, not assume one window.
+(unix seconds); 429 adds `Retry-After` (seconds). Observed live: different endpoints report
+whichever bucket is binding (per-principal minute limiter vs the tier's daily bucket), so
+refresh scripts should pace off `Remaining`, not assume one window.
 
-Source of truth (`lumenloop-backend/lumenloop-mcp/src/index.ts` + `src/api/router.ts`):
-
-| Tier | Per minute | Per day |
-|---|---|---|
-| guest | 30 | 2,000 |
-| partner | 240 | 30,000 |
-| (per-principal ceiling) | 300 | — |
+The keyless docs publish guest limits (30/min, 2,000/day). Tier-specific limits for an authed
+key come from `GET /v1/me` (`limits`) and the live headers — partner-tier numbers are
+deliberately not republished here (partner account detail; go-public cleanup 2026-07-06).
 
 Pagination: only `list_documents` is truly paginated (`page` + `limit ≤ 100`,
 response `pagination:{page,limit,total,hasMore}`). Everything else takes a `limit` cap only;
@@ -166,13 +163,14 @@ limit. `*` = required arg. Enum defaults from the live OpenAPI spec (2026-07-01)
 | `find_similar_scf_submissions` | scf | SCF submissions by topic (`query`) OR similar to an existing one (`slug`) — mutually exclusive (slug wins) | `query` XOR `slug`, `limit=15`, `round`, `category` | **bare array** of `{slug,title,description,category,round,award_type,budget,linked_project_slug(s),similarity}` |
 | `get_scf_submissions` | scf | SCF submissions for one project incl. **full `application` proposal markdown**; pass slug (preferred) or fuzzy `name` — at least one (else clean 400) | `slug` and/or `name` | `{count, submissions:[{title,round,category,award_type,budget,description,application,submission_url,…}]}` |
 
-Partner research tools (tier `partner`; invisible on `/v1/tools`, discoverable per-name; verified via authed `GET /v1/tools/{name}` 2026-07-01):
-
-| Tool | Metered | Description | Input | Output (`data`) |
-|---|---|---|---|---|
-| `request_research` | **YES ($)** | Commission a server-side research agent over the full corpus. Modes: `answer` (flat ~$0.02, seconds), `sources`/`structured`/`report` (depth-dependent, capped ~$2/run, vs $50/mo quota). HTTP 402 without billing. Async | `question*` (5–4000 chars), `output_format` (report\|sources\|structured\|answer; default report), `format` (tweet\|thread\|long-form; report only), `output_schema` (structured only) | `{run_id, poll_after_s, message, recent_runs?}` |
-| `research_result` | no (free poll) | Poll a run by `run_id`; `wait_s` (0–45) long-polls | `run_id*` (uuid), `wait_s` | running: `{status:"running",progress{…}}`; complete: mode-dependent (`answer` → `{answer,confidence,citations}`; `report` → `{report,sources,citations}`; etc.). Unknown uuid → soft-empty `data.text`; non-uuid → 400 |
-| `list_my_research` | no (free) | List YOUR account's commissioned runs — **dedup before paying** | `limit=25 (≤100)` | **bare array** of `{run_id,status,started_at,title,slug,format,summary,created_at}` (published schema says `{results:[…]}` — trust the wire) |
+Partner research tools (tier `partner`; invisible on `/v1/tools`, discoverable per-name via
+authed `GET /v1/tools/{name}`; verified 2026-07-01): `request_research` (**metered $**, the paid
+deep-research trigger), `research_result` (free poll), `list_my_research` (free list — dedup
+before paying). **Their descriptions/schemas/pricing are deliberately NOT republished here or in
+`inventory/lumenloop.json`** (partner-tier detail; go-public cleanup 2026-07-06 — the inventory
+keeps name-only stubs). All three are build-time excluded from the catalog
+(`EXCLUDED_LUMENLOOP_OPS`, `scripts/exposure.mjs`); to enable the lane, re-fetch the detail live
+per-name and follow CLAUDE.md's research-lane rule (budget gate + dedup in the same change).
 
 **New since prior characterization (2026-06-27):** the collection enums now include
 **`proposals`** (governance) in `get_document`, `list_documents`, `search_documents`,
@@ -223,15 +221,15 @@ Two distribution channels, same content:
 - `partner` set (6, tier partner): `lumenloop-api-billing`, `lumenloop-api-connect`,
   `lumenloop-api-integrate`, `lumenloop-api-keys`, `lumenloop-api-query`,
   `lumenloop-api-research`. **Quirk (live 2026-07-01):** the list shows
-  `available:false` for the partner set even with the partner key, but
-  `GET /v1/skills/{name}` returns the full partner skill content with the same key —
-  same trust-the-detail-endpoint rule as partner tools.
+  `available:false` for the partner set even with the partner key, but the detail endpoint
+  serves them with the same key — same trust-the-detail-endpoint rule as partner tools.
+  **Partner skill content is not mirrored or republished in this repo** (mirror source removed
+  2026-07-06, go-public cleanup; `inventory/lumenloop.json` keeps name-only stubs).
 - `GET /v1/skills/{name}` returns every file inline: `{name,set,tier,description,files:[{path,content}]}`.
 - `GET /v1/skills/archive/public` → application/zip (~43 KB, verified).
 
-**2. GitHub repo `lumenloop/lumenloop-skills`** (public set only; MIT; the partner set
-comes from a separate `lumenloop-api-skills` repo per the backend's
-`skills-content/manifest.json`). Structure:
+**2. GitHub repo `lumenloop/lumenloop-skills`** (public set only; MIT — the partner set is
+served only from the credentialed API, not public GitHub). Structure:
 
 ```
 .claude-plugin/{marketplace.json, plugin.json}   # Claude Code plugin (name: lumenloop-skills)
@@ -276,8 +274,8 @@ Wrapper guidance:
 6. **Slug-first discipline**: expose the `search_directory → slug → get_project /
    find_content_about_project / get_scf_submissions` chain in the wrapper docs; guessed
    slugs soft-fail.
-7. **Pace off `X-RateLimit-Remaining`** (buckets differ per endpoint); partner budget is
-   240/min, 30k/day.
+7. **Pace off `X-RateLimit-Remaining`** (buckets differ per endpoint); tier limits come from
+   `/v1/me` and the live headers, not from constants.
 8. **Drift watch**: poll `GET /v1/changelog?since=<last-run>` in the refresh script; enums
    already gained `proposals` since the 2026-06-27 characterization.
 9. MCP transport exists (`https://mcp.lumenloop.com/`) but the REST lane is simpler for a

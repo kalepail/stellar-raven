@@ -18,19 +18,6 @@
       ]
     },
     {
-      "id": "lumenloop-api",
-      "title": "LumenLoop REST API integration",
-      "description": "Partner-tier playbooks for calling the LumenLoop REST API directly (auth, the response envelope, the 18 read tools, metered research, billing, keys). Mirrors the contract the codemode server's lumenloop adapter enforces — read them to understand the envelope and deny-list before authoring `execute` code (deep dive: research/services/lumenloop.md).",
-      "members": [
-        "lumenloop-api/lumenloop-api-connect",
-        "lumenloop-api/lumenloop-api-query",
-        "lumenloop-api/lumenloop-api-research",
-        "lumenloop-api/lumenloop-api-integrate",
-        "lumenloop-api/lumenloop-api-billing",
-        "lumenloop-api/lumenloop-api-keys"
-      ]
-    },
-    {
       "id": "soroban-contracts",
       "title": "Soroban & smart contracts",
       "description": "Writing, securing, and upgrading Stellar smart contracts (SDF smart-contracts skill — formerly branded Soroban — + OpenZeppelin's Stellar contract skills). Execution micro-skill candidates for any contract-aware gather path.",

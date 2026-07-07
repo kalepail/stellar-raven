@@ -55,8 +55,14 @@ coordinated via Solo MCP project 49 (todos + scratchpads; backlog items tracked 
 - Soft-empty ≠ error ≠ data — keep per-service normalizers.
 - The paid Lumenloop research lane is not emitted at all — the `request_research` trigger AND
   its read half (`research_result`, `list_my_research`; account-scoped dead ends without the
-  trigger). Enabling it = remove all three exclusions (`scripts/exposure.mjs`) AND ship the
-  budget gate + dedup in the same change. `list_research` (public editorial pieces) stays.
+  trigger). Enabling it = remove all three exclusions (`scripts/exposure.mjs`) AND deliberately
+  restore partner detail persistence in `scripts/refresh-inventory.mjs` AND ship the budget
+  gate + dedup in the same change. `list_research` (public editorial pieces) stays.
+- **Partner-tier LumenLoop content is never committed** (go-public cleanup 2026-07-06):
+  `inventory/lumenloop.json` keeps name-only stubs (`partner_stub: true`, no
+  descriptions/schemas/limits), the `ecosystem-skills/` mirror has no credentialed source, and
+  `ecosystem-skills/update.sh` must stay keyless so agent-run skill syncs can never pull
+  partner content back in. `buildLumenloop` fails the build on any non-excluded stub.
 - **Before ANY side-effecting or paid operation ships** (the research lane above, or future
   write ops): adopt upstream OpenAPI-MCP-style request-context plumbing — the sandbox calls a
   host function; the host adapter receives the outer MCP request context and owns

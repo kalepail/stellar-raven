@@ -71,23 +71,21 @@ export const EXCLUDED_SCOUT_OPS = new Set([
 ]);
 
 // Retired skills — exclusion as DATA (ADR-0003; decision 2026-07-03).
-// The Lumenloop API-onboarding skills teach RAW HTTP/REST access (Bearer
-// llmcp_ auth, key minting, rate limits, the REST response envelope). They are
-// redundant AND misleading here: a model calling `execute` reaches Lumenloop
-// only through the wrapped `lumenloop.*` sandbox globals — no network, secrets
-// stay host-side, and the envelope is {ok,data}, not the REST shape these
-// skills describe. Bodies stay in the ecosystem-skills mirror as the harvest
-// source for operation-description enrichment (Solo todo 825); they are simply
-// never emitted — no skill entry, no sections, no bytes in the Worker bundle.
-export const RETIRED_ONBOARDING_SKILLS = new Set([
-  "lumenloop-api-billing",
-  "lumenloop-api-connect",
-  "lumenloop-api-integrate",
-  "lumenloop-api-keys",
-  "lumenloop-api-query",
-  "lumenloop-api-research",
-  "lumenloop-mcp-connect"
-]);
+// The Lumenloop onboarding skills teach RAW HTTP/REST or MCP-connector access
+// (Bearer llmcp_ auth, key minting, rate limits, the REST response envelope).
+// They are redundant AND misleading here: a model calling `execute` reaches
+// Lumenloop only through the wrapped `lumenloop.*` sandbox globals — no
+// network, secrets stay host-side, and the envelope is {ok,data}, not the
+// REST shape those skills describe.
+//
+// Only lumenloop-mcp-connect (from the PUBLIC lumenloop source) still exists
+// in the mirror. The six lumenloop-api-* partner skills were retired here
+// 2026-07-03 (Solo todo 825) and then REMOVED from the mirror entirely
+// 2026-07-06 (go-public cleanup): their description harvest was complete and
+// partner-tier content must not live in this public repo. Their names live on
+// only in RETIRED_SKILL_REF_RE below, which scrubs the public skills'
+// cross-references to them from emitted text.
+export const RETIRED_ONBOARDING_SKILLS = new Set(["lumenloop-mcp-connect"]);
 
 // Matches any reference to a retired onboarding skill in prose or a relative
 // markdown link (`../lumenloop-mcp-connect/SKILL.md`, "lumenloop-api-query").

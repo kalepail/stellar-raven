@@ -140,6 +140,12 @@ function runAgent(question, { searchTool, mcpConfigPath, model }) {
               : String(block.content ?? "");
             entry.resultChars = text.length;
             entry.isError = Boolean(block.is_error);
+            // execute RESULTS are kept whole (mirror of the execute-inputs-whole
+            // precedent above) — eval/qa/analyze-composition.mjs reads them for
+            // truncation footers and skill.run `calls` tallies. Bounded: the server
+            // already caps execute results at ~6k tokens via truncateForModel
+            // (src/policy/truncate.ts), so whole capture cannot balloon the file.
+            if (entry.tool.endsWith("execute")) entry.result = text;
           }
         }
       }

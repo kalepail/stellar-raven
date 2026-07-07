@@ -22,10 +22,15 @@
 //   GET /v1/me `tools.available` every run so drift fails loudly.
 // Skills are NOT authored the same way: GET /v1/skills already LISTS the
 // partner-set skills (marking them available:false), so the union comes from
-// that list plus per-name detail fetches — no name list to maintain. The
-// count guard is tools-only: GET /v1/me carries `tools.available` but exposes
-// NO skills count/list to assert against, so there is nothing to check the
-// skill union against.
+// that list — no name list to maintain. The count guard is tools-only: GET
+// /v1/me carries `tools.available` but exposes NO skills count/list to assert
+// against, so there is nothing to check the skill union against.
+//
+// PUBLISH-SAFETY (2026-07-06, go-public cleanup): partner-lane tools and
+// partner-set skills are persisted as NAME-ONLY stubs (`partner_stub: true`)
+// — no descriptions, no schemas, no file paths, and `me.limits` is dropped.
+// Partner-tier detail must never be committed to this public repo; the names
+// alone keep the union guards and drift diffs working.
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -167,20 +172,42 @@ async function refreshLumenloop() {
     );
   }
 
+  // Partner-lane tools are persisted as NAME-ONLY stubs: no detail fetch, no
+  // description/schemas. Partner-tier detail must not live in this public
+  // repo; the names alone keep the union count-guard above honest and keep
+  // build-catalog's exclusion guard (EXCLUDED_LUMENLOOP_OPS must resolve
+  // against the inventory) working. buildLumenloop fails loudly if a stub is
+  // ever not excluded, so restoring detail is always a deliberate change.
   const listedSet = new Set(listedToolNames);
   const tools = await Promise.all(
     toolNames.map(async (name) => {
+      if (!listedSet.has(name)) {
+        return { name, listed_in_catalog: false, partner_stub: true };
+      }
       const detail = await lumenloopGet(`/tools/${name}`, apiKey);
-      return { ...detail, listed_in_catalog: listedSet.has(name) };
+      return { ...detail, listed_in_catalog: true };
     }),
   );
   tools.sort((a, b) => a.name.localeCompare(b.name));
 
   // Skills: metadata only (never zip/file contents). The list marks partner-set
-  // skills available:false even with a partner key; the detail endpoint is the
-  // truth — union the same way, storing only file paths from the detail.
+  // skills available:false even with a partner key. PUBLIC-set skills store the
+  // upstream description + file paths from the detail endpoint; PARTNER-set
+  // skills are name/set/tier stubs only (no detail fetch, no description, no
+  // file paths) for the same publish-safety reason as the tool stubs — the
+  // names keep the /v1/skills union observable so partner-set drift still
+  // shows up in inventory diffs.
   const skills = await Promise.all(
     (skillList.skills ?? []).map(async (entry) => {
+      if (entry.set === "partner") {
+        return {
+          name: entry.name,
+          set: entry.set,
+          tier: entry.tier,
+          listed_available: entry.available,
+          partner_stub: true,
+        };
+      }
       const detail = await lumenloopGet(`/skills/${entry.name}`, apiKey);
       return {
         name: entry.name,
@@ -214,15 +241,18 @@ async function refreshLumenloop() {
     },
     quirk:
       "GET /v1/tools and GET /v1/skills hide (or mark unavailable) partner-tier items even with a partner key. " +
-      "This inventory unions the list endpoints with per-name detail fetches and validates the tool count against GET /v1/me tools.available.",
+      "This inventory unions the list endpoints and validates the tool count against GET /v1/me tools.available. " +
+      "Partner-tier items are persisted as name-only stubs (partner_stub: true) — detail is never committed.",
     changelogCursor: latest
       ? { date: latest.date, title: latest.title, breaking: latest.breaking ?? false }
       : null,
     changelogEntryCount: changelog.count ?? entries.length,
+    // Account limits/quotas are deliberately NOT persisted (partner-tier
+    // account detail; publish-safety). tools.available is what the union
+    // count-guard above asserts against, so it stays.
     me: {
       tier: me.tier,
       lane: me.lane,
-      limits: me.limits,
       tools: me.tools,
     },
     toolCount: tools.length,

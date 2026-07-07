@@ -58,16 +58,27 @@ describe("sandbox surface shape", () => {
     expect(providers.find((p) => p.name === "skills")).toBeUndefined();
   });
 
-  it("codemode has spec, search, catalog, describe, skill_read + the skill prelude", () => {
+  it("codemode has spec, search, catalog, describe, skill_read, skill_run + the skill prelude", () => {
     const codemode = providers.find((p) => p.name === "codemode")!;
     expect(Object.keys(codemode.fns).sort()).toEqual([
       "catalog",
       "describe",
       "search",
       "skill_read",
+      "skill_run",
       "spec"
     ]);
     expect(codemode.prelude).toContain("codemode.skill =");
+  });
+
+  it("the skill prelude carries the run wrapper: flat skill_run dispatch + the shared envelope guard", () => {
+    const codemode = providers.find((p) => p.name === "codemode")!;
+    // run is read's sibling over the flat dispatch (design §6) …
+    expect(codemode.prelude).toContain("run: async (name, input)");
+    expect(codemode.prelude).toContain("codemode.skill_run(name, input)");
+    // … and RETURNS the service envelope through the SAME guard operations
+    // get (no .data-trap inversion — that is skill.read's shape, not run's).
+    expect(codemode.prelude).toContain('__guardEnvelope(raw, "codemode.skill.run")');
   });
 });
 
@@ -560,13 +571,16 @@ describe("codemode fns", () => {
     expect(d.signature).toContain("codeReferences?:");
   });
 
-  it("describe on a skill: availableSections (same derivation as search hits) + skill.read usage (todo 841)", async () => {
-    const skillId = "skills.lumenloop.stellar-project-dossier";
+  it("describe on a prose skill: availableSections (same derivation as search hits) + skill.read usage (todo 841)", async () => {
+    // A NON-runnable skill — the dossier moved to the runnable branch below.
+    const skillId = "skills.lumenloop.stellar-content-auditor";
+    expect(catalog.entries.find((e) => e.id === skillId)?.runnable).toBeUndefined();
     const r = (await codemode.describe!(skillId)) as {
       ok: boolean;
       kind: string;
       availableSections: string[];
       usage: string;
+      signature?: string;
     };
     expect(r.ok).toBe(true);
     expect(r.kind).toBe("skill");
@@ -574,9 +588,65 @@ describe("codemode fns", () => {
     const sectionIds = catalog.entries
       .filter((e) => e.kind === "skill-section" && e.id.startsWith(`${skillId}#`))
       .map((e) => e.id.slice(skillId.length + 1));
+    expect(sectionIds.length).toBeGreaterThan(0);
     expect(r.availableSections.length).toBe(sectionIds.length);
     expect([...r.availableSections].sort()).toEqual([...sectionIds].sort());
     expect(r.usage).toContain(`codemode.skill.read("${skillId}", { sections: [...] })`);
+    // Prose skills stay read-only: no callable signature, no run usage.
+    expect(r.signature).toBeUndefined();
+    expect(r.usage).not.toContain("codemode.skill.run");
+  });
+
+  it("describe on a RUNNABLE skill: full skill.run signature + both schemas + dual usage naming both calls (design §5)", async () => {
+    const skillId = "skills.lumenloop.stellar-project-dossier";
+    const entry = catalog.entries.find((e) => e.id === skillId)!;
+    expect(entry.runnable).toBe(true); // manifest precondition (Phase B build)
+    const r = (await codemode.describe!(skillId)) as {
+      ok: boolean;
+      kind: string;
+      signature: string;
+      inputSchema: unknown;
+      outputSchema: unknown;
+      availableSections: string[];
+      usage: string;
+    };
+    expect(r.ok).toBe(true);
+    expect(r.kind).toBe("skill");
+    // FULL rendered signature — the exact callable line + the envelope union.
+    expect(r.signature).toContain(
+      `codemode.skill.run("${skillId}", input: StellarProjectDossierInput)`
+    );
+    expect(r.signature).toContain("{ ok: true, data: StellarProjectDossierOutput }");
+    // Both raw schemas as data — same projection codemode.catalog() serves.
+    expect(r.inputSchema).toEqual(entry.inputSchema);
+    expect(r.outputSchema).toEqual(entry.outputSchema);
+    // One skill, one id, two affordances: sections survive alongside run.
+    expect(r.availableSections.length).toBeGreaterThan(0);
+    expect(r.usage).toContain(`codemode.skill.run("${skillId}"`);
+    expect(r.usage).toContain(`codemode.skill.read("${skillId}"`);
+  });
+
+  it("catalog() view carries runnable on exactly the manifest's runnable entries", async () => {
+    const view = (await codemode.catalog!()) as {
+      entries: { id: string; runnable?: boolean }[];
+    };
+    const runnableIds = catalog.entries
+      .filter((e) => e.runnable === true)
+      .map((e) => e.id)
+      .sort();
+    expect(runnableIds.length).toBeGreaterThan(0);
+    expect(
+      view.entries
+        .filter((e) => e.runnable === true)
+        .map((e) => e.id)
+        .sort()
+    ).toEqual(runnableIds);
+    // Non-runnable entries carry NO key at all — the view mirrors the
+    // manifest's present-and-true-only shape (no third truth value to grep).
+    const runnableSet = new Set(runnableIds);
+    expect(view.entries.filter((e) => !runnableSet.has(e.id)).every((e) => !("runnable" in e))).toBe(
+      true
+    );
   });
 
   it("describe on a skill section: parent skill id + section key + exact skill.read call (todo 841)", async () => {
@@ -649,5 +719,135 @@ describe("codemode fns", () => {
     expect(fired).toBe(0); // discovery is not a skill read
     await fns.skill_read!("skills.lumenloop.stellar-project-dossier", {});
     expect(fired).toBe(1);
+  });
+
+  it("skill_run fires the onSkillRun hook on every dispatch (usage count, not success count)", async () => {
+    let fired = 0;
+    const providers = buildSandbox(catalog, bundle, env, {
+      onSkillRun: () => {
+        fired += 1;
+      }
+    });
+    const fns = fnsOf(providers, "codemode");
+    await fns.skill_run!("skills.definitely.not-a-skill", {});
+    expect(fired).toBe(1); // attempted run counts — the span attr measures usage
+    await fns.skill_read!("skills.lumenloop.stellar-project-dossier", {});
+    expect(fired).toBe(1); // reads are not runs
+  });
+});
+
+/**
+ * codemode.skill.run end-to-end through the provider path (design §11 row 6,
+ * §12): the REAL manifest + RUNNERS registry, the generated-scope prelude
+ * reconstruction (guardedNamespaces), and stub ADAPTERS via fetchImpl — the
+ * same stubbing seam every dispatch test above uses, so the whole chain
+ * prelude wrapper → flat skill_run dispatch → runSkill → declared-ops
+ * sub-facade → guard → adapter → redact runs for real; only HTTP is fake.
+ */
+describe("codemode.skill.run through the provider path (end-to-end, stub adapters)", () => {
+  const DOSSIER_ID = "skills.lumenloop.stellar-project-dossier";
+
+  // Per-op payloads in the lumenloop wire shape ({ success, data, error,
+  // meta }) — the adapter unwraps `data`, the runner projects it.
+  const payloadByPath: Record<string, unknown> = {
+    "/v1/tools/get_project": {
+      slug: "soroswap",
+      title: "Soroswap",
+      category: "DeFi",
+      tags: ["amm", "dex"],
+      links: { website: "https://soroswap.finance" },
+      description: "AMM protocol on Stellar"
+    },
+    "/v1/tools/search_directory": { count: 1, projects: [{ slug: "soroswap", title: "Soroswap" }] },
+    "/v1/tools/get_scf_submissions": {
+      count: 1,
+      submissions: [{ round: "SCF #12", award_type: "Build", title: "Soroswap AMM", status: "awarded" }]
+    },
+    "/v1/tools/find_content_about_project": {
+      articles: [
+        { title: "Soroswap ships v2", url: "https://x.example/a", publishing_date: "2026-06-01", summary: "release" }
+      ]
+    },
+    "/v1/tools/find_similar_projects_semantic": [{ slug: "phoenix", title: "Phoenix", category: "DeFi" }]
+  };
+  const dossierFetch: FetchLike = async (url) => {
+    const path = new URL(url).pathname;
+    if (!(path in payloadByPath)) throw new Error(`unexpected adapter fetch: ${url}`);
+    return new Response(
+      JSON.stringify({ success: true, data: payloadByPath[path], error: null, meta: { format: "json" } }),
+      { status: 200, headers: { "content-type": "application/json" } }
+    );
+  };
+
+  function skillNs(fetchImpl?: FetchLike) {
+    return guardedNamespaces(fetchImpl).codemode as unknown as {
+      skill: {
+        run: (name?: unknown, input?: unknown) => Promise<Record<string, unknown>>;
+      };
+    };
+  }
+
+  it("runs the dossier: envelope shape, host-recorded calls, guard traps on the result", async () => {
+    const codemode = skillNs(dossierFetch);
+    const r = (await codemode.skill.run(DOSSIER_ID, { project: "soroswap" })) as {
+      ok: boolean;
+      data: {
+        slug: string;
+        resolvedBy: string;
+        profile: { title: string } | null;
+        scf: { submissions: unknown[] } | null;
+        similar: { items: { slug: string }[] } | null;
+        calls: { op: string; ok: boolean; ms: number }[];
+      };
+    };
+    expect(r.ok).toBe(true);
+    expect(r.data.slug).toBe("soroswap");
+    expect(r.data.resolvedBy).toBe("input-slug"); // slug-direct probe, no directory search
+    expect(r.data.profile?.title).toBe("Soroswap");
+    expect(r.data.scf?.submissions).toHaveLength(1);
+    expect(r.data.similar?.items[0]?.slug).toBe("phoenix");
+    // Host-owned ledger: compact probe + 4-way fan-out, search_directory
+    // never consulted (exact-slug resolution succeeded).
+    expect(r.data.calls.map((c) => c.op).sort()).toEqual([
+      "lumenloop.find_content_about_project",
+      "lumenloop.find_similar_projects_semantic",
+      "lumenloop.get_project",
+      "lumenloop.get_project",
+      "lumenloop.get_scf_submissions"
+    ]);
+    expect(r.data.calls.every((c) => c.ok)).toBe(true);
+    // The run result rides __guardEnvelope like every operation call:
+    // wrong-level payload reads throw the corrective pointer.
+    expect(() => (r as unknown as Record<string, unknown>).slug).toThrow(/use r\.data\.slug/);
+    expect(() => (r as unknown as Record<string, unknown>).calls).toThrow(/use r\.data\.calls/);
+  });
+
+  it("unknown name fails as data naming the runnable ids + a nearest suggestion (exact-match discipline)", async () => {
+    const codemode = skillNs();
+    const r = (await codemode.skill.run("skills.lumenloop.stellar-project-dosier", {})) as {
+      ok: boolean;
+      error: { kind: string; message: string };
+    };
+    expect(r.ok).toBe(false);
+    expect(r.error.kind).toBe("error");
+    expect(r.error.message).toContain("skills.lumenloop.stellar-project-dossier");
+    expect(r.error.message).toContain("skills.lumenloop.stellar-ecosystem-digest");
+    expect(r.error.message).toContain("Did you mean");
+  });
+
+  it("invalid input is refused by the manifest schema before any adapter call (unknown keys rejected)", async () => {
+    let fetched = 0;
+    const countingFetch: FetchLike = async (url) => {
+      fetched += 1;
+      return dossierFetch(url);
+    };
+    const codemode = skillNs(countingFetch);
+    const r = (await codemode.skill.run(DOSSIER_ID, { project: "soroswap", bogus: true })) as {
+      ok: boolean;
+      error: { kind: string };
+    };
+    expect(r.ok).toBe(false);
+    expect(r.error.kind).toBe("error");
+    expect(fetched).toBe(0); // guard/validateArgs — model code never owns the contract
   });
 });

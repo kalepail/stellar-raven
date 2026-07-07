@@ -44,6 +44,11 @@ import {
   rewriteScoutRefs,
   scrubScoutDescription
 } from "./description-notes.mjs";
+// The runnable-skill allowlist-as-data (research/skill-run-design.md §5):
+// the SAME registry scripts/build-catalog.mjs attaches to the manifest, so
+// the two model-facing surfaces cannot drift (native type stripping, as for
+// build-catalog.mjs's src/ imports).
+import { RUNNERS } from "../src/skills/runners/index.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_PATH = join(ROOT, "specs", "super-spec.json");
@@ -362,9 +367,49 @@ function buildSkillIndex(manifest, exposed) {
   return index.sort((a, b) => (a.id < b.id ? -1 : 1));
 }
 
-function buildSkillsPaths(skillIndex) {
+/**
+ * The runnable-skill index for /skills/run_skill x-runnable-index — the same
+ * self-contained-index pattern as /skills/list_skills' x-skill-index (design
+ * §5). Descriptions come from the manifest entries (the exposed prose);
+ * schemas from the RUNNERS registry (the source build-catalog.mjs attached —
+ * one origin, so spec and manifest cannot disagree). Both-direction drift
+ * guards mirror runSkill's assertRunnersWired: a stale manifest (or a runner
+ * added without a rebuild) breaks THIS build, never ships a spec advertising
+ * a contract the deployed dispatch would refuse.
+ */
+function buildRunnableIndex(catalogManifest) {
+  const runnableEntries = catalogManifest.entries.filter((e) => e.runnable === true);
+  const entryIds = new Set(runnableEntries.map((e) => e.id));
+  for (const id of Object.keys(RUNNERS)) {
+    if (!entryIds.has(id)) {
+      throw new Error(
+        `RUNNERS registry key "${id}" has no runnable skill entry in catalog/manifest.json — ` +
+          `stale manifest; run node scripts/build-catalog.mjs before the super spec.`
+      );
+    }
+  }
+  for (const entry of runnableEntries) {
+    if (!RUNNERS[entry.id]) {
+      throw new Error(
+        `catalog/manifest.json marks "${entry.id}" runnable but no runner is bundled under that ` +
+          `id — registry/manifest drift; reconcile src/skills/runners/index.ts and rebuild the catalog.`
+      );
+    }
+  }
+  // Manifest entries are id-sorted, so the index (and the name enum derived
+  // from it) is deterministic without a second sort.
+  return runnableEntries.map((entry) => ({
+    id: entry.id,
+    description: entry.description,
+    inputSchema: RUNNERS[entry.id].inputSchema,
+    outputSchema: RUNNERS[entry.id].outputSchema
+  }));
+}
+
+function buildSkillsPaths(skillIndex, runnableIndex) {
   const skillIds = skillIndex.map((s) => s.id);
   const sectionCount = skillIndex.reduce((n, s) => n + s.sections.length, 0);
+  const runnableIds = runnableIndex.map((s) => s.id);
 
   return {
     "/skills/list_skills": {
@@ -429,6 +474,58 @@ function buildSkillsPaths(skillIndex) {
         "x-execute": `await codemode.skill.read(name, { sections })`
       }
     },
+    "/skills/run_skill": {
+      post: {
+        operationId: "skills.run_skill",
+        summary:
+          "Execute a runnable skill's data-gathering pipeline host-side and get one compact composed result.",
+        description:
+          `${runnableIds.length} of the bundled skills are RUNNABLE: their mechanical fetch-and-project ` +
+          `core also executes as vetted host-side code, composing several service calls into one compact, ` +
+          `typed result. Pass the exact skill id (enum below — ids are exact-match, never fuzzy) and an ` +
+          `input object; input is validated host-side against the skill's inputSchema in x-runnable-index ` +
+          `on this operation, which also carries each skill's outputSchema (the \`data\` payload contract). ` +
+          `The result rides the standard service-call envelope, and \`data.calls\` is a host-recorded audit ` +
+          `trail of every constituent call ({ op, ok, errorKind?, ms }). Judgment steps (quote selection, ` +
+          `synthesis) stay with you — the same skills remain readable via codemode.skill.read(id, { sections }).`,
+        tags: ["skills"],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                additionalProperties: false,
+                required: ["name", "input"],
+                properties: {
+                  name: {
+                    type: "string",
+                    description: "Exact runnable skill id.",
+                    enum: runnableIds
+                  },
+                  input: {
+                    type: "object",
+                    description:
+                      "Arguments for the skill, validated against its inputSchema in x-runnable-index (unknown keys are refused, never ignored)."
+                  }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: {
+            description:
+              "{ ok: true, data } | { ok: false, error: { kind: \"error\" | \"soft-empty\", message, hint? } } — " +
+              "the service-call envelope; data matches the skill's outputSchema in x-runnable-index and always " +
+              "includes the host-recorded `calls` audit trail."
+          }
+        },
+        "x-service": "skills",
+        "x-execute": `await codemode.skill.run(name, input)`,
+        "x-runnable-index": runnableIndex
+      }
+    },
     "/skills/search_skill_sections": {
       post: {
         operationId: "skills.search_skill_sections",
@@ -486,12 +583,13 @@ function main() {
 
   const scout = buildScout(stellarLight, exposed);
   const skillIndex = buildSkillIndex(skillsManifest, exposed);
+  const runnableIndex = buildRunnableIndex(catalogManifest);
 
   const paths = {
     ...buildLumenloopPaths(lumenloop, exposed),
     ...scout.paths,
     ...buildStellarDocs(stellarDocsSpec, exposed),
-    ...buildSkillsPaths(skillIndex)
+    ...buildSkillsPaths(skillIndex, runnableIndex)
   };
 
   // operationId uniqueness — the ids double as sandbox callable names.
@@ -531,7 +629,7 @@ function main() {
     {
       name: "skills",
       description:
-        "Bundled agent-skill playbooks (ecosystem-skills mirror): list, targeted section reads, and ranked search. The skill index is embedded in /skills/list_skills x-skill-index."
+        "Bundled agent-skill playbooks (ecosystem-skills mirror): list, targeted section reads, and ranked search. The skill index is embedded in /skills/list_skills x-skill-index. Skills marked runnable also execute host-side via /skills/run_skill (codemode.skill.run)."
     }
   ];
 
@@ -581,8 +679,9 @@ function main() {
         mirror: "ecosystem-skills/",
         syncedAt: skillsManifest.synced_at,
         skillCount: skillIndex.length,
+        runnableSkillCount: runnableIndex.length,
         sources: skillsManifest.sources.map((s) => ({ id: s.id, skills: s.skills.length })),
-        note: "Deliberately 3 operations, not one path per skill/section — the index lives in /skills/list_skills x-skill-index (design doc §3)."
+        note: "Deliberately 4 operations, not one path per skill/section — the index lives in /skills/list_skills x-skill-index (design doc §3); runnable-skill contracts live in /skills/run_skill x-runnable-index (research/skill-run-design.md §5)."
       }
     },
     "x-generated": {

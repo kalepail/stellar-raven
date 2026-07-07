@@ -25,6 +25,7 @@ import {
   type JsonSchema
 } from "../src/catalog/vendor/json-schema-types.ts";
 import { readSkill, type SkillBundle } from "../src/skills/store.ts";
+import { RUNNERS } from "../src/skills/runners/index.ts";
 import { scoreEntryWeighted, canonicalizeQuery } from "../src/catalog/scoring.ts";
 import { lastIdSegment } from "../src/catalog/id.ts";
 
@@ -446,7 +447,7 @@ describe("searchCatalog — keyword-indexed section bodies (todo 810)", () => {
 });
 
 describe("searchCatalog — signatures", () => {
-  it("renders TS signatures for operation hits only", () => {
+  it("renders TS signatures for operation hits (and runnable skills — see the design §5 describe), never prose hits", () => {
     const opHit = searchCatalog(catalog, { query: "search directory" })[0] as SearchHit;
     expect(opHit.kind).toBe("operation");
     expect(opHit.signature).toContain("type SearchDirectoryInput");
@@ -456,11 +457,13 @@ describe("searchCatalog — signatures", () => {
       "lumenloop.search_directory(input: SearchDirectoryInput): Promise<{ ok: true, data: SearchDirectoryOutput } | { ok: false, error: { kind: \"error\" | \"soft-empty\", message: string, hint?: string } }>"
     );
 
-    const skillHits = searchCatalog(catalog, { query: "soroban storage" }).filter(
-      (h) => h.kind !== "operation"
+    // Non-operation hits carry no signature UNLESS runnable (the two skills
+    // carrying bundled runners are the only exception, asserted separately).
+    const proseHits = searchCatalog(catalog, { query: "soroban storage" }).filter(
+      (h) => h.kind !== "operation" && !(h.id in RUNNERS)
     );
-    expect(skillHits.length).toBeGreaterThan(0);
-    expect(skillHits.every((h) => h.signature === undefined)).toBe(true);
+    expect(proseHits.length).toBeGreaterThan(0);
+    expect(proseHits.every((h) => h.signature === undefined)).toBe(true);
   });
 
   it("renders GET-operation signatures from OpenAPI parameters", () => {
@@ -579,6 +582,172 @@ describe("search-hit signature compaction (todo 841)", () => {
     expect(compacted).not.toContain("xxxx");
     // Full mode never compacts, no matter the size (describe's rendering).
     expect(renderSignature(overThreshold)).toContain("alpha?: string");
+  });
+});
+
+describe("runnable skills — loadManifest refinements (design §5)", () => {
+  const DOSSIER = "skills.lumenloop.stellar-project-dossier";
+  const rawManifest = (): { entries: Record<string, unknown>[] } =>
+    JSON.parse(readFileSync(join(ROOT, "catalog", "manifest.json"), "utf8"));
+
+  it("accepts the real manifest and carries the runnable flag through the parse", () => {
+    const parsed = loadManifest(rawManifest());
+    const entry = parsed.entries.find((e) => e.id === DOSSIER)!;
+    expect(entry.runnable).toBe(true);
+    expect(entry.inputSchema).not.toBeNull();
+    expect(entry.outputSchema).not.toBeNull();
+  });
+
+  it("rejects a runnable entry missing either schema", () => {
+    for (const field of ["inputSchema", "outputSchema"] as const) {
+      const raw = rawManifest();
+      const entry = raw.entries.find((e) => e.id === DOSSIER)!;
+      entry[field] = null;
+      expect(() => loadManifest(raw), field).toThrow(/must carry both schemas/);
+    }
+  });
+
+  it("rejects the runnable flag on a non-skill kind", () => {
+    const raw = rawManifest();
+    const op = raw.entries.find((e) => e.id === "lumenloop.search_directory")!;
+    op.runnable = true;
+    expect(() => loadManifest(raw)).toThrow(/skill-entry affordance/);
+  });
+});
+
+describe("runnable-skill signatures (design §5)", () => {
+  const dossier = () =>
+    catalog.entries.find((e) => e.id === "skills.lumenloop.stellar-project-dossier")!;
+
+  it("renders the exact codemode.skill.run callable line with the same envelope union operations use", () => {
+    const sig = renderSignature(dossier())!;
+    expect(sig).toContain("type StellarProjectDossierInput");
+    expect(sig).toContain("type StellarProjectDossierOutput");
+    expect(sig).toContain(
+      'codemode.skill.run("skills.lumenloop.stellar-project-dossier", input: StellarProjectDossierInput): Promise<{ ok: true, data: StellarProjectDossierOutput } | { ok: false, error: { kind: "error" | "soft-empty", message: string, hint?: string } }>'
+    );
+  });
+
+  it("non-runnable skills and sections still render no signature", () => {
+    const prose = catalog.entries.find((e) => e.kind === "skill" && e.runnable !== true)!;
+    expect(prose).toBeDefined();
+    expect(renderSignature(prose)).toBeUndefined();
+    const section = catalog.entries.find((e) => e.kind === "skill-section")!;
+    expect(renderSignature(section)).toBeUndefined();
+  });
+
+  it("search hits for a runnable skill carry BOTH the signature and availableSections", () => {
+    for (const id of Object.keys(RUNNERS)) {
+      const hit = searchCatalog(catalog, { query: id }).find((h) => h.id === id)!;
+      expect(hit, id).toBeDefined();
+      expect(hit.kind).toBe("skill");
+      const entry = catalog.entries.find((e) => e.id === id)!;
+      expect(hit.signature).toBe(renderSignature(entry, { compactOversizedOutput: true }));
+      expect(hit.signature).toContain(`codemode.skill.run(${JSON.stringify(id)}`);
+      expect(hit.availableSections!.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("honors COMPACT_OUTPUT_THRESHOLD for runnable skills exactly as for operations", () => {
+    // Hand-built runnable entry with an oversized output block: the search-
+    // hit rendering mode must stub it down to top-level field names + the
+    // describe pointer while keeping the callable line intact.
+    const entry: CatalogEntry = {
+      id: "skills.test.padded-runner",
+      service: "skills",
+      kind: "skill",
+      runnable: true,
+      description: "hand-built runnable compaction probe",
+      inputSchema: { type: "object", properties: { q: { type: "string" } } },
+      outputSchema: {
+        type: "object",
+        properties: {
+          alpha: { type: "string", description: "x".repeat(COMPACT_OUTPUT_THRESHOLD + 10) },
+          beta: { type: "number" }
+        }
+      },
+      transport: null,
+      provenance: { source: "test://runnable", fetchedAt: "2026-07-06T00:00:00Z" }
+    };
+    const compact = renderSignature(entry, { compactOversizedOutput: true })!;
+    expect(compact).toContain("alpha, beta");
+    expect(compact).toContain('codemode.describe("skills.test.padded-runner")');
+    expect(compact).not.toContain("xxxx");
+    expect(compact).toContain('codemode.skill.run("skills.test.padded-runner"');
+    // Full mode (describe's rendering) never compacts, no matter the size.
+    expect(renderSignature(entry)).toContain("alpha?: string");
+  });
+});
+
+describe("runnable byte-stability — the §10.1 invariant, pinned offline (design §12)", () => {
+  const RUNNABLE_IDS = new Set(Object.keys(RUNNERS));
+
+  /** The same manifest with the runnable attachment undone — "current main". */
+  function strippedCatalog(): Catalog {
+    const raw = JSON.parse(readFileSync(join(ROOT, "catalog", "manifest.json"), "utf8")) as {
+      entries: Record<string, unknown>[];
+    };
+    raw.entries = raw.entries.map((entry) => {
+      if (entry.runnable !== true) return entry;
+      const { runnable: _runnable, ...rest } = entry;
+      return { ...rest, inputSchema: null, outputSchema: null };
+    });
+    return loadManifest(raw);
+  }
+
+  it("every pre-existing hit field is byte-identical to a non-runnable build; signature on the runnable entries is the only delta", () => {
+    const stripped = strippedCatalog();
+    const queries: { query: string; limit?: number }[] = [
+      // Queries that surface the runnable entries (exact ids + topical)…
+      { query: "skills.lumenloop.stellar-project-dossier" },
+      { query: "skills.lumenloop.stellar-ecosystem-digest" },
+      { query: "project dossier scf funding history", limit: 20 },
+      { query: "recent ecosystem digest news roundup", limit: 20 },
+      { query: "scf funding award project", limit: 25 },
+      // …and a spread of ordinary pages (ops, sections, backfill, broad).
+      { query: "stellar", limit: 50 },
+      { query: "stellar soroban contract", limit: 15 },
+      { query: "search directory" },
+      { query: "soroban storage" },
+      { query: "stellar docs search" },
+      { query: "wallet balance lookup" },
+      { query: "fuzz testing smart contracts" },
+      {
+        query:
+          "design a cross chain remittance corridor that quotes fees checks anchor deposit " +
+          "limits verifies trustline flags and streams payment status webhooks to a dashboard",
+        limit: 5
+      }
+    ];
+    let runnableHitsSeen = 0;
+    for (const opts of queries) {
+      const before = searchCatalog(stripped, opts);
+      const after = searchCatalog(catalog, opts);
+      // Rank/membership identity: same ids in the same order.
+      expect(
+        after.map((h) => h.id),
+        opts.query
+      ).toEqual(before.map((h) => h.id));
+      for (let i = 0; i < after.length; i++) {
+        const { signature: sigBefore, ...restBefore } = before[i]!;
+        const { signature: sigAfter, ...restAfter } = after[i]!;
+        // Every pre-existing field byte-identical (score, tier, description,
+        // availableSections, …) — the scorer reads nothing this change touches.
+        expect(JSON.stringify(restAfter), `${opts.query} #${i} (${after[i]!.id})`).toBe(
+          JSON.stringify(restBefore)
+        );
+        if (RUNNABLE_IDS.has(after[i]!.id)) {
+          // The one permitted delta: the runnable hit GAINS a signature.
+          expect(sigBefore, `${opts.query} #${i}`).toBeUndefined();
+          expect(typeof sigAfter, `${opts.query} #${i}`).toBe("string");
+          runnableHitsSeen += 1;
+        } else {
+          expect(sigAfter, `${opts.query} #${i} (${after[i]!.id})`).toBe(sigBefore);
+        }
+      }
+    }
+    // The battery must actually exercise the delta, or it proves nothing.
+    expect(runnableHitsSeen).toBeGreaterThan(0);
   });
 });
 

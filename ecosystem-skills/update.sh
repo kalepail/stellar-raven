@@ -7,10 +7,24 @@
 # heterogeneous sources, each grouped under skills/<source>/<skill>/:
 #
 #   lumenloop            github  lumenloop/lumenloop-skills        (8 public skills)
-#   lumenloop-api        api     api.lumenloop.com partner archive (6 partner skills)
 #   openzeppelin-stellar github  OpenZeppelin/openzeppelin-skills  (3 Stellar skills, cherry-picked)
 #   stellar-dev          github  stellar/stellar-dev-skill         (7 SDF skills)
 #   stellar-light        github  Stellar-Light/stellar-scout       (1 skill, repo root)
+#
+# Public sources ONLY, no credentials. The lumenloop-api partner source (6
+# partner skills from the private lumenloop-api-skills repo, fetched via the
+# credentialed /v1/skills/archive/partner endpoint) was REMOVED 2026-07-06:
+# the skills were retired from catalog exposure 2026-07-03 (Solo todo 825,
+# RETIRED_ONBOARDING_SKILLS in scripts/exposure.mjs), their description
+# harvest is complete, and partner-tier content must not live in this public
+# repo. Do NOT re-add a credentialed source here — this script staying
+# keyless is what guarantees future agent-run syncs can never pull
+# partner-confidential content into the repo.
+#
+# Each GitHub source also vendors its upstream LICENSE/NOTICE files (fetched
+# at the same pinned commit) into skills/<source>/ so redistribution notices
+# survive every sync. stellar-light has no upstream license file — see
+# THIRD-PARTY-NOTICES.md at the repo root.
 #
 # It also snapshots the stellarlight.xyz/api/skills DIRECTORY (≈30 ecosystem
 # entries across sources/kinds) into catalog.json + MANIFEST.catalog — the
@@ -22,10 +36,7 @@
 # Usage:
 #   ./update.sh            # sync every source at its default branch
 #
-# Requires: gh (authenticated), jq, node, curl, unzip, git.
-# For the lumenloop-api partner archive: LUMENLOOP_API_KEY in the environment
-#   (or a sibling ../.env / ../.dev.vars with LUMENLOOP_API_KEY=...). If absent,
-#   the script fails closed (see below).
+# Requires: gh (authenticated), jq, node, curl, git. No API keys.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -37,45 +48,13 @@ command -v gh    >/dev/null || { echo "error: gh CLI not found" >&2; exit 1; }
 command -v jq    >/dev/null || { echo "error: jq not found" >&2; exit 1; }
 command -v node  >/dev/null || { echo "error: node not found" >&2; exit 1; }
 command -v curl  >/dev/null || { echo "error: curl not found" >&2; exit 1; }
-command -v unzip >/dev/null || { echo "error: unzip not found" >&2; exit 1; }
 command -v git   >/dev/null || { echo "error: git not found" >&2; exit 1; }
 
-# LUMENLOOP_API_KEY resolution:
-#   - var UNSET            -> fall back to ../.env, then ../.dev.vars (dev convenience).
-#   - var set but EMPTY    -> treat as an explicit "no key" and do NOT fall back,
-#                             so `LUMENLOOP_API_KEY= ./update.sh` reliably exercises
-#                             the fail-closed path even in a repo that has .env.
-#   - var set & non-empty  -> use it as-is.
-if [ -z "${LUMENLOOP_API_KEY+set}" ]; then
-  for env_file in "$SCRIPT_DIR/../.env" "$SCRIPT_DIR/../.dev.vars"; do
-    if [ -f "$env_file" ]; then
-      LUMENLOOP_API_KEY="$(grep -E '^LUMENLOOP_API_KEY=' "$env_file" | head -1 | cut -d= -f2- || true)"
-      [ -n "$LUMENLOOP_API_KEY" ] && break
-    fi
-  done
-fi
-
-# Fail CLOSED. The lumenloop-api partner archive REQUIRES a key; without it the
-# mirror is incomplete (19 of 25 skills). Validate creds BEFORE touching anything
-# on disk. A partial refresh is only allowed when explicitly requested via
-# ALLOW_PARTIAL=1, in which case MANIFEST.status is marked "partial" so it can
-# never be mistaken for a complete mirror.
+# Every source is public — the mirror is always complete. (The credentialed
+# partner source and its ALLOW_PARTIAL escape hatch were removed 2026-07-06;
+# see the header note.)
 MIRROR_STATUS="complete"
 MISSING_SOURCES="[]"
-PARTNER_ENABLED=1
-if [ -z "${LUMENLOOP_API_KEY:-}" ]; then
-  if [ "${ALLOW_PARTIAL:-0}" = "1" ]; then
-    echo "warning: LUMENLOOP_API_KEY missing — ALLOW_PARTIAL=1 set, producing a PARTIAL mirror (no lumenloop-api/*)." >&2
-    PARTNER_ENABLED=0
-    MIRROR_STATUS="partial"
-    MISSING_SOURCES='["lumenloop-api"]'
-  else
-    echo "error: LUMENLOOP_API_KEY not set (env, ../.env, or ../.dev.vars) — required for the lumenloop-api partner archive." >&2
-    echo "       Set the key, or re-run with ALLOW_PARTIAL=1 to accept an explicitly-marked partial mirror." >&2
-    echo "       Nothing on disk was modified." >&2
-    exit 1
-  fi
-fi
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
@@ -148,6 +127,21 @@ sync_github() {
       curl -fsSL "https://raw.githubusercontent.com/${owner}/${repo}/${commit}/${src}" -o "$dest"
     done
 
+  # Vendor the upstream LICENSE/NOTICE files (repo root, same pinned commit)
+  # into skills/<id>/ so redistribution notices ship with the mirrored content
+  # and survive every sync. Which names exist varies per repo; absent files are
+  # simply skipped (THIRD-PARTY-NOTICES.md at the repo root is the summary).
+  local license_files="[]" notice_name
+  for notice_name in LICENSE LICENSE.md LICENSE.txt LICENSE-APACHE LICENSE-MIT NOTICE NOTICE.md COPYING; do
+    if echo "$tree" | jq -e --arg n "$notice_name" '.tree[] | select(.type=="blob" and .path==$n)' >/dev/null; then
+      mkdir -p "$BUILD_DIR/$id"
+      echo "  + $id/$notice_name (upstream license/notice)"
+      curl -fsSL "https://raw.githubusercontent.com/${owner}/${repo}/${commit}/${notice_name}" \
+        -o "$BUILD_DIR/$id/$notice_name"
+      license_files="$(echo "$license_files" | jq --arg n "$notice_name" '. + [$n]')"
+    fi
+  done
+
   # Group flat file rows into per-skill objects.
   local skills_json
   skills_json="$(echo "$files" | jq '
@@ -159,82 +153,14 @@ sync_github() {
     --arg id "$id" --arg owner "$owner" --arg repo "$repo" \
     --arg path "$src_path" --arg ref "$ref" \
     --arg commit "$commit" --arg commit_date "$commit_date" \
-    --argjson skills "$skills_json" '
+    --argjson skills "$skills_json" --argjson license_files "$license_files" '
     { id:$id, type:"github", owner:$owner, repo:$repo, path:$path, ref:$ref,
       commit:$commit, commit_date:$commit_date,
       url:("https://github.com/"+$owner+"/"+$repo+"/tree/"+$commit+($path|if .=="" then "" else "/"+. end)),
+      license_files:$license_files,
       skills:$skills }' > "$SRC_DIR/$id.json"
 
   echo "  pinned ${id} @ ${commit:0:12} ($(echo "$skills_json" | jq length) skills)."
-}
-
-# ---------------------------------------------------------------------------
-# sync_lumenloop_archive <id> <set>   (set = public|partner)
-# Downloads the zip archive of skill folders from the LumenLoop API.
-#
-# The partner repo (lumenloop-api-skills) is NOT public, so its provenance is
-# NOT git-commit-reproducible the way the GitHub sources are: the API exposes
-# only a short (7-char) commit ref behind a mutable, credentialed archive
-# endpoint. To make a run independently checkable we record a source-level
-# SHA256 of the exact downloaded zip plus the API version metadata, and label
-# the reproducibility model honestly. Caller guarantees the key is present.
-# ---------------------------------------------------------------------------
-sync_lumenloop_archive() {
-  local id=$1 set=$2
-  echo "Syncing ${id}: api.lumenloop.com /v1/skills/archive/${set} ..."
-
-  local meta commit repo version_json
-  meta="$(curl -fsS -H "Authorization: Bearer ${LUMENLOOP_API_KEY}" "https://api.lumenloop.com/v1/skills")"
-  commit="$(echo "$meta" | jq -r --arg s "$set" '.data.versions[$s].commit // "unknown"')"
-  repo="$(echo "$meta" | jq -r --arg s "$set" '.data.versions[$s].repo // "lumenloop-skills"')"
-  version_json="$(echo "$meta" | jq --arg s "$set" '.data.versions[$s] // {}')"
-
-  local zip="$WORK/${id}.zip" ex="$WORK/${id}-x"
-  curl -fsS -H "Authorization: Bearer ${LUMENLOOP_API_KEY}" \
-    "https://api.lumenloop.com/v1/skills/archive/${set}" -o "$zip"
-
-  # Source-level digest of the exact bytes served for this run.
-  local archive_sha256 archive_bytes
-  archive_sha256="$( { shasum -a 256 "$zip" 2>/dev/null || sha256sum "$zip"; } | awk '{print $1}')"
-  archive_bytes="$(wc -c < "$zip" | tr -d ' ')"
-
-  rm -rf "$ex"; mkdir -p "$ex"
-  unzip -q "$zip" -d "$ex"
-
-  # Lay out <build>/<id>/<skill>/... and build the per-skill file index.
-  mkdir -p "$BUILD_DIR/$id"
-  cp -R "$ex"/. "$BUILD_DIR/$id/"
-
-  local rows="[]"
-  while IFS= read -r f; do
-    local rel="${f#$ex/}"
-    local skill="${rel%%/*}"
-    local relpath="${rel#*/}"
-    local size sha
-    size="$(wc -c < "$f" | tr -d ' ')"
-    sha="$(git hash-object "$f")"
-    rows="$(echo "$rows" | jq --arg sk "$skill" --arg rp "$relpath" --argjson sz "$size" --arg sha "$sha" \
-      '. + [{skill:$sk, path:$rp, size:$sz, sha:$sha}]')"
-  done < <(find "$ex" -type f -name '*.md' | sort)
-
-  local skills_json
-  skills_json="$(echo "$rows" | jq '
-    group_by(.skill)
-    | map({ name: .[0].skill, files: (map({path, size, sha}) | sort_by(.path)) })')"
-
-  jq -n --arg id "$id" --arg set "$set" --arg commit "$commit" --arg repo "$repo" \
-    --arg sha256 "$archive_sha256" --argjson bytes "$archive_bytes" \
-    --argjson version "$version_json" --arg now "$NOW" \
-    --argjson skills "$skills_json" '
-    { id:$id, type:"lumenloop-archive", set:$set, repo:("lumenloop/"+$repo),
-      reproducibility:"api-versioned+archive-digested",
-      commit_ref:$commit, commit_ref_note:"short ref reported by the API for a PRIVATE repo — not an independently-verifiable git SHA",
-      api_version:$version,
-      archive_sha256:$sha256, archive_bytes:$bytes, archive_fetched_at:$now,
-      endpoint:("https://api.lumenloop.com/v1/skills/archive/"+$set),
-      url:("https://api.lumenloop.com/v1/skills"), skills:$skills }' > "$SRC_DIR/$id.json"
-
-  echo "  ${id}: api ref ${commit} · zip sha256 ${archive_sha256:0:16}… ($(echo "$skills_json" | jq length) skills)."
 }
 
 # ---------------------------------------------------------------------------
@@ -265,7 +191,6 @@ fetch_catalog() {
 # BEFORE the swap below, so skills/ + MANIFEST.json are never left clobbered.
 # ===========================================================================
 sync_github lumenloop            lumenloop   lumenloop-skills    skills main
-[ "$PARTNER_ENABLED" = "1" ] && sync_lumenloop_archive lumenloop-api partner
 sync_github openzeppelin-stellar OpenZeppelin openzeppelin-skills skills main \
             setup-stellar-contracts upgrade-stellar-contracts develop-secure-contracts
 sync_github stellar-dev          stellar     stellar-dev-skill   skills main

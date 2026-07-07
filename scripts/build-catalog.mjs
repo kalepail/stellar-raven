@@ -16,11 +16,15 @@
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 // Loaded via native type stripping (Node >= 23.6) — the same way
 // eval/run-routing.mjs imports src/catalog/search.ts. Still zero deps.
 import { extractKeywords } from "../src/catalog/extract-keywords.ts";
 import { tokenize } from "../src/catalog/vendor/search-scoring.ts";
+// The runnable-skill allowlist-as-data (research/skill-run-design.md §2/§5):
+// the SAME registry the runtime dispatch and the super-spec emitter consume,
+// so the exposed runnable surface cannot drift between emitters.
+import { RUNNERS } from "../src/skills/runners/index.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_PATH = join(ROOT, "catalog", "manifest.json");
@@ -195,20 +199,30 @@ function assertRetirementNamesResolve(skillsManifest) {
 }
 
 // Lumenloop serves 14 skills of its own via /v1/skills (metadata only; bodies
-// are zips). They are NOT emitted: every one duplicates a canonical skills.*
-// mirror entry — one skill, one id (ADR-0003 kills the lumenloop.skill.* twin
-// namespace entirely). Guard the duplication assumption loudly: a NEW
-// upstream-served skill with no mirror counterpart must break the build (mirror
-// it via ecosystem-skills/update.sh, or exclude it here with a reason), not
-// vanish silently.
+// are zips). They are NOT emitted: every PUBLIC one duplicates a canonical
+// skills.* mirror entry — one skill, one id (ADR-0003 kills the
+// lumenloop.skill.* twin namespace entirely). Guard the duplication assumption
+// loudly: a NEW upstream-served public skill with no mirror counterpart must
+// break the build (mirror it via ecosystem-skills/update.sh, or exclude it
+// here with a reason), not vanish silently.
+//
+// Partner-set skills are exempt BY POLICY: they are deliberately not mirrored
+// (partner-tier content must not live in this public repo — mirror source
+// removed 2026-07-06) and never emitted. The inventory keeps them as
+// name-only stubs (`set: "partner"`, no description/files) purely so the
+// /v1/skills union stays observable and drift in the partner set still
+// surfaces in inventory diffs.
 function assertLumenloopSkillsMirrored(inv, skillsManifest) {
   const mirrorNames = new Set(
     skillsManifest.sources.flatMap((s) => s.skills.map((sk) => sk.name))
   );
-  const unmirrored = inv.skills.map((s) => s.name).filter((n) => !mirrorNames.has(n));
+  const unmirrored = inv.skills
+    .filter((s) => s.set !== "partner")
+    .map((s) => s.name)
+    .filter((n) => !mirrorNames.has(n));
   if (unmirrored.length > 0) {
     throw new Error(
-      `Lumenloop /v1/skills serves skills with no ecosystem-skills mirror counterpart: ` +
+      `Lumenloop /v1/skills serves public skills with no ecosystem-skills mirror counterpart: ` +
         `${unmirrored.join(", ")}. Mirror them (ecosystem-skills/update.sh) or exclude them ` +
         `here with a reason — API-served skills are never emitted directly (ADR-0003).`
     );
@@ -339,6 +353,19 @@ function buildLumenloop(inv) {
   const consumedNotes = new Set();
 
   for (const tool of inv.tools) {
+    // Partner-lane tools exist in the inventory only as name stubs (no
+    // description/schemas — partner-tier detail is not persisted in this
+    // public repo). A stub that is not excluded is unemittable AND a policy
+    // breach: fail loudly so exposing a partner tool is always a deliberate
+    // change (extend the exclusions, or restore detail persistence together
+    // with the budget gate — see CLAUDE.md's research-lane rule).
+    if (tool.partner_stub && !lumenloopOpExcluded(tool)) {
+      throw new Error(
+        `lumenloop tool "${tool.name}" is a partner name-only stub but is not excluded — ` +
+          `it cannot be emitted. Add it to EXCLUDED_LUMENLOOP_OPS (scripts/exposure.mjs), or ` +
+          `deliberately restore partner detail persistence in scripts/refresh-inventory.mjs.`
+      );
+    }
     if (lumenloopOpExcluded(tool)) continue;
     const descriptionParts = [tool.description];
     if (tool.when_to_use) descriptionParts.push(`When to use: ${tool.when_to_use}`);
@@ -645,6 +672,60 @@ function buildSkills(manifest) {
 }
 
 // ---------------------------------------------------------------------------
+// Runnable skills — attach `runnable: true` + the runner's schemas to the
+// matching skill entries (research/skill-run-design.md §5: a contract
+// broadening on the EXISTING kind:"skill" entry, never a second entry/kind —
+// one skill, one id, two affordances). Fail-loud drift guards in every
+// direction, mirroring assertRetirementNamesResolve /
+// assertLumenloopExclusionsResolve: registry keys and declared ops are
+// exact-match data pinned to the emitted surface, so upstream drift breaks
+// the BUILD, never surfaces as a runtime TypeError dressed up as a runner
+// bug. Exported for the guard tests (test/catalog.test.ts); main() below is
+// gated so importing this module never builds.
+// ---------------------------------------------------------------------------
+
+export function attachRunnableSkills(entries, registry = RUNNERS) {
+  const opIds = new Set(entries.filter((e) => e.kind === "operation").map((e) => e.id));
+  const byId = new Map(entries.map((e) => [e.id, e]));
+  for (const [id, runner] of Object.entries(registry)) {
+    const entry = byId.get(id);
+    // A registry key with no emitted skill entry = the skill was renamed or
+    // retired (or the key is a typo). Silence here would ship a runner the
+    // catalog never advertises — dead code at best, id drift at worst.
+    if (!entry || entry.kind !== "skill") {
+      throw new Error(
+        `RUNNERS registry key "${id}" matched no emitted skill entry — the skill was renamed/` +
+          `retired upstream or the id is wrong; reconcile src/skills/runners/index.ts with the ` +
+          `skills mirror (registry drift must break the build, not silently un-expose the runner).`
+      );
+    }
+    // Every declared op must resolve to an emitted operation entry: this is
+    // the guard that turns an upstream constituent-op retirement (e.g. a
+    // live-drift refresh dropping one) into a build failure instead of a
+    // missing facade fn at dispatch time.
+    for (const opId of runner.ops) {
+      if (!opIds.has(opId)) {
+        throw new Error(
+          `runner "${id}" declares op "${opId}" which resolves to no emitted operation entry — ` +
+            `upstream retired/renamed it or exposure now excludes it; reconcile the runner's ` +
+            `declared ops (and its pipeline) before rebuilding.`
+        );
+      }
+    }
+  }
+  return entries.map((entry) => {
+    const runner = registry[entry.id];
+    if (!runner) return entry;
+    return {
+      ...entry,
+      runnable: true,
+      inputSchema: runner.inputSchema,
+      outputSchema: runner.outputSchema
+    };
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Assemble
 // ---------------------------------------------------------------------------
 
@@ -653,7 +734,10 @@ function buildSkills(manifest) {
 // excluded scout endpoint by its raw REST spelling, or mention a retired
 // skill. This is the systemic backstop for the whole leak class — a scrub or
 // rewrite that goes stale fails the build here instead of shipping a pointer
-// to a capability consumers must never learn about.
+// to a capability consumers must never learn about. Runnable-skill entries
+// contribute their schema JSON too (design §5): schema `description` strings
+// are emitted text — a runner schema naming a non-exposed op would teach the
+// model exactly what ADR-0003 forbids. Exported for the guard tests.
 //
 // The "any service.op token not in opIds" check needs the full assembled
 // manifest as an allowlist, so it stays here; the other three checks (raw
@@ -661,7 +745,7 @@ function buildSkills(manifest) {
 // allowlist-free and factored into scripts/emitted-text-guard.mjs so any
 // OTHER emitted text (e.g. the /demo page/prompts) can run them too without
 // a manifest — see assertNoNonExposedRefsInText.
-function assertNoNonExposedRefs(entries) {
+export function assertNoNonExposedRefs(entries) {
   const opIds = new Set(entries.filter((e) => e.kind === "operation").map((e) => e.id));
   // Service-callable tokens ("scout.matchPartners"); the lookbehind skips
   // dotted prefixes so skill ids like "skills.lumenloop.<name>" never match,
@@ -669,7 +753,15 @@ function assertNoNonExposedRefs(entries) {
   const callableRe = /(?<![.\w])(?:lumenloop|scout|stellarDocs)\.[A-Za-z_]\w*/g;
   const TLDS = new Set(["com", "org", "net", "io", "xyz", "dev", "app", "buzz"]);
   for (const entry of entries) {
-    const text = [entry.description ?? "", ...(entry.keywords ?? [])].join("\n");
+    const text = [
+      entry.description ?? "",
+      ...(entry.keywords ?? []),
+      // Runnable schemas ship to the model (signatures, describe, super
+      // spec) — their whole JSON is guarded text like any description.
+      ...(entry.runnable === true
+        ? [JSON.stringify(entry.inputSchema), JSON.stringify(entry.outputSchema)]
+        : [])
+    ].join("\n");
     for (const token of text.match(callableRe) ?? []) {
       if (TLDS.has(token.split(".")[1])) continue;
       if (!opIds.has(token)) {
@@ -696,19 +788,23 @@ function main() {
   assertScoutExclusionsResolve(stellarLight.openapi);
 
   const stellarDocsEntries = buildStellarDocs(stellarDocsSpec);
-  const entries = [
-    ...attachOperationKeywords(buildLumenloop(lumenloop)),
-    ...attachOperationKeywords(buildScout(stellarLight)),
-    // Docs ops carry page-title vocabulary (hundreds of distinct frequency-1
-    // tokens post-DF) — the default 64 cap truncates the alphabetical tail,
-    // so they get a roomier cap. Still bounded: 12 ops × ≤256 short tokens.
-    ...attachOperationKeywords(
-      stellarDocsEntries,
-      stellarDocsTitleExtras(stellarDocsEntries, stellarDocsTitles),
-      { cap: 256 }
-    ),
-    ...buildSkills(skillsManifest)
-  ].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  // Runnable attachment runs over the FULLY assembled set: its declared-op
+  // guard needs every service's operation entries in scope, not just skills.
+  const entries = attachRunnableSkills(
+    [
+      ...attachOperationKeywords(buildLumenloop(lumenloop)),
+      ...attachOperationKeywords(buildScout(stellarLight)),
+      // Docs ops carry page-title vocabulary (hundreds of distinct frequency-1
+      // tokens post-DF) — the default 64 cap truncates the alphabetical tail,
+      // so they get a roomier cap. Still bounded: 12 ops × ≤256 short tokens.
+      ...attachOperationKeywords(
+        stellarDocsEntries,
+        stellarDocsTitleExtras(stellarDocsEntries, stellarDocsTitles),
+        { cap: 256 }
+      ),
+      ...buildSkills(skillsManifest)
+    ].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+  );
 
   const ids = new Set();
   for (const entry of entries) {
@@ -750,8 +846,16 @@ function main() {
     `  excluded at build: lumenloop ops [${excludedLumenloop.join(", ")}], ` +
       `scout ops [${[...EXCLUDED_SCOUT_OPS].join(", ")}], ` +
       `retired skills [${[...RETIRED_ONBOARDING_SKILLS].join(", ")}], ` +
-      `lumenloop-served skill metadata (${lumenloop.skills.length}, all mirrored)`
+      `lumenloop-served skill metadata (${lumenloop.skills.length}: ` +
+      `${lumenloop.skills.filter((s) => s.set !== "partner").length} public/mirrored, ` +
+      `${lumenloop.skills.filter((s) => s.set === "partner").length} partner name-only stubs)`
   );
+  // Transparency, inclusion side: name the runnable skills the build attached
+  // (the registry is the allowlist-as-data — design §2).
+  console.log(`  runnable skills: [${Object.keys(RUNNERS).sort().join(", ")}]`);
 }
 
-main();
+// Gated so the guard tests (test/catalog.test.ts) can import the exported
+// functions above without triggering a build; `node scripts/build-catalog.mjs`
+// still builds exactly as before.
+if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) main();

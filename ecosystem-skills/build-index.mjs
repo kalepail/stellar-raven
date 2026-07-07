@@ -120,10 +120,9 @@ for (const src of manifest.sources) {
 }
 out.push("");
 out.push(
-  "_GitHub sources are pinned to full commit SHAs (independently verifiable). The `lumenloop-api` " +
-    "partner archive comes from a **private** repo behind a credentialed, mutable endpoint: it is " +
-    "**API-versioned + archive-digested** (a short API ref + a SHA256 of the exact zip), not " +
-    "git-commit-reproducible. See `MANIFEST.json` → that source's `reproducibility` field._",
+  "_Every source is public GitHub, pinned to a full commit SHA (independently verifiable); " +
+    "each source's upstream LICENSE/NOTICE files are vendored alongside its skills " +
+    "(see `THIRD-PARTY-NOTICES.md` at the repo root)._",
 );
 out.push("");
 

@@ -108,3 +108,10 @@ custom `codemode.execute` span around each sandbox run (the Worker Loader isolat
 auto-instrumented). Both are queryable in the dash (Workers & Pages → Observability) or via the
 telemetry query API. Survey of the whole surface — pricing, query API, OTel export, GraphQL
 metrics: `research/observability-cloudflare.md`.
+
+## License
+
+[Apache-2.0](./LICENSE) © 2026 Tyler van der Hoeven — **except** vendored third-party content
+(the `ecosystem-skills/skills/<source>/` mirrors and `src/catalog/vendor/`), which retains its
+upstream licenses: see [`THIRD-PARTY-NOTICES.md`](./THIRD-PARTY-NOTICES.md). Notably, the
+`openzeppelin-stellar` skills subtree is AGPL-3.0.

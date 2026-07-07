@@ -28,6 +28,12 @@ type Operation = {
   "x-execute"?: string;
   "x-algolia"?: unknown;
   "x-skill-index"?: Array<{ id: string; source: string; description: string; sections: string[] }>;
+  "x-runnable-index"?: Array<{
+    id: string;
+    description: string;
+    inputSchema: Record<string, unknown>;
+    outputSchema: Record<string, unknown>;
+  }>;
 };
 
 const spec = JSON.parse(readFileSync(SPEC_PATH, "utf8")) as {
@@ -43,6 +49,10 @@ const manifest = JSON.parse(readFileSync(join(ROOT, "catalog", "manifest.json"),
     id: string;
     service: string;
     kind: string;
+    description: string;
+    runnable?: true;
+    inputSchema: Record<string, unknown> | null;
+    outputSchema: Record<string, unknown> | null;
   }>;
 };
 
@@ -89,7 +99,7 @@ describe("shape and counts", () => {
     expect(counts.lumenloop).toBe(18);
     expect(counts.scout).toBe(20);
     expect(counts.stellarDocs).toBe(12);
-    expect(counts.skills).toBe(3);
+    expect(counts.skills).toBe(4); // list, read, ranked search, run_skill (design §5)
   });
 
   it("every path is '/{service}/{operation}' and operationIds are unique callable ids", () => {
@@ -182,6 +192,46 @@ describe("consistency with the catalog (single source of truth)", () => {
     ]!.schema as { properties: { name: { enum: string[] } } };
     const index = spec.paths["/skills/list_skills"]!.get!["x-skill-index"]!;
     expect(schema.properties.name.enum).toEqual(index.map((s) => s.id));
+  });
+});
+
+describe("runnable skills — /skills/run_skill (design §5)", () => {
+  const runSkillOp = () => spec.paths["/skills/run_skill"]!.post!;
+
+  it("exists with the exact dispatch line under the skills service", () => {
+    const op = runSkillOp();
+    expect(op).toBeDefined();
+    expect(op.operationId).toBe("skills.run_skill");
+    expect(op["x-service"]).toBe("skills");
+    expect(op["x-execute"]).toBe("await codemode.skill.run(name, input)");
+  });
+
+  it("name enum is exactly the manifest's runnable skill ids, in manifest (id-sorted) order", () => {
+    const schema = runSkillOp().requestBody!.content!["application/json"]!.schema as {
+      additionalProperties: boolean;
+      required: string[];
+      properties: { name: { enum: string[] } };
+    };
+    const runnableIds = manifest.entries.filter((e) => e.runnable === true).map((e) => e.id);
+    expect(runnableIds.length).toBeGreaterThan(0);
+    expect(schema.properties.name.enum).toEqual(runnableIds);
+    expect(schema.required).toEqual(["name", "input"]);
+    expect(schema.additionalProperties).toBe(false);
+  });
+
+  it("x-runnable-index matches the manifest entries byte-for-byte (id, description, both schemas)", () => {
+    const index = runSkillOp()["x-runnable-index"]!;
+    const runnable = manifest.entries.filter((e) => e.runnable === true);
+    expect(index.map((s) => s.id)).toEqual(runnable.map((e) => e.id));
+    for (const item of index) {
+      const entry = runnable.find((e) => e.id === item.id)!;
+      expect(item.description).toBe(entry.description);
+      // Both artifacts are sortKeysDeep'd by their builders, so JSON string
+      // equality is byte equality — the assertRunnersWired pinning, checked
+      // across the two emitted surfaces.
+      expect(JSON.stringify(item.inputSchema), item.id).toBe(JSON.stringify(entry.inputSchema));
+      expect(JSON.stringify(item.outputSchema), item.id).toBe(JSON.stringify(entry.outputSchema));
+    }
   });
 });
 

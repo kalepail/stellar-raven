@@ -20,13 +20,19 @@
  * Op extraction is regex over each execute input's {code}:
  *   /\b(lumenloop|scout|stellarDocs)\.(\w+)\s*\(/  → service op
  *   codemode.skill.read / codemode.skill_read      → service "skills"
+ *   codemode.skill.run("<id>") / codemode.skill_run → service "skills" op
+ *     "skill.run" (skillId captured); when the runner registry exists
+ *     (src/skills/runners/index.ts — research/skill-run-design.md §10), each
+ *     skill.run is EXPANDED with that runner's declared constituent ops so
+ *     coverage credits a dossier/digest run with the services it actually
+ *     touched. Registry absent (pre-feature builds) → no expansion, noted.
  *   codemode.search|catalog|spec|describe          → service "meta-discovery"
  * meta-discovery (and the top-level MCP search tool) is always on-plan and
  * excluded from the touched-service set. Rows whose execute inputs look
  * legacy-truncated (exactly 600 chars, or unparseable JSON) are flagged —
  * pre-patch run-qa.mjs sliced ALL inputs to 600 chars, so old runs undercount.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
 
@@ -38,14 +44,22 @@ export const OP_CLASSES_PATH = path.join(PLAN_DIR, "op-classes.json");
 const PLAN_SERVICES = new Set(["lumenloop", "scout", "stellarDocs", "skills"]);
 
 // One combined regex so op order inside a script is preserved (match.index).
+// skill.run must precede skill.read in the alternation only for readability —
+// the literals cannot shadow each other. The run branch optionally captures the
+// first string argument (the exact runnable-skill id) for registry expansion.
+// NOTE: transcripts store the JSON-stringified {code}, so quotes inside `code`
+// appear escaped (\" ) — the quote class therefore also admits a leading
+// backslash via the (\\?["']) group.
 const OP_RE =
-  /\b(lumenloop|scout|stellarDocs)\.(\w+)\s*\(|\bcodemode\.skill(?:\.read|_read)\s*\(|\bcodemode\.(search|catalog|spec|describe)\s*\(/g;
+  /\b(lumenloop|scout|stellarDocs)\.(\w+)\s*\(|\bcodemode\.skill(?:\.run|_run)\s*\(\s*(?:\\?["']([^\\"']+)\\?["'])?|\bcodemode\.skill(?:\.read|_read)\s*\(|\bcodemode\.(search|catalog|spec|describe)\s*\(/g;
 
 /**
  * Extract service ops (in source order) from one execute tool input string
  * (the JSON-stringified {code} input as stored in the transcript).
- * Returns { ops: [{service, op}], truncated } — truncated flags the legacy
- * 600-char slice (length exactly 600, or JSON no longer parseable).
+ * Returns { ops: [{service, op, skillId?}], truncated } — truncated flags the
+ * legacy 600-char slice (length exactly 600, or JSON no longer parseable).
+ * skill.run entries carry op "skill.run" plus skillId when the first argument
+ * was a string literal (expansion happens later, in expandSkillRuns).
  */
 export function extractExecuteOps(inputStr) {
   const raw = String(inputStr ?? "");
@@ -60,17 +74,71 @@ export function extractExecuteOps(inputStr) {
   const ops = [];
   for (const m of code.matchAll(OP_RE)) {
     if (m[1]) ops.push({ service: m[1], op: m[2] });
-    else if (m[3]) ops.push({ service: "meta-discovery", op: m[3] });
+    else if (/skill(?:\.run|_run)/.test(m[0])) ops.push({ service: "skills", op: "skill.run", ...(m[3] ? { skillId: m[3] } : {}) });
+    else if (m[4]) ops.push({ service: "meta-discovery", op: m[4] });
     else ops.push({ service: "skills", op: "skill.read" });
   }
   return { ops, truncated };
+}
+
+/**
+ * Load the skill-run runner registry (src/skills/runners/index.ts) as a plain
+ * { runnableId: [declaredOpId, ...] } map, or null with a note when it cannot
+ * be loaded. GRACEFUL DEGRADATION IS THE CONTRACT here: the eval instruments
+ * land BEFORE the feature (research/skill-run-design.md §13 step 1), so the
+ * baseline side of the A/B runs with no registry — extraction still records
+ * skill.run calls, they just don't expand. Node ≥ 22.6 strips the registry's
+ * types natively (it is node-clean by design, §2); any import failure also
+ * degrades rather than failing the grade.
+ */
+export async function loadRunnerOps(repoRoot = path.resolve(PLAN_DIR, "..", "..")) {
+  const registryPath = path.join(repoRoot, "src", "skills", "runners", "index.ts");
+  if (!existsSync(registryPath)) {
+    return { runnerOps: null, note: "runner registry absent (src/skills/runners/index.ts not built yet) — skill.run calls are counted but not expanded" };
+  }
+  try {
+    const mod = await import(pathToFileURL(registryPath).href);
+    const RUNNERS = mod.RUNNERS;
+    if (!RUNNERS) throw new Error("module has no RUNNERS export");
+    const entries = RUNNERS instanceof Map ? [...RUNNERS.entries()] : Object.entries(RUNNERS);
+    const runnerOps = {};
+    for (const [id, runner] of entries) {
+      if (!Array.isArray(runner?.ops)) throw new Error(`RUNNERS["${id}"] has no ops[] array`);
+      runnerOps[id] = [...runner.ops];
+    }
+    return { runnerOps, note: null };
+  } catch (err) {
+    return { runnerOps: null, note: `runner registry import failed (${err.message}) — skill.run calls are counted but not expanded` };
+  }
+}
+
+/**
+ * Expand each skill.run op through the registry's declared ops: the original
+ * entry is kept and the runner's constituent ops are inserted after it (each
+ * marked via: <skillId>) so touched-service coverage and progression see the
+ * work the run actually performed. No registry / unknown id / no captured id
+ * → the op passes through unexpanded.
+ */
+export function expandSkillRuns(ops, runnerOps) {
+  if (!runnerOps) return ops;
+  const out = [];
+  for (const o of ops) {
+    out.push(o);
+    if (o.service !== "skills" || o.op !== "skill.run" || !o.skillId) continue;
+    for (const declared of runnerOps[o.skillId] ?? []) {
+      const dot = declared.indexOf(".");
+      if (dot <= 0) continue; // declared ops are "<service>.<op>" catalog ids
+      out.push({ service: declared.slice(0, dot), op: declared.slice(dot + 1), via: o.skillId });
+    }
+  }
+  return out;
 }
 
 /** Class for one extracted op; falls back for the virtual services. */
 export function classOf(service, op, opClasses) {
   const cls = opClasses[`${service}.${op}`];
   if (cls) return cls;
-  if (service === "skills") return "detail"; // skill.read = read one skill by name
+  if (service === "skills") return "detail"; // skill.read / skill.run = one skill by exact name
   if (service === "meta-discovery") return op === "search" || op === "catalog" ? "broad" : "meta";
   return "unknown"; // dynamic dispatch / drift — informational, never on a progression
 }
@@ -151,30 +219,36 @@ export function detectProgression(orderedOps, opClasses) {
 const isSearchToolCall = (t) => /^mcp__.+__search/.test(t.tool ?? "");
 const isExecuteToolCall = (t) => (t.tool ?? "").endsWith("execute");
 
-/** Grade one result row against the rules + op classes. */
-export function gradeRow(row, rulesDoc, opClasses) {
+/**
+ * Grade one result row against the rules + op classes. `runnerOps` (from
+ * loadRunnerOps) expands skill.run calls with their declared constituent ops
+ * before coverage/progression grading; null (registry absent) grades the
+ * unexpanded stream.
+ */
+export function gradeRow(row, rulesDoc, opClasses, runnerOps = null) {
   const { ruleId, plan } = matchPlanRule(row, rulesDoc);
 
   // Ordered op stream: MCP search calls count as meta-discovery broad steps;
   // execute inputs contribute their extracted ops in source order.
-  const orderedOps = [];
+  const extractedOps = [];
   let searchQueries = 0;
   let executeCalls = 0;
   let truncatedInputs = 0;
   for (const entry of row.transcript ?? []) {
     if (isSearchToolCall(entry)) {
       searchQueries++;
-      orderedOps.push({ service: "meta-discovery", op: "search" });
+      extractedOps.push({ service: "meta-discovery", op: "search" });
     } else if (isExecuteToolCall(entry)) {
       executeCalls++;
       const { ops, truncated } = extractExecuteOps(entry.input);
       if (truncated) truncatedInputs++;
       for (const op of ops) {
         if (op.service === "meta-discovery" && op.op === "search") searchQueries++;
-        orderedOps.push(op);
+        extractedOps.push(op);
       }
     }
   }
+  const orderedOps = expandSkillRuns(extractedOps, runnerOps);
 
   const touchedServices = [...new Set(orderedOps.map((o) => o.service))]
     .filter((s) => PLAN_SERVICES.has(s))
@@ -297,7 +371,10 @@ async function main() {
   const results = JSON.parse(readFileSync(resultsPath, "utf8"));
   if (!Array.isArray(results.rows)) throw new Error(`${resultsPath}: missing rows[]`);
 
-  const planRows = results.rows.map((row) => gradeRow(row, rulesDoc, opClasses));
+  const { runnerOps, note: runnerNote } = await loadRunnerOps();
+  if (runnerNote) console.log(`note: ${runnerNote}`);
+
+  const planRows = results.rows.map((row) => gradeRow(row, rulesDoc, opClasses, runnerOps));
   const summary = summarizePlan(planRows);
 
   const outPath = resultsPath.replace(/\.json$/, "") + ".plan.json";
@@ -310,6 +387,7 @@ async function main() {
           rulesPath,
           rulesVersion: rulesDoc.version,
           opClassesPath: OP_CLASSES_PATH,
+          runnerRegistry: runnerOps ? { runnableIds: Object.keys(runnerOps).sort() } : { absent: true, note: runnerNote },
           gradedAt: new Date().toISOString()
         },
         summary,

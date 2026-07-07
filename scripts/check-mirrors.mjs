@@ -64,6 +64,21 @@ function checkEcosystemSkills() {
         );
       }
     }
+    // Vendored upstream LICENSE/NOTICE files (redistribution notices) —
+    // THIRD-PARTY-NOTICES.md depends on these being present, so a manifest
+    // entry with no file on disk must fail just like a missing skill file.
+    for (const file of source.license_files ?? []) {
+      assertFile(
+        `ecosystem-skills/skills/${source.id}/${file}`,
+        `ecosystem-skills manifest lists missing license/notice file: ${source.id}/${file}`,
+      );
+    }
+    if ((source.license_files ?? []).length === 0) {
+      fail(
+        `ecosystem-skills source "${source.id}" vendors no upstream LICENSE/NOTICE — ` +
+          `every mirrored source must carry its redistribution notice (see THIRD-PARTY-NOTICES.md)`,
+      );
+    }
   }
 
   if (manifest.skill_count !== skillIds.size) {

@@ -5,6 +5,12 @@ on:
     branches: [main]
   pull_request:
 
+# Explicit least-privilege token: this workflow only reads the repo. The repo
+# default is currently read-only too, but that's a mutable setting — pin it
+# here so fork PRs on the public repo can never inherit anything broader.
+permissions:
+  contents: read
+
 jobs:
   # Server-side backstop for the pre-commit hook (scripts/scan-secrets.mjs).
   # Runs on every push/PR regardless of GitHub plan — unlike GitHub push

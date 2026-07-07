@@ -1,16 +1,16 @@
 {
-  "changelogEntryCount": 29,
+  "changelogEntryCount": 31,
   "changelogLatest": {
     "date": "2026-07-06",
-    "detail": "search_repos results and explain_repo now carry a codeVerified object: stellarProof (how we know it's Stellar — cargo-sdk/contract-macros/lang-sdk/js-sdk/stellar-toml), codeDepth (0-1 substance of the contract logic, not stars), isDeployableContract (Cargo cdylib), sorobanSdkVersion + versionStatus (current/supported/deprecated/unknown vs the latest protocol). Derived by scanning the repo's Cargo.toml + source through a shared, tested pipeline; codeDepth also feeds repoScore so code-verified deep contracts outrank starred-but-shallow ones. null until a repo is code-scanned (honest — we never claim verification we haven't done). ADDITIVE + routing-neutral: new response fields only, no operation added/removed, no operation-description changes.",
-    "summary": "codeVerified block on repos — code-truth from analyzing each repo's ACTUAL source (stellarProof, codeDepth, deployable-contract, soroban-sdk version status). The discriminator between a popular repo and real, current, deep Soroban code.",
+    "detail": "scfRound previously shipped as a hand-curated constant that asserted 'no round confirmed open' while the cited source showed SCF #45 in Submission (sls-014). It now parses the awards page's structured round data (roundNumber/phase/submission deadline) on a 6-hour revalidate, adds currentPhase + roundsInProgress + source:'live'|'unavailable', and enforces the invariant: on fetch failure the note says the live check failed and points at verifyAt — it never asserts a negative. sls-015: the searchProjects operation description's named-product mentions (Etherfuse Stablebonds, Soroswap, explorers) are now explicitly bounded to directory facts, per the finding that agents read them as routing claims for editorial questions. DESCRIPTION CHANGE — downstream routing catalogs should re-baseline after ingesting (the change was requested by the downstream eval itself).",
+    "summary": "sls-014: getRfps meta.scfRound is now LIVE (6h revalidate from communityfund.stellar.org/awards' embedded award_rounds payload) — no more stale-at-birth round state. sls-015: searchProjects description scopes its product name-drops to directory facts (editorial/analysis content belongs to content platforms).",
     "surfaces": [
       "api"
     ],
-    "type": "added",
-    "version": "openapi 1.5.0"
+    "type": "fixed",
+    "version": "openapi 1.6.1"
   },
-  "fetchedAt": "2026-07-06T15:29:47.428Z",
+  "fetchedAt": "2026-07-06T21:16:58.912Z",
   "openapi": {
     "components": {
       "parameters": {
@@ -841,7 +841,7 @@
       },
       "summary": "Agent-native data layer for the Stellar ecosystem — projects, builders, hackathons, SCF, audits, research.",
       "title": "Stellar Scout API",
-      "version": "1.5.0"
+      "version": "1.6.1"
     },
     "openapi": "3.1.0",
     "paths": {
@@ -1451,6 +1451,17 @@
               }
             },
             {
+              "description": "Set to 1 to bypass the directory quality bar. By default results include only complete, non-archived profiles (tagline + a contact path), pilot partners first; all=1 returns every published partner including placeholder-thin profiles.",
+              "in": "query",
+              "name": "all",
+              "schema": {
+                "enum": [
+                  "1"
+                ],
+                "type": "string"
+              }
+            },
+            {
               "$ref": "#/components/parameters/q"
             },
             {
@@ -1794,7 +1805,7 @@
       },
       "/api/projects/search": {
         "get": {
-          "description": "Search the curated Stellar **project/product directory** — what's been *built*, by whom, with SCF-funding and live/inactive status (wallets, DEXes, anchors, lending, oracles, RWAs, tooling). Keyword + synonym match (dex→amm/swap, rosca→susu/chama) ranked by curated **prominence**, SDF/community verification, SCF funding, and Live status; falls back to semantic vector search when keyword hits are thin. Each result carries status, scfAwarded/scfTotalAwardedUSD, `builtBy` (the org/entity behind it — 'who built X'), the project's own links, a confidence score, and its top indexed `repos` inline. **Use when:** 'who/what already exists for X', 'has anyone built X', 'is there a live/funded project for X', or you need a project's funding/status/competitors. **Not for:** raw GitHub source repos ranked by code quality → use search_repos; docs, SEPs, audits, how-to/feasibility knowledge → use search_research; category counts or whitespace → use get_clusters. Use for 'who has built / is there a / which projects / give me a directory of' questions about Stellar apps, products, protocols, dApps, teams, companies and startups by category — DeFi, lending, credit, yield, AMM, DEX, swap, NFT marketplace, wallets, anchors and on/off-ramps, RWA and real-world-asset tokenization, stablecoins, payments, oracles, identity, gaming, infrastructure, tooling. Also 'is there a mature X I could integrate', 'who is building Y', projects operating as anchors, and named products (Etherfuse Stablebonds, Soroswap). Also answers list/enumerate/compare questions from the curated directory: which wallets exist and how they differ, anchors and anchor infrastructure, the main DeFi projects (directory / market map), NFT marketplaces, perpetuals/derivatives DEXes, block explorers (stellar.expert, StellarChain), AMM/liquidity protocols and their yields, and specific products like Etherfuse Stablebonds (USTRY/CETES).",
+          "description": "Search the curated Stellar **project/product directory** — what's been *built*, by whom, with SCF-funding and live/inactive status (wallets, DEXes, anchors, lending, oracles, RWAs, tooling). Keyword + synonym match (dex→amm/swap, rosca→susu/chama) ranked by curated **prominence**, SDF/community verification, SCF funding, and Live status; falls back to semantic vector search when keyword hits are thin. Each result carries status, scfAwarded/scfTotalAwardedUSD, `builtBy` (the org/entity behind it — 'who built X'), the project's own links, a confidence score, and its top indexed `repos` inline. **Use when:** 'who/what already exists for X', 'has anyone built X', 'is there a live/funded project for X', or you need a project's funding/status/competitors. **Not for:** raw GitHub source repos ranked by code quality → use search_repos; docs, SEPs, audits, how-to/feasibility knowledge → use search_research; category counts or whitespace → use get_clusters. Use for 'who has built / is there a / which projects / give me a directory of' questions about Stellar apps, products, protocols, dApps, teams, companies and startups by category — DeFi, lending, credit, yield, AMM, DEX, swap, NFT marketplace, wallets, anchors and on/off-ramps, RWA and real-world-asset tokenization, stablecoins, payments, oracles, identity, gaming, infrastructure, tooling. Also 'is there a mature X I could integrate', 'who is building Y', projects operating as anchors, and named products (Etherfuse Stablebonds, Soroswap) — for DIRECTORY FACTS about those products only (status, funding, builder, links); for editorial/analysis content about them (articles, interviews, metrics commentary, deep dives) use content platforms instead. Also answers list/enumerate/compare questions from the curated directory: which wallets exist and how they differ, anchors and anchor infrastructure, the main DeFi projects (directory / market map), NFT marketplaces, perpetuals/derivatives DEXes, block explorers (stellar.expert, StellarChain), AMM/liquidity protocols and their yields, and specific products like Etherfuse Stablebonds (USTRY/CETES) — again as directory records, not articles about them.",
           "operationId": "searchProjects",
           "parameters": [
             {
@@ -2440,7 +2451,7 @@
       }
     ]
   },
-  "openapiVersion": "1.5.0",
+  "openapiVersion": "1.6.1",
   "operationCount": 24,
   "service": "stellar-light",
   "source": {
@@ -2452,7 +2463,7 @@
     "status": "https://stellarlight.xyz/api/status"
   },
   "status": {
-    "apiVersion": "1.5.0",
+    "apiVersion": "1.6.1",
     "docs": "https://stellarlight.xyz/scout",
     "endpoints": [
       "/api/status",
@@ -2502,15 +2513,15 @@
       },
       {
         "count": 2423,
-        "lastUpdatedAt": "2026-07-06T15:17:37.996Z",
+        "lastUpdatedAt": "2026-07-06T16:34:30.935Z",
         "name": "repos",
         "notes": "Indexed-and-scored Stellar GitHub repos (powers /api/repos/search)"
       },
       {
         "count": 1,
-        "lastUpdatedAt": "2026-07-05T16:02:52.177898+00:00",
+        "lastUpdatedAt": "2026-07-06T17:38:38.449564+00:00",
         "name": "ecosystemStats",
-        "notes": "Electric Capital snapshot, as of 2026-06-27"
+        "notes": "Electric Capital snapshot, as of 2026-06-28"
       },
       {
         "count": 7,

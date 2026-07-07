@@ -86,10 +86,18 @@ export function createExecuteRunner(env: Env): ExecuteRunner {
     // The flag is ADVICE-ONLY: it may change the truncation footer's wording,
     // never the token budget or which result bytes are kept.
     let skillRead = false;
+    // Count of skill.run dispatches this run (attempted, whatever the
+    // outcome) — stamped on the codemode.execute span below so runnable-skill
+    // usage is visible in the trace waterfall; per-run outcomes live in the
+    // skill_run log events the host dispatch emits (design §8).
+    let skillRuns = 0;
     const providers = buildSandbox(getCatalog(), bundleJson as SkillBundle, env, {
       superSpec: superSpecJson,
       onSkillRead: () => {
         skillRead = true;
+      },
+      onSkillRun: () => {
+        skillRuns += 1;
       }
     });
     // Custom span because the Worker Loader isolate is NOT auto-instrumented
@@ -102,6 +110,7 @@ export function createExecuteRunner(env: Env): ExecuteRunner {
       span.setAttribute("sandbox.ok", result.error === undefined);
       span.setAttribute("sandbox.logLines", result.logs?.length ?? 0);
       span.setAttribute("sandbox.skillRead", skillRead);
+      span.setAttribute("sandbox.skillRun", skillRuns);
       return result;
     });
     const logs = shapeLogs(outcome.logs, secrets);

@@ -10,8 +10,8 @@
  * Field rationale (what earns its place for a two-tool search+execute MCP):
  *  - id / service / kind / description → the search scorer's input fields.
  *  - inputSchema / outputSchema        → rendered into the TS `signature`
- *    returned with operation hits, and execute-side arg validation —
- *    the model never owns URLs/args, PLAN §4.
+ *    returned with operation and runnable-skill hits, and execute-side arg
+ *    validation — the model never owns URLs/args, PLAN §4.
  *  - transport                         → what the adapters need to actually
  *    place the call.
  *  - provenance                        → where the entry came from + snapshot
@@ -77,9 +77,28 @@ export const catalogEntrySchema = z.object({
    * (src/catalog/scoring.ts); never rendered to users.
    */
   keywords: z.array(z.string()).optional(),
-  /** JSON Schema for call args (operations); null for skills/sections. */
+  /**
+   * Runnable-skill marker (research/skill-run-design.md §5): literal `true`
+   * ONLY on the kind:"skill" entries whose data-gathering core also ships as
+   * a bundled host-side runner (src/skills/runners/), callable inside
+   * `execute` via `codemode.skill.run(id, input)`. A deliberate contract
+   * broadening, not a new kind: "skills are prose; a declared few are also
+   * callable" — one skill, one id, two affordances (read + run). A second
+   * kind/entry would recreate the twin-identity problem ADR-0002/0003 killed.
+   * Runnable entries MUST carry both schemas (enforced by
+   * refinedCatalogSchema in src/catalog/search.ts); the builder attaches the
+   * flag + schemas from the RUNNERS registry (scripts/build-catalog.mjs).
+   */
+  runnable: z.literal(true).optional(),
+  /**
+   * JSON Schema for call args (operations) or for `codemode.skill.run` input
+   * (runnable skills); null for prose-only skills and sections.
+   */
   inputSchema: jsonSchemaShape.nullable(),
-  /** JSON Schema for the result where the upstream declares one; else null. */
+  /**
+   * JSON Schema for the result where the upstream declares one, or the
+   * runner's declared `data` payload contract (runnable skills); else null.
+   */
   outputSchema: jsonSchemaShape.nullable(),
   transport: transportSchema.nullable(),
   provenance: provenanceSchema
