@@ -269,7 +269,7 @@ async function selfTest() {
     tags: { freshness: true, liveData: true },
     graderNotes: "Synthetic long-result pack guard.",
     candidateAnswer:
-      "Alpha Town Hall covered a Signal Backstop migration, and the Beta Portfolio Intelligence video named North Capital and Delta Vault.",
+      "Alpha Town Hall covered a Signal Backstop migration, and the Beta Portfolio Intelligence video named North Capital and Delta Vault. The deep body says $42,000 moved in seven minutes.",
     transcript: [
       {
         tool: "mcp__raven__execute",
@@ -277,8 +277,8 @@ async function selfTest() {
         resultChars: 30000,
         isError: false,
         result:
-          '{"items":[{"title":"Alpha Town Hall","url":"https://example.test/watch?v=secret","date":"2026-07-01","summary":"Alpha lending coverage discussed a Signal Backstop migration and source-basis evidence."},{"title":"Beta Portfolio Intelligence","url":"https://example.test/beta#frag","date":"2026-07-02","summary":"The team named North Capital, Delta Vault, and risk monitoring APIs."}],"bulk":"' +
-          "x".repeat(26000) +
+          '{"items":[{"title":"Alpha Town Hall","url":"https://example.test/watch?v=secret","date":"2026-07-01","summary":"Alpha lending coverage discussed a Signal Backstop migration and source-basis evidence."},{"title":"Beta Portfolio Intelligence","url":"https://example.test/beta#frag","date":"2026-07-02","summary":"The team named North Capital, Delta Vault, and risk monitoring APIs."}],"deepArticleBody":"This paragraph is not a source-shaped item. It says $42,000 moved in seven minutes after the first alert, which claim-anchored extraction must preserve.","bulk":"' +
+          "x".repeat(25000) +
           '"}\n--- TRUNCATED --- Result was ~7500 tokens (limit: 6000). Bulk lost from top-level keys: "bulk" ~26.0k chars (cut).'
       }
     ]
@@ -289,6 +289,8 @@ async function selfTest() {
     longEvidence.includes("Alpha Town Hall") &&
     longEvidence.includes("Signal Backstop migration") &&
     longEvidence.includes("North Capital") &&
+    longEvidence.includes("claimSnippets:") &&
+    longEvidence.includes("$42,000 moved in seven minutes") &&
     !longEvidence.includes("v=secret") &&
     !longEvidence.includes("#frag");
   if (!longOk) {

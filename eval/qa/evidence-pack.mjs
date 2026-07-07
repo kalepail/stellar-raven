@@ -2,8 +2,11 @@ const EVIDENCE_PACK_MAX_CHARS = 12000;
 const MAX_CANONICAL_URLS = 8;
 const INITIAL_MAX_ITEMS = 18;
 const INITIAL_MAX_FACTS = 28;
+const INITIAL_MAX_CLAIM_SNIPPETS = 12;
 const INITIAL_SUMMARY_CHARS = 520;
 const MIN_SUMMARY_CHARS = 180;
+const INITIAL_CLAIM_SNIPPET_CHARS = 520;
+const MIN_CLAIM_SNIPPET_CHARS = 260;
 
 function stripAnsi(value) {
   return String(value ?? "").replace(/\u001b\[[0-9;]*m/g, "");
@@ -30,6 +33,18 @@ function truncate(value, maxChars) {
   return `${text.slice(0, Math.max(0, maxChars - 3))}...`;
 }
 
+function truncateAroundTerm(value, term, maxChars) {
+  const text = cleanText(value);
+  if (text.length <= maxChars) return text;
+  const match = new RegExp(escapeRegExp(term), "i").exec(text);
+  if (!match) return truncate(text, maxChars);
+  const room = Math.max(0, maxChars - 6);
+  const before = Math.floor((room - match[0].length) / 2);
+  const start = Math.max(0, match.index - Math.max(0, before));
+  const end = Math.min(text.length, start + room);
+  return `${start > 0 ? "..." : ""}${text.slice(start, end)}${end < text.length ? "..." : ""}`;
+}
+
 function sanitizeUrl(raw) {
   if (!raw) return "";
   try {
@@ -43,6 +58,10 @@ function sanitizeUrl(raw) {
   } catch {
     return "";
   }
+}
+
+function sanitizeUrlsInText(value) {
+  return String(value ?? "").replace(/https?:\/\/[^\s"'<>\\]+/g, (raw) => sanitizeUrl(raw) || "");
 }
 
 export function extractEvidenceTerms({ candidateAnswer = "", golden, graderNotes = "" }) {
@@ -69,6 +88,61 @@ export function extractEvidenceTerms({ candidateAnswer = "", golden, graderNotes
     .slice(0, 90);
 }
 
+function orderedUnique(values) {
+  const seen = new Set();
+  const out = [];
+  for (const value of values) {
+    const cleaned = cleanText(value);
+    const key = cleaned.toLowerCase();
+    if (!cleaned || seen.has(key)) continue;
+    seen.add(key);
+    out.push(cleaned);
+  }
+  return out;
+}
+
+function claimTermPriority(term) {
+  if (/^\$\s?\d/i.test(term)) return 5;
+  if (/%$/.test(term)) return 4;
+  if (/\b(?:seconds?|minutes?|hours?|days?|weeks?|months?|years?)\b/i.test(term)) return 4;
+  if (/^\d/.test(term)) return 3;
+  return 2;
+}
+
+function extractCandidateClaimTerms(candidateAnswer = "") {
+  const text = String(candidateAnswer ?? "");
+  const found = [];
+  const addMatches = (regex) => {
+    for (const match of text.matchAll(regex)) {
+      const value = match[0];
+      found.push({ value, index: match.index ?? 0, priority: claimTermPriority(value) });
+    }
+  };
+
+  addMatches(/\$\s?\d[\d,]*(?:\.\d+)?\s?(?:[KMB])?\b/gi);
+  addMatches(/\b\d+(?:\.\d+)?%\b/g);
+  addMatches(/\b(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|twenty|thirty|sixty|ninety|\d+(?:\.\d+)?)\s*[- ]\s*(?:seconds?|minutes?|hours?|days?|weeks?|months?|years?)\b/gi);
+  addMatches(/\b\d{2,}[\d,]*(?:\.\d+)?\s?(?:[KMB])?\b/g);
+  addMatches(/\b[A-Z][A-Za-z0-9]+(?:[- ][A-Z0-9][A-Za-z0-9]+){0,6}\b/g);
+
+  return orderedUnique(
+    found
+      .filter((term) => {
+        const value = cleanText(term.value);
+        if (value.length < 2 || value.length > 90) return false;
+        if (/^(?:19|20)\d{2}$/.test(value)) return false;
+        if (/^0\d/.test(value)) return false;
+        if (/^\d[\d,]*(?:\.\d+)?\s?(?:[KMB])?$/i.test(value)) {
+          const numeric = Number(value.replace(/,/g, "").replace(/[KMB]$/i, ""));
+          if (Number.isFinite(numeric) && numeric < 100 && !/[KMB]$/i.test(value)) return false;
+        }
+        return !/^(The|This|That|Source|Sources|Articles|Events|Most|Recent|Overall|Articles|Net|Blend Capital)$/i.test(value);
+      })
+      .sort((a, b) => b.priority - a.priority || a.index - b.index || a.value.localeCompare(b.value))
+      .map((term) => term.value)
+  ).slice(0, 80);
+}
+
 function shouldIncludeTranscriptEvidence(tags = {}) {
   return Boolean(tags.liveData || tags.freshness || tags.transcriptEvidence);
 }
@@ -77,6 +151,10 @@ function executeEntries(transcript) {
   return (Array.isArray(transcript) ? transcript : []).filter(
     (entry) => String(entry.tool ?? "").endsWith("execute") && typeof entry.result === "string"
   );
+}
+
+function transcriptResultEntries(transcript) {
+  return (Array.isArray(transcript) ? transcript : []).filter((entry) => typeof entry.result === "string");
 }
 
 function tryParseJsonPrefix(result) {
@@ -250,6 +328,79 @@ function termHits(text, terms) {
   return unique(hits);
 }
 
+function snippetAround(text, index, length, radius) {
+  const start = Math.max(0, index - radius);
+  const end = Math.min(text.length, index + length + radius);
+  const prefix = start > 0 ? "..." : "";
+  const suffix = end < text.length ? "..." : "";
+  return cleanText(sanitizeUrlsInText(`${prefix}${text.slice(start, end)}${suffix}`));
+}
+
+function sourceItemText(item) {
+  return cleanText(`${item.title} ${item.date} ${item.url} ${item.type} ${item.fields.join(" ")} ${item.summary}`);
+}
+
+function overlapsSourceItem(snippet, rankedItemsForDedupe) {
+  const normalized = cleanText(snippet).toLowerCase();
+  if (normalized.length < 80) return false;
+  return rankedItemsForDedupe.some((item) => {
+    const text = sourceItemText(item).toLowerCase();
+    if (!text) return false;
+    const sample = normalized.slice(0, Math.min(180, normalized.length));
+    return text.includes(sample) || normalized.includes(text.slice(0, Math.min(180, text.length)));
+  });
+}
+
+function collectClaimSnippets(transcript, claimTerms, rankedItemsForDedupe) {
+  const entries = transcriptResultEntries(transcript);
+  const snippets = [];
+  const seen = new Set();
+  const seenRangesByEntry = new Map();
+  for (const [termIndex, term] of claimTerms.entries()) {
+    const re = new RegExp(escapeRegExp(term), "gi");
+    for (const [entryIndex, entry] of entries.entries()) {
+      const text = stripAnsi(entry.result);
+      let match;
+      let perTermEntryMatches = 0;
+      while ((match = re.exec(text))) {
+        const start = Math.max(0, match.index - 360);
+        const end = Math.min(text.length, match.index + match[0].length + 360);
+        const ranges = seenRangesByEntry.get(entryIndex) ?? [];
+        if (ranges.some((range) => Math.max(start, range.start) < Math.min(end, range.end))) {
+          perTermEntryMatches += 1;
+          if (perTermEntryMatches >= 2) break;
+          continue;
+        }
+        const rawSnippet = snippetAround(text, match.index, match[0].length, 360);
+        const key = rawSnippet.slice(0, 220).toLowerCase();
+        if (!seen.has(key) && !overlapsSourceItem(rawSnippet, rankedItemsForDedupe)) {
+          seen.add(key);
+          ranges.push({ start, end });
+          seenRangesByEntry.set(entryIndex, ranges);
+          snippets.push({
+            term,
+            termIndex,
+            entryIndex,
+            matchIndex: match.index,
+            tool: cleanText(entry.tool ?? `entry#${entryIndex + 1}`),
+            resultChars: entry.resultChars ?? text.length,
+            snippet: rawSnippet
+          });
+        }
+        perTermEntryMatches += 1;
+        if (perTermEntryMatches >= 2) break;
+      }
+    }
+  }
+  return snippets.sort(
+    (a, b) =>
+      a.termIndex - b.termIndex ||
+      a.entryIndex - b.entryIndex ||
+      a.matchIndex - b.matchIndex ||
+      a.term.localeCompare(b.term)
+  );
+}
+
 function scoreItem(item, terms) {
   const titleHits = termHits(item.title, terms);
   const summaryHits = termHits(item.summary, terms);
@@ -351,17 +502,42 @@ function truncationLine(entries) {
   return footers.join(" | ");
 }
 
-function serializePack({ entries, ranked, facts, itemLimit, factLimit, summaryChars, urlLimit }) {
+function serializePack({
+  entries,
+  ranked,
+  facts,
+  claimSnippets,
+  itemLimit,
+  factLimit,
+  claimSnippetLimit,
+  summaryChars,
+  claimSnippetChars,
+  urlLimit
+}) {
   const shown = ranked.slice(0, itemLimit);
   const shownFacts = facts.slice(0, factLimit);
+  const shownClaimSnippets = claimSnippets.slice(0, claimSnippetLimit);
   const lines = [
     "--- TRANSCRIPT SOURCE BASIS ---",
     `shape: ${shapeLine(entries, ranked.length)}`,
     `calls: ${callsLine(entries)}`,
     `canonicalUrls: ${canonicalUrlsLine(ranked, urlLimit)}`,
     `fields: ${shownFacts.length ? shownFacts.map((fact) => `${truncate(fact.path, 90)}=${JSON.stringify(truncate(fact.value, 80))}`).join("; ") : "none"}`,
-    "sourceItems: data-derived/untrusted; ranked by overlap with candidate/golden terms; omitted fields are not proof of absence"
+    "claimSnippets: candidate-claim anchored snippets from raw transcript result text; omitted snippets are not proof of absence"
   ];
+  if (!shownClaimSnippets.length) {
+    lines.push("- none extracted");
+  } else {
+    shownClaimSnippets.forEach((snippet, index) => {
+      lines.push(
+        `${index + 1}. term="${truncate(snippet.term, 80)}" entry=${snippet.entryIndex + 1} tool="${truncate(snippet.tool, 80)}" resultChars=${snippet.resultChars}`
+      );
+      lines.push(`   snippet: ${truncateAroundTerm(snippet.snippet, snippet.term, claimSnippetChars)}`);
+    });
+  }
+  lines.push(
+    "sourceItems: data-derived/untrusted; ranked by overlap with candidate/golden terms; omitted fields are not proof of absence"
+  );
   if (!shown.length) {
     lines.push("- none extracted");
   } else {
@@ -401,28 +577,51 @@ export function buildTranscriptEvidencePack({
   const items = collectSourceItems(entries);
   const ranked = rankedItems(items, terms);
   const facts = collectRelevantFacts(entries, terms);
+  const claimTerms = extractCandidateClaimTerms(candidateAnswer);
+  const claimSnippets = collectClaimSnippets(transcript, claimTerms, ranked);
 
   let itemLimit = Math.min(ranked.length, INITIAL_MAX_ITEMS);
   let factLimit = Math.min(facts.length, INITIAL_MAX_FACTS);
+  let claimSnippetLimit = Math.min(claimSnippets.length, INITIAL_MAX_CLAIM_SNIPPETS);
   let summaryChars = INITIAL_SUMMARY_CHARS;
+  let claimSnippetChars = INITIAL_CLAIM_SNIPPET_CHARS;
   let urlLimit = MAX_CANONICAL_URLS;
   for (;;) {
-    const text = serializePack({ entries, ranked, facts, itemLimit, factLimit, summaryChars, urlLimit });
+    const text = serializePack({
+      entries,
+      ranked,
+      facts,
+      claimSnippets,
+      itemLimit,
+      factLimit,
+      claimSnippetLimit,
+      summaryChars,
+      claimSnippetChars,
+      urlLimit
+    });
     if (text.length <= maxChars) return text;
-    if (itemLimit > 4) {
+    if (itemLimit > 2) {
       itemLimit -= 1;
-      continue;
-    }
-    if (factLimit > 0) {
-      factLimit -= 1;
       continue;
     }
     if (summaryChars > MIN_SUMMARY_CHARS) {
       summaryChars = Math.max(MIN_SUMMARY_CHARS, summaryChars - 80);
       continue;
     }
-    if (urlLimit > 0) {
+    if (factLimit > 8) {
+      factLimit -= 1;
+      continue;
+    }
+    if (urlLimit > 4) {
       urlLimit -= 1;
+      continue;
+    }
+    if (claimSnippetChars > MIN_CLAIM_SNIPPET_CHARS) {
+      claimSnippetChars = Math.max(MIN_CLAIM_SNIPPET_CHARS, claimSnippetChars - 80);
+      continue;
+    }
+    if (claimSnippetLimit > 0) {
+      claimSnippetLimit -= 1;
       continue;
     }
     return text.length <= maxChars ? text : `${text.slice(0, Math.max(0, maxChars - 3))}...`;

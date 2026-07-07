@@ -361,9 +361,14 @@ execute call outcomes and sanitized canonical URLs, parse source-like items (`ti
 `summary`), rank them by overlap with candidate/golden terms, label them data-derived/untrusted,
 and enforce a hard post-serialization char budget. Packed URLs are sanitized, so stripped query or
 fragment text is not contradiction evidence. Non-live/non-freshness cases still receive no transcript
-evidence unless explicitly tagged for it. **Comparability:** this is a prompt/rubric semantic change
+evidence unless explicitly tagged for it. Todo 873 extended the same v2.3 pack format with
+claim-anchored snippets: salient candidate-answer claims (amounts, numbers, durations, percentages,
+proper-noun phrases) are matched against raw transcript result text so non-source-shaped prose can
+support the answer without dumping whole payloads. The judge prompt did not change, so the rubric
+stamp stays v2.3. **Comparability:** this is a prompt/rubric semantic change relative to v2.2
 (`JUDGE_RUBRIC=v2.3`); do not compare v2.3 wrong counts against v2.2/native stored verdicts without
-re-judging the saved answers under v2.3.
+re-judging the saved answers under v2.3. For same-rubric v2.3 rows judged before todo 873, targeted
+rejudge is still needed when the pack shape matters.
 
 ## Known limitations
 
