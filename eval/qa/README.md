@@ -306,6 +306,32 @@ summaries the v2.2 judge called invented (`Templar`, `backstop LP market migrati
 pack described below; keep the detailed rubric mechanics there rather than duplicating them in
 result records.
 
+**Results — 2026-07-07 artifact/source-basis lane ship round** (todo 870; rubric v2.3 throughout,
+answering/judge claude-sonnet-5; dev server on the artifact-lane build with the loopback
+`dev-local` owner active). Routing gate PASS (`eval/results/routing-2026-07-07T19-13-48-644Z.json`).
+Same-rubric baseline: the stored 6000-cap rows re-judged under v2.3 read live-5 = 5 correct
+(blend-coverage wrong→correct via the v2.3 pack; one identical-input variance flip on
+hackathon-winners, monitor-only), main-2 = 2 correct. Experiment: live-5
+`results/2026-07-07T19-26-06-variantA.json` original 3C/2P, main-2
+`results/2026-07-07T19-27-04-variantA.json` 2C. Both experiment partials live-verified as judge
+artifacts (disputed specifics verbatim in tool results — hackathon prize split in description
+prose + `submissionCount`, Blend incident specifics in article bodies); the fix is the todo-873
+claim-anchored pack extension, under which both rows re-judge correct. Corrected reading: live-5
+5C, main-2 2C — neutral-or-better on the payload-heavy class with `codemode.artifact.read` used
+in 4/5 live cases (blend 4×), 3 recoverable execute slips (two malformed tool calls, one
+envelope-path misread the fail-loud guard recovered), no main-battery regression. Ship gate PASS.
+Closing sample-30 battery `results/2026-07-07T19-58-35-variantA.json`: **19 correct / 11 partial /
+0 wrong / 0 error** (judged pre-873-pack by module cache; immaterial to untagged rows). Partial
+review: 7 legitimate completeness partials (heterogeneous golden-nuance omissions, do-not-act
+bucket); 4 wrong-claim partials → sk-001 recurrence (stale wasm target read from the mirrored
+skill), sk-002 recurrence (reentrancy claim, same source), sls-017 filed (LOBSTR XRPL support
+omitted from directory records), and one stale golden (q-soroban-storage-types: post-P23
+auto-restore semantics) corrected via the golden-truth workflow (CAP-0066 triangulation; docs
+ambiguity filed as sd-007). Under the corrected golden that stored row re-judges wrong, honestly:
+the candidate had Instance auto-restore right but still described Persistent as
+RestoreFootprintOp-only — a genuine failure whose root cause is the sd-007 docs ambiguity, which
+the old golden had masked by encoding the same stale belief. Numbers as-is, nothing tuned.
+
 **Second judge-artifact class (2026-07-03 evening, Solo todo 826):** the rubric-v2 addendum can
 be bypassed by **avoid-clause phrasing** — a golden must-avoid banning claims "beyond corpus
 support" makes a corpus-blind judge read beyond-golden specifics as avoid-matched, wrong again.

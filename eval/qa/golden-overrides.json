@@ -590,6 +590,86 @@
     ]
    },
    "graderNotesAppend": "The live submissions record carries per-submission award_type and budget fields (verified against the official SCF site 2026-07-06): SCF #15 $57,600 + SCF #17 $139,150 + SCF #21 $100,000 + Liquidity Award '24 Q1 $50,000 = $346,750 exactly. Record-consistent per-submission detail is corpus-grounded, NOT fabrication — do not penalize richer-than-golden detail that matches these figures/labels. '3 rounds' (numbered) and '4 awarded submissions' are both correct framings. Rounded variants ($57.6K etc.) are fine; the official site itself rounds."
+  },
+  "q-soroban-storage-types": {
+   "why": "The generic storage-types golden under-specified current Protocol 23 restoration semantics, letting the judge treat Instance/Persistent restoration as RestoreFootprintOp-only. Current truth: Persistent and Instance entries are archived, not deleted, and can be auto-restored during InvokeHostFunctionOp when the archived keys are included in the restore metadata/restore footprint (usually from RPC simulation); RestoreFootprintOp remains the manual/rare fallback. This is eval-side freshness drift of protocol semantics, amplified by adjacent Stellar Docs wording that still describes RestoreFootprintOp without the Protocol 23 caveat.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "Soroban has exactly three storage types with the stable roles in this case: Persistent for long-lived per-key data, Temporary for short-lived/cheaper data, and Instance for small contract-instance state loaded with the instance.",
+     "verdict": "confirmed",
+     "classes": [
+      "A: developers.stellar.org 'How to choose the right storage type' fetched 2026-07-07 — storage table lists Persistent / Temporary / Instance and TTL behavior: Persistent and Instance are archived, Temporary is removed forever",
+      "E: live stellarDocs.search_soroban_contract_docs 2026-07-07 returned state-archival and storage pages for 'persistent temporary instance storage TTL RestoreFootprintOp automatic restore'"
+     ]
+    },
+    {
+     "claim": "Starting in Protocol 23/CAP-0066, archived Persistent or Instance entries can be automatically restored during InvokeHostFunctionOp when included in the transaction restore list / archived entries metadata.",
+     "verdict": "confirmed",
+     "classes": [
+      "A: developers.stellar.org state-archival page fetched 2026-07-07 — 'Starting in Protocol 23 ... archived Persistent or Instance contract entries can be automatically restored before a host function runs, but only if they're included in the transaction's restore list'",
+      "B: stellar/stellar-protocol core/cap-0066.md at 1b1c22e02fc0cec6fff1175c2d7d08ad83a828e1 — introduces automatic restoration via InvokeHostFunctionOp; any archived key present in the footprint is automatically restored; all archived keys must be declared in SorobanResourcesExtV0.archivedEntries",
+      "B: stellar/stellar-core src/transactions/InvokeHostFunctionOpFrame.cpp at d6f2546791774d0b2cd925b8a4026adf967a92a3 — autorestore support started in p23; entry must be in read-write footprint and marked in archivedSorobanEntries"
+     ]
+    },
+    {
+     "claim": "RestoreFootprintOp is still valid but is no longer the normal required path for P23+ archived Persistent/Instance entries; it is a manual fallback for rare cases such as resource-limit overflow or fee-management separation.",
+     "verdict": "confirmed",
+     "classes": [
+      "A: developers.stellar.org state-archival RestoreFootprintOp section fetched 2026-07-07 — manual RestoreFootprintOp is 'for the most part, no longer needed starting in Protocol 23' because archived entries auto-restore in InvokeHostFunctionOp footprints; rare cases remain",
+      "B: CAP-0066 'Handling Invocations that restore too much state for automatic restore' — when auto-restore exceeds resource limits, manually issue one or more RestoreFootprintOp before invocation"
+     ]
+    },
+    {
+     "claim": "Current official docs are internally discoverable but partly ambiguous/stale around this point.",
+     "verdict": "confirmed",
+     "classes": [
+      "E: live stellarDocs search 2026-07-07 returns correct state-archival hits for Protocol 23 automatic restoration and the Instance/Persistent sections with auto-restore snippets",
+      "A: the same state-archival page still has a 'Behavior of transactions...' section saying a footprint with an archived Persistent key will fail immediately, without qualifying 'unless included in the restore list'; the storage-choice page says Persistent data can be restored using RestoreFootprintOp without mentioning P23 auto-restore. Filed as improvements/stellar-docs/sd-007-state-archival-auto-restore-ambiguity.md"
+     ]
+    },
+    {
+     "claim": "Sibling consistency sweep: adjacent storage/TTL goldens do not require a contradictory change for this pass.",
+     "verdict": "confirmed",
+     "classes": [
+      "Local corpus sweep 2026-07-07 over q-protocol-state-archival-ttl, q-sor-force-fast-archival-localnet, q-sor-p23-auto-restore-extendto, q-soroban-storage-types-list, q-soroban-ttl-expiry-behavior, and q-soroban-archive-restore: siblings already say Persistent/Instance are archived/restorable; the P23-specific cases already mention auto-restore. q-soroban-archive-restore has a broad keyFact mentioning RestoreFootprintOp/CLI, but its answer and grader notes explicitly include P23 auto-restore, so it is not contradictory."
+     ]
+    }
+   ],
+   "evidence": [
+    "eval/qa/results/2026-07-07T19-58-35-variantA.json q-soroban-storage-types: candidate said Instance storage is archived at TTL 0 but auto-restored via Invoke; judge marked this wrong with a RestoreFootprintOp-only rationale",
+    "Live official docs 2026-07-07: https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival — overview says Persistent/Instance restore usually automatically via InvokeHostFunction, rarely manually via RestoreFootprintOp; Contract Data Automatic Restoration says P23 auto-restore requires transaction restore list; RestoreFootprintOp section says manual op is mostly no longer needed from P23",
+    "Live official docs 2026-07-07: https://developers.stellar.org/docs/build/guides/storage/choosing-the-right-storage — storage table confirms Persistent and Instance archive while Temporary is removed forever; Persistent section still mentions RestoreFootprintOp without the P23 auto-restore caveat (sd-007)",
+    "stellar/stellar-protocol core/cap-0066.md at 1b1c22e02fc0cec6fff1175c2d7d08ad83a828e1: lines 16-17, 43-48, 391-400, and 619-647 confirm automatic restoration via InvokeHostFunctionOp and rare/manual RestoreFootprintOp fallback",
+    "stellar/stellar-core at d6f2546791774d0b2cd925b8a4026adf967a92a3: InvokeHostFunctionOpFrame.cpp lines 1006-1025 and 1184-1195 implement archivedSorobanEntries-driven autorestore; InvokeHostFunctionTests.cpp lines 5256-5330, 5488-5585, and 10439-10520 exercise contract-instance and persistent-entry autorestore",
+    "Independent verifier subagent 019f3e2e-cca0-73b0-96f3-fefe990de0bb independently confirmed A/B/E source classes and the restore-list nuance on 2026-07-07"
+   ],
+   "rootCause": [
+    "eval-side freshness drift of protocol semantics: the generic storage-types golden did not carry the Protocol 23 / CAP-0066 auto-restore update, so a judge applied the older RestoreFootprintOp-only mental model",
+    "improvements/stellar-docs/sd-007-state-archival-auto-restore-ambiguity.md — official docs are mostly correct on the state-archival page, but adjacent sections/pages still omit or contradict the restore-list qualifier, making the stale interpretation plausible"
+   ],
+   "golden": {
+    "answer": "Soroban exposes **three storage types** via `env.storage()`:\n\n- **Persistent** — long-lived, per-key data such as balances, allowances, ownership, and other state that must survive. On TTL expiry it is **archived, not deleted**, and can be restored.\n- **Temporary** — cheaper, short-lived data such as caches, ephemeral allowances, pricing snapshots, and other recreatable values. On TTL expiry it is **permanently deleted** and **cannot be restored**.\n- **Instance** — small per-contract config/admin/metadata tied to the contract instance entry. It is loaded with the contract instance on invocation, shares the contract instance's TTL, and should stay small.\n\nCurrent restoration semantics (Protocol 23 / CAP-0066+): archived **Persistent** and **Instance** entries can be automatically restored by `InvokeHostFunctionOp` when the archived keys are included in the transaction restore metadata / restore footprint, normally populated by RPC simulation. A manually built transaction that omits the needed restore list can still fail, and `RestoreFootprintOp` remains the manual/rare fallback for resource-limit or fee-management cases. **Temporary** entries are different: once expired, they are gone.\n\nRule of thumb: balances/ownership -> Persistent; ephemeral/derivable data -> Temporary; admin/config flags -> Instance. These are Soroban's storage durabilities, not Solidity's `storage`/`memory`/`calldata`.",
+    "keyFacts": [
+     "The three storage types are Instance, Persistent, and Temporary (accessed via `env.storage()`).",
+     "Persistent is for long-lived per-key data like balances/ownership; Temporary is for cheap short-lived/recreatable data; Instance is for small per-contract config/admin/metadata tied to the contract instance and loaded with it.",
+     "TTL expiry differs by type: Persistent and Instance entries are archived and restorable; Temporary entries are permanently deleted and cannot be restored.",
+     "States current Protocol 23+ restoration semantics: archived Persistent/Instance entries can auto-restore during `InvokeHostFunctionOp` when the archived keys are included in the transaction restore metadata/restore footprint (usually via RPC simulation); `RestoreFootprintOp` is still valid but mostly a manual/rare fallback, not the always-required path."
+    ],
+    "avoid": [
+     "Do NOT invent storage types not in Soroban (e.g., only 'storage'/'memory'/'calldata' as in Solidity).",
+     "Do NOT say Temporary data is restorable after expiry, or that Persistent/Instance data is permanently deleted on expiry.",
+     "Do NOT claim archived Persistent/Instance entries always require a separate `RestoreFootprintOp` or that auto-restore is impossible under Protocol 23+.",
+     "Do NOT imply auto-restore works magically without the archived entries being included in the restore metadata/restore footprint, normally via RPC simulation."
+    ],
+    "sources": [
+     "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival",
+     "https://developers.stellar.org/docs/build/guides/storage/choosing-the-right-storage",
+     "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0066.md",
+     "https://github.com/stellar/stellar-core/blob/master/src/transactions/InvokeHostFunctionOpFrame.cpp"
+    ]
+   },
+   "graderNotesAppend": "Corrected 2026-07-07 via golden-truth workflow (todo 870): the prior generic storage-types golden was too stale/underspecified for Protocol 23 restoration and allowed a RestoreFootprintOp-only judge rationale. Ground truth triangulated across A official docs, B CAP-0066 + stellar-core source/tests, E live Stellar Docs index, and an independent verifier. Grading nuance: an answer that says Instance/Persistent are auto-restored by Invoke is correct only with the restore-list/footprint caveat; an answer that says RestoreFootprintOp is available as a manual fallback is also correct; an answer that says RestoreFootprintOp is always required, or that auto-restore requires no restore metadata/simulation, is wrong. Sibling sweep checked state-archival/TTL/storage cases; no other keyFact needed an override in this pass."
   }
  }
 }

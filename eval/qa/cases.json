@@ -18,6 +18,7 @@
       "q-scf-history-soroswap",
       "q-scf-regional-india",
       "q-scf-total-distributed",
+      "q-soroban-storage-types",
       "q-ti-rpc-gettransactions-pagination-xdr"
     ]
   },
@@ -11029,18 +11030,24 @@
       "id": "q-soroban-storage-types",
       "question": "What are the three Soroban storage types and when should I use each?",
       "golden": {
-        "answer": "Soroban exposes **three storage types** via `env.storage()`:\n\n- **Persistent** — long-lived data (balances, allowances, ownership). On TTL expiry it is **archived,\n  not deleted, and can be restored**.\n- **Temporary** — cheap, short-lived data (ephemeral allowances, pricing snapshots). It is the\n  **cheapest** tier, and on TTL expiry it is **permanently deleted** (not restorable).\n- **Instance** — small per-contract config/admin data tied to the contract instance entry. It is\n  **loaded on every contract invocation** (so keep it small) and shares its **TTL with the contract\n  instance**.\n\nRule of thumb: balances/ownership → Persistent; ephemeral/derivable data → Temporary; admin/config\nflags → Instance.\n\n(These are Soroban's tiers — not Solidity's `storage`/`memory`/`calldata`. And don't swap the\nsemantics: Temporary is **not** restorable; Persistent is **not** permanently deleted on expiry.)",
+        "answer": "Soroban exposes **three storage types** via `env.storage()`:\n\n- **Persistent** — long-lived, per-key data such as balances, allowances, ownership, and other state that must survive. On TTL expiry it is **archived, not deleted**, and can be restored.\n- **Temporary** — cheaper, short-lived data such as caches, ephemeral allowances, pricing snapshots, and other recreatable values. On TTL expiry it is **permanently deleted** and **cannot be restored**.\n- **Instance** — small per-contract config/admin/metadata tied to the contract instance entry. It is loaded with the contract instance on invocation, shares the contract instance's TTL, and should stay small.\n\nCurrent restoration semantics (Protocol 23 / CAP-0066+): archived **Persistent** and **Instance** entries can be automatically restored by `InvokeHostFunctionOp` when the archived keys are included in the transaction restore metadata / restore footprint, normally populated by RPC simulation. A manually built transaction that omits the needed restore list can still fail, and `RestoreFootprintOp` remains the manual/rare fallback for resource-limit or fee-management cases. **Temporary** entries are different: once expired, they are gone.\n\nRule of thumb: balances/ownership -> Persistent; ephemeral/derivable data -> Temporary; admin/config flags -> Instance. These are Soroban's storage durabilities, not Solidity's `storage`/`memory`/`calldata`.",
         "keyFacts": [
           "The three storage types are Instance, Persistent, and Temporary (accessed via `env.storage()`).",
-          "Persistent is for long-lived data like balances/ownership; Temporary is for cheap short-lived data; Instance is for per-contract config/admin data tied to the contract instance."
+          "Persistent is for long-lived per-key data like balances/ownership; Temporary is for cheap short-lived/recreatable data; Instance is for small per-contract config/admin/metadata tied to the contract instance and loaded with it.",
+          "TTL expiry differs by type: Persistent and Instance entries are archived and restorable; Temporary entries are permanently deleted and cannot be restored.",
+          "States current Protocol 23+ restoration semantics: archived Persistent/Instance entries can auto-restore during `InvokeHostFunctionOp` when the archived keys are included in the transaction restore metadata/restore footprint (usually via RPC simulation); `RestoreFootprintOp` is still valid but mostly a manual/rare fallback, not the always-required path."
         ],
         "avoid": [
           "Do NOT invent storage types not in Soroban (e.g., only 'storage'/'memory'/'calldata' as in Solidity).",
-          "Do NOT say Temporary data is restorable after expiry, or that Persistent data is permanently deleted on expiry (those are swapped)."
+          "Do NOT say Temporary data is restorable after expiry, or that Persistent/Instance data is permanently deleted on expiry.",
+          "Do NOT claim archived Persistent/Instance entries always require a separate `RestoreFootprintOp` or that auto-restore is impossible under Protocol 23+.",
+          "Do NOT imply auto-restore works magically without the archived entries being included in the restore metadata/restore footprint, normally via RPC simulation."
         ],
         "sources": [
+          "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival",
           "https://developers.stellar.org/docs/build/guides/storage/choosing-the-right-storage",
-          "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival"
+          "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0066.md",
+          "https://github.com/stellar/stellar-core/blob/master/src/transactions/InvokeHostFunctionOpFrame.cpp"
         ]
       },
       "tags": {
@@ -11050,7 +11057,7 @@
         "confidence": "high",
         "freshness": false
       },
-      "graderNotes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). Storage-semantics swap is the headline trap; Solidity storage/memory/calldata is the cross-chain trap. Verified against 'choosing the right storage' + state-archival docs.\nAlso good if the answer: Instance storage is loaded on every contract invocation (so keep it small). | Temporary is the cheapest tier.\nGolden cites: The developers.stellar.org 'choosing the right storage' or state-archival guide."
+      "graderNotes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). Storage-semantics swap is the headline trap; Solidity storage/memory/calldata is the cross-chain trap. Verified against 'choosing the right storage' + state-archival docs.\nAlso good if the answer: Instance storage is loaded on every contract invocation (so keep it small). | Temporary is the cheapest tier.\nGolden cites: The developers.stellar.org 'choosing the right storage' or state-archival guide.\nCorrected 2026-07-07 via golden-truth workflow (todo 870): the prior generic storage-types golden was too stale/underspecified for Protocol 23 restoration and allowed a RestoreFootprintOp-only judge rationale. Ground truth triangulated across A official docs, B CAP-0066 + stellar-core source/tests, E live Stellar Docs index, and an independent verifier. Grading nuance: an answer that says Instance/Persistent are auto-restored by Invoke is correct only with the restore-list/footprint caveat; an answer that says RestoreFootprintOp is available as a manual fallback is also correct; an answer that says RestoreFootprintOp is always required, or that auto-restore requires no restore metadata/simulation, is wrong. Sibling sweep checked state-archival/TTL/storage cases; no other keyFact needed an override in this pass."
     },
     {
       "id": "q-soroban-storage-types-list",
