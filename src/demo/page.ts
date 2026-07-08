@@ -21,6 +21,7 @@
  */
 import { BASE, FAVICON, FONT_FACE, HOST, OG_ALT, OG_IMAGE, TOKENS, ravenSvg } from "../site.ts";
 import { DEMO_CAPS } from "./budget.ts";
+import { DEMO_GLOBE_PNG_BASE64 } from "./globe.ts";
 import { escapeHtml as esc, html, raw } from "../html.ts";
 
 // ---------------------------------------------------------------------------
@@ -29,18 +30,26 @@ import { escapeHtml as esc, html, raw } from "../html.ts";
 
 const DEMO_CSS = `
 body{display:flex;flex-direction:column}
-/* script-budget goes to the chat client — the backdrop is the consent page's
-   CSS dither-glow, not the WebGL globe */
-.stage{background:
-  radial-gradient(52% 46% at 10% 108%,rgba(255,85,0,.4),rgba(255,85,0,.06) 46%,transparent 66%),
-  var(--green)}
-.stage::after{content:"";position:absolute;inset:0;opacity:.45;mix-blend-mode:screen;
-  background-image:radial-gradient(rgba(255,85,0,.9) 1px,transparent 1.4px);
-  background-size:4px 4px;
-  -webkit-mask-image:radial-gradient(52% 46% at 10% 108%,#000,transparent 60%);
-  mask-image:radial-gradient(52% 46% at 10% 108%,#000,transparent 60%)}
+/* Backdrop = one frozen frame of the landing WebGL dither-globe, baked to a
+   data: PNG (scripts/gen-globes.mjs, shared scripts/lib/dither-globe.mjs). Same
+   globe in both states, no page script and no CSP change — a CSS
+   background-image is governed by img-src 'self' data:.
+   image-rendering:pixelated keeps the dither dots hard squares as the 560x350
+   frame upscales to 160vmin. */
+.stage{background:var(--green)}
+/* Match the homepage WebGL globe exactly: same 160vmin size, and the sphere
+   centred on 50vw − 61.92vmin (the shader's 0.5·u_res + offX·min·scale) rather
+   than pinned to the left edge — so the baked frame's left edge goes to
+   calc(50vw − 79.9vmin) (that centre minus the sphere's 17.94vmin inset). */
+.stage::after{content:"";position:absolute;inset:0;
+  background-image:url("data:image/png;base64,${DEMO_GLOBE_PNG_BASE64}");
+  background-position:calc(50vw - 79.9vmin) bottom;background-size:160vmin auto;background-repeat:no-repeat;
+  image-rendering:pixelated}
+/* The globe now sits a touch DARKER than the field, so it never threatens
+   legibility — the scrim is just a gentle top veil for depth and fades to
+   clear over the bottom-left sphere so its dither texture stays visible. */
 .scrim{background:
-  linear-gradient(180deg,rgba(14,21,13,.85) 0%,rgba(14,21,13,.62) 34%,rgba(14,21,13,.38) 66%,rgba(14,21,13,.66) 100%)}
+  linear-gradient(180deg,rgba(14,21,13,.42) 0%,rgba(14,21,13,.12) 26%,transparent 58%,transparent 100%)}
 
 .pwrap{width:100%;max-width:940px;margin:0 auto;padding:0 22px;position:relative;z-index:2}
 main.play{display:flex;flex-direction:column;padding-bottom:18px}
@@ -118,7 +127,7 @@ details.tcard[open]>summary::before{transform:rotate(90deg)}
 .qline .qf{color:var(--ash);margin-left:10px}
 
 .hits{list-style:none;margin:0;padding:4px 0}
-.hits li{display:flex;gap:10px;align-items:baseline;padding:8px 16px;border-top:1px solid var(--line);
+.hits li{display:flex;gap:10px;align-items:center;padding:8px 16px;border-top:1px solid var(--line);
   font-family:var(--mono);font-size:12px}
 .hits li:first-child{border-top:0}
 .hits .rank{color:var(--ash);flex:none;min-width:14px;text-align:right}
@@ -168,9 +177,9 @@ details.tcard[open]>summary::before{transform:rotate(90deg)}
 .gate .cta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:28px}
 .gate .cta .hint{font-family:var(--mono);font-size:11.5px;color:var(--ash)}
 .gate .consent{margin-top:18px}
-.gate .consent-row{display:inline-flex;align-items:flex-start;gap:10px;cursor:pointer;
+.gate .consent-row{display:inline-flex;align-items:center;gap:10px;cursor:pointer;
   font-family:var(--sans);font-size:11.5px;color:var(--ash);line-height:1.6}
-.gate .consent-row input{flex:none;margin-top:1px;width:15px;height:15px;accent-color:var(--orange);cursor:pointer}
+.gate .consent-row input{flex:none;width:15px;height:15px;accent-color:var(--orange);cursor:pointer}
 .gate .consent-row a{color:var(--dim);text-decoration:underline;text-underline-offset:2px}
 .gate .consent-row a:hover{color:var(--orange)}
 /* CSS-only consent gate — no script on the locked page. The sign-in button is
@@ -625,7 +634,7 @@ export const DEMO_PAGE_HEADERS: Record<string, string> = {
 // Static example trace (locked state) — hard-coded sample data in the SAME
 // markup the client script builds. Hits/scores/total are a real
 // searchCatalogPage("soroban smart contract deploy", limit 4) page against
-// the current catalog; the playbook text quotes the real skill section.
+// the current catalog; the sections text quotes the real skill section.
 // ADR-0003: only exposed operations/skills appear here.
 // ---------------------------------------------------------------------------
 
@@ -644,16 +653,16 @@ const SAMPLE_CODE = `async () => {
     stellarDocs.search_soroban_contract_docs({ query: "deploy to testnet", hitsPerPage: 3 })
   ]);
   return {
-    playbook: skill.ok ? skill.sections : skill.error,
+    sections: skill.ok ? skill.sections : skill.error,
     docs: docs.ok ? docs.data.hits.map(h => ({ url: h.url, breadcrumb: h.breadcrumb })) : docs.error
   };
 }`;
 
 const SAMPLE_RESULT = `{
-  "playbook": [
+  "sections": [
     {
       "section": "build-deploy-invoke",
-      "content": "## Build, deploy, invoke\\n\\n\`\`\`bash\\n# Build optimized WASM → target/wasm32v1-none/release/*.wasm\\nstellar contract build\\n\\n# Create and fund an identity (testnet)\\nstellar keys generate alice --network testnet --fund\\n\\n# Deploy (constructor args go after the \`--\`)\\nstellar contract deploy \\\\\\n  --wasm target/wasm32v1-none/release/my_contract.wasm \\\\\\n  --source-account alice \\\\\\n  --network testnet \\\\\\n  -- \\\\\\n  --admin alice\\n\\n# Invoke\\nstellar contract invoke \\\\\\n  --id CONTRACT_ID \\\\\\n  --source-account alice \\\\\\n  --network testnet \\\\\\n  -- \\\\\\n  increment\\n\`\`\`\\n\\nTo upload WASM without instantiating (e.g. for factories or upgrades), use \`stellar contract upload\` …"
+      "content": "## Build, deploy, invoke\\n\\n\`\`\`bash\\n# Build optimized WASM → target/wasm32v1-none/release/*.wasm\\n# (optimization is on by default; --optimize=false to disable)\\nstellar contract build\\n\\n# Create and fund an identity (testnet)\\nstellar keys generate alice --network testnet --fund\\n\\n# Deploy (constructor args go after the \`--\`)\\nstellar contract deploy \\\\\\n  --wasm target/wasm32v1-none/release/my_contract.wasm \\\\\\n  --source-account alice \\\\\\n  --network testnet \\\\\\n  -- \\\\\\n  --admin alice\\n\\n# Invoke\\nstellar contract invoke \\\\\\n  --id CONTRACT_ID \\\\\\n  --source-account alice \\\\\\n  --network testnet \\\\\\n  -- \\\\\\n  increment\\n\`\`\`\\n\\nTo upload WASM without instantiating (e.g. for factories or upgrades), use \`stellar contract upload\` …"
     }
   ],
   "docs": [
@@ -680,7 +689,7 @@ const SAMPLE_ANSWER =
   "`stellar contract deploy --wasm target/wasm32v1-none/release/my_contract.wasm " +
   "--source-account alice --network testnet -- --admin alice` if your constructor needs " +
   "that argument. Constructor args go after the `--`. The " +
-  "build-deploy-invoke playbook section and the getting-started docs above walk the same " +
+  "build-deploy-invoke skill section and the getting-started docs above walk the same " +
   "flow end to end, including invoking the deployed contract.";
 
 function sampleTrace(): string {
@@ -697,7 +706,7 @@ function sampleTrace(): string {
     `<span class="st ok">ok</span></summary><div class="tcard-body">` +
     `<div class="qline">query <b>${esc(SAMPLE_QUERY)}</b><span class="qf">limit=4</span></div>` +
     `<ol class="hits">${hits}</ol>` +
-    `<div class="hmeta">4 of 46 matches &middot; truncated &mdash; more matched than shown</div>` +
+    `<div class="hmeta">4 of 47 matches &middot; truncated &mdash; more matched than shown</div>` +
     `</div></details>` +
     `<div class="stepline">step 2</div>` +
     `<details class="tcard" open><summary><span class="tw">execute</span>` +

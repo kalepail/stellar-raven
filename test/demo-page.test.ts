@@ -68,6 +68,9 @@ describe("demo page states", () => {
     expect(lockedHtml).toContain("Test drive <span class=\"r\">Raven</span>");
     expect(lockedHtml).toContain("Example session");
     expect(lockedHtml).toContain("soroban smart contract deploy");
+    expect(lockedHtml).toContain("&quot;sections&quot;: [");
+    expect(lockedHtml).not.toContain("&quot;playbook&quot;: [");
+    expect(lockedHtml).toContain("4 of 47 matches");
     expect(lockedHtml).toContain("The playground shows the live trace");
     expect(lockedHtml).toContain("connect an MCP client to <code>/mcp</code>");
     expect(lockedHtml).not.toContain("<script>");

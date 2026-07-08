@@ -30,6 +30,7 @@ import {
   PLEX_MONO_500_WOFF2
 } from "./fonts";
 import { escapeHtml } from "./html";
+import { CONSENT_GLOBE_PNG_BASE64 } from "./consent-globe";
 
 const MCP_ENDPOINT = "https://raven.stellar.buzz/mcp";
 export const HOST = "raven.stellar.buzz";
@@ -260,10 +261,10 @@ pre.code .k{color:#93d6a6}
   text-transform:uppercase;color:var(--ash);margin:0 0 14px}
 .vs .col.win h3{color:var(--orange)}
 .vs ul{list-style:none;margin:0;padding:0}
-.vs li{position:relative;padding:9px 0 9px 26px;font-size:14px;color:var(--dim);line-height:1.55;
+.vs li{display:flex;gap:12px;align-items:baseline;padding:9px 0;font-size:14px;color:var(--dim);line-height:1.55;
   border-top:1px solid var(--line)}
 .vs li:first-child{border-top:0}
-.vs li::before{content:"×";position:absolute;left:2px;top:8px;color:var(--ash);font-weight:600}
+.vs li::before{content:"×";color:var(--ash);font-weight:600}
 .vs .col.win li{color:var(--fog)}
 .vs .col.win li::before{content:"✓";color:var(--orange)}
 .vs li b{color:var(--fog);font-weight:600}
@@ -788,18 +789,21 @@ export function landingPage(): string {
 
 const CONSENT_CSS = `
 body{display:flex;flex-direction:column}
-/* no WebGL here (script-free page) — a CSS dither-glow evokes the globe */
-.stage{background:
-  radial-gradient(52% 46% at 12% 106%,rgba(255,85,0,.5),rgba(255,85,0,.07) 46%,transparent 66%),
-  var(--green)}
-.stage::after{content:"";position:absolute;inset:0;opacity:.5;mix-blend-mode:screen;
-  background-image:radial-gradient(rgba(255,85,0,.9) 1px,transparent 1.4px);
-  background-size:4px 4px;
-  -webkit-mask-image:radial-gradient(52% 46% at 12% 106%,#000,transparent 60%);
-  mask-image:radial-gradient(52% 46% at 12% 106%,#000,transparent 60%)}
+/* Same baked dither-globe as the playground (script-free page: a data: PNG
+   background is fine under img-src data:, no WebGL/canvas needed). The approve
+   screen is an INVITING surface, so this variant is a LIGHT OLIVE lifted above
+   the field — the inverse of the playground's darker, recessed sphere. */
+.stage{background:var(--green)}
+/* Match the homepage WebGL globe exactly (see the demo page for the derivation):
+   same 160vmin size, sphere centred on 50vw − 61.92vmin rather than left-pinned. */
+.stage::after{content:"";position:absolute;inset:0;
+  background-image:url("data:image/png;base64,${CONSENT_GLOBE_PNG_BASE64}");
+  background-position:calc(50vw - 79.9vmin) bottom;background-size:160vmin auto;background-repeat:no-repeat;
+  image-rendering:pixelated}
+/* gentle top veil for depth; fades clear over the bottom-left sphere so the
+   olive glow reads (the centred card carries its own contrast for its text). */
 .scrim{background:
-  linear-gradient(140deg,var(--bg) 6%,rgba(14,21,13,.8) 40%,rgba(14,21,13,.4) 66%,transparent 88%),
-  linear-gradient(0deg,rgba(14,21,13,.6),transparent 40%)}
+  linear-gradient(180deg,rgba(14,21,13,.5) 0%,rgba(14,21,13,.15) 22%,transparent 55%,transparent 100%)}
 main.auth{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 22px 64px;
   position:relative;z-index:2}
 .card{width:100%;max-width:460px;border:1px solid var(--line-2);border-radius:20px;
@@ -822,17 +826,19 @@ main.auth{flex:1;display:flex;align-items:center;justify-content:center;padding:
 .panel-h{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
   color:var(--dim);padding:28px 34px 4px}
 .scopes{list-style:none;margin:0;padding:0 34px}
-.scopes li{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-top:1px solid var(--line)}
+/* grid so the tick centres on the mcp pill by row (align-items:center), while the
+   description flows in column 2 under the pill — no per-element margin nudging. */
+.scopes li{display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center;padding:13px 0;border-top:1px solid var(--line)}
 .scopes li:first-child{border-top:0}
-.tick{flex:none;margin-top:2px}
-.scope-code{font-family:var(--mono);font-size:12px;color:var(--orange);background:var(--orange-soft);
+.tick{flex:none}
+.scope-code{grid-column:2;justify-self:start;font-family:var(--mono);font-size:12px;color:var(--orange);background:var(--orange-soft);
   border:1px solid rgba(255,85,0,.24);padding:1px 7px;border-radius:6px}
-.scope-desc{font-size:13.5px;color:var(--dim);margin-top:6px;line-height:1.5}
+.scope-desc{grid-column:2;font-size:13.5px;color:var(--dim);margin-top:6px;line-height:1.5}
 .act{padding:24px 34px 32px}
 .act .btn-primary{width:100%;justify-content:center;padding:15px}
-.consent-row{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12.5px;
+.consent-row{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:12.5px;
   color:var(--dim);line-height:1.5;margin:0 0 16px}
-.consent-row input{flex:none;margin-top:1px;width:15px;height:15px;accent-color:var(--orange);cursor:pointer}
+.consent-row input{flex:none;width:15px;height:15px;accent-color:var(--orange);cursor:pointer}
 .consent-row a{color:var(--fog);text-decoration:underline;text-underline-offset:2px}
 .consent-row a:hover{color:var(--orange)}
 /* CSS-only gate (script-free page): the submit button is inert until #tos-agree
@@ -840,8 +846,8 @@ main.auth{flex:1;display:flex;align-items:center;justify-content:center;padding:
    not the enforcement boundary. */
 .act:not(:has(#tos-agree:checked)) .btn-primary{opacity:.45;pointer-events:none;
   cursor:not-allowed;box-shadow:none;transform:none}
-.note{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--dim);margin:16px 0 0;line-height:1.5}
-.note svg{flex:none;margin-top:1px}
+.note{display:flex;gap:9px;align-items:center;font-size:12.5px;color:var(--dim);margin:16px 0 0;line-height:1.5}
+.note svg{flex:none}
 .auth-brand{display:flex;align-items:baseline;justify-content:center;gap:11px;padding:30px 0 4px;
   position:relative;z-index:2}
 .auth-brand .rv{width:22px;height:22px;fill:var(--orange);filter:drop-shadow(0 0 12px rgba(255,85,0,.5));align-self:center}
@@ -883,9 +889,9 @@ export function consentPage(args: {
     .map((s) => {
       const gloss = SCOPE_GLOSS[s];
       return (
-        `<li>${TICK}<div><code class="scope-code">${escapeHtml(s)}</code>` +
+        `<li>${TICK}<code class="scope-code">${escapeHtml(s)}</code>` +
         (gloss ? `<div class="scope-desc">${escapeHtml(gloss)}</div>` : ``) +
-        `</div></li>`
+        `</li>`
       );
     })
     .join("");

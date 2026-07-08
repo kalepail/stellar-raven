@@ -3,17 +3,21 @@
  *
  *   node scripts/gen-og.mjs   (or: npm run site:og)
  *
- * Requires ImageMagick (`magick`) on PATH. Mirrors the landing hero: an
- * authentic 4x4 Bayer ordered-dither orange globe (matching src/site.ts's WebGL
- * shader) on the left, editorial type (IBM Plex Serif / Plex Sans / Plex Mono,
- * fetched from google/fonts) set on the right. Deterministic — never
- * hand-edit src/og.ts, rerun this instead.
+ * Requires ImageMagick (`magick`) on PATH. Mirrors the landing hero: the SAME
+ * dither-globe as the playground/consent backdrops (shared
+ * scripts/lib/dither-globe.mjs — a frozen frame of src/site.ts's WebGL shader),
+ * here in hot orange on the left, with editorial type (IBM Plex Serif / Plex
+ * Sans / Plex Mono, fetched from google/fonts) set on the right. ImageMagick is
+ * used only to composite the legibility scrim + type over the globe; the globe
+ * itself is the JS core (real Lambert sphere, not a centred radial gradient).
+ * Deterministic — never hand-edit src/og.ts, rerun this instead.
  */
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, writeFileSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { renderGlobePng } from "./lib/dither-globe.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const work = mkdtempSync(join(tmpdir(), "raven-og-"));
@@ -36,17 +40,21 @@ await download("https://github.com/google/fonts/raw/main/ofl/ibmplexmono/IBMPlex
 
 const RAVEN = "path 'M2 14 C8 13 10 9 12 4 C14 9 16 13 22 14 C16 14 13 16 12 20 C11 16 8 14 2 14 Z'";
 
-// 1) grayscale sphere as a lower-left corner arc; a light (not white) core keeps
-//    dither texture everywhere (never a flat solid fill), like the live sphere
-magick(["-size", "1200x630", "-define", "gradient:center=120,720", "-define", "gradient:radii=560,560",
-  "radial-gradient:#cfcfcf-black", p("sphere_gray.png")]);
-// 2) 4x4 Bayer ordered dither -> black/white dots
-magick([p("sphere_gray.png"), "-ordered-dither", "o4x4", p("sphere_mask.png")]);
-// 3) orange globe on deep-green via the dither mask
-magick(["-size", "1200x630", "xc:#0e150d", "(", "-size", "1200x630", "xc:#ff5500", ")",
-  p("sphere_mask.png"), "-composite", p("globe.png")]);
-// 4) legibility scrim: dark radial pocket over the copy (right) + top band
-magick([p("globe.png"),
+// 1) the globe — the SHARED Lambert dither sphere (scripts/lib/dither-globe.mjs)
+//    in hot orange (#ff5500) on the deep-green canvas (#0e150d), anchored
+//    bottom-left like the landing hero. Rendered at half-res (600x315) so the
+//    2x pixel-doubled upscale (step 4, -scale, nearest) gives crisp ~2px dots.
+writeFileSync(p("globe_half.png"), renderGlobePng({
+  cols: 600, rows: 315,
+  front: [1.0, 0.333, 0.0], // #ff5500 orange (lit near-hemisphere)
+  back: [0.0549, 0.0824, 0.051], // #0e150d deep green (unlit field == canvas)
+  // smaller (larger scale shrinks the sphere) and pulled left (more-negative
+  // offX) so the bottom-right terminator clears the raven.stellar.buzz/mcp link.
+  scale: 1.62, offX: -0.46, offY: -0.42
+}));
+// 4) upscale the globe to 1200x630 (crisp pixel-doubling), then a legibility
+//    scrim: dark radial pocket over the copy (right) + top band
+magick([p("globe_half.png"), "-scale", "1200x630!",
   "(", "-size", "1200x630", "-define", "gradient:center=880,320", "-define", "gradient:radii=700,600",
   "radial-gradient:#0e150dF2-#0e150d00", ")", "-composite",
   "(", "-size", "1200x150", "gradient:#0e150dCC-#0e150d00", ")", "-geometry", "+0+0", "-composite",
@@ -56,11 +64,17 @@ magick([p("globe.png"),
 // the category eyebrow, not a second wordmark. Tagline leads with the value
 // line in bright type, the pillar line beneath it in dim type, both sized to
 // stay inside the right column (x 600..1140).
-const RX = 600;
+const RX = 648;
 magick([p("og_base.png"),
-  "-fill", "#ff5500", "-draw", `translate ${RX},128 scale 1.3,1.3 ${RAVEN}`,
-  "-font", MONO, "-pointsize", "19", "-fill", "#9aa890", "-annotate", `+${RX + 48}+158`, "REMOTE MCP SERVER",
-  "-font", MONO, "-pointsize", "19", "-fill", "#ff5500", "-annotate", `+${RX + 296}+158`, "· LIVE",
+  // Raven mark as a hanging bullet: ~2x size, offset LEFT of the text column so
+  // every text line (eyebrow, title, tagline, link) stays left-aligned at RX,
+  // while the mark hangs in the margin, vertically centred on the eyebrow line.
+  "-fill", "#ff5500", "-draw", `translate ${RX - 75},120 scale 2.6,2.6 ${RAVEN}`,
+  "-font", MONO, "-pointsize", "19", "-fill", "#9aa890", "-annotate", `+${RX}+158`, "REMOTE MCP SERVER",
+  // LIVE indicator: a filled status dot (not the tiny middot glyph) vertically
+  // centred on the eyebrow's optical middle, snug against REMOTE MCP SERVER.
+  "-fill", "#ff5500", "-draw", `circle ${RX + 220},151 ${RX + 220},156`,
+  "-font", MONO, "-pointsize", "19", "-fill", "#ff5500", "-annotate", `+${RX + 236}+158`, "LIVE",
   "-font", SERIF, "-weight", "700", "-pointsize", "96", "-fill", "#eef0e2", "-annotate", `+${RX}+262`, "Stellar",
   "-font", SERIF, "-weight", "700", "-pointsize", "96", "-fill", "#ff5500", "-annotate", `+${RX}+362`, "Raven",
   "-font", SANS, "-weight", "600", "-pointsize", "29", "-fill", "#eef0e2", "-annotate", `+${RX}+442`, "All of Stellar, one connection.",
