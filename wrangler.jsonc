@@ -53,7 +53,7 @@
     }
   ],
   // Auth-bound execute result artifacts. Host code enforces 7-day logical
-  // expiry; the bucket lifecycle is the 30-day GC backstop.
+  // expiry; the bucket lifecycle also expires objects after 7 days.
   "r2_buckets": [
     {
       "binding": "ARTIFACTS",

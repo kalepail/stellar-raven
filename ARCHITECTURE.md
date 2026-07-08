@@ -272,8 +272,8 @@ stored value back into the sandbox (`r.data`) so code can filter/project the ful
 without spending model context; the only exit remains the same final result cap above. Missing,
 expired, wrong-owner, invalid-id, and ownerless reads are all
 `{ ok:false, error:{ kind:"error", ... } }` from the sandbox's perspective. Store-level 7-day
-logical expiry is enforced on every `info`/`read`; the bucket's 30-day lifecycle is only the
-GC backstop.
+logical expiry is enforced on every `info`/`read`; the bucket lifecycle also expires objects
+after 7 days so physical retention matches the app contract.
 
 Abuse controls are per execute call: `codemode.artifact.info` is capped at 8 metadata probes
 and `codemode.artifact.read` is capped at 4 reads. The provider records read count/bytes for
