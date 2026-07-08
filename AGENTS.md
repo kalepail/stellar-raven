@@ -41,6 +41,8 @@ Current skills:
 - **run-evals** — run a full eval round: pick instruments, let the runner spawn the answering and
   judge agents, review every verdict, triage to root cause, file upstream findings in
   `improvements/`. The scores are the instrument; the findings are the product.
+- **improvements-pipeline** — maintain the `improvements/` upstream-findings pipeline: lifecycle
+  statuses, filing quality bar, intake resolution, probes/recurrences, generated index, and lint gates.
 - **golden-truth** — change the golden Q→A corpus without codifying lies: classify the truth
   domain, triangulate across independent source classes, encode disputed/unverifiable facts
   honestly, land as a provenance-bearing override.

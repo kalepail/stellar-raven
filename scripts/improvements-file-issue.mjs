@@ -4,19 +4,27 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import {
+  GITHUB_REPO_RE,
   oneLineTitle,
   parseFinding,
+  readIntake,
+  resolveIntake,
   section,
   writeFindingFrontmatter,
 } from "./improvements-lib.mjs";
 
 const args = parseArgs(process.argv.slice(2));
-if (!args.file || !args.repo) {
-  console.error("usage: node scripts/improvements-file-issue.mjs --file improvements/...md --repo owner/name [--dry-run] [--render-body-file /tmp/body.md]");
+if (!args.file) {
+  console.error("usage: node scripts/improvements-file-issue.mjs --file improvements/...md [--repo owner/name] [--dry-run] [--render-body-file /tmp/body.md]");
   process.exit(2);
 }
 
 const finding = parseFinding(path.resolve(args.file));
+const repo = args.repo ?? resolveRepo(finding);
+if (!GITHUB_REPO_RE.test(repo)) {
+  console.error(`invalid repo '${repo}'; expected owner/repo`);
+  process.exit(2);
+}
 const title = `${finding.frontmatter.id}: ${oneLineTitle(finding)}`;
 const body = renderBody(finding);
 
@@ -39,7 +47,7 @@ const result = spawnSync("gh", [
   "issue",
   "create",
   "--repo",
-  args.repo,
+  repo,
   "--title",
   title,
   "--body-file",
@@ -50,6 +58,21 @@ if (result.status !== 0) {
   process.stderr.write(result.stderr);
   process.stderr.write(result.stdout);
   process.exit(result.status ?? 1);
+}
+
+function resolveRepo(finding) {
+  const resolution = resolveIntake(finding, readIntake());
+  if (resolution.kind === "repo") return resolution.repo;
+  if (resolution.kind === "unclear") {
+    console.error(`${finding.frontmatter.id}: intake is unclear (${resolution.reason}); pass --repo only after manual triage`);
+    process.exit(2);
+  }
+  if (resolution.kind === "mixed") {
+    console.error(`${finding.frontmatter.id}: intake is mixed (${resolution.reason}); add a finding override or pass --repo after manual triage`);
+    process.exit(2);
+  }
+  console.error(`${finding.frontmatter.id}: intake unresolved (${resolution.reason}); update improvements/intake.json`);
+  process.exit(2);
 }
 
 const url = result.stdout.trim();

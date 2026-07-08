@@ -54,7 +54,8 @@ current process state before using raw shell commands.
 - `research/observability-cloudflare.md` — CF observability survey: Workers Logs, Traces (beta;
   Worker Loader NOT auto-instrumented — custom spans via `tracing.enterSpan`), OTel export,
   telemetry query API, GraphQL metrics. What we enabled and why. For live production log/trace
-  reviews, use `.claude/skills/cloudflare-observability-review/SKILL.md`.
+  reviews, use `.agents/skills/cloudflare-observability-review/SKILL.md` (Claude reaches the
+  same file through the committed `.claude/skills` symlink).
 - `research/prior-art.md` — map of `../stellar-raven-next` / `../stellar-raven`. **Learn, don't
   clone:** those repos are references, not templates — design this project's own types, formats,
   and adapters; take their *content* (skills mirror, golden corpus) and *lessons* (ADR pitfalls),
@@ -101,8 +102,9 @@ current process state before using raw shell commands.
 - **Evals' primary artifact is upstream findings** — this server's own tuning ceiling is
   limited; every eval run files evidence-backed service-improvement recommendations in
   `improvements/` (charter there; own-repo fixes go to Solo todos instead). To run a
-  round, use the `run-evals` skill (`.claude/skills/run-evals/SKILL.md` — agent-agnostic
-  runbook: instrument selection, gates, agentic verdict review, failure triage, filing).
+  round, use the `run-evals` skill (`.agents/skills/run-evals/SKILL.md` — agent-agnostic
+  runbook: instrument selection, gates, agentic verdict review, failure triage, filing;
+  lifecycle/intake/probe maintenance lives in the `improvements-pipeline` skill).
 - **Let independent adversarial reviews finish.** When a Solo/subagent review is requested for
   design, code, eval, or research work, treat it as a quality gate, not a speed bump. Do not
   interrupt or close the reviewer merely because it is taking longer than expected; let it run to

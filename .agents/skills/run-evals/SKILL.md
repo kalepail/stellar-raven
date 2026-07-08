@@ -208,7 +208,7 @@ For each miss/wrong/partial (and each surprising pass), classify and route:
 | Judge artifact | live re-execution contradicts the verdict | round record; re-judge; rubric note if a new failure mode |
 | Agent failure | tool use / synthesis genuinely wrong in transcript | round record; only actionable if a pattern → Solo todo (prompt/tool-shape) |
 | Own-repo gap: scoring/catalog/executor/adapters/normalizers | search buried the right entry; envelope/normalizer misread a payload | **own-repo Solo todo** — never improvements/ |
-| Eval-side gap: stale golden, mislabeled case, missing lane coverage | golden disagrees with live truth from the service's own mouth | Solo todo (goldens live in this repo); the fix lands as an `eval/qa/golden-overrides.json` entry (the corpus archive is verbatim/read-only) **via the `golden-truth` skill** (`.claude/skills/golden-truth/SKILL.md` — gospel changes need multi-source triangulation, never a single source class); freshness-drifting truth moves to the live-data lane as behavioral golden |
+| Eval-side gap: stale golden, mislabeled case, missing lane coverage | golden disagrees with live truth from the service's own mouth | Solo todo (goldens live in this repo); the fix lands as an `eval/qa/golden-overrides.json` entry (the corpus archive is verbatim/read-only) **via the `golden-truth` skill** (`.agents/skills/golden-truth/SKILL.md` — gospel changes need multi-source triangulation, never a single source class); freshness-drifting truth moves to the live-data lane as behavioral golden |
 | **Upstream data/content gap**: missing fields, unordered arrays, empty lanes, extraction quality, stale skill content | correct agent + correct plumbing still can't answer from what the service returns | **`improvements/` finding** |
 | **Upstream semantics/spec gap**: response contracts, error shapes, vocabulary, index tokenization/ranking | the service works but its self-description or behavior misleads any consumer, not just us | **`improvements/` finding** |
 
@@ -256,7 +256,9 @@ the fields exist; the reviewer checks they're true.
 
 Charter: `improvements/README.md`. One file per finding in the matching collection
 (`lumenloop/`, `stellar-light-scout/`, `stellar-docs/`, `skills/`), next id in the
-collection's `<prefix>-NNN` sequence. Frontmatter + three sections:
+collection's `<prefix>-NNN` sequence. Frontmatter + three sections.
+For lifecycle, intake, probe, index, and lint maintenance details, use the
+`improvements-pipeline` skill.
 
 ```
 ---

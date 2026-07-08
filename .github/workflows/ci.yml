@@ -64,6 +64,7 @@ jobs:
       # within ±1% of eval/gates.json, skills lane top-1 at/above its floor.
       # Both offline: searchCatalog over the committed manifest, no live services.
       - run: npm run eval:selftest
+      - run: npm run improvements:lint
       - run: npm run eval:routing -- --gate
       # Generated artifacts must match their sources exactly (they are rebuilt,
       # never hand-edited). Every build here is offline: catalog/spec/skills read
