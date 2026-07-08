@@ -131,7 +131,7 @@ export async function handleDemoChat(
     (await verifyDemoCookie(env.MCP_SERVER_SECRET, request.headers.get("cookie"))) ??
     (allowDevUnauthenticated(env, url.hostname) ? DEV_SUBJECT : null);
   if (!subject) {
-    return reject(401, "unauthenticated", "No valid demo session — reload /demo and sign in.");
+    return reject(401, "unauthenticated", "No valid playground session — reload /playground and sign in.");
   }
 
   // Body before throttle: a malformed request must not burn one of the

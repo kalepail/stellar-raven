@@ -101,24 +101,27 @@ function isMcpPath(url: URL): boolean {
 }
 
 // Exact paths only (review finding 6: no startsWith that would catch
-// /demolition) — anything else under /demo* falls through to the provider's
-// defaultHandler 404.
-function isDemoPath(url: URL): boolean {
+// /playgrounds) — anything else under /playground* falls through to the
+// provider's defaultHandler 404. The legacy /demo{,/} page URL is matched too,
+// solely so handlePlaygroundRoute can 301 it to /playground.
+function isPlaygroundPath(url: URL): boolean {
   return (
+    url.pathname === "/playground" ||
+    url.pathname === "/playground/" ||
+    url.pathname === "/playground/login" ||
+    url.pathname === "/playground/chat" ||
     url.pathname === "/demo" ||
-    url.pathname === "/demo/" ||
-    url.pathname === "/demo/login" ||
-    url.pathname === "/demo/chat"
+    url.pathname === "/demo/"
   );
 }
 
 /**
- * /demo routes — a browser surface gated by the signed demo cookie (plus the
- * same loopback dev bypass /mcp honors), never by the OAuth provider. Matched
- * paths with an unsupported method get 405 here; only unmatched paths fall
- * through to the provider.
+ * /playground routes — a browser surface gated by the signed demo cookie (plus
+ * the same loopback dev bypass /mcp honors), never by the OAuth provider.
+ * Matched paths with an unsupported method get 405 here; only unmatched paths
+ * fall through to the provider. The retired /demo{,/} URL 301s to /playground.
  */
-async function handleDemoRoute(
+async function handlePlaygroundRoute(
   request: Request,
   env: Env,
   ctx: ExecutionContext,
@@ -126,7 +129,14 @@ async function handleDemoRoute(
 ): Promise<Response> {
   const isRead = request.method === "GET" || request.method === "HEAD";
 
+  // Retired page URL — permanent redirect to the current /playground path.
+  // Relative Location (RFC 7231 §7.1.2): same-origin, and avoids reconstructing
+  // the host/port from the request URL.
   if (url.pathname === "/demo" || url.pathname === "/demo/") {
+    return new Response(null, { status: 301, headers: { location: "/playground" } });
+  }
+
+  if (url.pathname === "/playground" || url.pathname === "/playground/") {
     if (!isRead) return methodNotAllowed("GET, HEAD");
     // No cookie present → verify returns null without needing the secret.
     const subject = await verifyDemoCookie(env.MCP_SERVER_SECRET, request.headers.get("cookie"));
@@ -134,15 +144,15 @@ async function handleDemoRoute(
     return new Response(demoPage({ authenticated }), { headers: DEMO_PAGE_HEADERS });
   }
 
-  if (url.pathname === "/demo/login") {
+  if (url.pathname === "/playground/login") {
     // GET only (not HEAD): the redirect parks single-use state in KV — probe
     // requests must not mint state.
     if (request.method !== "GET") return methodNotAllowed("GET");
     return demoLoginRedirect(request, env);
   }
 
-  // /demo/chat — handleDemoChat owns the full gauntlet (method, origin, auth,
-  // throttle, body) and answers 405 for non-POST itself.
+  // /playground/chat — handleDemoChat owns the full gauntlet (method, origin,
+  // auth, throttle, body) and answers 405 for non-POST itself.
   const { handleDemoChat } = await import("./demo/chat");
   return handleDemoChat(request, env, ctx);
 }
@@ -170,10 +180,10 @@ export default {
       }
     }
 
-    // /demo playground — cookie-gated browser surface, intercepted BEFORE
-    // the provider (it knows nothing about these routes).
-    if (isDemoPath(url)) {
-      return handleDemoRoute(request, env, ctx, url);
+    // /playground — cookie-gated browser surface, intercepted BEFORE the
+    // provider (it knows nothing about these routes).
+    if (isPlaygroundPath(url)) {
+      return handlePlaygroundRoute(request, env, ctx, url);
     }
 
     // Discovery aliases (path-suffixed RFC 8414 + OIDC-discovery paths) →

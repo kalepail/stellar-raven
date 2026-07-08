@@ -117,6 +117,8 @@ body.no-gl .stage{background:
 .brand .wm b{font-family:var(--display);font-weight:600;font-size:25px;letter-spacing:-.015em;color:var(--fog)}
 .brand .wm i{font-family:var(--mono);font-style:normal;font-size:11px;font-weight:500;letter-spacing:.24em;
   text-transform:uppercase;color:var(--dim);margin-top:5px}
+.top-nav{margin-left:auto;display:flex;align-items:center;gap:10px}
+.top-nav .btn-ghost{padding:9px 15px;font-size:12px}
 
 /* ---- buttons ---- */
 .btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--sans);font-weight:600;
@@ -128,6 +130,8 @@ body.no-gl .stage{background:
 .btn-ghost{background:transparent;color:var(--dim);border-color:var(--line-2);font-family:var(--mono);
   font-weight:500;font-size:11px;letter-spacing:.02em;padding:8px 13px;border-radius:9px}
 .btn-ghost:hover{border-color:var(--orange);color:var(--fog)}
+.btn-outline{background:transparent;color:var(--fog);border-color:var(--line-2)}
+.btn-outline:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px)}
 .btn:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
 
 /* ---- hero: copy in a right-aligned column, clear of the globe ---- */
@@ -651,7 +655,8 @@ export function landingPage(): string {
       JSONLD
     ) +
     `<div class="stage"><canvas id="gl"></canvas></div><div class="scrim"></div>` +
-    `<header class="top"><div class="wrap top-in">${brand()}</div></header>` +
+    `<header class="top"><div class="wrap top-in">${brand()}` +
+    `<nav class="top-nav"><a class="btn btn-ghost" href="/playground">Playground</a></nav></div></header>` +
     `<main class="wrap"><section class="hero" id="connect"><div class="hero-in">
   <p class="eyebrow">Remote MCP server <span class="live"><span class="dot"></span>live</span></p>
   <h1 class="title">Stellar <span class="r">Raven</span></h1>
@@ -679,7 +684,7 @@ export function landingPage(): string {
     `<div class="below">
   <div class="stats" aria-label="What one connection covers">
     <span class="st"><b>50</b> live operations</span>
-    <span class="st"><b>271</b> catalog entries</span>
+    <span class="st"><b>272</b> catalog entries</span>
     <span class="st"><b>18</b> playbooks</span>
     <span class="st"><b>1</b> sign-in</span>
     <span class="st"><b>0</b> API keys</span>
@@ -752,7 +757,7 @@ export function landingPage(): string {
         </ul>
       </div>
     </div>
-    <p class="hood">Under the hood: two MCP tools. <code>search</code> ranks 271 operations, docs, and
+    <p class="hood">Under the hood: two MCP tools. <code>search</code> ranks 272 catalog entries — operations, docs, and
       skill sections; <code>execute</code> runs your agent's JavaScript in a no-network sandbox where
       every call is validated against the catalog.</p>
   </section>
@@ -760,6 +765,7 @@ export function landingPage(): string {
   <div class="cta-row">
     <span class="line">Two minutes from paste to expert.</span>
     <a class="btn btn-primary" href="#connect">Connect your agent</a>
+    <a class="btn btn-outline" href="/playground">Try the playground</a>
   </div>
 </div>` +
     `<footer><div class="wrap foot">
@@ -940,6 +946,7 @@ export function robotsTxt(): string {
     "Allow: /",
     "Disallow: /authorize",
     "Disallow: /callback",
+    "Disallow: /playground",
     "Disallow: /demo",
     "Disallow: /mcp",
     `Sitemap: https://${HOST}/sitemap.xml`,

@@ -217,7 +217,7 @@ async function completeCallback(
     // interstitial instead of a 302. The whole navigation chain here was
     // initiated cross-site (WorkOS → /callback), and browsers withhold
     // SameSite=Strict cookies on every request in a cross-site-initiated
-    // redirect chain — a direct 302 to /demo would land on the locked page.
+    // redirect chain — a direct 302 to /playground would land on the locked page.
     // The meta-refresh below starts a FRESH navigation initiated by this
     // same-origin document, so the Strict cookie is sent. returnTo is
     // allowlisted to fixed paths at parse time (parseDemoParkedState), so
@@ -308,7 +308,7 @@ function workosAuthorizeUrl(
 }
 
 /**
- * GET /demo/login (routed in src/server.ts) — parks the demo branch of the
+ * GET /playground/login (routed in src/server.ts) — parks the demo branch of the
  * login union under the SAME `login:${state}` key scheme and TTL as the MCP
  * flow, sets the same browser-binding cookie, and redirects to WorkOS
  * AuthKit with the shared `${origin}/callback` redirect_uri.
@@ -319,7 +319,7 @@ export async function demoLoginRedirect(request: Request, env: Env): Promise<Res
   const binding = crypto.randomUUID();
   await env.OAUTH_KV.put(
     `login:${state}`,
-    JSON.stringify({ type: "demo", binding, returnTo: "/demo" } satisfies ParkedLogin),
+    JSON.stringify({ type: "demo", binding, returnTo: "/playground" } satisfies ParkedLogin),
     { expirationTtl: LOGIN_STATE_TTL_SECONDS }
   );
   const headers = new Headers({

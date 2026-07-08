@@ -116,20 +116,20 @@ describe("verifyDemoCookie", () => {
 
 describe("parseDemoParkedState", () => {
   it("accepts the two fixed returnTo paths", () => {
-    expect(parseDemoParkedState(JSON.stringify({ type: "demo", returnTo: "/demo", binding: "x" }))).toEqual({
+    expect(parseDemoParkedState(JSON.stringify({ type: "demo", returnTo: "/playground", binding: "x" }))).toEqual({
       type: "demo",
-      returnTo: "/demo"
+      returnTo: "/playground"
     });
-    expect(parseDemoParkedState(JSON.stringify({ type: "demo", returnTo: "/demo/" }))).toEqual({
+    expect(parseDemoParkedState(JSON.stringify({ type: "demo", returnTo: "/playground/" }))).toEqual({
       type: "demo",
-      returnTo: "/demo/"
+      returnTo: "/playground/"
     });
   });
 
   it("rejects non-demo, open-redirect, and malformed states", () => {
     expect(parseDemoParkedState(JSON.stringify({ type: "mcp", oauthReq: {}, binding: "x" }))).toBeNull();
     expect(parseDemoParkedState(JSON.stringify({ type: "demo", returnTo: "https://evil.example/demo" }))).toBeNull();
-    expect(parseDemoParkedState(JSON.stringify({ type: "demo", returnTo: "/demo/../mcp" }))).toBeNull();
+    expect(parseDemoParkedState(JSON.stringify({ type: "demo", returnTo: "/playground/../mcp" }))).toBeNull();
     expect(parseDemoParkedState(JSON.stringify({ type: "demo", returnTo: "//evil.example" }))).toBeNull();
     expect(parseDemoParkedState(JSON.stringify({ type: "demo" }))).toBeNull();
     expect(parseDemoParkedState(JSON.stringify({ returnTo: "/demo" }))).toBeNull();

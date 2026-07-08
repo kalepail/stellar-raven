@@ -525,7 +525,7 @@ const DEMO_SCRIPT = `
     showPulse("sending");
     var res;
     try {
-      res = await fetch("/demo/chat", {
+      res = await fetch("/playground/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ messages: history })
@@ -595,7 +595,7 @@ const DEMO_SCRIPT = `
 // hard-coded (Web Crypto is async, and these headers are a sync module const);
 // test/demo-page.test.ts recomputes it from the rendered page, so an edit to
 // DEMO_SCRIPT fails the suite with the new value to paste here.
-const DEMO_SCRIPT_SHA256 = "sha256-xs0oM6+VHVELqhY1b2nX56CMArcAc5qRsRFp7MkD8IQ=";
+const DEMO_SCRIPT_SHA256 = "sha256-pSilD4zwrNz+0rctCOprryCke6zESCHVmIzC14aPK0M=";
 
 export const DEMO_PAGE_HEADERS: Record<string, string> = {
   "content-type": "text/html; charset=utf-8",
@@ -711,7 +711,7 @@ const EXPLAINER =
   "answer before connecting your own agent.";
 const DEMO_TITLE = "Playground · Stellar Raven";
 const DEMO_DESCRIPTION = "Try Stellar Raven's live agent playground for Stellar ecosystem questions.";
-const DEMO_URL = `https://${HOST}/demo`;
+const DEMO_URL = `https://${HOST}/playground`;
 
 function demoHead(): string {
   return `<!doctype html><html lang="en"><head>
@@ -761,7 +761,7 @@ function lockedBody(): string {
     `<p class="eyebrow">Agent playground <span class="live"><span class="dot"></span>live tools</span></p>` +
     `<h1>Test drive <span class="r">Raven</span></h1>` +
     `<p class="lede">${esc(EXPLAINER)}</p>` +
-    `<div class="cta"><a class="btn btn-primary" href="/demo/login">Sign in to try it</a>` +
+    `<div class="cta"><a class="btn btn-primary" href="/playground/login">Sign in to try it</a>` +
     `<span class="hint">WorkOS sign-in &middot; no service API keys &middot; rate-limited</span></div>` +
     `</section>` +
     `<section class="example"><div class="exhead"><p class="eyebrow">Example session</p>` +
@@ -798,7 +798,7 @@ export function demoPage(opts: { authenticated: boolean }): string {
 
 function demoFooter(): string {
   return (
-    `<footer class="site-foot"><b>Public playground.</b> Demo mode keeps each turn short and ` +
+    `<footer class="site-foot"><b>Public playground.</b> Playground mode keeps each turn short and ` +
     `rate-limited. For longer agent runs, connect an MCP client to <code>/mcp</code>.</footer>`
   );
 }

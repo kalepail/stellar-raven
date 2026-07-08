@@ -79,7 +79,7 @@ export function parseDemoParkedState(raw: string): { type: "demo"; returnTo: str
   if (typeof parsed !== "object" || parsed === null) return null;
   const { type, returnTo } = parsed as { type?: unknown; returnTo?: unknown };
   if (type !== "demo") return null;
-  if (returnTo !== "/demo" && returnTo !== "/demo/") return null;
+  if (returnTo !== "/playground" && returnTo !== "/playground/") return null;
   return { type: "demo", returnTo };
 }
 

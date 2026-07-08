@@ -56,15 +56,15 @@ describe("demo page states", () => {
     expect(lockedHtml).toContain('<meta property="og:image" content="https://raven.stellar.buzz/og.png"/>');
     expect(lockedHtml).toContain('<meta property="og:image:width" content="1200"/>');
     expect(lockedHtml).toContain('<meta property="og:image:height" content="630"/>');
-    expect(lockedHtml).toContain('<meta property="og:url" content="https://raven.stellar.buzz/demo"/>');
+    expect(lockedHtml).toContain('<meta property="og:url" content="https://raven.stellar.buzz/playground"/>');
     expect(lockedHtml).toContain('<meta name="twitter:card" content="summary_large_image"/>');
     expect(lockedHtml).toContain('<meta name="twitter:image" content="https://raven.stellar.buzz/og.png"/>');
     expect(lockedHtml).toContain('<link rel="apple-touch-icon"');
-    expect(lockedHtml).toContain('<link rel="canonical" href="https://raven.stellar.buzz/demo"/>');
+    expect(lockedHtml).toContain('<link rel="canonical" href="https://raven.stellar.buzz/playground"/>');
   });
 
   it("locked: sign-in link, static example trace, zero script", () => {
-    expect(lockedHtml).toContain('href="/demo/login"');
+    expect(lockedHtml).toContain('href="/playground/login"');
     expect(lockedHtml).toContain("Test drive <span class=\"r\">Raven</span>");
     expect(lockedHtml).toContain("Example session");
     expect(lockedHtml).toContain("soroban smart contract deploy");
@@ -75,11 +75,11 @@ describe("demo page states", () => {
     expect(lockedHtml).not.toContain('class="flow"');
   });
 
-  it("authenticated: composer + trace client wired to /demo/chat", () => {
+  it("authenticated: composer + trace client wired to /playground/chat", () => {
     expect(chatHtml).toContain('id="composer-form"');
     expect(chatHtml).toContain('id="log"');
     expect(chatHtml).toContain(`maxlength="${DEMO_CAPS.maxUserMessageChars}"`);
-    expect(chatHtml).toContain('fetch("/demo/chat"');
+    expect(chatHtml).toContain('fetch("/playground/chat"');
     expect(chatHtml).toContain("Ask about Stellar and Raven will search its connected sources");
     expect(chatHtml).not.toContain("full power and glory of Stellar Raven");
     expect(chatHtml).toContain("connect an MCP client to <code>/mcp</code>");
