@@ -16,7 +16,8 @@ https://agents.stellar.buzz served as an alias (both in `wrangler.jsonc` routes)
 `stellar-raven-codemode`, "Ecosystem - Stellar" CF account). WorkOS OAuth + admin-token/local
 bypasses — design in `research/auth-workos.md`, connection guide in [`README.md`](./README.md).
 CI + daily live-drift refresh: github.com/kalepail/stellar-raven Actions (repo renamed from
-stellar-raven-codemode 2026-07-02). Work is
+stellar-raven-codemode 2026-07-02). The worker also serves a small browser surface — landing +
+Terms/Privacy consent pages and the demo playground (`src/site.ts`, `src/demo/`). Work is
 coordinated via Solo MCP project 49 (todos + scratchpads; backlog items tracked there).
 
 ## Solo first
@@ -56,10 +57,10 @@ current process state before using raw shell commands.
   telemetry query API, GraphQL metrics. What we enabled and why. For live production log/trace
   reviews, use `.agents/skills/cloudflare-observability-review/SKILL.md` (Claude reaches the
   same file through the committed `.claude/skills` symlink).
-- `research/prior-art.md` — map of `../stellar-raven-next` / `../stellar-raven`. **Learn, don't
-  clone:** those repos are references, not templates — design this project's own types, formats,
-  and adapters; take their *content* (skills mirror, golden corpus) and *lessons* (ADR pitfalls),
-  not their code or schemas by default.
+- `research/prior-art.md` — historical map of the retired sibling repos (see "Retired prior-art
+  repos" below). **Learn, don't clone:** they were references, not templates — design this
+  project's own types, formats, and adapters; take their *content* (skills mirror, golden
+  corpus) and *lessons* (ADR pitfalls), not their code or schemas by default.
 
 ## Rules
 
@@ -95,10 +96,11 @@ current process state before using raw shell commands.
   approval/elicitation/budget there. Approval state never lives in sandbox code. (Todo 845
   item 3; design reference: `@cloudflare/codemode` OpenApiMcpServerOptions.request.)
 - Secrets host-side only; sandbox keeps `globalOutbound: null`.
-- Generated artifacts (`catalog/manifest.json`, inventory JSONs) are rebuilt by `scripts/`,
-  never hand-edited.
-- Prior-art repos `../stellar-raven-next` and `../stellar-raven` are **read-only reference** —
-  copy code in, never modify them.
+- Generated artifacts (`catalog/manifest.json`, inventory JSONs, `src/fonts.ts`, `src/og.ts`)
+  are rebuilt by `scripts/` (`npm run` targets), never hand-edited.
+- Prior-art sibling checkouts are **retired and deleted** — never reference `../stellar-raven*`
+  paths. Everything kept from them is vendored read-only in `eval/corpus/` (provenance +
+  checksums in `eval/corpus/PROVENANCE.md`).
 - **Evals' primary artifact is upstream findings** — this server's own tuning ceiling is
   limited; every eval run files evidence-backed service-improvement recommendations in
   `improvements/` (charter there; own-repo fixes go to Solo todos instead). To run a
@@ -111,12 +113,13 @@ current process state before using raw shell commands.
   completion unless the user explicitly cancels it, it clearly errors, or it is blocking on input
   that only the user can provide. Capture and incorporate the review findings before finalizing.
 
-## Neighboring repos
+## Retired prior-art repos
 
-- `../stellar-raven-next` — primary prior art (see its `AGENTS.md`); `agents-docs/` there mirrors
-  the Cloudflare Agents SDK docs incl. `docs/codemode/`. **Being retired** — everything
-  eval-corpus-related is vendored in `eval/corpus/` (see `eval/corpus/PROVENANCE.md`); don't add
-  new dependencies on the sibling path.
-- `../raven-golden-qa` — **retired**; its corpora (big.json, the semantic battery) live at
-  `eval/corpus/raven-golden-qa/`. The raw jutsu user-question pool was **removed** for privacy
-  (real user ids + user-pasted secret keys/emails) and is not vendored here.
+The sibling checkouts `../stellar-raven`, `../stellar-raven-next`, and `../raven-golden-qa` are
+retired and no longer exist on disk; older docs/ADRs may still name them. Everything kept is
+vendored read-only in `eval/corpus/` (provenance + checksums in `eval/corpus/PROVENANCE.md`):
+the 538-case golden corpus under `eval/corpus/raven-next/`, the raven-golden-qa corpora
+(big.json, the semantic battery) under `eval/corpus/raven-golden-qa/`. The raw jutsu
+user-question pool was **removed** for privacy (real user ids + user-pasted secret keys/emails)
+and is not vendored here. `research/prior-art.md` is the historical map of what those repos
+contained.

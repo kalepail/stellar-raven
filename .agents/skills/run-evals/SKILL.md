@@ -80,6 +80,21 @@ Tracking (Solo MCP — this repo's project binding is in CLAUDE.md): create or c
 the round's working record (numbers, per-case notes, triage table, findings drafted). Repo
 fixes discovered during the round become **their own Solo todos** — never `improvements/` files.
 
+For a multi-lane or CI-like round, use `truth-maintenance` as the coordinator rather than
+holding every transcript, drift note, golden check, and improvement follow-up in one context
+window. The coordinator should own the Solo ledger and spawn isolated reviewers for:
+
+- wrong/partial QA rows or shards of rows,
+- plan/routing regression diffs,
+- golden contradiction or freshness clusters,
+- improvements filing/follow-up,
+- adversarial closeout review.
+
+Use Solo `list_agent_tools` to pick available runtimes, `spawn_agent` + `send_input` to launch
+them, and `timer_fire_when_idle_all`/`timer_fire_when_idle_any` to wake the coordinator when
+reviewers go idle. Each reviewer appends a narrow verdict with evidence to the scratchpad; the
+coordinator reconciles and patches. Do not pass the coordinator's expected answer to reviewers.
+
 ## Step 1 — preflight (always, free)
 
 ```sh
@@ -95,6 +110,15 @@ those are load-time files, committed, and safe from recompiles. Generated files
 (`routing-cases.json`, `qa/cases.json`, `plan/op-classes.json`) are never hand-edited.
 
 ## Step 2 — live server (only for QA / agentic / live-data lanes)
+
+Use Solo first. Check the project processes for the `dev` command (`npm run dev`) and reuse it
+when it is already running. Discover its port with Solo (`services_list` or
+`wait_for_bound_port`) and pass that port to the eval runner. Do not start a duplicate Wrangler
+process just because the example below uses `8788`.
+
+If no Solo dev process exists and a live lane needs one, start/restart the trusted Solo `dev`
+command when available. Only fall back to a foreground shell command for a short local run when
+Solo has no matching command, and stop it before finalizing:
 
 ```sh
 npx wrangler dev --port 8788 --host localhost
@@ -114,7 +138,8 @@ Readiness check before launching any lane (a plain GET on `/mcp` is not meaningf
 with a real MCP initialize):
 
 ```sh
-curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:8788/mcp \
+PORT=<solo-discovered-port>
+curl -s -o /dev/null -w '%{http_code}' -X POST "http://localhost:${PORT}/mcp" \
   -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"probe","version":"0"}}}'
 ```
@@ -128,18 +153,18 @@ Expect `200`. A `401` here means the `--host localhost` gotcha above bit you.
 npm run eval:routing -- --gate            # exit 1 on gate breach or changed denominator
 
 # QA headline (sample) — variant A = the shipped `search` tool
-node eval/qa/run-qa.mjs --variant A --sample 30 --port 8788
+node eval/qa/run-qa.mjs --variant A --sample 30 --port "$PORT"
 # targeted smoke: --ids a,b,c ; collect-only: --no-judge ; overrides: --model/--judge-model
 
 # QA live-data lane (grounding behavior; graded behaviorally, never on snapshot values)
-node eval/qa/run-qa.mjs --cases eval/qa/live-cases.json --port 8788
+node eval/qa/run-qa.mjs --cases eval/qa/live-cases.json --port "$PORT"
 
 # Plan regrade (offline, reads stored transcripts)
 npm run eval:plan -- eval/qa/results/<stamp>-variantA.json
 
 # Agentic lane (Claude Code only — Workflow harness): boot server, then invoke the
 # Workflow tool with eval/agentic/workflow-agentic-routing.js and
-# args {"port": 8788, "cases": [...]} mapped from eval/agentic/sample.json
+# args {"port": Number(process.env.PORT), "cases": [...]} mapped from eval/agentic/sample.json
 # (id/question/expected_service). Codex fallback: skip, or drive sub-agents manually
 # per eval/agentic/README.md "Method".
 ```
@@ -189,6 +214,11 @@ Known judge failure modes (from `eval/qa/README.md`):
 Fan out sub-agents for this review when the run is big: one per `wrong`/`partial` case, each
 re-executing the disputed claims live (production or dev `execute`) and returning a verdict
 + evidence. Collect into the round scratchpad.
+
+Shard by evidence type when that is cheaper than case-by-case review. Example: one reviewer
+checks all rows involving docs-index freshness, another checks Scout/Lumenloop corpus claims,
+and another checks plan transcripts. Keep the write sets disjoint: reviewers append to Solo;
+the coordinator edits repo files.
 
 Results rows do NOT carry the `golden` field (`{id, question, tags, answer, transcript,
 verdict, ...}` only) — reviewers working from rows alone can't see `golden.keyFacts`/`avoid`.
@@ -310,6 +340,8 @@ Close-out checklist:
 - [ ] Own-repo fixes filed as Solo todos (not improvements/, not silently patched)
 - [ ] Any new/changed golden override carries live evidence + `rootCause` (compile enforces
       the fields; the reviewer verifies the substance) and its root cause is actually filed
+- [ ] Independent/adversarial review finished and every finding was reconciled or explicitly
+      recorded as a non-blocking residual risk
 - [ ] Solo round todo closed with a comment linking scratchpad + results stamps
 
 ## Hard rules (violating any of these invalidates the round)

@@ -38,6 +38,10 @@ Most questions mix domains — classify per CLAIM, not per case.
 
 ## Step 2 — know your source classes (independence is between CLASSES)
 
+Tool names below are examples from current agent environments, not a Claude-only contract.
+Use the available equivalent or tool discovery in the active agent when a named MCP tool is
+not present.
+
 - **A. Official primary docs/sites** — developers.stellar.org, service owners' own docs
   (WebFetch, `mcp__parallel-search__web_fetch`).
 - **B. Source code / repos** — the implementation is the ground truth for limits and
@@ -86,6 +90,12 @@ Rules for the fan-out: agents research, they do NOT edit files; exact quotes + U
 mandatory (a stranger must be able to re-walk the trail); "unverifiable" is an honest,
 useful verdict — never stretch weak evidence; when two agents disagree, run a targeted
 follow-up probe — never coin-flip, never average.
+
+Use Solo for this fan-out when working in this repo: create or reuse the round scratchpad,
+spawn one agent per claim cluster, and have agents append matrices directly to the
+scratchpad. The authoring agent edits `golden-overrides.json` only after reconciling those
+independent matrices. For broad corpus-health or drift-refresh work, let `truth-maintenance`
+coordinate this lane alongside eval and improvements review.
 
 **Independent re-verification lane (high-stakes changes).** The corroboration matrix is
 authored by the agent proposing the change — a matrix review can rubber-stamp its blind

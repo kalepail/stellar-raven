@@ -1,12 +1,16 @@
 ---
 name: live-drift-resolution
-description: Resolve a "Live service drift detected" issue — the daily CI that diffs the committed catalog against the live upstream surfaces (Lumenloop, Stellar Light/Scout, Stellar Docs). Regenerate the artifacts, classify the drift, decide whether it needs a policy or routing-baseline change or is a clean mechanical bump, dual-verify, then commit and close. Use when a drift issue is filed, when refreshing inventory, or when deciding if an upstream version bump is routing-neutral.
+description: Resolve a "Live service drift detected" issue — the daily CI that diffs the committed catalog against the live upstream surfaces (Lumenloop, Stellar Light/Scout, Stellar Docs). Regenerate the artifacts, classify the drift, decide whether it needs a policy or routing-baseline change or is a clean mechanical bump, dual-verify, commit, deploy when authorized, verify production, and close. Use when a drift issue is filed, when refreshing inventory, or when deciding if an upstream version bump is routing-neutral.
 ---
 
 # Live service drift resolution — stellar-raven-codemode
 
 This skill is agent-agnostic: a plain-markdown runbook. Claude Code invokes it as a skill;
 Codex or any other CLI agent can be pointed at this file directly.
+
+Boundary: this resolves live **service surface** drift. If the user asks whether repo truth is
+current across evals, golden answers, improvements, upstream issues, or PRs, use
+`truth-maintenance` as the coordinator and this skill as only the drift lane.
 
 ## North star
 
@@ -90,6 +94,9 @@ facts. Do this after regeneration and again after any corrective edits:
   findings when the drift reveals a live upstream gap. Regenerate `improvements/INDEX.md`.
 - **Relevant docs/examples:** check any repo-scoped skills, examples, or runbooks that
   quote the changed behavior and would teach agents the old facts.
+- **Upstream issue/PR state:** if this drift may resolve or obsolete existing
+  `improvements/` findings, use `improvements-pipeline` to inspect the upstream issue/PR
+  state and re-run the original trigger before changing statuses.
 
 For non-trivial drift, split this audit across Solo reviewers instead of one agent doing
 all checks serially. Use separate reviewer briefs for the categories above, have each
@@ -105,6 +112,9 @@ example:
   and generated runtime bundles.
 - `exposure/routing reviewer`: inspect inventory/catalog/spec/op classes, ADR-0003
   exposure policy, and routing gate evidence.
+- `upstream follow-up reviewer`: inspect affected `improvements/` findings and their
+  upstream issues/PRs, then re-run the original trigger to decide whether the drift actually
+  fixed, superseded, or left them still-repro.
 
 Record when a category is intentionally unchanged. "No edit needed" is a conclusion that
 needs evidence, not an assumption.
@@ -143,12 +153,54 @@ changelog is a *claim to verify*, not evidence. Derive the class from the actual
 
 ```
 # added/removed/renamed operations — compare the path·method set old vs new:
-git show HEAD:inventory/<svc>.json | node -e '…print sorted METHOD path keys…' > /tmp/old
-node -e '…same over working tree…' inventory/<svc>.json > /tmp/new
-diff /tmp/old /tmp/new          # empty = no surface change
+SERVICE=<svc>
+git show "HEAD:inventory/${SERVICE}.json" | node -e '
+const fs = require("fs");
+const doc = JSON.parse(fs.readFileSync(0, "utf8"));
+const methods = new Set(["get","post","put","patch","delete","options","head"]);
+for (const [path, ops] of Object.entries(doc.openapi?.paths ?? {})) {
+  for (const method of Object.keys(ops ?? {})) {
+    if (methods.has(method)) console.log(`${method.toUpperCase()} ${path}`);
+  }
+}
+' | sort > "/tmp/${SERVICE}.surface.old"
+node -e '
+const fs = require("fs");
+const doc = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+const methods = new Set(["get","post","put","patch","delete","options","head"]);
+for (const [path, ops] of Object.entries(doc.openapi?.paths ?? {})) {
+  for (const method of Object.keys(ops ?? {})) {
+    if (methods.has(method)) console.log(`${method.toUpperCase()} ${path}`);
+  }
+}
+' "inventory/${SERVICE}.json" | sort > "/tmp/${SERVICE}.surface.new"
+diff -u "/tmp/${SERVICE}.surface.old" "/tmp/${SERVICE}.surface.new"
+# empty = no surface change
 
 # routing-relevant text — compare per-op operationId+summary+description old vs new:
-# (extract "METHOD path :: operationId :: summary :: description" for every op, sort, diff)
+git show "HEAD:inventory/${SERVICE}.json" | node -e '
+const fs = require("fs");
+const doc = JSON.parse(fs.readFileSync(0, "utf8"));
+const methods = new Set(["get","post","put","patch","delete","options","head"]);
+const norm = v => String(v ?? "").replace(/\s+/g, " ").trim();
+for (const [path, ops] of Object.entries(doc.openapi?.paths ?? {})) {
+  for (const [method, op] of Object.entries(ops ?? {})) {
+    if (methods.has(method)) console.log(`${method.toUpperCase()} ${path} :: ${norm(op.operationId)} :: ${norm(op.summary)} :: ${norm(op.description)}`);
+  }
+}
+' | sort > "/tmp/${SERVICE}.text.old"
+node -e '
+const fs = require("fs");
+const doc = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+const methods = new Set(["get","post","put","patch","delete","options","head"]);
+const norm = v => String(v ?? "").replace(/\s+/g, " ").trim();
+for (const [path, ops] of Object.entries(doc.openapi?.paths ?? {})) {
+  for (const [method, op] of Object.entries(ops ?? {})) {
+    if (methods.has(method)) console.log(`${method.toUpperCase()} ${path} :: ${norm(op.operationId)} :: ${norm(op.summary)} :: ${norm(op.description)}`);
+  }
+}
+' "inventory/${SERVICE}.json" | sort > "/tmp/${SERVICE}.text.new"
+diff -u "/tmp/${SERVICE}.text.old" "/tmp/${SERVICE}.text.new"
 # empty diff = the "no operation-description changes" claim is TRUE at our ingest, not just upstream's word
 ```
 
@@ -233,7 +285,9 @@ Run the guards that would catch a bad absorb, and confirm the scope:
   `npm run improvements:probes`.
 - `npm run secrets:scan -- --tree` is clean — a regenerated artifact must never carry an upstream
   key/token. Also eyeball the diff for high-entropy strings and secret-shaped assignments.
-- `git status --short` shows only the generated artifacts; `git diff --check` is clean.
+- `git status --short` shows only regenerated artifacts plus any explicitly justified policy,
+  runner, baseline, eval/golden, improvement, or runbook edits required by the drift class;
+  `git diff --check` is clean.
 
 ## Step 6 — independent adversarial review (default for anything past pure-provenance)
 
@@ -256,8 +310,6 @@ adversarial reviews finish).
   class of change, e.g. `catalog: absorb <service> <version> drift — <one-line class>`. State in
   the body what was verified (op count, description-identity, gate result, guards, secrets) and
   that an independent review agreed. Push.
-- Close the drift issue with a comment that records the same evidence and the resolving commit
-  sha (`gh issue close <n> --comment …`).
 - If the change involved a policy or baseline decision, record it where the project tracks work
   (Solo), so the *why* survives — the artifacts only carry the *what*.
 
@@ -279,6 +331,9 @@ version until a manual deploy. Closing the drift loop requires shipping:
 A drift bump that is committed but never deployed is a *silent* stale prod — the catalog carries
 the new upstream version while the gateway still answers as the old one. Treat deploy as part of
 resolving the issue, not a separate optional chore.
+
+After production verification, close the drift issue with a comment that records the commit sha,
+deploy Version ID, and evidence from the guards/review/live check (`gh issue close <n> --comment …`).
 
 ## Hard rules
 

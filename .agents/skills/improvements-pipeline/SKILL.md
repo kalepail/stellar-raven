@@ -1,6 +1,6 @@
 ---
 name: improvements-pipeline
-description: Maintain the improvements/ upstream-findings pipeline for stellar-raven-codemode. Use when filing or updating service-improvement findings, resolving intake targets, maintaining improvements/intake.json, interpreting improvements lint failures, running recurrence probes, regenerating improvements/INDEX.md, or handling eval-round and drift-refresh improvement maintenance.
+description: Maintain the improvements/ upstream-findings pipeline for stellar-raven-codemode. Use when filing or updating service-improvement findings, resolving intake targets, maintaining improvements/intake.json, interpreting improvements lint failures, running recurrence probes, regenerating improvements/INDEX.md, reviewing upstream issues or PRs opened from findings, or handling eval-round and drift-refresh improvement maintenance.
 ---
 
 # Improvements pipeline
@@ -20,6 +20,10 @@ Statuses are evidence bars:
   successor finding instead of stretching the old one.
 
 Findings are for upstream service/data/content/spec gaps only. Own-repo fixes go to Solo todos.
+
+GitHub state is not truth by itself. An upstream issue being closed or a PR being merged is
+evidence to inspect; a finding moves to `fixed-upstream` only after re-running the original
+trigger, recurrence probe, or live repro and observing the fix.
 
 ## Filing workflow
 
@@ -51,6 +55,57 @@ npm run improvements:lint
 
 Use `npm run improvements:lint -- --live` when intake repos were added, renamed, or questioned.
 
+## Upstream issue and PR follow-up
+
+Use this loop when reviewing issues/PRs that were opened from findings, during drift refresh,
+or when a user asks whether previous improvements were resolved.
+
+1. Enumerate durable refs from frontmatter/evidence:
+   - `rg -n "github.com/.+/(issues|pull)/" improvements`
+   - include `reported-upstream` and non-fixed `verified` findings first, then fixed findings
+     if a regression/recurrence is suspected.
+2. Build a deterministic state table in a Solo scratchpad:
+
+```
+| finding | trigger evidence | upstream ref | ref state | PR checks/reviews | live re-check | action |
+|---|---|---|---|---|---|---|
+```
+
+3. For each issue/PR, inspect current upstream state with the GitHub MCP tools or `gh`:
+   title, open/closed/merged state, close reason, linked PRs/issues, latest maintainer
+   comments, review decision, unresolved requested changes, failing checks, and last update.
+   For PRs this repo opened, also check whether it needs author action, review response,
+   rebase, CI fix, or abandonment.
+4. Re-run the original trigger:
+   - finding with `probe` frontmatter: `npm run improvements:probes` or a targeted equivalent.
+   - eval-origin finding: use the stored transcript only to reconstruct the original claim,
+     then re-run the smallest live `execute` or direct service call that can prove current
+     upstream state.
+   - drift-origin finding: compare the refreshed inventory/catalog/service response that
+     originally exposed the gap.
+5. Classify the outcome:
+   - `fixed`: live trigger no longer reproduces; update status to `fixed-upstream`, add dated
+     evidence, and note the resolving issue/PR.
+   - `still-repro`: keep status, add a recurrence with date and evidence, and comment/follow up
+     upstream if the ref claims to be fixed.
+   - `closed-unfixed`: keep or return to `reported-upstream` while the GitHub ref remains in
+     evidence, record why closure did not resolve it, and open a successor or follow-up ref
+     only when the owner path is clear.
+   - `superseded`: link the successor finding or upstream ref; do not stretch the old finding.
+   - `inconclusive`: do not change status; record the missing evidence and create a Solo todo or
+     timer for the next concrete check.
+6. Regenerate and verify after edits:
+
+```sh
+npm run improvements:index
+npm run improvements:lint
+npm run improvements:lint -- --live
+npm run improvements:probes
+```
+
+Use Solo timers for unresolved follow-up instead of memory. A timer body should include the
+finding ids, upstream refs, scratchpad id, and the exact re-check to run.
+
 ## Probes and recurrences
 
 Probe frontmatter is optional and shaped as:
@@ -81,3 +136,7 @@ when the public owner is genuinely unknown; include the rule or reason so future
 During eval rounds, file or update findings before closing the round. On drift-refresh days, run probes,
 refresh statuses for upstream fixes with live evidence, and run live intake lint. Ad hoc edits to
 findings, probes, or intake always end with index regeneration if needed and lint.
+
+For broad cadence work, use the `truth-maintenance` skill as the coordinator: it creates the
+Solo scratchpad/todo, fans out issue/PR, drift, eval, and golden reviewers, and reconciles the
+lane verdicts before closeout.

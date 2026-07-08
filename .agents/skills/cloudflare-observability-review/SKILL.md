@@ -9,6 +9,10 @@ Use this runbook to answer "what happened in production?" for
 `stellar-raven-codemode` using Cloudflare Workers Logs, platform invocation
 events, and OTel spans.
 
+When the investigation is part of an eval round, agent-run forensic review, or other
+multi-agent maintenance pass, record the query inputs, Ray IDs, and verdict in the relevant
+Solo scratchpad/todo so the evidence survives outside the current context window.
+
 ## Principle
 
 Prefer Cloudflare-native request identity over app-issued task IDs.
@@ -65,7 +69,7 @@ echoing it:
 
 ```sh
 set -a; . ./.env; set +a
-MARK="codex-live-telemetry-$(date +%s)"
+MARK="raven-live-telemetry-$(date +%s)"
 BODY=$(node -e 'const m=process.argv[1]; console.log(JSON.stringify({
   jsonrpc:"2.0", id:0, method:"initialize",
   params:{protocolVersion:"2025-06-18", capabilities:{},

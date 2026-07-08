@@ -7,7 +7,7 @@ Entry point for Codex and any non-Claude CLI agent working in this repo.
 `CLAUDE.md` is the single source of truth for what this project is, the architecture docs to
 start from (`PLAN.md`, `ARCHITECTURE.md`), the research docs, the hard rules (manifest-is-the-
 exposed-surface / ADR-0003, secrets host-side only, generated artifacts never hand-edited,
-forward-only), the deployment/CI bindings, and the neighboring repos. This file does not
+forward-only), the deployment/CI bindings, and the retired prior-art repos. This file does not
 duplicate it — it points Codex at it and lists the shared skills. When guidance here and
 `CLAUDE.md` could diverge, `CLAUDE.md` wins; keep this file thin.
 
@@ -35,14 +35,19 @@ want to customize the Codex-app presentation, generated via the skill-creator's
 
 Current skills:
 
+- **truth-maintenance** — coordinate a full truth-maintenance pass across live drift, evals,
+  golden truth, and improvements/issues/PR follow-up using Solo todos, scratchpads, spawned agents,
+  and timers as the control plane.
 - **live-drift-resolution** — resolve a "Live service drift detected" issue: regenerate the
-  catalog, classify the drift (provenance/data vs operation-surface vs routing-text), decide
-  policy/routing-baseline vs clean bump, dual-verify, commit and close.
+  catalog, classify the drift (provenance/data vs operation-surface vs routing-text vs
+  runner-affecting), decide policy/routing-baseline vs clean bump, dual-verify, commit,
+  deploy when authorized, verify production, and close.
 - **run-evals** — run a full eval round: pick instruments, let the runner spawn the answering and
   judge agents, review every verdict, triage to root cause, file upstream findings in
   `improvements/`. The scores are the instrument; the findings are the product.
 - **improvements-pipeline** — maintain the `improvements/` upstream-findings pipeline: lifecycle
-  statuses, filing quality bar, intake resolution, probes/recurrences, generated index, and lint gates.
+  statuses, filing quality bar, intake resolution, probes/recurrences, upstream issue/PR
+  follow-up, generated index, and lint gates.
 - **golden-truth** — change the golden Q→A corpus without codifying lies: classify the truth
   domain, triangulate across independent source classes, encode disputed/unverifiable facts
   honestly, land as a provenance-bearing override.
@@ -64,5 +69,5 @@ Current skills:
 - **Secrets host-side only**, never printed or committed; `npm run secrets:scan -- --tree` before
   committing regenerated artifacts.
 - **Generated artifacts are rebuilt by `scripts/`, never hand-edited.**
-- Prior-art repos `../stellar-raven-next` / `../stellar-raven` are read-only reference — learn,
-  don't clone.
+- Prior-art sibling repos (`../stellar-raven*`) are retired and deleted — never reference the
+  sibling paths; their kept content is vendored read-only in `eval/corpus/`. Learn, don't clone.
