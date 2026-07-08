@@ -183,7 +183,7 @@ describe("consistency with the catalog (single source of truth)", () => {
         checked += 1;
       }
     }
-    expect(checked).toBe(203); // every cataloged section is discoverable in the index (post-retirement)
+    expect(checked).toBe(sectionIds.size); // every cataloged section is discoverable in the index
   });
 
   it("read_skill's name enum is exactly the exposed skill ids", () => {
