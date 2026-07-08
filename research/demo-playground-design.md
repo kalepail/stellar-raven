@@ -14,7 +14,7 @@ before trusting after ~2026-08.
 ## What we're building
 
 A chat playground at `GET /demo` on the existing worker: the user types intent,
-a cheap Cloudflare-billed tool-calling model drives Raven's real `search` and
+a gateway-routed tool-calling model drives Raven's real `search` and
 `execute` tools, and every tool call renders as an inspectable trace — search
 query → ranked hits → execute script → response envelope (`ok/data` vs
 `error.kind: "error" | "soft-empty"`; there is **no** "denied" envelope state —
@@ -53,7 +53,11 @@ Shape:
   and theme reused; **no React/Vite toolchain added** — the repo ships one JS
   bundle and the trace UI is small enough to hand-roll like site.ts does).
 - `POST /demo/chat` — SSE response. Chat history is client-held and replayed
-  per request; the worker stays stateless per-request.
+  per request; the worker stays stateless per-request. In the bundled browser
+  client, only `user` messages and the assistant's final visible text are
+  replayed. Tool trace frames (`search`/`execute` inputs, outputs, logs, and
+  cards) are display-only and do not carry into later turns except to the
+  extent the final answer summarized them.
 - Server iterates `streamText(...).fullStream` and emits **our own small SSE
   frame schema** (`token`, `tool-start`, `tool-result`, `step`, `done`,
   `error`) rather than the AI SDK UI-message protocol, since we own both ends
@@ -85,31 +89,33 @@ handlers use — not an HTTP round-trip to `/mcp` with a token:
 - UI copy states plainly: the playground exercises the same server-side Raven
   tool implementations as `/mcp`; it does not exercise MCP OAuth transport.
 
-## Decision 3 — Model: via AI binding + AI Gateway; default `@cf/moonshotai/kimi-k2.6` (revised)
+## Decision 3 — Model: via AI binding + AI Gateway; GPT-5.4 primary
 
-> **Revision 2026-07-06 (live browser testing, workers-ai-provider 3.3.1):**
-> every cheaper candidate failed streaming tool calls in a different way —
-> glm-4.7-flash hung silent to the 120s abort on most tool-enabled calls
-> (no-tools calls answered in ~130ms); mistral-small-3.1 streamed
-> token-duplicated tool args (`{"{"queryquery":":…`) that the SDK rejected;
-> llama-3.3-70b-fast emitted its function JSON as plain text, never as a tool
-> call. `@cf/moonshotai/kimi-k2.6` — the model cloudflare/agents-starter
-> itself ships on this exact stack — completed search→answer turns in ~8s.
-> Pricier ($0.95/$4.00 per M; still <1¢ per capped demo turn), and demo
-> search payloads are compacted (5-hit default page, clipped
-> description/signature) to keep prefill small. The table below records the
-> original price-first ranking for the record; treat "reliable streaming tool
-> calls through workers-ai-provider TODAY" as a hard prerequisite any
-> replacement must prove in a live browser turn first.
+> **Revision 2026-07-07 (live `/demo/chat` gauntlet):** use
+> `openai/gpt-5.4` as the primary model and `openai/gpt-5.4-mini` as the
+> fallback, with `xai/grok-4.3` and `@cf/moonshotai/kimi-k2.7-code` kept as
+> future-gauntlet controls. The measured matrix is in
+> `research/demo-model-gauntlet-2026-07-07.md`; the code source of truth is
+> `src/demo/model-config.ts`. GPT-5.4 had the best reliability/latency balance
+> under the exact Worker + SSE + AI Gateway + `workers-ai-provider` + Raven
+> `search`/`execute` path. GPT-5.4 Mini was faster and cheaper but had more
+> tool-budget failures, so it remains fallback rather than primary. Search
+> payloads stay compacted (5-hit default page, clipped description/signature)
+> to keep reasoning-model prefill small.
+
+Historical note: the original 2026-07-06 price-first pass considered Workers
+AI `@cf/*` models first, and Kimi was briefly the best live-browser candidate
+after cheaper models failed streaming tool calls. That is no longer the active
+default.
 
 Live account catalog (26 text-gen models, `/ai/models/search`, 2026-07-06):
 
 | candidate | $/M in/out | ctx | function calling | note |
 |---|---|---|---|---|
-| **`@cf/zai-org/glm-4.7-flash`** | 0.0605 / 0.40 | 131k | yes (+reasoning) | **default** — cheapest credible agentic model; Cloudflare's own current tutorial model |
+| `@cf/zai-org/glm-4.7-flash` | 0.0605 / 0.40 | 131k | yes (+reasoning) | historical price-first candidate; failed the live tool-call path in later testing |
 | `@cf/openai/gpt-oss-20b` | 0.20 / 0.30 | 128k | yes | cheapest strong output pricing, but binding I/O is Responses-API-shaped (`input`, not `messages`) — verify provider conversion before use |
 | `@cf/google/gemma-4-26b-a4b-it` | 0.10 / 0.30 | 256k | yes | newer, less battle-tested — A/B candidate |
-| `openai/gpt-5.4-nano` / `-mini` | 0.20/1.25 · 0.75/4.50 | ~128k/1.1M | yes | unified-billing "smart lane" — needs prepaid credits (5% purchase fee) + authenticated gateway; deferred to v2 |
+| `openai/gpt-5.4` / `openai/gpt-5.4-mini` | see live AI Gateway pricing | ~1.1M for mini; verify catalog for exact context | yes | active primary/fallback from the 2026-07-07 gauntlet |
 
 Rejected: `@hf/nousresearch/hermes-2-pro-mistral-7b` (**deprecated, gone from
 live catalog** — appears in stale docs/blog posts, do not build on it);
@@ -178,19 +184,25 @@ everything cross-request is honest best-effort (review finding 3 — Workers KV
 has no atomic consume, and `stepCountIs` alone does not cap multiple tool calls
 emitted in a single model step):
 
-- `stopWhen: stepCountIs(5)`; `maxOutputTokens` 4096 (revised from 800 —
-  kimi's hidden reasoning counts against the budget and burned 800 with zero
-  visible text; worst case ≈ 1.6¢ of output per turn); abort/timeout on the
-  whole turn (120s, tied to client disconnect).
+- `stopWhen: stepCountIs(5)`; `maxOutputTokens` 4096 (sized for reasoning
+  models, where hidden reasoning can consume output budget before visible text;
+  worst case ≈ 1.6¢ of output per turn at the GPT-5.4 output rate used by the
+  2026-07-07 gauntlet); abort/timeout on the whole turn (120s, tied to client
+  disconnect).
 - In-request counters enforced inside the tool `execute:` closures: ≤ 2
-  `execute` calls per turn (counted per call, not per step), `search` limit
-  clamped to ≤ 8 (default page 5, per-hit prose clipped — see Decision 2
-  note), execute code length capped, replayed history clamped (chars +
-  message count) before the model sees it. The per-message 4000-char cap
-  applies to user-role messages only — truncating replayed assistant answers
-  corrupts the model's view of its own replies (PR #5 review); with 4096-token
-  answers, the 24k-char history budget holds roughly one to two long turns of
-  memory, which is the cost guard working as intended.
+  `execute` calls and ≤ 2 `search` calls per turn (counted per call, not per
+  step), search result limit clamped to ≤ 6 (default page 5, per-hit prose
+  clipped — see Decision 2 note), execute code length capped at 8000 chars,
+  replayed history first clamped to the newest 20 `user`/`assistant` messages
+  and then trimmed by dropping oldest messages until it is within the 24k
+  total-content budget when possible; the final new message is always kept.
+  The per-message 4000-char cap applies to user-role messages only —
+  truncating replayed assistant answers corrupts the model's view of its own
+  replies (PR #5 review); with 4096-token answers, the 24k-char history budget
+  holds roughly one to two long turns of memory, which is the cost guard
+  working as intended. In the bundled browser client, tool trace frames are not
+  replayed; the next turn gets only prior user text plus final assistant text
+  after clamping.
 - Per-subject KV token-bucket (N chats/hour on `OAUTH_KV`) — **best-effort
   coarse throttling only**, racy by design; acceptable because the WorkOS gate
   bounds the audience.
@@ -265,9 +277,9 @@ emitted in a single model step):
    `workers-ai-provider`) and a public streaming route beside `/mcp`; keep
    `src/demo/` isolated, zero changes to MCP auth behavior, review the diff for
    route-order regressions.
-3. **Cheap-model reliability** — glm-4.7-flash may emit bad JS or mishandle
-   envelopes; strict system prompt, low step cap, failures rendered honestly in
-   the trace (that's arguably the demo working as intended).
+3. **Model reliability** — provider-specific tool-call behavior still varies;
+   `DEMO_MODEL_OVERRIDE` and the gauntlet runner exist so model changes prove
+   themselves in the real Worker/SSE/tool path before promotion.
 4. **Trace leakage** — traces show model code + tool results; the executor's
    existing redaction/truncation runs on everything displayed; don't log full
    trace payloads server-side.

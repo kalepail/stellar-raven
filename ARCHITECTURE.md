@@ -46,8 +46,15 @@ handler in `src/server.ts`. The page (`src/demo/page.ts`) is cookie-gated throug
 unauthenticated users see a static example trace and `/demo/login`; authenticated users get a
 same-origin SSE chat UI backed by `/demo/chat`. The chat handler (`src/demo/chat.ts`) runs the
 same host-side catalog search and execute runner through AI SDK tools (`src/demo/tools.ts`),
-but with demo-only caps from `DEMO_CAPS`: step count, search/execute call counts, execute code
-length, replay history, output tokens, hourly KV throttle, and AI Gateway spend/rate posture.
+with demo-only caps from `DEMO_CAPS` for step count, search/execute call counts, execute code
+length, replay history, output tokens, and hourly KV throttle; AI Gateway spend/rate posture is
+configured separately through the demo gateway binding/config.
+The bundled browser client keeps replayed history in page memory, not Worker storage: each new turn
+posts its current `user`/`assistant` message list back to `/demo/chat`, then the server clamps that
+list to the newest 20 messages and drops oldest messages until it is within the 24k total-content
+budget when possible, always keeping the final new message. In the bundled client, tool trace frames
+(`search`/`execute` inputs, outputs, logs, and cards) are display-only and are not replayed on later
+turns except to the extent the assistant's final text summarized them.
 In-script discovery is deliberately narrower than production (`codemode.describe` only for
 exact visible hit ids; no `codemode.search/catalog/spec`) so the public playground remains a
 small guided demo, not a full agent harness.
