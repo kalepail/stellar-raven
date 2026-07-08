@@ -21,6 +21,7 @@
  */
 import { BASE, FAVICON, FONT_FACE, HOST, OG_ALT, OG_IMAGE, TOKENS, ravenSvg } from "../site.ts";
 import { DEMO_CAPS } from "./budget.ts";
+import { escapeHtml as esc, html, raw } from "../html.ts";
 
 // ---------------------------------------------------------------------------
 // Page CSS — on top of the shared FONT_FACE/TOKENS/BASE design system.
@@ -766,29 +767,25 @@ function topBar(): string {
 }
 
 function lockedBody(): string {
-  return (
-    `<main class="play pwrap"><section class="gate">` +
-    `<p class="eyebrow">Agent playground <span class="live"><span class="dot"></span>live tools</span></p>` +
-    `<h1>Test drive <span class="r">Raven</span></h1>` +
-    `<p class="lede">${esc(EXPLAINER)}</p>` +
-    // CSS-only consent gate: the locked page ships zero script (CSP pins a single
-    // hash for the chat script), so `.gate:has(#tos-agree:checked)` toggles the
-    // button's enabled state — pointer-events:none blocks the click until checked.
-    `<div class="cta"><a id="signin" class="btn btn-primary" ` +
-    `href="/playground/login">Sign in to try it</a>` +
-    `<span class="hint">WorkOS sign-in &middot; no service API keys &middot; rate-limited</span></div>` +
-    `<div class="consent"><label class="consent-row">` +
-    `<input type="checkbox" id="tos-agree"/>` +
-    `<span>By using Stellar Raven you acknowledge you have read and<br/>agreed to the ` +
-    `<a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Terms of Service</a> ` +
-    `and <a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.` +
-    `</span></label></div>` +
-    `</section>` +
-    `<section class="example"><div class="exhead"><p class="eyebrow">Example session</p>` +
-    `<span class="exnote">static sample &mdash; sign in to run your own</span></div>` +
-    sampleTrace() +
-    `</section></main>`
-  );
+  // CSS-only consent gate: the locked page ships zero script (CSP pins a single
+  // hash for the chat script), so `.gate:has(#tos-agree:checked)` toggles the
+  // button's enabled state — pointer-events:none blocks the click until checked.
+  return html`<main class="play pwrap"><section class="gate">\
+<p class="eyebrow">Agent playground <span class="live"><span class="dot"></span>live tools</span></p>\
+<h1>Test drive <span class="r">Raven</span></h1>\
+<p class="lede">${EXPLAINER}</p>\
+<div class="cta"><a id="signin" class="btn btn-primary" href="/playground/login">Sign in to try it</a>\
+<span class="hint">WorkOS sign-in &middot; no service API keys &middot; rate-limited</span></div>\
+<div class="consent"><label class="consent-row"><input type="checkbox" id="tos-agree"/>\
+<span>By using Stellar Raven you acknowledge you have read and<br/>agreed to the \
+<a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Terms of Service</a> \
+and <a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.\
+</span></label></div>\
+</section>\
+<section class="example"><div class="exhead"><p class="eyebrow">Example session</p>\
+<span class="exnote">static sample &mdash; sign in to run your own</span></div>\
+${raw(sampleTrace())}\
+</section></main>`.toString();
 }
 
 function chatBody(): string {
@@ -821,15 +818,6 @@ function demoFooter(): string {
     `<footer class="site-foot"><b>Public playground.</b> Playground mode keeps each turn short and ` +
     `rate-limited. For longer agent runs, connect an MCP client to <code>/mcp</code>.</footer>`
   );
-}
-
-function esc(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 }
 
 function staticInlineCode(value: string): string {

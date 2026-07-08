@@ -29,6 +29,7 @@ import {
   PLEX_MONO_400_WOFF2,
   PLEX_MONO_500_WOFF2
 } from "./fonts";
+import { escapeHtml } from "./html";
 
 const MCP_ENDPOINT = "https://raven.stellar.buzz/mcp";
 export const HOST = "raven.stellar.buzz";
@@ -973,11 +974,3 @@ export const SITEMAP_HEADERS: Record<string, string> = {
   "cache-control": "public, max-age=86400"
 };
 
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
