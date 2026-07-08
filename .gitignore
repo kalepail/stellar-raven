@@ -12,6 +12,9 @@ node_modules/
 dist/
 .wrangler/
 
+# local OS/editor noise
+.DS_Store
+
 # generated types (npm run types)
 env.d.ts
 # local harness state (settings.local.json, worktrees) stays ignored;
