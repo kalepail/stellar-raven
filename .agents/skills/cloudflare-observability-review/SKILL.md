@@ -27,6 +27,11 @@ subject/client fields to app logs rather than asking models to forward ids.
   convenience stream; a miss there is not evidence that logs are absent.
 - Do not copy raw IPs, IP hashes, or IP-derived fingerprints into app logs.
   Cloudflare platform events already expose IP-bearing request headers.
+- It is OK to query and use Cloudflare-native private/platform fields
+  (IP-bearing headers, geo, TLS/client fingerprint fields, user-agent) inside a
+  bounded investigation when they are needed to join or separate requests.
+  Report them only when directly relevant; otherwise report Ray IDs, time
+  windows, paths, statuses, and app event fields.
 - Do not infer identity from IP/geo/TLS fields unless explicitly doing an abuse
   review with a separate privacy decision.
 
@@ -101,6 +106,44 @@ Wait 30-90 seconds for ingestion before querying.
 4. For broader reviews, group counts by `$metadata.type`,
    `$workers.event.request.path`, `$workers.event.response.status`,
    `$workers.event.request.headers.user-agent`, or `cloudflare.ray_id`.
+
+## Demo Playground Failures
+
+For `/demo/chat` screenshots or user-visible tool cards, do not start only from
+the screenshot timestamp. The screenshot may be captured after the failing turn,
+or from a local browser that is replaying retained UI state. First search a wide
+recent window (usually 10 hours, or the user's stated window) for app events:
+
+- `source.evt = "demo-execute"` grouped by `source.ok` and `source.error`.
+- `source.evt = "demo-chat"` with `source.executeFailures > 0`, grouped by
+  `source.executeFailures`, `source.finishReason`, and Ray/request ID.
+- Needle searches for the visible user query terms, e.g. `ecosystem gaps
+  builders` or `yield rwa bond asset`.
+- Span view for `codemode.execute`, grouped by `$metadata.message` and
+  `sandbox.ok`, to separate model-code failures from sandbox/runtime failures.
+
+Then join each failing request by `$metadata.requestId`:
+
+- `demo-search`: query, kind/service filters, hit count, top ids.
+- `demo-execute`: `ok`, `error`, `codeChars`, redacted/sampled `code`, `ms`.
+- `op`: operation ids/outcomes/timings inside the execute attempt.
+- `demo-chat`: `searchCalls`, `executeCalls`, `executeFailures`,
+  `finishReason`, `budgetExhausted`, `finalNeededButMissing`, answer preview.
+- `cf-worker-event`: path/method/status/user-agent and, when needed, the
+  Cloudflare private/platform fields used to disambiguate same-user traffic.
+
+Common diagnosis patterns:
+
+- `object is not iterable (cannot read property Symbol(Symbol.iterator))` with
+  code containing `Promise.all({ ... })` is model-authored JavaScript, not an
+  upstream service outage. The retry should rewrite to
+  `Promise.all([callA, callB])`.
+- `Execution timed out` after successful `op` lines usually means the model
+  wrote a slow/broad script or hit the sandbox's 60s wall-clock cap. Check
+  `codeChars`, broad list limits, and operation timings before blaming a
+  service.
+- `demo-chat` can still finish with an answer after failed executes; inspect
+  `executeFailures`, not only `finishReason`.
 
 ## Field Map
 

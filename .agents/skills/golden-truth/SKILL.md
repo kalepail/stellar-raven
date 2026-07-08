@@ -1,6 +1,6 @@
 ---
 name: golden-truth
-description: Change the golden Q→A corpus without codifying lies: classify the truth domain, triangulate across independent source classes, encode disputed or unverifiable facts honestly, and land provenance-bearing overrides. Use when editing eval golden answers, key facts, avoid clauses, sources, or grader notes.
+description: "Change the golden Q→A corpus without codifying lies: classify the truth domain, triangulate across independent source classes, encode disputed or unverifiable facts honestly, and land provenance-bearing overrides. Use when editing eval golden answers, key facts, avoid clauses, sources, or grader notes."
 ---
 
 # Golden gospel-truth verification — how to change the golden corpus without codifying lies

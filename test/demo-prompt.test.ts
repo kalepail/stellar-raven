@@ -26,6 +26,8 @@ describe("demo system prompt", () => {
     expect(DEMO_PREAMBLE).toContain("do not call `codemode.search`, `codemode.catalog`, or `codemode.spec`");
     expect(DEMO_PREAMBLE).toContain('`codemode.describe("<exact id>")` is allowed');
     expect(DEMO_PREAMBLE).toContain("Do not infer per-item detail functions");
+    expect(DEMO_PREAMBLE).toContain("`Promise.all` accepts an ARRAY only");
+    expect(DEMO_PREAMBLE).toContain("never `Promise.all({ ... })`");
     expect(DEMO_PREAMBLE).toContain("named result objects");
     expect(DEMO_PREAMBLE).toContain("Avoid lossy projection false negatives");
     expect(DEMO_PREAMBLE).toContain("filter against raw row JSON");

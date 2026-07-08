@@ -23,6 +23,7 @@
  */
 import { tool } from "ai";
 import { z } from "zod";
+import { parseExpressionAt } from "acorn";
 import { searchCatalogPage, catalogServices, type SearchHit } from "../catalog/search.ts";
 import { getCatalog } from "../catalog/load.ts";
 import {
@@ -98,6 +99,61 @@ function compactHitForDemo(hit: SearchHit): SearchHit {
       ? { signature: clipSignature(hit.signature, DEMO_HIT_SIGNATURE_CHARS) }
       : {})
   };
+}
+
+type AstNode = {
+  type?: string;
+  callee?: AstNode;
+  object?: AstNode;
+  property?: AstNode;
+  computed?: boolean;
+  name?: string;
+  value?: unknown;
+  arguments?: AstNode[];
+  [key: string]: unknown;
+};
+
+function isIdentifier(node: AstNode | undefined, name: string): boolean {
+  return node?.type === "Identifier" && node.name === name;
+}
+
+function isPromiseAllObjectCall(node: AstNode): boolean {
+  const callee = node.callee;
+  if (node.type !== "CallExpression" || callee?.type !== "MemberExpression") return false;
+  if (!isIdentifier(callee.object, "Promise")) return false;
+  const property = callee.property;
+  const allProperty =
+    callee.computed === true
+      ? property?.type === "Literal" && property.value === "all"
+      : isIdentifier(property, "all");
+  return allProperty && node.arguments?.[0]?.type === "ObjectExpression";
+}
+
+function walkAst(node: AstNode, visit: (node: AstNode) => boolean): boolean {
+  if (visit(node)) return true;
+  for (const [key, value] of Object.entries(node)) {
+    if (key === "parent") continue;
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (item && typeof item === "object" && walkAst(item as AstNode, visit)) return true;
+      }
+    } else if (value && typeof value === "object" && walkAst(value as AstNode, visit)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function demoExecutePreflightError(code: string): string | null {
+  try {
+    const ast = parseExpressionAt(code, 0, { ecmaVersion: "latest" }) as unknown as AstNode;
+    if (!walkAst(ast, isPromiseAllObjectCall)) return null;
+    return "invalid demo execute script: `Promise.all({ ... })` is not valid JavaScript fanout because `Promise.all` requires an array/iterable. Rewrite as `const [a, b] = await Promise.all([callA, callB])`, then build a named result object from those values.";
+  } catch {
+    // Let the real sandbox return syntax/runtime diagnostics; this preflight
+    // only catches a known-good parse with a known-bad Promise.all shape.
+    return null;
+  }
 }
 
 export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; budget?: DemoToolBudget }): {
@@ -221,6 +277,10 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
           "code-too-long",
           `execute code too long for the demo: ${args.code.length} chars (max ${DEMO_CAPS.maxExecuteCodeChars}). Write a shorter script — select fields and aggregate in-sandbox instead of inlining data.`
         );
+      }
+      const preflightError = demoExecutePreflightError(args.code);
+      if (preflightError) {
+        return refuse("invalid-promise-all-object", preflightError);
       }
       budget.executeCalls += 1;
 

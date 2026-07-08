@@ -108,6 +108,23 @@ describe("demo tools at the worker boundary", () => {
     expect(budgetReport()).toMatchObject({ executeCalls: 2, executeFailures: 1, executeRefusals: 1 });
   });
 
+  it("refuses object-shaped Promise.all before spending an execute run", async () => {
+    const { execute, budgetReport } = makeTools();
+    const result = (await execute.execute({
+      code: `async () => {
+        const calls = await Promise.all({
+          projects: scout.searchProjects({ query: "rwa", limit: 2 })
+        });
+        return calls;
+      }`
+    })) as { ok: false; error: string };
+
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain("Promise.all({ ... })");
+    expect(result.error).toContain("requires an array/iterable");
+    expect(budgetReport()).toMatchObject({ executeCalls: 0, executeFailures: 0, executeRefusals: 1 });
+  });
+
   it("allows exact-id codemode.describe in demo execute", async () => {
     const { execute, budgetReport } = makeTools();
     const result = (await execute.execute({
