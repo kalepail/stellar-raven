@@ -42,8 +42,6 @@ const spec = JSON.parse(readFileSync(SPEC_PATH, "utf8")) as {
   paths: Record<string, Record<string, Operation>>;
   components: Record<string, Record<string, unknown>>;
   "x-services": Record<string, unknown>;
-  "x-service": Array<{ id: string; operations: string[] }>;
-  "x-workflow": Array<{ id: string; families: string[]; steps: Array<{ id: string; usage: string }> }>;
 };
 
 const manifest = JSON.parse(readFileSync(join(ROOT, "catalog", "manifest.json"), "utf8")) as {
@@ -194,21 +192,6 @@ describe("consistency with the catalog (single source of truth)", () => {
     ]!.schema as { properties: { name: { enum: string[] } } };
     const index = spec.paths["/skills/list_skills"]!.get!["x-skill-index"]!;
     expect(schema.properties.name.enum).toEqual(index.map((s) => s.id));
-  });
-
-  it("root x-service/x-workflow extensions mirror the manifest discovery cards", () => {
-    const serviceCards = manifest.entries.filter((e) => e.kind === "service");
-    const workflowCards = manifest.entries.filter((e) => e.kind === "workflow");
-    expect(spec["x-service"].map((c) => c.id)).toEqual(serviceCards.map((e) => e.id));
-    expect(spec["x-workflow"].map((c) => c.id)).toEqual(workflowCards.map((e) => e.id));
-    expect(spec["x-service"].find((c) => c.id === "service:lumenloop")?.operations).toContain(
-      "lumenloop.search_directory"
-    );
-    const workflow = spec["x-workflow"].find((c) => c.id === "workflow:project-funding-lookup")!;
-    expect(workflow.families).toEqual(["lumenloop", "scout"]);
-    expect(workflow.steps.find((s) => s.id === "lumenloop.search_directory")?.usage).toBe(
-      "await lumenloop.search_directory(args)"
-    );
   });
 });
 

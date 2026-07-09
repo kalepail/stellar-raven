@@ -32,7 +32,7 @@ import { z } from "zod";
 
 export const CATALOG_SERVICES = ["lumenloop", "scout", "stellarDocs", "skills"] as const;
 
-export const CATALOG_KINDS = ["operation", "skill", "skill-section", "service", "workflow"] as const;
+export const CATALOG_KINDS = ["operation", "skill", "skill-section"] as const;
 export type CatalogKind = (typeof CATALOG_KINDS)[number];
 
 /** A JSON Schema fragment — kept opaque; only the TS renderer walks it. */
@@ -68,8 +68,6 @@ export const catalogEntrySchema = z.object({
   id: z.string().min(1),
   service: z.enum(CATALOG_SERVICES),
   kind: z.enum(CATALOG_KINDS),
-  /** Human title for schema-free discovery cards (`kind:"service"` / `kind:"workflow"`). */
-  title: z.string().min(1).optional(),
   description: z.string().min(1),
   /**
    * Skill-section entries only (optional): content tokens distilled from the
@@ -79,22 +77,6 @@ export const catalogEntrySchema = z.object({
    * (src/catalog/scoring.ts); never rendered to users.
    */
   keywords: z.array(z.string()).optional(),
-  /**
-   * Discovery-card source families. Service cards carry their one family;
-   * workflow cards carry every family the archetype is meant to orient.
-   */
-  families: z.array(z.enum(CATALOG_SERVICES)).optional(),
-  /** Service-card operation ids in the emitted family. */
-  operations: z.array(z.string().min(1)).optional(),
-  /** Workflow-card ordered steps, each resolving to an exposed operation/skill/section id. */
-  steps: z
-    .array(
-      z.object({
-        id: z.string().min(1),
-        why: z.string().min(1)
-      })
-    )
-    .optional(),
   /**
    * Runnable-skill marker (research/skill-run-design.md §5): literal `true`
    * ONLY on the kind:"skill" entries whose data-gathering core also ships as

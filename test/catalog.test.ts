@@ -11,10 +11,6 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadManifest, type Catalog } from "../src/catalog/search.ts";
 import { RUNNERS } from "../src/skills/runners/index.ts";
-// @ts-expect-error Build-script data is authored as plain ESM.
-import { WORKFLOW_ARCHETYPES } from "../scripts/catalog-data/workflow-archetypes.mjs";
-// @ts-expect-error Build script exports are plain ESM for guard tests.
-import { assertNoNonExposedRefs } from "../scripts/build-catalog.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MANIFEST_PATH = join(ROOT, "catalog", "manifest.json");
@@ -107,7 +103,7 @@ describe("build-catalog.mjs", () => {
     expect(count((e) => e.id === "scout.partnerOnboard")).toBe(1);
 
     // Stellar Docs: 12 authored operations from specs/stellar-docs.json.
-    const docs = catalog.entries.filter((e) => e.service === "stellarDocs" && e.kind === "operation");
+    const docs = catalog.entries.filter((e) => e.service === "stellarDocs");
     expect(docs).toHaveLength(12);
     expect(docs.every((e) => e.kind === "operation")).toBe(true);
     expect(docs.map((e) => e.id)).toContain("stellarDocs.search_docs");
@@ -128,14 +124,8 @@ describe("build-catalog.mjs", () => {
     expect(count((e) => e.id.includes("lumenloop-api-"))).toBe(0);
     expect(count((e) => e.id.includes("lumenloop-mcp-connect"))).toBe(0);
 
-    // Phase 2 discovery cards: four service family cards plus one workflow
-    // card per authored archetype. Cards are searchable model-facing text,
-    // but schema-free and non-callable.
-    expect(count((e) => e.kind === "service")).toBe(4);
-    expect(count((e) => e.kind === "workflow")).toBe(WORKFLOW_ARCHETYPES.length);
-
     // Grand total: everything in the manifest is exposed (ADR-0003).
-    expect(catalog.entries).toHaveLength(272 + 4 + WORKFLOW_ARCHETYPES.length);
+    expect(catalog.entries).toHaveLength(272);
   });
 
   it("carries exactly version/generatedAt/entries at the top level", () => {
@@ -185,69 +175,6 @@ describe("build-catalog.mjs", () => {
       method: "GET",
       path: "/api/projects/search"
     });
-  });
-
-  it("service and workflow cards are shallow, schema-free, and generated from the shared archetype source", () => {
-    const serviceCards = catalog.entries.filter((e) => e.kind === "service");
-    expect(serviceCards.map((e) => e.id).sort()).toEqual([
-      "service:lumenloop",
-      "service:scout",
-      "service:skills",
-      "service:stellarDocs"
-    ]);
-    for (const card of serviceCards) {
-      expect(card.title, card.id).toBeTruthy();
-      expect(card.description.length, card.id).toBeLessThanOrEqual(300);
-      expect(card.inputSchema, card.id).toBeNull();
-      expect(card.outputSchema, card.id).toBeNull();
-      expect(card.transport, card.id).toBeNull();
-      expect(card.families, card.id).toEqual([card.service]);
-      if (card.service !== "skills") expect(card.operations!.length, card.id).toBeGreaterThan(0);
-      expect(card.operations!.every((id) => catalog.entries.some((e) => e.id === id && e.kind === "operation"))).toBe(true);
-    }
-
-    const workflowCards = catalog.entries.filter((e) => e.kind === "workflow");
-    expect(workflowCards.map((e) => e.id).sort()).toEqual(
-      WORKFLOW_ARCHETYPES.map((a: { id: string }) => `workflow:${a.id}`).sort()
-    );
-    for (const card of workflowCards) {
-      expect(card.title, card.id).toBeTruthy();
-      expect(card.description.length, card.id).toBeLessThanOrEqual(300);
-      expect(card.inputSchema, card.id).toBeNull();
-      expect(card.outputSchema, card.id).toBeNull();
-      expect(card.transport, card.id).toBeNull();
-      expect(card.families!.length, card.id).toBeGreaterThan(0);
-      expect(card.steps!.length, card.id).toBeGreaterThan(0);
-      expect(card.steps!.every((step) => catalog.entries.some((e) => e.id === step.id))).toBe(true);
-      expect(card.keywords!.length, card.id).toBeGreaterThan(0);
-    }
-  });
-
-  it("fails loud when a discovery card references a bogus or non-exposed operation id", () => {
-    const badWorkflow = {
-      id: "workflow:bad-step",
-      service: "lumenloop",
-      kind: "workflow",
-      title: "Bad workflow",
-      description: "This card must fail the ADR-0003 build guard.",
-      families: ["lumenloop"],
-      steps: [{ id: "lumenloop.not_exposed", why: "bogus id should fail" }],
-      inputSchema: null,
-      outputSchema: null,
-      transport: null,
-      provenance: { source: "test://card", fetchedAt: "2026-07-09T00:00:00Z" }
-    };
-    expect(() => assertNoNonExposedRefs([...catalog.entries, badWorkflow])).toThrow(
-      /workflow card "workflow:bad-step" references non-manifest id "lumenloop.not_exposed"/
-    );
-
-    const excludedWorkflow = {
-      ...badWorkflow,
-      steps: [{ id: "lumenloop.request_research", why: "excluded op should fail" }]
-    };
-    expect(() => assertNoNonExposedRefs([...catalog.entries, excludedWorkflow])).toThrow(
-      /workflow card "workflow:bad-step" references non-manifest id "lumenloop.request_research"/
-    );
   });
 });
 

@@ -636,7 +636,7 @@ const JSONLD =
         description:
           "A remote MCP server that gives AI agents Stellar docs and ecosystem context in one connection: " +
           "official docs, live ecosystem data, community intel, and curated playbooks, unified in one " +
-          "catalog. Its search tool ranks every operation, skill, and discovery card; its execute tool runs agent-written " +
+          "catalog. Its search tool ranks every operation and skill; its execute tool runs agent-written " +
           "JavaScript in a sandboxed, no-network runtime. One OAuth sign-in, no service API keys.",
         offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
         author: { "@type": "Organization", name: "Stellar", url: "https://stellar.org" }
@@ -686,7 +686,7 @@ export function landingPage(): string {
     `<div class="below">
   <div class="stats" aria-label="What one connection covers">
     <span class="st"><b>50</b> live operations</span>
-    <span class="st"><b>286</b> catalog entries</span>
+    <span class="st"><b>272</b> catalog entries</span>
     <span class="st"><b>18</b> playbooks</span>
     <span class="st"><b>1</b> sign-in</span>
     <span class="st"><b>0</b> API keys</span>
@@ -759,8 +759,8 @@ export function landingPage(): string {
         </ul>
       </div>
     </div>
-    <p class="hood">Under the hood: two MCP tools. <code>search</code> ranks 286 catalog entries — operations, docs,
-      skill sections, and service/workflow cards; <code>execute</code> runs your agent's JavaScript in a no-network sandbox where
+    <p class="hood">Under the hood: two MCP tools. <code>search</code> ranks 272 catalog entries — operations, docs, and
+      skill sections; <code>execute</code> runs your agent's JavaScript in a no-network sandbox where
       every call is validated against the catalog.</p>
   </section>
 
@@ -994,3 +994,4 @@ export const SITEMAP_HEADERS: Record<string, string> = {
   "content-type": "application/xml; charset=utf-8",
   "cache-control": "public, max-age=86400"
 };
+

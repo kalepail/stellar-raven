@@ -28,7 +28,6 @@ import { readSkill, type SkillBundle } from "../src/skills/store.ts";
 import { RUNNERS } from "../src/skills/runners/index.ts";
 import { scoreEntryWeighted, canonicalizeQuery } from "../src/catalog/scoring.ts";
 import { lastIdSegment } from "../src/catalog/id.ts";
-import { CATALOG_KINDS } from "../src/catalog/types.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -47,7 +46,7 @@ describe("searchCatalog — contract shape", () => {
     for (const hit of hits) {
       expect(typeof hit.id).toBe("string");
       expect(typeof hit.service).toBe("string");
-      expect([...CATALOG_KINDS]).toContain(hit.kind);
+      expect(["operation", "skill", "skill-section"]).toContain(hit.kind);
       expect(typeof hit.score).toBe("number");
       expect(typeof hit.description).toBe("string");
       if (hit.signature !== undefined) expect(typeof hit.signature).toBe("string");
@@ -81,10 +80,6 @@ describe("searchCatalog — contract shape", () => {
     const scoutOnly = searchCatalog(catalog, { query: "stellar projects", service: "scout" });
     expect(scoutOnly.length).toBeGreaterThan(0);
     expect(scoutOnly.every((h) => h.service === "scout")).toBe(true);
-
-    const workflowsOnly = searchCatalog(catalog, { query: "funding project lookup", kind: "workflow" });
-    expect(workflowsOnly.length).toBeGreaterThan(0);
-    expect(workflowsOnly.every((h) => h.kind === "workflow")).toBe(true);
   });
 
   it("returns [] for queries with no lexical overlap", () => {
@@ -209,27 +204,6 @@ describe("searchCatalog — routing quality", () => {
     for (const [service, n] of perService) {
       expect(n, `service ${service} exceeds quota`).toBeLessThanOrEqual(2);
     }
-  });
-});
-
-describe("searchCatalog — Phase 2 service/workflow cards", () => {
-  it("surfaces service cards with families and no signatures", () => {
-    const hit = searchCatalog(catalog, { query: "community editorial ecosystem intelligence", kind: "service" })[0]!;
-    expect(hit.id).toBe("service:lumenloop");
-    expect(hit.kind).toBe("service");
-    expect(hit.title).toBe("Lumenloop");
-    expect(hit.families).toEqual(["lumenloop"]);
-    expect(hit.signature).toBeUndefined();
-  });
-
-  it("surfaces workflow cards as schema-free orientation hits", () => {
-    const hits = searchCatalog(catalog, { query: "project funding lookup scf grant", kind: "workflow", limit: 5 });
-    const hit = hits.find((h) => h.id === "workflow:project-funding-lookup")!;
-    expect(hit).toBeDefined();
-    expect(hit.kind).toBe("workflow");
-    expect(hit.title).toBe("Project/funding lookup");
-    expect(hit.families).toEqual(["lumenloop", "scout"]);
-    expect(hit.signature).toBeUndefined();
   });
 });
 

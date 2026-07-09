@@ -21,12 +21,11 @@
  *     words in prose descriptions carry real signal in the vendor math.)
  *
  *  2. Kind weighting — skill-section entries (fragments of a SKILL.md whose
- *     whole-skill entry also ranks) and discovery cards (service/workflow
- *     orientation entries) are scaled below operations. The search tool
- *     exists to route a model to something it can CALL or open whole;
- *     fragments and cards should not blanket-outrank operations on shared
- *     topical vocabulary. They still rank — and still win on strong lexical
- *     matches.
+ *     whole-skill entry also ranks) are scaled by 0.75. The search tool
+ *     exists to route a model to something it can CALL or open whole; 203
+ *     near-duplicate fragments should not blanket-outrank 57 operations on
+ *     shared topical vocabulary. Sections still rank — and still win on
+ *     strong lexical matches. Whole-skill entries keep full weight.
  *
  *  3. Service-diversity selection — the top-`limit` SET is chosen with a
  *     per-service quota (score order otherwise preserved). A routing search
@@ -110,12 +109,6 @@ export function effectiveQuery(query: string): string {
  */
 const KEYWORD_BLEND = 0.4;
 
-/** One obvious knob for Phase 2 discovery-card ranking. Must stay <= 0.75. */
-export const DISCOVERY_CARD_KIND_WEIGHT = 0.75;
-
-/** Existing fragment weight; kept explicit so cards can be lowered independently. */
-export const SKILL_SECTION_KIND_WEIGHT = 0.75;
-
 /**
  * Joined-keywords cache for the augmented scoring pass. Keyed on the
  * `keywords` ARRAY, not the scorable wrapper: searchCatalog() builds a fresh
@@ -168,12 +161,7 @@ function weightedScore(
   query: string,
   score: EntryScorer
 ): number | null {
-  const kindWeight =
-    entry.kind === "skill-section"
-      ? SKILL_SECTION_KIND_WEIGHT
-      : entry.kind === "service" || entry.kind === "workflow"
-        ? DISCOVERY_CARD_KIND_WEIGHT
-        : 1;
+  const kindWeight = entry.kind === "skill-section" ? 0.75 : 1;
   const base = scoreWithKeywords(entry, query, score);
   if (base !== null) return Math.round(base * kindWeight);
   const filtered = effectiveQuery(query);

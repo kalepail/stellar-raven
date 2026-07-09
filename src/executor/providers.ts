@@ -365,12 +365,7 @@ function catalogEntryView(entry: CatalogEntry) {
     id: entry.id,
     service: entry.service,
     kind: entry.kind,
-    ...(entry.title ? { title: entry.title } : {}),
     description: entry.description,
-    ...(entry.keywords ? { keywords: entry.keywords } : {}),
-    ...(entry.families ? { families: entry.families } : {}),
-    ...(entry.operations ? { operations: entry.operations } : {}),
-    ...(entry.steps ? { steps: entry.steps } : {}),
     inputSchema: entry.inputSchema,
     outputSchema: entry.outputSchema,
     // Runnable-skill affordance flag (design §5): present-and-true only, same
@@ -378,23 +373,6 @@ function catalogEntryView(entry: CatalogEntry) {
     // sees exactly what the catalog says, no third truth value.
     ...(entry.runnable === true ? { runnable: true as const } : {})
   };
-}
-
-function entryUsageLine(catalog: Catalog, id: string): string {
-  const entry = catalog.entries.find((e) => e.id === id);
-  if (!entry) return `unknown id ${JSON.stringify(id)}`;
-  if (entry.kind === "operation") return `await ${entry.id}(args)`;
-  if (entry.kind === "skill") {
-    if (entry.runnable === true) return `codemode.skill.run(${JSON.stringify(entry.id)}, input)`;
-    return `codemode.skill.read(${JSON.stringify(entry.id)})`;
-  }
-  if (entry.kind === "skill-section") {
-    const hash = entry.id.indexOf("#");
-    const skillId = hash === -1 ? entry.id : entry.id.slice(0, hash);
-    const section = hash === -1 ? entry.id : entry.id.slice(hash + 1);
-    return `codemode.skill.read(${JSON.stringify(skillId)}, { sections: [${JSON.stringify(section)}] })`;
-  }
-  return `codemode.describe(${JSON.stringify(entry.id)})`;
 }
 
 function describeCatalogEntry(catalog: Catalog, id?: unknown) {
@@ -453,28 +431,6 @@ function describeCatalogEntry(catalog: Catalog, id?: unknown) {
       skillId,
       section,
       usage: `read this section via codemode.skill.read(${JSON.stringify(skillId)}, { sections: [${JSON.stringify(section)}] })`
-    };
-  }
-  if (entry.kind === "service") {
-    return {
-      ...base,
-      ...(entry.title ? { title: entry.title } : {}),
-      families: entry.families ?? [entry.service],
-      operations: entry.operations ?? [],
-      usage: `use service:${entry.service} as an orientation card; call codemode.describe on one of operations for schemas, or search with service ${JSON.stringify(entry.service)} to rank this family`
-    };
-  }
-  if (entry.kind === "workflow") {
-    return {
-      ...base,
-      ...(entry.title ? { title: entry.title } : {}),
-      families: entry.families ?? [entry.service],
-      steps: (entry.steps ?? []).map((step) => ({
-        ...step,
-        usage: entryUsageLine(catalog, step.id)
-      })),
-      usage:
-        "use this workflow as an ordered discovery plan; execute only exact operation calls from the steps, and read skill steps with codemode.skill.read/skill.run as shown"
     };
   }
   const signature = renderSignature(entry);

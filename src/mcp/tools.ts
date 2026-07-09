@@ -54,7 +54,7 @@ export const rankedSearchInputSchema = {
     .enum(SEARCH_KINDS)
     .optional()
     .describe(
-      "Restrict results to one entry kind: service operation, whole skill, skill section, service orientation card, or workflow card."
+      "Restrict results to one entry kind: a service operation, a whole skill, or a single skill section."
     ),
   service: z
     .string()
@@ -75,11 +75,6 @@ export const searchHitSchema = z.object({
   id: z.string().describe("Exact catalog id — use it verbatim; never guess variants."),
   service: z.string(),
   kind: z.enum(SEARCH_KINDS),
-  title: z.string().optional().describe("Human title for service/workflow discovery cards."),
-  families: z
-    .array(z.string())
-    .optional()
-    .describe("Discovery-card source families; workflow cards may list several."),
   score: z
     .number()
     .describe(
@@ -109,7 +104,7 @@ export const rankedSearchOutputSchema = {
   hits: z
     .array(searchHitSchema)
     .describe(
-      "Ranked catalog entries. Operation hits include a rendered TypeScript signature you can call from `execute`; service/workflow hits are schema-free orientation cards."
+      "Ranked catalog entries. Operation hits include a rendered TypeScript signature you can call from `execute`."
     ),
   total: z
     .number()
@@ -163,7 +158,7 @@ function sourceBasisForTelemetry(sourceBasis: BuildSourceBasisManifestInput | un
 // playground drives the exact production tool contract.
 export const SEARCH_DESCRIPTION = `Ranked lexical search over the unified catalog of everything this server can do: every service operation (lumenloop.*, scout.*, stellarDocs.*), every skill, and every skill section.
 
-Returns ranked hits with rendered TypeScript signatures for operation/runnable-skill hits, plus schema-free service and workflow cards for source-family orientation.
+Returns ranked hits with rendered TypeScript signatures so you can call them from the \`execute\` tool without guessing.
 
 ## Workflow
 
@@ -178,7 +173,7 @@ Most questions have a primary family and a corroborating one — pick both up fr
 
 - Never guess operation or skill names — always discover them here first (or with \`codemode.search\` mid-script).
 - Prefer targeted queries ("account trustlines", "soroban storage patterns") over broad ones, and vary vocabulary across candidate families.
-- Use \`kind\` to narrow to operations vs skills vs skill sections vs service cards vs workflow cards, and \`service\` to narrow to one namespace. Filter values are exact-match — an unknown \`service\` is rejected with the valid names, never silently empty.
+- Use \`kind\` to narrow to operations vs skills vs skill sections, and \`service\` to narrow to one namespace. Filter values are exact-match — an unknown \`service\` is rejected with the valid names, never silently empty.
 - Each hit's \`tier\` says which scorer ranked it: "gated" (strict, primary) or "backfill" (gate-relaxed page fill for long queries, always ranked below every gated hit). \`score\` is comparable only among same-tier hits within one response — a backfill score can be numerically larger than a gated one ranked above it.
 - \`truncated: true\` means more entries matched (\`total\`) than the page shows — if nothing here fits, search again with a higher \`limit\`, the other candidate family, or varied vocabulary before concluding the capability is missing.
 - Skill hits are operational playbooks and carry \`availableSections\` — read those sections via \`codemode.skill.read(id, { sections })\` inside \`execute\`.
@@ -323,7 +318,7 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
       });
       const nextSteps =
         hits.length > 0
-          ? `These hits are composable: write ONE \`execute\` script that calls the several relevant operations (Promise.all across services for independent calls), then follows up with deeper calls parameterized by their results — e.g. \`await lumenloop.search_directory({ query: "..." })\` then \`lumenloop.get_project({ slug })\`. Service/workflow hits are orientation cards: use \`codemode.describe("<exact id>")\` to inspect their operation list or ordered steps, then call/read the exact ids they name. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under \`.data\` (\`r.data.projects\`, never \`r.projects\`); check \`r.ok\` first. Skill hits are operational playbooks — read the sections you need in-script via \`codemode.skill.read(id, { sections })\` (keys: the hit's \`availableSections\`), and pair them with stellarDocs searches for current reference truth. Hits whose \`signature\` shows a \`codemode.skill.run("<exact id>", input)\` line are runnable skills — call that line verbatim to run the whole pipeline in one step (payload under \`.data\`, constituent calls audited in \`data.calls\`). Scores compare only within the same \`tier\` (gated hits always rank above backfill hits). Signatures with a stubbed output type (\`{ /* N top-level fields: ... */ }\`) list the payload's top-level field names — for the full output shape call \`codemode.describe("<exact id>")\` inside \`execute\`. For directory/list rows, inspect keys or filter raw row JSON and nested/common field variants before projecting compact columns. Use \`codemode.search(...)\` mid-script for follow-up discovery; search again here with the other candidate family, varied vocabulary, or \`kind\`/\`service\` filters if none fit.${truncated ? " More entries matched than shown (truncated) — raise `limit`, try the other candidate family, or vary vocabulary if none of these fit." : ""}`
+          ? `These hits are composable: write ONE \`execute\` script that calls the several relevant operations (Promise.all across services for independent calls), then follows up with deeper calls parameterized by their results — e.g. \`await lumenloop.search_directory({ query: "..." })\` then \`lumenloop.get_project({ slug })\`. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under \`.data\` (\`r.data.projects\`, never \`r.projects\`); check \`r.ok\` first. Skill hits are operational playbooks — read the sections you need in-script via \`codemode.skill.read(id, { sections })\` (keys: the hit's \`availableSections\`), and pair them with stellarDocs searches for current reference truth. Hits whose \`signature\` shows a \`codemode.skill.run("<exact id>", input)\` line are runnable skills — call that line verbatim to run the whole pipeline in one step (payload under \`.data\`, constituent calls audited in \`data.calls\`). Scores compare only within the same \`tier\` (gated hits always rank above backfill hits). Signatures with a stubbed output type (\`{ /* N top-level fields: ... */ }\`) list the payload's top-level field names — for the full output shape call \`codemode.describe("<exact id>")\` inside \`execute\`. For directory/list rows, inspect keys or filter raw row JSON and nested/common field variants before projecting compact columns. Use \`codemode.search(...)\` mid-script for follow-up discovery; search again here with the other candidate family, varied vocabulary, or \`kind\`/\`service\` filters if none fit.${truncated ? " More entries matched than shown (truncated) — raise `limit`, try the other candidate family, or vary vocabulary if none of these fit." : ""}`
           : "No hits. Try the other candidate family, vary vocabulary (entity name first, then capability phrase), or drop the `kind`/`service` filters. Do not conclude the capability is missing from one empty result.";
       return respond({ hits, total, truncated, nextSteps });
     }

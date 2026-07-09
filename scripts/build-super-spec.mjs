@@ -569,54 +569,6 @@ function buildSkillsPaths(skillIndex, runnableIndex) {
   };
 }
 
-function entryUsageLine(catalogManifest, id) {
-  const entry = catalogManifest.entries.find((e) => e.id === id);
-  if (!entry) return `unknown id ${JSON.stringify(id)}`;
-  if (entry.kind === "operation") return `await ${entry.id}(args)`;
-  if (entry.kind === "skill") {
-    if (entry.runnable === true) return `codemode.skill.run(${JSON.stringify(entry.id)}, input)`;
-    return `codemode.skill.read(${JSON.stringify(entry.id)})`;
-  }
-  if (entry.kind === "skill-section") {
-    const hash = entry.id.indexOf("#");
-    const skillId = hash === -1 ? entry.id : entry.id.slice(0, hash);
-    const section = hash === -1 ? entry.id : entry.id.slice(hash + 1);
-    return `codemode.skill.read(${JSON.stringify(skillId)}, { sections: [${JSON.stringify(section)}] })`;
-  }
-  return `codemode.describe(${JSON.stringify(entry.id)})`;
-}
-
-function buildDiscoveryCardExtensions(catalogManifest) {
-  const cards = catalogManifest.entries.filter((entry) => entry.kind === "service" || entry.kind === "workflow");
-  return {
-    serviceCards: cards
-      .filter((entry) => entry.kind === "service")
-      .map((entry) => ({
-        id: entry.id,
-        title: entry.title,
-        service: entry.service,
-        description: entry.description,
-        keywords: entry.keywords ?? [],
-        operations: entry.operations ?? []
-      })),
-    workflowCards: cards
-      .filter((entry) => entry.kind === "workflow")
-      .map((entry) => ({
-        id: entry.id,
-        title: entry.title,
-        service: entry.service,
-        families: entry.families ?? [entry.service],
-        description: entry.description,
-        keywords: entry.keywords ?? [],
-        steps: (entry.steps ?? []).map((step) => ({
-          id: step.id,
-          why: step.why,
-          usage: entryUsageLine(catalogManifest, step.id)
-        }))
-      }))
-  };
-}
-
 // ---------------------------------------------------------------------------
 // Assemble
 // ---------------------------------------------------------------------------
@@ -632,7 +584,6 @@ function main() {
   const scout = buildScout(stellarLight, exposed);
   const skillIndex = buildSkillIndex(skillsManifest, exposed);
   const runnableIndex = buildRunnableIndex(catalogManifest);
-  const discoveryCards = buildDiscoveryCardExtensions(catalogManifest);
 
   const paths = {
     ...buildLumenloopPaths(lumenloop, exposed),
@@ -733,8 +684,6 @@ function main() {
         note: "Deliberately 4 operations, not one path per skill/section — the index lives in /skills/list_skills x-skill-index (design doc §3); runnable-skill contracts live in /skills/run_skill x-runnable-index (research/skill-run-design.md §5)."
       }
     },
-    "x-service": discoveryCards.serviceCards,
-    "x-workflow": discoveryCards.workflowCards,
     "x-generated": {
       builder: "scripts/build-super-spec.mjs",
       generatedAt: catalogManifest.generatedAt,

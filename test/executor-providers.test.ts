@@ -781,7 +781,7 @@ describe("codemode fns", () => {
 
   it("catalog() returns the full manifest view — every entry callable, host detail stripped", async () => {
     const view = (await codemode.catalog!()) as {
-      entries: { id: string; kind: string; transport?: unknown; operations?: string[]; steps?: unknown[] }[];
+      entries: { id: string; transport?: unknown }[];
     };
     expect(view.entries.length).toBe(catalog.entries.length);
     // No policy layer exists (ADR-0003): nothing uncallable is in the view.
@@ -789,8 +789,6 @@ describe("codemode fns", () => {
       true
     );
     expect(view.entries.every((e) => !("transport" in e) && !("provenance" in e))).toBe(true);
-    expect(view.entries.find((e) => e.id === "service:lumenloop")?.operations!.length).toBeGreaterThan(0);
-    expect(view.entries.find((e) => e.id === "workflow:project-funding-lookup")?.steps!.length).toBeGreaterThan(0);
   });
 
   it("describe is exact-match only", async () => {
@@ -835,38 +833,6 @@ describe("codemode fns", () => {
     // One-line envelope reminder.
     expect(r.usage).toContain("callable line");
     expect(r.usage).toContain("r.data");
-  });
-
-  it("describe on service/workflow cards returns orientation details and exact step usage", async () => {
-    const serviceCard = (await codemode.describe!("service:lumenloop")) as {
-      ok: boolean;
-      kind: string;
-      title: string;
-      operations: string[];
-      usage: string;
-    };
-    expect(serviceCard.ok).toBe(true);
-    expect(serviceCard.kind).toBe("service");
-    expect(serviceCard.title).toBe("Lumenloop");
-    expect(serviceCard.operations).toContain("lumenloop.search_directory");
-    expect(serviceCard.usage).toContain("orientation card");
-
-    const workflowCard = (await codemode.describe!("workflow:project-funding-lookup")) as {
-      ok: boolean;
-      kind: string;
-      families: string[];
-      steps: Array<{ id: string; usage: string }>;
-    };
-    expect(workflowCard.ok).toBe(true);
-    expect(workflowCard.kind).toBe("workflow");
-    expect(workflowCard.families).toEqual(["lumenloop", "scout"]);
-    expect(workflowCard.steps.map((s) => s.id)).toContain("lumenloop.search_directory");
-    expect(workflowCard.steps.find((s) => s.id === "lumenloop.search_directory")?.usage).toBe(
-      "await lumenloop.search_directory(args)"
-    );
-    expect(workflowCard.steps.find((s) => s.id === "scout.getBuilders")?.usage).toBe(
-      "await scout.getBuilders(args)"
-    );
   });
 
   it("describe is a strict superset of the search hit: the hit stubs, describe carries the full type (todo 841)", async () => {

@@ -247,10 +247,6 @@ import {
   scrubRetiredSkillRefs
 } from "./exposure.mjs";
 import { assertNoNonExposedRefsInText } from "./emitted-text-guard.mjs";
-import {
-  SERVICE_FAMILY_PURPOSES,
-  WORKFLOW_ARCHETYPES
-} from "./catalog-data/workflow-archetypes.mjs";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -730,128 +726,6 @@ export function attachRunnableSkills(entries, registry = RUNNERS) {
 }
 
 // ---------------------------------------------------------------------------
-// Phase 2 discovery cards — schema-free service/workflow catalog lanes.
-// Source data is shared with scripts/build-micro-map.mjs.
-// ---------------------------------------------------------------------------
-
-const DISCOVERY_CARD_PROVENANCE = {
-  source: "scripts/catalog-data/workflow-archetypes.mjs",
-  fetchedAt: "2026-07-09T00:00:00.000Z"
-};
-
-const DESCRIPTION_CARD_MAX_CHARS = 300;
-
-function assertCardDescriptionLength(entry) {
-  if (entry.description.length > DESCRIPTION_CARD_MAX_CHARS) {
-    throw new Error(
-      `discovery card "${entry.id}" description is ${entry.description.length} chars; ` +
-        `keep service/workflow card descriptions <= ${DESCRIPTION_CARD_MAX_CHARS}`
-    );
-  }
-}
-
-function assertIdReferencesResolve(refs, ids, label) {
-  for (const id of refs) {
-    if (!ids.has(id)) {
-      throw new Error(`${label} references non-manifest id "${id}"`);
-    }
-  }
-}
-
-export function buildDiscoveryCards(entries) {
-  const cards = [];
-  const ids = new Set(entries.map((entry) => entry.id));
-  const serviceFamilies = new Set(entries.map((entry) => entry.service));
-  const purposeFamilies = new Set();
-
-  for (const purpose of SERVICE_FAMILY_PURPOSES) {
-    if (!serviceFamilies.has(purpose.family)) {
-      throw new Error(`service card family "${purpose.family}" is not present in catalog entries`);
-    }
-    if (purposeFamilies.has(purpose.family)) throw new Error(`duplicate service family purpose: ${purpose.family}`);
-    purposeFamilies.add(purpose.family);
-    const operations = entries
-      .filter((entry) => entry.service === purpose.family && entry.kind === "operation")
-      .map((entry) => entry.id)
-      .sort();
-    const card = {
-      id: `service:${purpose.family}`,
-      service: purpose.family,
-      kind: "service",
-      title: purpose.label,
-      description: purpose.line,
-      families: [purpose.family],
-      operations,
-      keywords: extractKeywords([purpose.label, purpose.line, purpose.authority, operations.join(" ")].join("\n"), {
-        exclude: [`service:${purpose.family}`, purpose.family, "service", purpose.line],
-        cap: 48
-      }),
-      inputSchema: null,
-      outputSchema: null,
-      transport: null,
-      provenance: DISCOVERY_CARD_PROVENANCE
-    };
-    assertCardDescriptionLength(card);
-    cards.push(card);
-  }
-
-  const archetypeIds = new Set();
-  for (const archetype of WORKFLOW_ARCHETYPES) {
-    if (archetypeIds.has(archetype.id)) throw new Error(`duplicate workflow archetype id: ${archetype.id}`);
-    archetypeIds.add(archetype.id);
-    if (!Array.isArray(archetype.families) || archetype.families.length === 0) {
-      throw new Error(`workflow archetype "${archetype.id}" has no families`);
-    }
-    for (const family of archetype.families) {
-      if (!serviceFamilies.has(family)) {
-        throw new Error(`workflow archetype "${archetype.id}" references unknown family "${family}"`);
-      }
-      if (!purposeFamilies.has(family)) {
-        throw new Error(`workflow archetype "${archetype.id}" references family "${family}" with no purpose prose`);
-      }
-    }
-    if (!Array.isArray(archetype.steps) || archetype.steps.length === 0) {
-      throw new Error(`workflow archetype "${archetype.id}" has no steps`);
-    }
-    assertIdReferencesResolve(
-      archetype.steps.map((step) => step.id),
-      ids,
-      `workflow card "workflow:${archetype.id}"`
-    );
-    const steps = archetype.steps.map((step) => ({ id: step.id, why: step.why }));
-    const card = {
-      id: `workflow:${archetype.id}`,
-      service: archetype.families[0],
-      kind: "workflow",
-      title: archetype.title,
-      description: archetype.questionShape,
-      families: archetype.families,
-      steps,
-      keywords: extractKeywords(
-        [
-          archetype.title,
-          archetype.questionShape,
-          archetype.families.join(" "),
-          steps.map((step) => `${step.id} ${step.why}`).join("\n")
-        ].join("\n"),
-        {
-          exclude: [`workflow:${archetype.id}`, "workflow", archetype.title, archetype.questionShape],
-          cap: 64
-        }
-      ),
-      inputSchema: null,
-      outputSchema: null,
-      transport: null,
-      provenance: DISCOVERY_CARD_PROVENANCE
-    };
-    assertCardDescriptionLength(card);
-    cards.push(card);
-  }
-
-  return cards;
-}
-
-// ---------------------------------------------------------------------------
 // Assemble
 // ---------------------------------------------------------------------------
 
@@ -872,7 +746,6 @@ export function buildDiscoveryCards(entries) {
 // OTHER emitted text (e.g. the /demo page/prompts) can run them too without
 // a manifest — see assertNoNonExposedRefsInText.
 export function assertNoNonExposedRefs(entries) {
-  const ids = new Set(entries.map((e) => e.id));
   const opIds = new Set(entries.filter((e) => e.kind === "operation").map((e) => e.id));
   // Service-callable tokens ("scout.matchPartners"); the lookbehind skips
   // dotted prefixes so skill ids like "skills.lumenloop.<name>" never match,
@@ -887,25 +760,8 @@ export function assertNoNonExposedRefs(entries) {
       // spec) — their whole JSON is guarded text like any description.
       ...(entry.runnable === true
         ? [JSON.stringify(entry.inputSchema), JSON.stringify(entry.outputSchema)]
-        : []),
-      ...(entry.steps ?? []).flatMap((step) => [step.id, step.why]),
-      ...(entry.operations ?? [])
+        : [])
     ].join("\n");
-    if (entry.kind === "workflow") {
-      assertIdReferencesResolve(
-        (entry.steps ?? []).map((step) => step.id),
-        ids,
-        `workflow card "${entry.id}"`
-      );
-    }
-    if (entry.kind === "service") {
-      assertIdReferencesResolve(entry.operations ?? [], ids, `service card "${entry.id}"`);
-      for (const opId of entry.operations ?? []) {
-        if (!opIds.has(opId)) {
-          throw new Error(`service card "${entry.id}" references non-operation id "${opId}"`);
-        }
-      }
-    }
     for (const token of text.match(callableRe) ?? []) {
       if (TLDS.has(token.split(".")[1])) continue;
       if (!opIds.has(token)) {
@@ -932,26 +788,22 @@ function main() {
   assertScoutExclusionsResolve(stellarLight.openapi);
 
   const stellarDocsEntries = buildStellarDocs(stellarDocsSpec);
-  const coreEntries = [
-    ...attachOperationKeywords(buildLumenloop(lumenloop)),
-    ...attachOperationKeywords(buildScout(stellarLight)),
-    // Docs ops carry page-title vocabulary (hundreds of distinct frequency-1
-    // tokens post-DF) — the default 64 cap truncates the alphabetical tail,
-    // so they get a roomier cap. Still bounded: 12 ops × ≤256 short tokens.
-    ...attachOperationKeywords(
-      stellarDocsEntries,
-      stellarDocsTitleExtras(stellarDocsEntries, stellarDocsTitles),
-      { cap: 256 }
-    ),
-    ...buildSkills(skillsManifest)
-  ];
-  // Runnable attachment runs over the FULLY assembled callable/readable set:
-  // its declared-op guard needs every service's operation entries in scope,
-  // not just skills. Discovery cards are built after that from the same
-  // exposed ids, then the final manifest is sorted.
-  const runnableEntries = attachRunnableSkills(coreEntries);
-  const entries = [...runnableEntries, ...buildDiscoveryCards(runnableEntries)].sort((a, b) =>
-    a.id < b.id ? -1 : a.id > b.id ? 1 : 0
+  // Runnable attachment runs over the FULLY assembled set: its declared-op
+  // guard needs every service's operation entries in scope, not just skills.
+  const entries = attachRunnableSkills(
+    [
+      ...attachOperationKeywords(buildLumenloop(lumenloop)),
+      ...attachOperationKeywords(buildScout(stellarLight)),
+      // Docs ops carry page-title vocabulary (hundreds of distinct frequency-1
+      // tokens post-DF) — the default 64 cap truncates the alphabetical tail,
+      // so they get a roomier cap. Still bounded: 12 ops × ≤256 short tokens.
+      ...attachOperationKeywords(
+        stellarDocsEntries,
+        stellarDocsTitleExtras(stellarDocsEntries, stellarDocsTitles),
+        { cap: 256 }
+      ),
+      ...buildSkills(skillsManifest)
+    ].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
   );
 
   const ids = new Set();

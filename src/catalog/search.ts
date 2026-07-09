@@ -60,11 +60,7 @@ export type SearchHit = {
    * broken sort under a "higher is better" schema.
    */
   tier: "gated" | "backfill";
-  /** Human title for schema-free discovery cards. */
-  title?: string;
   description: string;
-  /** Discovery-card families; service cards have one, workflow cards may have several. */
-  families?: string[];
   /**
    * Rendered TypeScript signature — operation entries and runnable-skill
    * entries (research/skill-run-design.md §5: a runnable skill's hit carries
@@ -446,8 +442,6 @@ export function searchCatalogPage(catalog: Catalog, opts: SearchOptions): Search
       tier: index < gatedCount ? "gated" : "backfill",
       description: entry.description
     };
-    if (entry.title) hit.title = entry.title;
-    if (entry.families) hit.families = entry.families;
     // Search-hit rendering mode: oversized output type blocks become stubs
     // (COMPACT_OUTPUT_THRESHOLD above) — the full signature is describe's job.
     // Runnable-skill hits render one too (the skill.run callable line, the
