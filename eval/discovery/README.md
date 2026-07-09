@@ -53,6 +53,15 @@ Post-PR-17-fold numbers, run against the Solo `dev-wt` server at `http://localho
 The PR #17 fold added only the `pr17-fold` pool; extended/issue-9/round-844 numbers are
 byte-identical to the pre-adjudication run, and Pool C remains at its adjudicated baseline.
 
+### July 9 artifact availability
+
+No `eval/discovery/results/` JSON or exact result-file stamp survives for this July 9 baseline.
+A free in-memory replay on 2026-07-09 from 22:04:36.356Z through 22:04:37.631Z reproduced all
+43 rows and the table exactly (32 family hits, 25 usable operations; pool counts 6/4, 10/7,
+3/2, 3/3, 10/9), but that replay was not persisted. Those timestamps are an execution window,
+not an invented artifact stamp. The table above is therefore the committed historical record;
+the missing raw JSON is explicitly unavailable, and the next run must write a new honest stamp.
+
 ## Miss Classification
 
 Classification happens during review, not in the runner:

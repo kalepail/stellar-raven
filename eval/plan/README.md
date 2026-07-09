@@ -151,3 +151,22 @@ progression nudge (todo 824 item 7), deployed between the 07-02 run and this one
 - **Decision:** progression stays informational, never gated — now evidence-backed at the
   post-nudge checkpoint, not just provisional. Todo 807 closed 2026-07-03; reopen only if a
   future run produces an actual detail-starvation transcript.
+
+## Results — 2026-07-09 truth-maintenance closeout
+
+Fresh sample-30 QA result `eval/qa/results/2026-07-09T19-53-07-variantA.json` (answering and
+judge model `claude-sonnet-5`, rubric v2.4 / evidence pack p3) scored 20 correct / 8 partial /
+2 wrong and reported $16.6216 cost. Its free offline plan sidecar is
+`eval/qa/results/2026-07-09T19-53-07-variantA.plan.json`.
+
+| metric | value |
+|---|---:|
+| requiredCovered | **28/30 (93%)** |
+| mean onPlanRatio | **0.977777…** |
+| progression (11 expected) | **4 used / 7 skipped** |
+| truncated transcript inputs | **0** |
+
+This closes the plan record for the July 9 headline checkpoint: set coverage stayed at the
+established 28/30 level, mean on-plan ratio remained high, and the no-truncation condition makes
+the extraction complete under this grader. Progression remains informational; 4/11 does not
+override the standing decision without a detail-starved wrong-answer mechanism.

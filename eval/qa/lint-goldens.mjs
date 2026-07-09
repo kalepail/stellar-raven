@@ -20,8 +20,9 @@
  *
  * Usage:
  *   node eval/qa/lint-goldens.mjs [files...]
- * Default files: eval/qa/cases.json + eval/qa/live-cases.json. Accepts either
- * a top-level array of cases or an object with a `cases` array.
+ * Default files: eval/qa/cases.json + the frozen canonical live-data contract
+ * + the opt-in live-digest supplement. Accepts either a top-level array of
+ * cases or an object with a `cases` array.
  *
  * ALWAYS exits 0 — this is a warning pass, never a gate. New goldens that trip
  * the judge-blind tier should be rewritten to concrete traps before they ship.
@@ -52,7 +53,11 @@ const stripProhibition = (item) => item.replace(/^\s*do\s+not\b/i, "");
 // Support the judge cannot see → the finding is tier "judge-blind".
 const JUDGE_BLIND_RE = /\b(corpus|reviewer|golden|source data|cited records?|catalog|directory|transcripts?)\b/i;
 
-const DEFAULT_FILES = ["eval/qa/cases.json", "eval/qa/live-cases.json"];
+const DEFAULT_FILES = [
+  "eval/qa/cases.json",
+  "eval/qa/live-cases.json",
+  "eval/qa/live-digest-supplement-cases.json"
+];
 const files = process.argv.slice(2).length ? process.argv.slice(2) : DEFAULT_FILES;
 
 const tally = { "judge-blind": 0, "sourcing-guard": 0 };

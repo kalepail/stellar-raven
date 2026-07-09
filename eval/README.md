@@ -672,8 +672,8 @@ control strict 67/106/128, AE 85/122/139 (n=163).
 
 The `codemode.skill.run` ship gate from `research/skill-run-design.md` §10, run exactly as
 designed: instruments first (commit `eb412bd` — ranked-id dump, whole execute results,
-composition analyzer, plan-grader recognition, the two live-lane digest cases), BEFORE lanes on
-that instrumented main, feature commit `f99be10`, AFTER lanes same day, same judge, same
+composition analyzer, plan-grader recognition, the two opt-in live-digest supplement cases),
+BEFORE lanes on that instrumented main, feature commit `f99be10`, AFTER lanes same day, same judge, same
 rubric (v2.1). QA result stamps live in `eval/qa/results/`, routing runs in `eval/results/`
 (both git-ignored/local-only, so this section is the durable record).
 
@@ -689,19 +689,20 @@ claim). `eval:routing -- --gate` **PASS** against the unchanged 2026-07-04 basel
 | lane | BEFORE | AFTER |
 |---|---|---|
 | targeted `--ids` battery (6 cases: 5 dossier-shaped incl. the fabrication trap + 1 digest-shaped) | 4 correct / 1 partial / 1 wrong (`2026-07-06T20-41-52-variantA`) | **6 / 0 / 0** (`2026-07-07T00-38-53-variantA`) |
-| live lane (12 cases, behavioral goldens, reported separately per EVALS.md rule 2) | 11 / 0 / 1 (`2026-07-06T20-51-40-variantA`) | 11 / 0 / 1 (`2026-07-07T00-47-30-variantA`) — the **same pre-existing wrong** (`q-live-hackathon-recent-winners`), unrelated to the feature |
+| canonical + digest supplement (12 cases = membership-frozen 10 + opt-in 2, historically run from one then-combined file; not a canonical-lane denominator) | 11 / 0 / 1 (`2026-07-06T20-51-40-variantA`) | 11 / 0 / 1 (`2026-07-07T00-47-30-variantA`) — the **same pre-existing wrong** (`q-live-hackathon-recent-winners`), unrelated to the feature |
 
 **Composition** (`analyze-composition.mjs`, ids battery): mean turns 4.83 → 4.5, execute
 scripts 8 → 7, constituent op calls 24 → 21 (skill.run calls expanded through declared ops for
-comparability), truncated-input cases 1 → 0. Live lane: mean turns 5.83 → 5.0, op calls
+comparability), truncated-input cases 1 → 0. Canonical + digest supplement: mean turns 5.83 → 5.0, op calls
 60 → 53, execution failures 2 → 0 — but execute scripts went **up** 22 → 25, so read the
-live-lane composition delta as mixed, not a win.
+combined-lane composition delta as mixed, not a win.
 
 **Adoption, per runner — the honest split:**
 
 - **Digest: 2 of 3 digest-shaped cases adopted** `codemode.skill.run`, both single-script,
   both correct: `q-edge-fresh-most-recent-news` (ids battery) and `q-live-digest-rwa-recent`
-  (live lane). The third (`q-live-digest-blend-coverage`) answered correctly without it.
+  (digest supplement). The third (`q-live-digest-blend-coverage`, also supplement) answered
+  correctly without it.
 - **Dossier: 0 of 5 dossier-shaped cases adopted.** All 5 were answered correctly via manual
   op composition in the AFTER run — which means the ids-battery verdict flips
   (`q-defi-phoenix-scf` wrong→correct, `q-scf-history-soroswap` partial→correct; both were
@@ -741,6 +742,12 @@ Full record: `research/discovery-redesign.md` (plan+evidence), `research/p1-guid
   agentic drift rows; 3 cases folded from PR #17). Post-fold baseline: familyHit@3 32/43
   (74.4%), usableOp@5 25/43 (58.1%). Known scope limit: naive-verbatim queries
   under-represent the mixed register real agents use (see below).
+- **Routing closeout:** the two latest stored runs,
+  `routing-2026-07-09T21-32-59-931Z.json` and
+  `routing-2026-07-09T21-38-32-482Z.json`, reproduce the same current counts: legacy strict
+  213/267/305 of 338, skills 18/22/22 of 23, extended strict **79/104/110** of 122,
+  extended accept-either 110/121/122; gate PASS. Earlier 120/122 and 77/122 extended figures
+  are historical milestones, not the current strict result.
 - **P1 (shipped):** multi-query source-family guidance + generated micro-map
   (`scripts/catalog-data/workflow-archetypes.mjs` → `src/mcp/micro-map.ts`). Gated on live
   distributions, 3 agentic runs/arm: docs 100% all cells, scout medium 90×3, lumenloop at

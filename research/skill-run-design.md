@@ -626,9 +626,10 @@ The gate, in order:
    transcripts + verdicts, rubric v2.1) and AFTER on the feature build, same judge, same
    day.
 3. **Live-lane digest supplement** — the main battery is thin on digest shape (1 case), so
-   add **2 hand-authored live-lane cases** to `eval/qa/live-cases.json` (the committed
-   load-time supplement built for exactly this): e.g. "what's new around RWA on Stellar in
-   the last month" and "recent coverage of <directory entity>" — goldens are **behavioral**
+   add **2 hand-authored live-digest cases** (originally appended to `eval/qa/live-cases.json`;
+   todo 913 restored that file's membership-frozen denominator and moved them to the distinct opt-in
+   `eval/qa/live-digest-supplement-cases.json` contract): e.g. "what's new around RWA on
+   Stellar in the last month" and "recent coverage of <directory entity>" — goldens are **behavioral**
    per that lane's charter (dated citations present, window/as-of framing stated, honest
    soft-empty handling; never snapshot values), authored through
    `.claude/skills/golden-truth/SKILL.md` discipline. Run the lane before/after too;

@@ -173,3 +173,13 @@ the gateway's counter-balancing catalog note did not hold; per-question counter-
 violate the no-case-tuning rule. QA headline on the same day was aggregate-identical to the
 prior best (see eval/qa/README.md), so the capture costs routing-label accuracy, not answer
 quality on this sample.
+
+## July 9 P1 closeout — raw artifact unavailable
+
+The discovery-redesign closeout records the P1 repeated-run summary (Docs 100% in all cells,
+Scout medium 90% ×3, Lumenloop medium at its 37.5% ×3 baseline) and a separate QA best-of-three
+summary of 23 correct / 6 partial / 1 wrong. No July 9 agentic raw result JSON is available in
+the local-only results store, so there is no reproducible per-row artifact to cite here. A
+coordination note mentions only the fragment `2026-07-09T15-09-32`; that is not a complete
+verified filename and is deliberately **not** recorded as a result stamp. Treat the aggregate
+P1 prose as an unavailable historical artifact, not as a re-runnable stamped result.

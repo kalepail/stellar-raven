@@ -35,7 +35,10 @@
  *                      compile-qa.mjs --sample N)
  *   --ids a,b,c        run only these case ids (smoke tests)
  *   --port N           wrangler dev port (default 8788)
- *   --cases path       battery file (default eval/qa/cases.json)
+ *   --cases path       battery file (default eval/qa/cases.json). Named
+ *                      hand-authored contracts include live-data-canonical-v1
+ *                      (live-cases.json) and live-digest-supplement-v1
+ *                      (live-digest-supplement-cases.json); run separately.
  *   --model name       answering-agent model (default claude-sonnet-5)
  *   --judge-model name judge model (default judge.mjs JUDGE_MODEL)
  *   --no-judge         collect answers only (judge later)
@@ -236,7 +239,7 @@ async function main() {
 
   const toolNames = await preflight(port, searchTool);
   console.log(
-    `run-qa: variant ${variant} (search tool "${searchTool}") · ${cases.length} cases · server :${port} tools [${toolNames.join(", ")}] · agent ${model} · judge ${noJudge ? "OFF" : judgeModel}`
+    `run-qa: variant ${variant} (search tool "${searchTool}") · ${battery.contract ? `contract ${battery.contract} · ` : ""}${cases.length} cases · server :${port} tools [${toolNames.join(", ")}] · agent ${model} · judge ${noJudge ? "OFF" : judgeModel}`
   );
 
   const tmpDir = mkdtempSync(path.join(os.tmpdir(), "qa-mcp-"));
@@ -315,6 +318,7 @@ async function main() {
           judgeRubric: noJudge ? null : JUDGE_RUBRIC,
           packVersion: PACK_VERSION,
           casesPath,
+          caseContract: battery.contract ?? null,
           sampleN: sampleN ?? null,
           ids: ids ?? null,
           startedAt,
