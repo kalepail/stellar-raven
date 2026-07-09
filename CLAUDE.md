@@ -68,7 +68,8 @@ How to apply:
 - Bulk/mechanical work (clear-spec implementation, data analysis, migrations): gpt-5.5 — it's
   effectively free.
 - Anything user-facing (UI, copy, API design) needs taste ≥ 7.
-- Reviews of plans/implementations: fable-5 or opus-4.8, optionally gpt-5.5 as an extra
+- Reviews of plans/implementations: fable-5 (Claude CLI alias: `fable`) or opus-4.8,
+  optionally gpt-5.5 as an extra
   independent perspective.
 - Never use Haiku.
 
@@ -81,8 +82,10 @@ Coordination bullet above):
   or `codex exec --yolo` (edits) with a fully self-contained prompt. `~/.codex/config.toml`
   already defaults to gpt-5.5. No wrapper gymnastics: Solo spawns Codex directly, so gpt-5.5 is a
   first-class fan-out target.
-- **Claude models** (sonnet-5, opus-4.8, fable-5) fan out via the Solo Claude agent tool —
-  `spawn_agent` (Claude, `extra_args: ["--model", "<model>", "--dangerously-skip-permissions"]`).
+- **Claude models** fan out via the Solo Claude agent tool —
+  `spawn_agent` (Claude, `extra_args: ["--model", "<claude-cli-model>", "--dangerously-skip-permissions"]`).
+  The model names in the ranking table are product/ranking names, not always CLI aliases:
+  Fable 5 must be spawned with `--model fable` (not `fable-5`; verified 2026-07-09).
   An orchestrator running inside Claude Code may use its native subagent `model` parameter for
   quick in-harness helpers (same rankings apply), but anything long-lived, reviewable, or shared
   across agents goes through Solo so its output lands in project state.
