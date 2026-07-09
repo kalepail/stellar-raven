@@ -48,9 +48,9 @@ Total findings: 43
 | sd-002 | Operation-level protocol vocabulary is under-represented in the docs search   | proposed          | 2026-07-03 | 0           |
 | sd-003 | The Algolia docs index excludes the auto-generated RPC-method and             | reported-upstream | 2026-07-03 | 0           |
 | sd-004 | The RPC method reference pages describe pagination limits as "hardcoded in    | reported-upstream | 2026-07-03 | 0           |
-| sd-005 | The docs' agentic-payments coverage documents x402 and MPP mechanics in depth | reported-upstream | 2026-07-06 | 0           |
-| sd-006 | The Algolia crawler for developers.stellar.org strips code blocks, so the     | reported-upstream | 2026-07-06 | 0           |
-| sd-007 | The state-archival docs now correctly describe Protocol 23 automatic          | reported-upstream | 2026-07-07 | 1           |
+| sd-005 | The docs' agentic-payments coverage documents x402 and MPP mechanics in depth | reported-upstream | 2026-07-06 | 1           |
+| sd-006 | The Algolia crawler for developers.stellar.org strips code blocks, so the     | fixed-upstream    | 2026-07-06 | 0           |
+| sd-007 | The state-archival docs now correctly describe Protocol 23 automatic          | reported-upstream | 2026-07-07 | 2           |
 
 ## lumenloop
 

@@ -1,7 +1,7 @@
 ---
 id: sd-006
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-06
 evidence:
   - eval/qa/results/2026-07-06T18-48-22-variantA.json (q-tool-cli-install, partial — verdict stands, mixed root cause)
@@ -9,6 +9,8 @@ evidence:
   - live verification 2026-07-06: index-record probe of /docs/tools/cli/install-cli plus regex sweep of the full index for install command strings
   - Solo project 49, todo 846
   - upstream issue filed 2026-07-07: https://github.com/stellar/stellar-docs/issues/2569
+  - live fixed 2026-07-09 (crawler config v15, Solo scratchpad 565): crawler now indexes `article pre code`; exact package-manager/install-command queries such as `brew install stellar-cli`, `winget install Stellar.StellarCLI`, `cargo install stellar-cli`, and install-script phrasing return `/docs/tools/cli/install-cli` at rank #1 with command text
+  - monitor-only residual 2026-07-09: broad install intent such as `stellar cli install command` still relies on Algolia rule `raven-promote-stellar-cli-install` to place the canonical install page at rank #1; this is not a successor finding because command extraction itself is fixed upstream
 ---
 
 ## Finding
@@ -47,6 +49,16 @@ the install-cli page and regex-checking the records:
 
 QA case q-tool-cli-install in the 2026-07-06 stamp; review triage in workflow
 wf_01b3347d-1b8.
+
+Live fixed 2026-07-09: crawler config v15 indexes `article pre code`, and the
+primary index now returns the install page at rank #1 with real command text
+for exact command-shaped queries including `brew install stellar-cli`,
+`winget install Stellar.StellarCLI`, `cargo install stellar-cli`, and
+install-script phrasing. A monitor-only residual remains for broad install
+intent: `stellar cli install command` ranks the canonical install page #1 only
+with the Algolia rule `raven-promote-stellar-cli-install` enabled; with rules
+disabled it drops below unrelated install-command snippets. That residual is
+rule-health monitoring, not a new crawler/code-block finding.
 
 ## Recommendation
 
