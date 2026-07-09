@@ -31,8 +31,9 @@ in a networkless Dynamic Worker; host adapters own all service traffic, policy, 
 
 ## Coordination
 
-- Solo MCP project 49 is the control plane for dev processes, todos, scratchpads, timers, and
-  long-running agents. Check Solo state before starting or replacing any of them.
+- The Solo project bound to this repo (currently project 49) is the control plane for dev
+  processes, todos, scratchpads, timers, and long-running agents. Confirm scope with `whoami` and
+  inspect `list_processes` before starting or replacing any of them.
 - Independent adversarial review is a completion gate when requested: reviewer must differ from
   author, run to completion, and have every finding reconciled before finalization.
 - Before spawning, inspect `list_agent_tools`. Add a permission-bypass flag only if the saved tool
@@ -40,6 +41,7 @@ in a networkless Dynamic Worker; host adapters own all service traffic, policy, 
 - Every Solo-spawned agent must run non-interactively, using the saved bypass flag or an added one,
   and its brief must require the same non-interactive mode for any descendants it spawns.
 - Keep long-lived or shared fan-out in Solo so status and output remain visible to other agents.
+- For a running service, use `get_process_ports` / `wait_for_bound_port` instead of guessing a URL.
 
 ## Model routing for repo-work fan-out
 
@@ -52,15 +54,17 @@ exact CLI mechanics live in `research/agent-model-roster.md`.
 | Balanced routine implementation | `gpt-5.6-terra` | `high`, with task-proportionate review |
 | Mechanical sweeps and bounded first passes | `gpt-5.6-luna` | `medium` or `high`; require a stronger reviewer |
 | Vendor-diverse adversarial review | `grok-4.5` | `high`; do not treat it as a taste-calibrated reviewer |
-| User-facing design, API, code-quality, or copy review | Fable 5 or Opus 4.8 | Claude CLI aliases `fable` / `opus`; Sonnet 5 is acceptable for bounded review |
+| User-facing design, API, code-quality, or copy review | Fable 5 or Opus 4.8 | Claude aliases `fable` (never `fable-5`) / `opus`; Sonnet 5 is acceptable for bounded review |
 
 - Set Codex effort with `-c 'model_reasoning_effort="<effort>"'`; set Grok effort with
   `--reasoning-effort <effort>`. Do not rely on catalog defaults.
-- Only choose repo-work models explicitly listed in the table above. **Never use GPT-5.5 or
-  Haiku**; catalog availability is not authorization.
+- Only choose repo-work models explicitly listed in the table above. Never use Haiku or an
+  unlisted legacy model; catalog availability is not authorization.
 - Sol/Terra `ultra` is a delegated multi-agent system, not another comparable reasoning depth;
   evaluate it as a separate arm.
 - Public benchmark scores inform routing but do not become house cost/intelligence/taste ratings.
+- If a selected arm misses the quality bar, rerun or redo the work with a stronger listed model
+  without waiting for permission; cost is only a tie-breaker.
 - Eval answering and judge models are separate measurement contracts controlled by `run-evals`.
 
 ## Hard rules

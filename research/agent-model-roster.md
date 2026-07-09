@@ -62,9 +62,10 @@ Do not repeat `--yolo`; the saved tool command already includes it.
 
 ## Public evidence snapshot — 2026-07-09
 
-This is directional evidence for future house calibration, not a second operational routing
-table. Public API prices are not a house `cost` score: that score would reflect what Tyler
-actually pays under the available plans, including allowance pressure. Likewise, public
+This is directional evidence for calibration if house axes are reintroduced, not a second
+operational routing table. Public API prices do not define a house `cost` score; any future score
+would reflect what Tyler actually pays under the available plans, including allowance pressure.
+Likewise, public
 benchmarks do not directly measure the repo's combined UI/UX, code-quality, API-design, and copy
 `taste` axis.
 
@@ -81,8 +82,8 @@ with a single-agent run: `ultra` delegates to subagents and is a different execu
 | Grok 4.5 (API default `high`) | $2 / $6 | 54 | 76 | vendor-diverse coding candidate |
 
 The final column explains the role each arm should cover in follow-up gauntlets. Public results are
-evidence for a future house calibration, not substitutes for Tyler's cost/intelligence/taste scores
-and not a second ranking table.
+evidence for calibration if house axes are reintroduced, not substitutes for Tyler's direct
+ratings and not a second ranking table.
 
 Relevant external evidence:
 
@@ -144,10 +145,8 @@ Solo's saved Claude command already includes `--dangerously-skip-permissions`.
 ## Evidence boundaries
 
 - GPT-5.6 Sol/Terra/Luna and Grok 4.5 are verified callable and appear in the active routing table
-  in `AGENTS.md`. External benchmarks support their interim roles; local gauntlets or
-  Tyler's direct ranking must establish house cost/intelligence/taste scores.
-- GPT-5.5 is explicitly prohibited for repo work. Do not select it as a baseline, fallback,
-  reviewer, or one-shot arm even if a local catalog still exposes it.
+  in `AGENTS.md`. External benchmarks support their interim roles; local gauntlets or Tyler's
+  direct judgment would be required before reintroducing house cost/intelligence/taste scores.
 - The public demo's Workers AI/provider models are a separate surface and measurement contract
   (`research/demo-model-gauntlet-2026-07-07.md`). Do not infer Solo-agent quality from that table.
 - QA answering and judge defaults are another separate measurement contract (`run-evals` skill).
