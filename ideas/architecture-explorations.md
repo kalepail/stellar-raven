@@ -21,31 +21,42 @@ conviction or a winning A/B on golden Q→A accuracy.
    objection to the architecture with data, or redirects the project. The single
    highest-information experiment available.
 
-2. **Hybrid lexical+embedding retrieval A/B** (days; all referee instruments exist). Lexical
-   search is a measured treadmill: five structural scorer levers, tokenizer-aware hand-written
-   description notes, strict top-1 ~63–67% across instruments, and fresh live exhibits
-   ("blend lending pools" → scout.compareHackathons top-1 in production, 2026-07-07).
-   Build-time embeddings for the ~272 catalog entries committed as a generated artifact
-   (pinned model, determinism preserved), blended or reranked against the vendored scorer;
-   referee with the routing gate + extended lane (strict top-1 77/122 is the target) + a QA
-   sample. The win is counted as much in *removed mechanism* as in points.
+2. **Hybrid lexical+embedding retrieval A/B — GREENLIT as the Vectorize frontier spike
+   (Tyler, 2026-07-09; discovery-redesign round outcome).** The 2026-07-09 round hardened the
+   case: the lumenloop capture class is an entity→family mapping problem in a 66%-mixed-register
+   query stream, and BOTH lexical levers are now measured at their ceiling — prose guidance is
+   zero-sum across 7 live agentic runs, and generic catalog cards intercept ≤6.9% of real agent
+   queries even at the enrichment upper bound (`research/p2-outcome-addendum.md`). What has NOT
+   been tried: **Cloudflare Vectorize (or committed build-time vectors) with a frontier
+   embedding model** — round 5f (eval/README.md) tested only offline bge-base and failed all
+   four modes; that result binds the design (stronger model, determinism preserved: pinned
+   model + committed generated vectors or a versioned Vectorize index built in refresh, never
+   at request time), not the idea. Spike design: target exactly the measured class — referee
+   with the discovery instrument, the mined real-query set (66% mixed register), and live
+   agentic runs at ≥3 runs/arm with per-case family matrices (single runs proven unable to
+   gate ±2-case movements); docs 100% and scout-medium hold as blocking guardrails. Run in a
+   fresh worktree after the discovery-redesign merge.
 
 3. **MCP 2026-07-28 spec readiness spike** (1 day; TIME-SENSITIVE — final ships ~3 weeks from
-   the review date). The RC removes `initialize` (where SERVER_INSTRUCTIONS — one of the four
-   envelope-teaching channels — currently rides), goes fully stateless with server-issued
-   handles as tool arguments (which validates the artifact-id design), and adds
-   `Mcp-Method`/`Mcp-Name` routing headers plus list/read cache fields (SEP-2549/2575). For a
-   forward-only no-back-compat repo this is a cheap early-adoption opportunity and a real risk
-   if ignored.
+   the review date). PARTIALLY RESOLVED 2026-07-09: the instructions-channel question was
+   researched from primary sources and decided (`research/discovery-redesign.md` §4 P1 step 3
+   — instructions survive in optional `server/discover`; SEARCH_DESCRIPTION is the reliable
+   carrier; served dual-era). REMAINING: the transport-level compat review — `initialize` and
+   `Mcp-Session-Id` removal, required `Mcp-Method`/`Mcp-Name` headers, `subscriptions/listen`
+   replacing GET/SSE — against the McpAgent/createMcpHandler stack once SDKs land the final
+   spec. Re-check client adoption of `server/discover` after July 28.
 
 4. **Compact operation-card code-shaped search re-test** — ADR-0001's own named next
    experiment: hybrid ranked/code search over op cards with `codemode.search`/`describe`
    parity in the search sandbox; rerun the 60-case paired A/B. Win = variant-B answer quality
    without the max-turn exhaustion that killed it.
 
-5. **Discovery-only eval instrument** (small) — "did one search turn return the right callable
-   set?" Isolates retrieval quality from answer policy; makes candidates 1, 2, and 4 cheaper
-   to referee.
+5. **Discovery-only eval instrument** — BUILT 2026-07-09 (`eval/discovery/`, discovery-redesign
+   round): 40 adjudicated cases over the live MCP HTTP surface, familyHit@3 / usableOp@5,
+   post-adjudication baseline 29/40 · 22/40. Known scope limit: naive-verbatim queries
+   under-represent the mixed register real agents use (66% of mined traffic) — the planned
+   extension is a replay lane over mined real queries (extraction pattern in the
+   2026-07-09 round ledger).
 
 6. **Pre-cap evidence sidecar for QA judging** (runner change). Closes the residual
    judge/agent evidence asymmetry at its root: agents read full payloads via
