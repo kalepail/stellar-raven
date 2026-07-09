@@ -91,7 +91,9 @@ window. The coordinator should own the Solo ledger and spawn isolated reviewers 
 - adversarial closeout review.
 
 Use Solo `list_agent_tools` to pick available runtimes, `spawn_agent` + `send_input` to launch
-them, and `timer_fire_when_idle_all`/`timer_fire_when_idle_any` to wake the coordinator when
+them (in yolo/permission-bypass mode — pass the runtime's bypass flag via `extra_args`, per the
+`CLAUDE.md` Coordination bullet — so a spawned reviewer never stalls on an approval prompt), and
+`timer_fire_when_idle_all`/`timer_fire_when_idle_any` to wake the coordinator when
 reviewers go idle. Each reviewer appends a narrow verdict with evidence to the scratchpad; the
 coordinator reconciles and patches. Do not pass the coordinator's expected answer to reviewers.
 

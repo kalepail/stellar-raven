@@ -299,7 +299,9 @@ adversarial reviews finish).
 - Use Solo to spawn a *different* agent (e.g. Codex) with an explicit adversarial brief: do NOT
   trust the maintainer's summary; re-derive the drift class from the actual `git diff`, re-run the
   guards and gate, check ADR-0003 exposure and secrets, and return a verdict with file:line
-  evidence. Put the brief in a Solo scratchpad and have the reviewer append findings to it.
+  evidence. Spawn it in yolo/permission-bypass mode (bypass flag via `spawn_agent`'s `extra_args`,
+  per the `CLAUDE.md` Coordination bullet) so the reviewer never stalls on an approval prompt. Put
+  the brief in a Solo scratchpad and have the reviewer append findings to it.
 - Reviewer ≠ author is the invariant. Let it run to completion; reconcile every finding before
   committing. Watch for the reviewer with an idle-wake timer rather than polling.
 

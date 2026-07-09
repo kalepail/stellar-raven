@@ -41,8 +41,11 @@ Use fixed headings so spawned agents can append without clobbering each other:
 
 For anything beyond a tiny single-lane check, spawn isolated Solo agents with narrow briefs.
 Use `list_agent_tools`, then `spawn_agent`, then `send_input` with the returned
-`agent_instructions` prepended. By default, agents research/review and append to the Solo
-ledger; the coordinator owns repo edits. Only delegate patches when the write set is narrow,
+`agent_instructions` prepended. Spawn each agent in non-interactive yolo/permission-bypass mode
+(pass the runtime's bypass flag via `spawn_agent`'s `extra_args`; per-runtime flags are in the
+`CLAUDE.md` Coordination bullet) so a child never stalls on an approval prompt, and have the brief
+tell any agent that spawns its own sub-agents to do the same. By default, agents research/review
+and append to the Solo ledger; the coordinator owns repo edits. Only delegate patches when the write set is narrow,
 explicit, and disjoint. Use `timer_fire_when_idle_all` or `timer_fire_when_idle_any` to wake
 the coordinator when agents go idle. Do not poll in a loop.
 

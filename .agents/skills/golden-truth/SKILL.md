@@ -92,7 +92,9 @@ useful verdict — never stretch weak evidence; when two agents disagree, run a 
 follow-up probe — never coin-flip, never average.
 
 Use Solo for this fan-out when working in this repo: create or reuse the round scratchpad,
-spawn one agent per claim cluster, and have agents append matrices directly to the
+spawn one agent per claim cluster (in yolo/permission-bypass mode — pass the runtime's bypass
+flag via `spawn_agent`'s `extra_args`, per the `CLAUDE.md` Coordination bullet — so a child never
+stalls on an approval prompt), and have agents append matrices directly to the
 scratchpad. The authoring agent edits `golden-overrides.json` only after reconciling those
 independent matrices. For broad corpus-health or drift-refresh work, let `truth-maintenance`
 coordinate this lane alongside eval and improvements review.

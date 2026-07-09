@@ -63,6 +63,11 @@ Current skills:
 - **Independent adversarial review is a quality gate, not a speed bump.** Reviewer ≠ author; let
   it run to completion; reconcile every finding before finalizing. Coordinate multi-agent work,
   todos, and scratchpads through the Solo MCP project bound in `CLAUDE.md`.
+- **Spawn sub-agents in yolo/permission-bypass mode.** Solo-managed children have no human to
+  answer approval prompts, so launch every spawned agent — and have it launch its own
+  sub-sub-agents — non-interactively: pass the runtime's bypass flag via `spawn_agent`'s
+  `extra_args` (Codex `--yolo`, Claude `--dangerously-skip-permissions`, or the equivalent). See
+  the `CLAUDE.md` "Solo first → Coordination" bullet for the full per-runtime list.
 - **The manifest IS the exposed surface (ADR-0003).** Never tell a consumer what the gateway
   cannot do; never emit text referencing a non-exposed op or retired skill — the build guard
   (`assertNoNonExposedRefs`) enforces it.
