@@ -55,6 +55,22 @@ evidence:
   lives in CLAUDE.md) — a finding file may note that a fix landed here, but the repo work
   is tracked there.
 
+## Upstream filing channels
+
+`reported-upstream` means a GitHub issue (or equivalent) exists with the service owner.
+Known channels (issue access confirmed 2026-07-09):
+
+- `stellar-light-scout/` and `skills/` (Scout-sourced) findings → the Stellar-Light org:
+  - <https://github.com/Stellar-Light/stellarlight> — the discovery-layer service behind
+    the Stellar Light API (data/content/API-semantics findings).
+  - <https://github.com/Stellar-Light/stellar-scout> — the Scout skill (skill-content and
+    research-corpus findings).
+  - <https://github.com/Stellar-Light/scout-mcp> — their MCP server surface.
+  File on the repo that owns the failing surface; when unsure, file on `stellarlight`
+  and cross-link. Record the issue URL in the finding's `evidence` list.
+- `lumenloop/` and `stellar-docs/` findings — no public issue channel wired yet; record
+  the report route in the finding file when one is used.
+
 ## When findings get filed
 
 After **every eval round**. See `eval/EVALS.md` for the eval workflow; filing the
