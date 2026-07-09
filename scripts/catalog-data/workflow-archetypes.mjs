@@ -169,8 +169,7 @@ export const WORKFLOW_ARCHETYPES = [
     questionShape: "What projects are similar to X, adjacent to a category, or part of a landscape?",
     families: ["lumenloop", "scout"],
     steps: [
-      { id: "lumenloop.find_similar_projects_semantic", why: "find semantically similar ecosystem projects" },
-      { id: "lumenloop.get_related_projects", why: "read curated related-project links" },
+      { id: "lumenloop.find_similar_projects_semantic", why: "find semantically similar ecosystem projects from a known project" },
       { id: "scout.analyzeEcosystem", why: "compare the broader live ecosystem cluster" },
       { id: "scout.getClusters", why: "inspect Scout's cluster view when categories are fuzzy" }
     ]
