@@ -187,7 +187,7 @@ describe("searchCatalog — routing quality", () => {
   });
 
   it("routes a topical docs question to a stellarDocs op in the top 3 (structural)", () => {
-    // Mechanism check (not a golden-corpus case): the 12 authored docs ops
+    // Mechanism check (not a golden-corpus case): the authored docs ops
     // carry topical vocabulary, so a docs-shaped natural-language question
     // must surface stellarDocs near the top despite 300+ competing entries.
     const hits = searchCatalog(catalog, { query: "how do I extend TTL state archival", limit: 5 });

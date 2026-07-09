@@ -226,6 +226,43 @@
       }
     },
     {
+      "id": "stellarDocs.search_markdown_docs",
+      "name": "search_markdown_docs",
+      "index": "crawler_markdown-index",
+      "description": "Whole-page Markdown search over official Stellar developer docs at developers.stellar.org. Use when exact code blocks, shell commands, install snippets, YAML, JSON-RPC examples, CLI flags, or generated markdown links matter more than DocSearch section ranking — for example `curl -fsSL https://github.com/stellar/stellar-cli/raw/main/install.sh | sh`, `brew install stellar-cli`, `winget install --id Stellar.StellarCLI`, `cargo install --locked stellar-cli`, Docker/Quickstart commands, Stellar CLI examples, and RPC JSON payloads. This index has fewer page-level records than the primary DocSearch index, so it is a supplement for exact/code retrieval, not a replacement for the category-specific search operations.",
+      "params": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["query"],
+        "properties": {
+          "query": { "type": "string", "description": "Keyword or exact command/code query. Advanced syntax works for quoted phrases." },
+          "hitsPerPage": { "type": "integer", "minimum": 1, "maximum": 20, "default": 5 },
+          "page": { "type": "integer", "minimum": 0, "default": 0 },
+          "includeContent": { "type": "boolean", "default": false, "description": "Return the full markdown page text as `content` (can be many KB)." }
+        }
+      },
+      "returns": "Array of page-level hits: { url, breadcrumb (title > heading), snippet, content? } plus { nbHits, nbPages, page }.",
+      "algolia": {
+        "paramMap": { "query": "query", "hitsPerPage": "hitsPerPage", "page": "page" },
+        "fixedParams": {
+          "attributesToRetrieve": ["url", "title", "heading"],
+          "attributesToSnippet": ["text:30"],
+          "highlightPreTag": "**",
+          "highlightPostTag": "**"
+        },
+        "conditionalParams": {
+          "includeContent=true": { "attributesToRetrieve": ["url", "title", "heading", "text"] }
+        }
+      },
+      "verified": {
+        "checkedAt": "2026-07-09",
+        "query": "curl -fsSL github stellar-cli",
+        "params": { "hitsPerPage": 5 },
+        "nbHits": 1,
+        "topHit": "https://developers.stellar.org/docs/tools/cli/install-cli"
+      }
+    },
+    {
       "id": "stellarDocs.search_docs_in_category",
       "name": "search_docs_in_category",
       "description": "Keyword search restricted to ONE top-level category of the Stellar developer docs. Categories (measured page counts): build (189 — smart contracts, guides, apps/dapps, security, agentic payments), data (131 — Stellar RPC, Horizon, Hubble analytics, indexers/Galexie, oracles), tools (88 — Stellar CLI, Lab, Quickstart, SDKs, developer tools), learn (58 — protocol fundamentals: ledgers, accounts, transactions, operations, fees, consensus, lumens XLM, anchors, SEPs, migrate from EVM), platforms (51 — Anchor Platform, Stellar Disbursement Platform), validators (16 — running a stellar-core validator node), tokens (9 — issuing assets, asset anatomy, access control, Stellar Asset Contract, token interface), networks (2 — resource limits and fees), meetings (85 — protocol & developers meeting notes). Use when a question clearly belongs to one area and general search returns cross-area noise.",

@@ -523,41 +523,47 @@ function buildScout(inv) {
 }
 
 // ---------------------------------------------------------------------------
-// Stellar Docs (Algolia) — 12 authored operations from specs/stellar-docs.json
+// Stellar Docs (Algolia) — authored operations from specs/stellar-docs.json
 // (Lane D, todo 796; mapping recipe: research/services/stellar-docs-spec-design.md §7)
 // ---------------------------------------------------------------------------
 
 function buildStellarDocs(spec) {
   const { backend, catalogHints } = spec;
-  return spec.operations.map((op) => ({
-    id: op.id, // "stellarDocs.search_docs" etc — verbatim from the spec
-    service: spec.service,
-    kind: catalogHints.kind,
-    description: op.returns ? `${op.description}\n\nReturns: ${op.returns}` : op.description,
-    inputSchema: op.params, // spec params are already a JSON Schema object
-    outputSchema: null,
-    // Transport = shared backend block + this op's exact Algolia query mapping.
-    // Phase 3's adapter consumes `algolia` (paramMap/fixedParams/
-    // conditionalParams/clientFilter/derivedQuery) as-is.
-    transport: {
-      type: "algolia",
-      index: backend.index,
-      endpoint: backend.endpoint,
-      hosts: backend.hosts,
-      applicationIdEnv: backend.applicationIdEnv,
-      apiKeyEnv: backend.apiKeyEnv,
-      retry: backend.retry,
-      baseParams: backend.baseParams,
-      constraints: backend.constraints,
-      algolia: op.algolia
-    },
-    provenance: {
-      source: catalogHints.provenanceSource,
-      fetchedAt: spec.authoredAt,
-      spec: "specs/stellar-docs.json",
-      note: "authored spec-as-data operation (Lane D todo 796), live-verified against the Algolia index — not a fetched descriptor"
-    }
-  }));
+  return spec.operations.map((op) => {
+    const index = op.index ?? backend.index;
+    return {
+      id: op.id, // "stellarDocs.search_docs" etc — verbatim from the spec
+      service: spec.service,
+      kind: catalogHints.kind,
+      description: op.returns ? `${op.description}\n\nReturns: ${op.returns}` : op.description,
+      inputSchema: op.params, // spec params are already a JSON Schema object
+      outputSchema: null,
+      // Transport = shared backend block + this op's exact Algolia query mapping.
+      // Phase 3's adapter consumes `algolia` (paramMap/fixedParams/
+      // conditionalParams/clientFilter/derivedQuery) as-is.
+      transport: {
+        type: "algolia",
+        index,
+        endpoint: `POST /1/indexes/${encodeURIComponent(index)}/query`,
+        hosts: backend.hosts,
+        applicationIdEnv: backend.applicationIdEnv,
+        apiKeyEnv: backend.apiKeyEnv,
+        retry: backend.retry,
+        baseParams: backend.baseParams,
+        constraints: backend.constraints,
+        algolia: op.algolia
+      },
+      provenance: {
+        source:
+          op.index === undefined
+            ? catalogHints.provenanceSource
+            : `https://{ALGOLIA_APPLICATION_ID}-dsn.algolia.net/1/indexes/${encodeURIComponent(index)}/settings`,
+        fetchedAt: spec.authoredAt,
+        spec: "specs/stellar-docs.json",
+        note: "authored spec-as-data operation (Lane D todo 796), live-verified against the Algolia index — not a fetched descriptor"
+      }
+    };
+  });
 }
 
 // ---------------------------------------------------------------------------

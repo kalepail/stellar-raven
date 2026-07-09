@@ -39,8 +39,11 @@ type AlgoliaHit = {
   type?: string;
   hierarchy?: Record<string, string | null>;
   content?: string;
+  text?: string;
+  title?: string;
+  heading?: string;
   weight?: { position?: number };
-  _snippetResult?: { content?: { value?: string } };
+  _snippetResult?: { content?: { value?: string }; text?: { value?: string } };
   [k: string]: unknown;
 };
 
@@ -137,14 +140,15 @@ function breadcrumb(hierarchy: Record<string, string | null> | undefined): strin
 function shapeHit(hit: AlgoliaHit): Record<string, unknown> {
   const shaped: Record<string, unknown> = {
     url: hit.url,
-    url_without_anchor: hit.url_without_anchor,
+    url_without_anchor: hit.url_without_anchor ?? hit.url,
     anchor: hit.anchor,
     type: hit.type,
-    breadcrumb: breadcrumb(hit.hierarchy)
+    breadcrumb: breadcrumb(hit.hierarchy) || [hit.title, hit.heading].filter(Boolean).join(" > ")
   };
-  const snippet = hit._snippetResult?.content?.value;
+  const snippet = hit._snippetResult?.content?.value ?? hit._snippetResult?.text?.value;
   if (snippet) shaped.snippet = snippet;
   if (typeof hit.content === "string") shaped.content = hit.content;
+  if (typeof hit.text === "string") shaped.content = hit.text;
   return shaped;
 }
 

@@ -246,6 +246,31 @@ describe("stellarDocs adapter", () => {
     }
   });
 
+  it("queries the markdown index and shapes page-level text snippets", async () => {
+    const { fetchImpl, calls } = stubFetch(fixture("stellar-docs-markdown-success.json"), 200);
+    const r = await callStellarDocs(
+      entry("stellarDocs.search_markdown_docs"),
+      { query: "curl -fsSL github stellar-cli", includeContent: true },
+      docsEnv,
+      fetchImpl
+    );
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(calls[0]?.url).toBe(
+      "https://TESTAPPID-dsn.algolia.net/1/indexes/crawler_markdown-index/query"
+    );
+    const params = JSON.parse(String(calls[0]?.init?.body));
+    expect(params.attributesToSnippet).toEqual(["text:30"]);
+    expect(params.attributesToRetrieve).toEqual(["url", "title", "heading", "text"]);
+    const data = r.data as { hits: { url_without_anchor: string; breadcrumb: string; snippet?: string; content?: string }[] };
+    expect(data.hits[0]?.url_without_anchor).toBe(
+      "https://developers.stellar.org/docs/tools/cli/install-cli"
+    );
+    expect(data.hits[0]?.breadcrumb).toBe("Install the CLI | Stellar Docs > Install the Stellar CLI");
+    expect(data.hits[0]?.snippet).toContain("curl");
+    expect(data.hits[0]?.content).toContain("stellar-cli/raw/main/install.sh");
+  });
+
   it("maps zero hits to soft-empty (reliable negative on this index)", async () => {
     const { fetchImpl } = stubFetch(fixture("stellar-docs-soft-empty.json"), 200);
     const r = await callStellarDocs(
