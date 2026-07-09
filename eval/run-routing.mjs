@@ -172,7 +172,7 @@ async function main() {
       expected_service: c.expected_service,
       ...(expectedAny ? { expected_any: expectedAny } : {}),
       ...grade,
-      topHits: hits.map((h) => ({ id: h.id, service: h.service, kind: h.kind, score: h.score })),
+      topHits: hits.map((h) => ({ id: h.id, service: h.service, score: h.score })),
     };
   };
 

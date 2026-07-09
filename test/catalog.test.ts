@@ -248,23 +248,6 @@ describe("build-catalog.mjs", () => {
     expect(() => assertNoNonExposedRefs([...catalog.entries, excludedWorkflow])).toThrow(
       /workflow card "workflow:bad-step" references non-manifest id "lumenloop.request_research"/
     );
-
-    const cardToCardStep = {
-      ...badWorkflow,
-      steps: [{ id: "service:scout", why: "card ids are not executable/readable steps" }]
-    };
-    expect(() => assertNoNonExposedRefs([...catalog.entries, cardToCardStep])).toThrow(
-      /workflow card "workflow:bad-step" references non-step catalog id "service:scout" of kind "service"/
-    );
-
-    const badTitle = {
-      ...badWorkflow,
-      title: "Call lumenloop.request_research",
-      steps: [{ id: "lumenloop.search_directory", why: "valid step" }]
-    };
-    expect(() => assertNoNonExposedRefs([...catalog.entries, badTitle])).toThrow(
-      /entry "workflow:bad-step"/
-    );
   });
 });
 

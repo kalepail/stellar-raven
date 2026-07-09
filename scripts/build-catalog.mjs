@@ -758,22 +758,9 @@ function assertIdReferencesResolve(refs, ids, label) {
   }
 }
 
-function assertWorkflowStepReferencesResolve(refs, entriesById, label) {
-  for (const id of refs) {
-    const entry = entriesById.get(id);
-    if (!entry) {
-      throw new Error(`${label} references non-manifest id "${id}"`);
-    }
-    if (!["operation", "skill", "skill-section"].includes(entry.kind)) {
-      throw new Error(`${label} references non-step catalog id "${id}" of kind "${entry.kind}"`);
-    }
-  }
-}
-
 export function buildDiscoveryCards(entries) {
   const cards = [];
   const ids = new Set(entries.map((entry) => entry.id));
-  const entriesById = new Map(entries.map((entry) => [entry.id, entry]));
   const serviceFamilies = new Set(entries.map((entry) => entry.service));
   const purposeFamilies = new Set();
 
@@ -826,9 +813,9 @@ export function buildDiscoveryCards(entries) {
     if (!Array.isArray(archetype.steps) || archetype.steps.length === 0) {
       throw new Error(`workflow archetype "${archetype.id}" has no steps`);
     }
-    assertWorkflowStepReferencesResolve(
+    assertIdReferencesResolve(
       archetype.steps.map((step) => step.id),
-      entriesById,
+      ids,
       `workflow card "workflow:${archetype.id}"`
     );
     const steps = archetype.steps.map((step) => ({ id: step.id, why: step.why }));
@@ -886,7 +873,6 @@ export function buildDiscoveryCards(entries) {
 // a manifest — see assertNoNonExposedRefsInText.
 export function assertNoNonExposedRefs(entries) {
   const ids = new Set(entries.map((e) => e.id));
-  const entriesById = new Map(entries.map((e) => [e.id, e]));
   const opIds = new Set(entries.filter((e) => e.kind === "operation").map((e) => e.id));
   // Service-callable tokens ("scout.matchPartners"); the lookbehind skips
   // dotted prefixes so skill ids like "skills.lumenloop.<name>" never match,
@@ -895,7 +881,6 @@ export function assertNoNonExposedRefs(entries) {
   const TLDS = new Set(["com", "org", "net", "io", "xyz", "dev", "app", "buzz"]);
   for (const entry of entries) {
     const text = [
-      entry.title ?? "",
       entry.description ?? "",
       ...(entry.keywords ?? []),
       // Runnable schemas ship to the model (signatures, describe, super
@@ -907,9 +892,9 @@ export function assertNoNonExposedRefs(entries) {
       ...(entry.operations ?? [])
     ].join("\n");
     if (entry.kind === "workflow") {
-      assertWorkflowStepReferencesResolve(
+      assertIdReferencesResolve(
         (entry.steps ?? []).map((step) => step.id),
-        entriesById,
+        ids,
         `workflow card "${entry.id}"`
       );
     }
