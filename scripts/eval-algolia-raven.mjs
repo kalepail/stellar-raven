@@ -201,6 +201,7 @@ function summarize(results) {
       .filter((r) => r.expectedRank !== null)
       .sort((a, b) => a.expectedRank - b.expectedRank)[0];
     const defaultRank = item.results.find((r) => r.strategy === "primary-docs-default")?.expectedRank ?? null;
+    const primaryGood = defaultRank !== null && defaultRank <= 3;
     return {
       id: item.id,
       finding: item.finding,
@@ -208,9 +209,10 @@ function summarize(results) {
       defaultRank,
       bestStrategy: best?.strategy ?? null,
       bestRank: best?.expectedRank ?? null,
-      recommendation:
-        best && best.expectedRank <= 3
-          ? "Raven-side query strategy/client filter can cover this; do not mutate Algolia settings yet."
+      recommendation: primaryGood
+        ? "Primary DocSearch now covers this in the top 3; keep this as a regression check for crawler/rule drift."
+        : best && best.expectedRank <= 3
+          ? "A non-default Raven query strategy can cover this; consider routing or targeted Algolia tuning before adding records."
           : "Needs supplement records or upstream indexing/rules; query strategy alone did not reach the target."
     };
   });
