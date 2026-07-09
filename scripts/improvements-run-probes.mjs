@@ -2,6 +2,10 @@
 import { appendFileSync } from "node:fs";
 import { listFindingFiles, parseFinding } from "./improvements-lib.mjs";
 
+const AUTH_PROBE_HOSTS = {
+  LUMENLOOP_API_KEY: "api.lumenloop.com",
+};
+
 const today = new Date().toISOString().slice(0, 10);
 const appendDrafts = process.argv.includes("--append-drafts");
 const findings = listFindingFiles().map(parseFinding);
@@ -40,7 +44,31 @@ if (failed.length) process.exitCode = 1;
 
 async function runProbe(probe) {
   if (probe.type !== "http-text") throw new Error(`unsupported probe type ${probe.type}`);
-  const res = await fetch(probe.url, { headers: { "user-agent": "stellar-raven-improvements-probe" } });
+  const headers = { "user-agent": "stellar-raven-improvements-probe" };
+  if (probe.authEnv) {
+    const expectedHost = AUTH_PROBE_HOSTS[probe.authEnv];
+    const target = new URL(probe.url);
+    if (!expectedHost || target.origin !== `https://${expectedHost}`) {
+      throw new Error(`auth probe target is not approved for ${probe.authEnv}`);
+    }
+    const token = process.env[probe.authEnv];
+    if (!token) {
+      return {
+        ok: false,
+        inconclusive: true,
+        summary: `missing host credential ${probe.authEnv}`,
+      };
+    }
+    headers.authorization = `Bearer ${token}`;
+  }
+  if (probe.body !== undefined) headers["content-type"] = "application/json";
+  const res = await fetch(probe.url, {
+    method: probe.method ?? "GET",
+    headers,
+    body: probe.body,
+    redirect: probe.authEnv ? "error" : "follow",
+    signal: AbortSignal.timeout(15_000),
+  });
   const body = await res.text();
   const expect = probe.expect ?? {};
   const checks = [];

@@ -9,6 +9,7 @@ evidence:
   - Solo project 49, todo 828, scratchpad 521 (golden-truth deep-verification round)
   - live re-verified 2026-07-06 (eval round todo 846): the indexed RPC Structure→Pagination page still says the getEvents limit is "hardcoded in Stellar-RPC for performance reasons"; the method pages remain unindexed (sd-003) so their wording could not be re-fetched via search, but the sibling indexed page shows the same unfixed pattern
   - upstream issue filed 2026-07-07: https://github.com/stellar/stellar-docs/issues/2567
+  - pending upstream PR https://github.com/stellar/stellar-docs/pull/2572 tracked 2026-07-09 at head eb676939424ea6b783729de6e94fbf93665b12e6: branch wording now describes configurable defaults, but the PR remains open/review-required/merge-blocked; production proof is unavailable, so issue #2567 remains open
 ---
 
 ## Finding

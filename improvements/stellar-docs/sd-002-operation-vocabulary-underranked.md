@@ -26,10 +26,16 @@ Retrieval cluster analysis C2 from the 2026-07-03 eval round (results files
 above). Follow-up probes on 2026-07-06 and 2026-07-09 show collateral
 improvement in direct docs search for the combined C2 vocabulary, but they do
 not reproduce the original cross-service ranking comparison closely enough to
-confirm a fix.
+confirm a fix. Conversely, those successful direct-search probes mean the
+history does not support a stronger claim that the vocabulary is absent or
+currently unretrievable. The original observation and the later probes measure
+different things, so this finding remains `proposed`: neither promoted as a
+confirmed recurrence nor closed as fixed.
 
 ## Recommendation
 
-Improve ranking/synonym coverage for operation-level vocabulary — e.g. boost
-operation reference pages for these terms, or add synonym mappings so
-user-phrased queries land on the existing content.
+First replay the original cross-service candidate-ranking comparison with a
+captured, repeatable target. If docs still lose despite returning the relevant
+pages directly, improve ranking/synonym coverage — e.g. boost operation
+reference pages or add synonym mappings for the user phrasing. Do not file an
+upstream ranking report from the current non-like-for-like history alone.

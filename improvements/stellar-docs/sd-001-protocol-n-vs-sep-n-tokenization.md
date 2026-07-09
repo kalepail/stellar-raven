@@ -11,6 +11,9 @@ evidence:
   - Solo project 49, todo 822, comments 2204-2210
   - live re-verified 2026-07-06 (eval round todo 846): bare "Protocol 24" still returns 8/8 SEP-24 anchor pages; the Whisk/state-archival meetings content only surfaces (as hit #1) on the detail-rich meetings-scoped query
   - live re-verified 2026-07-09 (Solo scratchpad 565): bare "Protocol 24" still returns SEP-24/anchor pages as all top hits; "Protocol 24 Whisk state archival" with meetings filtering returns the Whisk/state-archival meeting content at rank #1
+recurrences:
+  - date: 2026-07-09
+    evidence: the controlled Algolia harness now requires the exact `/meetings/2025/10/16` record plus `state`, `archival`, and `Whisk`; bare `Protocol 24` misses that semantic target across the tested strategies. The former any-`/meetings/` target could falsely pass an unrelated meeting hit and has been retired.
 ---
 
 ## Finding
@@ -29,7 +32,11 @@ halves: "Protocol 24" on the main index returns SEP-24 pages; the
 meetings-category query returns the Whisk state-archival content as hit #1.
 The 2026-07-09 re-check still reproduces the same split: bare protocol-version
 intent is SEP-24-biased, while a detailed Whisk/state-archival query reaches
-the correct meetings content.
+the correct meetings content. A controlled-harness audit found that the old
+`/meetings/`-prefix expectation was too broad: an unrelated meeting result
+could count as a recovery. The harness now requires the actual 2025-10-16
+meeting URL and the Whisk/state/archival terms, preserving this as a real
+recurrence instead of a URL-class false positive.
 
 ## Recommendation
 

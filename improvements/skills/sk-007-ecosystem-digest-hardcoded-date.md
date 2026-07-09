@@ -1,15 +1,29 @@
 ---
 id: sk-007
 service: skills
-status: proposed
+status: reported-upstream
 discovered: 2026-07-03
 evidence:
   - ecosystem-skills/skills/lumenloop/stellar-ecosystem-digest/SKILL.md (mirror, verbatim of upstream lumenloop/lumenloop-skills)
   - audit sweep 2026-07-03 (documentation-consistency pass)
   - live re-verified 2026-07-06 (eval round todo 846): worked example still hardcodes "Today is 2026-06-08" and date_end="2026-06-08" throughout, byte-identical to the quoted lines, no placeholder marker added
+  - upstream source rechecked 2026-07-09 at lumenloop/lumenloop-skills skills commit d92c56b: the worked example still says "Today is 2026-06-08" and repeats the frozen date through every recency query
+  - upstream issue filed 2026-07-09: https://github.com/lumenloop/lumenloop-skills/issues/3
+recurrences:
+  - date: 2026-07-09
+    evidence: current upstream stellar-ecosystem-digest still contains the literal "Today is 2026-06-08" and frozen 2026-05-09→2026-06-08 window
+probe:
+  type: http-text
+  url: https://raw.githubusercontent.com/lumenloop/lumenloop-skills/main/skills/stellar-ecosystem-digest/SKILL.md
+  expect:
+    status: 200
+    contains:
+      - Today is 2026-06-08
 ---
 
 ## Finding
+
+The ecosystem-digest skill hard-codes a stale 2026-06-08 recency window.
 
 The `lumenloop/stellar-ecosystem-digest` skill hard-codes a specific calendar
 date — **"Today is 2026-06-08"** — into its worked example, and threads that same

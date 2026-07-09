@@ -16,6 +16,10 @@ import {
   resolveIntake,
 } from "./improvements-lib.mjs";
 
+const AUTH_PROBE_HOSTS = {
+  LUMENLOOP_API_KEY: "api.lumenloop.com",
+};
+
 const live = process.argv.includes("--live");
 const statusRank = {
   proposed: 0,
@@ -102,8 +106,35 @@ function validateProbe(label, probe) {
   if (probe.type !== "http-text") {
     errors.push(`${label}: unsupported probe.type '${probe.type}'`);
   }
-  if (!probe.url || !/^https?:\/\//.test(probe.url)) {
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(probe.url);
+  } catch {
+    // Report the stable validation message below instead of parser-specific text.
+  }
+  if (!parsedUrl || !["http:", "https:"].includes(parsedUrl.protocol)) {
     errors.push(`${label}: probe.url must be an http(s) URL`);
+  }
+  if (probe.method !== undefined && !["GET", "POST"].includes(probe.method)) {
+    errors.push(`${label}: probe.method must be GET or POST`);
+  }
+  if (probe.authEnv !== undefined) {
+    const expectedHost = AUTH_PROBE_HOSTS[probe.authEnv];
+    if (!expectedHost) {
+      errors.push(`${label}: probe.authEnv is not an approved probe credential`);
+    } else if (parsedUrl && parsedUrl.origin !== `https://${expectedHost}`) {
+      errors.push(`${label}: probe.authEnv ${probe.authEnv} may only target https://${expectedHost}`);
+    }
+  }
+  if (probe.body !== undefined) {
+    try {
+      JSON.parse(probe.body);
+    } catch {
+      errors.push(`${label}: probe.body must be valid JSON`);
+    }
+    if (probe.method !== "POST") {
+      errors.push(`${label}: probe.body requires probe.method POST`);
+    }
   }
   const expect = probe.expect;
   if (!expect || typeof expect !== "object") {

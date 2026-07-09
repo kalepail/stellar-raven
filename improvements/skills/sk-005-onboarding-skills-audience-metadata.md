@@ -1,19 +1,36 @@
 ---
 id: sk-005
 service: skills
-status: proposed
+status: reported-upstream
 discovered: 2026-07-03
 evidence:
   - gateway retirement decision + verification, Solo project 49, todo 825 (2026-07-03)
   - scripts/build-catalog.mjs RETIRED_ONBOARDING_SKILLS (deny-list-as-data, this repo)
   - content survey: lumenloop-api family teaches Bearer llmcp_ auth, key minting, REST envelope; playbooks reference tools by bare name only (zero REST markers)
   - live re-verified 2026-07-06 (eval round todo 846): stellar-project-dossier playbook still ships no frontmatter audience/transport marker; the retirement of the 7 onboarding skills is holding (playbook still bare-name tool refs, zero REST/auth markers)
+  - upstream source rechecked 2026-07-09 at lumenloop/lumenloop-skills main (skills tree d92c56b): stellar-project-dossier frontmatter still has name/description/user-invocable only, with no audience or transport marker
+  - upstream issue filed 2026-07-09: https://github.com/lumenloop/lumenloop-skills/issues/2
+recurrences:
+  - date: 2026-07-09
+    evidence: current upstream stellar-project-dossier frontmatter still omits audience/transport metadata while remaining user-invocable
+probe:
+  type: http-text
+  url: https://raw.githubusercontent.com/lumenloop/lumenloop-skills/main/skills/stellar-project-dossier/SKILL.md
+  expect:
+    status: 200
+    contains:
+      - 'user-invocable: true'
+    excludes:
+      - 'audience:'
+      - 'transport:'
 ---
 
 ## Finding
 
-The lumenloop skill corpus mixes two audiences with no machine-readable marker. The
-`lumenloop-api` family (connect/keys/billing/integrate/query/research) plus
+The Lumenloop skill corpus lacks machine-readable audience and transport metadata.
+
+It mixes two audiences with no machine-readable marker. The `lumenloop-api`
+family (connect/keys/billing/integrate/query/research) plus
 `lumenloop-mcp-connect` teach **transport onboarding**: Bearer `llmcp_` auth, key
 minting/rotation, rate limits, the REST response envelope, connector installs. The
 seven playbooks (dossier, ecosystem-scout, scf-radar, digest, auditor, quickstart,
@@ -30,9 +47,10 @@ kept.
 
 ## Evidence
 
-Content survey and retirement verification in Solo todo 825. REST-marker scan across
-the family vs the playbooks (transport markers 40+ per onboarding skill, 0 per
-playbook).
+A source survey and REST-marker scan found 40+ transport markers per onboarding
+skill and zero in the transport-agnostic playbooks. The current upstream
+`stellar-project-dossier` frontmatter remains user-invocable but has no audience
+or transport marker.
 
 ## Recommendation
 

@@ -112,7 +112,7 @@ function renderBody(finding) {
 function scrub(text) {
   return String(text)
     .split("\n")
-    .filter((line) => !/\b(Solo|scratchpad|todo \d+|workflow|comment \d+)/i.test(line))
+    .filter((line) => !/\b(Solo|scratchpad|todo \d+|workflow\s+wf_[\w-]+|comment \d+)/i.test(line))
     .join("\n")
     .replace(/solo:\/\/\S+/gi, "[internal coordination record]")
     .replace(/\/Users\/[^\s)]+/g, "[local path elided]");

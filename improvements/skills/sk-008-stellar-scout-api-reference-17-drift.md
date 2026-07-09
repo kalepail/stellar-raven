@@ -1,17 +1,20 @@
 ---
 id: sk-008
 service: skills
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-09
 evidence:
   - live drift issue 14: inventory/stellar-light.json refreshed to OpenAPI/status 1.7.0
   - ecosystem-skills/skills/stellar-light/stellar-scout/references/api-reference.md (mirror of upstream Stellar-Light/stellar-scout @ c2a6f95)
   - upstream issue filed 2026-07-09: https://github.com/Stellar-Light/stellar-scout/issues/8
+  - upstream issue #8 closed completed after fix commit aea0c125325ceed746eefaa505e3bd45dabd5ca1
+  - upstream source and local mirror rechecked 2026-07-09: api-reference now documents the ramps filter, typed partner capability/freshness/trust fields, and full codeVerified fields including symbols, sdkCapabilities, and mainnetContractId
+  - local mirror synchronized to aea0c125 and regenerated through skills bundle, catalog, super spec, and plan op classes; production live verification remains pending coordinator merge/deploy
 ---
 
 ## Finding
 
-The upstream `Stellar-Light/stellar-scout` skill API reference lags the live
+The upstream `Stellar-Light/stellar-scout` skill API reference previously lagged the live
 Scout OpenAPI 1.7.0 contract for two exposed read endpoints. The live
 `GET /api/partners` operation now accepts a `ramps` query parameter and returns
 a typed `PartnersResponse` / `Partner` schema, while the skill's
@@ -37,7 +40,7 @@ Live inventory refreshed for issue 14 shows:
 - `inventory/stellar-light.json` expands repo/code verification output with
   fields such as `mainnetContractId`, `sdkCapabilities`, and `symbols`.
 
-The mirrored upstream skill still says:
+The former mirrored upstream skill said:
 
 - `ecosystem-skills/skills/stellar-light/stellar-scout/references/api-reference.md:244`
   lists `/api/partners` params as `type`, `sector`, `region`, `accepting=1`,
@@ -46,16 +49,13 @@ The mirrored upstream skill still says:
   describes `/api/repos/explain` as returning `repo`, `routedVia`, `answer`,
   `alternateRepos`, and `sources`, omitting the new code-verification fields.
 
-`gh api repos/Stellar-Light/stellar-scout/commits/main` showed the upstream
-skill source still pinned at commit `c2a6f95eeb02261d54a2a72b68595886f8fba0e8`
-from 2026-07-08, so `ecosystem-skills/update.sh` has no newer source to mirror.
+The fix landed in upstream commit `aea0c125325ceed746eefaa505e3bd45dabd5ca1`.
+The 2026-07-09 mirror sync pins that commit and the generated runtime bundle
+contains the corrected endpoint guidance. Production proof is intentionally
+deferred until the coordinator merges and deploys this branch.
 
 ## Recommendation
 
-Update the upstream `references/api-reference.md` in
-`Stellar-Light/stellar-scout` to match OpenAPI 1.7.0 for these endpoints:
-document the `ramps` filter and typed partner fields for `GET /api/partners`,
-and include the richer `codeVerified` fields for `GET /api/repos/explain`.
-After the upstream source changes, rerun this repo's `ecosystem-skills/update.sh`
-and `npm run skills:bundle` so runtime skill prose and generated catalog
-artifacts stay aligned.
+Resolved upstream. Keep the mirror pin and runtime bundle synchronized with the
+Scout source, and complete the final production read after coordinator merge and
+deploy before treating Raven's served copy as live-verified.

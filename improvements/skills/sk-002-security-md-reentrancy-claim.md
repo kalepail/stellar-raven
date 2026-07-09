@@ -11,6 +11,7 @@ evidence:
   - live re-verified 2026-07-06 (eval round todo 846): security.md still carries the verbatim "possible but rarely exploitable" self-reentrancy sentence, unqualified against the host's forbid-any-reentry behavior
   - upstream issue filed 2026-07-07: https://github.com/stellar/stellar-dev-skill/issues/46
   - fixed upstream in 2026-07-08 mirror sync: security.md now says the host blocks direct or indirect reentrant calls on normal cross-contract paths, while preserving the external-call boundary warning
+  - upstream issue #46 closed completed 2026-07-09 after source proof was posted: https://github.com/stellar/stellar-dev-skill/issues/46#issuecomment-4930590461
 recurrences:
   - date: 2026-07-03
     evidence: eval/qa/results/2026-07-03T16-06-45-variantA.json (q-soroban-reentrancy, partial); re-verified against rs-soroban-env source and docs reliable-negative on reentrancy.

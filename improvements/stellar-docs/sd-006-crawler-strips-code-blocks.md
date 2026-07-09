@@ -11,6 +11,7 @@ evidence:
   - upstream issue filed 2026-07-07: https://github.com/stellar/stellar-docs/issues/2569
   - live fixed 2026-07-09 (crawler config v15, Solo scratchpad 565): crawler now indexes `article pre code`; exact package-manager/install-command queries such as `brew install stellar-cli`, `winget install Stellar.StellarCLI`, `cargo install stellar-cli`, and install-script phrasing return `/docs/tools/cli/install-cli` at rank #1 with command text
   - monitor-only residual 2026-07-09: broad install intent such as `stellar cli install command` still relies on Algolia rule `raven-promote-stellar-cli-install` to place the canonical install page at rank #1; this is not a successor finding because command extraction itself is fixed upstream
+  - upstream issue #2569 closed completed 2026-07-09 after live Algolia proof was posted: https://github.com/stellar/stellar-docs/issues/2569#issuecomment-4930591593
 ---
 
 ## Finding

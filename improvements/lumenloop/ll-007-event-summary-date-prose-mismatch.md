@@ -1,13 +1,32 @@
 ---
 id: ll-007
 service: lumenloop
-status: proposed
+status: verified
 discovered: 2026-07-03
 evidence:
   - live search_content_semantic events probe (2026-07-03 evening, production)
   - 2 of ~14 India event rows affected (Bhopal + Jabalpur "Build On Stellar" workshops)
   - Solo project 49, todo 807, scratchpad 521
   - live re-verified 2026-07-06 (eval round todo 846): Bhopal (id 1597) and Jabalpur (id 1598) rows still carry start_at 2026-06-27 with "July 27" in the summary prose
+  - live re-verified 2026-07-09: authenticated event semantic search returned ids 1597/1598 with start_at 2026-06-27T05:30/06:30Z while both summaries still say July 27
+recurrences:
+  - date: 2026-07-09
+    evidence: POST search_content_semantic for Bhopal/Jabalpur Build On Stellar returned ids 1597/1598 with June 27 structured timestamps and July 27 summary prose
+probe:
+  type: http-text
+  url: https://api.lumenloop.com/v1/tools/search_content_semantic
+  method: POST
+  authEnv: LUMENLOOP_API_KEY
+  body: '{"query":"Bhopal Jabalpur Build On Stellar workshop","types":["events"],"date_start":"2026-06-01","limit":100}'
+  expect:
+    status: 200
+    contains:
+      - '"id":"1597"'
+      - '"start_at":"2026-06-27T05:30:00.000Z"'
+      - 'July 27 in Bhopal'
+      - '"id":"1598"'
+      - '"start_at":"2026-06-27T06:30:00.000Z"'
+      - 'Jabalpur, July 27'
 ---
 
 ## Finding
@@ -22,7 +41,7 @@ is unknown.
 
 ## Evidence
 
-Live probe 2026-07-03 (production, free ops):
+Live probes 2026-07-03 and 2026-07-09 (production, free ops):
 `search_content_semantic({query:"Stellar Build Station India builder
 sprint", types:["events"], date_start:"2026-06-01"})` returns both rows
 with `start_at: 2026-06-27` and "July 27" in the summary prose. Round

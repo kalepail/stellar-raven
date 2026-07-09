@@ -11,6 +11,7 @@ evidence:
   - live re-verified 2026-07-06 (eval round todo 846): get_doc_page_sections on the getTransactions method page still returns the identical soft-empty ("auto-generated API-reference pages are not indexed")
   - upstream issue filed 2026-07-07: https://github.com/stellar/stellar-docs/issues/2566
   - live re-check 2026-07-09 (Solo scratchpad 565): `getTransactions limit 200 default 50 pagination` now ranks `/docs/data/apis/rpc/admin-guide/configuring` at #1 with the getTransactions transaction cap snippet, but `getTransactions API reference limit` still drifts to Horizon/API Explorer/structure pages and the generated method page remains unindexed; partial mitigation only
+  - pending upstream PR https://github.com/stellar/stellar-docs/pull/2572 tracked 2026-07-09 at head eb676939424ea6b783729de6e94fbf93665b12e6: open, review required, merge blocked, core checks and preview green; production/live Algolia proof unavailable, so issue #2566 remains open
 ---
 
 ## Finding

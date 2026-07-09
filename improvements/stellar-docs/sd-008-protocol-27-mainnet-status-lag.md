@@ -1,7 +1,7 @@
 ---
 id: sd-008
 service: stellar-docs
-status: verified
+status: reported-upstream
 discovered: 2026-07-09
 evidence:
   - live Horizon first-activation boundary rechecked 2026-07-09: ledger 63386818 closed at 2026-07-08T17:00:05Z under Protocol 26; ledger 63386819 closed at 17:00:10Z under Protocol 27
@@ -9,6 +9,7 @@ evidence:
   - stellar/rs-soroban-sdk latest release API rechecked 2026-07-09: v27.0.0, prerelease false, published 2026-07-08T19:48:45Z; the P27 table still lists Smart Contract Rust SDK and Stellar CLI as TBD
   - Solo project 49, todo 831 and truth-maintenance scratchpad 567 independent corroboration matrices
   - eval/qa/results/2026-07-09T19-25-25-variantA.json (8-case post-vote P27 smoke: 0 correct / 3 partial / 5 wrong; every verdict manually reviewed)
+  - upstream issue filed 2026-07-09: https://github.com/stellar/stellar-docs/issues/2574
 probe:
   type: http-text
   url: https://developers.stellar.org/docs/networks/software-versions
@@ -21,8 +22,10 @@ probe:
 
 ## Finding
 
-The Software Versions page still presents Protocol 27 as Testnet-only and Protocol 26 as the
-latest Mainnet section after Stellar Mainnet activated Protocol 27. It also leaves the P27 Smart
+The Software Versions page still presents Protocol 27 as Testnet-only after Mainnet activation.
+
+It retains Protocol 26 as the latest Mainnet section after Stellar Mainnet activated Protocol 27.
+It also leaves the P27 Smart
 Contract Rust SDK and Stellar CLI rows as `TBD` after stable v27.0.0 releases became available.
 
 This is not a network ambiguity. The adjacent live Horizon ledgers show the exact transition:

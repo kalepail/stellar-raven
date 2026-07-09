@@ -35,8 +35,9 @@ const CASES = [
     category: "Protocol 24",
     finding: "sd-001",
     query: "Protocol 24",
-    expectUrlIncludes: ["/meetings/"],
-    note: "Protocol-version query should not collapse into SEP-24 anchor pages."
+    expectUrlIncludes: ["/meetings/2025/10/16"],
+    expectTextIncludesAll: ["state", "archival", "Whisk"],
+    note: "Protocol-version query should reach the actual Whisk/state-archival meeting record, not merely any meetings URL."
   },
   {
     id: "sd-003-gettransactions-limits",
@@ -51,8 +52,8 @@ const CASES = [
     category: "AP2/ACP",
     finding: "sd-005",
     query: "AP2 ACP Agentic Commerce Protocol Google agentic payments",
-    expectUrlIncludes: ["/meetings/"],
-    note: "AP2/ACP grounding is expected, at best, from meeting notes rather than current docs pages."
+    expectTextIncludesAny: ["AP2", "Agentic Commerce Protocol", " ACP "],
+    note: "A hit counts only when its returned text actually names AP2/ACP; generic x402/MPP meetings content is not landscape grounding."
   },
   {
     id: "opv-account-merge-reserve",
@@ -206,10 +207,36 @@ function applyClientFilter(hits, clientFilter) {
   });
 }
 
-function rankExpected(hits, expected) {
-  const expectedList = Array.isArray(expected) ? expected : [expected];
-  const index = hits.findIndex((hit) => expectedList.some((item) => hit.url?.includes(item)));
+function rankExpected(hits, testCase) {
+  const expectedUrls = testCase.expectUrlIncludes ?? [];
+  const requiredText = testCase.expectTextIncludesAll ?? [];
+  const alternativeText = testCase.expectTextIncludesAny ?? [];
+  const index = hits.findIndex((hit) => {
+    if (expectedUrls.length && !expectedUrls.some((item) => hit.url?.includes(item))) return false;
+    const searchable = [hit.url, hit.breadcrumb, hit.snippet]
+      .filter(Boolean)
+      .join(" ")
+      .replace(/\*\*/g, " ");
+    const lower = searchable.toLowerCase();
+    if (requiredText.some((item) => !lower.includes(item.toLowerCase()))) return false;
+    if (alternativeText.length && !alternativeText.some((item) => lower.includes(item.toLowerCase()))) return false;
+    return expectedUrls.length > 0 || requiredText.length > 0 || alternativeText.length > 0;
+  });
   return index < 0 ? null : index + 1;
+}
+
+function expectedLabel(testCase) {
+  const groups = [];
+  if (testCase.expectUrlIncludes?.length) {
+    groups.push(`url-any(${testCase.expectUrlIncludes.join(" | ")})`);
+  }
+  if (testCase.expectTextIncludesAll?.length) {
+    groups.push(`text-all(${testCase.expectTextIncludesAll.join(" + ")})`);
+  }
+  if (testCase.expectTextIncludesAny?.length) {
+    groups.push(`text-any(${testCase.expectTextIncludesAny.join(" | ")})`);
+  }
+  return groups.join(" AND ");
 }
 
 async function runCase(auth, testCase, strategy, hitsPerPage) {
@@ -231,7 +258,7 @@ async function runCase(auth, testCase, strategy, hitsPerPage) {
     index: strategy.index,
     nbHits: body.nbHits,
     returned: hits.length,
-    expectedRank: rankExpected(hits, testCase.expectUrlIncludes),
+    expectedRank: rankExpected(hits, testCase),
     topUrl: hits[0]?.url ?? null,
     hits
   };
@@ -278,7 +305,7 @@ function printHuman(results) {
   for (const item of results) {
     console.log(`\n## ${item.id} (${item.category}; ${item.finding})`);
     console.log(`query: ${item.query}`);
-    console.log(`target: ${item.expectUrlIncludes.join(" OR ")}`);
+    console.log(`target: ${expectedLabel(item)}`);
     for (const result of item.results) {
       const rank = result.expectedRank === null ? "miss" : `#${result.expectedRank}`;
       console.log(`- ${result.strategy}: ${rank}; top=${result.topUrl ?? "none"}; nbHits=${result.nbHits}`);
