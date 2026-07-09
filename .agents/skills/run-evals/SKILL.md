@@ -42,6 +42,12 @@ Do not conflate the agent running this runbook with the model under test:
 There is no committed multi-model matrix unless the round explicitly creates one. Report the
 answering model, judge model, sample/full-set size, and results-file stamp for every QA run.
 
+The answering/judge defaults above are part of the **measurement contract** — changing them
+changes what the numbers mean, so they move only by explicit eval decision, never by the general
+model-picking guidance. That guidance (`CLAUDE.md`, "Picking models for sub-agent fan-out")
+applies to everything *around* the measurement: helper/reviewer/triage sub-agents the
+orchestrator fans out through Solo while running a round.
+
 ## Clean Codex workflow
 
 When asked to run evals "from this Codex agent", use this loop:

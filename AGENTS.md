@@ -68,6 +68,13 @@ Current skills:
   sub-sub-agents — non-interactively: pass the runtime's bypass flag via `spawn_agent`'s
   `extra_args` (Codex `--yolo`, Claude `--dangerously-skip-permissions`, or the equivalent). See
   the `CLAUDE.md` "Solo first → Coordination" bullet for the full per-runtime list.
+- **Pick sub-agent models by the `CLAUDE.md` rankings** ("Picking models for sub-agent fan-out"):
+  gpt-5.5 via Codex for bulk/mechanical work, fable-5 or opus-4.8 for plan/implementation
+  reviews, taste ≥ 7 models for anything user-facing, never Haiku. Use the CLI aliases documented
+  in `CLAUDE.md` when spawning them; for example Fable 5 is `claude --model fable`, not
+  `--model fable-5`. Defaults, not limits — if a cheaper model's output misses the bar, redo it
+  with a smarter model without asking; cost is a tie-breaker only. Eval answering/judge models are
+  a separate measurement contract (`run-evals` skill), not covered by the rankings.
 - **The manifest IS the exposed surface (ADR-0003).** Never tell a consumer what the gateway
   cannot do; never emit text referencing a non-exposed op or retired skill — the build guard
   (`assertNoNonExposedRefs`) enforces it.

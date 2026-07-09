@@ -296,12 +296,14 @@ clean bump — spawn an **independent reviewer** to verify or refute the "safe t
 before committing. This mirrors the repo's dual-verify norm (`CLAUDE.md`: let independent
 adversarial reviews finish).
 
-- Use Solo to spawn a *different* agent (e.g. Codex) with an explicit adversarial brief: do NOT
+- Use Solo to spawn a *different* agent with an explicit adversarial brief: do NOT
   trust the maintainer's summary; re-derive the drift class from the actual `git diff`, re-run the
   guards and gate, check ADR-0003 exposure and secrets, and return a verdict with file:line
-  evidence. Spawn it in yolo/permission-bypass mode (bypass flag via `spawn_agent`'s `extra_args`,
-  per the `CLAUDE.md` Coordination bullet) so the reviewer never stalls on an approval prompt. Put
-  the brief in a Solo scratchpad and have the reviewer append findings to it.
+  evidence. Pick the reviewer's model per the `CLAUDE.md` model rankings ("Picking models for
+  sub-agent fan-out" — reviews call for the strong-reasoning tier, ideally a different vendor
+  than the author). Spawn it in yolo/permission-bypass mode (bypass flag via `spawn_agent`'s
+  `extra_args`, per the `CLAUDE.md` Coordination bullet) so the reviewer never stalls on an
+  approval prompt. Put the brief in a Solo scratchpad and have the reviewer append findings to it.
 - Reviewer ≠ author is the invariant. Let it run to completion; reconcile every finding before
   committing. Watch for the reviewer with an idle-wake timer rather than polling.
 

@@ -94,7 +94,9 @@ follow-up probe — never coin-flip, never average.
 Use Solo for this fan-out when working in this repo: create or reuse the round scratchpad,
 spawn one agent per claim cluster (in yolo/permission-bypass mode — pass the runtime's bypass
 flag via `spawn_agent`'s `extra_args`, per the `CLAUDE.md` Coordination bullet — so a child never
-stalls on an approval prompt), and have agents append matrices directly to the
+stalls on an approval prompt; pick each agent's model per the `CLAUDE.md` rankings, "Picking
+models for sub-agent fan-out" — verification research is bulk-tier work, adjudicating disputed
+clusters is review-tier), and have agents append matrices directly to the
 scratchpad. The authoring agent edits `golden-overrides.json` only after reconciling those
 independent matrices. For broad corpus-health or drift-refresh work, let `truth-maintenance`
 coordinate this lane alongside eval and improvements review.

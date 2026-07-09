@@ -45,6 +45,54 @@ current process state before using raw shell commands.
   has no matching process/tool. If you must start a non-Solo long-running process, say why and stop
   it before finalizing.
 
+### Picking models for sub-agent fan-out
+
+Rankings, higher = better (Tyler, 2026-07-09). Cost reflects what we actually pay (the OpenAI
+plan's limits are very generous), not list price. Intelligence is how hard a problem you can hand
+the model unsupervised. Taste covers UI/UX, code quality, API design, and copy.
+
+| model    | cost | intelligence | taste |
+|----------|------|--------------|-------|
+| gpt-5.5  | 9    | 8            | 5     |
+| sonnet-5 | 5    | 5            | 7     |
+| opus-4.8 | 4    | 7            | 8     |
+| fable-5  | 2    | 9            | 9     |
+
+How to apply:
+
+- These are defaults, not limits. Standing permission to override: if a cheaper model's output
+  doesn't meet the bar, rerun or redo the work with a smarter model without asking. Judge the
+  output, not the price tag — escalating costs less than shipping mediocre work.
+- Cost is a tie-breaker only; when axes conflict for anything that ships,
+  intelligence > taste > cost.
+- Bulk/mechanical work (clear-spec implementation, data analysis, migrations): gpt-5.5 — it's
+  effectively free.
+- Anything user-facing (UI, copy, API design) needs taste ≥ 7.
+- Reviews of plans/implementations: fable-5 (Claude CLI alias: `fable`) or opus-4.8,
+  optionally gpt-5.5 as an extra
+  independent perspective.
+- Never use Haiku.
+
+Mechanics — **Solo is the fan-out plane** (yolo rule and per-runtime bypass flags in the
+Coordination bullet above):
+
+- **gpt-5.5 is only reachable through the Codex CLI.** Fan out via the Solo Codex agent tool —
+  `spawn_agent` (Codex, `extra_args: ["--yolo"]`) then `send_input` the brief — for reviewers and
+  long-lived helpers; for fire-and-forget work, one-shot `codex exec -s read-only` (investigation)
+  or `codex exec --yolo` (edits) with a fully self-contained prompt. `~/.codex/config.toml`
+  already defaults to gpt-5.5. No wrapper gymnastics: Solo spawns Codex directly, so gpt-5.5 is a
+  first-class fan-out target.
+- **Claude models** fan out via the Solo Claude agent tool —
+  `spawn_agent` (Claude, `extra_args: ["--model", "<claude-cli-model>", "--dangerously-skip-permissions"]`).
+  The model names in the ranking table are product/ranking names, not always CLI aliases:
+  Fable 5 must be spawned with `--model fable` (not `fable-5`; verified 2026-07-09).
+  An orchestrator running inside Claude Code may use its native subagent `model` parameter for
+  quick in-harness helpers (same rankings apply), but anything long-lived, reviewable, or shared
+  across agents goes through Solo so its output lands in project state.
+- Eval-lane models are NOT covered by this table: QA answering/judge model defaults are part of
+  the measurement contract (`.agents/skills/run-evals/SKILL.md`) and change only by explicit
+  eval decision.
+
 ## Research docs (current truth, live-verified; refresh before trusting)
 
 - `research/services/lumenloop.md` — 21 tools, envelope, quirks (partner items hidden from

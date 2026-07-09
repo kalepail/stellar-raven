@@ -49,13 +49,18 @@ and append to the Solo ledger; the coordinator owns repo edits. Only delegate pa
 explicit, and disjoint. Use `timer_fire_when_idle_all` or `timer_fire_when_idle_any` to wake
 the coordinator when agents go idle. Do not poll in a loop.
 
-Agent selection is a default, not a limit:
+Agent/model selection is a default, not a limit. The current model rankings, per-axis scores,
+and per-runtime spawn mechanics are bindings that live in `CLAUDE.md` ("Picking models for
+sub-agent fan-out") — consult them when spawning; this skill carries only the patterns:
 
-- Mechanical catalog/data/script checks: Codex or the cheapest reliable coding agent.
-- Adversarial plan/code/golden review: strongest available reasoning agent, often Claude/Opus
-  if configured, with Codex as an additional independent perspective when useful.
-- UI/copy/API-design taste calls: pick a model/agent with good taste; cost is a tie-breaker only.
-- Bulk deterministic sweeps: cheaper agent or terminal script, then a stronger reviewer samples.
+- Mechanical catalog/data/script checks and bulk sweeps: the cheapest agent that clears the bar
+  (per the rankings' bulk/mechanical row), or a terminal script — then a stronger reviewer samples.
+- Adversarial plan/code/golden review: the strongest reasoning agents in the rankings, with an
+  independent second perspective from a different vendor's agent when useful.
+- UI/copy/API-design taste calls: an agent whose model meets the rankings' taste bar; cost is a
+  tie-breaker only.
+- Escalate without asking: if a cheaper agent's output misses the bar, redo the work with a
+  smarter model. Judge the output, not the price tag.
 
 Reviewer and author are separate roles. A spawned reviewer must re-derive from files, diffs,
 live probes, or GitHub state, not rubber-stamp the coordinator's summary. Let reviewers finish
