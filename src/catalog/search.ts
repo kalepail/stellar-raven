@@ -95,7 +95,8 @@ export type SearchOptions = {
  *    novel ungated candidates when tier 2 ran.
  *  - `truncated` — total > hits.length: more matching entries exist than the
  *    page shows, so a caller that found nothing fitting should retry with a
- *    higher limit or narrower query/filters rather than conclude absence.
+ *    higher limit, varied vocabulary, or alternate family/filter rather than
+ *    conclude absence.
  */
 export type SearchPage = {
   hits: SearchHit[];

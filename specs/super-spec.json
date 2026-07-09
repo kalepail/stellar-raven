@@ -4837,7 +4837,7 @@
     },
     "/skills/search_skill_sections": {
       "post": {
-        "description": "Scores every skill and every '##' section against a short intent phrase and returns ranked hits with exact ids (skill ids and 'skills.<source>.<name>#<section-slug>' section ids) that codemode.skill.read accepts. Use when grepping x-skill-index headings is not enough and you want relevance ranking over descriptions too.",
+        "description": "Scores every skill and every '##' section against a targeted query and returns ranked hits with exact ids (skill ids and 'skills.<source>.<name>#<section-slug>' section ids) that codemode.skill.read accepts. Use when grepping x-skill-index headings is not enough and you want relevance ranking over descriptions too.",
         "operationId": "skills.search_skill_sections",
         "requestBody": {
           "content": {
@@ -4852,7 +4852,7 @@
                     "type": "integer"
                   },
                   "query": {
-                    "description": "Short intent phrase, e.g. \"soroban storage patterns\".",
+                    "description": "Targeted query, e.g. \"soroban storage patterns\".",
                     "type": "string"
                   }
                 },
@@ -4867,7 +4867,7 @@
         },
         "responses": {
           "200": {
-            "description": "{ ok: true, hits: [{ id, service, kind, score, tier, description }], total, truncated } or { ok: false, error } (an unknown kind/service filter value is rejected with the valid names — filters are exact-match). Each hit's tier is \"gated\" (strict primary scorer) or \"backfill\" (gate-relaxed page fill, always ranked below every gated hit); score compares ONLY among same-tier hits — a backfill score can be numerically larger than a gated one ranked above it. truncated: true means more entries matched (total) than returned — raise limit or narrow the query."
+            "description": "{ ok: true, hits: [{ id, service, kind, score, tier, description }], total, truncated } or { ok: false, error } (an unknown kind/service filter value is rejected with the valid names — filters are exact-match). Each hit's tier is \"gated\" (strict primary scorer) or \"backfill\" (gate-relaxed page fill, always ranked below every gated hit); score compares ONLY among same-tier hits — a backfill score can be numerically larger than a gated one ranked above it. truncated: true means more entries matched (total) than returned — raise limit, try a different family, or vary vocabulary."
           }
         },
         "summary": "Ranked lexical search over all skills and skill sections.",

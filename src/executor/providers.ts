@@ -575,7 +575,7 @@ export function buildCodemodeProvider(
                 error: {
                   service: "codemode",
                   kind: "error",
-                  message: 'codemode.search needs a query: search("intent phrase") or search({ query, kind?, service?, limit? })'
+                  message: 'codemode.search needs a query: search("targeted query") or search({ query, kind?, service?, limit? })'
                 }
               };
             }

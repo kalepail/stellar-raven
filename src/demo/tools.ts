@@ -238,14 +238,14 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
       const remainingSearches = Math.max(0, DEMO_CAPS.maxSearchCallsPerTurn - budget.searchCalls);
       const searchAgain =
         remainingSearches > 0
-          ? " If these hits are truncated, mismatched, or do not expose the right endpoint shape, spend the second and final `search` now with narrower endpoint-discovery terms or exact `kind`/`service` filters before executing."
+          ? " If these hits are truncated, mismatched, need corroboration, or do not expose the right endpoint shape, spend the second and final `search` now with the other candidate family, varied vocabulary, or exact `kind`/`service` filters before executing."
           : " No search calls remain; do not conclude capability absence from mismatched hits alone, and use the best available exact ids.";
       const nextSteps =
         hits.length > 0
           ? `These hits are composable: write ONE \`execute\` script that calls the several relevant operations from the visible search result sets (Promise.all across services for independent calls), then follow up with deeper calls parameterized by their results only when the exact operation was returned here — e.g. \`await lumenloop.search_directory({ query: "..." })\` then \`lumenloop.get_project({ slug })\` only if both ids are present. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under \`.data\` (\`r.data.projects\`, never \`r.projects\`); check \`r.ok\` first. Skill hits are operational playbooks — read the sections you need in-script via \`codemode.skill.read(id, { sections })\` (keys: the hit's \`availableSections\`). Hits whose \`signature\` shows a \`codemode.skill.run("<exact id>", input)\` line are runnable skills — call that line verbatim to run the whole pipeline in one step (payload under \`.data\`, constituent calls audited in \`data.calls\`). Scores compare only within the same \`tier\` (gated hits always rank above backfill hits). Demo rule: \`codemode.describe("<exact id>")\` is available for exact visible hit ids when a signature is stubbed or row fields are unclear; \`codemode.search\`, \`codemode.catalog\`, and \`codemode.spec\` are disabled in-script. Avoid lossy projection false negatives: inspect row keys or filter against raw row JSON before selecting fields, and include nested/common field variants.${truncated ? " More entries matched than shown (truncated)." : ""}${searchAgain}`
           : remainingSearches > 0
-            ? "No hits. Use the second and final search with a shorter, broader, or differently phrased endpoint-discovery query; do not conclude the capability is missing from one empty result."
-            : "No hits and no search calls remain. Say the search found no matching exposed catalog entries, suggest a shorter query for a new turn, and do not conclude the capability is missing from one empty result.";
+            ? "No hits. Use the second and final search for the other candidate family or varied vocabulary; do not conclude the capability is missing from one empty result."
+            : "No hits and no search calls remain. Say the search found no matching exposed catalog entries, suggest another candidate family or varied vocabulary for a new turn, and do not conclude the capability is missing from one empty result.";
       return respond({ hits, total, truncated, nextSteps });
     }
   });

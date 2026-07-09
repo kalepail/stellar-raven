@@ -531,7 +531,7 @@ function buildSkillsPaths(skillIndex, runnableIndex) {
         operationId: "skills.search_skill_sections",
         summary: "Ranked lexical search over all skills and skill sections.",
         description:
-          "Scores every skill and every '##' section against a short intent phrase and returns ranked hits with exact " +
+          "Scores every skill and every '##' section against a targeted query and returns ranked hits with exact " +
           "ids (skill ids and 'skills.<source>.<name>#<section-slug>' section ids) that codemode.skill.read accepts. " +
           "Use when grepping x-skill-index headings is not enough and you want relevance ranking over descriptions too.",
         tags: ["skills"],
@@ -544,7 +544,7 @@ function buildSkillsPaths(skillIndex, runnableIndex) {
                 additionalProperties: false,
                 required: ["query"],
                 properties: {
-                  query: { type: "string", description: "Short intent phrase, e.g. \"soroban storage patterns\"." },
+                  query: { type: "string", description: "Targeted query, e.g. \"soroban storage patterns\"." },
                   limit: { type: "integer", minimum: 1, maximum: 50, default: 10 }
                 }
               }
@@ -559,7 +559,7 @@ function buildSkillsPaths(skillIndex, runnableIndex) {
               "filters are exact-match). Each hit's tier is \"gated\" (strict primary scorer) or \"backfill\" " +
               "(gate-relaxed page fill, always ranked below every gated hit); score compares ONLY among " +
               "same-tier hits — a backfill score can be numerically larger than a gated one ranked above it. " +
-              "truncated: true means more entries matched (total) than returned — raise limit or narrow the query."
+              "truncated: true means more entries matched (total) than returned — raise limit, try a different family, or vary vocabulary."
           }
         },
         "x-service": "skills",
