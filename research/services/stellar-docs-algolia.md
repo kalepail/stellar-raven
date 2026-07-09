@@ -5,6 +5,28 @@ _Measured live on **2026-07-01** with raw curl probes using the dedicated search
 the authored spec built on top of this index — why it looks the way it does — see
 [`stellar-docs-spec-design.md`](./stellar-docs-spec-design.md) (design record; the 12 ops shipped)._
 
+> **2026-07-09 update — crawler v15, the CLI rule, and the rejected markdown index.**
+> The production DocSearch crawler config was fixed (v15) to index **code-block text**, which
+> had been silently stripped (finding `sd-006`, now `fixed-upstream` and live-verified:
+> `brew install stellar-cli` / `curl install.sh` / winget / cargo command text is searchable
+> and `/docs/tools/cli/install-cli` ranks #1 for exact-command queries). This was a *general*
+> fix with measured collateral improvement (`sd-003` partially mitigated: the RPC admin-guide
+> page now surfaces getTransactions limits, though generated API-reference method pages remain
+> unindexed). One narrow Algolia **rule stays live and load-bearing**:
+> `raven-promote-stellar-cli-install` — measured with `enableRules:false`, broad install-intent
+> phrasings ("stellar cli install command") lose the install page from top-5 without it; exact
+> package-manager commands rank #1 from the crawler fix alone. Policy: no further single-page
+> rules/synonyms — general mechanisms only (run-evals Step 5).
+> A second **`crawler_markdown-index`** and a `search_markdown_docs` op were prototyped,
+> measured with the live A/B harness `scripts/eval-algolia-raven.mjs` (`npm run
+> eval:algolia-raven`, merged via PR #15), and **rejected**: zero wins against the post-v15
+> primary index across the harness cases, so the op was removed pre-merge and the second index
+> is not consumed (a second crawler = standing drift/maintenance surface with no measured win).
+> The harness is retained as the instrument for any future Algolia-strategy comparison.
+> Known residual gaps (live-probed 2026-07-09): bare "Protocol 24" still returns SEP-24 pages
+> (`sd-001`); AP2/ACP agentic-payments positioning remains a corpus/content gap (`sd-005`).
+> Evidence trail: improvements/stellar-docs/* dated 2026-07-09, PRs #15/#16.
+
 ## Overview
 
 The Stellar developer docs (`developers.stellar.org` — docs + blog + meeting notes) are indexed by
