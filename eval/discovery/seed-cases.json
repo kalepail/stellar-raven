@@ -1,0 +1,189 @@
+{
+  "schema": "discovery-phase0-seed-cases-v1",
+  "authoredAt": "2026-07-09",
+  "source": "12 extended strict top-5 misses from eval/results/routing-2026-07-09T15-20-19-712Z.json plus Protocol 24/AP2/RPC examples from Solo scratchpad 565.",
+  "notes": [
+    "expectedSourceFamilies is the intended authority family for the one-call top-3 check.",
+    "alternateSourceFamilies preserves routing eval accept-either context but is not counted as a Phase 0 source-family hit.",
+    "usable.services is intentionally broad for this static pass: any top-5 operation/skill from that service family is counted as a usable discovery affordance.",
+    "priorMiss is only applied when discovery itself passes; discovery failures are classified as retrieval."
+  ],
+  "cases": [
+    {
+      "id": "q-crp-export-tx-history-taxes",
+      "caseGroup": "extended-strict-top5-miss",
+      "question": "How do I export a complete Stellar account transaction history for tax or accounting, and what should I know about TurboTax or CoinTracker-style integrations?",
+      "expectedSourceFamilies": ["stellarDocs"],
+      "alternateSourceFamilies": ["scout"],
+      "usable": { "services": ["stellarDocs"] },
+      "notes": "Extended lane strict miss; docs authority should be visible before Scout ecosystem/project operations."
+    },
+    {
+      "id": "q-crp-regional-offramp-mobilemoney",
+      "caseGroup": "extended-strict-top5-miss",
+      "question": "Which wallets or anchors let users cash Stellar USDC or XLM out to local bank, card, or mobile-money rails, and how should a builder integrate last-mile cash-out?",
+      "expectedSourceFamilies": ["lumenloop"],
+      "alternateSourceFamilies": ["scout"],
+      "usable": { "services": ["lumenloop"] },
+      "notes": "Lumenloop authority miss from the extended lane; Scout is acceptable context but not the intended source family."
+    },
+    {
+      "id": "q-defi-build-staking-for-own-token",
+      "caseGroup": "extended-strict-top5-miss",
+      "question": "Since XLM has no native protocol staking, how can I build a staking or yield feature for my own Soroban token?",
+      "expectedSourceFamilies": ["stellarDocs"],
+      "alternateSourceFamilies": ["lumenloop", "scout"],
+      "usable": { "services": ["stellarDocs"] },
+      "notes": "Extended lane strict miss; one-call search should surface docs before ecosystem discovery."
+    },
+    {
+      "id": "q-defi-sdex-offer-lifecycle",
+      "caseGroup": "extended-strict-top5-miss",
+      "question": "After submitting Stellar Manage Buy/Sell offers, how do I track offer ids, fills, cancellations, and path-payment executions through the SDEX orderbook?",
+      "expectedSourceFamilies": ["stellarDocs"],
+      "alternateSourceFamilies": ["scout"],
+      "usable": { "services": ["stellarDocs"] },
+      "notes": "Extended lane strict miss; operational protocol docs should be discoverable."
+    },
+    {
+      "id": "q-edge-exchange-memo-lost-funds",
+      "caseGroup": "extended-strict-top5-miss",
+      "question": "I sent XLM or USDC to an exchange and forgot or used the wrong memo, so it never credited. Where did the funds go and can I recover them?",
+      "expectedSourceFamilies": ["stellarDocs"],
+      "alternateSourceFamilies": ["scout"],
+      "usable": { "services": ["stellarDocs"] },
+      "notes": "Extended lane strict miss; consumer-facing docs should surface before Lumenloop/Scout exploratory tools."
+    },
+    {
+      "id": "q-edge-metamask-evm-mental-model",
+      "caseGroup": "extended-strict-top5-miss",
+      "question": "Can I add Stellar to MetaMask or use an XLM contract address like on Ethereum, and if not how do I hold, buy, or move XLM?",
+      "expectedSourceFamilies": ["stellarDocs"],
+      "alternateSourceFamilies": ["scout"],
+      "usable": { "services": ["stellarDocs"] },
+      "notes": "Extended lane strict miss; docs should be discoverable for EVM mental-model correction."
+    },
+    {
+      "id": "q-pc-account-merge-reclaim-reserve",
+      "caseGroup": "extended-strict-top5-miss",
+      "question": "How does account merge work, what must I clear first, and can I use it to reclaim locked base-reserve XLM?",
+      "expectedSourceFamilies": ["stellarDocs"],
+      "alternateSourceFamilies": ["scout"],
+      "usable": { "services": ["stellarDocs"] },
+      "notes": "Extended lane strict miss; also appeared in scratchpad 565 targeted QA as broadly grounded once the agent searched well."
+    },
+    {
+      "id": "q-pc-practical-fee-setting",
+      "caseGroup": "extended-strict-top5-miss",
+      "question": "What fee should I set in TransactionBuilder, does 100 stroops always work, what happens under surge pricing if my max fee is too low, and is there an API to estimate fees?",
+      "expectedSourceFamilies": ["stellarDocs"],
+      "alternateSourceFamilies": ["scout"],
+      "usable": { "services": ["stellarDocs"] },
+      "notes": "Extended lane strict miss; docs authority should beat Scout/RFP vocabulary."
+    },
+    {
+      "id": "q-pc-sequence-numbers-ordering-replace",
+      "caseGroup": "extended-strict-top5-miss",
+      "question": "How do Stellar sequence numbers behave compared with an EVM nonce, including ordering across unrelated accounts, duplicate or seq+2 submissions, and replacing a stuck pending transaction?",
+      "expectedSourceFamilies": ["stellarDocs"],
+      "alternateSourceFamilies": ["scout"],
+      "usable": { "services": ["stellarDocs"] },
+      "notes": "Extended lane strict miss; docs authority absent from top five."
+    },
+    {
+      "id": "q-pc-surge-griefing-threat-model",
+      "caseGroup": "extended-strict-top5-miss",
+      "question": "How could Stellar surge pricing or fee mechanisms be abused, and how should an enterprise system defend against fee spikes?",
+      "expectedSourceFamilies": ["stellarDocs"],
+      "alternateSourceFamilies": ["scout"],
+      "usable": { "services": ["stellarDocs"] },
+      "notes": "Extended lane strict miss; docs authority should be discoverable despite security/threat vocabulary."
+    },
+    {
+      "id": "q-sor-msg-sender-equivalent",
+      "caseGroup": "extended-strict-top5-miss",
+      "question": "What's the Soroban equivalent of Solidity's `msg.sender` — how do I get the calling address, why must the user pass their own Address as an argument, and what exactly does `require_auth()` verify (it's not an allow/blocklist)?",
+      "expectedSourceFamilies": ["stellarDocs"],
+      "alternateSourceFamilies": ["scout"],
+      "usable": { "services": ["stellarDocs"] },
+      "notes": "Extended lane strict miss; scratchpad 565 targeted QA found the answer broadly grounded with better search behavior."
+    },
+    {
+      "id": "q-ti-friendbot-ratelimit-alternatives",
+      "caseGroup": "extended-strict-top5-miss",
+      "question": "Friendbot keeps rate-limiting my testnet funding - what are the legitimate ways to get testnet XLM, and is there an official backup faucet wallet?",
+      "expectedSourceFamilies": ["stellarDocs"],
+      "alternateSourceFamilies": ["scout"],
+      "usable": { "services": ["stellarDocs"] },
+      "notes": "Extended lane strict miss; docs authority should appear before Scout discovery."
+    },
+    {
+      "id": "scratchpad-565-protocol-24-bare",
+      "caseGroup": "scratchpad-565-protocol24",
+      "question": "Has Protocol 24 landed yet?",
+      "expectedSourceFamilies": ["stellarDocs", "lumenloop"],
+      "alternateSourceFamilies": ["skills"],
+      "usable": {
+        "hitIds": [
+          "stellarDocs.search_protocol_concepts_docs",
+          "lumenloop.search_content_semantic",
+          "skills.stellar-dev.standards#protocol-governance"
+        ]
+      },
+      "priorMiss": {
+        "cause": "agent-behavior",
+        "evidence": "Scratchpad 565: bare Protocol 24 is ambiguous, but Whisk/state-archival phrasing grounds the answer. A constrained agent should refine rather than stop at the bare query."
+      },
+      "notes": "Protocol-version exemplar class from research/discovery-redesign.md Phase 0."
+    },
+    {
+      "id": "scratchpad-565-cap62-implemented",
+      "caseGroup": "scratchpad-565-protocol-exemplar",
+      "question": "Is CAP-62 implemented?",
+      "expectedSourceFamilies": ["skills", "stellarDocs"],
+      "alternateSourceFamilies": ["scout"],
+      "usable": {
+        "hitIds": [
+          "skills.stellar-dev.standards#protocol-governance",
+          "stellarDocs.search_protocol_concepts_docs"
+        ]
+      },
+      "notes": "Protocol Zipper/CAP implemented analogue from Phase 0; useful to detect whether governance/status affordances are discoverable."
+    },
+    {
+      "id": "scratchpad-565-ap2-acp",
+      "caseGroup": "scratchpad-565-ap2",
+      "question": "What is AP2 or Agentic Commerce Protocol, and how does it compare with x402 and MPP on Stellar?",
+      "expectedSourceFamilies": ["skills", "stellarDocs"],
+      "alternateSourceFamilies": ["lumenloop", "scout"],
+      "usable": {
+        "hitIds": [
+          "skills.stellar-dev.agentic-payments",
+          "stellarDocs.search_doc_titles",
+          "stellarDocs.search_docs"
+        ],
+        "services": ["skills"]
+      },
+      "priorMiss": {
+        "cause": "downstream",
+        "evidence": "Scratchpad 565: targeted QA still could not ground AP2/ACP from the catalog and correctly declined to invent facts."
+      },
+      "notes": "Discovery can find the agentic-payments skill; the gap is source content coverage for AP2/ACP."
+    },
+    {
+      "id": "scratchpad-565-rpc-gettransactions",
+      "caseGroup": "scratchpad-565-rpc",
+      "question": "For Stellar RPC getTransactions, what are the limit 200 default 50 pagination rules and how do XDR fields appear?",
+      "expectedSourceFamilies": ["stellarDocs"],
+      "alternateSourceFamilies": ["scout"],
+      "usable": {
+        "hitIds": ["stellarDocs.search_rpc_horizon_data_docs", "stellarDocs.search_docs"]
+      },
+      "priorMiss": {
+        "cause": "downstream",
+        "evidence": "Scratchpad 565: admin-config page now ranks for limit phrasing, but generated method reference pages remain unindexed."
+      },
+      "notes": "RPC sd-003 class: discovery finds the docs search op, but answer quality depends on downstream docs index coverage."
+    }
+  ]
+}
