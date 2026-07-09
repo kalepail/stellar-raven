@@ -34,7 +34,7 @@
  * snapshots — never wall clock). Running twice yields byte-identical output
  * (asserted by test/super-spec.test.ts).
  */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, renameSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -55,6 +55,12 @@ const OUT_PATH = join(ROOT, "specs", "super-spec.json");
 
 const readJson = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
 const readText = (p) => readFileSync(join(ROOT, p), "utf8");
+
+function writeFileAtomic(path, data) {
+  const tmp = `${path}.${process.pid}.${Date.now()}.tmp`;
+  writeFileSync(tmp, data);
+  renameSync(tmp, path);
+}
 
 // ---------------------------------------------------------------------------
 // Shared helpers (kept in sync with scripts/build-catalog.mjs where noted)
@@ -696,7 +702,7 @@ function main() {
   const sorted = sortKeysDeep(spec);
   mkdirSync(dirname(OUT_PATH), { recursive: true });
   const pretty = `${JSON.stringify(sorted, null, 2)}\n`;
-  writeFileSync(OUT_PATH, pretty);
+  writeFileAtomic(OUT_PATH, pretty);
 
   // Size report (design doc §4): the compact form is what ships into the
   // sandbox per search — that's the number that matters.

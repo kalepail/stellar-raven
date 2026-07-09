@@ -14,7 +14,7 @@
  * (catalogSchema) in test/catalog.test.ts; this script stays plain JS so it
  * runs with `node` alone.
  */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, renameSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 // Loaded via native type stripping (Node >= 23.6) — the same way
@@ -31,6 +31,12 @@ const OUT_PATH = join(ROOT, "catalog", "manifest.json");
 
 const readJson = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
 const readText = (p) => readFileSync(join(ROOT, p), "utf8");
+
+function writeFileAtomic(path, data) {
+  const tmp = `${path}.${process.pid}.${Date.now()}.tmp`;
+  writeFileSync(tmp, data);
+  renameSync(tmp, path);
+}
 
 // ---------------------------------------------------------------------------
 // Operation keywords (todo 824 items 4+5, M3/M4): descriptions are prose, so
@@ -832,7 +838,7 @@ function main() {
   // neither the scorer, the adapters, nor codemode.catalog() read it.
   const catalog = sortKeysDeep({ version: 1, generatedAt, entries });
   mkdirSync(dirname(OUT_PATH), { recursive: true });
-  writeFileSync(OUT_PATH, `${JSON.stringify(catalog, null, 2)}\n`);
+  writeFileAtomic(OUT_PATH, `${JSON.stringify(catalog, null, 2)}\n`);
 
   const counts = {};
   for (const entry of entries) {
