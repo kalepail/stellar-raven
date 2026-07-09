@@ -19,26 +19,26 @@ Total findings: 43
 
 ## stellar-light-scout
 
-| id      | title                                                                             | status            | discovered | recurrences |
-| ------- | --------------------------------------------------------------------------------- | ----------------- | ---------- | ----------- |
-| sls-001 | The hackathon detail endpoint returned winner lists WITHOUT placement fields, but | fixed-upstream    | 2026-07-03 | 0           |
-| sls-002 | Some SCF award entries carry null amounts — e.g. Liqvid.xyz is marked awarded     | fixed-upstream    | 2026-07-03 | 0           |
-| sls-003 | Positive finding, recorded as a trust anchor: the audit corpus is excellent. All  | verified          | 2026-07-03 | 0           |
-| sls-004 | 404 responses are sometimes non-JSON (content-type inconsistency with the rest of | proposed          | 2026-07-03 | 0           |
-| sls-005 | Successor to the fixed sls-001. On events whose winners were announced as a       | fixed-upstream    | 2026-07-03 | 0           |
-| sls-006 | The scout research corpus's sdf-blog source indexes blog listing,                 | fixed-upstream    | 2026-07-03 | 0           |
-| sls-007 | /api/rfps exposes activeQuarter plus per-RFP quarter and status,                  | fixed-upstream    | 2026-07-03 | 0           |
-| sls-008 | The project directory carries two live, Lending-typed records that appear to be   | fixed-upstream    | 2026-07-03 | 0           |
-| sls-009 | searchProjects ranks authority/prominence above exact name match: the queries     | fixed-upstream    | 2026-07-03 | 0           |
-| sls-010 | Builder-directory filtering is literal substring over free-text fields, which     | reported-upstream | 2026-07-03 | 0           |
-| sls-011 | Scout and Lumenloop disagree on the same project's total SCF funding with no      | reported-upstream | 2026-07-03 | 0           |
-| sls-012 | Anchor corridor/coverage data exists only as free-text prose; no structured       | fixed-upstream    | 2026-07-03 | 0           |
-| sls-013 | The analyze funding dimension is unstable and internally inconsistent:            | fixed-upstream    | 2026-07-03 | 0           |
-| sls-014 | Successor to the fixed sls-007 — and its cautionary sequel. The scfRound          | fixed-upstream    | 2026-07-06 | 0           |
-| sls-015 | First, credit where due: the 1.4.4/1.5.0 enrichments to searchProjects'           | fixed-upstream    | 2026-07-06 | 0           |
-| sls-016 | Per-winner award amounts are not structured. Winner entries on completed          | reported-upstream | 2026-07-07 | 1           |
-| sls-017 | LOBSTR's directory records omit its XRP Ledger support. LOBSTR's own site         | fixed-upstream    | 2026-07-07 | 0           |
-| sls-018 | Structured coverage exists for Etherfuse, but generic Mexico on-ramp queries      | fixed-upstream    | 2026-07-08 | 0           |
+| id      | title                                                                             | status         | discovered | recurrences |
+| ------- | --------------------------------------------------------------------------------- | -------------- | ---------- | ----------- |
+| sls-001 | The hackathon detail endpoint returned winner lists WITHOUT placement fields, but | fixed-upstream | 2026-07-03 | 0           |
+| sls-002 | Some SCF award entries carry null amounts — e.g. Liqvid.xyz is marked awarded     | fixed-upstream | 2026-07-03 | 0           |
+| sls-003 | Positive finding, recorded as a trust anchor: the audit corpus is excellent. All  | verified       | 2026-07-03 | 0           |
+| sls-004 | 404 responses are sometimes non-JSON (content-type inconsistency with the rest of | proposed       | 2026-07-03 | 0           |
+| sls-005 | Successor to the fixed sls-001. On events whose winners were announced as a       | fixed-upstream | 2026-07-03 | 0           |
+| sls-006 | The scout research corpus's sdf-blog source indexes blog listing,                 | fixed-upstream | 2026-07-03 | 0           |
+| sls-007 | /api/rfps exposes activeQuarter plus per-RFP quarter and status,                  | fixed-upstream | 2026-07-03 | 0           |
+| sls-008 | The project directory carries two live, Lending-typed records that appear to be   | fixed-upstream | 2026-07-03 | 0           |
+| sls-009 | searchProjects ranks authority/prominence above exact name match: the queries     | fixed-upstream | 2026-07-03 | 0           |
+| sls-010 | Builder-directory filtering is literal substring over free-text fields, which     | fixed-upstream | 2026-07-03 | 0           |
+| sls-011 | Scout and Lumenloop disagree on the same project's total SCF funding with no      | fixed-upstream | 2026-07-03 | 0           |
+| sls-012 | Anchor corridor/coverage data exists only as free-text prose; no structured       | fixed-upstream | 2026-07-03 | 0           |
+| sls-013 | The analyze funding dimension is unstable and internally inconsistent:            | fixed-upstream | 2026-07-03 | 0           |
+| sls-014 | Successor to the fixed sls-007 — and its cautionary sequel. The scfRound          | fixed-upstream | 2026-07-06 | 0           |
+| sls-015 | First, credit where due: the 1.4.4/1.5.0 enrichments to searchProjects'           | fixed-upstream | 2026-07-06 | 0           |
+| sls-016 | Per-winner award amounts are not structured. Winner entries on completed          | fixed-upstream | 2026-07-07 | 1           |
+| sls-017 | LOBSTR's directory records omit its XRP Ledger support. LOBSTR's own site         | fixed-upstream | 2026-07-07 | 0           |
+| sls-018 | Structured coverage exists for Etherfuse, but generic Mexico on-ramp queries      | fixed-upstream | 2026-07-08 | 0           |
 
 ## stellar-docs
 

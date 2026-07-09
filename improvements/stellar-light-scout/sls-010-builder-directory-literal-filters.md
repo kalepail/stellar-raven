@@ -1,13 +1,14 @@
 ---
 id: sls-010
 service: stellar-light-scout
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-03
 evidence:
   - live production execute 2026-07-03 (scout.getBuilders 16-probe fan-out; Solo scratchpad 521 follow-up, todo 826 comment 2224)
   - consumer-side workaround shipped: eval/qa/golden-overrides.json q-builder-by-region-latam graderNotes instruct per-country fan-out
   - live re-check 2026-07-06 (eval round todo 846): claim (1) FIXED — location:"Latin America" now returns 19 builders with country-valued locations (Chile, Brazil, Costa Rica), confirming region→country synonym expansion shipped; claim (2) strict-literal q bio matching was not probed this round, so the finding stays open on that half
   - upstream issue filed 2026-07-07: https://github.com/Stellar-Light/stellar-scout/issues/2
+  - "fixed upstream and live re-verified 2026-07-09T13:00Z after Stellar-Light/stellar-scout#2 closure: GET https://stellarlight.xyz/api/builders?location=Latin%20America&limit=50 and GET https://stellarlight.xyz/api/builders?location=LatAm&limit=50 each return 19 builders across Brazil/Chile/Colombia/Costa%20Rica; GET https://stellarlight.xyz/api/builders?location=Brazil&q=payments&limit=50 returns 2 builders including Cleverson Silva's Boleto Guardian profile, which does not contain the literal token 'payments'"
 ---
 
 ## Finding
@@ -37,6 +38,20 @@ LatAm countries plus 7 location×skill combos plus the unfiltered total (112).
 Zero-match responses correctly return the structured filter-miss advisory
 (112-profile directory restated, Discord/GitHub fallbacks) — the miss
 signalling is good; the matching is what's literal.
+
+Live re-check 2026-07-09T13:00Z after upstream issue
+`Stellar-Light/stellar-scout#2` was closed:
+
+- `GET https://stellarlight.xyz/api/builders?location=Latin%20America&limit=50`
+  and `GET https://stellarlight.xyz/api/builders?location=LatAm&limit=50`
+  each return 19 builders with country-valued locations including Brazil,
+  Chile, Colombia, and Costa Rica.
+- `GET https://stellarlight.xyz/api/builders?location=Brazil&q=payments&limit=50`
+  returns 2 builders, including Cleverson Silva's Boleto Guardian profile
+  ("blockchain-based infrastructure that prevents boleto fraud..."), which was
+  the original non-literal payments-relevant miss. `GET
+  https://stellarlight.xyz/api/builders?location=Latin%20America&q=payments&limit=50`
+  returns 7 builders. Both halves of the original matching finding are fixed.
 
 ## Recommendation
 

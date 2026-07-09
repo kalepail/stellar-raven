@@ -1,13 +1,14 @@
 ---
 id: sls-011
 service: stellar-light-scout
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-03
 evidence:
   - live production execute 2026-07-03 (scout.searchProjects + lumenloop.get_project on slug lobstr; Solo scratchpad 521 follow-up, todo 826 comment 2224)
   - consumer-side workaround shipped: eval/qa/golden-overrides.json q-eco-lobstr-wallet graderNotes instruct not penalizing either figure
   - live re-verified 2026-07-06 (eval round todo 846): lobstr still Scout $232,000 (scfAmountStatus:"disclosed") vs Lumenloop $267,463 — same $35,463 gap, same rounds [2,17,22], still no basis note on either figure; partial improvement: Scout now exposes scfAwardedRounds:[2,17,22], but no per-round dollars
   - upstream issue filed 2026-07-07: https://github.com/Stellar-Light/stellar-scout/issues/1
+  - "fixed upstream and live re-verified 2026-07-09T13:01Z after Stellar-Light/stellar-scout#1 closure: GET https://stellarlight.xyz/api/projects/search?q=lobstr&limit=5 returns LOBSTR with scfTotalAwardedUSD:232000, scfAwardedRounds:[2,17,22], and meta.scfCountBasis explaining totals are in-house reconstructions and should reconcile on rounds; GET https://stellarlight.xyz/api/analyze?dimension=funding returns funding.countBasis plus byRound entries for rounds 2, 17, and 22"
 ---
 
 ## Finding
@@ -26,6 +27,26 @@ least shows its work; the reconciliation itself needs both owners.
 Live 2026-07-03, production `execute` in a single script: both records fetched
 in the same instant, figures as above ($35,463 apart, ~15%). Neither record
 carries an as-of date or a basis note for the figure.
+
+Live re-check 2026-07-09T13:01Z after upstream issue
+`Stellar-Light/stellar-scout#1` was closed:
+
+- `GET https://stellarlight.xyz/api/projects/search?q=lobstr&limit=5` returns
+  LOBSTR with `scfTotalAwardedUSD:232000`, `scfAwardedRounds:[2,17,22]`, and
+  `scfAmountStatus:"disclosed"`. The response `meta.scfCountBasis` now says
+  dollar totals are in-house reconstructions because SCF does not publish all
+  per-award amounts, and that consumers should reconcile on
+  `scfAwardedRounds`.
+- `GET https://stellarlight.xyz/api/analyze?dimension=funding` returns
+  `funding.countBasis`, `methodologyVersion:"funding-v2 (2026-07-05)"`, and
+  `funding.byRound` entries for the recorded LOBSTR rounds: round 2
+  `count:1,totalUSD:77333`, round 17 `count:12,totalUSD:1185546`, and round 22
+  `count:19,totalUSD:801698`.
+
+The Scout total still differs from the recorded Lumenloop total
+(`awarded_total:267463`), but the live Scout response now exposes the basis and
+round-membership reconciliation fields that were missing from the original
+finding.
 
 ## Root cause (deep-verified 2026-07-03, todo 828)
 
