@@ -102,12 +102,11 @@ describe("build-catalog.mjs", () => {
     expect(count((e) => e.id === "scout.matchPartners")).toBe(1);
     expect(count((e) => e.id === "scout.partnerOnboard")).toBe(1);
 
-    // Stellar Docs: authored operations from specs/stellar-docs.json.
+    // Stellar Docs: 12 authored operations from specs/stellar-docs.json.
     const docs = catalog.entries.filter((e) => e.service === "stellarDocs");
-    expect(docs).toHaveLength(13);
+    expect(docs).toHaveLength(12);
     expect(docs.every((e) => e.kind === "operation")).toBe(true);
     expect(docs.map((e) => e.id)).toContain("stellarDocs.search_docs");
-    expect(docs.map((e) => e.id)).toContain("stellarDocs.search_markdown_docs");
     expect(docs.map((e) => e.id)).toContain("stellarDocs.search_docs_in_category");
     expect(docs.map((e) => e.id)).toContain("stellarDocs.search_meeting_notes");
     // Every docs op carries the algolia execute-mapping block for Phase 3.
@@ -126,7 +125,7 @@ describe("build-catalog.mjs", () => {
     expect(count((e) => e.id.includes("lumenloop-mcp-connect"))).toBe(0);
 
     // Grand total: everything in the manifest is exposed (ADR-0003).
-    expect(catalog.entries).toHaveLength(273);
+    expect(catalog.entries).toHaveLength(272);
   });
 
   it("carries exactly version/generatedAt/entries at the top level", () => {

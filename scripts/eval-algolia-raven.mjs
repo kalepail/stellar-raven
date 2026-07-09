@@ -17,58 +17,106 @@ const MEETINGS_FACET = [["docusaurus_tag:-docs-default-current"]];
 const CASES = [
   {
     id: "sd-006-cli-curl-command",
+    category: "CLI/install",
     finding: "sd-006",
     query: "curl -fsSL github stellar-cli",
-    expectUrlIncludes: "/docs/tools/cli/install-cli",
+    expectUrlIncludes: ["/docs/tools/cli/install-cli"],
     note: "Command-shaped install query should reach the canonical CLI install page."
   },
   {
     id: "sd-006-cli-install-intent",
+    category: "CLI/install",
     finding: "sd-006",
     query: "stellar cli install command",
-    expectUrlIncludes: "/docs/tools/cli/install-cli",
+    expectUrlIncludes: ["/docs/tools/cli/install-cli"],
     note: "Natural install intent should not lose to unrelated install-command snippets."
   },
   {
     id: "sd-001-protocol-24",
+    category: "Protocol 24",
     finding: "sd-001",
     query: "Protocol 24",
-    expectUrlIncludes: "/meetings/",
+    expectUrlIncludes: ["/meetings/"],
     note: "Protocol-version query should not collapse into SEP-24 anchor pages."
   },
   {
     id: "sd-003-gettransactions-limits",
+    category: "RPC getTransactions",
     finding: "sd-003",
     query: "getTransactions pagination limit default 50 max 200",
-    expectUrlIncludes: "/docs/data/apis/rpc/",
+    expectUrlIncludes: ["/docs/data/apis/rpc/"],
     note: "RPC pagination facts should surface from indexed config/structure pages or a supplement."
+  },
+  {
+    id: "sd-005-ap2-acp-agentic-commerce",
+    category: "AP2/ACP",
+    finding: "sd-005",
+    query: "AP2 ACP Agentic Commerce Protocol Google agentic payments",
+    expectUrlIncludes: ["/meetings/"],
+    note: "AP2/ACP grounding is expected, at best, from meeting notes rather than current docs pages."
+  },
+  {
+    id: "opv-account-merge-reserve",
+    category: "operation vocabulary",
+    finding: "routing-control",
+    query: "account merge reclaim base reserve trustlines offers subentries",
+    expectUrlIncludes: ["/docs/data/apis/horizon/api-reference/errors/result-codes/operation-specific/account-merge", "/docs/learn/fundamentals/transactions/list-of-operations"],
+    note: "Classic operation vocabulary should reach account-merge result codes or operation docs."
+  },
+  {
+    id: "opv-sponsored-reserves",
+    category: "operation vocabulary",
+    finding: "routing-control",
+    query: "sponsored reserves num_sponsored revoke sponsorship CAP-33",
+    expectUrlIncludes: ["/docs/build/guides/transactions/sponsored-reserves", "/docs/learn/fundamentals/transactions/list-of-operations"],
+    note: "Sponsored reserve terms should reach the sponsored-reserves guide or operation list."
+  },
+  {
+    id: "opv-claimable-balance-predicates",
+    category: "operation vocabulary",
+    finding: "routing-control",
+    query: "claimable balance predicates claimant reclaim",
+    expectUrlIncludes: ["/docs/build/guides/transactions/claimable-balances", "/docs/learn/fundamentals/transactions/list-of-operations"],
+    note: "Claimable-balance predicate vocabulary should reach the guide or operation list."
+  },
+  {
+    id: "opv-require-auth",
+    category: "operation vocabulary",
+    finding: "routing-control",
+    query: "require_auth authorize_as_current_contract msg.sender",
+    expectUrlIncludes: ["/docs/learn/fundamentals/contract-development/authorization"],
+    note: "Soroban auth vocabulary should reach the contract authorization docs."
   }
 ];
 
 const STRATEGIES = [
   {
-    id: "primary-docs-default",
+    id: "primary-docs-rules",
+    label: "primary+rules docs",
     index: PRIMARY_INDEX,
     params: { facetFilters: DOCS_FACET }
   },
   {
-    id: "primary-strict-exact",
+    id: "primary-docs-no-rules",
+    label: "primary-only docs",
     index: PRIMARY_INDEX,
-    params: { facetFilters: DOCS_FACET, removeWordsIfNoResults: "none", queryType: "prefixNone", typoTolerance: false }
+    params: { facetFilters: DOCS_FACET, enableRules: false }
   },
   {
-    id: "primary-tools-filtered",
+    id: "primary-meetings-rules",
+    label: "primary+rules meetings",
     index: PRIMARY_INDEX,
-    params: { facetFilters: DOCS_FACET, hitsPerPage: 100 },
-    clientFilter: { field: "url_without_anchor", prefixesAnyOf: ["https://developers.stellar.org/docs/tools/cli"] }
+    params: { facetFilters: MEETINGS_FACET }
   },
   {
-    id: "primary-meetings-filtered",
+    id: "primary-meetings-no-rules",
+    label: "primary-only meetings",
     index: PRIMARY_INDEX,
-    params: { facetFilters: MEETINGS_FACET, hitsPerPage: 100 }
+    params: { facetFilters: MEETINGS_FACET, enableRules: false }
   },
   {
     id: "markdown-default",
+    label: "markdown index",
     index: MARKDOWN_INDEX,
     params: {}
   }
@@ -166,7 +214,8 @@ function applyClientFilter(hits, clientFilter) {
 }
 
 function rankExpected(hits, expected) {
-  const index = hits.findIndex((hit) => hit.url?.includes(expected));
+  const expectedList = Array.isArray(expected) ? expected : [expected];
+  const index = hits.findIndex((hit) => expectedList.some((item) => hit.url?.includes(item)));
   return index < 0 ? null : index + 1;
 }
 
@@ -176,8 +225,8 @@ async function runCase(auth, testCase, strategy, hitsPerPage) {
     analytics: false,
     query: testCase.query,
     hitsPerPage: requestedHits,
-    attributesToRetrieve: ["url", "url_without_anchor", "anchor", "hierarchy", "type", "content"],
-    attributesToSnippet: ["content:24"],
+    attributesToRetrieve: ["url", "url_without_anchor", "anchor", "hierarchy", "type", "content", "title", "heading"],
+    attributesToSnippet: ["content:24", "text:24"],
     highlightPreTag: "**",
     highlightPostTag: "**",
     ...strategy.params
@@ -197,40 +246,77 @@ async function runCase(auth, testCase, strategy, hitsPerPage) {
 
 function summarize(results) {
   return results.map((item) => {
-    const best = item.results
+    const bestAny = item.results
       .filter((r) => r.expectedRank !== null)
       .sort((a, b) => a.expectedRank - b.expectedRank)[0];
-    const defaultRank = item.results.find((r) => r.strategy === "primary-docs-default")?.expectedRank ?? null;
-    const primaryGood = defaultRank !== null && defaultRank <= 3;
+    const primaryRulesBest = bestRank(item.results, ["primary-docs-rules", "primary-meetings-rules"]);
+    const primaryNoRulesBest = bestRank(item.results, ["primary-docs-no-rules", "primary-meetings-no-rules"]);
+    const markdownRank = item.results.find((r) => r.strategy === "markdown-default")?.expectedRank ?? null;
+    const markdownWinsPrimary =
+      markdownRank !== null &&
+      (primaryRulesBest === null || markdownRank < primaryRulesBest) &&
+      (primaryNoRulesBest === null || markdownRank < primaryNoRulesBest);
+    const primaryGood = primaryRulesBest !== null && primaryRulesBest <= 3;
     return {
       id: item.id,
+      category: item.category,
       finding: item.finding,
       query: item.query,
-      defaultRank,
-      bestStrategy: best?.strategy ?? null,
-      bestRank: best?.expectedRank ?? null,
+      primaryRulesBest,
+      primaryNoRulesBest,
+      markdownRank,
+      bestStrategy: bestAny?.strategy ?? null,
+      bestRank: bestAny?.expectedRank ?? null,
+      markdownWinsPrimary,
       recommendation: primaryGood
         ? "Primary DocSearch now covers this in the top 3; keep this as a regression check for crawler/rule drift."
-        : best && best.expectedRank <= 3
-          ? "A non-default Raven query strategy can cover this; consider routing or targeted Algolia tuning before adding records."
+        : markdownWinsPrimary
+          ? "Markdown index wins a case the primary index loses; this is evidence for keeping the markdown op."
+          : bestAny && bestAny.expectedRank <= 3
+          ? "A non-default primary query strategy can cover this; prefer routing/category selection over adding a second docs op."
           : "Needs supplement records or upstream indexing/rules; query strategy alone did not reach the target."
     };
   });
 }
 
+function bestRank(results, strategyIds) {
+  const ranks = results
+    .filter((r) => strategyIds.includes(r.strategy) && r.expectedRank !== null)
+    .map((r) => r.expectedRank);
+  return ranks.length ? Math.min(...ranks) : null;
+}
+
+function rankLabel(rank) {
+  return rank === null || rank === undefined ? "miss" : `#${rank}`;
+}
+
 function printHuman(results) {
   for (const item of results) {
-    console.log(`\n## ${item.id} (${item.finding})`);
+    console.log(`\n## ${item.id} (${item.category}; ${item.finding})`);
     console.log(`query: ${item.query}`);
-    console.log(`target: ${item.expectUrlIncludes}`);
+    console.log(`target: ${item.expectUrlIncludes.join(" OR ")}`);
     for (const result of item.results) {
       const rank = result.expectedRank === null ? "miss" : `#${result.expectedRank}`;
       console.log(`- ${result.strategy}: ${rank}; top=${result.topUrl ?? "none"}; nbHits=${result.nbHits}`);
     }
   }
-  console.log("\n## Summary");
+
+  console.log("\n## Evidence table");
+  console.log("| Category | Case | Primary+rules | Primary-only (rules disabled) | Markdown index | Best | Decision note |");
+  console.log("|---|---|---:|---:|---:|---|---|");
   for (const row of summarize(results)) {
-    console.log(`- ${row.id}: default=${row.defaultRank ?? "miss"}, best=${row.bestStrategy ?? "none"} ${row.bestRank ? `#${row.bestRank}` : ""} — ${row.recommendation}`);
+    const best = row.bestStrategy ? `${row.bestStrategy} ${rankLabel(row.bestRank)}` : "none";
+    console.log(
+      `| ${row.category} | ${row.id} | ${rankLabel(row.primaryRulesBest)} | ${rankLabel(row.primaryNoRulesBest)} | ${rankLabel(row.markdownRank)} | ${best} | ${row.recommendation} |`
+    );
+  }
+
+  const markdownWins = summarize(results).filter((row) => row.markdownWinsPrimary);
+  console.log("\n## Markdown decision");
+  if (markdownWins.length) {
+    console.log(`Markdown wins ${markdownWins.length} case(s): ${markdownWins.map((row) => row.id).join(", ")}`);
+  } else {
+    console.log("Markdown wins 0 cases against the best post-v15 primary-index arm in this harness.");
   }
 }
 

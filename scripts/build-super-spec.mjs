@@ -292,7 +292,7 @@ function buildScout(inv, exposed) {
 }
 
 // ---------------------------------------------------------------------------
-// stellarDocs — authored spec-as-data operations (specs/stellar-docs.json)
+// stellarDocs — 12 authored spec-as-data operations (specs/stellar-docs.json)
 // ---------------------------------------------------------------------------
 
 function buildStellarDocs(spec, exposed) {
@@ -624,7 +624,7 @@ function main() {
     {
       name: "stellarDocs",
       description:
-        "Official Stellar developer docs at developers.stellar.org, searched via Algolia DocSearch and markdown indexes (intent-named operations)."
+        "Official Stellar developer docs at developers.stellar.org, searched via the Algolia DocSearch index (12 intent-named operations)."
     },
     {
       name: "skills",

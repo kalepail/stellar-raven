@@ -5333,88 +5333,6 @@
         "x-service": "stellarDocs"
       }
     },
-    "/stellarDocs/search_markdown_docs": {
-      "post": {
-        "description": "Whole-page Markdown search over official Stellar developer docs at developers.stellar.org. Use when exact code blocks, shell commands, install snippets, YAML, JSON-RPC examples, CLI flags, or generated markdown links matter more than DocSearch section ranking — for example `curl -fsSL https://github.com/stellar/stellar-cli/raw/main/install.sh | sh`, `brew install stellar-cli`, `winget install --id Stellar.StellarCLI`, `cargo install --locked stellar-cli`, Docker/Quickstart commands, Stellar CLI examples, and RPC JSON payloads. This index has fewer page-level records than the primary DocSearch index, so it is a supplement for exact/code retrieval, not a replacement for the category-specific search operations.",
-        "operationId": "stellarDocs.search_markdown_docs",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "hitsPerPage": {
-                    "default": 5,
-                    "maximum": 20,
-                    "minimum": 1,
-                    "type": "integer"
-                  },
-                  "includeContent": {
-                    "default": false,
-                    "description": "Return the full markdown page text as `content` (can be many KB).",
-                    "type": "boolean"
-                  },
-                  "page": {
-                    "default": 0,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "query": {
-                    "description": "Keyword or exact command/code query. Advanced syntax works for quoted phrases.",
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "query"
-                ],
-                "type": "object"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Array of page-level hits: { url, breadcrumb (title > heading), snippet, content? } plus { nbHits, nbPages, page }."
-          }
-        },
-        "summary": "Whole-page Markdown search over official Stellar developer docs at developers.stellar.org.",
-        "tags": [
-          "stellarDocs"
-        ],
-        "x-algolia": {
-          "conditionalParams": {
-            "includeContent=true": {
-              "attributesToRetrieve": [
-                "url",
-                "title",
-                "heading",
-                "text"
-              ]
-            }
-          },
-          "fixedParams": {
-            "attributesToRetrieve": [
-              "url",
-              "title",
-              "heading"
-            ],
-            "attributesToSnippet": [
-              "text:30"
-            ],
-            "highlightPostTag": "**",
-            "highlightPreTag": "**"
-          },
-          "paramMap": {
-            "hitsPerPage": "hitsPerPage",
-            "page": "page",
-            "query": "query"
-          }
-        },
-        "x-execute": "await stellarDocs.search_markdown_docs(args)",
-        "x-service": "stellarDocs"
-      }
-    },
     "/stellarDocs/search_meeting_notes": {
       "post": {
         "description": "Search the Stellar protocol & developers meeting notes published at developers.stellar.org/meetings (2024–2026): CAP (Core Advancement Proposal) discussions, protocol upgrade votes and release planning for stellar-core, SEP proposals and ecosystem standards debates, validator coordination. This is the non-docs slice of the index, selected server-side via the docusaurus_tag facet. Useful for history questions — when or why something was decided, which protocol version introduced a change — that regular docs pages do not answer.",
@@ -5818,7 +5736,7 @@
       "name": "scout"
     },
     {
-      "description": "Official Stellar developer docs at developers.stellar.org, searched via Algolia DocSearch and markdown indexes (intent-named operations).",
+      "description": "Official Stellar developer docs at developers.stellar.org, searched via the Algolia DocSearch index (12 intent-named operations).",
       "name": "stellarDocs"
     },
     {
@@ -5876,7 +5794,7 @@
   ],
   "x-generated": {
     "builder": "scripts/build-super-spec.mjs",
-    "catalogEntries": 273,
+    "catalogEntries": 272,
     "generatedAt": "2026-07-09T11:50:42.414Z"
   },
   "x-services": {
