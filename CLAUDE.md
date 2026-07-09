@@ -40,7 +40,11 @@ current process state before using raw shell commands.
   runtime's bypass flag via `spawn_agent`'s `extra_args` (Claude `--dangerously-skip-permissions`,
   Codex `--yolo` / `--dangerously-bypass-approvals-and-sandbox`, Gemini `--yolo`, or the equivalent
   full-auto flag for Copilot/OpenCode/Amp/Kimi/etc.), and make the spawn brief tell the child to
-  launch its own sub-agents the same way so the bypass propagates down the whole tree.
+  launch its own sub-agents the same way so the bypass propagates down the whole tree. Check the
+  saved agent tool's default command first (its `command` shows in `list_processes`/spawn output):
+  the Solo **Codex** tool default already includes `--yolo` (as of 2026-07-09), and passing it
+  again via `extra_args` duplicates the flag and kills the spawn on launch; Claude tolerates a
+  duplicated `--dangerously-skip-permissions`.
 - **Fallback:** use local shell process management only for short foreground commands or when Solo
   has no matching process/tool. If you must start a non-Solo long-running process, say why and stop
   it before finalizing.
