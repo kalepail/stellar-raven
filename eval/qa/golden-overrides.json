@@ -398,8 +398,196 @@
    },
    "graderNotesAppend": "CORRECTION 2026-07-03 (todo 829 contradiction sweep — supersedes the scope claim in the 2026-06-29 note above): the '$1.2-2B vs $2.8B gap is a scope difference (registered funds vs broad RWA incl. stablecoins)' reconciliation is WRONG. rwa.xyz's Stellar headline EXCLUDES stablecoins (separate ~$300M stablecoin-mcap metric), and every figure in play shares that ex-stablecoin scope — the gap is TEMPORAL ($1.52B Mar 31 → $2B Apr 11 → ~$2.8B early June). Also re-attributed: ~$2.8B = June interview/rwa.xyz (not the written report); 1,700 MAD = Electric Capital May 2026. Do not penalize a candidate citing any dated point on the trajectory, nor one repeating the Lumenloop 'per Messari's report' attribution (the cited corpus source itself misattributes — ll-009); credit candidates that date figures or distinguish report vs interview."
   },
+  "q-edge-fresh-latest-protocol-version": {
+   "why": "The behavior-first rubric was sound, but both its illustrative answer and grader notes froze Protocol 26 as current and the July 8 Protocol 27 vote as pending. That expired narrative can steer a judge even though the case explicitly says not to hard-gate on a number.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "Protocol 27 is the current Mainnet protocol after activation on 2026-07-08",
+     "verdict": "confirmed",
+     "classes": [
+      "C: Horizon P26→P27 boundary at ledgers 63386818/63386819",
+      "A: SDF Zipper upgrade guide; B: CAP-0071 and stellar-core v27 release line"
+     ]
+    }
+   ],
+   "rootCause": [
+    "eval-side date-contingent example expired while the durable behavior gate remained valid",
+    "solo://proj/49/todo/date-contingent-trap--831",
+    "improvements/stellar-docs/sd-008-protocol-27-mainnet-status-lag.md"
+   ],
+   "evidence": [
+    "2026-07-09 sibling sweep and independent final diff review in Solo scratchpad 567",
+    "Horizon first-P27 ledger 63386819 closed 2026-07-08T17:00:10Z"
+   ],
+   "golden": {
+    "answer": "**Freshness-honesty case — gate the behavior, not a frozen number.** As of **2026-07-09**, Mainnet runs **Protocol 27, Zipper**; live Horizon shows the P26→P27 boundary at ledger **63386819** on **2026-07-08 17:00:10 UTC**. A correct answer should still perform a dated lookup against an authoritative live network source, state the observed version and as-of time, and warn that validator upgrade votes can make it stale. Software release tags are supporting context, not proof of network activation.",
+    "keyFacts": [
+     "Gives the current protocol version from a dated authoritative live-network lookup and flags that it may become stale after a validator upgrade vote.",
+     "Treats Protocol 27 as live on Mainnet after 2026-07-08, while preserving the behavior-first rather than frozen-number grading rule."
+    ],
+    "avoid": [
+     "Do NOT state a protocol version as definitively current without a dated source or staleness flag.",
+     "Do NOT claim Protocol 26 is still current or that the Protocol 27 Mainnet vote remains pending.",
+     "Do NOT infer live network activation solely from a software release tag."
+    ],
+    "sources": [
+     "https://horizon.stellar.org/ledgers/63386819",
+     "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+     "https://github.com/stellar/stellar-core/releases"
+    ]
+   },
+   "graderNotesAppend": "POST-VOTE CORRECTION 2026-07-09 (todo 831): the inherited P26/pending-vote example is expired. Reward a dated, sourced P27 answer; continue grading the lookup/staleness behavior rather than requiring a permanent version or ledger number."
+  },
+  "q-pc-protocol-upgrade-timing": {
+   "why": "The dated reference answer called the July 8 Protocol 27 vote the next Mainnet upgrade after that vote had completed. The behavioral gate was already freshness-aware, but the stale narrative could still steer a judge toward a past date. This override records the completed P27 activation and refuses to invent a later unannounced vote.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "Protocol 27 activated on Mainnet on 2026-07-08 at ledger 63386819",
+     "verdict": "confirmed",
+     "classes": [
+      "C: Horizon ledgers 63386818/63386819 — P26 at 2026-07-08T17:00:05Z, then P27 at 17:00:10Z",
+      "A: SDF Zipper upgrade guide — July 8, 2026 Mainnet upgrade vote"
+     ]
+    },
+    {
+     "claim": "A later Mainnet upgrade date must not be guessed from the completed P27 schedule",
+     "verdict": "confirmed",
+     "classes": [
+      "A: the checked SDF upgrade guide establishes only the completed P27 schedule",
+      "C: live Pubnet reports protocol 27; it does not announce a future vote"
+     ]
+    }
+   ],
+   "rootCause": [
+    "eval-side freshness drift: a forward-looking schedule aged past its vote date",
+    "solo://proj/49/todo/date-contingent-trap--831",
+    "improvements/stellar-docs/sd-008-protocol-27-mainnet-status-lag.md"
+   ],
+   "evidence": [
+    "2026-07-09 independent re-verification in Solo scratchpad 567: Horizon boundary ledgers + SDF upgrade guide",
+    "Sibling sweep covered all compiled cases mentioning Protocol 27, Zipper, or 2026-07-08"
+   ],
+   "golden": {
+    "answer": "Protocol-upgrade timing must come from a dated primary source. The previously published **Protocol 27 (Zipper)** schedule is now historical: the SDF guide scheduled the Mainnet vote for **2026-07-08**, and live Horizon shows the network changed from Protocol 26 at ledger **63386818** (17:00:05 UTC) to **Protocol 27** at ledger **63386819** (17:00:10 UTC). Do not keep presenting July 8 as the next vote. For whatever upgrade follows P27, report a date/version only if a current SDF upgrade guide, validator notice, or equivalent primary source actually announces one; otherwise say that the checked sources do not establish a later date. Validator operators adopt an upgrade through network-upgrade voting, not through CAP acceptance or software release alone.",
+    "keyFacts": [
+     "Requires a dated current primary source for any claimed next protocol-upgrade date/version, and recognizes that the July 8, 2026 Protocol 27 vote is completed rather than upcoming.",
+     "Explains that Mainnet activated Protocol 27 at ledger 63386819 on 2026-07-08 and that CAP approval, software release, Testnet activation, and Mainnet validator voting are distinct milestones."
+    ],
+    "avoid": [
+     "Do NOT present the completed July 8, 2026 Protocol 27 vote as a future or next upgrade.",
+     "Do NOT invent a later protocol vote date without a dated primary source.",
+     "Do NOT confuse protocol upgrade voting with SEP/CAP approval or a software release alone."
+    ],
+    "sources": [
+     "https://horizon.stellar.org/ledgers/63386819",
+     "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+     "https://developers.stellar.org/docs/validators/admin-guide/network-upgrades"
+    ]
+   },
+   "graderNotesAppend": "POST-VOTE CORRECTION 2026-07-09 (todo 831): P27 is live. Accept a cautious answer that says no later vote is established by the sources it checked; never require the candidate to fabricate the next upgrade."
+  },
+  "q-protocol-27-cap-0071": {
+   "why": "The golden's CAP-0071 substance remained correct, but its status key fact and avoid clause became false when Mainnet activated Protocol 27. Leaving the trap would punish the now-true claim that P27 is live.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "Protocol 27 is active on Mainnet since ledger 63386819",
+     "verdict": "confirmed",
+     "classes": [
+      "C: Horizon boundary ledgers report P26 at 63386818 and P27 at 63386819 (2026-07-08T17:00:10Z)",
+      "A: SDF Zipper guide scheduled the Mainnet upgrade vote for 2026-07-08"
+     ]
+    },
+    {
+     "claim": "CAP-0071 is the P27 authentication-delegation/address-bound-credentials change",
+     "verdict": "confirmed",
+     "classes": [
+      "B: stellar/stellar-protocol core/cap-0071.md — Accepted, protocol version 27",
+      "A: SDF Zipper guide describes delegation and AddressV2"
+     ]
+    }
+   ],
+   "rootCause": [
+    "eval-side date-contingent status trap expired after the scheduled Mainnet vote",
+    "solo://proj/49/todo/date-contingent-trap--831",
+    "improvements/stellar-docs/sd-008-protocol-27-mainnet-status-lag.md"
+   ],
+   "evidence": [
+    "2026-07-09 independent P27 corroboration matrix in Solo scratchpad 567",
+    "Horizon first-P27 ledger boundary plus CAP-0071 source and official upgrade guide"
+   ],
+   "golden": {
+    "answer": "**Protocol 27 (Zipper)** is live on Stellar Mainnet as of **2026-07-08**. Live Horizon shows ledger **63386818** closed under Protocol 26 at 17:00:05 UTC and ledger **63386819** closed under Protocol 27 at 17:00:10 UTC. P27 is built around **CAP-0071**, which adds first-class authentication delegation for custom accounts and address-bound Soroban credentials: `SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES`, nested `SorobanDelegateSignature` chains, and `SOROBAN_CREDENTIALS_ADDRESS_V2`. It is a Soroban authorization/credentials change, not a consensus, ZK, or parallel-execution change. Treat live status as freshness-sensitive and confirm it from the network rather than the currently lagging Software Versions page.",
+    "keyFacts": [
+     "States that Protocol 27 is active on Mainnet since 2026-07-08 (first P27 ledger 63386819).",
+     "Explains that CAP-0071 adds address-bound credentials and first-class authentication delegation for custom accounts."
+    ],
+    "avoid": [
+     "Do NOT claim Protocol 27 is still queued or pending on Mainnet.",
+     "Do NOT mis-describe CAP-0071 as a consensus, ZK, or parallelism change.",
+     "Do NOT present network status without a dated live source or freshness caveat."
+    ],
+    "sources": [
+     "https://horizon.stellar.org/ledgers/63386819",
+     "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0071.md",
+     "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide"
+    ]
+   },
+   "graderNotesAppend": "POST-VOTE CORRECTION 2026-07-09 (todo 831): the question's word 'queued' is now a stale premise. Reward candidates that correct it and state P27 is live since 2026-07-08; do not require parroting the stale premise."
+  },
+  "q-protocol-current-mainnet-version": {
+   "why": "This case's key fact and avoid clause expired at the Protocol 27 Mainnet vote. The live network now reports protocol 27, so continuing to require P26 or forbid P27 would manufacture judge failures.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "Current Stellar Mainnet protocol is 27",
+     "verdict": "confirmed",
+     "classes": [
+      "C: Horizon root current_protocol_version=27 and latest ledger protocol_version=27 asOf 2026-07-09",
+      "B: stellar-core v27.1.0 Config.cpp sets CURRENT_LEDGER_PROTOCOL_VERSION=27"
+     ]
+    },
+    {
+     "claim": "Mainnet activation occurred at ledger 63386819 on 2026-07-08T17:00:10Z",
+     "verdict": "confirmed",
+     "classes": [
+      "C: adjacent Horizon ledgers 63386818/63386819 show the P26→P27 boundary",
+      "A: SDF Zipper guide scheduled the Mainnet vote for 2026-07-08"
+     ]
+    }
+   ],
+   "rootCause": [
+    "eval-side date-contingent trap expired after the scheduled validator vote",
+    "solo://proj/49/todo/date-contingent-trap--831",
+    "improvements/stellar-docs/sd-008-protocol-27-mainnet-status-lag.md"
+   ],
+   "evidence": [
+    "2026-07-09 independent P27 re-verification in Solo scratchpad 567",
+    "Sibling consistency sweep covered nine P27/Zipper-related cases"
+   ],
+   "golden": {
+    "answer": "As of **2026-07-09**, Stellar Mainnet runs **Protocol 27 (Zipper)**. The activation boundary is observable directly in Horizon: ledger **63386818** closed under Protocol 26 at **2026-07-08 17:00:05 UTC**, and ledger **63386819** closed under Protocol 27 at **17:00:10 UTC**. Zipper brings CAP-0071's authentication delegation and address-bound Soroban credentials. This is freshness-sensitive: confirm the current protocol against live Horizon/RPC or protocol history before relying on a remembered number. The official Software Versions page was still showing P27 as Testnet-only when checked on 2026-07-09, so it should not override the live ledger.",
+    "keyFacts": [
+     "Identifies Protocol 27 ('Zipper') as the current Mainnet protocol as of 2026-07-09, activated on 2026-07-08 at ledger 63386819.",
+     "Flags current protocol status as freshness-sensitive and points to a live network source such as Horizon/RPC or protocol history."
+    ],
+    "avoid": [
+     "Do NOT assert Protocol 26 or an older version as the current Mainnet protocol after the 2026-07-08 upgrade.",
+     "Do NOT claim Protocol 27 is still queued or Testnet-only.",
+     "Do NOT state the current version without a dated live source or staleness caveat."
+    ],
+    "sources": [
+     "https://horizon.stellar.org/",
+     "https://horizon.stellar.org/ledgers/63386819",
+     "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide"
+    ]
+   },
+   "graderNotesAppend": "POST-VOTE CORRECTION 2026-07-09 (todo 831): P27 activated at ledger 63386819. The original P26 requirement and anti-P27-live trap are false and must not influence grading."
+  },
   "q-protocol-latest-stellar-core-release": {
-   "why": "Skeptic sweep (todo 829, instrument 2, first run) BROKE this golden: it pinned v27.0.0 as latest 'as of the 2026-06-29 snapshot', but GitHub releases shows v27.1.0 (prerelease:false) published 2026-06-25 — the pin was false at its own authoring date, and keyFact 1 punished the truthful answer. De-pinned to the durable formulation per the golden-truth skill.",
+   "why": "The 2026-07-03 skeptic sweep corrected the latest tag to v27.1.0. A second date-contingent correction is now required: the answer and avoid clause still implied P27 was pending after Mainnet activated it on 2026-07-08.",
    "truthDomain": "real-world",
    "corroboration": [
     {
@@ -411,31 +599,165 @@
      ]
     },
     {
-     "claim": "Mainnet ran Protocol 26 at the snapshot; P27 vote scheduled 2026-07-08",
+     "claim": "Protocol 27 activated on Mainnet after the v27.1.0 release",
      "verdict": "confirmed",
      "classes": [
-      "C: live Horizon GET /ledgers?order=desc → protocol_version 26 (2026-07-03T18:34Z)",
-      "A: yardstick blog + Software Versions page"
+      "C: Horizon boundary ledgers show first P27 ledger 63386819 at 2026-07-08T17:00:10Z",
+      "A: SDF Zipper guide scheduled the vote for July 8; B: GitHub release v27.1.0 published 2026-06-25"
      ]
     }
    ],
    "rootCause": [
     "eval-side authoring: single-source-class 're-verification' — the 06-29 check read the docs Software Versions page (a protocol-support table) instead of the GitHub releases feed the golden itself names as its live source, missing the 06-25 patch release; exactly the class-independence failure the golden-truth skill forbids",
     "solo://proj/49/todo/corpus-health-instru--829 (skeptic-sweep instrument, first run)",
-    "solo://proj/49/todo/date-contingent-trap--831 (the 'P27 not live' trap expires at the 2026-07-08 mainnet vote)"
+    "solo://proj/49/todo/date-contingent-trap--831",
+    "improvements/stellar-docs/sd-008-protocol-27-mainnet-status-lag.md"
    ],
    "evidence": [
     "Skeptic sweep 2026-07-03 (scratchpad 521): GitHub releases API quotes, Horizon live probe, docs fetches — all asOf 2026-07-03",
-    "Sibling sweep done in-sweep: q-protocol-27-cap-0071, q-protocol-current-mainnet-version, q-protocol-version-history-list claim only 'v27.0.0 is released' (still true) — no contradiction, no edits needed; they share the 07-08 trap expiry"
+    "Post-vote re-verification 2026-07-09 in Solo scratchpad 567: Horizon first-P27 boundary + CAP/core source + SDF guide",
+    "Sibling sweep covered every compiled case mentioning Protocol 27, Zipper, or 2026-07-08"
    ],
    "golden": {
-    "answer": "As of the **2026-07-03 snapshot**, the latest stellar-core release is **v27.1.0** (published 2026-06-25) — a **v27-series** release targeting **Protocol 27** (CAP-0071) [1]. Treat the exact tag as volatile: confirm against github.com/stellar/stellar-core/releases [1] — patch releases land between protocol votes, and the official Software Versions page tracks protocol support (it lists 27.0.0 under \"Protocol 27 (Testnet, June 18, 2026)\"), not necessarily the newest patch tag [2]. stellar-core's major version tracks the protocol version it supports (v26 → P26, v27 → P27). A v27-series release does **not** mean P27 is live on Mainnet — Mainnet ran Protocol 26 (Stellar Core 26.1.0) at the snapshot; the P27 Mainnet vote was scheduled 2026-07-08. CAP-0071 adds address-bound Soroban credentials (`SOROBAN_CREDENTIALS_ADDRESS_V2`) and authentication delegation.\n\n**Freshness:** the gradeable facts are the durable ones — the latest release is a v27-series build targeting P27, released ≠ activated, and GitHub releases is the live source. Any dated, sourced v27.x tag is acceptable.\n\nSources: [1] github.com/stellar/stellar-core/releases; [2] developers.stellar.org Software Versions.",
+    "answer": "As of **2026-07-09**, the latest stable stellar-core release is **v27.1.0** (published 2026-06-25), a v27-series release supporting **Protocol 27 / CAP-0071**. Treat the exact patch tag as volatile and confirm it against GitHub releases. Software release and network activation are distinct milestones: v27.1.0 shipped before Mainnet activated P27, and live Horizon shows the activation at ledger **63386819** on **2026-07-08 17:00:10 UTC**. The durable lesson is not that P27 remains pending; it is that a release tag alone never proves current network state. Check both the release feed and the live network.",
     "keyFacts": [
      "Identifies the latest stellar-core release as a v27-series release targeting Protocol 27 (CAP-0071) — any dated, sourced v27.x tag is acceptable (v27.1.0, published 2026-06-25, as of 2026-07-03); never require one frozen tag.",
-     "Flags this as freshness-sensitive and points to the GitHub releases page (github.com/stellar/stellar-core/releases) as the live source."
+     "Flags the tag and network status as separate freshness-sensitive facts, using GitHub releases for the tag and live Horizon/RPC for Mainnet activation."
+    ],
+    "avoid": [
+     "Do NOT assert an old stellar-core release as the latest without checking the live release feed.",
+     "Do NOT claim Protocol 27 is still pending on Mainnet; it activated on 2026-07-08.",
+     "Do NOT infer network activation from a software release alone or present the exact patch tag as permanent."
+    ],
+    "sources": [
+     "https://github.com/stellar/stellar-core/releases/tag/v27.1.0",
+     "https://horizon.stellar.org/ledgers/63386819",
+     "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide"
     ]
    },
-   "graderNotesAppend": "Corrected 2026-07-03 (todo 829 skeptic sweep, first run): the prior pin (v27.0.0 latest 'as of 2026-06-29') was false at authoring — v27.1.0 published 2026-06-25. Root cause: single-source-class re-verification (docs protocol-support table instead of the releases feed). Grading: any dated, sourced v27.x tag is correct; a candidate noting the Software-Versions-vs-releases distinction is more precise, not wrong. DATE-CONTINGENT TRAP: 'released ≠ P27 live on Mainnet' is true only until the 2026-07-08 mainnet vote — re-verify immediately after (todo 831)."
+   "graderNotesAppend": "Corrected 2026-07-03 for the v27.1.0 tag, then re-verified post-vote 2026-07-09 (todo 831): P27 is now live. Preserve only the durable distinction that release and activation require different sources; never grade 'P27 is live' as wrong."
+  },
+  "q-protocol-version-history-list": {
+   "why": "The historical feature/version mapping remains valid, but the tail key fact froze P26 as latest and P27 as queued. The P27 vote completed, so the history must now end with P27 active on Mainnet.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "Protocol 27 follows Protocol 26 and activated on Mainnet on 2026-07-08",
+     "verdict": "confirmed",
+     "classes": [
+      "C: Horizon P26→P27 boundary at ledgers 63386818/63386819",
+      "A: SDF Zipper guide + B: CAP-0071 protocol version 27"
+     ]
+    }
+   ],
+   "rootCause": [
+    "eval-side freshness drift in the tail of an otherwise historical list",
+    "solo://proj/49/todo/date-contingent-trap--831",
+    "improvements/stellar-docs/sd-008-protocol-27-mainnet-status-lag.md"
+   ],
+   "evidence": [
+    "2026-07-09 independent re-verification and sibling sweep in Solo scratchpad 567"
+   ],
+   "golden": {
+    "answer": "Stellar protocol history from P19 through the live **Protocol 27** tail:\n\n- **Protocol 19** (2022-06-08) — generalized transaction preconditions/timebounds and extra signers (CAP-0021), plus signed-payload signers (CAP-0040).\n- **Protocol 20, Soroban** (2024-02-20) — Wasm smart contracts via the CAP-0046 series.\n- **Protocol 21** (2024-06-18) — secp256r1/passkey verification (CAP-0051) and TTL extension (CAP-0053).\n- **Protocol 22** (2024-12-05) — BLS12-381 host functions (CAP-0059) and contract constructors (CAP-0058).\n- **Protocol 23, Whisk** (2025-09-03) — parallel contract execution (CAP-0063), live/archival state separation (CAP-0062), and unified events (CAP-0067).\n- **Protocol 24** (2025-10-22) — corrective/stability upgrade for Whisk's state-archival inconsistency.\n- **Protocol 25, X-Ray** (2026-01-22) — BN254 and Poseidon/Poseidon2 host functions (CAP-0074/0075).\n- **Protocol 26, Yardstick** (2026-05-06) — protocol configuration, checked i256 arithmetic, TTL-v2, additional BN254, SAC, and strkey host functions.\n- **Protocol 27, Zipper** (2026-07-08) — CAP-0071 authentication delegation and address-bound Soroban credentials; first live P27 ledger **63386819** at 17:00:10 UTC.\n\nThe feature→version mapping is durable, but the tail is freshness-sensitive: verify the latest network protocol from live Horizon/RPC or protocol history.",
+    "keyFacts": [
+     "Protocol 19 introduced generalized transaction preconditions/timelocks; Protocol 20 introduced Soroban; Protocol 21 added secp256r1/passkeys and TTL extension; Protocol 22 added BLS12-381 and constructors; Protocol 23 added parallel execution and archival separation.",
+     "Protocol 25 added BN254/Poseidon, Protocol 26 added Yardstick's configuration/cost/host-function changes, and Protocol 27 ('Zipper') activated on Mainnet on 2026-07-08 with CAP-0071 authentication delegation/address-bound credentials.",
+     "Flags the latest protocol tail as freshness-sensitive and points to a live network source."
+    ],
+    "avoid": [
+     "Do NOT mis-pair a feature with the wrong protocol or invent CAP/version mappings.",
+     "Do NOT describe Protocol 26 as the latest activated Mainnet version after 2026-07-08 or call Protocol 27 queued.",
+     "Do NOT present the tail as permanent without a dated live source."
+    ],
+    "sources": [
+     "https://horizon.stellar.org/ledgers/63386819",
+     "https://github.com/stellar/stellar-protocol/tree/master/core",
+     "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide"
+    ]
+   },
+   "graderNotesAppend": "POST-VOTE CORRECTION 2026-07-09 (todo 831): older rows were not re-authored; the corrected delta is the P27 tail."
+  },
+  "q-soroban-auth-delegation-p27": {
+   "why": "The CAP-0071 mechanics are correct, but the timing paragraph and anti-activation trap still treated the July 8 vote as pending. The answer should now state that the feature's protocol is live while preserving the caveat that tooling must support it.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "CAP-0071 delegation/address-bound credentials are Protocol 27 features and P27 is live on Mainnet",
+     "verdict": "confirmed",
+     "classes": [
+      "B: CAP-0071 source defines the credential types and protocol version 27",
+      "C: live Horizon first P27 ledger 63386819; A: SDF Zipper guide describes the feature"
+     ]
+    }
+   ],
+   "rootCause": [
+    "eval-side date-contingent timing prose expired after P27 activation",
+    "solo://proj/49/todo/date-contingent-trap--831"
+   ],
+   "evidence": [
+    "2026-07-09 independent CAP/source/network verification in Solo scratchpad 567"
+   ],
+   "golden": {
+    "answer": "**Yes. Protocol 27 (Zipper), live on Mainnet since 2026-07-08, adds first-class delegated signers for custom accounts through CAP-0071.** It introduces `SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES`, nested `SorobanDelegateSignature` chains, and `ENVELOPE_TYPE_SOROBAN_AUTHORIZATION_WITH_ADDRESS`. CAP-0071 also adds `SOROBAN_CREDENTIALS_ADDRESS_V2`, binding credentials to the account address to prevent cross-account replay. These capabilities were not available as this first-class protocol design since Soroban launch, and clients still need compatible SDK/CLI versions. Confirm live status from the network because activation timing is freshness-sensitive.",
+    "keyFacts": [
+     "States that Protocol 27/CAP-0071 adds first-class authentication delegation for custom accounts and is live on Mainnet since 2026-07-08.",
+     "Names the delegated/address-bound credential mechanisms, including SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES and SOROBAN_CREDENTIALS_ADDRESS_V2."
+    ],
+    "avoid": [
+     "Do NOT assert delegated signers were always a first-class feature or available since Soroban launch.",
+     "Do NOT attribute delegation to the wrong protocol or claim Protocol 27 remains pending on Mainnet.",
+     "Do NOT imply incompatible older tooling can use the P27 credential formats."
+    ],
+    "sources": [
+     "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0071.md",
+     "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+     "https://horizon.stellar.org/ledgers/63386819"
+    ]
+   },
+   "graderNotesAppend": "POST-VOTE CORRECTION 2026-07-09 (todo 831): accept and reward a sourced statement that P27 is live."
+  },
+  "q-soroban-current-sdk-cli-version": {
+   "why": "The freshness-sensitive golden still described soroban-sdk v27 as a release candidate after v27.0.0 became a stable GitHub release on 2026-07-08. The behavioral gate was sound, but the pinned example and grader note were stale.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "rs-soroban-sdk v27.0.0 is a stable release and stellar-cli v27.0.0 remains the current v27 CLI release",
+     "verdict": "confirmed",
+     "classes": [
+      "B: stellar/rs-soroban-sdk latest release v27.0.0, prerelease=false, published 2026-07-08T19:48:45Z",
+      "B: stellar/stellar-cli latest release v27.0.0, prerelease=false, published 2026-06-17T22:43:34Z",
+      "A: Software Versions page still shows TBD for P27 Rust SDK/CLI, demonstrating docs lag rather than contradicting the release feeds"
+     ]
+    }
+   ],
+   "rootCause": [
+    "plain release freshness drift after the corpus snapshot",
+    "solo://proj/49/todo/date-contingent-trap--831",
+    "improvements/stellar-docs/sd-008-protocol-27-mainnet-status-lag.md"
+   ],
+   "evidence": [
+    "GitHub releases API rechecked 2026-07-09 for rs-soroban-sdk and stellar-cli",
+    "P27 sibling sweep in Solo scratchpad 567"
+   ],
+   "golden": {
+    "answer": "As of **2026-07-09**, the live release feeds show **soroban-sdk v27.0.0** as a stable release and **stellar-cli v27.0.0** as the current v27 CLI release. Both align with Protocol 27, now live on Mainnet. Exact versions move frequently, so a correct answer should query and date the GitHub release feeds (or crates.io) instead of freezing these examples. Use the current `stellar` CLI name, not the deprecated `soroban` binary name, and pin to a supported SDK major appropriate for the deployed protocol/toolchain.",
+    "keyFacts": [
+     "Reports current soroban-sdk and stellar-cli versions from dated live release feeds (v27.0.0 for both as of 2026-07-09) and relates them to Protocol 27.",
+     "Flags exact versions as volatile and points to GitHub releases/crates.io rather than treating the examples as permanent."
+    ],
+    "avoid": [
+     "Do NOT call soroban-sdk v27.0.0 an RC after its stable 2026-07-08 release.",
+     "Do NOT present exact SDK/CLI versions as permanent without a dated live source.",
+     "Do NOT recommend the deprecated `soroban` binary as the current CLI name."
+    ],
+    "sources": [
+     "https://github.com/stellar/rs-soroban-sdk/releases/tag/v27.0.0",
+     "https://github.com/stellar/stellar-cli/releases/tag/v27.0.0",
+     "https://developers.stellar.org/docs/networks/software-versions"
+    ]
+   },
+   "graderNotesAppend": "POST-RELEASE CORRECTION 2026-07-09: stable soroban-sdk v27.0.0 shipped on 2026-07-08. Grade the dated live-source behavior, not the old RC example."
   },
   "q-scf-total-distributed": {
    "why": "Skeptic sweep (todo 829, instrument 2, first run) BROKE this golden: it pinned the 06-29 corpus snapshot (~$19.97M / ~223 projects, 'report this as the live snapshot') — the live metric DOUBLED in four days ($40.74M / 400 projects on 07-03), and SDF's own cumulative statements exceeded the pin even in Jan 2025. De-pinned to behavior (dated, source-labeled reporting) per the golden-truth skill's disputed-never-pinned rule.",

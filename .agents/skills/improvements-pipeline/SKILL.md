@@ -55,6 +55,29 @@ npm run improvements:lint
 
 Use `npm run improvements:lint -- --live` when intake repos were added, renamed, or questioned.
 
+## Direct Algolia remediation (stellar-docs search-mechanism findings)
+
+`stellar-docs` findings split into content gaps and search-mechanism gaps. Content gaps (a page is
+stale/wrong/missing) stay upstream on the docs repo. Search-mechanism gaps (ranking, tokenization,
+synonym/vocabulary, crawler config) are now directly remediable with the operator Algolia
+credentials in `.env` — write, crawler, and analytics tiers documented in
+`research/services/stellar-docs-algolia.md`. Reach for the direct lever only when it clears the bar:
+
+- **General mechanism only.** No per-page/per-query rules or synonyms — the same anti-overfitting
+  rule the eval loop enforces. The single load-bearing rule (`raven-promote-stellar-cli-install`) is
+  the ceiling of an acceptable single-target mechanism, not a template.
+- **Measured win first.** Prove it on the read-only A/B harness (`npm run eval:algolia-raven`,
+  `scripts/eval-algolia-raven.mjs`) before landing. A change that only helps its own case does not ship.
+- **Lowest-risk rung.** Analytics read < rule/settings write < crawler/index write; the corpus also
+  serves the real DocSearch frontend, so prefer reads and coordinate content-shaped changes upstream.
+- **Record it like a fix.** Put the change, the A/B before/after, and the live re-check in the
+  finding's `evidence`; keep any GitHub ref when a content/crawler cause also concerns the docs owner.
+- **Never print or commit an Algolia key**, and never wire the operator keys into the `execute`
+  sandbox — a model-invokable write is a gated side-effecting op, not a maintenance lever.
+
+Analytics/usage keys are also a low-risk **evidence** source: real user query and no-result streams
+quantify a finding's prevalence better than the eval corpus. Cite the analytics query and window.
+
 ## Upstream issue and PR follow-up
 
 Use this loop when reviewing issues/PRs that were opened from findings, during drift refresh,

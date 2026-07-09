@@ -301,9 +301,10 @@ adversarial reviews finish).
   guards and gate, check ADR-0003 exposure and secrets, and return a verdict with file:line
   evidence. Pick the reviewer's model per the `CLAUDE.md` model rankings ("Picking models for
   sub-agent fan-out" — reviews call for the strong-reasoning tier, ideally a different vendor
-  than the author). Spawn it in yolo/permission-bypass mode (bypass flag via `spawn_agent`'s
-  `extra_args`, per the `CLAUDE.md` Coordination bullet) so the reviewer never stalls on an
-  approval prompt. Put the brief in a Solo scratchpad and have the reviewer append findings to it.
+  than the author). Inspect `list_agent_tools`, then spawn it in yolo/permission-bypass mode so the
+  reviewer never stalls; pass a bypass flag through `spawn_agent.extra_args` only when the saved
+  command lacks it (bindings live in the `CLAUDE.md` Coordination bullet). Put the brief in a Solo
+  scratchpad and have the reviewer append findings to it.
 - Reviewer ≠ author is the invariant. Let it run to completion; reconcile every finding before
   committing. Watch for the reviewer with an idle-wake timer rather than polling.
 

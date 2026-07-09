@@ -42,16 +42,98 @@ no SSE/double-JSON parsing, `processingTimeMS` present) and equally fast.
 
 ## Auth + env vars
 
-| Env var | Value | Notes |
-| --- | --- | --- |
-| `ALGOLIA_APPLICATION_ID` | `VNSJF5AWIZ` | public, appears in hostnames |
-| `ALGOLIA_API_KEY` | (secret, in `.env`) | dedicated search key |
-| `ALGOLIA_DOCS_INDEX` | `crawler_Stellar Docs - Docusaurus` | suggested new env var; note the literal spaces |
+Two tiers now live in `.env`. The **read/search key** (`ALGOLIA_API_KEY`) powers the runtime
+gateway and is mirrored to Worker secrets. The **operator credentials** (write / crawler /
+analytics / usage / monitoring) are new as of 2026-07-09 and are for the maintenance and
+improvements loop — scripts and agents acting on the shared docs corpus — **not** the `execute`
+sandbox (see "Operator write/crawler/analytics surface" below). **Every one of these is a secret:
+never print, echo, or commit any Algolia key** (`npm run secrets:scan` covers them).
 
-Key introspection (`GET /1/keys/$ALGOLIA_API_KEY`, verified live): `acl: ["search",
+| Env var | Value | Tier | Notes |
+| --- | --- | --- | --- |
+| `ALGOLIA_APPLICATION_ID` | `VNSJF5AWIZ` | public | appears in hostnames; safe to log |
+| `ALGOLIA_API_KEY` | (secret) | read | dedicated search key; runtime + Worker secret |
+| `ALGOLIA_DOCS_INDEX` | `crawler_Stellar Docs - Docusaurus` | — | suggested env var; note the literal spaces |
+| `ALGOLIA_WRITE_API_KEY` | (secret) | operator write | index records + settings + rules + synonyms |
+| `ALGOLIA_CRAWLER_USER_ID` / `ALGOLIA_CRAWLER_API_KEY` | (secret) | operator crawler | Crawler Admin API (config, reindex, task status) |
+| `ALGOLIA_ANALYTICS_API_KEY` | (secret) | operator read | Search Analytics API (top/no-result queries) |
+| `ALGOLIA_USAGE_API_KEY` | (secret) | operator read | account usage/operations metering |
+| `ALGOLIA_MONITORING_API_KEY` | (secret) | operator read | infra/latency/incident monitoring |
+
+Read-key introspection (`GET /1/keys/$ALGOLIA_API_KEY`, verified live): `acl: ["search",
 "listIndexes", "settings"]`, `validity: 0` (never expires), created 2022-10, **no index
 restriction, no rate cap, no referer/IP restriction, no forced query params**. It can query both
-the primary and the replica, list all 6 indexes on the app, and read index settings.
+the primary and the replica, list every index on the app, and read index settings. (The app is
+down to **2 indexes** as of 2026-07-09 — the primary `crawler_Stellar Docs - Docusaurus` plus its
+`docs_replica_agent`, both ~13,064 raw records after that day's crawl — following the
+`crawler_markdown-index` retirement recorded below; earlier snapshots listed 6.)
+
+**Operator-key ACLs — introspected live 2026-07-09** (`GET /1/keys/{self}` for the app keys;
+Monitoring/Crawler probed against their own APIs). Values redacted; `validity: 0` (never expire)
+on every app key:
+
+| Key | Verified scope |
+| --- | --- |
+| `ALGOLIA_WRITE_API_KEY` | `acl: [search, browse, seeUnretrievableAttributes, listIndexes, analytics, logs, addObject, deleteObject, deleteIndex, settings, editSettings]` — full index CRUD: **add/delete records** (`addObject`/`deleteObject`), **edit settings + rules + synonyms** (`editSettings`), **delete whole indexes** (`deleteIndex`), `browse`, read analytics/logs. **No `admin` ACL** — it cannot create or manage API keys (good: the highest-blast-radius capability is absent). |
+| `ALGOLIA_ANALYTICS_API_KEY` | `acl: [listIndexes, analytics]` — read-only Search Analytics. |
+| `ALGOLIA_USAGE_API_KEY` | `acl: [usage, logs]` — account usage metering + logs. |
+| `ALGOLIA_MONITORING_API_KEY` | **Not an app key** — 403 on `/1/keys` (app `VNSJF5AWIZ`). It authenticates against the Monitoring API (`status.algolia.com`): verified `200` on `GET /1/inventory/servers` → cluster `c15-usw`, 3 servers. Account/cluster-scoped monitoring read. |
+| `ALGOLIA_CRAWLER_USER_ID` + `ALGOLIA_CRAWLER_API_KEY` | Crawler Admin API Basic auth (`crawler.algolia.com/api/1`). Verified list + detail + `?withConfig=true` read on the **single** crawler visible to it: **"Stellar Docs"** (`id 79c5d36e-ce6e-4ec3-bed3-04a30818122d`), `indexPrefix: "crawler_"`, `startUrls: [developers.stellar.org]`, `rateLimit: 8`, `schedule: "every 1 day at 12:00 am"`. Config read includes `apiKey` (the write key, embedded) — **never dump the raw config**. |
+
+For comparison, the read key stays `acl: [search, listIndexes, settings]`.
+
+**`crawler_markdown-index` fully retired — first exercise of the write/crawler lever (2026-07-09).**
+Introspection caught the tail of the earlier rejection: the index `crawler_markdown-index` had been
+deleted, but the crawler config still declared **two actions** (`Stellar Docs - Docusaurus` **and
+`markdown-index`**), so the next daily 12:00am crawl would have silently recreated it — index
+deletion and crawler-action removal are two separate steps. We closed the loop by `PATCH
+/api/1/crawlers/{id}/config` with an `actions`-only body keeping just the Docusaurus action
+(`taskId` returned, `200`); re-read confirmed `actionIndexNames: ["Stellar Docs - Docusaurus"]` with
+all other config keys intact. The index list is now the primary + `docs_replica_agent` only. This is
+the canonical low-risk pattern for the lever: it *removed* an already-rejected surface rather than
+adding a mechanism, was reversible (full config retained), and every step was verified. The local
+A/B harness (`scripts/eval-algolia-raven.mjs`) was cleaned of its now-dead `markdown-default`
+strategy in the same pass.
+
+## Operator write/crawler/analytics surface (new 2026-07-09 — handle with caution)
+
+We can now *modify* the Stellar Docs Algolia app, not just read it. This is a **shared production
+corpus** that also serves the real DocSearch frontend — it is not our worker's private data — so
+the bar is higher than for anything we own, and the caution the rest of this project applies to
+side-effecting operations applies here in full.
+
+Risk ladder — pick the lowest rung that closes the gap:
+
+1. **Analytics / usage / monitoring reads (low risk, pure evidence).** Real user query streams,
+   no-result queries, and traffic/latency are direct evidence for `improvements/` findings and
+   the discovery-redesign work — they quantify prevalence (which the eval corpus can only
+   approximate) and surface content gaps we would otherwise never see. Prefer these first. Still
+   send `analytics: false` on *our own* automated search traffic so we never pollute the very
+   dashboards we read.
+2. **Rules / synonyms / index settings writes (medium risk).** Possible now via
+   `ALGOLIA_WRITE_API_KEY`, but the anti-overfitting policy is unchanged and binds harder because
+   it is now easy to violate: **general mechanisms only, no per-page/per-query rules or synonyms**,
+   and every change must show a measured win on the read-only A/B harness
+   (`scripts/eval-algolia-raven.mjs`, `npm run eval:algolia-raven`) before it lands. The single
+   load-bearing rule `raven-promote-stellar-cli-install` is the *ceiling* of what a single-target
+   mechanism should look like, not a template to copy. A change that only helps its own test case
+   stays unshipped.
+3. **Index record writes / crawler config / reindex (highest risk).** These alter what the docs
+   team's own crawler produces and what every DocSearch user sees. Forward-only does not mean
+   careless: needs conviction or a golden/A/B win, and content-shaped fixes (a page is wrong,
+   stale, or missing) still belong upstream in `stellar/stellar-docs` — coordinate rather than
+   silently rewrite someone else's corpus. The rejected `crawler_markdown-index` (a second crawler
+   with zero measured win = standing drift surface) is the cautionary precedent.
+
+Guardrails that do **not** relax because we now have write access:
+- The A/B harness (`scripts/eval-algolia-raven.mjs`) stays **read-only** — it never creates
+  indexes, rules, synonyms, events, or crawler tasks. It is the measurement instrument for any
+  write, kept separate from the write itself.
+- Operator keys are host/script-side only. **Do not wire them into the `execute` sandbox** — a
+  model-invokable Algolia write is a side-effecting op and would require the request-context
+  approval/budget plumbing described in `CLAUDE.md` (Rules) before it could ship, on top of the
+  measured-win bar above.
+- Secrets host-side only; never printed or committed.
 
 Headers on every request:
 

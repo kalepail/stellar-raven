@@ -257,6 +257,12 @@ wrangler `^4.107.0`, compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders` b
 >   provider's `defaultHandler` (`src/auth/workos.ts`). The OG image and site fonts are generated
 >   code (`src/og.ts`, `src/fonts.ts` via `npm run site:og` / `npm run site:fonts`), not served
 >   from static asset files.
+> - **Discovery orientation shipped 2026-07-09** (`src/mcp/micro-map.ts`): the two-tool surface
+>   remains unchanged, while generated source-family/workflow guidance teaches multi-query
+>   planning. `eval/discovery/` measures the narrow one-search route-discovery layer. Searchable
+>   service/workflow catalog cards were built and cleanly reverted after real-query interception
+>   measured below the run-to-run noise floor; the successor Vectorize frontier spike is tracked
+>   separately rather than left as unused production code.
 >
 > Follow-ups and former deferrals (tracked as Solo backlog todos; project binding in CLAUDE.md):
 > - `codemode.skill.run` (executable skills) — **BUILT 2026-07-06, ship-approved** (todo 806;
@@ -282,8 +288,8 @@ wrangler `^4.107.0`, compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders` b
 5. **Policy + observability** — build-time exposure filtering, paid lane excluded, redaction,
    truncation, structured logs, and execute spans. *(shipped)*
 6. **Inventory refresh** — refresh script + drift CI + adapted surface smoke check. *(shipped)*
-7. **Evals** — routing, QA, plan, agentic, and live-data lanes with committed gate baselines and
-   own-repo formats. *(shipped; see `eval/EVALS.md`)*
+7. **Evals** — routing, discovery, QA, plan, agentic, and live-data lanes with committed gate
+   baselines and own-repo formats. *(shipped; see `eval/EVALS.md`)*
 8. **Deploy + auth** — WorkOS-backed OAuth at `/mcp` with admin-token + local-dev bypasses;
    deployed on the default route and alias. *(shipped)*
 

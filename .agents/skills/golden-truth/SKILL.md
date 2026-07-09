@@ -92,14 +92,14 @@ useful verdict — never stretch weak evidence; when two agents disagree, run a 
 follow-up probe — never coin-flip, never average.
 
 Use Solo for this fan-out when working in this repo: create or reuse the round scratchpad,
-spawn one agent per claim cluster (in yolo/permission-bypass mode — pass the runtime's bypass
-flag via `spawn_agent`'s `extra_args`, per the `CLAUDE.md` Coordination bullet — so a child never
-stalls on an approval prompt; pick each agent's model per the `CLAUDE.md` rankings, "Picking
-models for sub-agent fan-out" — verification research is bulk-tier work, adjudicating disputed
-clusters is review-tier), and have agents append matrices directly to the
-scratchpad. The authoring agent edits `golden-overrides.json` only after reconciling those
-independent matrices. For broad corpus-health or drift-refresh work, let `truth-maintenance`
-coordinate this lane alongside eval and improvements review.
+inspect `list_agent_tools`, and spawn one agent per claim cluster in yolo/permission-bypass mode
+so a child never stalls. Pass a bypass flag through `spawn_agent.extra_args` only when the saved
+command lacks it (bindings live in the `CLAUDE.md` Coordination bullet). Pick each agent's model
+per the `CLAUDE.md` rankings, "Picking models for sub-agent fan-out" — verification research is
+bulk-tier work, adjudicating disputed clusters is review-tier — and have agents append matrices
+directly to the scratchpad. The authoring agent edits `golden-overrides.json` only after
+reconciling those independent matrices. For broad corpus-health or drift-refresh work, let
+`truth-maintenance` coordinate this lane alongside eval and improvements review.
 
 **Independent re-verification lane (high-stakes changes).** The corroboration matrix is
 authored by the agent proposing the change — a matrix review can rubber-stamp its blind

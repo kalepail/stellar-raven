@@ -353,6 +353,32 @@ cases; enumeration-tail/caveat/corroboration omissions are real but not yet a me
 The full stored-row judge-regression gate remains deliberately deferred because committed replay
 fixtures conflict with the repo's results-local-only convention.
 
+**Results — 2026-07-09 truth-maintenance checkpoint** (todo 900; answering/judge
+`claude-sonnet-5`, rubric v2.4 / pack p3, dev server on the shipped P1 discovery-guidance build).
+The post-P27 focused smoke
+`results/2026-07-09T19-25-25-variantA.json` covered eight P27/Zipper/release cases and scored
+**0 correct / 3 partial / 5 wrong / 0 error**. Every answer and verdict was manually reviewed.
+The misses are real: exposed docs repeatedly called P26 current, treated the completed July 8 vote
+as unconfirmed, omitted the P27 history/activation tail, or denied CAP-0071 delegation; release
+answers recovered only part of the live tag/status contract. No golden was weakened to match stale
+retrieval. The official Software Versions lag and measured consumer impact are recorded in
+`improvements/stellar-docs/sd-008`; the eight local goldens were independently re-verified and
+corrected through the golden-truth workflow. The behavior-gated edge row was compiled after the
+smoke with a post-vote example; manual re-grade leaves its saved verdict wrong because the candidate
+still asserted a version without the required staleness caveat.
+
+Fresh sample-30 `results/2026-07-09T19-53-07-variantA.json`: **20 correct / 8 partial / 2 wrong /
+0 error**; plan regrade `results/2026-07-09T19-53-07-variantA.plan.json`: **28/30 requiredCovered
+(93%), mean onPlanRatio 0.98**. This score sits inside the committed v2.4/p3 noise floor and does not
+justify a full 469-case run. Review of all ten non-correct verdicts found no judge artifacts. The two
+wrongs are genuine: `q-sep-6-24-deprecation` denied the SEP-0006 status note that interactive
+components are deprecated in favor of SEP-24 (upstream docs parity gap filed as `sd-009`), and
+`q-tool-cli-install` invented a Stellar “SVM” version manager despite otherwise retrieving the
+correct install commands (answer-synthesis error, no upstream finding). The eight partials are
+heterogeneous omissions or one timeline imprecision, not a shared regression mechanism. Outcome:
+headline checkpoint and plan gate complete; prioritize upstream findings and risk-weighted corpus
+maintenance rather than spending on an archival/full-battery score.
+
 **Second judge-artifact class (2026-07-03 evening, Solo todo 826):** the rubric-v2 addendum can
 be bypassed by **avoid-clause phrasing** — a golden must-avoid banning claims "beyond corpus
 support" makes a corpus-blind judge read beyond-golden specifics as avoid-matched, wrong again.

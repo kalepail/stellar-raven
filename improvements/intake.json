@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "updated": "2026-07-07",
+  "updated": "2026-07-09",
   "notes": [
     "Verified with gh on 2026-07-07. LumenLoop API/backend intake remains unclear: the public org has skills/data/feed repos, but no obvious public API or feedback tracker.",
     "Algolia ranking-only docs findings may not have a clear public intake even though developers.stellar.org content lives in stellar/stellar-docs."
@@ -66,6 +66,8 @@
     "sd-004": { "repo": "stellar/stellar-docs", "reason": "Docs wording/content correction." },
     "sd-005": { "repo": "stellar/stellar-docs", "reason": "Docs content gap." },
     "sd-006": { "repo": "stellar/stellar-docs", "reason": "Crawler/indexed content structure for docs pages." },
-    "sd-007": { "repo": "stellar/stellar-docs", "reason": "Docs content ambiguity; in-charter per README." }
+    "sd-007": { "repo": "stellar/stellar-docs", "reason": "Docs content ambiguity; in-charter per README." },
+    "sd-008": { "repo": "stellar/stellar-docs", "reason": "Official Software Versions content lags live Mainnet activation and stable release feeds." },
+    "sd-009": { "repo": "stellar/stellar-docs", "reason": "Developer docs omit the canonical SEP-6 interactive-component deprecation status." }
   }
 }

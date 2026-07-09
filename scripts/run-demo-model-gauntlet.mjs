@@ -14,7 +14,6 @@ const DEFAULT_MODELS = [
   "google/gemini-3.5-flash",
   "xai/grok-4.3",
   "@cf/moonshotai/kimi-k2.7-code",
-  "openai/gpt-5.5",
   "anthropic/claude-fable-5",
   "@cf/openai/gpt-oss-120b"
 ];

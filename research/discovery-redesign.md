@@ -1,6 +1,11 @@
 # Discovery redesign — assessment of issues #9–#13 and the measured plan
 
-**Status:** research + plan, awaiting Tyler review before build (2026-07-09).
+**Status:** reconciled 2026-07-09 — Phase 0 + Phase 1 shipped; Phase 2 was built, measured
+below the noise floor, and fully reverted. Outcome records:
+[`p1-guidance-spec.md`](./p1-guidance-spec.md),
+[`p2-lanes-spec.md`](./p2-lanes-spec.md),
+[`p2-outcome-addendum.md`](./p2-outcome-addendum.md), and the discovery-redesign round in
+[`eval/README.md`](../eval/README.md).
 **Scope:** github.com/kalepail/stellar-raven issues #9 (problem statement), #10 (capability
 atlas), #11 (Vectorize routing cards), #12 (unified discovery surface), #13 (subtool
 taxonomy) — the "matching Questions → services/tools" redesign thread.

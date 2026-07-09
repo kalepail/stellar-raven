@@ -18,6 +18,7 @@ the headline wins.
 | — skills lane (23, hand-authored) | skills routing | free, same run | **GATE**: must not regress 18/23 top-1 (floor in `eval/gates.json`, same `--gate` enforcement; re-baselined 2026-07-03, todo 825 — 8 cases targeting the retired lumenloop-api/mcp-connect onboarding skills moved to `retiredCases`, prior floor 26/31 with the same 5 misses) |
 | — extended lane (122, real-user phrasing) | `search` on jitsu-mined questions | free, same run | Diagnostic; **target metric for retrieval work** (pass@5 120/122, zero-hit 0 as of 2026-07-03 tiered rescue — was 65/122 zero-hit; strict top-1 77/122 after op keywords, was 74) |
 | — accept-either views (corpus `acceptable_cards` ∪ overlay) | label-tolerance context | free, same run | Diagnostic only; never the headline |
+| `eval/discovery/` | one-search source-family / usable-route discovery over the live MCP HTTP surface | free aside from the local server; after discovery guidance or retrieval-shape work | Diagnostic: 43 adjudicated cases; `familyHit@3` + `usableOp@5`; known limit is verbatim single-query input |
 | `eval/agentic/` | agent-driven `search`, live server | ~$, minutes — after major search-behavior changes | Diagnostic (label-ambiguity analysis) |
 | `eval/qa/run-qa.mjs` — main battery (469) | **end-to-end search → execute → answer** | ~$0.2–0.7/case, ~30 min per 30-case sample — before/after big changes, A/Bs | **HEADLINE** (correct / partial / wrong) |
 | — live-data lane (`--cases eval/qa/live-cases.json`, 10) | `execute` **grounding** where priors fail | ~$3–7 full — after executor/adapter changes | Diagnostic for the execute path; graded on behavior (live-derived facts, as-of framing, honest refusal), never exact values |
@@ -63,6 +64,11 @@ the raven sibling repos are retired; growth happens in this repo's own formats.
    committed record with the exact results-file stamp they cite. The results dirs are unbounded
    — prune them periodically (e.g. drop results older than 30 days), keeping any stamp still
    referenced by `eval/gates.json` or a committed README record.
+8. **Discovery is intentionally narrower than QA.** `eval/discovery/` asks whether one verbatim
+   `search` surfaces an expected family in the top 3 and a usable operation/skill in the top 5.
+   It does not measure multi-search agent planning or final-answer correctness. The planned
+   extensions are an agent-allowed-≤3-search arm and replay of mined real agent queries; until
+   those land, use the agentic and QA lanes for behavioral conclusions.
 
 ## Primary artifact: service-improvement recommendations
 

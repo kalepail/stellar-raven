@@ -97,11 +97,12 @@ window. The coordinator should own the Solo ledger and spawn isolated reviewers 
 - adversarial closeout review.
 
 Use Solo `list_agent_tools` to pick available runtimes, `spawn_agent` + `send_input` to launch
-them (in yolo/permission-bypass mode — pass the runtime's bypass flag via `extra_args`, per the
-`CLAUDE.md` Coordination bullet — so a spawned reviewer never stalls on an approval prompt), and
-`timer_fire_when_idle_all`/`timer_fire_when_idle_any` to wake the coordinator when
-reviewers go idle. Each reviewer appends a narrow verdict with evidence to the scratchpad; the
-coordinator reconciles and patches. Do not pass the coordinator's expected answer to reviewers.
+them in yolo/permission-bypass mode so a spawned reviewer never stalls. Inspect the saved command
+first and pass a bypass flag via `extra_args` only when it is missing (bindings live in the
+`CLAUDE.md` Coordination bullet). Use `timer_fire_when_idle_all`/`timer_fire_when_idle_any` to wake
+the coordinator when reviewers go idle. Each reviewer appends a narrow verdict with evidence to
+the scratchpad; the coordinator reconciles and patches. Do not pass the coordinator's expected
+answer to reviewers.
 
 ## Step 1 — preflight (always, free)
 
@@ -252,7 +253,12 @@ For each miss/wrong/partial (and each surprising pass), classify and route:
 
 Anti-overfitting rules bind here: zero-hit routing cases stay failing until a *general*
 mechanism fixes them; no query→service maps, no per-question vocabulary. If the only fix
-you can imagine is case-specific, the case stays red and the note says why.
+you can imagine is case-specific, the case stays red and the note says why. **This binds harder
+now that operator Algolia write/crawler access exists** (`.env`; see
+`research/services/stellar-docs-algolia.md`): a docs-search rule/synonym you *can* now add still
+must be a general mechanism with a measured win on the A/B harness (`npm run eval:algolia-raven`)
+before it lands, and content-shaped gaps still go upstream — the `improvements-pipeline` skill's
+"Direct Algolia remediation" section is the gate.
 
 **"Do not act yet" bucket.** A finding backed by a single case goes into a named
 monitor-only list in the round record, not into a fix. The bar for acting: the same

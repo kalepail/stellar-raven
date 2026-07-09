@@ -10,7 +10,6 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const PRIMARY_INDEX = "crawler_Stellar Docs - Docusaurus";
-const MARKDOWN_INDEX = "crawler_markdown-index";
 const DOCS_FACET = [["docusaurus_tag:docs-default-current"]];
 const MEETINGS_FACET = [["docusaurus_tag:-docs-default-current"]];
 
@@ -113,12 +112,6 @@ const STRATEGIES = [
     label: "primary-only meetings",
     index: PRIMARY_INDEX,
     params: { facetFilters: MEETINGS_FACET, enableRules: false }
-  },
-  {
-    id: "markdown-default",
-    label: "markdown index",
-    index: MARKDOWN_INDEX,
-    params: {}
   }
 ];
 
@@ -251,11 +244,6 @@ function summarize(results) {
       .sort((a, b) => a.expectedRank - b.expectedRank)[0];
     const primaryRulesBest = bestRank(item.results, ["primary-docs-rules", "primary-meetings-rules"]);
     const primaryNoRulesBest = bestRank(item.results, ["primary-docs-no-rules", "primary-meetings-no-rules"]);
-    const markdownRank = item.results.find((r) => r.strategy === "markdown-default")?.expectedRank ?? null;
-    const markdownWinsPrimary =
-      markdownRank !== null &&
-      (primaryRulesBest === null || markdownRank < primaryRulesBest) &&
-      (primaryNoRulesBest === null || markdownRank < primaryNoRulesBest);
     const primaryGood = primaryRulesBest !== null && primaryRulesBest <= 3;
     return {
       id: item.id,
@@ -264,15 +252,11 @@ function summarize(results) {
       query: item.query,
       primaryRulesBest,
       primaryNoRulesBest,
-      markdownRank,
       bestStrategy: bestAny?.strategy ?? null,
       bestRank: bestAny?.expectedRank ?? null,
-      markdownWinsPrimary,
       recommendation: primaryGood
         ? "Primary DocSearch now covers this in the top 3; keep this as a regression check for crawler/rule drift."
-        : markdownWinsPrimary
-          ? "Markdown index wins a case the primary index loses; this is evidence for keeping the markdown op."
-          : bestAny && bestAny.expectedRank <= 3
+        : bestAny && bestAny.expectedRank <= 3
           ? "A non-default primary query strategy can cover this; prefer routing/category selection over adding a second docs op."
           : "Needs supplement records or upstream indexing/rules; query strategy alone did not reach the target."
     };
@@ -302,21 +286,13 @@ function printHuman(results) {
   }
 
   console.log("\n## Evidence table");
-  console.log("| Category | Case | Primary+rules | Primary-only (rules disabled) | Markdown index | Best | Decision note |");
-  console.log("|---|---|---:|---:|---:|---|---|");
+  console.log("| Category | Case | Primary+rules | Primary-only (rules disabled) | Best | Decision note |");
+  console.log("|---|---|---:|---:|---|---|");
   for (const row of summarize(results)) {
     const best = row.bestStrategy ? `${row.bestStrategy} ${rankLabel(row.bestRank)}` : "none";
     console.log(
-      `| ${row.category} | ${row.id} | ${rankLabel(row.primaryRulesBest)} | ${rankLabel(row.primaryNoRulesBest)} | ${rankLabel(row.markdownRank)} | ${best} | ${row.recommendation} |`
+      `| ${row.category} | ${row.id} | ${rankLabel(row.primaryRulesBest)} | ${rankLabel(row.primaryNoRulesBest)} | ${best} | ${row.recommendation} |`
     );
-  }
-
-  const markdownWins = summarize(results).filter((row) => row.markdownWinsPrimary);
-  console.log("\n## Markdown decision");
-  if (markdownWins.length) {
-    console.log(`Markdown wins ${markdownWins.length} case(s): ${markdownWins.map((row) => row.id).join(", ")}`);
-  } else {
-    console.log("Markdown wins 0 cases against the best post-v15 primary-index arm in this harness.");
   }
 }
 

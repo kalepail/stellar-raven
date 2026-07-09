@@ -52,11 +52,11 @@ conviction or a winning A/B on golden Q→A accuracy.
    without the max-turn exhaustion that killed it.
 
 5. **Discovery-only eval instrument** — BUILT 2026-07-09 (`eval/discovery/`, discovery-redesign
-   round): 40 adjudicated cases over the live MCP HTTP surface, familyHit@3 / usableOp@5,
-   post-adjudication baseline 29/40 · 22/40. Known scope limit: naive-verbatim queries
-   under-represent the mixed register real agents use (66% of mined traffic) — the planned
-   extension is a replay lane over mined real queries (extraction pattern in the
-   2026-07-09 round ledger).
+   round): 43 adjudicated cases over the live MCP HTTP surface, familyHit@3 / usableOp@5,
+   post-PR-17-fold baseline 32/43 · 25/43. Known scope limit: naive-verbatim single queries
+   under-represent the mixed register real agents use (66% of mined traffic). Planned extensions:
+   replay mined real queries (extraction pattern in the 2026-07-09 round ledger) and add the
+   agent-allowed-≤3-search arm promised by the original Phase 0 plan.
 
 6. **Pre-cap evidence sidecar for QA judging** (runner change). Closes the residual
    judge/agent evidence asymmetry at its root: agents read full payloads via
