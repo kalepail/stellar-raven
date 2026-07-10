@@ -31,7 +31,7 @@
     "solo://proj/49/todo/judge-rubric-corpus--826 — the avoid-clause judge-artifact class (FIXED: rubric v2.1 + eval:qa:lint, commit 18e234f)",
     "eval-side freshness drift: the corpus snapshot (authored ~2026-06) predates most of the live India footprint; no upstream service defect — the services returned the data correctly"
    ],
-   "golden": {
+  "golden": {
     "answer": "- Answer from Stellar corpora (scout_research / scout_builders / scout_hackathons + the Ambassador Program), NOT general web — the regional-community question is in-corpus.\n- India is an active Stellar region: the Ambassador Program supports builders/educators forming regional chapters (events, meetups, docs). Source: https://stellar.gitbook.io/ambassador-program\n- Ground the activity in evidence — the corpus records a dense 2026 India footprint of community/ambassador-run activations (Rise In × Stellar India): Stellar Build Station 21-day builder sprints in Kolkata, Kozhikode (Kerala), Pune, and Delhi-NCR; builder workshops in Bhopal and Jabalpur; a Goa Builders Camp (5-day residency, July 2026); and Inner Circle community events across five Indian cities (2026-04-25). Rise In's November 2025 monthly update reported 250+ projects submitted from India across 9 activations. Source: Stellar Light research corpus (https://stellarlight.xyz)\n- Regional chapters can recommend Instawards (≤ $15K XLM) for local builders; they do not hand out the $150K Build grant. Source: https://stellar.gitbook.io/ambassador-program",
     "keyFacts": [
      "Confirms an active India-region Stellar community via the Ambassador Program / regional chapters.",
@@ -360,11 +360,15 @@
    "golden": {
    "answer": "Stellar hosts an institutionally validated **RWA** stack. Core live products include:\n- **Franklin Templeton BENJI / FOBXX** — tokenized US-government money-market fund, on Stellar since **2021**; first US-registered mutual fund to use a public blockchain as its system of record [stellar.org BENJI 5-year press].\n- **WisdomTree CRDT** — Private Credit & Alternative Income Digital Fund, launched on Stellar and Ethereum in **September 2025**; private credit, not Treasuries [WisdomTree release].\n- **Ondo USDY** — Treasuries-backed yieldcoin, launched on Stellar in **September 2025** for non-US persons [stellar.org Ondo release].\n\nThese dated primary sources establish a pattern centered on Treasuries and private credit, with additional institution-issued products appearing over time. Dated measures moved from **$1.52B at Q1 2026 end** in Messari's written report (crossing $2B on April 11) to about **$2.8B in early June 2026** in rwa.xyz data and the SDF president's June 4 interview. Do not turn those snapshots into a permanent total, an unsupported 'deepest chain' ranking, or an ecosystem-wide claim that other RWA categories are absent without a defined current sweep.",
     "keyFacts": [
-     "Names the live institutional RWAs on Stellar: Franklin Templeton's BENJI (FOBXX money-market fund), WisdomTree's CRDT (private credit), and Ondo's USDY (Treasuries-backed yieldcoin).",
-     "Characterizes Stellar RWA as Treasuries + private credit (institutionally validated), each with a source."
+      "Names the live institutional RWAs on Stellar: Franklin Templeton's BENJI (FOBXX money-market fund), WisdomTree's CRDT (private credit), and Ondo's USDY (Treasuries-backed yieldcoin).",
+      "Characterizes Stellar RWA as Treasuries + private credit (institutionally validated), each with a source."
+    ],
+    "avoid": [
+      "Do NOT claim live tokenized equities, real estate, or commodities on Stellar at scale without a dated source; do not present those categories as timeless whitespace.",
+      "Do NOT invent an RWA issuer/product not in the source data or misattribute a product to the wrong issuer."
     ]
-   },
-  "graderNotesAppend": "Attribution corrected 2026-07-03 (todo 829): ~$2.8B is June-2026 rwa.xyz/interview data, not the written Q1 report ($1.52B at Q1-end / $2B Apr 11). Do not penalize either dated point. REFUTE CORRECTION 2026-07-09 (todo 901): the absolute 'deepest RWA stack of any non-EVM L1' opener and the undefined cross-category 'not live at comparable scale' negative were unmeasured and are removed. Grade the named products, issuer attribution, dates, and freshness behavior; never require those unsupported comparisons."
+  },
+  "graderNotesAppend": "Attribution corrected 2026-07-03 (todo 829): ~$2.8B is June-2026 rwa.xyz/interview data, not the written Q1 report ($1.52B at Q1-end / $2B Apr 11). Do not penalize either dated point. Because a cited Lumenloop source itself misattributes $2.8B to 'the report' (ll-009), do NOT fail an answer solely for repeating that attribution; DO credit answers that date the figure or note the interview/report distinction. REFUTE CORRECTION 2026-07-09 (todo 901): the absolute 'deepest RWA stack of any non-EVM L1' opener and the undefined cross-category 'not live at comparable scale' negative were unmeasured and are removed. Grade the named products, issuer attribution, dates, and freshness behavior; never require those unsupported comparisons."
   },
   "q-eco-stellar-rwa-stablecoin-volume": {
    "why": "Consistency-sweep contradiction (register 2026-07-03), largest of the three fixes: (1) ~$2.8B and the 1,700 monthly-active-developers stat were both misattributed to Messari's written Q1 report ($2.8B = June interview/rwa.xyz; 1,700 MAD = Electric Capital's dashboard, May 2026, quoted by the SDF president); (2) the prior graderNotes' scope-difference reconciliation ('registered funds vs broad RWA incl. stablecoins') is CONTRADICTED — rwa.xyz's headline EXCLUDES stablecoins (separate ~$300M metric; a ~$300M stablecoin mcap can't bridge a $1.5B→$2.8B gap) — the gap is temporal.",
@@ -1655,9 +1659,10 @@
      "claim": "Circle issues EURC; its current EU legal issuer is Circle Internet Financial Europe SAS; EURC launched on Stellar on 2023-09-26.",
      "verdict": "confirmed",
      "classes": [
-      "A: Circle EURC legal disclosure identifies Circle Internet Financial Europe SAS as licensed issuer",
-      "A: SDF EURC launch release dates Stellar availability to 2023-09-26"
-     ]
+        "A: Circle EURC legal disclosure identifies Circle Internet Financial Europe SAS as licensed issuer",
+        "A: SDF EURC launch release dates Stellar availability to 2023-09-26"
+      ],
+      "notes": "Single-class limitation: Circle's own disclosure is the only source class in this matrix supporting the exact Circle Internet Financial Europe SAS legal-entity name; the SDF release independently corroborates the 2023-09-26 launch date only, not the entity attribution. Treat the exact legal entity as disclosure-bound and re-verify Circle's current page."
     }
    ],
    "rootCause": [
