@@ -33,8 +33,8 @@ Grounding research (live-verified across 2026-07-01…07-03; service specs refre
      `/api/openapi.json`, `/api/status` (live counts + endpoint enumeration), `/api/changelog`.
      scout-mcp is a pure 1:1 wrapper → we integrate over HTTP directly.
    - **Stellar Docs** — integrate via **direct Algolia REST** (decided 2026-07-01), not the MCP.
-     App `VNSJF5AWIZ`, index `crawler_Stellar Docs - Docusaurus` (12,867 entries, crawler active;
-     one replica `docs_replica_agent` used by the MCP). A **dedicated search key is in hand**
+     App `VNSJF5AWIZ`, index `crawler_Stellar Docs - Docusaurus` (crawler active; one replica
+     `docs_replica_agent` used by the MCP). A **dedicated search key is in hand**
      (`.env`: `ALGOLIA_APPLICATION_ID` / `ALGOLIA_API_KEY` — verified live: ACL
      search/listIndexes/settings-read, no index restriction, no per-IP rate cap, never expires).
      Spec: `research/services/stellar-docs-algolia.md`. The Docs MCP endpoint stays documented in
@@ -77,7 +77,7 @@ Host Worker  (Workers Paid · wrangler: worker_loaders LOADER · nodejs_compat)
   └─ host-side layers:
         adapters/   per-service clients, designed fresh per the live service research
         policy/     arg validation vs manifest · redaction (exposure filtered at build, ADR-0003)
-        catalog/    manifest → ConnectorDescription[] builder, cached (KV)
+        catalog/    bundled manifest → validated in-memory catalog, cached per isolate
         skills/     bundled skill store, section-indexed at build time
 ```
 
@@ -118,14 +118,14 @@ callable surface — fields chosen for what search/execute actually consume, not
 }
 ```
 
-Actual catalog (`catalog/manifest.json`; counts are authoritative in the manifest — the ADR
-below records the last structural change): **272 entries, all exposed** — 50 operations
-(lumenloop 18, scout 20, stellarDocs 12; the Docs MCP is fallback only) + 18 `skills.*` mirror
-skill entries + 204 skill `##`/file sections. **The manifest IS the exposed surface** — excluded
-surfaces (the paid research lane incl. its read half, account mutations, scout writes and their
-schema/assistant feeders, retired onboarding skills, the `lumenloop.skill.*` twin namespace) are
-filtered at build time and never emitted; there is no `policy`/`cost`/`auth` field and no runtime
-deny layer, and a build guard rejects any emitted text that references a non-exposed surface. See
+Actual catalog counts are authoritative in `catalog/manifest.json`, not repeated here because
+daily upstream and skill drift can change them. The catalog contains exposed service operations,
+`skills.*` mirror entries, and skill `##`/file sections. **The manifest IS the exposed surface** —
+excluded surfaces (the paid research lane incl. its read half, account mutations, scout writes
+and their schema/assistant feeders, retired onboarding skills, the `lumenloop.skill.*` twin
+namespace) are filtered at build time and never emitted; there is no `policy`/`cost`/`auth` field
+and no runtime deny layer, and a build guard rejects any emitted text that references a
+non-exposed surface. See
 [`research/decisions/0003-build-time-exposure-filtering.md`](./research/decisions/0003-build-time-exposure-filtering.md)
 (ADR-0003, 2026-07-04: 299→274 entries, 25→0 denied, superseding ADR-0002's deny-list model;
 2026-07-04 follow-up: 274→271, dead-end read-halves and description leaks removed, exclusion
@@ -133,9 +133,13 @@ data consolidated in `scripts/exposure.mjs`; later skill mirror drift moved the 
 204 without changing operation exposure).
 Entries additionally carry an `outputSchema` wherever the source declares one.
 
-Build pipeline: `scripts/build-catalog.mjs` reads the three service inventories + the skills
-index → emits `manifest.json` + a compiled search index bundled into the Worker. Catalog assembly
-is deterministic and offline-testable; only the inventory *refresh* touches the network.
+Build pipeline: `scripts/build-catalog.mjs` reads `inventory/lumenloop.json`,
+`inventory/stellar-light.json`, the authored `specs/stellar-docs.json`,
+`inventory/stellar-docs-titles.json` (page-title vocabulary), and
+`ecosystem-skills/MANIFEST.json`, then emits only `catalog/manifest.json`. The Worker bundles that
+manifest and scores its entries at request time; the builder emits no other search artifact.
+Catalog assembly is deterministic and offline-testable; only inventory refresh and skill-mirror
+sync touch the network.
 
 ## 3. Skills directory — selective + partial exposure
 
@@ -264,7 +268,8 @@ wrangler `^4.107.0`, compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders` b
 >   measured below the run-to-run noise floor; the successor Vectorize frontier spike is tracked
 >   separately rather than left as unused production code.
 >
-> Follow-ups and former deferrals (tracked as Solo backlog todos; project binding in CLAUDE.md):
+> Follow-ups and former deferrals (tracked as Solo backlog todos; project binding in
+> [`AGENTS.md` “Coordination”](./AGENTS.md#coordination)):
 > - `codemode.skill.run` (executable skills) — **BUILT 2026-07-06, ship-approved** (todo 806;
 >   the 2026-07-03 do-not-build decision's reopen triggers fired). Two v1 runners (project
 >   dossier, ecosystem digest) passed the design's §10 A/B gate — retrieval-neutral by
@@ -278,8 +283,9 @@ wrangler `^4.107.0`, compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders` b
 >   (`eval/plan/README.md` “Results — 2026-07-02”, conclusion).
 
 1. **Scaffold** — wrangler + pinned deps + CLAUDE.md + hygiene checks. *(shipped)*
-2. **Catalog + `search`** — manifest types, builder over the three inventories + skills,
-   host-side search with TS signatures in results. Fully offline-testable. *(shipped)*
+2. **Catalog + `search`** — manifest types, builder over the service snapshots, authored Docs
+   spec, Docs page-title snapshot, and skills manifest; host-side search with TS signatures in
+   results. Fully offline-testable. *(shipped)*
 3. **Adapters + `execute`** — per-service clients in `src/adapters/`, `DynamicWorkerExecutor`
    with namespaced providers, and `codemode.search/describe` sandbox globals. *(shipped)*
 4. **Skills store** — sectioned retrieval (`skill.read`), build-time exposure policy, and

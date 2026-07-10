@@ -28,8 +28,10 @@ that added a callable operation ships an unvetted surface; re-baselining a gate 
 didn't touch routing hides a real regression behind a moved goalpost. The whole skill exists to
 make that one call correctly and prove it.
 
-Bindings that change (which CI repo, which Solo project, which secret store) live in `CLAUDE.md`,
-not here — read it for the concrete pointers. This runbook is the procedure.
+Bindings that change (which CI repo, which Solo project, which secret store) live in
+[`AGENTS.md`](../../../AGENTS.md), especially
+[`Coordination`](../../../AGENTS.md#coordination) and [`Hard rules`](../../../AGENTS.md#hard-rules),
+not here. This runbook is the procedure.
 
 ## Step 0 — read the issue, don't trust its summary
 
@@ -72,7 +74,8 @@ Confirm the working tree touched **only generated artifacts** (`git status --sho
 classification below explicitly requires an intentional policy, runner, or baseline-source edit
 (for example `scripts/exposure.mjs`, runner `ops`, or `eval/gates.json`). Any other hand-editable
 source, doc, or script means something is wrong; stop and investigate. Generated artifacts are
-never hand-edited (`CLAUDE.md` rule).
+never hand-edited
+([`AGENTS.md` “Commands and verification”](../../../AGENTS.md#commands-and-verification)).
 
 ## Step 1b — impact audit beyond the generated catalog
 
@@ -217,8 +220,8 @@ A newly-exposed operation is a **new callable surface**. Do not ship it unexamin
 - A **removed** op that was referenced anywhere must not leave a dangling reference — the build
   guard will fail loud if it does; that failure is the signal, not a nuisance.
 - Special case — the paid Lumenloop research lane (`request_research` + its read half
-  `research_result`/`list_my_research`) stays excluded as a unit; see the `CLAUDE.md` rule before
-  touching any of the three.
+  `research_result`/`list_my_research`) stays excluded as a unit; see
+  [`AGENTS.md` “Hard rules”](../../../AGENTS.md#hard-rules) before touching any of the three.
 
 Record the exposure call and its rationale (Solo scratchpad / commit body). This is the class the
 issue means by "new/removed operations … may need policy (deny/metered) decisions."
@@ -253,8 +256,10 @@ runners' output projections are self-authored schemas — they can only prove th
 matches itself, so upstream shape drift on a declared op must be re-verified against the live
 service, not against the runner's own contract:
 
-- **Re-run the affected runners' live smoke**: against a live-serving instance (e.g. wrangler
-  dev with the local-auth gotcha from `CLAUDE.md`), `execute` a `codemode.skill.run(...)` call
+- **Re-run the affected runners' live smoke**: against a live-serving instance (for example, the
+  existing Solo `dev` process and bound URL required by
+  [`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination)), `execute` a
+  `codemode.skill.run(...)` call
   for each affected runnable id with a representative input, and confirm the envelope: `ok`
   as expected, `data.calls[].ok` all true, no section unexpectedly `null` or `softEmpty`.
 - **Re-verify projections against the observed shapes**: compare the fields each runner
@@ -293,17 +298,19 @@ Run the guards that would catch a bad absorb, and confirm the scope:
 
 For any drift that touched the operation surface or routing text — and as good hygiene even on a
 clean bump — spawn an **independent reviewer** to verify or refute the "safe to commit" call
-before committing. This mirrors the repo's dual-verify norm (`CLAUDE.md`: let independent
-adversarial reviews finish).
+before committing. This mirrors the repo's independent-review rule in
+[`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination).
 
 - Use Solo to spawn a *different* agent with an explicit adversarial brief: do NOT
   trust the maintainer's summary; re-derive the drift class from the actual `git diff`, re-run the
   guards and gate, check ADR-0003 exposure and secrets, and return a verdict with file:line
-  evidence. Pick the reviewer's model per the `CLAUDE.md` model rankings ("Picking models for
-  sub-agent fan-out" — reviews call for the strong-reasoning tier, ideally a different vendor
+  evidence. Pick the reviewer's model per
+  [`AGENTS.md` “Model routing for repo-work fan-out”](../../../AGENTS.md#model-routing-for-repo-work-fan-out)
+  — reviews call for the strong-reasoning tier, ideally a different vendor
   than the author). Inspect `list_agent_tools`, then spawn it in yolo/permission-bypass mode so the
   reviewer never stalls; pass a bypass flag through `spawn_agent.extra_args` only when the saved
-  command lacks it (bindings live in the `CLAUDE.md` Coordination bullet). Put the brief in a Solo
+  command lacks it (bindings live in
+  [`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination)). Put the brief in a Solo
   scratchpad and have the reviewer append findings to it.
 - Reviewer ≠ author is the invariant. Let it run to completion; reconcile every finding before
   committing. Watch for the reviewer with an idle-wake timer rather than polling.
