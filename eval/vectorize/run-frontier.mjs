@@ -6,7 +6,7 @@
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { loadManifest, searchCatalog } from "../../src/catalog/search.ts";
 import { MODEL, POLICY, REPO } from "./frontier-config.mjs";
 import { rerankSearchPage } from "./retrieval.mjs";
@@ -128,6 +128,10 @@ function gateVerdict(frontier) {
   return { pass: Object.values(checks).every(Boolean), checks, baselines: { legacy, bandPct, band, skillsFloor } };
 }
 
+export function shouldFailFrontier(triggerCleared) {
+  return !triggerCleared;
+}
+
 async function main() {
   const compiled = JSON.parse(readFileSync(ROUTING_CASES, "utf8"));
   const skillsData = JSON.parse(readFileSync(SKILLS_CASES, "utf8"));
@@ -178,10 +182,12 @@ async function main() {
     matrices: { lexical: replayLexical.rows, frontier: replayFrontier.rows }
   });
   console.log(JSON.stringify({ outPath, calibrationPass, lexical, frontier, gate, triggerDelta, triggerCleared }, null, 2));
-  if (!gate.pass) process.exitCode = 1;
+  if (shouldFailFrontier(triggerCleared)) process.exitCode = 1;
 }
 
-main().catch((error) => {
-  console.error(`run-frontier failed: ${error.message}`);
-  process.exit(1);
-});
+if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+  main().catch((error) => {
+    console.error(`run-frontier failed: ${error.message}`);
+    process.exit(1);
+  });
+}

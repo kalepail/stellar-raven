@@ -7,6 +7,7 @@ import { aggregateAgentEvidence, classifyMiss } from "../eval/discovery/classify
 import { capSearchEvidence, gradeVisibleSearches } from "../eval/discovery/lib.mjs";
 import { MODEL, buildCatalogCards, cardSetHash } from "../eval/vectorize/frontier-config.mjs";
 import { loadFrontierArtifact } from "../eval/vectorize/retrieval.mjs";
+import { shouldFailFrontier } from "../eval/vectorize/run-frontier.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -71,6 +72,11 @@ describe("discovery measurement extensions", () => {
 });
 
 describe("pinned Vectorize frontier artifact", () => {
+  it("fails the CLI whenever the composite trigger does not clear", () => {
+    expect(shouldFailFrontier(false)).toBe(true);
+    expect(shouldFailFrontier(true)).toBe(false);
+  });
+
   it("matches every exposed catalog card and decodes fixed-width vectors", () => {
     const loaded = loadFrontierArtifact();
     const cards = buildCatalogCards();
