@@ -93,17 +93,18 @@ async function runReplay(mode) {
     if (mode === "frontier") process.stdout.write(`[replay ${index + 1}/${replay.occurrences.length}] ${occurrence.id}\r`);
     const hits =
       mode === "lexical"
-        ? searchCatalog(CATALOG, { query: occurrence.query, limit: 5 })
-        : await rerankSearchPage(searchCatalog, CATALOG, { query: occurrence.query, limit: 5 });
+        ? searchCatalog(CATALOG, { query: occurrence.query, limit: 8 })
+        : await rerankSearchPage(searchCatalog, CATALOG, { query: occurrence.query, limit: 8 });
+    const gradedHits = hits.slice(0, 5);
     const expected = new Set(occurrence.expectedFamilies);
     const acceptable = new Set(occurrence.acceptableOps);
     rows.push({
       id: occurrence.id,
       caseId: occurrence.caseId,
       register: occurrence.register,
-      familyTop1: Boolean(hits[0] && expected.has(hits[0].service)),
-      familyTop5: hits.some((hit) => expected.has(hit.service)),
-      usableOpAt5: hits.some((hit) => acceptable.has(hit.id)),
+      familyTop1: Boolean(gradedHits[0] && expected.has(gradedHits[0].service)),
+      familyTop5: gradedHits.some((hit) => expected.has(hit.service)),
+      usableOpAt5: gradedHits.some((hit) => acceptable.has(hit.id)),
       topIds: hits.map((hit) => hit.id)
     });
   }

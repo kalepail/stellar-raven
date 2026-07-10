@@ -10,6 +10,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  capSearchEvidence,
   compactHit,
   expectedFamiliesOf,
   gradeVisibleSearches,
@@ -108,7 +109,13 @@ function runAgent(c, { mcpConfigPath, model, effort }) {
     }
   );
   if (response.error) {
-    return { searches: [], output: null, error: `agent spawn failed: ${response.error.message}` };
+    return {
+      searches: [],
+      observedSearchCount: 0,
+      searchContractValid: false,
+      output: null,
+      error: `agent spawn failed: ${response.error.message}`
+    };
   }
 
   const pending = new Map();
@@ -156,20 +163,22 @@ function runAgent(c, { mcpConfigPath, model, effort }) {
       if (message.is_error) resultError = message.subtype ?? "agent result is_error";
     }
   }
-  if (searches.length < 1 || searches.length > MAX_SEARCHES) {
-    resultError = `search-call contract breached: expected 1-${MAX_SEARCHES}, observed ${searches.length}`;
+  const capped = capSearchEvidence(searches, MAX_SEARCHES);
+  if (!capped.searchContractValid) {
+    resultError = `search-call contract breached: expected 1-${MAX_SEARCHES}, observed ${capped.observedSearchCount}`;
   }
   if (!output && !resultError) {
     resultError = `missing structured output (exit ${response.status}): ${String(response.stderr).slice(0, 400)}`;
   }
-  return { searches, output, costUsd, turns, error: resultError };
+  return { ...capped, output, costUsd, turns, error: resultError };
 }
 
 function gradeAgentRow(c, run) {
   const visible = gradeVisibleSearches(c, run.searches);
   const expected = new Set(expectedFamiliesOf(c));
-  const primaryHit = run.output ? expected.has(run.output.primaryService) : false;
-  const alternateIds = run.output?.alternateToolIds ?? [];
+  const validOutput = run.searchContractValid ? run.output : null;
+  const primaryHit = validOutput ? expected.has(validOutput.primaryService) : false;
+  const alternateIds = validOutput?.alternateToolIds ?? [];
   const anyHit =
     primaryHit ||
     alternateIds.some((id) => expected.has(String(id).split(".")[0]));
@@ -217,10 +226,18 @@ async function main() {
           ...grade,
           searches: run.searches,
           selection: run.output,
-          agent: { model, effort, turns: run.turns, costUsd: run.costUsd, error: run.error ?? null }
+          agent: {
+            model,
+            effort,
+            turns: run.turns,
+            costUsd: run.costUsd,
+            observedSearchCount: run.observedSearchCount,
+            searchContractValid: run.searchContractValid,
+            error: run.error ?? null
+          }
         });
         console.log(
-          `searches=${run.searches.length} visible-family=${grade.familyHitAt3 ? "hit" : "miss"} primary=${grade.primaryHit ? "hit" : "miss"}${run.error ? ` error=${run.error}` : ""}`
+          `searches=${run.observedSearchCount} visible-family=${grade.familyHitAt3 ? "hit" : "miss"} primary=${grade.primaryHit ? "hit" : "miss"}${run.error ? ` error=${run.error}` : ""}`
         );
       }
     }

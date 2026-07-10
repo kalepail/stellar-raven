@@ -62,7 +62,7 @@ regression.
 
 Local-only evidence stamps:
 
-- offline frontier: `2026-07-10T04-18-22-708Z-vectorize-frontier.json`;
+- offline frontier: `2026-07-10T04-33-01-150Z-vectorize-frontier.json`;
 - lexical medium agent arm, three runs: `2026-07-10T03-32-14-241Z-lexical-medium-3x-agent.json`;
 - vector medium agent arm, three runs: `2026-07-10T03-56-45-883Z-vector-medium-3x-agent.json`.
 
@@ -84,13 +84,28 @@ hard validity check, not a reported win.
 | extended strict top-1/3/5 (122) | 79 / 104 / 110 | **40 / 87 / 106** | regression |
 | extended accept-either top-1/3/5 (122) | 110 / 121 / 122 | **46 / 97 / 114** | FAIL 122/122 hold |
 | mined LumenLoop family top-1 (91 queries) | 20/91 (22.0%) | **12/91 (13.2%)** | −8.8 points |
-| mined LumenLoop family top-5 | 44/91 (48.4%) | **42/91 (46.2%)** | −2.2 points |
-| mined usable operation top-5 | 31/91 (34.1%) | **29/91 (31.9%)** | regression |
+| mined LumenLoop family top-5 | 37/91 (40.7%) | **42/91 (46.2%)** | +5.5 points; lift clears |
+| mined usable operation top-5 | 28/91 (30.8%) | **29/91 (31.9%)** | +1 occurrence |
 
-The target replay fails the preregistered lift. Its largest semantic win is Aquarius (family
-top-1 0/6→6/6), but Blend loses 10 top-1 occurrences (11/16→1/16); Comet, Phoenix, and LOBSTR
-also lose top-1 occurrences. The net is 20→12, so the result is churn with a negative balance,
-not a label reshuffle worth shipping.
+The target replay clears the top-5 lift threshold, but not the composite ship gate: every legacy
+check and the extended 122/122 hold fail. Top-1 also moves backward by 8.8 points. Per-case replay
+counts show the tradeoff rather than hiding it in the aggregate:
+
+| target case (occurrences) | lexical top-1 | vector top-1 | lexical top-5 | vector top-5 | usable op top-5 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| tokenized RWA freshness (15) | 0 | 0 | 1 | 3 | 1→0 |
+| Aquarius what-is (6) | 0 | 6 | 0 | 6 | 0→6 |
+| Comet content (14) | 2 | 0 | 6 | 8 | 3→2 |
+| Phoenix SCF (8) | 4 | 2 | 5 | 7 | 5→7 |
+| RWA overview (8) | 0 | 1 | 1 | 2 | 1→2 |
+| Soroswap what-is (12) | 2 | 2 | 5 | 5 | 5→5 |
+| LOBSTR wallet (12) | 1 | 0 | 3 | 3 | 2→3 |
+| Blend TVL (16) | 11 | 1 | 16 | 8 | 11→4 |
+| **total (91)** | **20** | **12** | **37** | **42** | **28→29** |
+
+Aquarius supplies all six of its new top-5 hits while Blend loses eight, and top-1 has the inverse
+imbalance (Aquarius +6, Blend −10, plus Comet/Phoenix/LOBSTR losses). The +5.5-point top-5 target
+gain is real, but it cannot offset the preregistered blocking regressions.
 
 ### Three-run agent matrix
 
@@ -111,8 +126,16 @@ agent. The baseline selected LumenLoop for Comet and Phoenix in all three runs (
 
 The vector mean is 45.8% versus 25.0% baseline (+20.8 points), but the gains are unstable and
 zero-sum: one Comet loss offsets a tokenized-RWA win in run 1; Aquarius and LOBSTR move in only
-two runs; Blend moves once; RWA overview times out once. The independent replay is negative,
-so this agent-primary movement does not clear the target trigger.
+two runs; Blend moves once; RWA overview times out once. The independent replay is negative at
+top-1 and the blocking gates fail, so this agent-primary movement does not clear the composite
+ship gate.
+
+The agent arm also has a known surface confound: its lexical endpoint is the full shipped server
+with generated micro-map/search guidance, while the isolated frontier endpoint intentionally
+implements only the search tool and its experimental description. It is useful as a caller-level
+stress sample, not a surface-identical retrieval A/B. The offline replay runs both policies through
+the same catalog/search code and independently decides the no-ship result; no claimed win relies
+on the confounded agent comparison.
 
 Blocking guardrails fail directly:
 

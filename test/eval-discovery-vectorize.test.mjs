@@ -3,8 +3,8 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { fileURLToPath } from "node:url";
 import { classifyRegister } from "../eval/discovery/mine-agent-queries.mjs";
-import { classifyMiss } from "../eval/discovery/classify-misses.mjs";
-import { gradeVisibleSearches } from "../eval/discovery/lib.mjs";
+import { aggregateAgentEvidence, classifyMiss } from "../eval/discovery/classify-misses.mjs";
+import { capSearchEvidence, gradeVisibleSearches } from "../eval/discovery/lib.mjs";
 import { MODEL, buildCatalogCards, cardSetHash } from "../eval/vectorize/frontier-config.mjs";
 import { loadFrontierArtifact } from "../eval/vectorize/retrieval.mjs";
 
@@ -34,6 +34,22 @@ describe("discovery measurement extensions", () => {
       { hits: [{ id: "lumenloop.search_directory", service: "lumenloop" }] }
     ]);
     expect(grade).toEqual({ familyHitAt3: true, usableOpAt5: true });
+  });
+
+  it("caps over-limit search evidence and rejects its final selection contract", () => {
+    const capped = capSearchEvidence([{ hits: [] }, { hits: [] }, { hits: [] }, { hits: [] }]);
+    expect(capped.searches).toHaveLength(3);
+    expect(capped.observedSearchCount).toBe(4);
+    expect(capped.searchContractValid).toBe(false);
+  });
+
+  it("requires family and operation recovery in the same agent run", () => {
+    const split = aggregateAgentEvidence([
+      { familyHitAt3: true, usableOpAt5: false },
+      { familyHitAt3: false, usableOpAt5: true }
+    ]);
+    expect(split).toMatchObject({ familyHitAt3: true, usableOpAt5: true, recoveredTogether: false });
+    expect(classifyMiss({ familyHitAt3: false, usableOpAt5: false }, split)).toBe("retrieval");
   });
 
   it("classifies the mined register with an explicit, deterministic rule", () => {

@@ -774,9 +774,10 @@ miss classification) and a local Qwen3-Embedding-0.6B reference harness pinned b
 runtime version, card hashes, and committed vectors. Pure lexical calibration reproduced
 213/267/305 legacy, 18/22/22 skills, and 79/104/110 extended exactly.
 
-The fixed semantic rerank failed the ship gate: mined LumenLoop replay family top-1/top-5 moved
-22.0→13.2% and 48.4→46.2%; legacy fell to 95/218/279; extended accept-either top-5 fell
-122→114. Three medium agent runs per arm moved LumenLoop primary from 2/8×3 to 3/8, 5/8,
+The fixed semantic rerank failed the composite ship gate: mined LumenLoop replay family top-1
+moved 22.0→13.2%, while top-5 improved 40.7→46.2% and cleared its target lift; legacy still
+fell to 95/218/279 and extended accept-either top-5 fell 122→114. Three medium agent runs per
+arm moved LumenLoop primary from 2/8×3 to 3/8, 5/8,
 3/8, but docs primary was only 11/12, 12/12, 11/12 and scout primary 8/10, 9/10, 8/10 in
 the vector arm. Per-case review found Aquarius wins offset by Blend/Comet churn and broad
 docs/scout ranking cannibalization. **Measured no-ship:** no production scorer, binding, index,

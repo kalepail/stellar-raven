@@ -141,6 +141,15 @@ export function gradeVisibleSearches(c, searches) {
   return { familyHitAt3, usableOpAt5 };
 }
 
+export function capSearchEvidence(searches, maxSearches = 3) {
+  const observedSearchCount = searches.length;
+  return {
+    searches: searches.slice(0, maxSearches),
+    observedSearchCount,
+    searchContractValid: observedSearchCount >= 1 && observedSearchCount <= maxSearches
+  };
+}
+
 export function summarizeDiscovery(rows) {
   const bucket = (items) => {
     const n = items.length;

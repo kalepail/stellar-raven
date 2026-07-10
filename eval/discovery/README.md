@@ -8,17 +8,30 @@ The runner talks to the real MCP server over HTTP and does not import `src/` sea
 
 ```sh
 node eval/discovery/run-discovery.mjs --url http://localhost:8788
-node eval/discovery/run-agent-discovery.mjs --url http://localhost:8788
-node eval/discovery/run-replay.mjs --url http://localhost:8788
+node eval/discovery/run-agent-discovery.mjs --url http://localhost:8787
+node eval/discovery/run-replay.mjs --url http://localhost:8787
 ```
 
-`--url` defaults to `http://localhost:8788` and may include or omit `/mcp`. For non-local targets, provide an auth token through one of `RAVEN_MCP_BEARER_TOKEN`, `MCP_BEARER_TOKEN`, `MCP_ADMIN_TOKEN`, or `RAVEN_ADMIN_TOKEN`; the runner sends it as a bearer token and never prints it.
+`run-discovery.mjs` retains its historical `http://localhost:8788` default; the new agent and
+replay runners default to the repository's Solo `dev` process at `http://localhost:8787`.
+Every `--url` may include or omit `/mcp`. For non-local targets, provide an auth token through
+one of `RAVEN_MCP_BEARER_TOKEN`, `MCP_BEARER_TOKEN`, `MCP_ADMIN_TOKEN`, or
+`RAVEN_ADMIN_TOKEN`; the runner sends it as a bearer token and never prints it.
 
 Results are written to `eval/discovery/results/<ISO-stamp>.json` and are local evidence, matching the existing eval results convention.
 
-The agent runner defaults to `claude-sonnet-5` at medium effort, launches non-interactively with permission bypass, exposes only `mcp__raven__search`, enforces one to three observed search calls, and records both visible hits and the final selected family. `--repeat N`, `--cases`, `--ids`, `--model`, and `--effort` support isolated A/Bs.
+The agent runner defaults to `claude-sonnet-5` at medium effort, launches non-interactively with
+permission bypass, and exposes only `mcp__raven__search`. It records the observed call count,
+grades at most the first three searches, and invalidates final-selection credit if the agent makes
+zero or more than three calls. `--repeat N`, `--cases`, `--ids`, `--model`, and `--effort`
+support isolated A/Bs.
 
 `mine-agent-queries.mjs` builds `mined-lumenloop-queries.json` only from agent-generated queries over committed eval questions; raw user traffic is forbidden. The committed lane has 91 occurrences across the eight LumenLoop target cases from three retained historical agentic result files. Its deterministic register classifier reports 42 mixed (46.2%), 19 entity-only, and 30 capability queries. This does not recreate the unavailable July 9 160-query artifact's 66.3% mixed share; the different retained sample is recorded honestly rather than relabeled to match history.
+
+Standalone replay smoke evidence against the existing Solo `dev` process:
+`2026-07-10T04-31-51-308Z-todo-902-smoke.json` (91/91 calls completed; family top-1
+20/91, family top-5 37/91, usable operation top-5 28/91). The result is local/gitignored by
+policy; its exact stamp and aggregate are retained here.
 
 ## Seed Pools
 
@@ -39,8 +52,9 @@ For each case, the runner calls `search` once with the case question and `limit:
 The summary reports overall counts and per-seed-pool counts. `classify-misses.mjs` pairs a one-shot result with an agent result:
 
 - `downstream`: one shot already surfaced both expected family@3 and usable op@5;
-- `agent-behavior`: one shot missed at least one metric, but the ≤3-search agent surfaced both;
-- `retrieval`: the agent still did not surface both.
+- `agent-behavior`: one shot missed at least one metric, but one ≤3-search agent run surfaced both;
+- `retrieval`: no individual agent run surfaced both. Family and operation hits from different
+  repeated runs are never OR-combined into a recovery.
 
 ## Phase 0 Baseline
 

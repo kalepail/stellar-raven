@@ -32,14 +32,16 @@ conviction or a winning A/B on golden Q→A accuracy.
    four modes; that result binds the design (stronger model, determinism preserved: pinned
    model + committed generated vectors or a versioned Vectorize index built in refresh, never
    at request time), not the idea. Spike design: target exactly the measured class — referee
-   with the discovery instrument, the mined real-query set (66% mixed register), and live
+   with the discovery instrument, the mined real-query set (the unavailable historical artifact
+   was 66% mixed register; the retained reproducible lane is 46.2%), and live
    agentic runs at ≥3 runs/arm with per-case family matrices (single runs proven unable to
    gate ±2-case movements); docs 100% and scout-medium hold as blocking guardrails. Run in a
    fresh worktree after the discovery-redesign merge. **Outcome:** the pinned local
    Qwen3-Embedding-0.6B rerank harness and prerequisite discovery lanes landed as eval assets,
-   but the retrieval mode failed: mined target replay regressed top-1/top-5, legacy and extended
-   gates broke, and three vector agent runs failed docs/scout blockers despite a noisy LumenLoop
-   primary lift. No production Vectorize/index/runtime path shipped. Full record:
+   but the retrieval mode failed the composite ship gate: mined target top-5 cleared its isolated
+   lift while top-1 regressed, legacy and extended gates broke, and three vector agent runs failed
+   docs/scout blockers despite a noisy LumenLoop primary lift. No production
+   Vectorize/index/runtime path shipped. Full record:
    `eval/vectorize/README.md`.
 
 3. **MCP 2026-07-28 spec readiness spike** (1 day; TIME-SENSITIVE — final ships ~3 weeks from

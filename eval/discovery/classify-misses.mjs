@@ -14,8 +14,18 @@ const argValue = (flag) => {
 export function classifyMiss(oneShot, agent) {
   const oneShotSufficient = oneShot.familyHitAt3 && oneShot.usableOpAt5;
   if (oneShotSufficient) return "downstream";
-  const agentRecovered = agent?.familyHitAt3 && agent?.usableOpAt5;
+  const agentRecovered = agent?.recoveredTogether ?? (agent?.familyHitAt3 && agent?.usableOpAt5);
   return agentRecovered ? "agent-behavior" : "retrieval";
+}
+
+export function aggregateAgentEvidence(candidates) {
+  if (!candidates.length) return null;
+  return {
+    familyHitAt3: candidates.some((candidate) => candidate.familyHitAt3),
+    usableOpAt5: candidates.some((candidate) => candidate.usableOpAt5),
+    recoveredTogether: candidates.some((candidate) => candidate.familyHitAt3 && candidate.usableOpAt5),
+    runs: candidates.length
+  };
 }
 
 function main() {
@@ -34,13 +44,7 @@ function main() {
 
   const rows = (oneShot.cases ?? oneShot.rows ?? []).map((row) => {
     const candidates = byCase.get(row.id) ?? [];
-    const agentBest = candidates.length
-      ? {
-          familyHitAt3: candidates.some((candidate) => candidate.familyHitAt3),
-          usableOpAt5: candidates.some((candidate) => candidate.usableOpAt5),
-          runs: candidates.length
-        }
-      : null;
+    const agentBest = aggregateAgentEvidence(candidates);
     return {
       id: row.id,
       seed: row.seed ?? null,
@@ -64,8 +68,8 @@ function main() {
       agent: path.basename(agentPath),
       rule: {
         downstream: "one-shot visibly surfaced both an expected family@3 and usable op@5",
-        agentBehavior: "one-shot missed at least one metric; <=3-search agent recovered both",
-        retrieval: "<=3-search agent still did not recover both visible metrics"
+        agentBehavior: "one-shot missed at least one metric; one <=3-search agent run recovered both",
+        retrieval: "no <=3-search agent run recovered both visible metrics"
       }
     },
     summary: { n: rows.length, counts },
