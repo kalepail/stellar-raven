@@ -10,6 +10,7 @@ evidence:
   - upstream issue #8 closed completed after fix commit aea0c125325ceed746eefaa505e3bd45dabd5ca1
   - upstream source and local mirror rechecked 2026-07-09: api-reference now documents the ramps filter, typed partner capability/freshness/trust fields, and full codeVerified fields including symbols, sdkCapabilities, and mainnetContractId
   - local mirror synchronized to aea0c125 and regenerated through skills bundle, catalog, super spec, and plan op classes; production live verification remains pending coordinator merge/deploy
+  - production verification 2026-07-10: Cloudflare version b804f6ab-3f65-45e9-82b9-cfede7725dbc served a 272-entry catalog, and codemode.skill.read for the Scout api-reference section contained the ramps filter, codeVerified, and mainnetContractId markers
 ---
 
 ## Finding
@@ -54,8 +55,17 @@ The 2026-07-09 mirror sync pins that commit and the generated runtime bundle
 contains the corrected endpoint guidance. Production proof is intentionally
 deferred until the coordinator merges and deploys this branch.
 
+That deferred proof completed on 2026-07-10 against production Cloudflare version
+`b804f6ab-3f65-45e9-82b9-cfede7725dbc`: `codemode.catalog()` returned exactly 272
+entries, the Scout skill served 17 entries, and reading its 25,351-character
+`file:references/api-reference.md` section confirmed the `ramps` filter,
+`codeVerified`, and `mainnetContractId` markers.
+
 ## Recommendation
 
 Resolved upstream. Keep the mirror pin and runtime bundle synchronized with the
 Scout source, and complete the final production read after coordinator merge and
 deploy before treating Raven's served copy as live-verified.
+
+The final production read is complete; Raven's served copy is live-verified as of
+2026-07-10.
