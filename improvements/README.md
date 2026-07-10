@@ -56,8 +56,8 @@ evidence:
   upstream changes (drift refresh is a natural checkpoint).
 - Findings here are for the **services**. Fixes to this repo (adapters,
   normalizers, catalog, eval golden) go to Solo todos instead (the Solo project binding
-  lives in CLAUDE.md) — a finding file may note that a fix landed here, but the repo work
-  is tracked there.
+  lives in [`AGENTS.md` “Coordination”](../AGENTS.md#coordination)) — a finding file may note
+  that a fix landed here, but the repo work is tracked there.
 
 ## Upstream filing channels
 

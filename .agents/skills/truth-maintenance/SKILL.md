@@ -19,7 +19,8 @@ lane verdicts, evidence, follow-ups, and cleaned-up spawned work.
 ## Solo orchestration contract
 
 Solo is the control plane. Before doing work, call `whoami`, confirm the Solo project
-binding from `CLAUDE.md`, and inspect current processes/todos/scratchpads. Do not start duplicate
+binding from [`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination), and inspect current
+processes/todos/scratchpads. Do not start duplicate
 dev servers; use the Solo `dev` command and `wait_for_bound_port`/`services_list` when a
 live server is needed.
 
@@ -44,15 +45,17 @@ Use `list_agent_tools` to inspect the saved command, then `spawn_agent`, then `s
 returned `agent_instructions` prepended. Spawn each agent in non-interactive
 yolo/permission-bypass mode so a child never stalls on an approval prompt; pass a runtime's bypass
 flag through `spawn_agent.extra_args` only when the saved command lacks it (current bindings and
-flags live in the `CLAUDE.md` Coordination bullet). Have the brief tell any agent that spawns its
+flags live in [`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination)). Have the brief tell any agent that spawns its
 own sub-agents to apply the same check. By default, agents research/review and append to the Solo
 ledger; the coordinator owns repo edits. Only delegate patches when the write set is narrow,
 explicit, and disjoint. Use `timer_fire_when_idle_all` or `timer_fire_when_idle_any` to wake the
 coordinator when agents go idle. Do not poll in a loop.
 
-Agent/model selection is a default, not a limit. The current model rankings, per-axis scores,
-and per-runtime spawn mechanics are bindings that live in `CLAUDE.md` ("Picking models for
-sub-agent fan-out") — consult them when spawning; this skill carries only the patterns:
+Agent/model selection is a default, not a limit. The current model rankings and per-runtime spawn
+mechanics are bindings in
+[`AGENTS.md` “Model routing for repo-work fan-out”](../../../AGENTS.md#model-routing-for-repo-work-fan-out)
+and [`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination) — consult them when spawning;
+this skill carries only the patterns:
 
 - Mechanical catalog/data/script checks and bulk sweeps: the cheapest agent that clears the bar
   (per the rankings' bulk/mechanical row), or a terminal script — then a stronger reviewer samples.

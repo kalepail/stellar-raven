@@ -1,9 +1,12 @@
 # inventory/ — service inventory snapshots
 
-Machine-generated snapshots of the three third-party services the unified catalog is built
-from (see `PLAN.md` §§2, 5). `scripts/build-catalog.mjs` consumes these (plus the
-`ecosystem-skills/` mirror) to emit the searchable manifest; catalog assembly itself is
-offline — only this refresh touches the network.
+Machine-generated snapshots of the three third-party services used for catalog assembly and
+drift detection (see `PLAN.md` §§2, 5). `scripts/build-catalog.mjs` directly consumes the
+Lumenloop and Stellar Light snapshots plus the Stellar Docs title snapshot; the Algolia settings
+snapshot is drift evidence only. The builder's other semantic inputs are the authored
+`specs/stellar-docs.json`, the skills manifest and its enumerated mirror Markdown files, and the
+runnable-skill registry. Catalog assembly itself is offline — only refresh and mirror sync touch
+the network.
 
 ## Refresh
 
@@ -24,14 +27,14 @@ a `.env` value (Algolia hostnames are written with an `{ALGOLIA_APPLICATION_ID}`
 | --- | --- | --- |
 | `lumenloop.json` | All 21 tool names (18 guest + 3 partner), built by **unioning** keyless `GET /v1/tools` with the authored `LUMENLOOP_PARTNER_TOOLS` name list — the list endpoint hides partner tools even with a partner key, and the union count is validated against `GET /v1/me tools.available`. Guest tools carry full per-tool detail (description, `when_to_use`/`returns`, input/output JSON Schemas, invoke block); **partner tools are name-only stubs** (`partner_stub: true` — partner-tier detail is never committed; go-public cleanup 2026-07-06). Plus all 14 skill names (public set: metadata + file paths, never contents; **partner set: name/set/tier stubs only**; no `/v1/me` count guard since `/v1/me` exposes no skills count), `/v1/me` tier/lane/tool-counts (limits deliberately not persisted), and the full keyless `GET /v1/openapi.json` spec embedded under `openapi` (33 ops: the 18 guest tool-invoke paths + account/discovery endpoints; partner tools never appear in the spec — the `tools` union is the truth). | `changelogCursor` = latest `GET /v1/changelog` entry (date/title/breaking); `openapiVersion` |
 | `stellar-light.json` | The full `GET /api/openapi.json` spec embedded under `openapi` (24 operations, keyless), plus a `GET /api/status` snapshot with volatile fields (`generatedAt`, `usage`) stripped. | `changelogLatest` = latest `GET /api/changelog` entry; `openapiVersion` |
-| `stellar-docs.json` | Live index settings for Algolia index `crawler_Stellar Docs - Docusaurus` (the facet/ranking/distinct contract), plus the `operations` block — the single `stellarDocs.search_docs` operation descriptor (default params + exposable knobs per `research/services/stellar-docs-algolia.md`). | diff of `settings` (facets, distinct, replicas, searchable attrs) |
+| `stellar-docs.json` | Live settings for Algolia index `crawler_Stellar Docs - Docusaurus` (the facet/ranking/distinct contract). Stellar Docs operation definitions are authored separately in `specs/stellar-docs.json`. | diff of `settings` (facets, distinct, replicas, searchable attrs) |
+| `stellar-docs-titles.json` | Deduplicated `type:lvl1` page titles and paths from the live Algolia index. The catalog builder scopes these titles by each Docs operation's URL prefixes and distills them into routing keywords. | page-title/path additions, removals, and rewords |
 
 ## Generated — never hand-edited
 
 Every file here is rebuilt by `scripts/refresh-inventory.mjs`; do not edit them directly
-(per `CLAUDE.md`). **One exception in kind, not in place:** the `operations` block in
-`stellar-docs.json` is authored config, but it lives as the `STELLAR_DOCS_OPERATIONS`
-constant in `scripts/refresh-inventory.mjs` — edit it there and re-run the refresh, which
-regenerates the file losslessly. The same applies to the `LUMENLOOP_PARTNER_TOOLS` name
-list (the partner-lane names hidden from `/v1/tools`); a count mismatch against `/v1/me`
-fails the run loudly.
+([`AGENTS.md` “Commands and verification”](../AGENTS.md#commands-and-verification)). Stellar Docs
+operation definitions are not inventory content: edit the authored `specs/stellar-docs.json`
+instead. The `LUMENLOOP_PARTNER_TOOLS` name list is authored in
+`scripts/refresh-inventory.mjs`; edit it there and re-run the refresh. A count mismatch against
+`/v1/me` fails the run loudly.

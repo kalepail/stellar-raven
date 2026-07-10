@@ -44,7 +44,8 @@ answering model, judge model, sample/full-set size, and results-file stamp for e
 
 The answering/judge defaults above are part of the **measurement contract** — changing them
 changes what the numbers mean, so they move only by explicit eval decision, never by the general
-model-picking guidance. That guidance (`CLAUDE.md`, "Picking models for sub-agent fan-out")
+model-picking guidance.
+[`AGENTS.md` “Model routing for repo-work fan-out”](../../../AGENTS.md#model-routing-for-repo-work-fan-out)
 applies to everything *around* the measurement: helper/reviewer/triage sub-agents the
 orchestrator fans out through Solo while running a round.
 
@@ -82,8 +83,9 @@ Decide what changed (or what question you're asking) — that picks the instrume
 | Upstream drift refresh landed | routing `--gate`; refresh `improvements/` statuses (drift is the natural checkpoint for `fixed-upstream` re-checks) and re-check `eval/qa/golden-overrides.json` entries — they cite live facts that rot; update with fresh evidence |
 | Corpus-health cadence (periodic, no code change needed) | cross-question contradiction scan (corpus-internal, no live calls: flag golden pairs whose answers can't both be true — the ancestor corpora's dominant silent-drift failure; results + verified-consistent clusters + method all live in `eval/qa/consistency-register.json`) + a sampled refute-then-repair sweep (skeptic agent attacks a small sample of goldens' claims/citations with real tools, weighted toward freshness-sensitive + numeric/version claims and lower `confidence` tags — the strata where breaks concentrate; fixes go through the `golden-truth` skill) + re-verify any `dateContingentTraps` in the register whose trigger has passed. |
 
-Tracking (Solo MCP — this repo's project binding is in CLAUDE.md): create or claim a todo for the round; open a scratchpad as
-the round's working record (numbers, per-case notes, triage table, findings drafted). Repo
+Tracking (Solo MCP — this repo's project binding is in
+[`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination)): create or claim a todo for the
+round; open a scratchpad as the round's working record (numbers, per-case notes, triage table, findings drafted). Repo
 fixes discovered during the round become **their own Solo todos** — never `improvements/` files.
 
 For a multi-lane or CI-like round, use `truth-maintenance` as the coordinator rather than
@@ -99,7 +101,8 @@ window. The coordinator should own the Solo ledger and spawn isolated reviewers 
 Use Solo `list_agent_tools` to pick available runtimes, `spawn_agent` + `send_input` to launch
 them in yolo/permission-bypass mode so a spawned reviewer never stalls. Inspect the saved command
 first and pass a bypass flag via `extra_args` only when it is missing (bindings live in the
-`CLAUDE.md` Coordination bullet). Use `timer_fire_when_idle_all`/`timer_fire_when_idle_any` to wake
+[`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination)). Use
+`timer_fire_when_idle_all`/`timer_fire_when_idle_any` to wake
 the coordinator when reviewers go idle. Each reviewer appends a narrow verdict with evidence to
 the scratchpad; the coordinator reconciles and patches. Do not pass the coordinator's expected
 answer to reviewers.

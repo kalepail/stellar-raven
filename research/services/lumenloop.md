@@ -170,7 +170,8 @@ before paying). **Their descriptions/schemas/pricing are deliberately NOT republ
 `inventory/lumenloop.json`** (partner-tier detail; go-public cleanup 2026-07-06 — the inventory
 keeps name-only stubs). All three are build-time excluded from the catalog
 (`EXCLUDED_LUMENLOOP_OPS`, `scripts/exposure.mjs`); to enable the lane, re-fetch the detail live
-per-name and follow CLAUDE.md's research-lane rule (budget gate + dedup in the same change).
+per-name and follow [`AGENTS.md` “Hard rules”](../../AGENTS.md#hard-rules) (budget gate + dedup in
+the same change).
 
 **New since prior characterization (2026-06-27):** the collection enums now include
 **`proposals`** (governance) in `get_document`, `list_documents`, `search_documents`,

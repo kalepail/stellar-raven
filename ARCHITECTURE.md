@@ -41,16 +41,16 @@ through to its `defaultHandler` (`src/auth/workos.ts`), which — besides `/auth
 `npm run site:fonts`), embedded in the Worker bundle. Repository presentation images live under
 `assets/repo/`; there is no Wrangler static-assets directory.
 
-`/demo` is the browser playground surface, intercepted before the OAuth provider's default
+`/playground` is the browser playground surface, intercepted before the OAuth provider's default
 handler in `src/server.ts`. The page (`src/demo/page.ts`) is cookie-gated through WorkOS:
-unauthenticated users see a static example trace and `/demo/login`; authenticated users get a
-same-origin SSE chat UI backed by `/demo/chat`. The chat handler (`src/demo/chat.ts`) runs the
+unauthenticated users see a static example trace and `/playground/login`; authenticated users get
+a same-origin SSE chat UI backed by `/playground/chat`. The chat handler (`src/demo/chat.ts`) runs the
 same host-side catalog search and execute runner through AI SDK tools (`src/demo/tools.ts`),
 with demo-only caps from `DEMO_CAPS` for step count, search/execute call counts, execute code
 length, replay history, output tokens, and hourly KV throttle; AI Gateway spend/rate posture is
 configured separately through the demo gateway binding/config.
 The bundled browser client keeps replayed history in page memory, not Worker storage: each new turn
-posts its current `user`/`assistant` message list back to `/demo/chat`, then the server clamps that
+posts its current `user`/`assistant` message list back to `/playground/chat`, then the server clamps that
 list to the newest 20 messages and drops oldest messages until it is within the 24k total-content
 budget when possible, always keeping the final new message. In the bundled client, tool trace frames
 (`search`/`execute` inputs, outputs, logs, and cards) are display-only and are not replayed on later
@@ -58,6 +58,9 @@ turns except to the extent the assistant's final text summarized them.
 In-script discovery is deliberately narrower than production (`codemode.describe` only for
 exact visible hit ids; no `codemode.search/catalog/spec`) so the public playground remains a
 small guided demo, not a full agent harness.
+
+The retired page URLs `/demo` and `/demo/` return a permanent redirect to `/playground`.
+No legacy login or chat subroutes exist under that prefix.
 
 Each authorized request gets a **fresh, stateless `McpServer`** served over streamable HTTP
 by `createMcpHandler` (from `agents/mcp`) — no Durable Objects, no session state. Tool
@@ -265,7 +268,7 @@ inspect provenance without reading the payload.
 Production ownership is OAuth-only in v1. `src/server.ts` derives `artifactOwner` per tool
 call from `getMcpAuthContext()?.props.subject`, the peppered WorkOS subject set by the OAuth
 provider. The cached execute runner never captures that owner; it receives an
-`ExecuteCallContext` per call. Admin-token bypasses and `/demo` pass no owner: truncated
+`ExecuteCallContext` per call. Admin-token bypasses and `/playground` pass no owner: truncated
 results still get a source-basis block, but the artifact line is a generic
 unavailable/absent state and no R2 write is made. The loopback-only dev bypass is the one
 exception for local eval fidelity: it receives the fixed owner `dev-local` only from the
@@ -446,8 +449,9 @@ emitted — no skill entry, no sections, no bundle bytes (ADR-0003; the retireme
 `RETIRED_ONBOARDING_SKILLS` in `scripts/exposure.mjs` plus the ADR). Lumenloop-API-served
 skill metadata (14 skills as zips) is likewise never emitted: public skills duplicate
 canonical `skills.*` mirror entries, and partner skills are deliberately non-mirrored.
-Currently 18 exposed skills + 204 sections; there is no `lumenloop.skill.*` namespace and no read alias —
-unknown ids fail exact-match with a nearest-id suggestion.
+Current exposed skill and section counts are authoritative in `catalog/manifest.json`; there is
+no `lumenloop.skill.*` namespace and no read alias — unknown ids fail exact-match with a
+nearest-id suggestion.
 
 **The read path** (`readSkill`, `src/skills/store.ts`) resolves through the **catalog**,
 not the filesystem: `name` must be an exact catalog id (a `#slug` suffix reads that one
@@ -498,10 +502,10 @@ Observability to query: `execute`, `op`, `skill_run`, `execute_logs_shaped`, and
 `codemode.execute` span. A timeout generally appears as `execute`/`demo-execute` error
 `Execution timed out` with `ms` around 60,000.
 
-### Demo-only `/demo/chat`
+### Playground-only `/playground/chat`
 
 The demo subject is the peppered WorkOS user id stored in the signed `__Host-RAVEN_DEMO` cookie;
-loopback dev uses the fixed subject `dev-loopback`. A "chat" is one valid `POST /demo/chat` turn
+loopback dev uses the fixed subject `dev-loopback`. A "chat" is one valid `POST /playground/chat` turn
 after method, same-origin, auth, body-size, and body-shape validation. The throttle is consumed
 before model/tool execution, so later model or tool failure still counts.
 
@@ -553,17 +557,31 @@ Observability to query: `mcp_request`, `search`, `execute`, `artifact_write`, `a
 
 ## 8. Build & refresh chain — keeping the catalog honest
 
-Generated artifacts are rebuilt by scripts, never hand-edited (CLAUDE.md rule). The chain:
+Generated artifacts are rebuilt by scripts, never hand-edited
+([`AGENTS.md` “Commands and verification”](./AGENTS.md#commands-and-verification)). The chain:
 
 ```
-scripts/refresh-inventory.mjs   (live; the ONLY network step)
+scripts/refresh-inventory.mjs   (live inventory network step)
    → inventory/lumenloop.json  inventory/stellar-light.json  inventory/stellar-docs.json
-     (+ specs/stellar-docs.json — authored spec-as-data, not fetched)
+     inventory/stellar-docs-titles.json
+specs/stellar-docs.json         (authored spec-as-data, not fetched)
+ecosystem-skills/MANIFEST.json  (written by separate networked skill-mirror sync)
 scripts/build-catalog.mjs       → catalog/manifest.json        (offline, deterministic)
 scripts/build-micro-map.mjs     → src/mcp/micro-map.ts          (offline, deterministic)
 scripts/build-super-spec.mjs    → specs/super-spec.json        (npm run spec:build)
 scripts/bundle-skills.mjs       → src/skills/bundle.json       (npm run skills:bundle)
 ```
+
+`scripts/build-catalog.mjs` has five snapshot/metadata roots: `inventory/lumenloop.json`,
+`inventory/stellar-light.json`, `specs/stellar-docs.json`,
+`inventory/stellar-docs-titles.json`, and `ecosystem-skills/MANIFEST.json`. The manifest-enumerated
+mirror Markdown files are semantic inputs too: the builder reads each exposed `SKILL.md` and
+listed additional Markdown file to derive skill descriptions, sections, and routing keywords
+(§6). The imported registry in `src/skills/runners/index.ts` supplies emitted runnable flags and
+input/output schemas. The refreshed `inventory/stellar-docs.json` is the live Algolia
+settings/drift snapshot; it is not a catalog builder input. The title snapshot contributes
+per-operation routing vocabulary and its `fetchedAt` participates in the catalog's deterministic
+`generatedAt`.
 
 Determinism is a hard property: sorted keys, sorted entries, `generatedAt` derived from the
 newest *input* snapshot (never wall clock) — consecutive runs are byte-identical, and

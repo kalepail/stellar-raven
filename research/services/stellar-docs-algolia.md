@@ -131,7 +131,8 @@ Guardrails that do **not** relax because we now have write access:
   write, kept separate from the write itself.
 - Operator keys are host/script-side only. **Do not wire them into the `execute` sandbox** — a
   model-invokable Algolia write is a side-effecting op and would require the request-context
-  approval/budget plumbing described in `CLAUDE.md` (Rules) before it could ship, on top of the
+  approval/budget plumbing described in
+  [`AGENTS.md` “Hard rules”](../../AGENTS.md#hard-rules) before it could ship, on top of the
   measured-win bar above.
 - Secrets host-side only; never printed or committed.
 

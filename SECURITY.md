@@ -20,7 +20,9 @@ window to remediate before any public disclosure.
 
 - This repository's source and generated artifacts.
 - The deployed gateway at `raven.stellar.buzz` / `agents.stellar.buzz` (auth flows, the
-  `search`/`execute` MCP surface, the `/demo` playground, sandbox isolation/egress).
+  `search`/`execute` MCP surface, the `/playground` browser surface and its login/chat routes,
+  sandbox isolation/egress). The retired `/demo` and `/demo/` page URLs only redirect to
+  `/playground`; no login or chat subroutes exist under the retired prefix.
 
 Out of scope: the upstream services the gateway aggregates (Lumenloop, Stellar Light/Scout,
 Stellar Docs) — report those to their respective owners; vulnerabilities requiring a

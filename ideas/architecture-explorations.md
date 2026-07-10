@@ -72,8 +72,8 @@ conviction or a winning A/B on golden Q→A accuracy.
 
 8. **Adopt upstream's durable approval runtime** only when a side-effecting/paid op actually
    ships — `@cloudflare/codemode` v0.3/0.4 carries the DO-backed approve/reject/rollback
-   control plane CLAUDE.md's write-op rule anticipates. No action until then; mirror upstream
-   rather than inventing.
+   control plane anticipated by [`AGENTS.md` “Hard rules”](../AGENTS.md#hard-rules). No action
+   until then; mirror upstream rather than inventing.
 
 ## Known deferred hardening leftovers (small, non-blocking)
 
