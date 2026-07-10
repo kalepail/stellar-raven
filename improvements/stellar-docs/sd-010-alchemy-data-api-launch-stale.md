@@ -7,7 +7,7 @@ evidence:
   - developers.stellar.org Indexers overview fetched 2026-07-09 still says Alchemy is "in talks" to add Stellar with a targeted launch in the first half of 2026
   - official Alchemy Stellar Data API overview fetched 2026-07-09 documents live indexed native, classic, and Soroban asset data, including transfer history, balances, and NFT holdings without operating an indexer
   - official Alchemy Stellar API quickstart fetched 2026-07-09 documents the live Stellar JSON-RPC endpoint separately from the indexed Data API
-  - todo-910 partner-doc diagnostic at 2026-07-10T02:58:15.489Z matched 7/32 Alchemy fact groups through one current Raven source call versus 32/32 in four allowlisted first-party Markdown pages; eval/partner-docs/README.md
+  - todo-910 partner-doc diagnostic at 2026-07-10T03:15:21.411Z matched 6/32 Alchemy fact groups through one current Raven source call versus 31/32 in four allowlisted first-party Markdown pages; eval/partner-docs/README.md
   - upstream fix pending in open PR https://github.com/stellar/stellar-docs/pull/2573 (head 00e3c391fcb5011dfe13e66b726004e5a00f5228; checks green as of 2026-07-09)
 probe:
   type: http-text

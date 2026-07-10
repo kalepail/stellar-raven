@@ -58,7 +58,7 @@
         ["Soroban contract tokens", "soroban"],
         ["first page"],
         ["opaque pagination cursor", "pageKey"],
-        ["data envelope", "data"]
+        ["data envelope", "results under a data envelope"]
       ]
     },
     {
@@ -86,7 +86,7 @@
       "question": "What is in the current OpenZeppelin Stellar smart-contract suite?",
       "baseline": { "type": "skill", "id": "skills.openzeppelin-stellar.setup-stellar-contracts" },
       "candidateUrls": [
-        "https://raw.githubusercontent.com/OpenZeppelin/docs/refs/heads/main/content/stellar-contracts/index.mdx"
+        "https://raw.githubusercontent.com/OpenZeppelin/docs/f304ed55579dedf7ee0d2cc46982cca67c48e700/content/stellar-contracts/index.mdx"
       ],
       "facts": [
         ["Smart Account"],
@@ -105,7 +105,7 @@
       "question": "How do OpenZeppelin Stellar smart accounts compose context rules, signers, verifiers, and policies?",
       "baseline": { "type": "skill", "id": "skills.openzeppelin-stellar.setup-stellar-contracts" },
       "candidateUrls": [
-        "https://raw.githubusercontent.com/OpenZeppelin/docs/refs/heads/main/content/stellar-contracts/accounts/smart-account.mdx"
+        "https://raw.githubusercontent.com/OpenZeppelin/docs/f304ed55579dedf7ee0d2cc46982cca67c48e700/content/stellar-contracts/accounts/smart-account.mdx"
       ],
       "facts": [
         ["CustomAccountInterface"],
@@ -124,7 +124,7 @@
       "question": "How does OpenZeppelin's Stellar RWA suite implement regulated security tokens and identity checks?",
       "baseline": { "type": "skill", "id": "skills.openzeppelin-stellar.develop-secure-contracts" },
       "candidateUrls": [
-        "https://raw.githubusercontent.com/OpenZeppelin/docs/refs/heads/main/content/stellar-contracts/tokens/rwa/rwa.mdx"
+        "https://raw.githubusercontent.com/OpenZeppelin/docs/f304ed55579dedf7ee0d2cc46982cca67c48e700/content/stellar-contracts/tokens/rwa/rwa.mdx"
       ],
       "facts": [
         ["T-REX"],
@@ -143,7 +143,7 @@
       "question": "What do the current OpenZeppelin Relayer docs say about Stellar sponsored transactions and fee-token policy?",
       "baseline": { "type": "operation", "id": "stellarDocs.search_sdk_cli_tools_docs" },
       "candidateUrls": [
-        "https://raw.githubusercontent.com/OpenZeppelin/docs/refs/heads/main/content/relayer/1.4.x/stellar.mdx"
+        "https://raw.githubusercontent.com/OpenZeppelin/docs/f304ed55579dedf7ee0d2cc46982cca67c48e700/content/relayer/1.4.x/stellar.mdx"
       ],
       "facts": [
         ["mainnet"],

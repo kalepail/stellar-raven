@@ -16,9 +16,13 @@ OpenZeppelin to MDX below the `OpenZeppelin/docs` Stellar/Relayer content roots.
 content type, UTF-8 decoding, and a 256 KiB per-document cap are enforced. It never connects to a
 partner MCP server and never calls an API described by the fetched documentation.
 
+Measured OpenZeppelin case URLs are commit-pinned; each result records `resolvedCommit` alongside
+the body SHA-256. Any Raven baseline error makes the retrieval gate `inconclusive` rather than
+silently shrinking the comparison denominator.
+
 ## 2026-07-10 baseline
 
-Canonical diagnostic run: `2026-07-10T02:58:15.489Z`, local Raven at `7cf6213`, eight cases / 64
+Canonical diagnostic run: `2026-07-10T03:15:21.411Z`, local Raven at `7cf6213`, eight cases / 64
 fact groups. Current-Raven arm used one fixed relevant operation or mirrored skill per case;
 candidate arm fetched one admitted first-party Markdown/MDX page. Both arms were scored with the
 same literal fact-group matcher.
@@ -27,16 +31,16 @@ same literal fact-group matcher.
 | --- | ---: | ---: |
 | `alchemy-stellar-data-overview` | 0/8 | 8/8 |
 | `alchemy-stellar-transfers` | 1/8 | 8/8 |
-| `alchemy-stellar-balances` | 1/8 | 8/8 |
+| `alchemy-stellar-balances` | 0/8 | 7/8 |
 | `alchemy-stellar-rpc-quickstart` | 5/8 | 8/8 |
 | `openzeppelin-stellar-suite` | 1/8 | 8/8 |
 | `openzeppelin-smart-account` | 0/8 | 8/8 |
 | `openzeppelin-stellar-rwa` | 0/8 | 8/8 |
 | `openzeppelin-stellar-relayer` | 0/8 | 8/8 |
-| **Total** | **8/64 (12.5%)** | **64/64 (100%)** |
+| **Total** | **7/64 (10.9%)** | **63/64 (98.4%)** |
 
 Candidate fetches had zero errors, redirects outside the allowlist, prompt-signal matches, or
-content-type violations. Median document fetch was 48.3 ms and p95 was 121.1 ms in this single
+content-type violations. Median document fetch was 46.0 ms and p95 was 172.4 ms in this single
 local run. The retrieval-admission threshold passed (+87.5 percentage points, eight wins, zero
 regressions).
 

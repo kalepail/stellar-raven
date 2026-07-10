@@ -63,13 +63,23 @@ export function normalizeText(value) {
 
 export function matchFacts(text, facts) {
   const normalized = normalizeText(text);
-  const matched = facts.map((alternatives) => alternatives.some((term) => normalized.includes(normalizeText(term))));
+  const matched = facts.map((alternatives) => alternatives.some((term) => containsBoundedTerm(normalized, term)));
   return {
     matched: matched.filter(Boolean).length,
     total: facts.length,
     recall: facts.length ? matched.filter(Boolean).length / facts.length : 0,
     detail: facts.map((alternatives, index) => ({ alternatives, matched: matched[index] }))
   };
+}
+
+function containsBoundedTerm(normalizedText, term) {
+  const normalizedTerm = normalizeText(term);
+  if (!normalizedTerm) return false;
+  const phrase = normalizedTerm
+    .split(" ")
+    .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("\\s+");
+  return new RegExp(`(?:^|[^\\p{L}\\p{N}_])(?:${phrase})(?=$|[^\\p{L}\\p{N}_])`, "iu").test(normalizedText);
 }
 
 export function allowedCandidateUrl(rawUrl, partner) {
@@ -80,6 +90,11 @@ export function allowedCandidateUrl(rawUrl, partner) {
     return false;
   }
   if (url.protocol !== "https:" || url.username || url.password || url.port || url.search || url.hash) return false;
+  try {
+    if (decodeURIComponent(url.pathname) !== url.pathname) return false;
+  } catch {
+    return false;
+  }
   if (partner === "alchemy") {
     return url.origin === "https://www.alchemy.com"
       && url.pathname.startsWith("/docs/")
@@ -90,6 +105,16 @@ export function allowedCandidateUrl(rawUrl, partner) {
       && /^\/OpenZeppelin\/docs\/(?:refs\/heads\/main|[0-9a-f]{40})\/content\/(?:stellar-contracts|relayer)\/.+\.mdx$/u.test(url.pathname);
   }
   return false;
+}
+
+export function resolvedCommitForUrl(rawUrl) {
+  try {
+    const url = new URL(rawUrl);
+    if (url.origin !== "https://raw.githubusercontent.com") return null;
+    return url.pathname.match(/^\/OpenZeppelin\/docs\/([0-9a-f]{40})\//u)?.[1] ?? null;
+  } catch {
+    return null;
+  }
 }
 
 function promptSignals(text) {
@@ -140,6 +165,7 @@ async function fetchAllowlistedDocument(rawUrl, partner, timeoutMs, redirectDept
     cacheControl: response.headers.get("cache-control"),
     etag: response.headers.get("etag"),
     lastModified: response.headers.get("last-modified"),
+    resolvedCommit: resolvedCommitForUrl(response.url || rawUrl),
     promptSignals: promptSignals(text)
   };
 }
@@ -209,8 +235,9 @@ export function validateSuite(suite) {
   return suite;
 }
 
-function summarize(rows) {
+export function summarize(rows) {
   const available = rows.filter((row) => row.baseline.score);
+  const baselineErrors = rows.filter((row) => row.baseline.error !== null).length;
   const baselineMatched = available.reduce((sum, row) => sum + row.baseline.score.matched, 0);
   const candidateMatched = rows.reduce((sum, row) => sum + row.candidate.score.matched, 0);
   const totalFacts = rows.reduce((sum, row) => sum + row.candidate.score.total, 0);
@@ -222,15 +249,19 @@ function summarize(rows) {
   const promptSignalCount = rows.reduce((sum, row) => sum + row.candidate.documents.reduce((n, doc) => n + doc.promptSignals.length, 0), 0);
   const baselineRecall = baselineFacts ? baselineMatched / baselineFacts : null;
   const candidateRecall = totalFacts ? candidateMatched / totalFacts : 0;
-  const retrievalGate = baselineRecall !== null
-    && candidateRecall >= baselineRecall + 0.20
-    && wins >= 3
-    && regressions === 0
-    && fetchErrors === 0
-    && allowlistViolations === 0;
+  const retrievalGate = baselineErrors > 0 || available.length !== rows.length
+    ? "inconclusive"
+    : candidateRecall >= baselineRecall + 0.20
+      && wins >= 3
+      && regressions === 0
+      && fetchErrors === 0
+      && allowlistViolations === 0
+        ? "pass"
+        : "fail";
   return {
     cases: rows.length,
     baselineCases: available.length,
+    baselineErrors,
     totalFacts,
     baselineRecall,
     candidateRecall,
@@ -244,7 +275,7 @@ function summarize(rows) {
       median: percentile(rows.flatMap((row) => row.candidate.documents.map((doc) => doc.elapsedMs)), 50),
       p95: percentile(rows.flatMap((row) => row.candidate.documents.map((doc) => doc.elapsedMs)), 95)
     },
-    retrievalAdmissionGate: retrievalGate ? "pass" : "fail",
+    retrievalAdmissionGate: retrievalGate,
     headlineQaGate: "not-run",
     shipDecision: "do-not-ship-runtime-adapter"
   };
@@ -312,6 +343,7 @@ function selfTest() {
   assert.equal(allowedCandidateUrl("https://www.alchemy.com/docs/data/llms.txt", "alchemy"), true);
   assert.equal(allowedCandidateUrl("https://www.alchemy.com/docs/reference/x.md", "alchemy"), true);
   assert.equal(allowedCandidateUrl("https://www.alchemy.com/docs/reference/x.md?raw=1", "alchemy"), false);
+  assert.equal(allowedCandidateUrl("https://www.alchemy.com/docs/%2e%2e/x.md", "alchemy"), false);
   assert.equal(allowedCandidateUrl("https://www.alchemy.com/api/delete", "alchemy"), false);
   assert.equal(allowedCandidateUrl("https://evil.example/docs/x.md", "alchemy"), false);
   assert.equal(allowedCandidateUrl("https://raw.githubusercontent.com/OpenZeppelin/docs/refs/heads/main/content/stellar-contracts/index.mdx", "openzeppelin"), true);
@@ -327,6 +359,7 @@ function selfTest() {
     ]
   });
   assert.deepEqual(parseSseJson("event: message\ndata: {\"result\":{\"ok\":true}}\n\n"), { result: { ok: true } });
+  assert.equal(matchFacts("posted data", [["POST"]]).matched, 0);
   console.log("partner-docs eval self-test ok");
 }
 

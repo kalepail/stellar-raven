@@ -10,9 +10,9 @@ not. Raven should admit named documentation sources through host-owned configura
 provenance, and the existing manifest/executor boundary. The model must never supply a URL, select
 an unreviewed `llms.txt` child, inherit a partner MCP's tools, or receive partner credentials.
 
-The spike found a strong retrieval signal: eight fixed partner-specific cases scored 8/64 (12.5%)
-against one current Raven source call and 64/64 (100%) against the admitted first-party Markdown,
-with zero fetch errors and a 121.1 ms p95 over eight candidate fetches. That result passes the
+The spike found a strong retrieval signal: eight fixed partner-specific cases scored 7/64 (10.9%)
+against one current Raven source call and 63/64 (98.4%) against the admitted first-party Markdown,
+with zero fetch errors and a 172.4 ms p95 over eight candidate fetches. That result passes the
 diagnostic retrieval-admission threshold. It does **not** pass the ship gate: the cases were
 page-derived, the baseline was not an answering agent, reliability was sampled only once, and the
 security/runtime contract has not been implemented or independently exercised. Land the harness
@@ -95,12 +95,12 @@ An admission change must satisfy all of these:
 - root discovery links are inventory candidates only. A new `llms.txt` child causes drift review;
   it never becomes reachable automatically;
 - redirects are manual and every target must pass the same allowlist; IP literals, alternate
-  ports, userinfo, and origin changes fail closed;
+  ports, userinfo, origin changes, and percent-encoded pathnames fail closed;
 - the declaration and generated inventory carry hashes. Raw GitHub content is resolved from a
   reviewed branch to a 40-character commit and fetched from that immutable revision before
   promotion. The measured OpenZeppelin commit was
-  `f304ed55579dedf7ee0d2cc46982cca67c48e700`; the measured Alchemy public docs repository was
-  `181f472af296f63ef608b6d04e7acc0a5a5706c2`.
+  `f304ed55579dedf7ee0d2cc46982cca67c48e700`; the measured `alchemyplatform/docs` repository
+  commit was `181f472af296f63ef608b6d04e7acc0a5a5706c2`.
 
 The todo-910 harness implements the outer read-only subset now: fixed URLs, the two origins/path
 families, redirect revalidation, UTF-8/type checks, 256 KiB cap, and no partner MCP/API calls. It
