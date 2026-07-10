@@ -1,0 +1,160 @@
+{
+  "$schema": "./cases.schema.json",
+  "contract": "partner-docs-retrieval-v1",
+  "authoredAt": "2026-07-09",
+  "note": "Hand-authored retrieval cases for todo 910. This is a diagnostic spike lane, not a headline QA gate and not a production routing map.",
+  "cases": [
+    {
+      "id": "alchemy-stellar-data-overview",
+      "partner": "alchemy",
+      "question": "Is Alchemy's Stellar Data API live, what data does it index, and how does pagination work?",
+      "baseline": { "type": "operation", "id": "stellarDocs.search_rpc_horizon_data_docs" },
+      "candidateUrls": [
+        "https://www.alchemy.com/docs/reference/stellar-data-api-overview.md"
+      ],
+      "facts": [
+        ["Stellar Data API"],
+        ["native", "XLM"],
+        ["classic", "trustline"],
+        ["Soroban"],
+        ["transfer history"],
+        ["account balances"],
+        ["NFT holdings"],
+        ["opaque pageKey", "pageKey cursors"]
+      ]
+    },
+    {
+      "id": "alchemy-stellar-transfers",
+      "partner": "alchemy",
+      "question": "How do I query Alchemy for Stellar transfer history across native, classic, and Soroban assets?",
+      "baseline": { "type": "operation", "id": "stellarDocs.search_rpc_horizon_data_docs" },
+      "candidateUrls": [
+        "https://www.alchemy.com/docs/data/stellar-data-api/stellar-data-api-endpoints/transfers/get-stellar-transfers.md"
+      ],
+      "facts": [
+        ["POST"],
+        ["/data/stellar/transfers"],
+        ["transferType"],
+        ["native"],
+        ["classic"],
+        ["soroban"],
+        ["pageKey"],
+        ["fromLedger", "toLedger"]
+      ]
+    },
+    {
+      "id": "alchemy-stellar-balances",
+      "partner": "alchemy",
+      "question": "How does Alchemy's Stellar balances endpoint combine XLM, trustline assets, and Soroban tokens?",
+      "baseline": { "type": "operation", "id": "stellarDocs.search_rpc_horizon_data_docs" },
+      "candidateUrls": [
+        "https://www.alchemy.com/docs/data/stellar-data-api/stellar-data-api-endpoints/balances/get-stellar-balances.md"
+      ],
+      "facts": [
+        ["POST"],
+        ["/data/stellar/balances"],
+        ["native XLM"],
+        ["classic trustline", "classic"],
+        ["Soroban contract tokens", "soroban"],
+        ["first page"],
+        ["opaque pagination cursor", "pageKey"],
+        ["data envelope", "data"]
+      ]
+    },
+    {
+      "id": "alchemy-stellar-rpc-quickstart",
+      "partner": "alchemy",
+      "question": "What is the first JSON-RPC request for Alchemy's Stellar RPC and what endpoint does it use?",
+      "baseline": { "type": "operation", "id": "stellarDocs.search_docs" },
+      "candidateUrls": [
+        "https://www.alchemy.com/docs/reference/stellar-api-quickstart.md"
+      ],
+      "facts": [
+        ["stellar-mainnet.g.alchemy.com"],
+        ["/v2/"],
+        ["getNetwork"],
+        ["JSON-RPC 2.0", "jsonrpc"],
+        ["apiKey", "API key"],
+        ["named parameters"],
+        ["getLatestLedger"],
+        ["getLedgerEntries"]
+      ]
+    },
+    {
+      "id": "openzeppelin-stellar-suite",
+      "partner": "openzeppelin",
+      "question": "What is in the current OpenZeppelin Stellar smart-contract suite?",
+      "baseline": { "type": "skill", "id": "skills.openzeppelin-stellar.setup-stellar-contracts" },
+      "candidateUrls": [
+        "https://raw.githubusercontent.com/OpenZeppelin/docs/refs/heads/main/content/stellar-contracts/index.mdx"
+      ],
+      "facts": [
+        ["Smart Account"],
+        ["Fungible Tokens"],
+        ["Non-Fungible Tokens", "NFTs"],
+        ["Real World Assets", "RWAs"],
+        ["Governor"],
+        ["Timelock Controller"],
+        ["Fee Abstraction"],
+        ["USDC"]
+      ]
+    },
+    {
+      "id": "openzeppelin-smart-account",
+      "partner": "openzeppelin",
+      "question": "How do OpenZeppelin Stellar smart accounts compose context rules, signers, verifiers, and policies?",
+      "baseline": { "type": "skill", "id": "skills.openzeppelin-stellar.setup-stellar-contracts" },
+      "candidateUrls": [
+        "https://raw.githubusercontent.com/OpenZeppelin/docs/refs/heads/main/content/stellar-contracts/accounts/smart-account.mdx"
+      ],
+      "facts": [
+        ["CustomAccountInterface"],
+        ["context rules"],
+        ["signers"],
+        ["policies"],
+        ["verifiers"],
+        ["Protocol 23"],
+        ["AuthPayload"],
+        ["authorization flow", "Rule Evaluation"]
+      ]
+    },
+    {
+      "id": "openzeppelin-stellar-rwa",
+      "partner": "openzeppelin",
+      "question": "How does OpenZeppelin's Stellar RWA suite implement regulated security tokens and identity checks?",
+      "baseline": { "type": "skill", "id": "skills.openzeppelin-stellar.develop-secure-contracts" },
+      "candidateUrls": [
+        "https://raw.githubusercontent.com/OpenZeppelin/docs/refs/heads/main/content/stellar-contracts/tokens/rwa/rwa.mdx"
+      ],
+      "facts": [
+        ["T-REX"],
+        ["KYC/AML", "KYC", "AML"],
+        ["identity verifier"],
+        ["compliance contract"],
+        ["forced transfer"],
+        ["balance recovery", "recover_balance"],
+        ["identity registry storage"],
+        ["claim topics", "trusted issuer"]
+      ]
+    },
+    {
+      "id": "openzeppelin-stellar-relayer",
+      "partner": "openzeppelin",
+      "question": "What do the current OpenZeppelin Relayer docs say about Stellar sponsored transactions and fee-token policy?",
+      "baseline": { "type": "operation", "id": "stellarDocs.search_sdk_cli_tools_docs" },
+      "candidateUrls": [
+        "https://raw.githubusercontent.com/OpenZeppelin/docs/refs/heads/main/content/relayer/1.4.x/stellar.mdx"
+      ],
+      "facts": [
+        ["mainnet"],
+        ["testnet"],
+        ["sponsored transactions"],
+        ["fee_payment_strategy"],
+        ["allowed_tokens"],
+        ["classic Stellar assets", "credit_alphanum4"],
+        ["Soroban token support will be available", "future release"],
+        ["concurrent_transactions"]
+      ]
+    }
+  ]
+}
