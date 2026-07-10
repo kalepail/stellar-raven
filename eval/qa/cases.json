@@ -5,22 +5,41 @@
     "source": "eval/qa/golden-overrides.json",
     "applied": [
       "q-asset-rwa-tokenized-freshness",
+      "q-asset-usdc-eurc-issuer",
       "q-builder-by-region-latam",
       "q-crp-anchors-by-corridor",
+      "q-crp-oz-rwa-erc3643-trex",
+      "q-defi-agent-identity-stellar-experimental",
       "q-defi-blend-scf-funding",
       "q-defi-lending-scf-flagships",
+      "q-defi-phoenix-scf",
+      "q-defi-reflector-alternatives",
       "q-defi-rwa-overview",
+      "q-eco-2025-defi-launches",
       "q-eco-lobstr-wallet",
+      "q-eco-pyusd-stellar-freshness",
+      "q-eco-stablecoins-on-stellar",
       "q-eco-stellar-rwa-stablecoin-volume",
+      "q-eco-wallets-overview",
+      "q-eco-wallets-similar",
       "q-edge-fresh-latest-protocol-version",
+      "q-edge-scf-v7-centralization-myths",
+      "q-infra-rpc-providers-list",
+      "q-infra-which-indexer",
       "q-pc-protocol-upgrade-timing",
       "q-protocol-27-cap-0071",
       "q-protocol-current-mainnet-version",
       "q-protocol-latest-stellar-core-release",
       "q-protocol-version-history-list",
+      "q-scf-award-tiers-list",
+      "q-scf-category-funded-ratio",
+      "q-scf-current-round",
       "q-scf-exhaustive-funding-report",
+      "q-scf-funding-by-category",
       "q-scf-history-blend",
       "q-scf-history-soroswap",
+      "q-scf-liquidity-award-amount",
+      "q-scf-open-rfps",
       "q-scf-regional-india",
       "q-scf-total-distributed",
       "q-sor-bindings-from-wasm-no-address",
@@ -1069,18 +1088,20 @@
       "id": "q-asset-usdc-eurc-issuer",
       "question": "Who issues USDC and EURC on Stellar, and when did EURC launch on the network?",
       "golden": {
-        "answer": "**Circle issues both USDC and EURC on Stellar** [1][2]. **USDC** is the USD-backed stablecoin,\nredeemable 1:1 for US dollars; **EURC** is the euro-backed stablecoin, redeemable 1:1 for euro under\na full-reserve model [2]. **EURC launched on the Stellar network on September 26, 2023** [2]. Both\nare issued as **classic Stellar assets**, so each automatically has a reserved Stellar Asset Contract\n(SAC) usable from Soroban. EURC is issued by Circle's MiCA-regulated EU entity (Circle Mint Europe),\nmaking it usable for EUR-denominated anchor flows in scope of MiCA.\n\nSources: [1] stellar.org \"USDC and EURC on Stellar\" (Circle) page; [2] stellar.org press release\n\"EURC Launches on the Stellar Network\" (Sept 26, 2023).",
+        "answer": "**Circle issues both USDC and EURC on Stellar.** USDC is dollar-backed and EURC is euro-backed under their applicable reserve and redemption terms. **EURC launched on Stellar on September 26, 2023.** Both are classic Stellar assets and therefore have reserved Stellar Asset Contract representations for Soroban use.\n\nIf legal-entity precision is needed, current Circle disclosures identify the licensed EURC issuer as **Circle Internet Financial Europe SAS**. Verify the current disclosure rather than relying on an older or informal 'Circle Mint Europe' label.",
         "keyFacts": [
-          "Identifies Circle as the issuer of both USDC and EURC on Stellar.",
-          "States EURC launched on the Stellar network on September 26, 2023."
+          "Identifies Circle as the product issuer of both USDC and EURC on Stellar.",
+          "States that EURC launched on Stellar on September 26, 2023.",
+          "Uses Circle Internet Financial Europe SAS when naming EURC's current EU legal issuer."
         ],
         "avoid": [
-          "Do NOT attribute USDC/EURC issuance to Tether, Paxos, or the Stellar Development Foundation.",
-          "Do NOT claim USDC/EURC are algorithmic or non-fiat-backed stablecoins."
+          "Do NOT call Circle Mint Europe the current legal issuer; use Circle Internet Financial Europe SAS or omit the legal entity if not needed.",
+          "Do NOT attribute USDC/EURC issuance to Tether, Paxos, or SDF."
         ],
         "sources": [
-          "https://stellar.org/products-and-tools/circle-usdc-eurc",
-          "https://stellar.org/press/eurc-launches-on-the-stellar-network"
+          "https://www.circle.com/eurc",
+          "https://stellar.org/press/eurc-launches-on-the-stellar-network",
+          "https://stellar.org/products-and-tools/circle-usdc-eurc"
         ]
       },
       "tags": {
@@ -1090,7 +1111,7 @@
         "confidence": "high",
         "freshness": false
       },
-      "graderNotes": "Dossier §4. Verified: Circle issues both USDC and EURC on Stellar; EURC launched on Stellar 2023-09-26, fiat-backed redeemable 1:1 for euro (stellar.org press release).\nAlso good if the answer: USDC is USD-backed and EURC is euro-backed, each redeemable 1:1. | Both are issued as classic Stellar assets (and thus get a reserved SAC).\nGolden cites: A stellar.org Circle USDC/EURC page or the EURC launch press release."
+      "graderNotes": "Dossier §4. Verified: Circle issues both USDC and EURC on Stellar; EURC launched on Stellar 2023-09-26, fiat-backed redeemable 1:1 for euro (stellar.org press release).\nAlso good if the answer: USDC is USD-backed and EURC is euro-backed, each redeemable 1:1. | Both are issued as classic Stellar assets (and thus get a reserved SAC).\nGolden cites: A stellar.org Circle USDC/EURC page or the EURC launch press release.\nLEGAL-ENTITY CORRECTION 2026-07-09 (todo 901): replace inherited 'Circle Mint Europe' wording with Circle Internet Financial Europe SAS, per Circle's current EURC disclosure."
     },
     {
       "id": "q-asset-usdc-eurc-path-fx",
@@ -1172,7 +1193,7 @@
         "confidence": "high",
         "freshness": false
       },
-      "graderNotes": "2nd builder-discovery case; exercises the location filter. No-match returns the structured filter-miss advisory, not invented names. Verified 2026-06-29 via /api/builders: directory total = 110 profiles (matches ~110), exposes a location filter; LatAm is well-represented (Brazil, Chile, Colombia, Costa Rica, Kenya appear in location data), so this query should yield real profiles, not a miss. Note: the location field is free-text, so filtering on the literal 'Latin America' may need country-level terms (Brazil/Chile/...).\nAlso good if the answer: Surfaces region/location and skill attributes per profile.\nGolden cites: Stellar Light's builder directory (scout_builders) profiles.\nAvoid list re-armed 2026-07-03 (todo 826 residual), deep-verified per the golden-truth skill (todo 828): the support-relative item split into a concrete trap (LatAm builders verifiably exist — Brazil 10, Chile 5, Costa Rica 2, Colombia 1 at probe time, all 4 sampled builders real-world-confirmed via external sites/repos/demos; country names chosen over volatile counts for drift resistance) and an answer-visible attribution guard. Grading nuances from the real-world sweep: ArcusX was on Stellar TESTNET in its 2026 demos (in development — don't penalize either 'live' per the directory or 'in development' per the demos); Boleto Guardian is boleto document-authentication/anti-fraud on Stellar rather than a payments rail; the project names 'Stellar View'/'Tippa' (Miguel Nieto) are corpus-only — the builder is real and well-footprinted, but don't require or reward those specific product names. The location field is free-text — region terms like 'Latin America' return 0; candidates must fan out by country."
+      "graderNotes": "2nd builder-discovery case; exercises the location filter. No-match returns the structured filter-miss advisory, not invented names. Verified 2026-06-29 via /api/builders: directory total = 110 profiles (matches ~110), exposes a location filter; LatAm is well-represented (Brazil, Chile, Colombia, Costa Rica, Kenya appear in location data), so this query should yield real profiles, not a miss. Note: the location field is free-text, so filtering on the literal 'Latin America' may need country-level terms (Brazil/Chile/...).\nAlso good if the answer: Surfaces region/location and skill attributes per profile.\nGolden cites: Stellar Light's builder directory (scout_builders) profiles.\nAvoid list re-armed 2026-07-03 (todo 826 residual), deep-verified per the golden-truth skill (todo 828): LatAm builders verifiably exist and sampled builders have external footprints. Grading nuances: ArcusX was on Stellar TESTNET in its 2026 demos; Boleto Guardian is boleto document-authentication/anti-fraud on Stellar rather than a generic payments rail; the project names 'Stellar View'/'Tippa' are corpus-only. POST-FIX REOPEN 2026-07-09 (todo 901): ignore the inherited note saying region filters return zero. Live API checks now return 19 builders for both 'Latin America' and 'LatAm', and 7 for Latin America plus payments. Country fan-out is optional enrichment, not a required workaround."
     },
     {
       "id": "q-builder-by-scf-tier",
@@ -1795,19 +1816,18 @@
       "id": "q-crp-oz-rwa-erc3643-trex",
       "question": "Does Stellar have an ERC-3643 or T-REX-style regulated-token standard through OpenZeppelin Stellar RWA contracts, and how does identity-registry logic fit?",
       "golden": {
-        "answer": "Yes, but with an important status caveat: Stellar has a draft SEP-0057, \"T-REX (Token for Regulated EXchanges)\", authored by OpenZeppelin contributors. It adapts the ERC-3643/T-REX regulated-token idea to Stellar/Soroban and describes permissioned tokens for RWAs such as securities, real estate, and other regulated instruments. It is not the same as Ethereum ERC-3643 running natively on Stellar, and the Stellar Protocol repository lists SEP-0057 as Draft.\n\nThe correct high-level model is a regulated token plus modular compliance and identity components. SEP-0057 describes identity verification, investor profiles, claim topics/issuers, freezing, recovery, compliance hooks, and access-control/governance concepts. Raven should avoid promising exact production APIs such as `add_identity`, profiles, or roles unless those exact names are present in the current SEP or the current OpenZeppelin Stellar implementation. The durable answer is about the draft standard and compliance architecture, not a stable copy-paste API.\n\nFor many issuers, Stellar-native regulated-asset tools still include classic authorization flags, clawback, SEP-8 approval-server patterns, and SAC/Soroban token interfaces. Identity registries and allowlists can enforce transfer policy, but they do not by themselves satisfy securities law, investor accreditation, disclosure, custody, or transfer-agent obligations.",
+        "answer": "Yes, with a status caveat: **SEP-0057**, authored by OpenZeppelin contributors, is a **Draft** Stellar T-REX-style regulated-token proposal based on ERC-3643 concepts. It describes a regulated token with modular compliance and identity components, including investor identities/claims, freezing, recovery, compliance hooks, and access control.\n\nFunction-level details are draft-sensitive. The current SEP explicitly includes an identity-registry `add_identity(...)` function, but builders must verify names and signatures against the current SEP and implementation before treating them as stable production APIs. Stellar-native authorization flags, clawback, SEP-8 approval patterns, and SAC/Soroban interfaces remain separate tools. None of these mechanisms alone satisfies securities-law, disclosure, custody, or transfer-agent obligations.",
         "keyFacts": [
-          "Identifies SEP-0057 as a draft Stellar T-REX / regulated-token proposal authored by OpenZeppelin contributors and based on ERC-3643 concepts, not an already-final protocol primitive.",
-          "Explains that concrete identity-registry/API claims must be tied to the current SEP/repository/docs and should not rely on stale or invented function names.",
-          "Explains identity/role/allowlist registries are compliance-enforcement patterns for regulated tokens, not legal compliance by themselves."
+          "Identifies SEP-0057 as a draft Stellar T-REX / regulated-token proposal based on ERC-3643 concepts, not a final protocol primitive.",
+          "Explains the identity/compliance architecture and notes that the current draft includes add_identity while function signatures remain draft-sensitive.",
+          "Explains that technical identity and allowlist mechanisms do not by themselves provide legal compliance."
         ],
         "avoid": [
-          "Do NOT claim Stellar natively implements ERC-3643/T-REX as a protocol standard unless verified by current primary sources.",
-          "Do NOT invent OpenZeppelin Stellar function names such as `add_identity` or profiles/roles without citing the current library."
+          "Do NOT claim SEP-0057 is already a final, native protocol standard.",
+          "Do NOT label add_identity invented while it is present in the current SEP, or promise any draft API as permanently stable."
         ],
         "sources": [
           "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0057.md",
-          "https://github.com/orgs/stellar/discussions/1814",
           "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/README.md",
           "https://developers.stellar.org/docs/tokens/control-asset-access"
         ]
@@ -1820,7 +1840,7 @@
         "freshness": true,
         "freshnessHorizon": "quarterly"
       },
-      "graderNotes": "2026-06-29 VERIFIED against the SEP-0057 source: status Draft, title 'T-REX (Token for Regulated EXchanges)', authors OpenZeppelin + Boyan Barakov/Ozgun Ozerk/Dennis O'Connell, last updated 2026-06-11, explicitly based on ERC-3643. Real trait fns include mint/forced_transfer/set_address_frozen/set_compliance/set_identity_verifier/verify_identity/recovery_target -- so the must_avoid example 'add_identity' is correctly an INVENTED name (not in the spec). Draft + freshness keep confidence medium; re-check status/API names before treating function-level details as stable.\nAlso good if the answer: Mentions Stellar-native regulated asset tools may include authorization flags, SEP-8 approval-server patterns, SAC/Soroban token interfaces, or OZ contract libraries depending on design. | Flags freshness because contract libraries and APIs can change quickly.\nGolden cites: Current OpenZeppelin Stellar contracts docs/repository and any Stellar docs for regulated-asset patterns."
+      "graderNotes": "2026-06-29 VERIFIED against the SEP-0057 source: status Draft, title 'T-REX (Token for Regulated EXchanges)', authors OpenZeppelin + Boyan Barakov/Ozgun Ozerk/Dennis O'Connell, last updated 2026-06-11, explicitly based on ERC-3643. Real trait fns include mint/forced_transfer/set_address_frozen/set_compliance/set_identity_verifier/verify_identity/recovery_target -- so the must_avoid example 'add_identity' is correctly an INVENTED name (not in the spec). Draft + freshness keep confidence medium; re-check status/API names before treating function-level details as stable.\nAlso good if the answer: Mentions Stellar-native regulated asset tools may include authorization flags, SEP-8 approval-server patterns, SAC/Soroban token interfaces, or OZ contract libraries depending on design. | Flags freshness because contract libraries and APIs can change quickly.\nGolden cites: Current OpenZeppelin Stellar contracts docs/repository and any Stellar docs for regulated-asset patterns.\nAPI DRIFT CORRECTION 2026-07-09 (todo 901): disregard the inherited statement that add_identity is invented. The current SEP-0057 draft explicitly specifies it. Grade the draft-status and current-source caveat, not the stale absence claim."
     },
     {
       "id": "q-crp-regional-offramp-mobilemoney",
@@ -1951,20 +1971,21 @@
       "id": "q-defi-agent-identity-stellar-experimental",
       "question": "What exists for on-chain AI-agent identity/reputation (ERC-8004 style) on Stellar, and how mature is it?",
       "golden": {
-        "answer": "**ERC-8004 (\"Trustless Agents\")** is an **Ethereum** agent-identity/reputation/validation standard:\nproposed **Aug 13 2025**, **live on Ethereum mainnet Jan 29 2026** (still **EIP \"Draft\"** status), and\nit deliberately **excludes payments** (composing with x402 for settlement) [eips.ethereum.org/EIPS/eip-8004].\nOn **Stellar**, on-chain agent identity is **experimental / hackathon-stage, not a ratified standard**.\nScout surfaces real but early efforts: **trionlabs/stellar-8004** (\"Trustless Agents (8004) on\nStellar/Soroban\", repoScore 69, Agentic Hackathon, homepage stellar8004.com) and\n**progax01/stellar8004**; **emperorsixpacks/-bear-protocol** also bundles \"agent identity\" with x402\npayments. The correct Raven-shaped answer **honestly flags the immaturity** — these are\nexperiments/ports, not a mature Stellar standard — and never presents ERC-8004 as a Stellar standard.",
+        "answer": "**ERC-8004 ('Trustless Agents')** is an **Ethereum Draft** proposal for agent identity, reputation, and validation. The primary EIP was created in August 2025 and explicitly leaves payments out of scope; x402 or another payment protocol can be composed separately.\n\nOn Stellar, on-chain agent identity remains **experimental and hackathon-stage, not a ratified ecosystem standard**. Repositories such as trionlabs/stellar-8004 and progax01/stellar8004 are real Stellar/Soroban implementation efforts, and related projects may combine agent identity with x402 payments, but repository existence is not standards adoption.\n\nA correct answer should cite the EIP for Ethereum status and repository provenance for any Stellar experiment, distinguish identity from payment settlement, and state the maturity caveat. Do not require or repeat an exact Ethereum deployment date unless a dated primary deployment record independently establishes it.",
         "keyFacts": [
-          "ERC-8004 is an Ethereum agent-identity/reputation standard (live on Ethereum mainnet 2026-01-29), not a Stellar standard.",
-          "On Stellar, on-chain agent identity is experimental/hackathon-stage (e.g. trionlabs/stellar-8004, progax01/stellar8004), NOT a mature or ratified standard.",
-          "Raven flags the immaturity honestly rather than overstating maturity."
+          "Identifies ERC-8004 as an Ethereum Draft agent-identity/reputation proposal, not a Stellar standard.",
+          "States that Stellar agent-identity implementations are experimental/hackathon-stage rather than mature or ratified.",
+          "Uses repository provenance for named Stellar experiments and keeps payments/x402 distinct from the identity proposal."
         ],
         "avoid": [
           "Do NOT assert that a mature on-chain agent-identity standard exists on Stellar.",
-          "Do NOT present ERC-8004 as a Stellar standard."
+          "Do NOT present ERC-8004 as a Stellar standard.",
+          "Do NOT gate the answer on an exact ERC-8004 Mainnet deployment date that the cited primary source does not establish."
         ],
         "sources": [
-          "https://github.com/trionlabs/stellar-8004",
           "https://eips.ethereum.org/EIPS/eip-8004",
-          "https://x.com/DavideCrapis/status/2016893815857066212"
+          "https://github.com/trionlabs/stellar-8004",
+          "https://github.com/progax01/stellar8004"
         ]
       },
       "tags": {
@@ -1975,7 +1996,7 @@
         "freshness": true,
         "freshnessHorizon": "weekly"
       },
-      "graderNotes": "Freshness:true + honesty case. Phase-2 VERIFIED: ERC-8004 ('Trustless Agents') proposed Aug 13 2025, went LIVE on Ethereum mainnet Jan 29 2026 (still EIP 'Draft' status), excludes payments and composes with x402. On Stellar, agent-identity is real but EARLY/hackathon-stage — Scout shows trionlabs/stellar-8004 ('Trustless Agents (8004) on Stellar/Soroban', repoScore 69, Agentic Hackathon, judgeScore 0.8, homepage stellar8004.com) and progax01/stellar8004 — NOT a ratified Stellar standard. emperorsixpacks/-bear-protocol also bundles agent identity. Reward honest immaturity-flagging. 2026-06-29 RE-VERIFIED: ERC-8004 EIP still 'Draft' (eips.ethereum.org) and composes with x402 for payments per The Graph/eco.com writeups; Scout repos confirm trionlabs/stellar-8004 (repoScore 69, judge 0.8, homepage stellar8004.com) and progax01/stellar8004 (repoScore 53, judge 0.6). CORRECTED repo handle bear-protocol -> emperorsixpacks/-bear-protocol (leading dash; bare 'bear-protocol' 404s); GitHub-confirmed (desc: 'commerce layer for AI agent payments on Stellar. Job escrow, agent identity, and x402 micropayments'). Confidence stays medium: the exact Jan-29 mainnet date leans on a single social-post source.\nAlso good if the answer: Surfaces real Stellar agent-identity experiments with provenance (Scout repo links, e.g. trionlabs/stellar-8004 from the Agentic Hackathon).\nGolden cites: Scout repo provenance for any Stellar experiment named; an ERC-8004 reference for the Ethereum framing."
+      "graderNotes": "Freshness:true + honesty case. Phase-2 VERIFIED: ERC-8004 ('Trustless Agents') proposed Aug 13 2025, went LIVE on Ethereum mainnet Jan 29 2026 (still EIP 'Draft' status), excludes payments and composes with x402. On Stellar, agent-identity is real but EARLY/hackathon-stage — Scout shows trionlabs/stellar-8004 ('Trustless Agents (8004) on Stellar/Soroban', repoScore 69, Agentic Hackathon, judgeScore 0.8, homepage stellar8004.com) and progax01/stellar8004 — NOT a ratified Stellar standard. emperorsixpacks/-bear-protocol also bundles agent identity. Reward honest immaturity-flagging. 2026-06-29 RE-VERIFIED: ERC-8004 EIP still 'Draft' (eips.ethereum.org) and composes with x402 for payments per The Graph/eco.com writeups; Scout repos confirm trionlabs/stellar-8004 (repoScore 69, judge 0.8, homepage stellar8004.com) and progax01/stellar8004 (repoScore 53, judge 0.6). CORRECTED repo handle bear-protocol -> emperorsixpacks/-bear-protocol (leading dash; bare 'bear-protocol' 404s); GitHub-confirmed (desc: 'commerce layer for AI agent payments on Stellar. Job escrow, agent identity, and x402 micropayments'). Confidence stays medium: the exact Jan-29 mainnet date leans on a single social-post source.\nAlso good if the answer: Surfaces real Stellar agent-identity experiments with provenance (Scout repo links, e.g. trionlabs/stellar-8004 from the Agentic Hackathon).\nGolden cites: Scout repo provenance for any Stellar experiment named; an ERC-8004 reference for the Ethereum framing.\nREFUTE CORRECTION 2026-07-09 (todo 901): the prior 2026-01-29 Ethereum-mainnet date was supported only by a single non-primary source and is removed from the key facts. Grade the durable distinction—Ethereum Draft proposal versus experimental Stellar ports—and the payment-scope caveat. Never penalize an answer for omitting that date."
     },
     {
       "id": "q-defi-agentic-payment-standards-compare",
@@ -2583,7 +2604,7 @@
         "freshness": true,
         "freshnessHorizon": "monthly"
       },
-      "graderNotes": "Added from theboycoder/StellarLight data-layer intake. Freshness-sensitive because Scout project records and SCF totals move. Live Scout re-check 2026-06-29 confirms Blend, Slender (noncustodial money-market by eq-lab), DeFindex as live lending/yield records; Orbit naming fuzzy (Orbit Finance unfunded in project search, OrbitCDP appears in research/audit context), so Orbit is not a hard gate. This file OWNS the SCF-backed-landscape lane (scout_projects; 'who built lending + which have SCF backing') — DISTINCT from q-defi-blend-alternatives (find_similar; 'are there direct substitutes for Blend').\nAlso good if the answer: Distinguishes direct lenders from Blend-routing yield vaults, CDPs, leveraged-spot, or keeper/automation infrastructure. | Uses dated directory/project records for SCF status and avoids treating dollar amounts as permanent.\nGolden cites: Current Scout/Stellar Light project records or SCF submission records for each named funded project.\nAvoid list re-armed 2026-07-03 (todo 826 residual), then deep-verified and corrected per the golden-truth skill (todo 828). Verified: OrbitCDP (Zenith Protocols) is SCF-funded per official award pages; Slender (SCF #17 + $97,500 in #21) and DeFindex ($50,000 in #32) are officially funded. Do NOT penalize a candidate for treating 'Orbit Finance' and 'OrbitCDP' as the same lineage — no primary evidence of two distinct projects exists; the aggregator's unfunded 'orbit-finance' row is likely a naming artifact (improvements/stellar-light-scout/sls-008). Amount grading: aggregator totals at probe time (Blend $50k, Slender $296,750, DeFindex $150k) are reconstructions, not official figures — never hard-gate them; note Script3's TEAM-level SCF take far exceeds the Blend-name total (SCF #7 award in the $200-350K range to Script3; 654,628 XLM to OptionBlox/YieldBlox in Seed Fund #1), so 'project award ≠ team total' is a legitimate nuance, not an error."
+      "graderNotes": "Added from theboycoder/StellarLight data-layer intake. Freshness-sensitive because Scout project records and SCF totals move. Live Scout re-check 2026-06-29 confirms Blend, Slender (noncustodial money-market by eq-lab), DeFindex as live lending/yield records; Orbit naming fuzzy (Orbit Finance unfunded in project search, OrbitCDP appears in research/audit context), so Orbit is not a hard gate. This file OWNS the SCF-backed-landscape lane (scout_projects; 'who built lending + which have SCF backing') — DISTINCT from q-defi-blend-alternatives (find_similar; 'are there direct substitutes for Blend').\nAlso good if the answer: Distinguishes direct lenders from Blend-routing yield vaults, CDPs, leveraged-spot, or keeper/automation infrastructure. | Uses dated directory/project records for SCF status and avoids treating dollar amounts as permanent.\nGolden cites: Current Scout/Stellar Light project records or SCF submission records for each named funded project.\nAvoid list re-armed 2026-07-03 (todo 826 residual), then deep-verified per the golden-truth skill (todo 828). OrbitCDP, Slender, and DeFindex are officially SCF-funded; aggregator totals are reconstructions rather than official cumulative figures, and team lineage can exceed a project-name row. POST-FIX REOPEN 2026-07-09 (todo 901): Scout now explicitly links orbit-finance to canonicalSlug orbitcdp, marks both rows Inactive, and gives OrbitCDP lifecycle/round context. Treating the names as one lineage is now supported by the directory itself, not merely a likely-artifact inference."
     },
     {
       "id": "q-defi-liquid-staking-whitespace",
@@ -2842,15 +2863,18 @@
       "id": "q-defi-phoenix-scf",
       "question": "Show Phoenix's SCF submission history on Stellar.",
       "golden": {
-        "answer": "**Phoenix is SCF-funded.** The directory record for **Phoenix** (the Soroban **DeFi Hub** AMM-based DEX,\n**$PHO** token, status Live — running constant-product and stableswap pools) shows\n**`scfAwarded: true`** with an **SCF total of ~$394,500** [1]. The SCF submission framed the AMM DEX as\nthe first of several products in the hub. Route is resolve Phoenix → report its SCF history.\n\nSource: [1] stellarlight.xyz Phoenix directory record (Scout, 2026-06-22).",
+        "answer": "Stellar Light's dated Phoenix directory record identifies **Phoenix** as an SCF-funded Soroban DeFi Hub / AMM project and reports a **Scout-reconstructed cumulative total of $394,500**. Attribute that value explicitly to the Scout corpus and its as-of date; it is not independently reproduced from an attached official per-award trail.\n\nThe durable answer resolves the correct Phoenix project and reports its SCF-funded status. Re-query the directory for the current corpus value, and use official SCF records for any individual award amount or round they actually publish.",
         "keyFacts": [
-          "Resolves Phoenix (Soroban DeFi-Hub / AMM DEX, $PHO token) and reports it IS SCF-funded, citing its SCF total (~$394,500 per the directory record), or honestly states the figure if the live number differs."
+          "Resolves Phoenix as the Soroban DeFi Hub / AMM project and reports that Scout marks it SCF-funded.",
+          "Treats the $394,500 figure as a dated Scout reconstruction, not an independently official cumulative total."
         ],
         "avoid": [
-          "Do NOT fabricate an SCF round number, amount, or tier for Phoenix not present in source data."
+          "Do NOT present Scout's reconstructed Phoenix total as an independently verified official cumulative award figure.",
+          "Do NOT invent an SCF round, tier, or award amount absent from a source."
         ],
         "sources": [
-          "https://stellarlight.xyz/project/phoenix"
+          "https://stellarlight.xyz/project/phoenix",
+          "https://communityfund.stellar.org/awards"
         ]
       },
       "tags": {
@@ -2861,7 +2885,7 @@
         "freshness": true,
         "freshnessHorizon": "quarterly"
       },
-      "graderNotes": "GROUNDED: live Scout (2026-06-22, /api/projects/search?q=Phoenix) confirms Phoenix (DeFi Hub AMM DEX, $PHO, Live) scfAwarded=true, scfTotalAwardedUSD=394500. Rubric now rewards reporting the real ~$394.5K and forbids a fabricated figure. REVIEWED 2026-06-29: re-confirmed live (q=Phoenix → 'Phoenix DeFi Hub is an SCF-funded AMM-based DEX on Stellar/Soroban (PHO token)', constant-product + stableswap pools, Live, scfTotalAwardedUSD=394500, phoenix-hub.io). SCF $ drift-sensitive → freshness_sensitive:true (quarterly); must_have now allows an honest restatement if the live figure moves rather than gating on the frozen dollar amount.\nAlso good if the answer: Identifies Phoenix as the Soroban DeFi-Hub / AMM project (constant-product + stableswap pools) when scoping the lookup.\nGolden cites: The SCF submission/funding record for Phoenix (Lumenloop/Scout directory)."
+      "graderNotes": "GROUNDED: live Scout (2026-06-22, /api/projects/search?q=Phoenix) confirms Phoenix (DeFi Hub AMM DEX, $PHO, Live) scfAwarded=true, scfTotalAwardedUSD=394500. Rubric now rewards reporting the real ~$394.5K and forbids a fabricated figure. REVIEWED 2026-06-29: re-confirmed live (q=Phoenix → 'Phoenix DeFi Hub is an SCF-funded AMM-based DEX on Stellar/Soroban (PHO token)', constant-product + stableswap pools, Live, scfTotalAwardedUSD=394500, phoenix-hub.io). SCF $ drift-sensitive → freshness_sensitive:true (quarterly); must_have now allows an honest restatement if the live figure moves rather than gating on the frozen dollar amount.\nAlso good if the answer: Identifies Phoenix as the Soroban DeFi-Hub / AMM project (constant-product + stableswap pools) when scoping the lookup.\nGolden cites: The SCF submission/funding record for Phoenix (Lumenloop/Scout directory).\nCORPUS-ONLY CORRECTION 2026-07-09 (todo 901): grade correct project resolution, SCF-funded status, and explicit Scout attribution; do not hard-gate $394,500 as an official cumulative total."
     },
     {
       "id": "q-defi-phoenix-what-is",
@@ -2925,13 +2949,14 @@
       "id": "q-defi-reflector-alternatives",
       "question": "What oracle options do I have on Stellar besides Reflector?",
       "golden": {
-        "answer": "Reflector is the **dominant and most-integrated** Stellar price oracle, but it is **not the only one** —\nthe directory lists **multiple live Stellar/Soroban oracle providers** as alternatives [1]:\n\n- **DIA** — cross-chain oracle provider, live on Stellar/Soroban, customizable price feeds.\n- **Band Protocol** — cross-chain data oracle live on Stellar/Soroban.\n- **Lightecho** — open-source, free price oracle for Soroban (built by BP Ventures).\n- **RedStone** — modular price oracle, live on Stellar/Soroban mainnet (since ~March 2026).\n- **Orally** — push/pull on-chain oracles with cross-chain capability.\n\nSo the honest answer is **yes, there are alternatives**. Reflector leads on adoption (consumed by\nBlend, Orbit CDP, etc. [2]), but a builder picking an oracle has real choices.\n\nSources: [1] stellarlight.xyz directory (Scout `oracle` search, 22 results); [2] reflector.network.",
+        "answer": "Stellar Light's oracle search is the right discovery route for projects listed as Stellar/Soroban oracle alternatives to Reflector. In a dated Scout snapshot it returned multiple candidates, including DIA, Band Protocol, Lightecho, RedStone, and Orally. Treat that as a **directory roster**, not independent proof that every integration is live today.\n\nVerify each candidate against its operator documentation before recommending it, and compare feed coverage, update model, latency, trust assumptions, and current Stellar network support. Do not claim Reflector is the only oracle, but also do not assert a 'dominant/most-integrated' ranking without a reproducible cross-provider source.",
         "keyFacts": [
-          "Names real Stellar/Soroban oracle alternatives to Reflector that are live in the directory — e.g. DIA, Band Protocol, Lightecho, RedStone (and Orally)."
+          "Uses a dated Scout oracle search to identify candidate alternatives to Reflector.",
+          "Requires provider-primary verification before treating a directory candidate as currently live and avoids an unsupported market ranking."
         ],
         "avoid": [
-          "Do NOT claim Reflector is the only oracle on Stellar with no alternatives — that is false; DIA, Band, Lightecho, and RedStone are live.",
-          "Do NOT invent a fictitious competing Stellar oracle, or name a non-Stellar oracle that is not actually live on Soroban."
+          "Do NOT claim Reflector is the only oracle candidate in the Stellar directory.",
+          "Do NOT hard-gate the exact alternative roster, current-live status, or a dominance ranking without current provider-primary evidence."
         ],
         "sources": [
           "https://stellarlight.xyz/project/reflector",
@@ -2946,7 +2971,7 @@
         "freshness": true,
         "freshnessHorizon": "quarterly"
       },
-      "graderNotes": "FRESHNESS-GATED 2026-06-29: set freshness_sensitive:true (quarterly) — the answer carries dated specifics (RedStone 'mainnet since ~March 2026', Orally) that drift. CORRECTED vs dossier: live Scout (/api/projects/search?q=oracle, total=22) shows the oracle lane is NOT single-provider. Reflector is the most-integrated, but DIA, Band, Lightecho, RedStone and Orally are all live Stellar/Soroban oracles. The 'whitespace/single-provider' Phase-1 framing was stale — gate rewards naming real alternatives and forbids the 'only oracle' claim. Rubric gates on the discipline (real alternatives + not-only-oracle), not the exact RedStone date. find_similar_projects_semantic is the right route. DIFFERENT lane from q-defi-oracles-chainlink-band (which compares against the EVM oracle giants Chainlink/Band).\nAlso good if the answer: Conveys that Reflector is the dominant / most-integrated Stellar oracle, but NOT the only one — multiple price-oracle providers are live on Soroban.\nGolden cites: The directory/Scout entries for the named alternative oracles."
+      "graderNotes": "FRESHNESS-GATED 2026-06-29: set freshness_sensitive:true (quarterly) — the answer carries dated specifics (RedStone 'mainnet since ~March 2026', Orally) that drift. CORRECTED vs dossier: live Scout (/api/projects/search?q=oracle, total=22) shows the oracle lane is NOT single-provider. Reflector is the most-integrated, but DIA, Band, Lightecho, RedStone and Orally are all live Stellar/Soroban oracles. The 'whitespace/single-provider' Phase-1 framing was stale — gate rewards naming real alternatives and forbids the 'only oracle' claim. Rubric gates on the discipline (real alternatives + not-only-oracle), not the exact RedStone date. find_similar_projects_semantic is the right route. DIFFERENT lane from q-defi-oracles-chainlink-band (which compares against the EVM oracle giants Chainlink/Band).\nAlso good if the answer: Conveys that Reflector is the dominant / most-integrated Stellar oracle, but NOT the only one — multiple price-oracle providers are live on Soroban.\nGolden cites: The directory/Scout entries for the named alternative oracles.\nSOURCE-SCOPE CORRECTION 2026-07-09 (todo 901): the named alternatives are dated Scout directory candidates. Grade discovery and verification discipline; do not require the roster or Reflector dominance as independent live truth."
     },
     {
       "id": "q-defi-reflector-content",
@@ -3056,13 +3081,13 @@
       "id": "q-defi-rwa-overview",
       "question": "What real-world-asset (RWA) products are live on Stellar?",
       "golden": {
-        "answer": "Stellar hosts the deepest, most institutionally-validated **RWA** stack of any non-EVM L1. Core live\nproducts (each institution-issued, dated source):\n- **Franklin Templeton BENJI / FOBXX** — tokenized US-government money-market fund, on Stellar since\n  **2021**; first US-registered mutual fund to use a public blockchain as its system of record\n  [stellar.org BENJI 5-year press].\n- **WisdomTree CRDT** — Private Credit & Alternative Income Digital Fund, launched on Stellar (+Ethereum)\n  **Sep 2025**; **private credit**, not Treasuries [ir.wisdomtree.com]. (Also newer: WisdomTree **WTGXX**\n  tokenized MMF on Stellar, $1 min, 24/7 subscriptions.)\n- **Ondo USDY** — Treasuries-backed **yieldcoin**, launched on Stellar **Sep 17 2025**, non-US persons\n  [stellar.org Ondo press].\n\nPattern: **Treasuries + private credit**, institutionally validated. **Freshness flag:** the set keeps\nexpanding — Messari's written Q1-2026 report pinned the ex-stablecoin RWA stack at **$1.52B at Q1-end**\n(crossed $2B on Apr 11), and by **early June 2026** it reached **~$2.8B** (rwa.xyz; also stated by the\nSDF president in Messari's June 4 interview) — with additions like **tZERO USDM1** (Marshall Islands\nsovereign bond, 1:1 US Treasuries) and **RedStone's SEP-40** oracle-consumer standard [lumenloop\nresearch, week of May 29 2026]. Tokenized **equities, real estate, commodities** are **not yet live at\nscale** (whitespace). Cite dated sources and flag staleness rather than asserting a frozen total.",
+        "answer": "Stellar hosts an institutionally validated **RWA** stack. Core live products include:\n- **Franklin Templeton BENJI / FOBXX** — tokenized US-government money-market fund, on Stellar since **2021**; first US-registered mutual fund to use a public blockchain as its system of record [stellar.org BENJI 5-year press].\n- **WisdomTree CRDT** — Private Credit & Alternative Income Digital Fund, launched on Stellar and Ethereum in **September 2025**; private credit, not Treasuries [WisdomTree release].\n- **Ondo USDY** — Treasuries-backed yieldcoin, launched on Stellar in **September 2025** for non-US persons [stellar.org Ondo release].\n\nThese dated primary sources establish a pattern centered on Treasuries and private credit, with additional institution-issued products appearing over time. Dated measures moved from **$1.52B at Q1 2026 end** in Messari's written report (crossing $2B on April 11) to about **$2.8B in early June 2026** in rwa.xyz data and the SDF president's June 4 interview. Do not turn those snapshots into a permanent total, an unsupported 'deepest chain' ranking, or an ecosystem-wide claim that other RWA categories are absent without a defined current sweep.",
         "keyFacts": [
           "Names the live institutional RWAs on Stellar: Franklin Templeton's BENJI (FOBXX money-market fund), WisdomTree's CRDT (private credit), and Ondo's USDY (Treasuries-backed yieldcoin).",
           "Characterizes Stellar RWA as Treasuries + private credit (institutionally validated), each with a source."
         ],
         "avoid": [
-          "Do NOT claim live tokenized equities, real estate, or commodities on Stellar at scale — those are whitespace.",
+          "Do NOT claim live tokenized equities, real estate, or commodities on Stellar at scale without a dated source; do not present those categories as timeless whitespace.",
           "Do NOT invent an RWA issuer/product not in the source data or misattribute a product to the wrong issuer."
         ],
         "sources": [
@@ -3080,7 +3105,7 @@
         "freshness": true,
         "freshnessHorizon": "weekly"
       },
-      "graderNotes": "RWA is the deepest category and is FRESHNESS-sensitive (set keeps expanding). Live grounding (Scout research, May/Jun 2026): Stellar's tokenized-RWA stack crossed ~$2.8B (Messari State of Stellar Q1 2026, 4th among ecosystems); newer additions include WisdomTree WTGXX MMF ($1 min, 24/7 subscriptions), tZERO's USDM1 (Marshall Islands sovereign bond, 1:1 US Treasuries), and RedStone's SEP-40 oracle-consumer interface. Core institutional anchors: Franklin BENJI/FOBXX (since 2021), WisdomTree CRDT (private credit, Sep 2025), Ondo USDY (Treasuries yieldcoin, Sep 2025). Equities/real-estate still whitespace. Gate on 'cite dated sources + flag staleness,' not a frozen total. REVIEWED 2026-06-29: re-verified via Scout /api/research — lumenloop roundup (week of May 29 2026) confirms the $2.8B Messari Q1 2026 figure + WTGXX MMF + tZERO USDM1 + RedStone SEP-40; developers.stellar.org ecosystem snapshot independently confirms Franklin Templeton treasury fund + Ondo as live institutional issuers (and adds Spiko $1B, Archax $GOVY, Centrifuge). All four sources: URLs return 200. Treasuries+private-credit pattern and equities/real-estate-whitespace claim hold; totals remain point-in-time.\nAlso good if the answer: Notes BENJI has been on Stellar since 2021 (FOBXX = first US-registered mutual fund using a public blockchain as system of record). | Flags these figures/launches are time-sensitive and the RWA set keeps expanding.\nGolden cites: Each named RWA product carries a dated source (Lumenloop/news/issuer).\nAttribution corrected 2026-07-03 (todo 829): ~$2.8B is June-2026 rwa.xyz data (SDF president in Messari's 2026-06-04 interview), NOT the written Q1 report (which pinned $1.52B at Q1-end / $2B Apr 11 — same ex-stablecoin scope, earlier dates). Do not penalize answers citing either the Q1-report figures or the June ~$2.8B — one trajectory, different dates. Because a cited Lumenloop source itself misattributes $2.8B to 'the report' (ll-009), do NOT fail an answer solely for repeating that attribution; DO credit answers that date the figure or note the interview/report distinction."
+      "graderNotes": "RWA is the deepest category and is FRESHNESS-sensitive (set keeps expanding). Live grounding (Scout research, May/Jun 2026): Stellar's tokenized-RWA stack crossed ~$2.8B (Messari State of Stellar Q1 2026, 4th among ecosystems); newer additions include WisdomTree WTGXX MMF ($1 min, 24/7 subscriptions), tZERO's USDM1 (Marshall Islands sovereign bond, 1:1 US Treasuries), and RedStone's SEP-40 oracle-consumer interface. Core institutional anchors: Franklin BENJI/FOBXX (since 2021), WisdomTree CRDT (private credit, Sep 2025), Ondo USDY (Treasuries yieldcoin, Sep 2025). Equities/real-estate still whitespace. Gate on 'cite dated sources + flag staleness,' not a frozen total. REVIEWED 2026-06-29: re-verified via Scout /api/research — lumenloop roundup (week of May 29 2026) confirms the $2.8B Messari Q1 2026 figure + WTGXX MMF + tZERO USDM1 + RedStone SEP-40; developers.stellar.org ecosystem snapshot independently confirms Franklin Templeton treasury fund + Ondo as live institutional issuers (and adds Spiko $1B, Archax $GOVY, Centrifuge). All four sources: URLs return 200. Treasuries+private-credit pattern and equities/real-estate-whitespace claim hold; totals remain point-in-time.\nAlso good if the answer: Notes BENJI has been on Stellar since 2021 (FOBXX = first US-registered mutual fund using a public blockchain as system of record). | Flags these figures/launches are time-sensitive and the RWA set keeps expanding.\nGolden cites: Each named RWA product carries a dated source (Lumenloop/news/issuer).\nAttribution corrected 2026-07-03 (todo 829): ~$2.8B is June-2026 rwa.xyz/interview data, not the written Q1 report ($1.52B at Q1-end / $2B Apr 11). Do not penalize either dated point. Because a cited Lumenloop source itself misattributes $2.8B to 'the report' (ll-009), do NOT fail an answer solely for repeating that attribution; DO credit answers that date the figure or note the interview/report distinction. REFUTE CORRECTION 2026-07-09 (todo 901): the absolute 'deepest RWA stack of any non-EVM L1' opener and the undefined cross-category 'not live at comparable scale' negative were unmeasured and are removed. Grade the named products, issuer attribution, dates, and freshness behavior; never require those unsupported comparisons."
     },
     {
       "id": "q-defi-rwa-scf-similar",
@@ -3447,8 +3472,8 @@
           "Names key 2025 launches with dates: Ondo USDY on Stellar (Sep 17 2025), PayPal PYUSD on Stellar (Sep 18 2025), and WisdomTree CRDT (Sep 12 2025)."
         ],
         "avoid": [
-          "Do NOT misattribute a product to the wrong issuer (USDY=Ondo, PYUSD=PayPal, CRDT=WisdomTree) or assign the wrong launch year.",
-          "Do NOT invent a launch that is not in the source data."
+          "Do NOT misattribute the product/issuer roles: USDY is an Ondo product; CRDT is a WisdomTree product; PYUSD is PayPal-branded and Paxos-issued. If naming the legal Paxos entity, date the source because the 2025 SDF release and current Paxos page differ.",
+          "Do NOT assign the wrong launch year or invent a launch absent from the dated source."
         ],
         "sources": [
           "https://stellar.org/press/ondo-finance-launches-usdy-on-stellar",
@@ -3463,7 +3488,7 @@
         "freshness": true,
         "freshnessHorizon": "quarterly"
       },
-      "graderNotes": "VERIFIED dated facts against dossier primary sources: WisdomTree CRDT (Sep 12 2025, Stellar+Ethereum, GLACI index), Ondo USDY (Sep 17 2025, 5.3% APY), PayPal PYUSD (Sep 18 2025) — clustered around Meridian 2025 in Rio (Sep 17-18). Also FT first Singapore retail tokenized fund (2025). Freshness:quarterly — list is time-bounded. 'Notable launches in period X' → lumenloop_search_content_semantic.\nAlso good if the answer: Notes the September 2025 cluster (USDY + PYUSD + CRDT around Meridian 2025 in Rio) as an inflection point for Stellar DeFi/RWA growth. | Attributes each launch to a dated source and flags the list is time-bounded.\nGolden cites: A dated source for each named launch."
+      "graderNotes": "VERIFIED dated facts against dossier primary sources: WisdomTree CRDT (Sep 12 2025, Stellar+Ethereum, GLACI index), Ondo USDY (Sep 17 2025, 5.3% APY), PayPal PYUSD (Sep 18 2025) — clustered around Meridian 2025 in Rio (Sep 17-18). Also FT first Singapore retail tokenized fund (2025). Freshness:quarterly — list is time-bounded. 'Notable launches in period X' → lumenloop_search_content_semantic.\nAlso good if the answer: Notes the September 2025 cluster (USDY + PYUSD + CRDT around Meridian 2025 in Rio) as an inflection point for Stellar DeFi/RWA growth. | Attributes each launch to a dated source and flags the list is time-bounded.\nGolden cites: A dated source for each named launch.\nISSUER-ROLE + ENTITY-DRIFT CORRECTION 2026-07-09 (todo 901): 'PayPal PYUSD' names the product/brand; Paxos is the issuer. The 2025 SDF launch release names Paxos Trust Company, LLC, while Paxos's current page says Paxos Trust Company, N.A. Preserve the Sep 18, 2025 Stellar launch date and accept either entity only when accurately dated/sourced."
     },
     {
       "id": "q-eco-defi-market-map",
@@ -3647,7 +3672,7 @@
         "confidence": "high",
         "freshness": false
       },
-      "graderNotes": "GROUNDED 2026-06-22: Scout confirms Lobstr (User-Facing App, type Wallet, Live, SCF $232,000, lobstr.co): 'a widely used non-custodial Stellar wallet on iOS, Android, web and a browser extension. Users hold, send, receive, buy and swap XLM, USDC and Stellar assets... fiat on/off-ramp.' Built by Ultra Stellar (independent of SDF). The dossier's '1M+ users / 10M+ monthly tx' figures are LOBSTR's own marketing claims — kept as nice_to_have, not hard-gated. Per-project identity → lumenloop_get_project.\nAlso good if the answer: Spans web, iOS, and Android, with components like LOBSTR Vault and a Signer Extension. | Supports Stellar plus the XRP Ledger.\nGolden cites: A source identifying LOBSTR / Ultra Stellar.\nAvoid list re-armed 2026-07-03 (todo 826 residual), deep-verified per the golden-truth skill (todo 828): the scale-figures item is now an answer-visible attribution guard (the 1M+/10M+ figures are marketing-only, absent from both live records — a judge can check attribution from the answer text alone). Grading cautions: (1) the SCF-total disagreement (Scout $232,000 vs Lumenloop $267,463) is unresolvable — official records confirm rounds 2/17/22 but published only ONE amount ($88,000, SCF #22; SCF #2 was an XLM-pool percentage) — never penalize either total, and a candidate saying 'no official cumulative figure exists' is MORE correct than either number; (2) name collision: 'Lobster' (SCF #36, a liquidity-management project, $109,000) is a different project from LOBSTR the wallet — don't credit or penalize across the collision; (3) neither live record still mentions XRP Ledger support, so the golden's XRPL claim is no longer corpus-answerable — treat as nice-to-have, never require it and never punish its absence."
+      "graderNotes": "GROUNDED 2026-06-22: Scout confirms Lobstr (User-Facing App, type Wallet, Live, SCF $232,000, lobstr.co): 'a widely used non-custodial Stellar wallet on iOS, Android, web and a browser extension. Users hold, send, receive, buy and swap XLM, USDC and Stellar assets... fiat on/off-ramp.' Built by Ultra Stellar (independent of SDF). The dossier's '1M+ users / 10M+ monthly tx' figures are LOBSTR's own marketing claims — kept as nice_to_have, not hard-gated. Per-project identity → lumenloop_get_project.\nAlso good if the answer: Spans web, iOS, and Android, with components like LOBSTR Vault and a Signer Extension. | Supports Stellar plus the XRP Ledger.\nGolden cites: A source identifying LOBSTR / Ultra Stellar.\nAvoid list re-armed 2026-07-03 (todo 826 residual), deep-verified per the golden-truth skill (todo 828): scale figures require answer-visible attribution. Scout $232,000 and Lumenloop $267,463 remain incompatible reconstructions; official records confirm rounds 2/17/22 but publish only the $88,000 SCF #22 amount, while SCF #2 was an XLM-pool percentage. Never penalize either sourced total, and 'no official cumulative figure exists' is more precise. 'Lobster' SCF #36 is a different project, and XRPL support is no longer corpus-answerable. POST-FIX REOPEN 2026-07-09 (todo 901): Scout now documents the reconstruction basis and round membership, fixing the provenance gap in sls-011, but it does not resolve the dollar disagreement or create an official cumulative amount."
     },
     {
       "id": "q-eco-most-active-defi-projects",
@@ -3704,16 +3729,19 @@
       "id": "q-eco-pyusd-stellar-freshness",
       "question": "Is PayPal's PYUSD live on Stellar, and when did it launch?",
       "golden": {
-        "answer": "**Yes — PayPal's PYUSD is live on Stellar.** It launched on Stellar on **September 18, 2025**\n[stellar.org/press/paypal-pyusd-is-now-available-on-stellar]. PYUSD is **PayPal's** USD stablecoin\n(issued with Paxos), and on Stellar it joins the **issuer-led stablecoin set** (USDC/EURC by Circle,\nBENJI by Franklin Templeton). The Sep-2025 launch was part of a **cluster** of RWA/stablecoin launches\naround **Meridian 2025**. Any current circulating/supply figure is **freshness-sensitive** — cite a\ndated source and flag staleness rather than asserting a number. Don't assign the wrong issuer/date or\nclaim PYUSD is not on Stellar.",
+        "answer": "**PayPal USD (PYUSD) is live on Stellar.** It launched on **September 18, 2025**. PYUSD is PayPal-branded and **issued by Paxos**. The 2025 SDF launch release names **Paxos Trust Company, LLC**; Paxos's current product page names **Paxos Trust Company, N.A.** as issuer. Treat that as a dated disclosure change/disagreement, not a timeless entity fact.\n\nCurrent supply/circulation is also volatile. Cite a dated source for any current amount and distinguish product sponsor/brand from the source's named legal issuer.",
         "keyFacts": [
-          "Confirms PayPal's PYUSD launched on Stellar in September 2025 (around Sep 18, 2025), citing a dated source."
+          "Confirms PYUSD launched on Stellar on September 18, 2025.",
+          "Distinguishes PayPal's product/brand from Paxos as issuer and dates any LLC-versus-N.A. legal-entity wording.",
+          "Treats current circulating/supply figures as freshness-sensitive."
         ],
         "avoid": [
-          "Do NOT assign the wrong issuer or wrong launch date, or claim PYUSD is not on Stellar.",
-          "Do NOT assert a current circulating/supply figure without a dated source and staleness caveat."
+          "Do NOT claim PayPal itself is the legal issuer, or hard-code one Paxos legal entity without a date/source while the primary disclosures differ.",
+          "Do NOT claim PYUSD is absent from Stellar or give a current supply figure without a dated source."
         ],
         "sources": [
-          "https://stellar.org/press/paypal-pyusd-is-now-available-on-stellar"
+          "https://stellar.org/press/paypal-pyusd-is-now-available-on-stellar",
+          "https://www.paxos.com/pyusd/"
         ]
       },
       "tags": {
@@ -3724,22 +3752,25 @@
         "freshness": true,
         "freshnessHorizon": "quarterly"
       },
-      "graderNotes": "FRESHNESS + entity. Verified: PayPal's PYUSD launched on Stellar Sep 18, 2025 (SDF press), part of the Sep-2025 RWA/stablecoin cluster around Meridian 2025. Issuer = PayPal (with Paxos). Any circulating/supply figure is volatile — gate on a dated source + staleness caveat.\nAlso good if the answer: Attributes PYUSD to PayPal and frames it as part of the issuer-led stablecoin set on Stellar.\nGolden cites: A dated source for PYUSD on Stellar (Sep 2025)."
+      "graderNotes": "FRESHNESS + entity. Verified: PayPal's PYUSD launched on Stellar Sep 18, 2025 (SDF press), part of the Sep-2025 RWA/stablecoin cluster around Meridian 2025. Issuer = PayPal (with Paxos). Any circulating/supply figure is volatile — gate on a dated source + staleness caveat.\nAlso good if the answer: Attributes PYUSD to PayPal and frames it as part of the issuer-led stablecoin set on Stellar.\nGolden cites: A dated source for PYUSD on Stellar (Sep 2025).\nISSUER-ROLE + ENTITY-DRIFT CORRECTION 2026-07-09 (todo 901): replace inherited 'issuer=PayPal (with Paxos)' shorthand with PayPal-branded, Paxos-issued. SDF's 2025 release names the LLC; Paxos's current page names the N.A. Accept either only with the matching time/source context."
     },
     {
       "id": "q-eco-stablecoins-on-stellar",
       "question": "Which stablecoins are issued or live on Stellar?",
       "golden": {
-        "answer": "The Stellar stablecoin set is **issuer-led fiat dollars**, not crypto-native/algorithmic [1][2]:\n- **USDC** and **EURC** — by **Circle** (native multi-chain USDC/EURC on Stellar) [2].\n- **PYUSD** — **PayPal USD**, launched on Stellar **September 18, 2025** [1].\n- **Regional anchors** — e.g. **TZS** (Tanzanian shilling) by **ClickPesa**.\n- **BENJI** — a quasi-stable RWA (Franklin Templeton money-market share), adjacent to stablecoins.\n\n**No major algorithmic stablecoin is live on Stellar** — the stablecoin story is fiat-backed,\ninstitution-issued dollars. (Freshness: new issuers can appear; treat this list as time-bounded.)\n\nSources: [1] stellar.org PYUSD launch; [2] circle.com USDC on Stellar.",
+        "answer": "Stellar's major stablecoin set is issuer-led rather than algorithmic:\n- **USDC** and **EURC** are issued by **Circle** as native Stellar assets.\n- **PYUSD** is **PayPal USD**, live on Stellar since **September 18, 2025**, and issued by **Paxos**. SDF's 2025 launch release names Paxos Trust Company, LLC; Paxos's current product page names Paxos Trust Company, N.A.\n\nAdditional regional fiat assets can exist through anchors, but name them only with dated operator evidence. Keep money-market fund shares such as BENJI adjacent to, not identical with, fiat stablecoins. The roster and issuer disclosures are freshness-sensitive; verify them before presenting an exhaustive list or exact legal entity.",
         "keyFacts": [
-          "Names real Stellar stablecoins: Circle's USDC and EURC, and PayPal's PYUSD (launched on Stellar in Sep 2025)."
+          "Names Circle's USDC and EURC plus PayPal-branded, Paxos-issued PYUSD as real Stellar stablecoins.",
+          "Characterizes the major set as issuer-led fiat assets and flags roster freshness."
         ],
         "avoid": [
-          "Do NOT claim a major algorithmic stablecoin is live on Stellar, or invent a stablecoin/issuer not in the source data.",
-          "Do NOT misattribute issuers (USDC/EURC=Circle, PYUSD=PayPal)."
+          "Do NOT claim PayPal is PYUSD's legal issuer, or present one Paxos legal entity as timeless while dated primary sources differ.",
+          "Do NOT invent a stablecoin/issuer or claim a major algorithmic stablecoin is live without dated primary evidence."
         ],
         "sources": [
           "https://stellar.org/press/paypal-pyusd-is-now-available-on-stellar",
+          "https://www.paxos.com/pyusd/",
+          "https://www.circle.com/eurc",
           "https://www.circle.com/multi-chain-usdc/stellar"
         ]
       },
@@ -3751,7 +3782,7 @@
         "freshness": true,
         "freshnessHorizon": "quarterly"
       },
-      "graderNotes": "VERIFIED issuers against dossier primary sources: Circle USDC + EURC; PayPal PYUSD (launched on Stellar Sep 18 2025); regional anchors like ClickPesa TZS; BENJI as quasi-stable RWA share. Algorithmic stablecoins are absent on Stellar. Freshness:quarterly — new issuers can appear, so flag the list is time-bounded. Stablecoin coverage → lumenloop_search_content_semantic.\nAlso good if the answer: Characterizes the stablecoin set as issuer-led dollars (USDC/EURC/PYUSD), with regional anchors (e.g. ClickPesa's TZS) and BENJI as a quasi-stable RWA.\nGolden cites: A dated source for each named stablecoin."
+      "graderNotes": "VERIFIED issuers against dossier primary sources: Circle USDC + EURC; PayPal PYUSD (launched on Stellar Sep 18 2025); regional anchors like ClickPesa TZS; BENJI as quasi-stable RWA share. Algorithmic stablecoins are absent on Stellar. Freshness:quarterly — new issuers can appear, so flag the list is time-bounded. Stablecoin coverage → lumenloop_search_content_semantic.\nAlso good if the answer: Characterizes the stablecoin set as issuer-led dollars (USDC/EURC/PYUSD), with regional anchors (e.g. ClickPesa's TZS) and BENJI as a quasi-stable RWA.\nGolden cites: A dated source for each named stablecoin.\nISSUER + ENTITY-DRIFT CORRECTION 2026-07-09 (todo 901): the inherited PYUSD=PayPal issuer trap is false. Grade PayPal as product brand/sponsor and Paxos as issuer. SDF's 2025 release says LLC; Paxos's current page says N.A.; require date/source context for the exact entity. Circle remains issuer of USDC/EURC."
     },
     {
       "id": "q-eco-stellar-rwa-stablecoin-volume",
@@ -3815,10 +3846,10 @@
       "id": "q-eco-wallets-overview",
       "question": "Which wallets can I use on Stellar, and how do they differ?",
       "golden": {
-        "answer": "Main Stellar wallets, distinguished by **sponsor/model** (all Scout-grounded):\n- **Freighter** — the **Stellar Development Foundation's** official non-custodial wallet (browser\n  extension: Chrome/Firefox/Brave; iOS + Android) [Scout: .../freighter].\n- **LOBSTR** — widely-used non-custodial wallet (iOS/Android/web/extension) by **Ultra Stellar** (an\n  independent commercial entity, also behind StellarX/StellarTerm); SCF-awarded (~$232K) [Scout: .../lobstr].\n- **Hana** — non-custodial **multi-chain** wallet with Stellar support (MetaMask-style); SCF-awarded\n  (~$132K) [Scout: .../hana].\n- **xBull** — open-source non-custodial Stellar wallet (extension/web/mobile) by **Creit-Tech**, with a\n  passkey-based V2; SCF-awarded (~$56.2K) [Scout: .../xbull]. (Plus StellarTerm / Hot Wallet on the tail.)\n\nScope: **Freighter and xBull are Stellar-focused**; **LOBSTR adds XRP Ledger**; **Hana is broadly\nmulti-chain**. Developers should integrate the **Stellar Wallets Kit** to stay wallet-agnostic. Do NOT\nattribute LOBSTR to the SDF or Freighter to Ultra Stellar; don't invent a wallet or fabricate user\ncounts.",
+        "answer": "Main Stellar wallets, distinguished by sponsor and model:\n- **Freighter** — the Stellar/SDF wallet project, non-custodial and Stellar-focused.\n- **LOBSTR** — a non-custodial wallet product of **Ultra Stellar**, an independent commercial entity.\n- **Hana** — a non-custodial multi-chain wallet with Stellar support.\n- **xBull** — an open-source, non-custodial Stellar wallet built under **Creit-Tech**.\n\nThese roles should be sourced to the wallet/operator sites or repositories. Do not use reconstructed SCF totals or marketing-scale figures to rank the wallets. Developers should normally integrate a multi-wallet interface such as Stellar Wallets Kit rather than hard-wiring one wallet.",
         "keyFacts": [
-          "Names the main Stellar wallets — Freighter, LOBSTR, Hana, and xBull (and may add StellarTerm / Hot Wallet).",
-          "Distinguishes them by sponsor/model: Freighter is built by the Stellar Development Foundation; LOBSTR is by Ultra Stellar (independent commercial entity)."
+          "Names Freighter, LOBSTR, Hana, and xBull as Stellar wallet options.",
+          "Distinguishes sponsor/model: Freighter is in the Stellar/SDF project family; LOBSTR is an independent Ultra Stellar product; xBull is associated with Creit-Tech; Hana is multi-chain."
         ],
         "avoid": [
           "Do NOT claim LOBSTR is built/operated by the Stellar Development Foundation, or that Freighter is built by Ultra Stellar.",
@@ -3826,10 +3857,10 @@
           "Do NOT route to general-web for this directory-backed wallet question — use the curated project directory."
         ],
         "sources": [
-          "https://stellarlight.xyz/project/freighter",
-          "https://stellarlight.xyz/project/lobstr",
-          "https://stellarlight.xyz/project/hana",
-          "https://stellarlight.xyz/project/xbull"
+          "https://github.com/stellar/freighter",
+          "https://www.ultrastellar.com",
+          "https://hana.money",
+          "https://github.com/Creit-Tech/xBull-Wallet"
         ]
       },
       "tags": {
@@ -3839,22 +3870,25 @@
         "confidence": "high",
         "freshness": false
       },
-      "graderNotes": "Directory discovery → scout_projects. This file OWNS the sponsor/model differentiation lane (Freighter=SDF, LOBSTR=Ultra Stellar, Hana multi-chain, xBull=Creit-Tech) — distinct from q-eco-stellar-wallets-list (flat enumeration probe) and q-eco-wallets-similar (find_similar routing). Added the directory-not-general-web guard as must_avoid (2026-06-29) to keep it in the directory lane. All grounded on Scout: Freighter (SDF official, browser+iOS/Android), LOBSTR (Ultra Stellar, SCF ~$232K), Hana (multi-chain, SCF ~$132K), xBull (Creit-Tech, SCF ~$56.2K). Devs use Stellar Wallets Kit to stay wallet-agnostic.\nAlso good if the answer: Notes scope differences: Freighter and xBull are Stellar-focused; LOBSTR and Hana are multi-chain (LOBSTR adds XRP Ledger; Hana is broadly multi-chain). | Notes developers should integrate the Stellar Wallets Kit to stay wallet-agnostic.\nGolden cites: A source for each named wallet and its sponsor/model."
+      "graderNotes": "Directory discovery → scout_projects. This file OWNS the sponsor/model differentiation lane (Freighter=SDF, LOBSTR=Ultra Stellar, Hana multi-chain, xBull=Creit-Tech) — distinct from q-eco-stellar-wallets-list (flat enumeration probe) and q-eco-wallets-similar (find_similar routing). Added the directory-not-general-web guard as must_avoid (2026-06-29) to keep it in the directory lane. All grounded on Scout: Freighter (SDF official, browser+iOS/Android), LOBSTR (Ultra Stellar, SCF ~$232K), Hana (multi-chain, SCF ~$132K), xBull (Creit-Tech, SCF ~$56.2K). Devs use Stellar Wallets Kit to stay wallet-agnostic.\nAlso good if the answer: Notes scope differences: Freighter and xBull are Stellar-focused; LOBSTR and Hana are multi-chain (LOBSTR adds XRP Ledger; Hana is broadly multi-chain). | Notes developers should integrate the Stellar Wallets Kit to stay wallet-agnostic.\nGolden cites: A source for each named wallet and its sponsor/model.\nREFUTE CORRECTION 2026-07-09 (todo 901): remove inherited wallet SCF totals from grading; they are directory reconstructions without an attached official per-award calculation. Grade sponsor/model and wallet availability from operator/repository sources. Also disregard inherited XRP-Ledger scope detail unless a current LOBSTR source is cited."
     },
     {
       "id": "q-eco-wallets-similar",
       "question": "I use Freighter — what are similar Stellar wallets I could offer my users instead?",
       "golden": {
-        "answer": "Wallet alternatives to **Freighter** in the directory [1]:\n- **LOBSTR** (Ultra Stellar) — web/mobile/extension, Stellar + XRP Ledger, fiat on/off-ramps.\n- **Hana** — non-custodial **multi-chain** wallet with Stellar support (extension + mobile).\n- **xBull** — open-source, non-custodial Stellar wallet (extension + web + mobile), hybrid passkey V2.\n- Also: StellarTerm and Hot Wallet appear as adjacent options.\n\nThe practical answer for a builder is to **integrate the Stellar Wallets Kit** (multi-wallet SDK) so\nusers can pick any of these rather than committing to one. The wallet market is **crowded but\ndifferentiated** (SDF vs independent; Stellar-only vs multi-chain) with **no MetaMask-scale winner**.\n\nSource: [1] stellarlight.xyz directory (Scout, 2026-06-22).",
+        "answer": "Wallet alternatives to Freighter include **LOBSTR** (Ultra Stellar), **Hana** (multi-chain with Stellar support), and **xBull** (open-source Stellar wallet under Creit-Tech); StellarTerm and other directory entries may also be relevant when current.\n\nFor a builder, the durable recommendation is to integrate **Stellar Wallets Kit** or another current multi-wallet interface so users can choose among supported wallets. Distinguish each wallet by custody model, platform support, and operator using current sources; do not invent market-share rankings or use reconstructed SCF totals as a quality score.",
         "keyFacts": [
-          "Surfaces wallet alternatives to Freighter such as LOBSTR, Hana, and xBull (and possibly StellarTerm / Hot Wallet)."
+          "Surfaces corroborated Freighter alternatives such as LOBSTR, Hana, and xBull.",
+          "Recommends a wallet-agnostic integration and distinguishes options by sourced model/operator rather than an unsupported market ranking."
         ],
         "avoid": [
           "Do NOT invent a wallet not present in the source data.",
           "Do NOT recommend a non-Stellar wallet (e.g. MetaMask) as a drop-in Stellar wallet."
         ],
         "sources": [
-          "https://stellarlight.xyz/directory"
+          "https://www.ultrastellar.com",
+          "https://hana.money",
+          "https://github.com/Creit-Tech/xBull-Wallet"
         ]
       },
       "tags": {
@@ -3864,7 +3898,7 @@
         "confidence": "high",
         "freshness": false
       },
-      "graderNotes": "GROUNDED 2026-06-22 (re-verified 2026-06-29): Scout wallet records confirm the alternatives — Lobstr (SCF $232K), Hana (SCF $132K, multi-chain), xBull (SCF $56.2K, open-source) all type=Wallet, Live. This is the FIND-SIMILAR routing lane ('wallets like Freighter' → lumenloop_find_similar_projects_semantic) — DISTINCT from q-eco-wallets-overview (scout_projects; sponsor/model differentiation) and q-eco-stellar-wallets-list (flat enumeration). The Stellar Wallets Kit (multi-wallet SDK) is the practical integration answer.\nAlso good if the answer: Notes the practical answer is to integrate the Stellar Wallets Kit to support multiple wallets rather than picking one. | Briefly distinguishes them by model (SDF vs independent; Stellar-only vs multi-chain).\nGolden cites: A source for each suggested wallet."
+      "graderNotes": "GROUNDED 2026-06-22 (re-verified 2026-06-29): Scout wallet records confirm the alternatives — Lobstr (SCF $232K), Hana (SCF $132K, multi-chain), xBull (SCF $56.2K, open-source) all type=Wallet, Live. This is the FIND-SIMILAR routing lane ('wallets like Freighter' → lumenloop_find_similar_projects_semantic) — DISTINCT from q-eco-wallets-overview (scout_projects; sponsor/model differentiation) and q-eco-stellar-wallets-list (flat enumeration). The Stellar Wallets Kit (multi-wallet SDK) is the practical integration answer.\nAlso good if the answer: Notes the practical answer is to integrate the Stellar Wallets Kit to support multiple wallets rather than picking one. | Briefly distinguishes them by model (SDF vs independent; Stellar-only vs multi-chain).\nGolden cites: A source for each suggested wallet.\nREFUTE CORRECTION 2026-07-09 (todo 901): remove the undefined 'no MetaMask-scale winner' comparison and inherited SCF totals from grading. The corroborated wallet alternatives and multi-wallet integration recommendation remain."
     },
     {
       "id": "q-eco-xbull-wallet",
@@ -4800,7 +4834,7 @@
       "id": "q-edge-scf-v7-centralization-myths",
       "question": "Is SCF v7.0 predatory because only 10 percent is upfront, and can SDF block my app from mainnet or take it down?",
       "golden": {
-        "answer": "SCF funding terms and Stellar mainnet permission are separate. SCF v7 introduced Build Award tracks and a milestone/tranche model; the current awards page shows SCF #45 with a July 26, 2026 submission deadline and up to $150K in XLM. The public SCF page shows the four milestone labels: initial award distribution, MVP, testnet, and mainnet. Calling that predatory or fair requires evidence from the actual terms, not just the isolated fact that the initial distribution is 10%.\n\nSDF can administer its own grant programs, review eligibility, apply official rules, control SDF websites/branding, and stop or modify its own awards. That is not the same as protocol-level power to delete a deployed app from the public Stellar network. A public-network app still depends on its own operators, contracts, accounts, front ends, issuers, and compliance choices; SDF funding does not make SDF the host of every recipient's app.",
+        "answer": "SCF funding terms and Stellar Mainnet permission are separate. SCF v7 introduced Build Award tracks and a milestone/tranche model; as of **2026-07-09**, the current awards page shows **SCF #45** in Submission with an **August 16, 2026** deadline and up to **$150K worth of XLM**. The round/date is volatile and must be rechecked. Calling the program predatory or fair requires evidence from the complete terms, not the isolated initial-distribution percentage.\n\nSDF can administer its own grants, review eligibility, apply official rules, control SDF websites/branding, and stop or modify its own awards. That is not protocol-level power to delete a deployed app from the public Stellar network. A public-network app still depends on its own operators, contracts, accounts, front ends, issuers, and compliance choices; SDF funding does not make SDF the host of every recipient's app.",
         "keyFacts": [
           "Separates SCF grant/payment mechanics from permission to deploy on Stellar public network.",
           "Uses current SCF v7 program terms rather than assuming the 10 percent framing is complete.",
@@ -4825,7 +4859,7 @@
         "freshness": true,
         "freshnessHorizon": "yearly"
       },
-      "graderNotes": "Snapshot 2026-06-29. SCF #45 page and SCF v7 announcement were reachable; terms can change, so Phase 3 should re-check if reviewing after the current round.\nAlso good if the answer: Acknowledges centralization concerns honestly without overstating SDF censorship power.\nGolden cites: Current SCF/SDF source required for SCF v7 payment mechanics."
+      "graderNotes": "Snapshot 2026-06-29. SCF #45 page and SCF v7 announcement were reachable; terms can change, so Phase 3 should re-check if reviewing after the current round.\nAlso good if the answer: Acknowledges centralization concerns honestly without overstating SDF censorship power.\nGolden cites: Current SCF/SDF source required for SCF v7 payment mechanics.\nFRESHNESS CORRECTION 2026-07-09 (todo 901): the inherited July 26 SCF #45 deadline is expired. Live official and Scout round metadata agree on August 16, 2026. The centralization/grant-control reasoning is unchanged; never grade the duplicated old deadline as current."
     },
     {
       "id": "q-edge-send-me-free-xlm",
@@ -5571,16 +5605,19 @@
       "id": "q-infra-rpc-providers-list",
       "question": "I don't want to run my own RPC node — which providers offer hosted Stellar RPC, and is there a free public endpoint?",
       "golden": {
-        "answer": "You don't need to self-host — the **official Providers page (`developers.stellar.org/docs/data/apis/rpc/providers`)\nis the canonical, freshness-sensitive roster**. As of mid-2026 it lists ~15-16 hosted providers including\n**Validation Cloud, QuickNode, Blockdaemon, NowNodes, Gateway, Ankr, InfStones, Obsrvr, Nodies,\nOnFinality, Lightsail/Quasar, Uniblock, Exaion, Alchemy, GetBlock, and Liquify**, with coverage that\ndiffers by network (Testnet/Mainnet/Futurenet) and an \"RPC Archive\" (`getLedgers`) tier on a subset.\n\nThere are also **publicly-accessible endpoints** for prototyping (e.g. via **Liquify, Gateway\n(`soroban-rpc.{testnet,mainnet}.stellar.gateway.fm`), `sorobanrpc.com`, Nodies, SDF's\n`rpc-futurenet.stellar.org`**) — but treat these as best-effort, **not a production SLA**. The roster\nand tiers shift, so check the page rather than memorizing it.",
+        "answer": "The official [Stellar RPC Providers page](https://developers.stellar.org/docs/data/apis/rpc/providers) is the canonical, freshness-sensitive roster. As of **2026-07-09**, its hosted-provider table contains **15** entries: Blockdaemon, Validation Cloud, QuickNode, NowNodes, Gateway, Ankr, InfStones, Obsrvr, Nodies, OnFinality, Lightsail/Quasar, Uniblock, Exaion, Alchemy, and GetBlock. Network coverage and the RPC Archive/getLedgers tier vary by provider, so verify the current row before choosing one.\n\nThe page separately lists publicly accessible endpoints for prototyping, including **Liquify** and other public URLs. Liquify is not a sixteenth hosted-table provider. Public endpoints can be convenient for testing but are best-effort unless their operator publishes a production SLA; do not silently promote them to hosted-provider status.\n\nChoose by required network, archival method coverage, rate limits/SLA, geography, and operational support, then confirm against the current page rather than memorizing the roster.",
         "keyFacts": [
-          "Hosted Stellar RPC providers include Validation Cloud, QuickNode, Blockdaemon, Nodies, Ankr, NowNodes, Alchemy, and others (the official Providers page is the canonical list).",
-          "There are publicly-accessible RPC URLs too (e.g. via Liquify, Gateway, sorobanrpc.com, Nodies) for prototyping."
+          "Names representative hosted Stellar RPC providers and points to the official Providers page as the current roster.",
+          "Separates the 15-row hosted-provider table from publicly accessible endpoints such as Liquify.",
+          "Flags provider/network/archive coverage as freshness-sensitive."
         ],
         "avoid": [
-          "Do NOT invent provider names/URLs, or present a public endpoint as a production-grade SLA."
+          "Do NOT count Liquify as a hosted-provider-table row; it appears under Publicly Accessible APIs.",
+          "Do NOT invent provider names/URLs or present a public endpoint as a production-grade SLA."
         ],
         "sources": [
-          "https://developers.stellar.org/docs/data/apis/rpc/providers"
+          "https://developers.stellar.org/docs/data/apis/rpc/providers",
+          "https://github.com/stellar/stellar-docs/blob/main/docs/data/apis/rpc/providers.mdx"
         ]
       },
       "tags": {
@@ -5591,7 +5628,7 @@
         "freshness": true,
         "freshnessHorizon": "quarterly"
       },
-      "graderNotes": "Re-verified 2026-06-29: Providers page lists ~15 hosted providers (Blockdaemon, Validation Cloud, QuickNode, NowNodes, Gateway, Ankr, InfStones, Obsrvr, Nodies, OnFinality, Lightsail/Quasar, Uniblock, Exaion, Alchemy, GetBlock, Liquify) with a getLedgers archive tier on a subset. Freshness-sensitive: roster/tiers shift; reward pointing to the canonical Providers page + flagging staleness, not memorizing the list.\nAlso good if the answer: The official developers.stellar.org Providers page is freshness-sensitive (the roster and tiers change over time).\nGolden cites: developers.stellar.org RPC Providers page."
+      "graderNotes": "Re-verified 2026-06-29: Providers page lists ~15 hosted providers (Blockdaemon, Validation Cloud, QuickNode, NowNodes, Gateway, Ankr, InfStones, Obsrvr, Nodies, OnFinality, Lightsail/Quasar, Uniblock, Exaion, Alchemy, GetBlock, Liquify) with a getLedgers archive tier on a subset. Freshness-sensitive: roster/tiers shift; reward pointing to the canonical Providers page + flagging staleness, not memorizing the list.\nAlso good if the answer: The official developers.stellar.org Providers page is freshness-sensitive (the roster and tiers change over time).\nGolden cites: developers.stellar.org RPC Providers page.\nREFUTE CORRECTION 2026-07-09 (todo 901): the official page has 15 hosted rows. Liquify remains a valid public endpoint but belongs only to the separate Publicly Accessible APIs section. Accept roster drift when dated; reject the hosted/public category conflation."
     },
     {
       "id": "q-infra-secp256r1-passkeys",
@@ -5702,17 +5739,22 @@
       "id": "q-infra-which-indexer",
       "question": "Which third-party indexers support Stellar, and which should I pick if I need historical cross-account filtering?",
       "golden": {
-        "answer": "You need an **indexer** (not RPC) for **historical cross-account filtering** because RPC event history\nis bounded (default ~24h, max ~7-day window) and Horizon lacks filtered indexes\n([Indexers Overview](https://developers.stellar.org/docs/data/indexers)).\n\nStellar-supporting indexers:\n- **SubQuery** — multi-chain, dedicated Stellar starter repo. Safe default.\n- **OBSRVR** — the most **Stellar-native** option (real-time data to a warehouse).\n- **Goldsky** — Stellar via **Mirrors/Pipelines** (good fit if you already run Goldsky on EVM).\n- **OnFinality** — data hosting for SubQuery.\n- **Mercury** — Retroshades for Soroban + GraphQL over Stellar history.\n- **The Graph** — Stellar via **Substreams only** (no Subgraph / Token API on Stellar).\n\nFor deep historical SQL you can also use **Hubble** (BigQuery). Other providers are\nlaunching/expanding Stellar support around **2025–2026** — **Space and Time** (launched Q4 2025),\n**Allium** (Q1 2026), **Alchemy** (targeted H1 2026) — freshness-sensitive; verify timing.\n\nTraps: claiming The Graph offers full Subgraph/Token-API support for Stellar (it's Substreams-only), or\nrecommending **RPC alone** for historical cross-account filtering.",
+        "answer": "You need an **indexer** rather than RPC alone for historical cross-account filtering: RPC event history is bounded and Horizon does not provide arbitrary cross-account filtered indexes ([Indexers Overview](https://developers.stellar.org/docs/data/indexers)).\n\nEstablished Stellar choices include **SubQuery**, **OBSRVR**, **Goldsky Mirrors/Pipelines**, **OnFinality**, **Mercury**, and **The Graph via Substreams only** (not Stellar Subgraphs or Token API). For deep historical SQL, **Hubble/BigQuery** is another fit.\n\n**Alchemy status requires a dated source note.** As of **2026-07-09**, Alchemy says its indexed Stellar Data API is live on Mainnet and Testnet, with transfer history, account/token balances, and NFT holdings across native, Classic, and Soroban assets; the indexed-API announcement is dated **2026-07-08**. The live Stellar Indexers Overview still says Alchemy was targeted for H1 2026, so that page is stale on this provider; corrective stellar/stellar-docs PR #2573 was still open and unmerged when checked. Treat this as a docs-surface disagreement, not evidence that Alchemy is unavailable.\n\nSelection: use **OBSRVR** for a Stellar-native stream-to-warehouse workflow, **SubQuery** for its multi-chain indexing stack, **Goldsky** if it matches an existing EVM data platform, **Alchemy** if its address-centric indexed APIs cover the needed query, or **Hubble/BigQuery** for SQL-oriented deep history. Verify retention, data model, and current network coverage before committing.",
         "keyFacts": [
-          "Stellar-supporting indexers include SubQuery, Goldsky (Mirrors), OnFinality, OBSRVR, and Mercury; The Graph supports Stellar via Substreams only.",
-          "Indexers are needed (rather than RPC) for filtered historical queries because RPC event history is limited (~7 days) and Horizon lacks filtered indexes."
+          "Identifies current Stellar indexer/data-platform choices and explains that RPC alone is not a historical cross-account index.",
+          "States with an as-of date that Alchemy's indexed Stellar Data API is live, while explicitly flagging that the official Stellar Indexers Overview still carries stale planned-launch wording.",
+          "Preserves The Graph's actual boundary: Stellar support is via Substreams, not full Stellar Subgraph or Token API support."
         ],
         "avoid": [
-          "Do NOT claim The Graph offers full Subgraph/Token API support for Stellar (it is Substreams-only).",
-          "Do NOT recommend RPC alone for historical cross-account filtering."
+          "Do NOT state that Alchemy's Stellar indexed Data API is still merely targeted for H1 2026 without flagging the stale official-docs surface; Alchemy announced the live APIs on 2026-07-08.",
+          "Do NOT hide the source disagreement: the provider docs say live while developers.stellar.org still carries the expired roadmap sentence as of 2026-07-09.",
+          "Do NOT claim The Graph offers full Subgraph/Token API support for Stellar, or recommend RPC alone for arbitrary historical cross-account filtering."
         ],
         "sources": [
-          "https://developers.stellar.org/docs/data/indexers"
+          "https://www.alchemy.com/blog/alchemy-expands-stellar-data-apis-tier-1-validation",
+          "https://www.alchemy.com/docs/reference/stellar-data-api-overview",
+          "https://developers.stellar.org/docs/data/indexers",
+          "https://github.com/stellar/stellar-docs/pull/2573"
         ]
       },
       "tags": {
@@ -5723,7 +5765,7 @@
         "freshness": true,
         "freshnessHorizon": "quarterly"
       },
-      "graderNotes": "Re-verified 2026-06-29 against the Indexers Overview: SubQuery, Goldsky (Mirrors), OnFinality, OBSRVR, Mercury support Stellar; The Graph quote confirmed exactly: 'offers Stellar support for Substreams, with no current plans to expand Subgraph or Token API support to Stellar.' Added Space and Time (Q4 2025); Allium (Q1 2026); Alchemy (H1 2026) — freshness-sensitive, retention phrasing matches normalized ~24h default/~7d max. Reward flagging staleness.\nAlso good if the answer: SubQuery is a safe default (multi-chain, dedicated Stellar starter); OBSRVR is the most Stellar-native; Goldsky Mirrors fit teams already on Goldsky for EVM. | Some providers (e.g. Alchemy, Allium) are launching/expanding Stellar support around 2026 (freshness-sensitive).\nGolden cites: developers.stellar.org Indexers Overview page."
+      "graderNotes": "Re-verified 2026-06-29 against the Indexers Overview: SubQuery, Goldsky (Mirrors), OnFinality, OBSRVR, Mercury support Stellar; The Graph quote confirmed exactly: 'offers Stellar support for Substreams, with no current plans to expand Subgraph or Token API support to Stellar.' Added Space and Time (Q4 2025); Allium (Q1 2026); Alchemy (H1 2026) — freshness-sensitive, retention phrasing matches normalized ~24h default/~7d max. Reward flagging staleness.\nAlso good if the answer: SubQuery is a safe default (multi-chain, dedicated Stellar starter); OBSRVR is the most Stellar-native; Goldsky Mirrors fit teams already on Goldsky for EVM. | Some providers (e.g. Alchemy, Allium) are launching/expanding Stellar support around 2026 (freshness-sensitive).\nGolden cites: developers.stellar.org Indexers Overview page.\nCORRECTION 2026-07-09 (todo 901): real-world/provider status and docs discoverability disagree. Alchemy's indexed Stellar Data API is confirmed live by its dated announcement and product docs, but the live Stellar Indexers Overview still says targeted H1 2026; PR #2573 to correct the page is open/unmerged. Grade the durable behavior: cite a dated provider-status source and flag the stale docs surface. Do not penalize an answer for reporting the conflict, and do not accept the expired roadmap wording as uncontested current status."
     },
     {
       "id": "q-org-mazieres-chief-scientist",
@@ -7627,7 +7669,7 @@
       "id": "q-scf-award-tiers-list",
       "question": "List the SCF award tiers and supporting programs under SCF v7.0 and what each one funds.",
       "golden": {
-        "answer": "- **SCF Build** — the main award, up to **$150K in XLM**, for teams building apps/protocols on Stellar/Soroban (tracks: Open/Integration/RFP) ([SCF handbook — Build Award](https://stellar.gitbook.io/scf-handbook/scf-awards/build-award)).\n- **Instawards** — up to **$15K XLM per project**, recommended by a local Ambassador chapter (no open application); under v7.0 this **replaced the Kickstart Award** ([Instawards](https://stellar.gitbook.io/scf-handbook/scf-awards/instawards); [Introducing SCF v7](https://stellar.org/blog/ecosystem/introducing-scf-v7)).\n- **Audit Bank** — SDF-funded; covers **up to 100% of audit costs** for SCF-funded projects (small ~5% refundable co-pay) ([Audit Bank](https://stellar.gitbook.io/scf-handbook/supporting-programs/audit-bank)).\n- **Growth Hack** — cohort GTM/PMF program for mainnet projects; **~$20K base + up to $200K performance**, ~10–15 teams/quarter ([Growth Hack](https://stellar.gitbook.io/scf-handbook/supporting-programs/growth-hack)).\n- **Public Goods Award** — up to **~$50K XLM per proposal per quarter** for ecosystem public goods, NQG-voted ([Public Goods Award](https://stellar.gitbook.io/scf-handbook/supporting-programs/public-goods-award)).\n- **Stellar Liquidity Award** — **invitation-only** for audited, mainnet-live financial protocols (amount not publicly disclosed) ([Stellar Liquidity Award](https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award)).\n- These are **SCF awards/supporting programs**; SDF-direct instruments (Marketing Grant, Matching Fund, Enterprise Fund) are **separate** and not SCF tiers ([stellar.org/grants-and-funding](https://stellar.org/grants-and-funding)).",
+        "answer": "- **SCF Build** — up to **$150K in XLM** for teams building apps/protocols on Stellar/Soroban (Open, Integration, and RFP tracks).\n- **Instawards** — up to **$15K in XLM per project**, recommended by local Ambassador chapters; under v7.0 these replaced Kickstart Awards.\n- **Audit Bank** — SDF-funded audit support covering up to 100% of eligible audit costs, with the program's small refundable co-pay rules.\n- **Growth Hack** — a mainnet-project GTM/PMF cohort with about **$20K base plus up to $200K performance-based support**.\n- **Public Goods Award** — up to about **$50K in XLM per proposal per quarter**, selected through NQG voting.\n- **Stellar Liquidity Award** — invitation-only for audited, mainnet-live financial protocols. As of **2026-07-09**, the official rules publish a **$50K-in-XLM Base Liquidity Award** and an optional **additional $50K-in-XLM Supplemental Liquidity Award**, for **up to $100K total**. Supplemental eligibility follows the initial award and includes the stated sustained-liquidity criterion.\n- These are SCF awards/supporting programs. SDF-direct Marketing Grant, Matching Fund, and Enterprise Fund instruments are separate and should not be listed as SCF tiers.",
         "keyFacts": [
           "SCF Build is the main award (cap $150K XLM) for teams building apps/protocols on Stellar/Soroban.",
           "Instawards (up to $15K XLM per project) are recommended by local Ambassador chapters for early-stage builders.",
@@ -7642,6 +7684,7 @@
           "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award",
           "https://stellar.gitbook.io/scf-handbook/scf-awards/instawards",
           "https://stellar.gitbook.io/scf-handbook/supporting-programs/audit-bank",
+          "https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award/official-rules.md",
           "https://stellar.org/blog/ecosystem/introducing-scf-v7"
         ]
       },
@@ -7652,7 +7695,7 @@
         "confidence": "high",
         "freshness": false
       },
-      "graderNotes": "Dossier §2.2. Tier list churns across SCF versions — freshness-adjacent but the v7 structure is the current answer.\nAlso good if the answer: Growth Hack funds a cohort of teams ($20K base + up to $200K performance). | Public Goods Award is ~$50K XLM per proposal per quarter for ecosystem public goods. | Stellar Liquidity Award exists for audited, mainnet-live financial protocols (invitation-only).\nGolden cites: The SCF handbook awards/supporting-programs pages."
+      "graderNotes": "Dossier §2.2. Tier list churns across SCF versions — freshness-adjacent but the v7 structure is the current answer.\nAlso good if the answer: Growth Hack funds a cohort of teams ($20K base + up to $200K performance). | Public Goods Award is ~$50K XLM per proposal per quarter for ecosystem public goods. | Stellar Liquidity Award exists for audited, mainnet-live financial protocols (invitation-only).\nGolden cites: The SCF handbook awards/supporting-programs pages.\nCORRECTION 2026-07-09 (todo 901): the prior Liquidity Award nondisclosure sentence was false. Current official rules publish $50K in XLM base plus an optional additional $50K in XLM supplemental award, up to $100K total. These are dollar-denominated values paid in XLM, not a fixed token count; the supplemental award is conditional, and the program maximum must not be confused with Soroswap's individual $50K award."
     },
     {
       "id": "q-scf-build-award-cap",
@@ -7739,18 +7782,18 @@
       "id": "q-scf-category-funded-ratio",
       "question": "Which Stellar ecosystem category has the highest share of SCF-funded projects, not just the most funded projects in absolute count?",
       "golden": {
-        "answer": "Use the **categories** analytics snapshot and calculate funded share, not just absolute count.\n\nIn the June 25, 2026 Scout analytics snapshot, **Protocol/Contract** has the highest funded ratio\namong the major categories: **47 SCF-funded projects out of 78 total**, roughly **60%**. [1]\n\nThat is different from the absolute-count answer. **User-Facing App** has the most SCF-funded\nprojects in raw count (**110 funded of 202 total**) but a lower funded share, roughly **54%**. Tooling\nis **45/109** and Infrastructure is **37/106** in the same snapshot. [1]\n\nReport these as dated/tolerant live analytics. Do not hard-code them as permanent category facts.\n\nSource: [1] Stellar Light `analyze?dimension=categories` snapshot, generated June 25, 2026.",
+        "answer": "Use Stellar Light's **categories** analytics snapshot and compute `SCF-funded projects / total projects` for each major category. Label the result **per the Scout corpus**, include the generated/as-of date, and distinguish the highest share from the largest absolute funded count.\n\nDo not hard-code the inherited Protocol/Contract result or its 47/78 count as permanent real-world truth: later snapshots already drifted, and no independent official category aggregate is attached. Re-query, show the calculation, and report the current Scout-corpus winner with appropriate tolerance.",
         "keyFacts": [
-          "Computes or compares SCF-funded ratio by category, not only absolute funded-project count.",
-          "Identifies Protocol/Contract as the highest funded-ratio major category in the June 25, 2026 analytics snapshot (47 funded of 78 projects, roughly 60%).",
-          "Distinguishes this from User-Facing App, which has the most funded projects in absolute count but a lower funded ratio."
+          "Computes funded share by category rather than answering with absolute funded-project count.",
+          "Labels the numerator, denominator, ranking, and date as Scout-corpus analytics rather than independently official facts."
         ],
         "avoid": [
-          "Do NOT answer only User-Facing App because it has the most funded projects; that ignores the ratio asked for.",
-          "Do NOT fabricate exact percentages or treat live category counts as permanent."
+          "Do NOT answer only with the largest absolute funded count when the question asks for a ratio.",
+          "Do NOT hard-gate Protocol/Contract, 47/78, or any exact percentage as permanent world truth."
         ],
         "sources": [
-          "https://stellarlight.xyz"
+          "https://stellarlight.xyz",
+          "https://communityfund.stellar.org/awards"
         ]
       },
       "tags": {
@@ -7761,24 +7804,26 @@
         "freshness": true,
         "freshnessHorizon": "monthly"
       },
-      "graderNotes": "Added from theboycoder/StellarLight data-layer intake. Verified 2026-06-25 via /api/analyze?dimension=categories: User-Facing App 110/202, Tooling 45/109, Infrastructure 37/106, Protocol/Contract 47/78, Asset 0/3, Partner Integration 0/1, Anchor 0/1. Re-verified 2026-06-29 (counts drift): Protocol/Contract 44/86≈51%, User-Facing App 103/204≈50%, Tooling 42/108≈39%, Infrastructure 34/97≈35% — Protocol/Contract REMAINS the highest funded ratio among major categories, so the load-bearing claim holds; only the exact percentages move. Freshness-sensitive analytics snapshot; gate ratio reasoning, not permanent exact counts.\nAlso good if the answer: Provides dated/tolerant category counts because Scout analytics are a live snapshot.\nGolden cites: Stellar Light analytics categories/funding snapshot."
+      "graderNotes": "Added from theboycoder/StellarLight data-layer intake. Verified 2026-06-25 via /api/analyze?dimension=categories: User-Facing App 110/202, Tooling 45/109, Infrastructure 37/106, Protocol/Contract 47/78, Asset 0/3, Partner Integration 0/1, Anchor 0/1. Re-verified 2026-06-29 (counts drift): Protocol/Contract 44/86≈51%, User-Facing App 103/204≈50%, Tooling 42/108≈39%, Infrastructure 34/97≈35% — Protocol/Contract REMAINS the highest funded ratio among major categories, so the load-bearing claim holds; only the exact percentages move. Freshness-sensitive analytics snapshot; gate ratio reasoning, not permanent exact counts.\nAlso good if the answer: Provides dated/tolerant category counts because Scout analytics are a live snapshot.\nGolden cites: Stellar Light analytics categories/funding snapshot.\nCORPUS-ONLY CORRECTION 2026-07-09 (todo 901): gate ratio reasoning, as-of date, and Scout attribution. Never require the frozen category winner/count without a current query."
     },
     {
       "id": "q-scf-current-round",
       "question": "What is the current open SCF round and when is its submission deadline?",
       "golden": {
-        "answer": "- **Time-sensitive figure (as of June 2026):** the open round is **SCF #45**, submission deadline **July 26, 2026**, standard **$150K-in-XLM** Build cap. Report this, but do not assert it as definitively current. [communityfund.stellar.org/awards]\n- **Always flag freshness:** SCF Build rounds rotate on a roughly **6-week** cadence, so the current round number and deadline must be confirmed against the live source. [scout_rfps `activeQuarter` signal; communityfund.stellar.org/awards]\n- The live awards page is the authority for the open round/deadline; `scout_rfps` surfaces the active quarter and open-vs-closed window as corroboration. [stellarlight.xyz scout]\n- Round mechanics (stable): Build awards are up to **$150,000 worth of XLM**, budget set in USD, disbursed milestone-based in tranches. [SCF Build Award handbook]\n- Don't fabricate a round number or deadline not grounded in the live feed.",
+        "answer": "As of **2026-07-09**, the open build round is **SCF #45**, in the **Submission** phase, with a deadline of **August 16, 2026**. The standard Build Award cap remains up to **$150,000 worth of XLM**.\n\nThis is a volatile example, not permanent truth. SCF rounds rotate on a roughly six-week cadence, so report the round number, phase, and deadline only with an as-of date and verify them against the live communityfund.stellar.org awards page. Scout's live RFP metadata can corroborate the round/window but does not replace the official page.",
         "keyFacts": [
-          "Identifies the currently open/active SCF round (e.g. an SCF #NN) with its submission deadline.",
-          "Flags that round/deadline info is time-sensitive and should be confirmed against communityfund.stellar.org."
+          "Identifies SCF #45 as the current Submission round with an August 16, 2026 deadline, explicitly as of 2026-07-09.",
+          "Flags round/deadline information as time-sensitive and points to the live official awards page.",
+          "Keeps the stable Build cap distinct from the changing round schedule."
         ],
         "avoid": [
-          "Do NOT assert a specific round/deadline as definitively current without a freshness caveat (it rotates every ~6 weeks).",
-          "Do NOT fabricate a round number or deadline date not grounded in a source."
+          "Do NOT present the expired July 26 deadline as current.",
+          "Do NOT assert any round/deadline as permanent or fabricate a date not grounded in a live source."
         ],
         "sources": [
           "https://communityfund.stellar.org/awards",
-          "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award"
+          "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award",
+          "https://stellarlight.xyz/api/rfps?status=open"
         ]
       },
       "tags": {
@@ -7789,7 +7834,7 @@
         "freshness": true,
         "freshnessHorizon": "weekly"
       },
-      "graderNotes": "Dossier §4. Freshness item — rotates every ~6 weeks; reward staleness-flagging. scout_rfps surfaces activeQuarter signal.\nAlso good if the answer: States the SCF Build cadence is roughly every 6 weeks. | Notes the standard $150K XLM Build cap for the round.\nGolden cites: communityfund.stellar.org/awards (the live awards page) for the current round/deadline."
+      "graderNotes": "Dossier §4. Freshness item — rotates every ~6 weeks; reward staleness-flagging. scout_rfps surfaces activeQuarter signal.\nAlso good if the answer: States the SCF Build cadence is roughly every 6 weeks. | Notes the standard $150K XLM Build cap for the round.\nGolden cites: communityfund.stellar.org/awards (the live awards page) for the current round/deadline.\nFRESHNESS CORRECTION 2026-07-09 (todo 901): SCF #45 remains current, but its deadline is August 16, 2026, not July 26. Official awards and Scout live-round metadata agree. Continue gating on dated lookup behavior rather than one frozen round."
     },
     {
       "id": "q-scf-ecosystem-listing-partner-jobs",
@@ -7871,7 +7916,7 @@
         "freshnessHorizon": "weekly",
         "trap": "paid-bait"
       },
-      "graderNotes": "Governance-negative: the over-escalation trap. A simple totals lookup must NOT route to the banned/metered deep-research lane. Strict profile. Re-verified live 2026-06-29: scout_analyze funding = ~$19.97M / 223 projects; awards counter ~504 submissions. Kept in sync with q-scf-total-distributed.\nAlso good if the answer: Stays inside the keyless/low-cost analytics tier appropriate to a simple lookup.\nGolden cites: Stellar Light analytics (scout_analyze funding) for the totals.\nNarrative numbers refreshed 2026-07-03 (todo 829 sweep, sibling of q-scf-total-distributed): the behavioral gates (no metered/deep-research escalation) are unchanged and remain the point of this case. Amount grading follows the sibling's rule: any dated, source-named figure in the ~$20–45M band is fine; only undated fixed-truth claims and over-escalation fail."
+      "graderNotes": "Governance-negative: the over-escalation trap. A simple totals lookup must NOT route to the banned/metered deep-research lane. Strict profile. Re-verified live 2026-06-29: scout_analyze funding = ~$19.97M / 223 projects; awards counter ~504 submissions. Kept in sync with q-scf-total-distributed.\nAlso good if the answer: Stays inside the keyless/low-cost analytics tier appropriate to a simple lookup.\nGolden cites: Stellar Light analytics (scout_analyze funding) for the totals.\nNarrative numbers refreshed 2026-07-03 (todo 829 sweep, sibling of q-scf-total-distributed): the behavioral gates (no metered/deep-research escalation) remain the point. POST-FIX REOPEN 2026-07-09 (todo 901): funding-v2 now documents its reconstruction/count basis and populated round breakdown, fixing sls-013; continue accepting dated, source-named totals and reject only undated fixed truth, basis confusion, or over-escalation."
     },
     {
       "id": "q-scf-funded-similar-oracle",
@@ -7962,17 +8007,18 @@
       "id": "q-scf-funding-by-category",
       "question": "How is SCF funding distributed across ecosystem categories — which categories get the most?",
       "golden": {
-        "answer": "- The right source is Stellar Light's `scout_analyze` **categories dimension** — an aggregate distribution of projects/funding across ecosystem categories, not a per-project breakdown. [Stellar Light scout / stellarlight.xyz]\n- **Time-sensitive snapshot (June 29, 2026 live analytics):** ranked by both representation and SCF funding —\n  - **User-Facing App** — most represented and best-funded (~204 projects, ~103 SCF-funded, ~$9.19M)\n  - **Tooling** (~108 projects, ~42 funded, ~$3.28M)\n  - **Infrastructure** (~97 projects, ~34 funded, ~$3.01M)\n  - **Protocol/Contract** (~86 projects, ~44 funded, ~$4.48M — note it concentrates dollars into fewer, larger awards). [scout_analyze `?dimension=categories`]\n- **Headline:** User-Facing Apps lead on both count and dollars, then Tooling / Infrastructure / Protocol. Report these as a live snapshot that shifts each round — confirm against the live source.\n- Frame the answer as an aggregate distribution; `scout_clusters` is the complementary market-map view of crowded vs whitespace areas. Do not drop to per-project SCF history, and do not fabricate percentages or splits not in the analytics data.",
+        "answer": "Use Stellar Light's **categories** analytics dimension for a corpus-relative aggregate, not a per-project history. Label every output **'per the Scout corpus'** with its generated/as-of date and methodology/count basis.\n\nFor illustration only, the **2026-06-29 Scout snapshot** reported User-Facing App as the largest category in both project count and reconstructed SCF dollars, followed by Tooling, Infrastructure, and Protocol/Contract under that snapshot's taxonomy. Exact counts and dollar splits are not independently published by official SCF records and must not be hard-gated or presented as permanent ecosystem truth.\n\nThe durable answer explains the source taxonomy, dated snapshot, count basis, and category-versus-project distinction. Re-query the live analytics for current values and use the official SCF site only for program/award records it actually publishes.",
         "keyFacts": [
-          "Returns an ecosystem-analytics distribution of funding/projects across categories (the categories/funding dimension).",
-          "Identifies which categories are most represented, grounded in the analytics snapshot."
+          "Uses the Scout categories analytics dimension and labels the result corpus-relative with an as-of date.",
+          "Explains category-level distribution and count/methodology basis without hard-gating exact reconstructed figures."
         ],
         "avoid": [
-          "Do NOT fabricate category percentages or dollar splits not in the analytics data.",
-          "Do NOT answer with a per-project SCF history when the user asked for category-level distribution."
+          "Do NOT present Scout category counts/dollar estimates as independently official SCF totals or permanent truth.",
+          "Do NOT fabricate percentages/splits or answer with per-project history when category distribution was requested."
         ],
         "sources": [
-          "https://stellarlight.xyz"
+          "https://stellarlight.xyz",
+          "https://communityfund.stellar.org/awards"
         ]
       },
       "tags": {
@@ -7983,7 +8029,7 @@
         "freshness": true,
         "freshnessHorizon": "monthly"
       },
-      "graderNotes": "2nd scout_analyze case; exercises the categories dimension ('projects per category'). Refreshed 2026-06-29 via /api/analyze?dimension=categories: User-Facing App 204/103/$9.19M, Tooling 108/42/$3.28M, Infrastructure 97/34/$3.01M, Protocol/Contract 86/44/$4.48M (totalProjects 500). Live dollar figures → flipped freshness_sensitive true; ranking headline (UFA leads count+dollars, then Tooling/Infra/Protocol) unchanged.\nAlso good if the answer: Frames it as an aggregate distribution, not a per-project breakdown.\nGolden cites: Stellar Light analytics (scout_analyze categories/funding dimension)."
+      "graderNotes": "2nd scout_analyze case; exercises the categories dimension ('projects per category'). Refreshed 2026-06-29 via /api/analyze?dimension=categories: User-Facing App 204/103/$9.19M, Tooling 108/42/$3.28M, Infrastructure 97/34/$3.01M, Protocol/Contract 86/44/$4.48M (totalProjects 500). Live dollar figures → flipped freshness_sensitive true; ranking headline (UFA leads count+dollars, then Tooling/Infra/Protocol) unchanged.\nAlso good if the answer: Frames it as an aggregate distribution, not a per-project breakdown.\nGolden cites: Stellar Light analytics (scout_analyze categories/funding dimension).\nCORPUS-ONLY CORRECTION 2026-07-09 (todo 901): exact category counts/dollars are Scout analytics, not an independently published official aggregate. Grade source-relative labeling, date, taxonomy/count basis, and category reasoning; never require the June 29 numbers or ranking as permanent world truth."
     },
     {
       "id": "q-scf-growth-hack",
@@ -8265,17 +8311,21 @@
       "id": "q-scf-liquidity-award-amount",
       "question": "Exactly how much XLM does the Stellar Liquidity Award pay, and how do I apply for it?",
       "golden": {
-        "answer": "- The exact award amount is **not publicly disclosed** — the SCF handbook does not publish a figure or cap, so the honest answer is that the amount cannot be stated ([SCF handbook — Stellar Liquidity Award](https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award)).\n- The Stellar Liquidity Award is **invitation-only**, for **audited, mainnet-live financial protocols** ([Stellar Liquidity Award](https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award)).\n- There is **no open application or interest form** — SDF/SCF reaches out to qualifying protocols; you cannot self-apply ([Stellar Liquidity Award](https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award)).\n- For visibility, **engage via SCF governance / the Stellar Discord** and ship an audited, mainnet-live protocol, rather than looking for a public form ([Stellar Liquidity Award](https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award)).",
+        "answer": "As of **2026-07-09**, the official rules publish a **$50,000-in-XLM Base Liquidity Award** plus an optional **additional $50,000-in-XLM Supplemental Liquidity Award**, for **up to $100,000 of XLM value total**. The rules state dollar-denominated values paid in XLM; they do not promise a fixed number of XLM tokens, because the XLM amount depends on valuation/settlement.\n\nThe supplemental award is not automatic. A project must first qualify for and receive the initial award, then meet the supplemental criteria, including demonstrating seven consecutive days of recognized-asset TVL above $250K.\n\nThe program is **invitation-only** for audited financial protocols with a live Stellar Mainnet implementation that pass business, technical, legal/KYC, risk, and due-diligence checks. There is no public self-service application: qualifying projects are invited and receive the application form by email from SCF. The landing page directs questions to communityfund@stellar.org or the SDF team.\n\nDo not confuse the program maximum with a particular recipient's award. For example, Soroswap's official history records a $50K Liquidity Award; that does not establish that it received, or that every project receives, the optional supplemental amount.",
         "keyFacts": [
-          "States that the Stellar Liquidity Award is invitation-only for audited, mainnet-live financial protocols.",
-          "Honestly notes the exact award amount is NOT publicly disclosed (rather than inventing a figure)."
+          "States the dated published structure: $50K in XLM base plus an optional additional $50K in XLM supplemental award, up to $100K total.",
+          "Explains that these are dollar-denominated values paid in XLM, not a fixed number of XLM tokens.",
+          "States that the program is invitation-only for audited, mainnet-live financial protocols and that invited projects receive the application form by email."
         ],
         "avoid": [
-          "Do NOT fabricate a specific Liquidity Award amount or cap — it is not publicly disclosed.",
-          "Do NOT describe an open application/interest form for the Liquidity Award."
+          "Do NOT claim the Liquidity Award amount or cap is undisclosed; the current official rules publish the $50K base, optional additional $50K, and $100K total maximum.",
+          "Do NOT promise a fixed XLM token count or imply every recipient automatically receives $100K; the values are dollar-denominated in XLM and the supplemental award is conditional.",
+          "Do NOT describe a public self-service application or open interest form; eligible projects are invited and receive the application by email."
         ],
         "sources": [
-          "https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award"
+          "https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award",
+          "https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award/official-rules.md",
+          "https://communityfund.stellar.org/dashboard/submissions/recDy2knwdmwAPWBd"
         ]
       },
       "tags": {
@@ -8285,7 +8335,7 @@
         "confidence": "high",
         "freshness": false
       },
-      "graderNotes": "Dossier §2.2/§12. Honest 'not disclosed in the corpus' case — reward admitting the cap is undisclosed over inventing one.\nAlso good if the answer: Explains it is not a self-apply program — SDF/SCF reaches out; there is no open application form.\nGolden cites: The SCF Stellar Liquidity Award handbook page (which documents invite-only, undisclosed-cap status)."
+      "graderNotes": "Dossier §2.2/§12. Honest 'not disclosed in the corpus' case — reward admitting the cap is undisclosed over inventing one.\nAlso good if the answer: Explains it is not a self-apply program — SDF/SCF reaches out; there is no open application form.\nGolden cites: The SCF Stellar Liquidity Award handbook page (which documents invite-only, undisclosed-cap status).\nHISTORICAL NOTE INVALIDATION — CORRECTION 2026-07-09 (todo 901): disregard the inherited preceding 'not disclosed' review note and anti-amount trap; they are false under the current official rules. Reward the dated structure ($50K base + optional additional $50K, up to $100K total) and distinguish dollar-denominated XLM value from a fixed number of lumens. Preserve the invite-only/no-public-form behavior. Soroswap's $50K award is compatible with the base amount but the official row does not label it Base versus Supplemental, so do not require that classification."
     },
     {
       "id": "q-scf-nontechnical-participation",
@@ -8351,14 +8401,14 @@
       "id": "q-scf-open-rfps",
       "question": "What SCF RFPs are open right now — what is the SCF asking builders to build this quarter?",
       "golden": {
-        "answer": "- The right source is Stellar Light's `scout_rfps` — it returns the currently open SCF RFP briefs (the work the SCF is soliciting) for the active quarter. [Stellar Light scout / stellarlight.xyz]\n- **Time-sensitive set (2026-06-29 live feed):** `activeQuarter = q2-2026`, **5 open / 9 closed**.\n  The open briefs are **Trustline Onboarder**, **Passkey UI Kit**, **Account Demolisher**,\n  **Contract Source Verification Service**, and **OZ Accounts Policy Builder**. Report this as a\n  dated live snapshot, not a fixed list. [scout_rfps `/api/rfps`]\n- **Always flag freshness:** the open-RFP set rotates by SCF quarter/round, so confirm against the\n  live RFP feed. The Q1 2026 briefs **Prices API & Indexing Service**, **DeFi Positions API**, etc.\n  are closed in the 2026-06-29 feed and should not be presented as currently fundable. [stellarlight.xyz scout]\n- RFPs are reviewed via the **SCF Build RFP Track** — panel-only, no community (NQG) vote — and follow the standard **$150K-in-XLM** Build cap; per-RFP bounties are not separately published. [SCF Build Award handbook]\n- Don't invent RFP titles, per-RFP dollar amounts, or deadlines not in the live feed.",
+        "answer": "Use Stellar Light's `scout_rfps` feed to retrieve the **currently open RFP briefs**, and label the result as a dated **Scout-corpus snapshot**. The exact quarter, titles, and open/closed counts rotate and are not independently published on the cited SCF handbook page, so re-query rather than treating the inherited June 29 roster as permanently or officially current.\n\nThe SCF handbook independently confirms that RFPs use the Build RFP Track and the general Build Award cap of up to $150,000 in XLM. Do not infer per-RFP bounties or deadlines that the live source does not state.",
         "keyFacts": [
-          "Returns currently open SCF RFP briefs (the funding opportunities the SCF is soliciting).",
-          "Flags that the open-RFP set is time-sensitive and tied to the active SCF quarter/round."
+          "Uses the live Scout RFP feed and labels its roster with an as-of date and source-relative scope.",
+          "Flags that the open set rotates and independently distinguishes handbook program rules from the directory roster."
         ],
         "avoid": [
-          "Do NOT present a specific RFP list as permanently current — the open set rotates by quarter.",
-          "Do NOT invent RFP titles, per-RFP dollar amounts, or deadlines not in a source."
+          "Do NOT hard-gate the June 29 titles/counts or present them as permanently current official SCF truth.",
+          "Do NOT invent RFP titles, per-RFP amounts, or deadlines."
         ],
         "sources": [
           "https://stellarlight.xyz",
@@ -8373,7 +8423,7 @@
         "freshness": true,
         "freshnessHorizon": "weekly"
       },
-      "graderNotes": "Dossier §4.2. scout_rfps is the exact card for 'what is SCF asking to be built'. Freshness item — confidence stays medium because the open set rotates. Re-verified live 2026-06-29 (/api/rfps): activeQuarter q2-2026, 5 open / 9 closed, open briefs unchanged (Trustline Onboarder, Passkey UI Kit, Account Demolisher, Contract Source Verification Service, OZ Accounts Policy Builder). Rubric gates on the freshness caveat, not the exact list.\nAlso good if the answer: RFPs are reviewed via the SCF Build RFP Track (panel-only, no community vote). | RFP awards follow the standard SCF Build $150K XLM cap (per-RFP bounties are not separately published).\nGolden cites: The SCF RFP Track handbook page and/or the live RFPs feed."
+      "graderNotes": "Dossier §4.2. scout_rfps is the exact card for 'what is SCF asking to be built'. Freshness item — confidence stays medium because the open set rotates. Re-verified live 2026-06-29 (/api/rfps): activeQuarter q2-2026, 5 open / 9 closed, open briefs unchanged (Trustline Onboarder, Passkey UI Kit, Account Demolisher, Contract Source Verification Service, OZ Accounts Policy Builder). Rubric gates on the freshness caveat, not the exact list.\nAlso good if the answer: RFPs are reviewed via the SCF Build RFP Track (panel-only, no community vote). | RFP awards follow the standard SCF Build $150K XLM cap (per-RFP bounties are not separately published).\nGolden cites: The SCF RFP Track handbook page and/or the live RFPs feed.\nCORPUS-ONLY CORRECTION 2026-07-09 (todo 901): grade route, dated Scout attribution, and freshness discipline; do not require the inherited q2-2026 five-title roster as independently official."
     },
     {
       "id": "q-scf-public-goods-award",
@@ -8569,7 +8619,7 @@
         "freshness": true,
         "freshnessHorizon": "weekly"
       },
-      "graderNotes": "Dossier §11. scout_analyze funding dimension is the exact card ('how much has SCF distributed'). Re-verified live 2026-06-29: scout_analyze ?dimension=funding returned scfTotalDistributedUSD ~$19.97M, scfAwardedProjects 223, meanAwardUSD ~$89.5K (DOWN from the 2026-06-22 $21.36M/239 — the live metric recomputes and drifts in both directions). communityfund.stellar.org/awards counter showed 504 'Previously Awarded Submissions'. RECONCILED: two count bases (distinct funded projects ~223 vs awarded submissions ~504, since a project can win multiple rounds) and two denominations (USD analytics vs XLM-denominated press figures like ~200M XLM). Freshness-sensitive.\nAlso good if the answer: Flags that cumulative totals grow each round and should be confirmed against the live source, and notes the USD vs XLM denomination (budgets are set in USD, paid in XLM).\nGolden cites: Stellar Light analytics (scout_analyze funding) and/or the SCF history-of-SCF page.\nCorrected 2026-07-03 (todo 829 skeptic sweep): the prior golden pinned the 06-29 snapshot ($19.97M/~223) as 'the live snapshot' — the metric doubled in four days and SDF's own Jan-2025 statement (>$32M to >540 projects) already exceeded it. Grading: do NOT penalize any dated, source-named figure in the ~$20–45M band; punish only undated fixed-truth claims, un-named count bases, and scope confusion. The scout figure is corpus-relative ('per the Scout corpus'); a candidate cross-citing communityfund.stellar.org's own counters is MORE correct than one quoting scout alone. Upstream instability filed: improvements/stellar-light-scout/sls-013."
+      "graderNotes": "Dossier §11. scout_analyze funding dimension is the exact card ('how much has SCF distributed'). Re-verified live 2026-06-29: scout_analyze ?dimension=funding returned scfTotalDistributedUSD ~$19.97M, scfAwardedProjects 223, meanAwardUSD ~$89.5K (DOWN from the 2026-06-22 $21.36M/239 — the live metric recomputes and drifts in both directions). communityfund.stellar.org/awards counter showed 504 'Previously Awarded Submissions'. RECONCILED: two count bases (distinct funded projects ~223 vs awarded submissions ~504, since a project can win multiple rounds) and two denominations (USD analytics vs XLM-denominated press figures like ~200M XLM). Freshness-sensitive.\nAlso good if the answer: Flags that cumulative totals grow each round and should be confirmed against the live source, and notes the USD vs XLM denomination (budgets are set in USD, paid in XLM).\nGolden cites: Stellar Light analytics (scout_analyze funding) and/or the SCF history-of-SCF page.\nCorrected 2026-07-03 (todo 829 skeptic sweep): the prior golden pinned an unstable snapshot. Grading remains behavioral: accept dated, source-named figures and require count basis/denomination; punish fixed-truth and scope confusion. POST-FIX REOPEN 2026-07-09 (todo 901): sls-013 is fixed upstream. Live funding-v2 returned $40,160,145.13 across 398 distinct projects with computedAt, methodologyVersion, an explicit reconstruction/count basis, and populated byRound rows. This improves provenance but does not turn the reconstructed total into permanent or official truth."
     },
     {
       "id": "q-scf-v7-changes",

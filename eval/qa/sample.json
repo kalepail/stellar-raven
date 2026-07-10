@@ -294,10 +294,10 @@
       "id": "q-eco-wallets-overview",
       "question": "Which wallets can I use on Stellar, and how do they differ?",
       "golden": {
-        "answer": "Main Stellar wallets, distinguished by **sponsor/model** (all Scout-grounded):\n- **Freighter** — the **Stellar Development Foundation's** official non-custodial wallet (browser\n  extension: Chrome/Firefox/Brave; iOS + Android) [Scout: .../freighter].\n- **LOBSTR** — widely-used non-custodial wallet (iOS/Android/web/extension) by **Ultra Stellar** (an\n  independent commercial entity, also behind StellarX/StellarTerm); SCF-awarded (~$232K) [Scout: .../lobstr].\n- **Hana** — non-custodial **multi-chain** wallet with Stellar support (MetaMask-style); SCF-awarded\n  (~$132K) [Scout: .../hana].\n- **xBull** — open-source non-custodial Stellar wallet (extension/web/mobile) by **Creit-Tech**, with a\n  passkey-based V2; SCF-awarded (~$56.2K) [Scout: .../xbull]. (Plus StellarTerm / Hot Wallet on the tail.)\n\nScope: **Freighter and xBull are Stellar-focused**; **LOBSTR adds XRP Ledger**; **Hana is broadly\nmulti-chain**. Developers should integrate the **Stellar Wallets Kit** to stay wallet-agnostic. Do NOT\nattribute LOBSTR to the SDF or Freighter to Ultra Stellar; don't invent a wallet or fabricate user\ncounts.",
+        "answer": "Main Stellar wallets, distinguished by sponsor and model:\n- **Freighter** — the Stellar/SDF wallet project, non-custodial and Stellar-focused.\n- **LOBSTR** — a non-custodial wallet product of **Ultra Stellar**, an independent commercial entity.\n- **Hana** — a non-custodial multi-chain wallet with Stellar support.\n- **xBull** — an open-source, non-custodial Stellar wallet built under **Creit-Tech**.\n\nThese roles should be sourced to the wallet/operator sites or repositories. Do not use reconstructed SCF totals or marketing-scale figures to rank the wallets. Developers should normally integrate a multi-wallet interface such as Stellar Wallets Kit rather than hard-wiring one wallet.",
         "keyFacts": [
-          "Names the main Stellar wallets — Freighter, LOBSTR, Hana, and xBull (and may add StellarTerm / Hot Wallet).",
-          "Distinguishes them by sponsor/model: Freighter is built by the Stellar Development Foundation; LOBSTR is by Ultra Stellar (independent commercial entity)."
+          "Names Freighter, LOBSTR, Hana, and xBull as Stellar wallet options.",
+          "Distinguishes sponsor/model: Freighter is in the Stellar/SDF project family; LOBSTR is an independent Ultra Stellar product; xBull is associated with Creit-Tech; Hana is multi-chain."
         ],
         "avoid": [
           "Do NOT claim LOBSTR is built/operated by the Stellar Development Foundation, or that Freighter is built by Ultra Stellar.",
@@ -305,10 +305,10 @@
           "Do NOT route to general-web for this directory-backed wallet question — use the curated project directory."
         ],
         "sources": [
-          "https://stellarlight.xyz/project/freighter",
-          "https://stellarlight.xyz/project/lobstr",
-          "https://stellarlight.xyz/project/hana",
-          "https://stellarlight.xyz/project/xbull"
+          "https://github.com/stellar/freighter",
+          "https://www.ultrastellar.com",
+          "https://hana.money",
+          "https://github.com/Creit-Tech/xBull-Wallet"
         ]
       },
       "tags": {
@@ -318,7 +318,7 @@
         "confidence": "high",
         "freshness": false
       },
-      "graderNotes": "Directory discovery → scout_projects. This file OWNS the sponsor/model differentiation lane (Freighter=SDF, LOBSTR=Ultra Stellar, Hana multi-chain, xBull=Creit-Tech) — distinct from q-eco-stellar-wallets-list (flat enumeration probe) and q-eco-wallets-similar (find_similar routing). Added the directory-not-general-web guard as must_avoid (2026-06-29) to keep it in the directory lane. All grounded on Scout: Freighter (SDF official, browser+iOS/Android), LOBSTR (Ultra Stellar, SCF ~$232K), Hana (multi-chain, SCF ~$132K), xBull (Creit-Tech, SCF ~$56.2K). Devs use Stellar Wallets Kit to stay wallet-agnostic.\nAlso good if the answer: Notes scope differences: Freighter and xBull are Stellar-focused; LOBSTR and Hana are multi-chain (LOBSTR adds XRP Ledger; Hana is broadly multi-chain). | Notes developers should integrate the Stellar Wallets Kit to stay wallet-agnostic.\nGolden cites: A source for each named wallet and its sponsor/model."
+      "graderNotes": "Directory discovery → scout_projects. This file OWNS the sponsor/model differentiation lane (Freighter=SDF, LOBSTR=Ultra Stellar, Hana multi-chain, xBull=Creit-Tech) — distinct from q-eco-stellar-wallets-list (flat enumeration probe) and q-eco-wallets-similar (find_similar routing). Added the directory-not-general-web guard as must_avoid (2026-06-29) to keep it in the directory lane. All grounded on Scout: Freighter (SDF official, browser+iOS/Android), LOBSTR (Ultra Stellar, SCF ~$232K), Hana (multi-chain, SCF ~$132K), xBull (Creit-Tech, SCF ~$56.2K). Devs use Stellar Wallets Kit to stay wallet-agnostic.\nAlso good if the answer: Notes scope differences: Freighter and xBull are Stellar-focused; LOBSTR and Hana are multi-chain (LOBSTR adds XRP Ledger; Hana is broadly multi-chain). | Notes developers should integrate the Stellar Wallets Kit to stay wallet-agnostic.\nGolden cites: A source for each named wallet and its sponsor/model.\nREFUTE CORRECTION 2026-07-09 (todo 901): remove inherited wallet SCF totals from grading; they are directory reconstructions without an attached official per-award calculation. Grade sponsor/model and wallet availability from operator/repository sources. Also disregard inherited XRP-Ledger scope detail unless a current LOBSTR source is cited."
     },
     {
       "id": "q-edge-1xlm-activation-fee",
@@ -542,18 +542,20 @@
       "id": "q-scf-current-round",
       "question": "What is the current open SCF round and when is its submission deadline?",
       "golden": {
-        "answer": "- **Time-sensitive figure (as of June 2026):** the open round is **SCF #45**, submission deadline **July 26, 2026**, standard **$150K-in-XLM** Build cap. Report this, but do not assert it as definitively current. [communityfund.stellar.org/awards]\n- **Always flag freshness:** SCF Build rounds rotate on a roughly **6-week** cadence, so the current round number and deadline must be confirmed against the live source. [scout_rfps `activeQuarter` signal; communityfund.stellar.org/awards]\n- The live awards page is the authority for the open round/deadline; `scout_rfps` surfaces the active quarter and open-vs-closed window as corroboration. [stellarlight.xyz scout]\n- Round mechanics (stable): Build awards are up to **$150,000 worth of XLM**, budget set in USD, disbursed milestone-based in tranches. [SCF Build Award handbook]\n- Don't fabricate a round number or deadline not grounded in the live feed.",
+        "answer": "As of **2026-07-09**, the open build round is **SCF #45**, in the **Submission** phase, with a deadline of **August 16, 2026**. The standard Build Award cap remains up to **$150,000 worth of XLM**.\n\nThis is a volatile example, not permanent truth. SCF rounds rotate on a roughly six-week cadence, so report the round number, phase, and deadline only with an as-of date and verify them against the live communityfund.stellar.org awards page. Scout's live RFP metadata can corroborate the round/window but does not replace the official page.",
         "keyFacts": [
-          "Identifies the currently open/active SCF round (e.g. an SCF #NN) with its submission deadline.",
-          "Flags that round/deadline info is time-sensitive and should be confirmed against communityfund.stellar.org."
+          "Identifies SCF #45 as the current Submission round with an August 16, 2026 deadline, explicitly as of 2026-07-09.",
+          "Flags round/deadline information as time-sensitive and points to the live official awards page.",
+          "Keeps the stable Build cap distinct from the changing round schedule."
         ],
         "avoid": [
-          "Do NOT assert a specific round/deadline as definitively current without a freshness caveat (it rotates every ~6 weeks).",
-          "Do NOT fabricate a round number or deadline date not grounded in a source."
+          "Do NOT present the expired July 26 deadline as current.",
+          "Do NOT assert any round/deadline as permanent or fabricate a date not grounded in a live source."
         ],
         "sources": [
           "https://communityfund.stellar.org/awards",
-          "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award"
+          "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award",
+          "https://stellarlight.xyz/api/rfps?status=open"
         ]
       },
       "tags": {
@@ -564,7 +566,7 @@
         "freshness": true,
         "freshnessHorizon": "weekly"
       },
-      "graderNotes": "Dossier §4. Freshness item — rotates every ~6 weeks; reward staleness-flagging. scout_rfps surfaces activeQuarter signal.\nAlso good if the answer: States the SCF Build cadence is roughly every 6 weeks. | Notes the standard $150K XLM Build cap for the round.\nGolden cites: communityfund.stellar.org/awards (the live awards page) for the current round/deadline."
+      "graderNotes": "Dossier §4. Freshness item — rotates every ~6 weeks; reward staleness-flagging. scout_rfps surfaces activeQuarter signal.\nAlso good if the answer: States the SCF Build cadence is roughly every 6 weeks. | Notes the standard $150K XLM Build cap for the round.\nGolden cites: communityfund.stellar.org/awards (the live awards page) for the current round/deadline.\nFRESHNESS CORRECTION 2026-07-09 (todo 901): SCF #45 remains current, but its deadline is August 16, 2026, not July 26. Official awards and Scout live-round metadata agree. Continue gating on dated lookup behavior rather than one frozen round."
     },
     {
       "id": "q-scf-regional-india",

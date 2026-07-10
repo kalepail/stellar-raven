@@ -31,7 +31,7 @@
     "solo://proj/49/todo/judge-rubric-corpus--826 — the avoid-clause judge-artifact class (FIXED: rubric v2.1 + eval:qa:lint, commit 18e234f)",
     "eval-side freshness drift: the corpus snapshot (authored ~2026-06) predates most of the live India footprint; no upstream service defect — the services returned the data correctly"
    ],
-   "golden": {
+  "golden": {
     "answer": "- Answer from Stellar corpora (scout_research / scout_builders / scout_hackathons + the Ambassador Program), NOT general web — the regional-community question is in-corpus.\n- India is an active Stellar region: the Ambassador Program supports builders/educators forming regional chapters (events, meetups, docs). Source: https://stellar.gitbook.io/ambassador-program\n- Ground the activity in evidence — the corpus records a dense 2026 India footprint of community/ambassador-run activations (Rise In × Stellar India): Stellar Build Station 21-day builder sprints in Kolkata, Kozhikode (Kerala), Pune, and Delhi-NCR; builder workshops in Bhopal and Jabalpur; a Goa Builders Camp (5-day residency, July 2026); and Inner Circle community events across five Indian cities (2026-04-25). Rise In's November 2025 monthly update reported 250+ projects submitted from India across 9 activations. Source: Stellar Light research corpus (https://stellarlight.xyz)\n- Regional chapters can recommend Instawards (≤ $15K XLM) for local builders; they do not hand out the $150K Build grant. Source: https://stellar.gitbook.io/ambassador-program",
     "keyFacts": [
      "Confirms an active India-region Stellar community via the Ambassador Program / regional chapters.",
@@ -123,12 +123,12 @@
    ],
    "evidence": [
     "Live production execute 2026-07-03: scout builder directory total 112 profiles; Brazil 10 (incl. Cleverson Silva/Boleto Guardian payments infra, Matheus Brasil Aguiar/ChatPay Go Labs), Chile 5 (incl. Bruno Miranda/ArcusX payments), Costa Rica 2 (incl. Brandon Fernandez/Kindfi), Colombia 1 (Miguel Nieto); Argentina/Mexico/Peru/Venezuela 0",
-    "location='Latin America' returns 0 (free-text field, country-level terms required); zero-match responses carry the structured filter-miss advisory as graderNotes describe",
+    "Post-fix live API recheck 2026-07-09T23:34Z: location='Latin America' returns 19 builders across Brazil/Chile/Colombia/Costa Rica; adding q='payments' returns 7, confirming both region expansion and semantic/synonym matching now work",
     "Solo project 49: todo 826 comment 2224 (residual list), scratchpad 521 follow-up section"
    ],
    "rootCause": [
     "solo://proj/49/todo/judge-rubric-corpus--826 — judge-blind avoid phrasing predates the rubric-v2.1 corpus-blind constraint (eval-side authoring)",
-    "improvements/stellar-light-scout/sls-010 — builder-directory filters are literal substring (no region-synonym expansion, no semantic q fallback) and four LatAm countries have zero coverage; the upstream fix that would make region queries first-class"
+    "improvements/stellar-light-scout/sls-010 — fixed upstream and live re-verified 2026-07-09: region synonyms and the payments-relevance fallback now work; the remaining override protects durable attribution and anti-fabrication behavior, not a country-fan-out workaround"
    ],
    "golden": {
     "avoid": [
@@ -137,7 +137,7 @@
      "Do NOT route to general web (Perplexity/Parallel) for a curated builder-directory query."
     ]
    },
-   "graderNotesAppend": "Avoid list re-armed 2026-07-03 (todo 826 residual), deep-verified per the golden-truth skill (todo 828): the support-relative item split into a concrete trap (LatAm builders verifiably exist — Brazil 10, Chile 5, Costa Rica 2, Colombia 1 at probe time, all 4 sampled builders real-world-confirmed via external sites/repos/demos; country names chosen over volatile counts for drift resistance) and an answer-visible attribution guard. Grading nuances from the real-world sweep: ArcusX was on Stellar TESTNET in its 2026 demos (in development — don't penalize either 'live' per the directory or 'in development' per the demos); Boleto Guardian is boleto document-authentication/anti-fraud on Stellar rather than a payments rail; the project names 'Stellar View'/'Tippa' (Miguel Nieto) are corpus-only — the builder is real and well-footprinted, but don't require or reward those specific product names. The location field is free-text — region terms like 'Latin America' return 0; candidates must fan out by country."
+   "graderNotesAppend": "Avoid list re-armed 2026-07-03 (todo 826 residual), deep-verified per the golden-truth skill (todo 828): LatAm builders verifiably exist and sampled builders have external footprints. Grading nuances: ArcusX was on Stellar TESTNET in its 2026 demos; Boleto Guardian is boleto document-authentication/anti-fraud on Stellar rather than a generic payments rail; the project names 'Stellar View'/'Tippa' are corpus-only. POST-FIX REOPEN 2026-07-09 (todo 901): ignore the inherited note saying region filters return zero. Live API checks now return 19 builders for both 'Latin America' and 'LatAm', and 7 for Latin America plus payments. Country fan-out is optional enrichment, not a required workaround."
   },
   "q-crp-anchors-by-corridor": {
    "why": "Judge-blind avoid item ('without dated evidence from the anchor or ecosystem directory') re-armed: the corpus-side condition dropped for a purely answer-visible dated-citation guard, plus a concrete trap on the MoneyGram footprint conflation the corpus itself contains. Trap band widened 170-174 → 170-180 after deep verification found SDF's own press material says 'cash-out in 180+ countries' — the original band would have punished an SDF-sourced true claim.",
@@ -231,7 +231,7 @@
    ],
    "rootCause": [
     "solo://proj/49/todo/judge-rubric-corpus--826 — judge-blind avoid phrasing (eval-side authoring)",
-    "improvements/stellar-light-scout/sls-008 — Orbit Finance / OrbitCDP duplicate-ish lending records with no cross-link or dedupe signal; the upstream fix that would remove the naming trap this item guards",
+    "improvements/stellar-light-scout/sls-008 — fixed upstream: orbit-finance now carries canonicalSlug='orbitcdp', both rows are Inactive, and OrbitCDP carries lifecycle and SCF-round context; the override retains only durable official-funding and reconstruction cautions",
     "freshness: SCF amounts are point-in-time (probe 2026-07-03); the dated-amount guard, not pinned numbers, absorbs future drift"
    ],
    "golden": {
@@ -242,7 +242,7 @@
      "Do NOT present a cumulative SCF dollar total for any project as an official figure — no official source publishes cumulative per-project totals (early rounds were XLM-pool percentages), so all totals are aggregator reconstructions; state amounts only with a source and as-of date."
     ]
    },
-   "graderNotesAppend": "Avoid list re-armed 2026-07-03 (todo 826 residual), then deep-verified and corrected per the golden-truth skill (todo 828). Verified: OrbitCDP (Zenith Protocols) is SCF-funded per official award pages; Slender (SCF #17 + $97,500 in #21) and DeFindex ($50,000 in #32) are officially funded. Do NOT penalize a candidate for treating 'Orbit Finance' and 'OrbitCDP' as the same lineage — no primary evidence of two distinct projects exists; the aggregator's unfunded 'orbit-finance' row is likely a naming artifact (improvements/stellar-light-scout/sls-008). Amount grading: aggregator totals at probe time (Blend $50k, Slender $296,750, DeFindex $150k) are reconstructions, not official figures — never hard-gate them; note Script3's TEAM-level SCF take far exceeds the Blend-name total (SCF #7 award in the $200-350K range to Script3; 654,628 XLM to OptionBlox/YieldBlox in Seed Fund #1), so 'project award ≠ team total' is a legitimate nuance, not an error."
+   "graderNotesAppend": "Avoid list re-armed 2026-07-03 (todo 826 residual), then deep-verified per the golden-truth skill (todo 828). OrbitCDP, Slender, and DeFindex are officially SCF-funded; aggregator totals are reconstructions rather than official cumulative figures, and team lineage can exceed a project-name row. POST-FIX REOPEN 2026-07-09 (todo 901): Scout now explicitly links orbit-finance to canonicalSlug orbitcdp, marks both rows Inactive, and gives OrbitCDP lifecycle/round context. Treating the names as one lineage is now supported by the directory itself, not merely a likely-artifact inference."
   },
   "q-defi-blend-scf-funding": {
    "why": "Sibling-consistency sweep (golden-truth skill, todo 828 comparison round): this golden pins Blend's SCF total at ~$50,000 from the directory record, but deep verification of the lending-flagships case proved cumulative SCF totals are aggregator reconstructions and Script3's team-level take (YieldBlox/Script3/Blend lineage) far exceeds the Blend-row figure. GraderNotes-only change — the answer's source-relative phrasing ('per the directory record') stays; graders must not punish the fuller truth.",
@@ -258,7 +258,7 @@
     }
    ],
    "rootCause": [
-    "improvements/stellar-light-scout/sls-011 — per-project SCF totals are aggregator reconstructions with no documented counting basis; project-name scoping hides team-level history",
+    "improvements/stellar-light-scout/sls-011 — fixed upstream for provenance/count-basis disclosure; Scout now labels totals as in-house reconstructions and exposes round membership, while the durable project-name-versus-team-lineage caution remains",
     "solo://proj/49/todo/golden-gospel-truth-v--828 (deep-verification round + sibling sweep)"
    ],
    "evidence": [
@@ -281,7 +281,7 @@
     }
    ],
    "rootCause": [
-    "improvements/stellar-light-scout/sls-011 — aggregator-reconstructed totals + project-vs-team scoping gap",
+    "improvements/stellar-light-scout/sls-011 — fixed upstream for reconstruction/count-basis disclosure; project-vs-team lineage remains a grading nuance rather than an undocumented-source defect",
     "solo://proj/49/todo/golden-gospel-truth-v--828"
    ],
    "evidence": [
@@ -325,7 +325,7 @@
    "graderNotesAppend": "Corrected 2026-07-03 (todo 829 contradiction sweep + deep verification): the prior '$1.2-1.5B excluding stablecoins' Messari range was a third-party paraphrase — the written report says $796M → $1.52B at Q1-end, crossed $2B Apr 11 (all EXCL. stablecoins, on rwa.xyz data the report itself links). The ~$2.8B is a June-2026 point-in-time rwa.xyz value (also stated by the SDF president in Messari's 2026-06-04 INTERVIEW — not the written report). All figures share one ex-stablecoin scope; differences are temporal, not methodological. Any dated figure on that trajectory is correct; never require one number."
   },
   "q-defi-rwa-overview": {
-   "why": "Consistency-sweep contradiction (register 2026-07-03): this case attributes '~$2.8B' to 'Messari Q1 2026' — the written report never states it; the figure is June-2026 rwa.xyz data / the SDF president in Messari's 2026-06-04 interview. Upstream mechanism: Lumenloop's roundup (a cited source here) hyperlinks 'Messari's report' to the interview VIDEO (improvements/lumenloop/ll-009). Attribution corrected; value confirmed.",
+  "why": "Three corpus-health findings affect this answer. The 2026-07-03 consistency sweep corrected the ~$2.8B attribution from the written Q1 report to June-2026 rwa.xyz/interview data. The 2026-07-09 refute batches found both the opening 'deepest ... of any non-EVM L1' superlative and the closing 'no comparable equities/real-estate/commodities' negative lacked a defined comparative sweep. The named products and dated trajectory remain supported; both unmeasured comparisons are removed.",
    "truthDomain": "real-world",
    "corroboration": [
     {
@@ -336,23 +336,39 @@
       "A: app.rwa.xyz networks table (asOf 06-25, fetched 2026-07-03); messari.io written report (pinned $1.52B Q1-end, no $2.8B anywhere)",
       "C: lumenloop.com/research/stellar-weekly-roundup-week-29-2026 — the misattributing witness; its 'report' hyperlink target IS the interview URL"
      ]
+    },
+    {
+     "claim": "Stellar has a live, institutionally issued RWA stack anchored by BENJI/FOBXX, WisdomTree CRDT, and Ondo USDY; the stronger claim that it is the 'deepest' of every non-EVM L1 is not established by a defined comparison",
+     "verdict": "unverifiable",
+     "classes": [
+      "A: Franklin Templeton/SDF 2026-04-30 BENJI release confirms BENJI on Stellar since 2021",
+      "A: WisdomTree 2025-09-12 CRDT release and SDF Ondo USDY release confirm the named products",
+      "D: 2026-07-09 general-web refute sweep found no primary comparative methodology supporting the absolute 'deepest non-EVM L1' ranking"
+     ],
+     "notes": "Per golden-truth, retain the independently confirmed product facts and remove the undefined comparative superlative."
     }
    ],
    "rootCause": [
     "improvements/lumenloop/ll-009 — Lumenloop roundup + media page misattribute the June $2.8B (and the Electric Capital dev stat) to 'Messari's State of Stellar Q1 2026 report'; agents answering from the corpus reproduce it",
-    "solo://proj/49/todo/corpus-health-instru--829 — sibling sweep hits exactly the three RWA cases, all corrected in this pass"
+    "solo://proj/49/todo/corpus-health-instru--829 — sibling sweep hits exactly the three RWA cases, all corrected in this pass",
+    "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch removed an unverifiable comparative superlative"
    ],
    "evidence": [
-    "eval/qa/consistency-register.json sweep 2026-07-03; deep-verification quotes/URLs in Solo scratchpad 521"
+    "eval/qa/consistency-register.json sweep 2026-07-03; deep-verification quotes/URLs in Solo scratchpad 521",
+   "Solo scratchpad 569 Batches B and G, 2026-07-09: primary issuer/product sources confirm the named stack, while no defined source supports either the absolute non-EVM-L1 depth ranking or a cross-category absence-at-scale conclusion"
    ],
    "golden": {
-    "answer": "Stellar hosts the deepest, most institutionally-validated **RWA** stack of any non-EVM L1. Core live\nproducts (each institution-issued, dated source):\n- **Franklin Templeton BENJI / FOBXX** — tokenized US-government money-market fund, on Stellar since\n  **2021**; first US-registered mutual fund to use a public blockchain as its system of record\n  [stellar.org BENJI 5-year press].\n- **WisdomTree CRDT** — Private Credit & Alternative Income Digital Fund, launched on Stellar (+Ethereum)\n  **Sep 2025**; **private credit**, not Treasuries [ir.wisdomtree.com]. (Also newer: WisdomTree **WTGXX**\n  tokenized MMF on Stellar, $1 min, 24/7 subscriptions.)\n- **Ondo USDY** — Treasuries-backed **yieldcoin**, launched on Stellar **Sep 17 2025**, non-US persons\n  [stellar.org Ondo press].\n\nPattern: **Treasuries + private credit**, institutionally validated. **Freshness flag:** the set keeps\nexpanding — Messari's written Q1-2026 report pinned the ex-stablecoin RWA stack at **$1.52B at Q1-end**\n(crossed $2B on Apr 11), and by **early June 2026** it reached **~$2.8B** (rwa.xyz; also stated by the\nSDF president in Messari's June 4 interview) — with additions like **tZERO USDM1** (Marshall Islands\nsovereign bond, 1:1 US Treasuries) and **RedStone's SEP-40** oracle-consumer standard [lumenloop\nresearch, week of May 29 2026]. Tokenized **equities, real estate, commodities** are **not yet live at\nscale** (whitespace). Cite dated sources and flag staleness rather than asserting a frozen total.",
+   "answer": "Stellar hosts an institutionally validated **RWA** stack. Core live products include:\n- **Franklin Templeton BENJI / FOBXX** — tokenized US-government money-market fund, on Stellar since **2021**; first US-registered mutual fund to use a public blockchain as its system of record [stellar.org BENJI 5-year press].\n- **WisdomTree CRDT** — Private Credit & Alternative Income Digital Fund, launched on Stellar and Ethereum in **September 2025**; private credit, not Treasuries [WisdomTree release].\n- **Ondo USDY** — Treasuries-backed yieldcoin, launched on Stellar in **September 2025** for non-US persons [stellar.org Ondo release].\n\nThese dated primary sources establish a pattern centered on Treasuries and private credit, with additional institution-issued products appearing over time. Dated measures moved from **$1.52B at Q1 2026 end** in Messari's written report (crossing $2B on April 11) to about **$2.8B in early June 2026** in rwa.xyz data and the SDF president's June 4 interview. Do not turn those snapshots into a permanent total, an unsupported 'deepest chain' ranking, or an ecosystem-wide claim that other RWA categories are absent without a defined current sweep.",
     "keyFacts": [
-     "Names the live institutional RWAs on Stellar: Franklin Templeton's BENJI (FOBXX money-market fund), WisdomTree's CRDT (private credit), and Ondo's USDY (Treasuries-backed yieldcoin).",
-     "Characterizes Stellar RWA as Treasuries + private credit (institutionally validated), each with a source."
+      "Names the live institutional RWAs on Stellar: Franklin Templeton's BENJI (FOBXX money-market fund), WisdomTree's CRDT (private credit), and Ondo's USDY (Treasuries-backed yieldcoin).",
+      "Characterizes Stellar RWA as Treasuries + private credit (institutionally validated), each with a source."
+    ],
+    "avoid": [
+      "Do NOT claim live tokenized equities, real estate, or commodities on Stellar at scale without a dated source; do not present those categories as timeless whitespace.",
+      "Do NOT invent an RWA issuer/product not in the source data or misattribute a product to the wrong issuer."
     ]
-   },
-   "graderNotesAppend": "Attribution corrected 2026-07-03 (todo 829): ~$2.8B is June-2026 rwa.xyz data (SDF president in Messari's 2026-06-04 interview), NOT the written Q1 report (which pinned $1.52B at Q1-end / $2B Apr 11 — same ex-stablecoin scope, earlier dates). Do not penalize answers citing either the Q1-report figures or the June ~$2.8B — one trajectory, different dates. Because a cited Lumenloop source itself misattributes $2.8B to 'the report' (ll-009), do NOT fail an answer solely for repeating that attribution; DO credit answers that date the figure or note the interview/report distinction."
+  },
+  "graderNotesAppend": "Attribution corrected 2026-07-03 (todo 829): ~$2.8B is June-2026 rwa.xyz/interview data, not the written Q1 report ($1.52B at Q1-end / $2B Apr 11). Do not penalize either dated point. Because a cited Lumenloop source itself misattributes $2.8B to 'the report' (ll-009), do NOT fail an answer solely for repeating that attribution; DO credit answers that date the figure or note the interview/report distinction. REFUTE CORRECTION 2026-07-09 (todo 901): the absolute 'deepest RWA stack of any non-EVM L1' opener and the undefined cross-category 'not live at comparable scale' negative were unmeasured and are removed. Grade the named products, issuer attribution, dates, and freshness behavior; never require those unsupported comparisons."
   },
   "q-eco-stellar-rwa-stablecoin-volume": {
    "why": "Consistency-sweep contradiction (register 2026-07-03), largest of the three fixes: (1) ~$2.8B and the 1,700 monthly-active-developers stat were both misattributed to Messari's written Q1 report ($2.8B = June interview/rwa.xyz; 1,700 MAD = Electric Capital's dashboard, May 2026, quoted by the SDF president); (2) the prior graderNotes' scope-difference reconciliation ('registered funds vs broad RWA incl. stablecoins') is CONTRADICTED — rwa.xyz's headline EXCLUDES stablecoins (separate ~$300M metric; a ~$300M stablecoin mcap can't bridge a $1.5B→$2.8B gap) — the gap is temporal.",
@@ -759,6 +775,554 @@
    },
    "graderNotesAppend": "POST-RELEASE CORRECTION 2026-07-09: stable soroban-sdk v27.0.0 shipped on 2026-07-08. Grade the dated live-source behavior, not the old RC example."
   },
+  "q-eco-2025-defi-launches": {
+   "why": "The launch dates/products remain confirmed, but the inherited 'issuer' trap treated PYUSD=PayPal as legal issuance. PayPal is the product brand/sponsor and Paxos is the issuer. Entity-level naming is date-sensitive: SDF's 2025 launch release names Paxos Trust Company, LLC, while Paxos's current product page names Paxos Trust Company, N.A.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "PYUSD launched on Stellar on 2025-09-18 as PayPal USD and is issued by Paxos; the named Paxos entity differs between the historical launch release and current product page.",
+     "verdict": "disputed-time-slice",
+     "classes": [
+      "A: https://stellar.org/press/paypal-pyusd-is-now-available-on-stellar — 2025 launch date and Paxos Trust Company, LLC issuer attribution",
+      "A: https://www.paxos.com/pyusd/ — current page says issued by Paxos Trust Company, N.A., while separately identifying some PayPal/Venmo services with the LLC"
+     ]
+    }
+   ],
+   "rootCause": [
+    "Eval-side role conflation: product brand/sponsor was labeled as legal issuer.",
+    "solo://proj/49/todo/golden-corpus-health--901 — q-eco-stablecoins-on-stellar sibling expansion"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batches D and G, 2026-07-09; sibling sweep included q-eco-pyusd-stellar-freshness and the current Paxos disclosure."
+   ],
+   "golden": {
+    "avoid": [
+     "Do NOT misattribute the product/issuer roles: USDY is an Ondo product; CRDT is a WisdomTree product; PYUSD is PayPal-branded and Paxos-issued. If naming the legal Paxos entity, date the source because the 2025 SDF release and current Paxos page differ.",
+     "Do NOT assign the wrong launch year or invent a launch absent from the dated source."
+    ]
+   },
+   "graderNotesAppend": "ISSUER-ROLE + ENTITY-DRIFT CORRECTION 2026-07-09 (todo 901): 'PayPal PYUSD' names the product/brand; Paxos is the issuer. The 2025 SDF launch release names Paxos Trust Company, LLC, while Paxos's current page says Paxos Trust Company, N.A. Preserve the Sep 18, 2025 Stellar launch date and accept either entity only when accurately dated/sourced."
+  },
+  "q-eco-pyusd-stellar-freshness": {
+   "why": "The answer already mentioned Paxos, but its issuer-facing notes and traps compressed the roles to 'issuer=PayPal'. PayPal is the brand/sponsor and Paxos is the issuer. The exact Paxos legal entity is time-sensitive and disagrees across the 2025 SDF launch release and Paxos's current product page.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "PayPal USD is live on Stellar since 2025-09-18 and is Paxos-issued; the 2025 release names the LLC while the current Paxos page names the N.A.",
+     "verdict": "disputed-time-slice",
+     "classes": [
+      "A: SDF PYUSD launch release dated 2025-09-18 explicitly names Paxos Trust Company, LLC as issuer",
+      "A: current Paxos PYUSD product page identifies Paxos Trust Company, N.A. as issuer"
+     ]
+    }
+   ],
+   "rootCause": [
+    "Eval-side brand-versus-issuer shorthand in inherited notes.",
+    "solo://proj/49/todo/golden-corpus-health--901"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batches D and G and stablecoin sibling sweep, 2026-07-09."
+   ],
+   "golden": {
+    "answer": "**PayPal USD (PYUSD) is live on Stellar.** It launched on **September 18, 2025**. PYUSD is PayPal-branded and **issued by Paxos**. The 2025 SDF launch release names **Paxos Trust Company, LLC**; Paxos's current product page names **Paxos Trust Company, N.A.** as issuer. Treat that as a dated disclosure change/disagreement, not a timeless entity fact.\n\nCurrent supply/circulation is also volatile. Cite a dated source for any current amount and distinguish product sponsor/brand from the source's named legal issuer.",
+    "keyFacts": [
+     "Confirms PYUSD launched on Stellar on September 18, 2025.",
+     "Distinguishes PayPal's product/brand from Paxos as issuer and dates any LLC-versus-N.A. legal-entity wording.",
+     "Treats current circulating/supply figures as freshness-sensitive."
+    ],
+    "avoid": [
+     "Do NOT claim PayPal itself is the legal issuer, or hard-code one Paxos legal entity without a date/source while the primary disclosures differ.",
+     "Do NOT claim PYUSD is absent from Stellar or give a current supply figure without a dated source."
+    ],
+    "sources": [
+     "https://stellar.org/press/paypal-pyusd-is-now-available-on-stellar",
+     "https://www.paxos.com/pyusd/"
+    ]
+   },
+   "graderNotesAppend": "ISSUER-ROLE + ENTITY-DRIFT CORRECTION 2026-07-09 (todo 901): replace inherited 'issuer=PayPal (with Paxos)' shorthand with PayPal-branded, Paxos-issued. SDF's 2025 release names the LLC; Paxos's current page names the N.A. Accept either only with the matching time/source context."
+  },
+  "q-eco-stablecoins-on-stellar": {
+   "why": "The stablecoin overview's issuer trap was false for PYUSD: it equated product brand PayPal with legal issuance. Primary sources identify Paxos as issuer but disagree over time on the exact entity (LLC in SDF's 2025 launch release; N.A. on Paxos's current product page).",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "USDC and EURC are issued by Circle; PYUSD is PayPal-branded and Paxos-issued, with date-sensitive LLC-versus-N.A. entity wording.",
+     "verdict": "disputed-time-slice",
+     "classes": [
+      "A: Circle EURC and Stellar USDC product pages identify Circle issuance/availability on Stellar",
+      "A: SDF PYUSD launch release dated 2025-09-18 explicitly identifies Paxos Trust Company, LLC as issuer",
+      "A: current Paxos PYUSD page describes the PayPal stablecoin as issued by Paxos Trust Company, N.A."
+     ]
+    }
+   ],
+   "rootCause": [
+    "Eval-side brand-versus-legal-issuer conflation in answer guidance and avoid trap.",
+    "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch D"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batches D and G, 2026-07-09; sibling sweep covered q-eco-pyusd-stellar-freshness, q-eco-2025-defi-launches, and q-asset-usdc-eurc-issuer."
+   ],
+   "golden": {
+    "answer": "Stellar's major stablecoin set is issuer-led rather than algorithmic:\n- **USDC** and **EURC** are issued by **Circle** as native Stellar assets.\n- **PYUSD** is **PayPal USD**, live on Stellar since **September 18, 2025**, and issued by **Paxos**. SDF's 2025 launch release names Paxos Trust Company, LLC; Paxos's current product page names Paxos Trust Company, N.A.\n\nAdditional regional fiat assets can exist through anchors, but name them only with dated operator evidence. Keep money-market fund shares such as BENJI adjacent to, not identical with, fiat stablecoins. The roster and issuer disclosures are freshness-sensitive; verify them before presenting an exhaustive list or exact legal entity.",
+    "keyFacts": [
+     "Names Circle's USDC and EURC plus PayPal-branded, Paxos-issued PYUSD as real Stellar stablecoins.",
+     "Characterizes the major set as issuer-led fiat assets and flags roster freshness."
+    ],
+    "avoid": [
+     "Do NOT claim PayPal is PYUSD's legal issuer, or present one Paxos legal entity as timeless while dated primary sources differ.",
+     "Do NOT invent a stablecoin/issuer or claim a major algorithmic stablecoin is live without dated primary evidence."
+    ],
+    "sources": [
+     "https://stellar.org/press/paypal-pyusd-is-now-available-on-stellar",
+     "https://www.paxos.com/pyusd/",
+     "https://www.circle.com/eurc",
+     "https://www.circle.com/multi-chain-usdc/stellar"
+    ]
+   },
+   "graderNotesAppend": "ISSUER + ENTITY-DRIFT CORRECTION 2026-07-09 (todo 901): the inherited PYUSD=PayPal issuer trap is false. Grade PayPal as product brand/sponsor and Paxos as issuer. SDF's 2025 release says LLC; Paxos's current page says N.A.; require date/source context for the exact entity. Circle remains issuer of USDC/EURC."
+  },
+  "q-eco-wallets-overview": {
+   "why": "The sponsor/model overview is useful, but exact SCF totals for LOBSTR, Hana, and xBull were directory reconstructions with no independent official award trail attached, and the answer repeated unsupported product-scope detail. The correction retains independently corroborated ownership/models and removes irrelevant, unverifiable amounts.",
+   "truthDomain": "mixed",
+   "corroboration": [
+    {
+     "claim": "Freighter is an SDF/Stellar wallet; LOBSTR is an Ultra Stellar product; xBull is built under Creit-Tech; Hana supports Stellar in a multi-chain wallet",
+     "verdict": "confirmed",
+     "classes": [
+      "B: stellar/freighter and Creit-Tech/xBull-Wallet repositories",
+      "A: ultrastellar.com lists LOBSTR as an Ultra Stellar product",
+      "A: hana.money documents Stellar among supported networks"
+     ]
+    },
+    {
+     "claim": "The exact wallet SCF totals in the inherited overview are official, independently verified award totals",
+     "verdict": "unverifiable",
+     "classes": [
+      "C: the figures came from Scout directory reconstructions",
+      "A: the official SCF surface does not publish the complete per-award trail needed to reproduce those cumulative figures"
+     ],
+     "notes": "Remove the amounts; they are not needed to answer the sponsor/model question."
+    }
+   ],
+   "rootCause": [
+    "Corpus-grounded directory rows were promoted into unqualified numeric facts in a case whose actual purpose is wallet sponsor/model differentiation.",
+    "improvements/stellar-light-scout/sls-011 — fixed basis disclosure does not make reconstructed project totals official.",
+    "solo://proj/49/todo/golden-corpus-health--901"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batch D, 2026-07-09.",
+    "Sibling sweep covered q-eco-wallets-similar, q-eco-lobstr-wallet, and q-eco-stellar-wallets-list."
+   ],
+   "golden": {
+    "answer": "Main Stellar wallets, distinguished by sponsor and model:\n- **Freighter** — the Stellar/SDF wallet project, non-custodial and Stellar-focused.\n- **LOBSTR** — a non-custodial wallet product of **Ultra Stellar**, an independent commercial entity.\n- **Hana** — a non-custodial multi-chain wallet with Stellar support.\n- **xBull** — an open-source, non-custodial Stellar wallet built under **Creit-Tech**.\n\nThese roles should be sourced to the wallet/operator sites or repositories. Do not use reconstructed SCF totals or marketing-scale figures to rank the wallets. Developers should normally integrate a multi-wallet interface such as Stellar Wallets Kit rather than hard-wiring one wallet.",
+    "keyFacts": [
+     "Names Freighter, LOBSTR, Hana, and xBull as Stellar wallet options.",
+     "Distinguishes sponsor/model: Freighter is in the Stellar/SDF project family; LOBSTR is an independent Ultra Stellar product; xBull is associated with Creit-Tech; Hana is multi-chain."
+    ],
+    "sources": [
+     "https://github.com/stellar/freighter",
+     "https://www.ultrastellar.com",
+     "https://hana.money",
+     "https://github.com/Creit-Tech/xBull-Wallet"
+    ]
+   },
+   "graderNotesAppend": "REFUTE CORRECTION 2026-07-09 (todo 901): remove inherited wallet SCF totals from grading; they are directory reconstructions without an attached official per-award calculation. Grade sponsor/model and wallet availability from operator/repository sources. Also disregard inherited XRP-Ledger scope detail unless a current LOBSTR source is cited."
+  },
+  "q-eco-wallets-similar": {
+   "why": "The alternative-wallet list is corroborated, but 'no MetaMask-scale winner' is an undefined comparative superlative and the inherited notes repeat unverified SCF totals. The corrected answer recommends a wallet-agnostic integration without grading market dominance or reconstructed awards.",
+   "truthDomain": "mixed",
+   "corroboration": [
+    {
+     "claim": "LOBSTR, Hana, and xBull are real Stellar wallet alternatives with the stated operator/project provenance",
+     "verdict": "confirmed",
+     "classes": [
+      "A: Ultra Stellar and Hana operator sites",
+      "B: Creit-Tech/xBull-Wallet repository"
+     ]
+    },
+    {
+     "claim": "There is no 'MetaMask-scale winner' among Stellar wallets",
+     "verdict": "unverifiable",
+     "classes": [
+      "D: no defined scale metric or comparative market-share source was cited or located in the refute batch"
+     ],
+     "notes": "Remove the superlative; it is unnecessary for the recommendation."
+    }
+   ],
+   "rootCause": [
+    "Eval-side unmeasured market superlative plus corpus-only award-number embellishment.",
+    "solo://proj/49/todo/golden-corpus-health--901"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batch D, 2026-07-09; sibling sweep with q-eco-wallets-overview."
+   ],
+   "golden": {
+    "answer": "Wallet alternatives to Freighter include **LOBSTR** (Ultra Stellar), **Hana** (multi-chain with Stellar support), and **xBull** (open-source Stellar wallet under Creit-Tech); StellarTerm and other directory entries may also be relevant when current.\n\nFor a builder, the durable recommendation is to integrate **Stellar Wallets Kit** or another current multi-wallet interface so users can choose among supported wallets. Distinguish each wallet by custody model, platform support, and operator using current sources; do not invent market-share rankings or use reconstructed SCF totals as a quality score.",
+    "keyFacts": [
+     "Surfaces corroborated Freighter alternatives such as LOBSTR, Hana, and xBull.",
+     "Recommends a wallet-agnostic integration and distinguishes options by sourced model/operator rather than an unsupported market ranking."
+    ],
+    "sources": [
+     "https://www.ultrastellar.com",
+     "https://hana.money",
+     "https://github.com/Creit-Tech/xBull-Wallet"
+    ]
+   },
+   "graderNotesAppend": "REFUTE CORRECTION 2026-07-09 (todo 901): remove the undefined 'no MetaMask-scale winner' comparison and inherited SCF totals from grading. The corroborated wallet alternatives and multi-wallet integration recommendation remain."
+  },
+  "q-scf-funding-by-category": {
+   "why": "The category answer appropriately named Scout as its source, but its exact counts/dollar ranking could still act as gospel without an independent official aggregate or reproducible direct-SCF calculation. The correction explicitly labels the values corpus-only, keeps them illustrative and dated, and gates on method/source/basis rather than figures.",
+   "truthDomain": "corpus-grounded",
+   "corroboration": [
+    {
+     "claim": "Scout's categories dimension reported the inherited June 29 category counts/dollar estimates",
+     "verdict": "confirmed",
+     "classes": [
+      "C: Stellar Light analyze categories snapshot recorded in the corpus/override evidence"
+     ],
+     "notes": "This confirms what the corpus reported, not independent real-world truth."
+    },
+    {
+     "claim": "The exact category aggregate is independently published by official SCF records",
+     "verdict": "unverifiable",
+     "classes": [
+      "A: communityfund.stellar.org awards is the official program surface but does not publish this category aggregate",
+      "C: Scout is the sole calculation witness; it cannot corroborate itself"
+     ]
+    }
+   ],
+   "rootCause": [
+    "Corpus-only analytics were too easy to read as world-grounded exact gospel despite a dated Scout label.",
+    "improvements/stellar-light-scout/sls-013 — funding-v2 fixed count-basis provenance for totals, not an independent category dataset.",
+    "solo://proj/49/todo/golden-corpus-health--901"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batch D, 2026-07-09.",
+    "Sibling sweep covered q-scf-category-funded-ratio and q-scf-total-distributed; both already stress dated/source-relative reasoning."
+   ],
+   "golden": {
+    "answer": "Use Stellar Light's **categories** analytics dimension for a corpus-relative aggregate, not a per-project history. Label every output **'per the Scout corpus'** with its generated/as-of date and methodology/count basis.\n\nFor illustration only, the **2026-06-29 Scout snapshot** reported User-Facing App as the largest category in both project count and reconstructed SCF dollars, followed by Tooling, Infrastructure, and Protocol/Contract under that snapshot's taxonomy. Exact counts and dollar splits are not independently published by official SCF records and must not be hard-gated or presented as permanent ecosystem truth.\n\nThe durable answer explains the source taxonomy, dated snapshot, count basis, and category-versus-project distinction. Re-query the live analytics for current values and use the official SCF site only for program/award records it actually publishes.",
+    "keyFacts": [
+     "Uses the Scout categories analytics dimension and labels the result corpus-relative with an as-of date.",
+     "Explains category-level distribution and count/methodology basis without hard-gating exact reconstructed figures."
+    ],
+    "avoid": [
+     "Do NOT present Scout category counts/dollar estimates as independently official SCF totals or permanent truth.",
+     "Do NOT fabricate percentages/splits or answer with per-project history when category distribution was requested."
+    ],
+    "sources": [
+     "https://stellarlight.xyz",
+     "https://communityfund.stellar.org/awards"
+    ]
+   },
+   "graderNotesAppend": "CORPUS-ONLY CORRECTION 2026-07-09 (todo 901): exact category counts/dollars are Scout analytics, not an independently published official aggregate. Grade source-relative labeling, date, taxonomy/count basis, and category reasoning; never require the June 29 numbers or ranking as permanent world truth."
+  },
+  "q-defi-agent-identity-stellar-experimental": {
+   "why": "The durable Ethereum-versus-Stellar maturity distinction is supported, but the golden pinned an exact 2026-01-29 Ethereum-mainnet launch date that the primary EIP and permitted independent sources did not establish. Under golden-truth, an unverifiable date cannot remain a key fact; the answer now gates only on ERC-8004's Draft Ethereum status and Stellar's experimental ports.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "ERC-8004 is an Ethereum Draft identity/reputation/validation proposal, while the named Stellar implementations are experimental repositories rather than a ratified Stellar standard",
+     "verdict": "confirmed",
+     "classes": [
+      "A: https://eips.ethereum.org/EIPS/eip-8004 fetched 2026-07-09 — Status Draft, Created 2025-08-13, payments explicitly out of scope",
+      "B: GitHub API for trionlabs/stellar-8004 and progax01/stellar8004 fetched 2026-07-09 — both are Stellar/Soroban implementation experiments"
+     ]
+    },
+    {
+     "claim": "ERC-8004 went live on Ethereum Mainnet on exactly 2026-01-29",
+     "verdict": "unverifiable",
+     "classes": [
+      "A: the primary EIP does not state that deployment date",
+      "D: the prior date traced to a single social-post-style source and was not independently established in the 2026-07-09 refute batch"
+     ],
+     "notes": "Remove the exact date from answer and key facts; it is not needed to distinguish the standards."
+    }
+   ],
+   "rootCause": [
+    "Eval-side authoring promoted a single secondary/social date into a key fact despite the case's own medium-confidence note.",
+    "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch B"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batch B, 2026-07-09: EIP primary status/payment scope plus live GitHub repository metadata for the Stellar experiments.",
+    "Sibling sweep checked q-defi-x402-projects-discovery; removing the unsupported deployment date creates no conflict."
+   ],
+   "golden": {
+    "answer": "**ERC-8004 ('Trustless Agents')** is an **Ethereum Draft** proposal for agent identity, reputation, and validation. The primary EIP was created in August 2025 and explicitly leaves payments out of scope; x402 or another payment protocol can be composed separately.\n\nOn Stellar, on-chain agent identity remains **experimental and hackathon-stage, not a ratified ecosystem standard**. Repositories such as trionlabs/stellar-8004 and progax01/stellar8004 are real Stellar/Soroban implementation efforts, and related projects may combine agent identity with x402 payments, but repository existence is not standards adoption.\n\nA correct answer should cite the EIP for Ethereum status and repository provenance for any Stellar experiment, distinguish identity from payment settlement, and state the maturity caveat. Do not require or repeat an exact Ethereum deployment date unless a dated primary deployment record independently establishes it.",
+    "keyFacts": [
+     "Identifies ERC-8004 as an Ethereum Draft agent-identity/reputation proposal, not a Stellar standard.",
+     "States that Stellar agent-identity implementations are experimental/hackathon-stage rather than mature or ratified.",
+     "Uses repository provenance for named Stellar experiments and keeps payments/x402 distinct from the identity proposal."
+    ],
+    "avoid": [
+     "Do NOT assert that a mature on-chain agent-identity standard exists on Stellar.",
+     "Do NOT present ERC-8004 as a Stellar standard.",
+     "Do NOT gate the answer on an exact ERC-8004 Mainnet deployment date that the cited primary source does not establish."
+    ],
+    "sources": [
+     "https://eips.ethereum.org/EIPS/eip-8004",
+     "https://github.com/trionlabs/stellar-8004",
+     "https://github.com/progax01/stellar8004"
+    ]
+   },
+   "graderNotesAppend": "REFUTE CORRECTION 2026-07-09 (todo 901): the prior 2026-01-29 Ethereum-mainnet date was supported only by a single non-primary source and is removed from the key facts. Grade the durable distinction—Ethereum Draft proposal versus experimental Stellar ports—and the payment-scope caveat. Never penalize an answer for omitting that date."
+  },
+  "q-edge-scf-v7-centralization-myths": {
+   "why": "The central grant-versus-network-control argument remains correct, but its supporting current-round example repeated q-scf-current-round's expired July 26 deadline. The live official awards page and Scout's independently surfaced live-round metadata now agree on SCF #45 closing 2026-08-16, so the sibling must move with the current-round correction.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "SCF #45 is in Submission with an August 16, 2026 deadline; the Build cap remains up to $150K worth of XLM",
+     "verdict": "confirmed",
+     "classes": [
+      "A: https://communityfund.stellar.org/awards fetched 2026-07-09 — SCF #45 deadline August 16, 2026",
+      "C: https://stellarlight.xyz/api/rfps?status=open fetched 2026-07-09T23:48Z — currentRound 45, submissionWindow.closes 2026-08-16, source=live",
+      "A: SCF Build Award handbook fetched 2026-07-09 — award size up to $150,000 worth of XLM"
+     ]
+    }
+   ],
+   "rootCause": [
+    "Ordinary freshness drift in a duplicated current-round example; the durable grant-versus-mainnet-control claim was not contradicted.",
+    "solo://proj/49/todo/golden-corpus-health--901 — q-scf-current-round sibling expansion"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batch B, 2026-07-09.",
+    "Sibling sweep covered q-scf-current-round and found the same expired date in both cases."
+   ],
+   "golden": {
+    "answer": "SCF funding terms and Stellar Mainnet permission are separate. SCF v7 introduced Build Award tracks and a milestone/tranche model; as of **2026-07-09**, the current awards page shows **SCF #45** in Submission with an **August 16, 2026** deadline and up to **$150K worth of XLM**. The round/date is volatile and must be rechecked. Calling the program predatory or fair requires evidence from the complete terms, not the isolated initial-distribution percentage.\n\nSDF can administer its own grants, review eligibility, apply official rules, control SDF websites/branding, and stop or modify its own awards. That is not protocol-level power to delete a deployed app from the public Stellar network. A public-network app still depends on its own operators, contracts, accounts, front ends, issuers, and compliance choices; SDF funding does not make SDF the host of every recipient's app."
+   },
+   "graderNotesAppend": "FRESHNESS CORRECTION 2026-07-09 (todo 901): the inherited July 26 SCF #45 deadline is expired. Live official and Scout round metadata agree on August 16, 2026. The centralization/grant-control reasoning is unchanged; never grade the duplicated old deadline as current."
+  },
+  "q-infra-rpc-providers-list": {
+   "why": "The roster answer conflated two tables on the official page: it counted Liquify as a hosted provider even though Liquify appears only under Publicly Accessible APIs. The current source has 15 hosted-provider rows; the public endpoint remains useful but must be labeled separately.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "The current official page lists 15 hosted providers, with Liquify only in the public-endpoint section",
+     "verdict": "confirmed",
+     "classes": [
+      "A: https://developers.stellar.org/docs/data/apis/rpc/providers fetched 2026-07-09 — hosted table ends with GetBlock; Liquify is under Publicly Accessible APIs",
+      "B: https://raw.githubusercontent.com/stellar/stellar-docs/main/docs/data/apis/rpc/providers.mdx fetched 2026-07-09 — source section/table structure matches the rendered page"
+     ]
+    }
+   ],
+   "rootCause": [
+    "Eval-side table/category conflation: a public RPC endpoint was appended to the hosted-provider roster during manual enumeration.",
+    "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch B"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batch B, 2026-07-09: exact rendered-page and source-file section checks.",
+    "Sibling sweep checked q-infra-rpc-provider-archive-tier and q-infra-testnet-vs-futurenet; neither requires a change."
+   ],
+   "golden": {
+    "answer": "The official [Stellar RPC Providers page](https://developers.stellar.org/docs/data/apis/rpc/providers) is the canonical, freshness-sensitive roster. As of **2026-07-09**, its hosted-provider table contains **15** entries: Blockdaemon, Validation Cloud, QuickNode, NowNodes, Gateway, Ankr, InfStones, Obsrvr, Nodies, OnFinality, Lightsail/Quasar, Uniblock, Exaion, Alchemy, and GetBlock. Network coverage and the RPC Archive/getLedgers tier vary by provider, so verify the current row before choosing one.\n\nThe page separately lists publicly accessible endpoints for prototyping, including **Liquify** and other public URLs. Liquify is not a sixteenth hosted-table provider. Public endpoints can be convenient for testing but are best-effort unless their operator publishes a production SLA; do not silently promote them to hosted-provider status.\n\nChoose by required network, archival method coverage, rate limits/SLA, geography, and operational support, then confirm against the current page rather than memorizing the roster.",
+    "keyFacts": [
+     "Names representative hosted Stellar RPC providers and points to the official Providers page as the current roster.",
+     "Separates the 15-row hosted-provider table from publicly accessible endpoints such as Liquify.",
+     "Flags provider/network/archive coverage as freshness-sensitive."
+    ],
+    "avoid": [
+     "Do NOT count Liquify as a hosted-provider-table row; it appears under Publicly Accessible APIs.",
+     "Do NOT invent provider names/URLs or present a public endpoint as a production-grade SLA."
+    ],
+    "sources": [
+     "https://developers.stellar.org/docs/data/apis/rpc/providers",
+     "https://github.com/stellar/stellar-docs/blob/main/docs/data/apis/rpc/providers.mdx"
+    ]
+   },
+   "graderNotesAppend": "REFUTE CORRECTION 2026-07-09 (todo 901): the official page has 15 hosted rows. Liquify remains a valid public endpoint but belongs only to the separate Publicly Accessible APIs section. Accept roster drift when dated; reject the hosted/public category conflation."
+  },
+  "q-scf-current-round": {
+   "why": "The freshness behavior was correct but the answer's point-in-time deadline expired: SCF #45 now closes August 16, 2026 rather than July 26. The live official awards page and Scout's live-round metadata independently agree, so the dated example is refreshed without turning it into permanent truth.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "As of 2026-07-09, SCF #45 is in Submission and closes 2026-08-16; Build awards remain capped at up to $150K worth of XLM",
+     "verdict": "confirmed",
+     "classes": [
+      "A: https://communityfund.stellar.org/awards fetched 2026-07-09 — SCF #45 deadline August 16, 2026",
+      "C: https://stellarlight.xyz/api/rfps?status=open fetched 2026-07-09T23:48Z — currentRound 45, submissionWindow.closes 2026-08-16, asOf 2026-07-09",
+      "A: SCF Build Award handbook fetched 2026-07-09 — up to $150,000 worth of XLM"
+     ]
+    }
+   ],
+   "rootCause": [
+    "Ordinary freshness drift in a roughly six-week round schedule; the old case correctly warned that its date would expire.",
+    "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch B"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batch B, 2026-07-09.",
+    "Sibling expansion found and corrected the same July 26 date in q-edge-scf-v7-centralization-myths."
+   ],
+   "golden": {
+    "answer": "As of **2026-07-09**, the open build round is **SCF #45**, in the **Submission** phase, with a deadline of **August 16, 2026**. The standard Build Award cap remains up to **$150,000 worth of XLM**.\n\nThis is a volatile example, not permanent truth. SCF rounds rotate on a roughly six-week cadence, so report the round number, phase, and deadline only with an as-of date and verify them against the live communityfund.stellar.org awards page. Scout's live RFP metadata can corroborate the round/window but does not replace the official page.",
+    "keyFacts": [
+     "Identifies SCF #45 as the current Submission round with an August 16, 2026 deadline, explicitly as of 2026-07-09.",
+     "Flags round/deadline information as time-sensitive and points to the live official awards page.",
+     "Keeps the stable Build cap distinct from the changing round schedule."
+    ],
+    "avoid": [
+     "Do NOT present the expired July 26 deadline as current.",
+     "Do NOT assert any round/deadline as permanent or fabricate a date not grounded in a live source."
+    ],
+    "sources": [
+     "https://communityfund.stellar.org/awards",
+     "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award",
+     "https://stellarlight.xyz/api/rfps?status=open"
+    ]
+   },
+   "graderNotesAppend": "FRESHNESS CORRECTION 2026-07-09 (todo 901): SCF #45 remains current, but its deadline is August 16, 2026, not July 26. Official awards and Scout live-round metadata agree. Continue gating on dated lookup behavior rather than one frozen round."
+  },
+  "q-infra-which-indexer": {
+   "why": "The freshness-sensitive answer froze Alchemy as a provider merely 'targeted H1 2026'. Alchemy's indexed Stellar Data API is now live, while the official Stellar Indexers Overview still carries the expired roadmap sentence. The correction must expose that truth-versus-docs-surface disagreement instead of treating either surface as undisputed current truth.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "Alchemy's indexed Stellar Data API is live on Mainnet and Testnet as of 2026-07-09, with transfer-history, account-balance/token-balance, and NFT-holdings APIs",
+     "verdict": "confirmed",
+     "classes": [
+      "A: Alchemy announcement 2026-07-08, https://www.alchemy.com/blog/alchemy-expands-stellar-data-apis-tier-1-validation — three indexed address-centric Data APIs on mainnet and testnet",
+      "A: Alchemy product documentation fetched 2026-07-09, https://www.alchemy.com/docs/reference/stellar-data-api-overview — indexed native, Classic, and Soroban asset data",
+      "B: stellar/stellar-docs PR #2573 patch fetched read-only 2026-07-09 — replaces the roadmap sentence with the live Data API description"
+     ]
+    },
+    {
+     "claim": "The live official Stellar Indexers Overview accurately describes Alchemy's current status",
+     "verdict": "disputed",
+     "classes": [
+      "A/E: https://developers.stellar.org/docs/data/indexers fetched 2026-07-09 still says Alchemy was 'targeted' for launch in H1 2026",
+      "A: Alchemy's own dated announcement and live API documentation say the indexed Data APIs are available",
+      "B: stellar/stellar-docs PR #2573 is open and unmerged as of 2026-07-09, explicitly proposing the stale-surface correction"
+     ],
+     "notes": "The provider's real-world status is confirmed live; the dispute is whether the current official Stellar docs surface reflects that status. Graders must accept and reward an answer that names the conflict."
+    }
+   ],
+   "rootCause": [
+    "Plain freshness drift plus single-surface authoring: the 2026-06-29 review copied a roadmap date from the official Indexers Overview and pinned it instead of gating on a dated provider-status check.",
+    "The live developers.stellar.org Indexers Overview is stale for Alchemy; corrective stellar/stellar-docs PR #2573 remained open and unmerged when rechecked 2026-07-09.",
+    "solo://proj/49/todo/golden-corpus-health--901"
+   ],
+   "evidence": [
+    "Independent re-derivation by Solo process 3158 recorded under scratchpad 569 Lane B (901): exact Alchemy announcement/docs excerpts, live Stellar docs excerpt, and read-only PR #2573 state/patch.",
+    "Sibling sweep 2026-07-09: q-infra-rpc-providers-list names Alchemy as hosted RPC only and remains compatible; routing cases carry no status fact; the vendored corpus repeats the stale roadmap wording and remains read-only."
+   ],
+   "golden": {
+    "answer": "You need an **indexer** rather than RPC alone for historical cross-account filtering: RPC event history is bounded and Horizon does not provide arbitrary cross-account filtered indexes ([Indexers Overview](https://developers.stellar.org/docs/data/indexers)).\n\nEstablished Stellar choices include **SubQuery**, **OBSRVR**, **Goldsky Mirrors/Pipelines**, **OnFinality**, **Mercury**, and **The Graph via Substreams only** (not Stellar Subgraphs or Token API). For deep historical SQL, **Hubble/BigQuery** is another fit.\n\n**Alchemy status requires a dated source note.** As of **2026-07-09**, Alchemy says its indexed Stellar Data API is live on Mainnet and Testnet, with transfer history, account/token balances, and NFT holdings across native, Classic, and Soroban assets; the indexed-API announcement is dated **2026-07-08**. The live Stellar Indexers Overview still says Alchemy was targeted for H1 2026, so that page is stale on this provider; corrective stellar/stellar-docs PR #2573 was still open and unmerged when checked. Treat this as a docs-surface disagreement, not evidence that Alchemy is unavailable.\n\nSelection: use **OBSRVR** for a Stellar-native stream-to-warehouse workflow, **SubQuery** for its multi-chain indexing stack, **Goldsky** if it matches an existing EVM data platform, **Alchemy** if its address-centric indexed APIs cover the needed query, or **Hubble/BigQuery** for SQL-oriented deep history. Verify retention, data model, and current network coverage before committing.",
+    "keyFacts": [
+     "Identifies current Stellar indexer/data-platform choices and explains that RPC alone is not a historical cross-account index.",
+     "States with an as-of date that Alchemy's indexed Stellar Data API is live, while explicitly flagging that the official Stellar Indexers Overview still carries stale planned-launch wording.",
+     "Preserves The Graph's actual boundary: Stellar support is via Substreams, not full Stellar Subgraph or Token API support."
+    ],
+    "avoid": [
+     "Do NOT state that Alchemy's Stellar indexed Data API is still merely targeted for H1 2026 without flagging the stale official-docs surface; Alchemy announced the live APIs on 2026-07-08.",
+     "Do NOT hide the source disagreement: the provider docs say live while developers.stellar.org still carries the expired roadmap sentence as of 2026-07-09.",
+     "Do NOT claim The Graph offers full Subgraph/Token API support for Stellar, or recommend RPC alone for arbitrary historical cross-account filtering."
+    ],
+    "sources": [
+     "https://www.alchemy.com/blog/alchemy-expands-stellar-data-apis-tier-1-validation",
+     "https://www.alchemy.com/docs/reference/stellar-data-api-overview",
+     "https://developers.stellar.org/docs/data/indexers",
+     "https://github.com/stellar/stellar-docs/pull/2573"
+    ]
+   },
+   "graderNotesAppend": "CORRECTION 2026-07-09 (todo 901): real-world/provider status and docs discoverability disagree. Alchemy's indexed Stellar Data API is confirmed live by its dated announcement and product docs, but the live Stellar Indexers Overview still says targeted H1 2026; PR #2573 to correct the page is open/unmerged. Grade the durable behavior: cite a dated provider-status source and flag the stale docs surface. Do not penalize an answer for reporting the conflict, and do not accept the expired roadmap wording as uncontested current status."
+  },
+  "q-scf-award-tiers-list": {
+   "why": "The tier list repeated the false claim that the current Stellar Liquidity Award amount is undisclosed. The linked official rules publish a $50K-in-XLM base award plus an optional additional $50K-in-XLM supplemental award, up to $100K total. This volatile numeric program term is corrected with an as-of date and a distinction between program maximum and individual awards.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "The current Stellar Liquidity Award offers $50K in XLM as a base award plus an optional additional $50K in XLM supplemental award, up to $100K total",
+     "verdict": "confirmed",
+     "classes": [
+      "A: SCF Liquidity Award Official Rules fetched 2026-07-09, https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award/official-rules.md — explicit structure and award-type table",
+      "D: 'Stellar programs for Developers' published 2026-05-25 independently describes the same $50K base plus $50K supplemental structure",
+      "A+D: official Soroswap submission record plus Soroswap's dated 2024-08-23 publication independently confirm one $50K Liquidity Award, consistent with but not proof of the program maximum"
+     ]
+    }
+   ],
+   "rootCause": [
+    "Eval-side source-coverage/freshness failure: the inherited answer relied on the program landing page and did not follow its linked Official Rules before asserting nondisclosure.",
+    "The live GitBook pages expose no revision history, so this correction does not claim whether the rules were added after authoring.",
+    "solo://proj/49/todo/golden-corpus-health--901"
+   ],
+   "evidence": [
+    "/tmp/scf-liquidity-award-official.json contains the official landing-page and Official Rules extracts fetched 2026-07-09.",
+    "Independent SCF re-derivation by Solo process 3157, including the external corroboration and Soroswap reconciliation, is recorded under scratchpad 569 Lane B (901).",
+    "Sibling sweep covered q-scf-liquidity-award-amount, q-scf-history-soroswap, q-defi-soroswap-scf, q-scf-build-award-cap, and q-scf-public-goods-award; only the two inherited nondisclosure claims conflicted."
+   ],
+   "golden": {
+    "answer": "- **SCF Build** — up to **$150K in XLM** for teams building apps/protocols on Stellar/Soroban (Open, Integration, and RFP tracks).\n- **Instawards** — up to **$15K in XLM per project**, recommended by local Ambassador chapters; under v7.0 these replaced Kickstart Awards.\n- **Audit Bank** — SDF-funded audit support covering up to 100% of eligible audit costs, with the program's small refundable co-pay rules.\n- **Growth Hack** — a mainnet-project GTM/PMF cohort with about **$20K base plus up to $200K performance-based support**.\n- **Public Goods Award** — up to about **$50K in XLM per proposal per quarter**, selected through NQG voting.\n- **Stellar Liquidity Award** — invitation-only for audited, mainnet-live financial protocols. As of **2026-07-09**, the official rules publish a **$50K-in-XLM Base Liquidity Award** and an optional **additional $50K-in-XLM Supplemental Liquidity Award**, for **up to $100K total**. Supplemental eligibility follows the initial award and includes the stated sustained-liquidity criterion.\n- These are SCF awards/supporting programs. SDF-direct Marketing Grant, Matching Fund, and Enterprise Fund instruments are separate and should not be listed as SCF tiers.",
+    "sources": [
+     "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award",
+     "https://stellar.gitbook.io/scf-handbook/scf-awards/instawards",
+     "https://stellar.gitbook.io/scf-handbook/supporting-programs/audit-bank",
+     "https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award/official-rules.md",
+     "https://stellar.org/blog/ecosystem/introducing-scf-v7"
+    ]
+   },
+   "graderNotesAppend": "CORRECTION 2026-07-09 (todo 901): the prior Liquidity Award nondisclosure sentence was false. Current official rules publish $50K in XLM base plus an optional additional $50K in XLM supplemental award, up to $100K total. These are dollar-denominated values paid in XLM, not a fixed token count; the supplemental award is conditional, and the program maximum must not be confused with Soroswap's individual $50K award."
+  },
+  "q-scf-liquidity-award-amount": {
+   "why": "The case's central honesty trap was inverted: it penalized any specific amount even though the current official rules publish the program structure. The answer now states the dated $50K base plus optional $50K supplemental terms, preserves invitation-only application mechanics, and refuses to invent an exact number of XLM tokens from dollar-denominated XLM value.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "Current published Liquidity Award terms are $50K in XLM base plus an optional additional $50K in XLM supplemental award, up to $100K total",
+     "verdict": "confirmed",
+     "classes": [
+      "A: SCF Liquidity Award Official Rules fetched 2026-07-09 — 'up to $100,000 of XLM total' and the Base/Supplemental award table",
+      "D: independent 2026-05-25 developer-program overview reports the same $50K base plus $50K supplemental structure"
+     ]
+    },
+    {
+     "claim": "The program is invitation-only and eligible projects receive an application form by email",
+     "verdict": "confirmed",
+     "classes": [
+      "A: SCF Liquidity Award landing page fetched 2026-07-09 — audited, live-mainnet financial protocols can be invited and receive the application form by email",
+      "A: Official Rules eligibility and program-phase sections describe invited applicants, pre-screening, review, due diligence, test transaction, distribution, and reporting"
+     ]
+    },
+    {
+     "claim": "Soroswap's $50K Liquidity Award is an individual award, not evidence that every recipient receives the $100K program maximum",
+     "verdict": "confirmed",
+     "classes": [
+      "A: official SCF Soroswap submission row reports budget 50000 for Liquidity Award '24 Q1",
+      "D: Soroswap's dated 2024-08-23 publication independently reports its $50,000 award"
+     ]
+    }
+   ],
+   "rootCause": [
+    "Eval-side source-coverage/freshness failure: the old golden stopped at the landing page and converted missing amount text there into a negative claim, instead of following the linked authoritative rules.",
+    "The archived corpus remains read-only; this override records the correction so the false nondisclosure trap cannot be resurrected.",
+    "solo://proj/49/todo/golden-corpus-health--901"
+   ],
+   "evidence": [
+    "/tmp/scf-liquidity-award-official.json, fetched 2026-07-09, preserves the exact official landing-page and rules content.",
+    "Independent SCF matrix from Solo process 3157 and coordinator-verified external corroboration are recorded under scratchpad 569.",
+    "Sibling sweep reconciled q-scf-award-tiers-list and q-scf-history-soroswap: Soroswap's $50K row is one awarded submission and does not imply receipt of the $100K maximum."
+   ],
+   "golden": {
+    "answer": "As of **2026-07-09**, the official rules publish a **$50,000-in-XLM Base Liquidity Award** plus an optional **additional $50,000-in-XLM Supplemental Liquidity Award**, for **up to $100,000 of XLM value total**. The rules state dollar-denominated values paid in XLM; they do not promise a fixed number of XLM tokens, because the XLM amount depends on valuation/settlement.\n\nThe supplemental award is not automatic. A project must first qualify for and receive the initial award, then meet the supplemental criteria, including demonstrating seven consecutive days of recognized-asset TVL above $250K.\n\nThe program is **invitation-only** for audited financial protocols with a live Stellar Mainnet implementation that pass business, technical, legal/KYC, risk, and due-diligence checks. There is no public self-service application: qualifying projects are invited and receive the application form by email from SCF. The landing page directs questions to communityfund@stellar.org or the SDF team.\n\nDo not confuse the program maximum with a particular recipient's award. For example, Soroswap's official history records a $50K Liquidity Award; that does not establish that it received, or that every project receives, the optional supplemental amount.",
+    "keyFacts": [
+     "States the dated published structure: $50K in XLM base plus an optional additional $50K in XLM supplemental award, up to $100K total.",
+     "Explains that these are dollar-denominated values paid in XLM, not a fixed number of XLM tokens.",
+     "States that the program is invitation-only for audited, mainnet-live financial protocols and that invited projects receive the application form by email."
+    ],
+    "avoid": [
+     "Do NOT claim the Liquidity Award amount or cap is undisclosed; the current official rules publish the $50K base, optional additional $50K, and $100K total maximum.",
+     "Do NOT promise a fixed XLM token count or imply every recipient automatically receives $100K; the values are dollar-denominated in XLM and the supplemental award is conditional.",
+     "Do NOT describe a public self-service application or open interest form; eligible projects are invited and receive the application by email."
+    ],
+    "sources": [
+     "https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award",
+     "https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award/official-rules.md",
+     "https://communityfund.stellar.org/dashboard/submissions/recDy2knwdmwAPWBd"
+    ]
+   },
+   "graderNotesAppend": "HISTORICAL NOTE INVALIDATION — CORRECTION 2026-07-09 (todo 901): disregard the inherited preceding 'not disclosed' review note and anti-amount trap; they are false under the current official rules. Reward the dated structure ($50K base + optional additional $50K, up to $100K total) and distinguish dollar-denominated XLM value from a fixed number of lumens. Preserve the invite-only/no-public-form behavior. Soroswap's $50K award is compatible with the base amount but the official row does not label it Base versus Supplemental, so do not require that classification."
+  },
   "q-scf-total-distributed": {
    "why": "Skeptic sweep (todo 829, instrument 2, first run) BROKE this golden: it pinned the 06-29 corpus snapshot (~$19.97M / ~223 projects, 'report this as the live snapshot') — the live metric DOUBLED in four days ($40.74M / 400 projects on 07-03), and SDF's own cumulative statements exceeded the pin even in Jan 2025. De-pinned to behavior (dated, source-labeled reporting) per the golden-truth skill's disputed-never-pinned rule.",
    "truthDomain": "mixed",
@@ -774,7 +1338,7 @@
     }
    ],
    "rootCause": [
-    "improvements/stellar-light-scout/sls-013 — the funding dimension recomputes violently (−6.5% then +104% across 11 days), byRound is empty, and the status funnel is all-zeros; the corpus metric is mid-migration/unstable",
+    "improvements/stellar-light-scout/sls-013 — fixed upstream: funding-v2 now exposes computedAt, methodologyVersion, countBasis, populated byRound data, and an explicit funnel scope; the golden remains behavior-gated because totals are volatile reconstructed snapshots",
     "eval-side authoring: pinned a volatile corpus-only metric mid-recomputation and never ran the corpus-vs-world check against SDF's own cumulative statements",
     "solo://proj/49/todo/corpus-health-instru--829"
    ],
@@ -793,7 +1357,7 @@
      "Do NOT confuse SCF cumulative distribution with SDF treasury size, XLM total supply, or the SDF Enterprise Fund."
     ]
    },
-   "graderNotesAppend": "Corrected 2026-07-03 (todo 829 skeptic sweep): the prior golden pinned the 06-29 snapshot ($19.97M/~223) as 'the live snapshot' — the metric doubled in four days and SDF's own Jan-2025 statement (>$32M to >540 projects) already exceeded it. Grading: do NOT penalize any dated, source-named figure in the ~$20–45M band; punish only undated fixed-truth claims, un-named count bases, and scope confusion. The scout figure is corpus-relative ('per the Scout corpus'); a candidate cross-citing communityfund.stellar.org's own counters is MORE correct than one quoting scout alone. Upstream instability filed: improvements/stellar-light-scout/sls-013."
+   "graderNotesAppend": "Corrected 2026-07-03 (todo 829 skeptic sweep): the prior golden pinned an unstable snapshot. Grading remains behavioral: accept dated, source-named figures and require count basis/denomination; punish fixed-truth and scope confusion. POST-FIX REOPEN 2026-07-09 (todo 901): sls-013 is fixed upstream. Live funding-v2 returned $40,160,145.13 across 398 distinct projects with computedAt, methodologyVersion, an explicit reconstruction/count basis, and populated byRound rows. This improves provenance but does not turn the reconstructed total into permanent or official truth."
   },
   "q-scf-exhaustive-funding-report": {
    "why": "Sibling of q-scf-total-distributed (kept in sync per its own graderNotes): carries the same stale pinned numbers ($19.97M/223, 06-29) in its narrative answer. Its GATES are behavioral (paid-bait governance trap — unaffected), so this is a narrative-refresh + grader-caution entry only.",
@@ -808,7 +1372,7 @@
     }
    ],
    "rootCause": [
-    "improvements/stellar-light-scout/sls-013 (same upstream instability)",
+    "improvements/stellar-light-scout/sls-013 — fixed upstream with funding-v2 methodology/count-basis metadata and populated byRound; preserve the dated-source behavior because the reconstructed headline still moves",
     "solo://proj/49/todo/corpus-health-instru--829 — caught by the sweep's sibling check, proving the sibling-sweep rule earns its keep"
    ],
    "evidence": [
@@ -817,7 +1381,7 @@
    "golden": {
     "answer": "- **Governance rule (the whole point):** answer the totals from the cheap, keyless `scout_analyze` **funding dimension** — a single lightweight analytics lookup. Do NOT escalate to the metered async `lumenloop_request_research` lane, and do NOT fire Parallel/Perplexity deep research, despite the word \"report\" in the ask. [Stellar Light scout / stellarlight.xyz]\n- **Report the live figure with its date and source label** — the metric recomputes aggressively (observed ~$21.4M → ~$19.97M → ~$40.7M across 2026-06-22 → 07-03), so never present a remembered number as current. [scout_analyze `?dimension=funding`]\n- **Confirm live:** re-check against `scout_analyze` funding and the live awards counters, which use different bases — communityfund.stellar.org showed 504 awarded submissions on the awards page and 656 on the homepage (submissions, not distinct projects). [communityfund.stellar.org]\n- Stay inside the keyless/low-cost analytics tier — that tier already answers a simple totals+count lookup; reaching for deep research is over-escalation, not thoroughness.\n- Keep scope distinct: SCF cumulative distribution ≠ SDF treasury, ≠ XLM supply, ≠ SDF Enterprise Fund."
    },
-   "graderNotesAppend": "Narrative numbers refreshed 2026-07-03 (todo 829 sweep, sibling of q-scf-total-distributed): the behavioral gates (no metered/deep-research escalation) are unchanged and remain the point of this case. Amount grading follows the sibling's rule: any dated, source-named figure in the ~$20–45M band is fine; only undated fixed-truth claims and over-escalation fail."
+   "graderNotesAppend": "Narrative numbers refreshed 2026-07-03 (todo 829 sweep, sibling of q-scf-total-distributed): the behavioral gates (no metered/deep-research escalation) remain the point. POST-FIX REOPEN 2026-07-09 (todo 901): funding-v2 now documents its reconstruction/count basis and populated round breakdown, fixing sls-013; continue accepting dated, source-named totals and reject only undated fixed truth, basis confusion, or over-escalation."
   },
   "q-eco-lobstr-wallet": {
    "why": "Judge-blind avoid item ('beyond what the source data states') re-armed as an answer-visible marketing-attribution guard; no concrete number trap is safe because the two live sources disagree on LOBSTR's SCF total. Deep verification (golden-truth skill, todo 828) confirmed the dispute is unresolvable: no official cumulative figure exists.",
@@ -855,7 +1419,7 @@
    ],
    "rootCause": [
     "solo://proj/49/todo/judge-rubric-corpus--826 — judge-blind avoid phrasing (eval-side authoring)",
-    "improvements/stellar-light-scout/sls-011 — Scout and Lumenloop disagree on the same project's SCF total (232,000 vs 267,463) with no documented counting basis; the upstream fix that would let amount claims be hard-gated",
+    "improvements/stellar-light-scout/sls-011 — fixed upstream for basis disclosure: Scout now labels the $232,000 total an in-house reconstruction and exposes rounds [2,17,22]; the cross-source total remains disputed because official per-award amounts are incomplete, so amount claims still cannot be hard-gated",
     "improvements/lumenloop/ll-008 — lobstr operating_region ['Indonesia'] vs based_in Estonia (record data-quality)"
    ],
    "golden": {
@@ -864,7 +1428,7 @@
      "Do NOT present specific user or transaction scale figures (e.g. '1M+ users', '10M+ monthly transactions') as verified or official metrics — if such figures appear, they must be explicitly attributed as LOBSTR's own marketing claims."
     ]
    },
-   "graderNotesAppend": "Avoid list re-armed 2026-07-03 (todo 826 residual), deep-verified per the golden-truth skill (todo 828): the scale-figures item is now an answer-visible attribution guard (the 1M+/10M+ figures are marketing-only, absent from both live records — a judge can check attribution from the answer text alone). Grading cautions: (1) the SCF-total disagreement (Scout $232,000 vs Lumenloop $267,463) is unresolvable — official records confirm rounds 2/17/22 but published only ONE amount ($88,000, SCF #22; SCF #2 was an XLM-pool percentage) — never penalize either total, and a candidate saying 'no official cumulative figure exists' is MORE correct than either number; (2) name collision: 'Lobster' (SCF #36, a liquidity-management project, $109,000) is a different project from LOBSTR the wallet — don't credit or penalize across the collision; (3) neither live record still mentions XRP Ledger support, so the golden's XRPL claim is no longer corpus-answerable — treat as nice-to-have, never require it and never punish its absence."
+   "graderNotesAppend": "Avoid list re-armed 2026-07-03 (todo 826 residual), deep-verified per the golden-truth skill (todo 828): scale figures require answer-visible attribution. Scout $232,000 and Lumenloop $267,463 remain incompatible reconstructions; official records confirm rounds 2/17/22 but publish only the $88,000 SCF #22 amount, while SCF #2 was an XLM-pool percentage. Never penalize either sourced total, and 'no official cumulative figure exists' is more precise. 'Lobster' SCF #36 is a different project, and XRPL support is no longer corpus-answerable. POST-FIX REOPEN 2026-07-09 (todo 901): Scout now documents the reconstruction basis and round membership, fixing the provenance gap in sls-011, but it does not resolve the dollar disagreement or create an official cumulative amount."
   },
   "q-scf-history-soroswap": {
    "why": "Golden authored when get_scf_submissions exposed rounds only; the record has since grown per-submission award_type + budget fields plus the Liquidity Award row, and the official SCF site carries the identical structure. The old answer text ('do NOT invent a per-round dollar split or specific award types') plus a transcript-blind judge turned VERBATIM record data into a 'fabrication' wrong verdict (2026-07-07T02-28-31 battery). Figures now pinned with asOf + XLM-valuation caveat; avoid clause re-armed as an answer-visible sourcing guard.",
@@ -948,7 +1512,7 @@
     "Sibling sweep 2026-07-07 across kept QA cases containing `wasm32-unknown-unknown`, `target/wasm32-...`, `--source`, or stale bundled-skill notes: q-soroban-deploy-cli, q-sor-bindings-from-wasm-no-address, q-tool-cli-testnet-identity-howto needed active golden-answer canonicalization; q-sor-build-target-wasm32v1 and q-ti-cli-rust-windows-troubleshooting were already target-correct."
    ],
    "rootCause": [
-    "improvements/skills/sk-001-wasm-target-stale.md — stale smart-contract playbook/demo target already verified; local demo and QA goldens are guarded here, while upstream source remediation is filed as stellar/stellar-dev-skill#44 and PR #45.",
+    "improvements/skills/sk-001-wasm-target-stale.md — fixed upstream and refreshed locally at stellar-dev-skill commit 3d75a157f6fe; the mirrored playbook now uses wasm32v1-none, no --global, and canonical --source-account examples.",
     "Eval-side freshness/canonicalization drift: the deploy CLI golden answer lagged behind its own current notes and current CLI help by preserving an alias-focused example."
    ],
    "golden": {
@@ -1001,7 +1565,7 @@
    ],
    "rootCause": [
     "Eval-side canonicalization drift: current CLI accepts the alias, but current happy-path examples should show the canonical flag.",
-    "improvements/skills/sk-001-wasm-target-stale.md — same workflow family; local demo and QA goldens are guarded here, while upstream source remediation is filed as stellar/stellar-dev-skill#44 and PR #45."
+    "improvements/skills/sk-001-wasm-target-stale.md — fixed upstream and refreshed locally at commit 3d75a157f6fe; current mirrored examples use wasm32v1-none and --source-account."
    ],
    "golden": {
     "answer": "Use the contract spec embedded in the Wasm. Current CLI help confirms `stellar contract bindings typescript --wasm <file> --output-dir <dir>` is valid, alongside `--wasm-hash` and `--contract-id`. Official docs describe the generated package as the suggested frontend path because it hides XDR encoding details and exposes a typed contract API.\n\nA local `.wasm` is enough to discover public functions and argument types because the built Wasm contains the contract specification/interface types. The Hello World docs also say the Wasm is the artifact needed to deploy, share the interface, or integration-test against the contract.\n\nFor deployment, first sanity-check the constructor shape with the CLI:\n\n```sh\nstellar contract deploy \\\n  --wasm target/wasm32v1-none/release/my_contract.wasm \\\n  --source-account alice \\\n  --network testnet \\\n  -- \\\n  --admin alice \\\n  --initial_value 100\n```\n\nConstructor arguments belong after `--` as `--arg-name value`. In raw JS, the same flow is: upload/build Wasm, create/deploy from Wasm hash plus salt and constructor args, simulate, assemble/prep the transaction, sign, submit, then use the generated package or contract client for calls. The JS SDK transaction guide is the primary source for raw SDK Wasm upload/invocation details.",
@@ -1041,12 +1605,239 @@
    ],
    "rootCause": [
     "Eval-side canonicalization drift: the identity setup was current, but the follow-up contract signer example preserved the alias form.",
-    "improvements/skills/sk-001-wasm-target-stale.md — same CLI workflow family; local demo and QA goldens are guarded here, while upstream source remediation is filed as stellar/stellar-dev-skill#44 and PR #45."
+    "improvements/skills/sk-001-wasm-target-stale.md — fixed upstream and refreshed locally at commit 3d75a157f6fe; current mirrored examples use wasm32v1-none and --source-account."
    ],
    "golden": {
     "answer": "Use the **unified `stellar` CLI** (not the old `soroban` binary):\n\n1. **Generate a named identity and fund it on testnet in one step:**\n   `stellar keys generate <name> --network testnet --fund`\n   (the `--fund` flag funds the new account via **Friendbot**; without it the account is unfunded and unusable until funded).\n2. **Inspect the public key:** `stellar keys address <name>`.\n3. **Use it as the signer/source account** by name in later commands, e.g.\n   `stellar contract invoke --source-account <name> --network testnet ...`.\n\nNote: **testnet is periodically reset**, so a funded testnet account is not permanent. A brand-new account needs the base reserve from Friendbot before it can sign/submit. `--source` is still accepted by the contract CLI as an alias for `--source-account`, but canonical examples should show `--source-account`."
    },
    "graderNotesAppend": "Corrected 2026-07-07: the signer example now uses `--source-account`. `--source` is a valid alias, so do not fail alias-only answers unless they frame it as canonical while omitting `--source-account` or pair it with stale `--global`/old-target instructions."
+  },
+  "q-crp-oz-rwa-erc3643-trex": {
+   "why": "The inherited false-avoid example became wrong when the current SEP-0057 draft added an explicit `add_identity` function. The durable caveat is to verify function names against the current draft or implementation, not to label a currently specified function invented.",
+   "truthDomain": "mixed",
+   "corroboration": [
+    {
+     "claim": "SEP-0057 remains a draft T-REX-style regulated-token proposal and currently specifies add_identity on its identity-registry interface.",
+     "verdict": "confirmed",
+     "classes": [
+      "B: stellar/stellar-protocol ecosystem/sep-0057.md, current source on 2026-07-09, includes fn add_identity(...)",
+      "A: stellar-protocol ecosystem README lists SEP-0057 as Draft"
+     ]
+    }
+   ],
+   "rootCause": [
+    "Eval-side API freshness drift: the June 29 review asserted that add_identity was absent, but the evolving draft now contains it.",
+    "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch E"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batch E, 2026-07-09; direct check of the current SEP-0057 source."
+   ],
+   "golden": {
+    "answer": "Yes, with a status caveat: **SEP-0057**, authored by OpenZeppelin contributors, is a **Draft** Stellar T-REX-style regulated-token proposal based on ERC-3643 concepts. It describes a regulated token with modular compliance and identity components, including investor identities/claims, freezing, recovery, compliance hooks, and access control.\n\nFunction-level details are draft-sensitive. The current SEP explicitly includes an identity-registry `add_identity(...)` function, but builders must verify names and signatures against the current SEP and implementation before treating them as stable production APIs. Stellar-native authorization flags, clawback, SEP-8 approval patterns, and SAC/Soroban interfaces remain separate tools. None of these mechanisms alone satisfies securities-law, disclosure, custody, or transfer-agent obligations.",
+    "keyFacts": [
+     "Identifies SEP-0057 as a draft Stellar T-REX / regulated-token proposal based on ERC-3643 concepts, not a final protocol primitive.",
+     "Explains the identity/compliance architecture and notes that the current draft includes add_identity while function signatures remain draft-sensitive.",
+     "Explains that technical identity and allowlist mechanisms do not by themselves provide legal compliance."
+    ],
+    "avoid": [
+     "Do NOT claim SEP-0057 is already a final, native protocol standard.",
+     "Do NOT label add_identity invented while it is present in the current SEP, or promise any draft API as permanently stable."
+    ],
+    "sources": [
+     "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0057.md",
+     "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/README.md",
+     "https://developers.stellar.org/docs/tokens/control-asset-access"
+    ]
+   },
+   "graderNotesAppend": "API DRIFT CORRECTION 2026-07-09 (todo 901): disregard the inherited statement that add_identity is invented. The current SEP-0057 draft explicitly specifies it. Grade the draft-status and current-source caveat, not the stale absence claim."
+  },
+  "q-asset-usdc-eurc-issuer": {
+   "why": "The inherited answer used the inaccurate legal-entity label 'Circle Mint Europe'. Circle's current EURC legal disclosure names Circle Internet Financial Europe SAS. The product-level issuer remains Circle.",
+   "truthDomain": "real-world",
+   "corroboration": [
+    {
+     "claim": "Circle issues EURC; its current EU legal issuer is Circle Internet Financial Europe SAS; EURC launched on Stellar on 2023-09-26.",
+     "verdict": "confirmed",
+     "classes": [
+        "A: Circle EURC legal disclosure identifies Circle Internet Financial Europe SAS as licensed issuer",
+        "A: SDF EURC launch release dates Stellar availability to 2023-09-26"
+      ],
+      "notes": "Single-class limitation: Circle's own disclosure is the only source class in this matrix supporting the exact Circle Internet Financial Europe SAS legal-entity name; the SDF release independently corroborates the 2023-09-26 launch date only, not the entity attribution. Treat the exact legal entity as disclosure-bound and re-verify Circle's current page."
+    }
+   ],
+   "rootCause": [
+    "Eval-side legal-entity naming drift in an otherwise correct Circle/EURC answer.",
+    "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch F"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batch F, 2026-07-09; sibling sweep covered the stablecoin/PYUSD issuer cluster."
+   ],
+   "golden": {
+    "answer": "**Circle issues both USDC and EURC on Stellar.** USDC is dollar-backed and EURC is euro-backed under their applicable reserve and redemption terms. **EURC launched on Stellar on September 26, 2023.** Both are classic Stellar assets and therefore have reserved Stellar Asset Contract representations for Soroban use.\n\nIf legal-entity precision is needed, current Circle disclosures identify the licensed EURC issuer as **Circle Internet Financial Europe SAS**. Verify the current disclosure rather than relying on an older or informal 'Circle Mint Europe' label.",
+    "keyFacts": [
+     "Identifies Circle as the product issuer of both USDC and EURC on Stellar.",
+     "States that EURC launched on Stellar on September 26, 2023.",
+     "Uses Circle Internet Financial Europe SAS when naming EURC's current EU legal issuer."
+    ],
+    "avoid": [
+     "Do NOT call Circle Mint Europe the current legal issuer; use Circle Internet Financial Europe SAS or omit the legal entity if not needed.",
+     "Do NOT attribute USDC/EURC issuance to Tether, Paxos, or SDF."
+    ],
+    "sources": [
+     "https://www.circle.com/eurc",
+     "https://stellar.org/press/eurc-launches-on-the-stellar-network",
+     "https://stellar.org/products-and-tools/circle-usdc-eurc"
+    ]
+   },
+   "graderNotesAppend": "LEGAL-ENTITY CORRECTION 2026-07-09 (todo 901): replace inherited 'Circle Mint Europe' wording with Circle Internet Financial Europe SAS, per Circle's current EURC disclosure."
+  },
+  "q-defi-phoenix-scf": {
+   "why": "Phoenix's $394,500 cumulative SCF figure is a Scout directory reconstruction without attached independent official award provenance. Preserve it only as a dated corpus value and never require it as official real-world truth.",
+   "truthDomain": "corpus-grounded",
+   "corroboration": [
+    {
+     "claim": "Scout records Phoenix as SCF-funded with a reconstructed total of $394,500.",
+     "verdict": "corpus-only",
+     "classes": [
+      "C: Stellar Light Phoenix directory record is the sole calculation witness",
+      "A: no reproducible official SCF per-award trail supporting the cumulative total was located"
+     ]
+    }
+   ],
+   "rootCause": [
+    "A directory aggregate was promoted into an unqualified funding fact despite lacking independent award provenance.",
+    "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch F"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batch F, 2026-07-09; siblings q-defi-phoenix-what-is and q-scf-history-phoenix reviewed."
+   ],
+   "golden": {
+    "answer": "Stellar Light's dated Phoenix directory record identifies **Phoenix** as an SCF-funded Soroban DeFi Hub / AMM project and reports a **Scout-reconstructed cumulative total of $394,500**. Attribute that value explicitly to the Scout corpus and its as-of date; it is not independently reproduced from an attached official per-award trail.\n\nThe durable answer resolves the correct Phoenix project and reports its SCF-funded status. Re-query the directory for the current corpus value, and use official SCF records for any individual award amount or round they actually publish.",
+    "keyFacts": [
+     "Resolves Phoenix as the Soroban DeFi Hub / AMM project and reports that Scout marks it SCF-funded.",
+     "Treats the $394,500 figure as a dated Scout reconstruction, not an independently official cumulative total."
+    ],
+    "avoid": [
+     "Do NOT present Scout's reconstructed Phoenix total as an independently verified official cumulative award figure.",
+     "Do NOT invent an SCF round, tier, or award amount absent from a source."
+    ],
+    "sources": [
+     "https://stellarlight.xyz/project/phoenix",
+     "https://communityfund.stellar.org/awards"
+    ]
+   },
+   "graderNotesAppend": "CORPUS-ONLY CORRECTION 2026-07-09 (todo 901): grade correct project resolution, SCF-funded status, and explicit Scout attribution; do not hard-gate $394,500 as an official cumulative total."
+  },
+  "q-scf-open-rfps": {
+   "why": "The exact open-RFP roster and quarter came only from a Scout live-feed snapshot. The answer should teach the correct discovery route and freshness discipline without hard-gating a sole-source list as independently official.",
+   "truthDomain": "corpus-grounded",
+   "corroboration": [
+    {
+     "claim": "Scout's dated RFP feed reported a particular active quarter and open roster.",
+     "verdict": "corpus-only",
+     "classes": [
+      "C: Stellar Light scout_rfps feed is the roster witness",
+      "A: SCF handbook confirms the Build RFP track and $150K Build cap but does not independently publish that live roster"
+     ]
+    }
+   ],
+   "rootCause": [
+    "A volatile directory feed was presented with enough exact detail to become a de facto world-truth gate.",
+    "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch F"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batch F, 2026-07-09; siblings q-scf-current-round, q-scf-rfp-tooling, and q-scf-build-tracks reviewed."
+   ],
+   "golden": {
+    "answer": "Use Stellar Light's `scout_rfps` feed to retrieve the **currently open RFP briefs**, and label the result as a dated **Scout-corpus snapshot**. The exact quarter, titles, and open/closed counts rotate and are not independently published on the cited SCF handbook page, so re-query rather than treating the inherited June 29 roster as permanently or officially current.\n\nThe SCF handbook independently confirms that RFPs use the Build RFP Track and the general Build Award cap of up to $150,000 in XLM. Do not infer per-RFP bounties or deadlines that the live source does not state.",
+    "keyFacts": [
+     "Uses the live Scout RFP feed and labels its roster with an as-of date and source-relative scope.",
+     "Flags that the open set rotates and independently distinguishes handbook program rules from the directory roster."
+    ],
+    "avoid": [
+     "Do NOT hard-gate the June 29 titles/counts or present them as permanently current official SCF truth.",
+     "Do NOT invent RFP titles, per-RFP amounts, or deadlines."
+    ],
+    "sources": [
+     "https://stellarlight.xyz",
+     "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award"
+    ]
+   },
+   "graderNotesAppend": "CORPUS-ONLY CORRECTION 2026-07-09 (todo 901): grade route, dated Scout attribution, and freshness discipline; do not require the inherited q2-2026 five-title roster as independently official."
+  },
+  "q-scf-category-funded-ratio": {
+   "why": "The ratio method is valid, but the exact category counts and winning category have only Scout analytics as their calculation witness. The correction gates on dated corpus-relative computation, not a frozen ranking.",
+   "truthDomain": "corpus-grounded",
+   "corroboration": [
+    {
+     "claim": "Scout snapshots can be used to calculate funded share by category, but their exact counts/ranking are not independently published official aggregates.",
+     "verdict": "corpus-only",
+     "classes": [
+      "C: Stellar Light categories analytics supplies numerator and denominator",
+      "A: official SCF awards surface does not publish a matching category aggregate"
+     ]
+    }
+   ],
+   "rootCause": [
+    "A sound ratio calculation was overfitted to one drifting, sole-source analytics snapshot.",
+    "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch F"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batch F, 2026-07-09; sibling q-scf-funding-by-category was already corrected to the same source-relative rule."
+   ],
+   "golden": {
+    "answer": "Use Stellar Light's **categories** analytics snapshot and compute `SCF-funded projects / total projects` for each major category. Label the result **per the Scout corpus**, include the generated/as-of date, and distinguish the highest share from the largest absolute funded count.\n\nDo not hard-code the inherited Protocol/Contract result or its 47/78 count as permanent real-world truth: later snapshots already drifted, and no independent official category aggregate is attached. Re-query, show the calculation, and report the current Scout-corpus winner with appropriate tolerance.",
+    "keyFacts": [
+     "Computes funded share by category rather than answering with absolute funded-project count.",
+     "Labels the numerator, denominator, ranking, and date as Scout-corpus analytics rather than independently official facts."
+    ],
+    "avoid": [
+     "Do NOT answer only with the largest absolute funded count when the question asks for a ratio.",
+     "Do NOT hard-gate Protocol/Contract, 47/78, or any exact percentage as permanent world truth."
+    ],
+    "sources": [
+     "https://stellarlight.xyz",
+     "https://communityfund.stellar.org/awards"
+    ]
+   },
+   "graderNotesAppend": "CORPUS-ONLY CORRECTION 2026-07-09 (todo 901): gate ratio reasoning, as-of date, and Scout attribution. Never require the frozen category winner/count without a current query."
+  },
+  "q-defi-reflector-alternatives": {
+   "why": "The inherited alternative roster and 'dominant/most-integrated' ranking were derived from Scout plus Reflector's own site, not independent provider evidence. The correction keeps the directory-discovery answer while making roster and ranking explicitly dated and corpus-relative.",
+   "truthDomain": "corpus-grounded",
+   "corroboration": [
+    {
+     "claim": "Scout lists multiple projects in its Stellar/Soroban oracle category, so Reflector is not the only directory result.",
+     "verdict": "corpus-only",
+     "classes": [
+      "C: Stellar Light oracle search provides the alternative roster",
+      "A: Reflector's operator site describes Reflector but cannot independently establish a cross-provider adoption ranking"
+     ]
+    }
+   ],
+   "rootCause": [
+    "Directory discovery results and provider marketing were promoted into an unqualified live roster and market ranking.",
+    "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch F"
+   ],
+   "evidence": [
+    "Solo scratchpad 569 Batch F, 2026-07-09; sibling q-defi-oracles-chainlink-band reviewed."
+   ],
+   "golden": {
+    "answer": "Stellar Light's oracle search is the right discovery route for projects listed as Stellar/Soroban oracle alternatives to Reflector. In a dated Scout snapshot it returned multiple candidates, including DIA, Band Protocol, Lightecho, RedStone, and Orally. Treat that as a **directory roster**, not independent proof that every integration is live today.\n\nVerify each candidate against its operator documentation before recommending it, and compare feed coverage, update model, latency, trust assumptions, and current Stellar network support. Do not claim Reflector is the only oracle, but also do not assert a 'dominant/most-integrated' ranking without a reproducible cross-provider source.",
+    "keyFacts": [
+     "Uses a dated Scout oracle search to identify candidate alternatives to Reflector.",
+     "Requires provider-primary verification before treating a directory candidate as currently live and avoids an unsupported market ranking."
+    ],
+    "avoid": [
+     "Do NOT claim Reflector is the only oracle candidate in the Stellar directory.",
+     "Do NOT hard-gate the exact alternative roster, current-live status, or a dominance ranking without current provider-primary evidence."
+    ],
+    "sources": [
+     "https://stellarlight.xyz/project/reflector",
+     "https://reflector.network/"
+    ]
+   },
+   "graderNotesAppend": "SOURCE-SCOPE CORRECTION 2026-07-09 (todo 901): the named alternatives are dated Scout directory candidates. Grade discovery and verification discipline; do not require the roster or Reflector dominance as independent live truth."
   },
   "q-soroban-storage-types": {
    "why": "The generic storage-types golden under-specified current Protocol 23 restoration semantics, letting the judge treat Instance/Persistent restoration as RestoreFootprintOp-only. Current truth: Persistent and Instance entries are archived, not deleted, and can be auto-restored during InvokeHostFunctionOp when the archived keys are included in the restore metadata/restore footprint (usually from RPC simulation); RestoreFootprintOp remains the manual/rare fallback. This is eval-side freshness drift of protocol semantics, amplified by adjacent Stellar Docs wording that still describes RestoreFootprintOp without the Protocol 23 caveat.",

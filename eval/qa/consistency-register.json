@@ -19,7 +19,7 @@
             "q-eco-stellar-rwa-stablecoin-volume": "Messari 'State of Stellar Q1 2026' (per Lumenloop roundup, week of May 29 2026) puts the tokenized-RWA stack at ~$2.8B (4th among ecosystems)"
           },
           "why": "The ~$2.8B figure is attributed to two different sources (rwa.xyz in q-asset-rwa-tokenized-freshness vs Messari in the other two), and Messari's Q1-2026 headline is pinned at two different values (~$1.2-1.5B excluding stablecoins vs ~$2.8B tokenized-RWA stack). Under the standard reading of 'tokenized-RWA stack' (excludes stablecoins) both cannot be Messari's tokenized-RWA number. q-eco-stellar-rwa-stablecoin-volume's graderNotes partially reconcile it ('the $1.2-2B vs $2.8B gap is a scope difference — registered funds vs broad RWA incl. stablecoins'), but that reconciliation is not carried by the other two cases, so a candidate correctly quoting Messari-per-one-golden fails the sibling's framing.",
-          "disposition": "needs golden-truth review"
+          "disposition": "resolved by provenance-bearing overrides on 2026-07-03; retained as historical contradiction evidence and rechecked in the 2026-07-09 corpus-health sweep"
         }
       ],
       "tensions": [
@@ -113,7 +113,7 @@
             "q-soroban-auth-delegation-p27",
             "q-soroban-current-sdk-cli-version"
           ],
-          "note": "Checked every dated activation claim: P17 2021-06-01, P18 ~2021-11-03, P20 2024-02-20, P21 2024-06-18, P22 2024-12-05, P23 2025-09-03, P24 2025-10-22, P25 2026-01-22, P26 2026-05-06 (current Mainnet as of the 2026-06-29 snapshot), P27 queued (Testnet 2026-06-18, Mainnet vote 2026-07-08 pending) — identical across all mentions, and every P27 case consistently forbids claiming it live. Version/tooling claims agree too (stellar-core 27.0.0 latest release / 26.1.0 on Mainnet; soroban-sdk v26.1.0 stable; stellar-cli v27.0.0)."
+          "note": "Historical 2026-07-03 snapshot only: the P17-P26 mappings were consistent, and P27 was then queued for the 2026-07-08 Mainnet vote. SUPERSEDED by the 2026-07-09 post-vote sweep below: P27/Zipper activated at ledger 63386819 on 2026-07-08T17:00:10Z, so no current grader may use this historical pending wording."
         },
         {
           "cluster": "CAP statuses and protocol assignments (CAP-35/38/46/51/53/58/59/62/63/65/67/71/73/74/75)",
@@ -189,7 +189,7 @@
             "q-scf-nqg-voting",
             "q-org-sdf-enterprise-fund"
           ],
-          "note": "Build cap $150K XLM under v7.0 (launched Jan 2026, first round SCF #41); Instawards <=$15K (replaced Kickstart; the only ambassador funding lever — asserted identically in 3 cases incl. the overridden q-scf-regional-india); Public Goods ~$50K/quarter; Audit Bank up to 100%; Growth Hack $20K base + up to $200K; SDF Marketing/Matching ~$500K explicitly distinct from SCF in 6 cases; Enterprise Fund no-open-application in 5 cases; SCF #45 open, deadline 2026-07-26, in both cases that name it; cumulative ~$19.97M/~223 distinct projects vs ~504 awarded submissions reconciled identically in both totals cases."
+          "note": "Historical 2026-07-03 snapshot: Build/Instawards/Public Goods/Audit Bank/Growth Hack and SDF-vs-SCF distinctions were consistent. SUPERSEDED in part by the 2026-07-09 corpus-health sweep: this cluster omitted q-scf-liquidity-award-amount, while q-scf-award-tiers-list repeated its false 'amount undisclosed' claim. Current official rules publish $50K in XLM base plus an optional additional $50K supplemental award, up to $100K total. Funding-v2 also supersedes the old ~$19.97M/~223 analytics snapshot; current grading remains dated/source/count-basis-gated."
         },
         {
           "cluster": "per-project SCF award totals (Scout directory reconstructions)",
@@ -415,6 +415,201 @@
             "q-soroban-current-sdk-cli-version"
           ],
           "note": "Post-override truth is consistent: P27/Zipper activated on Mainnet at ledger 63386819 on 2026-07-08T17:00:10Z; CAP-0071 provides authentication delegation/address-bound credentials; stellar-core, soroban-sdk, and stellar-cli have stable v27 releases. The edge latest-version case remains behavior-gated rather than number-gated, and the stellar-core identity case never carried an activation claim."
+        }
+      ]
+    },
+    {
+      "date": "2026-07-09",
+      "method": "post-P27 full corpus-health refresh: free internal contradiction scan over all 469 compiled cases using entity/number/status/date signals and eight cross-cutting overlays; 127 shared claim clusters manually adjudicated; mandatory reopen set probed against current free primary/source/live surfaces; risk-weighted 12-case refute batches expanded only when a contradiction cluster was found",
+      "casesScanned": 469,
+      "clustersExamined": 127,
+      "contradictions": [
+        {
+          "cases": [
+            "q-scf-liquidity-award-amount",
+            "q-scf-award-tiers-list",
+            "q-scf-history-soroswap"
+          ],
+          "claims": {
+            "inherited corpus": "Liquidity Award amount was undisclosed",
+            "official rules": "up to $100,000 in XLM total: $50,000 Base Award plus an optional additional $50,000 Supplemental Award"
+          },
+          "why": "Published official rules now disclose the complete structure; the prior no-amount answer and trap were false. Soroswap's individual $50,000 award remains compatible with the program maximum.",
+          "disposition": "resolved with provenance-bearing overrides; inherited review text explicitly invalidated"
+        },
+        {
+          "cases": [
+            "q-scf-current-round",
+            "q-edge-scf-v7-centralization-myths"
+          ],
+          "claims": {
+            "inherited corpus": "SCF #45 submission deadline July 26, 2026",
+            "current official surface": "SCF #45 submission deadline August 16, 2026"
+          },
+          "why": "Two siblings froze the wrong current deadline.",
+          "disposition": "resolved with dated official-source overrides"
+        },
+        {
+          "cases": [
+            "q-infra-rpc-providers-list"
+          ],
+          "claims": {
+            "inherited corpus": "16 hosted RPC providers including Liquify",
+            "official docs/source": "15 hosted-provider rows; Liquify appears only under the separate publicly accessible APIs section"
+          },
+          "why": "The answer conflated two provider categories.",
+          "disposition": "resolved by preserving the hosted/public distinction"
+        },
+        {
+          "cases": [
+            "q-eco-stablecoins-on-stellar",
+            "q-eco-pyusd-stellar-freshness",
+            "q-eco-2025-defi-launches"
+          ],
+          "claims": {
+            "brand/issuer": "inherited grading treated PayPal as PYUSD's legal issuer",
+            "entity time slices": "SDF's 2025 launch release names Paxos Trust Company, LLC; Paxos's current product page names Paxos Trust Company, N.A."
+          },
+          "why": "Product brand was conflated with issuer, then one historical Paxos entity was frozen as timeless despite current primary-source drift.",
+          "disposition": "resolved as PayPal-branded/Paxos-issued with explicit dated LLC-versus-N.A. disagreement"
+        },
+        {
+          "cases": [
+            "q-crp-oz-rwa-erc3643-trex"
+          ],
+          "claims": {
+            "inherited avoid": "add_identity is an invented API name",
+            "current draft": "SEP-0057's claim-based reference appendix explicitly contains add_identity"
+          },
+          "why": "A moving draft invalidated the false-avoid example.",
+          "disposition": "resolved: current function acknowledged while draft/non-stable status remains explicit"
+        },
+        {
+          "cases": [
+            "q-asset-usdc-eurc-issuer"
+          ],
+          "claims": {
+            "inherited answer": "EURC legal issuer is Circle Mint Europe",
+            "current Circle disclosure": "Circle Internet Financial Europe SAS"
+          },
+          "why": "The legal-entity label was inaccurate.",
+          "disposition": "resolved with current Circle primary disclosure"
+        },
+        {
+          "cases": [
+            "q-defi-rwa-overview",
+            "q-defi-agent-identity-stellar-experimental",
+            "q-eco-wallets-overview",
+            "q-eco-wallets-similar"
+          ],
+          "claims": {
+            "inherited claims": "undefined RWA market superlatives/negative comparisons, an unsupported exact deployment date, reconstructed wallet SCF totals, and an undefined MetaMask-scale comparison",
+            "verified core": "the named products/projects/operators remain supported, but those comparisons, date, and reconstructed totals are not independently established"
+          },
+          "why": "Useful core facts were bundled with unnecessary claims that lacked a defined source methodology.",
+          "disposition": "resolved by removing the unverifiable clauses and retaining the supported core"
+        }
+      ],
+      "tensions": [
+        {
+          "cases": [
+            "q-infra-which-indexer"
+          ],
+          "claims": {
+            "real-world provider surface": "Alchemy's Stellar Data API is live for indexed Stellar data as of 2026-07-08, following Stellar RPC support on 2026-04-16",
+            "official Stellar docs surface": "the indexers page still says targeted launch H1 2026; stellar/stellar-docs#2573 is open"
+          },
+          "why": "Provider truth has advanced while the official discovery page remains stale.",
+          "disposition": "encoded as an explicit real-world-versus-docs-surface disagreement; never mark Alchemy not live solely from the stale page"
+        },
+        {
+          "cases": [
+            "q-defi-phoenix-scf",
+            "q-scf-open-rfps",
+            "q-scf-funding-by-category",
+            "q-scf-category-funded-ratio",
+            "q-defi-reflector-alternatives"
+          ],
+          "claims": {
+            "Scout corpus": "provides reconstructed totals, live roster snapshots, category calculations, and directory candidates",
+            "world truth": "matching independent official aggregates or provider-by-provider verification are absent"
+          },
+          "why": "The aggregator is a valid corpus source but cannot independently corroborate its own derived values or discovery roster.",
+          "disposition": "corpus-relative encoding: require source, as-of date, method/basis, and external verification before world-truth claims"
+        },
+        {
+          "cases": [
+            "q-eco-lobstr-wallet",
+            "q-crp-anchors-by-corridor",
+            "q-sep-catalog-list",
+            "q-sep-8-regulated-assets"
+          ],
+          "claims": {
+            "moving/scoped values": "LOBSTR reconstructed SCF totals disagree; MoneyGram uses 170+/174/180+ across dated surfaces; SEP-8 is Active in its file but Final in the repository table"
+          },
+          "why": "These are disclosed provenance/scope disagreements, not facts that can be collapsed into one timeless scalar.",
+          "disposition": "retain grader caution and accept accurately dated/source-scoped answers"
+        }
+      ],
+      "mandatoryReopen": {
+        "fixedUpstreamRootOverrides": "reopened builder region/count basis, Orbit lifecycle/canonical slug, Blend funding history, LOBSTR basis, SCF funding-v2 totals/count basis, anchor coverage, and CLI target/source-account cases; fixed roots are labeled without erasing remaining disputes",
+        "soroswapAndStorage": "Soroswap first/round/program-scope siblings and Protocol-23 storage/TTL auto-restore siblings remain mutually consistent",
+        "scfTotalsAndCountBases": "funding-v2 reported $40,160,145.13 across 398 projects at the 2026-07-09 probe; category analytics remain source-relative rather than official totals",
+        "builderAndAnchorCoverage": "live probe returned 19 Latin America builders and 7 payments builders; anchor probe returned 19 total rows and 10 with coverage at probe time, so counts remain dated",
+        "cliTargetAndSourceAccount": "stellar-cli v27.0.0 and current source confirm wasm32v1-none plus canonical --source-account with --source alias; no stale wasm32-unknown-unknown or global-flag grading remains"
+      },
+      "riskWeightedRefuteBatches": [
+        "A CLEAN",
+        "B NOT CLEAN — deadline, provider classification, deployment-date, and RWA comparison repairs",
+        "C CLEAN after B repairs",
+        "D NOT CLEAN — stablecoin issuer, wallet totals/comparison, and category aggregate repairs",
+        "E NOT CLEAN — SEP-0057 add_identity false avoid",
+        "F NOT CLEAN — EURC entity plus Scout-only Phoenix/RFP/category/oracle claims",
+        "G NOT CLEAN — PYUSD entity drift plus undefined RWA negative comparison",
+        "H CLEAN after all G repairs",
+        "I CLEAN — second consecutive clean batch; stop condition satisfied"
+      ],
+      "verifiedConsistent": [
+        {
+          "cluster": "Protocol 27 activation and tooling",
+          "cases": [
+            "q-protocol-current-mainnet-version",
+            "q-protocol-27-cap-0071",
+            "q-soroban-auth-delegation-p27",
+            "q-soroban-current-sdk-cli-version"
+          ],
+          "note": "P27/Zipper is active from ledger 63386819 at 2026-07-08T17:00:10Z; the earlier pending note is historical and explicitly superseded."
+        },
+        {
+          "cluster": "SCF award mechanics and Liquidity Award scope",
+          "cases": [
+            "q-scf-liquidity-award-amount",
+            "q-scf-award-tiers-list",
+            "q-scf-history-soroswap",
+            "q-scf-current-round"
+          ],
+          "note": "Program maximum ($100K in XLM via $50K Base plus optional $50K Supplemental), individual Soroswap award, general Build cap, and current-round deadline are explicitly distinguished."
+        },
+        {
+          "cluster": "Alchemy indexed-data launch versus stale Stellar docs",
+          "cases": [
+            "q-infra-which-indexer",
+            "q-infra-rpc-providers-list"
+          ],
+          "note": "Alchemy Data API live status and the stale H1-2026 Stellar docs statement coexist only as a disclosed surface disagreement; RPC hosted/public provider categories remain separate."
+        },
+        {
+          "cluster": "RWA attribution, stablecoin issuer roles, wallets, SCF source scope, and mandatory reopen families",
+          "cases": [
+            "q-defi-rwa-overview",
+            "q-eco-pyusd-stellar-freshness",
+            "q-asset-usdc-eurc-issuer",
+            "q-eco-wallets-overview",
+            "q-scf-funding-by-category",
+            "q-builder-by-region-latam",
+            "q-soroban-deploy-cli"
+          ],
+          "note": "Dated/provenance-bearing overrides now distinguish source snapshots, legal entities, directory reconstructions, and current CLI/API semantics without unsupported comparisons."
         }
       ]
     }
