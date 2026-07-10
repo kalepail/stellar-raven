@@ -34,7 +34,7 @@
  * snapshots — never wall clock). Running twice yields byte-identical output
  * (asserted by test/super-spec.test.ts).
  */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -44,6 +44,7 @@ import {
   rewriteScoutRefs,
   scrubScoutDescription
 } from "./description-notes.mjs";
+import { writeFileAtomic } from "./lib/shared.mjs";
 // The runnable-skill allowlist-as-data (research/skill-run-design.md §5):
 // the SAME registry scripts/build-catalog.mjs attaches to the manifest, so
 // the two model-facing surfaces cannot drift (native type stripping, as for
@@ -696,7 +697,7 @@ function main() {
   const sorted = sortKeysDeep(spec);
   mkdirSync(dirname(OUT_PATH), { recursive: true });
   const pretty = `${JSON.stringify(sorted, null, 2)}\n`;
-  writeFileSync(OUT_PATH, pretty);
+  writeFileAtomic(OUT_PATH, pretty);
 
   // Size report (design doc §4): the compact form is what ships into the
   // sandbox per search — that's the number that matters.

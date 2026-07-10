@@ -32,8 +32,9 @@
  *   --sample N also write eval/qa/sample.json — deterministic stratified subset
  *              (by service; same function run-qa.mjs uses)
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
+import { writeFileAtomic } from "../../scripts/lib/shared.mjs";
 import { QA_DIR, CASES_PATH, SERVICE_MAP, stratifiedSample } from "./lib.mjs";
 import { applyGraderNotesOverride } from "./grader-notes.mjs";
 
@@ -250,14 +251,14 @@ function main() {
     cases,
     skipped
   };
-  writeFileSync(CASES_PATH, JSON.stringify(out, null, 2) + "\n");
+  writeFileAtomic(CASES_PATH, JSON.stringify(out, null, 2) + "\n");
   console.log(`wrote ${CASES_PATH}`);
   console.log(JSON.stringify(counts, null, 2));
 
   if (sampleN) {
     const picked = stratifiedSample(cases, sampleN);
     const samplePath = path.join(QA_DIR, "sample.json");
-    writeFileSync(
+    writeFileAtomic(
       samplePath,
       JSON.stringify(
         {

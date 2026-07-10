@@ -25,10 +25,11 @@
  * `npm run skills:bundle` after any ecosystem-skills refresh (catalog rebuild
  * and bundle rebuild go together).
  */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { RETIRED_ONBOARDING_SKILLS, scrubRetiredSkillRefs } from "./exposure.mjs";
+import { writeFileAtomic } from "./lib/shared.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = JSON.parse(readFileSync(join(root, "ecosystem-skills/MANIFEST.json"), "utf8"));
@@ -54,7 +55,7 @@ const bundle = { generatedAt: manifest.synced_at, files: sorted };
 
 const outPath = join(root, "src/skills/bundle.json");
 mkdirSync(dirname(outPath), { recursive: true });
-writeFileSync(outPath, `${JSON.stringify(bundle, null, 2)}\n`);
+writeFileAtomic(outPath, `${JSON.stringify(bundle, null, 2)}\n`);
 
 const bytes = JSON.stringify(bundle).length;
 console.log(

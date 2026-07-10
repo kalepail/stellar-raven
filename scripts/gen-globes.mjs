@@ -15,10 +15,10 @@
  *
  * Deterministic — never hand-edit the emitted modules, rerun this instead.
  */
-import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { renderGlobeBase64 } from "./lib/dither-globe.mjs";
+import { writeFileAtomic } from "./lib/shared.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -64,6 +64,6 @@ for (const s of SURFACES) {
     `// baked to a 2-colour PNG for the ${s.what}\n` +
     `// (served inline as a data: background-image — no page script, no CSP change).\n` +
     `export const ${s.name} =\n  "${b64}";\n`;
-  writeFileSync(join(root, ...s.file), out);
+  writeFileAtomic(join(root, ...s.file), out);
   console.log(`wrote ${s.file.join("/")} (${FRAME.cols}x${FRAME.rows}, ${s.name})`);
 }

@@ -7,10 +7,11 @@
  * and guarded like the other emitted surfaces: exact id validation, token
  * budget checks, and ADR-0003 leak checks all fail loud.
  */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { assertNoNonExposedRefsInText } from "./emitted-text-guard.mjs";
+import { writeFileAtomic } from "./lib/shared.mjs";
 import {
   AUTHORITY_RULES,
   FAMILY_LINE,
@@ -170,7 +171,7 @@ function main() {
   const manifest = readJson(MANIFEST_PATH);
   const rendered = buildMicroMap(manifest);
   mkdirSync(dirname(OUT_PATH), { recursive: true });
-  writeFileSync(OUT_PATH, renderTs(rendered));
+  writeFileAtomic(OUT_PATH, renderTs(rendered));
   console.log(
     `src/mcp/micro-map.ts — MICRO_MAP ~${rendered.microMapTokens} tokens, ` +
       `FAMILY_LINE ~${rendered.familyLineTokens} tokens`

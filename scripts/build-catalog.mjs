@@ -14,7 +14,7 @@
  * (catalogSchema) in test/catalog.test.ts; this script stays plain JS so it
  * runs with `node` alone.
  */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 // Loaded via native type stripping (Node >= 23.6) — the same way
@@ -25,6 +25,7 @@ import { tokenize } from "../src/catalog/vendor/search-scoring.ts";
 // the SAME registry the runtime dispatch and the super-spec emitter consume,
 // so the exposed runnable surface cannot drift between emitters.
 import { RUNNERS } from "../src/skills/runners/index.ts";
+import { writeFileAtomic } from "./lib/shared.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_PATH = join(ROOT, "catalog", "manifest.json");
@@ -832,7 +833,7 @@ function main() {
   // neither the scorer, the adapters, nor codemode.catalog() read it.
   const catalog = sortKeysDeep({ version: 1, generatedAt, entries });
   mkdirSync(dirname(OUT_PATH), { recursive: true });
-  writeFileSync(OUT_PATH, `${JSON.stringify(catalog, null, 2)}\n`);
+  writeFileAtomic(OUT_PATH, `${JSON.stringify(catalog, null, 2)}\n`);
 
   const counts = {};
   for (const entry of entries) {

@@ -33,10 +33,11 @@
  *   none                 — governance / should-not-fire cases (no expected service)
  * Any other/unknown label is also skipped (reason: unknown-label).
  */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, mkdirSync } from "node:fs";
 import { dirname, join, resolve, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { deriveExpectedAny, frontmatterRouting } from "./lib/labels.mjs";
+import { writeFileAtomic } from "../scripts/lib/shared.mjs";
 
 const EVAL_DIR = dirname(fileURLToPath(import.meta.url));
 // Repo root, so committed paths are machine-independent (determinism convention:
@@ -158,7 +159,7 @@ function main() {
     extendedSkipped,
   };
   mkdirSync(EVAL_DIR, { recursive: true });
-  writeFileSync(OUT_PATH, JSON.stringify(out, null, 2) + "\n");
+  writeFileAtomic(OUT_PATH, JSON.stringify(out, null, 2) + "\n");
 
   console.log(`compiled ${cases.length}/${corpus.length} legacy routing cases (${anyCount} with expected_any) -> ${OUT_PATH}`);
   console.table(legacy.perService);

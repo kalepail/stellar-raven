@@ -24,9 +24,10 @@
  * Never hand-edit op-classes.json (CLAUDE.md: generated artifacts are rebuilt
  * by scripts).
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
+import { writeFileAtomic } from "../../scripts/lib/shared.mjs";
 
 const PLAN_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(PLAN_DIR, "..", "..");
@@ -127,7 +128,7 @@ const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv
 if (isMain) {
   const manifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf8"));
   const out = buildOpClasses(manifest);
-  writeFileSync(OUT_PATH, JSON.stringify(out, null, 2) + "\n");
+  writeFileAtomic(OUT_PATH, JSON.stringify(out, null, 2) + "\n");
   const counts = { broad: 0, detail: 0, meta: 0 };
   for (const c of Object.values(out.classes)) counts[c]++;
   console.log(

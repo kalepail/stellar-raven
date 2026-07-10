@@ -3,7 +3,7 @@
 // no deps). Behavior is the canonical refresh-inventory.mjs implementation;
 // both consumers must keep importing from here rather than re-growing local copies.
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 
 /**
  * Minimal .env parser (no dotenv dep): `KEY=value` lines, `#` comments,
@@ -66,4 +66,29 @@ export function sortDeep(value) {
     return out;
   }
   return value;
+}
+
+/**
+ * Write a generated artifact beside its destination, then atomically replace
+ * the destination. This prevents an interrupted generator from leaving a
+ * truncated tracked artifact for later commands or CI to consume.
+ */
+export function writeFileAtomic(path, data) {
+  const temporary = `${path}.${process.pid}.${Date.now()}.tmp`;
+  let failure;
+  try {
+    writeFileSync(temporary, data);
+    renameSync(temporary, path);
+  } catch (error) {
+    failure = error;
+    throw error;
+  } finally {
+    if (existsSync(temporary)) {
+      try {
+        unlinkSync(temporary);
+      } catch (cleanupError) {
+        if (!failure) throw cleanupError;
+      }
+    }
+  }
 }
