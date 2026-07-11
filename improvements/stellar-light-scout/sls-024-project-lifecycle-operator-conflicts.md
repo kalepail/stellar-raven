@@ -12,6 +12,7 @@ evidence:
   - GT-20 recurrence 2026-07-10: xBull remained Live with Android platform metadata while its Google Play URL returned 404 and operator page described passkey/hybrid V2 as forthcoming
   - GT-29 recurrence 2026-07-10: Centaurus remained Live+Unverified while its linked repositories had no activity after 2021 and no current primary deployment evidence was found
   - Eval recurrence 2026-07-11: super-corpus baseline headline run (result stamp 2026-07-11T15-36-44-variantA.json, case q-defi-streaming-payments-prior-art) — live Scout labeled Fluxity and SStream Live with no contract/network deployment proof, and the answering agent promoted the label into deployment and audit maturity; re-judge confirmed wrong
+  - Eval recurrence 2026-07-11 (tier-interleave round, result stamp 2026-07-11T21-44-47-variantA.json, same case): re-reproduced W→W; live re-execution `scout.searchProjects({q:"streaming recurring payments"})` returned Fluxity status=`Live`, verificationLevel=`Unverified`, `statusAsOf`/`statusBasis`/`statusSourceUrl` all `null`, `supportedNetworks` `[]`, scfTotalAwardedUSD 82750 across scfAwardedRounds [18,21] (the internally inconsistent aggregate the golden warns against); all 19 streaming-payment projects in the response were labeled `Live`. The qualifier fields this finding recommends now EXIST in the schema but are unpopulated, so the label still carries no deployment basis and the agent again promoted `Live` into production/audit maturity
 ---
 
 ## Finding
@@ -68,6 +69,25 @@ the label, and live re-execution found no contract/network deployment proof
 behind it. The consumer-facing consequence is exactly the missing qualifier this
 finding recommends — without a deployment basis, `Live` keeps getting promoted
 into deployment truth.
+
+The 2026-07-11 tier-interleave round (result stamp
+`2026-07-11T21-44-47-variantA.json`, same case, reviewed in
+`eval/qa/reviewed/2026-07-11-tier-interleave-round.md`) reproduced the class a
+second time and sharpened it against the recommendation below. A live
+`scout.searchProjects({ q: "streaming recurring payments" })` returned Fluxity
+with `status: "Live"` but `verificationLevel: "Unverified"`, `statusAsOf`,
+`statusBasis`, and `statusSourceUrl` all `null`, and `supportedNetworks: []` —
+i.e. the exact provenance/deployment-scope fields this finding asks for are now
+present in the response schema yet unpopulated for this record. Its
+`scfTotalAwardedUSD` was `82750` spanning `scfAwardedRounds: [18, 21]`, the
+internally inconsistent aggregate the golden explicitly cautions against
+promoting into a second award. Every one of the 19 streaming-payment projects
+in the same response was labeled `Live`. The answering agent again reported
+Fluxity as `Live` with the `$82,750` aggregate and no deployment caveat. Schema
+presence without population does not close the gap: a consumer still cannot
+distinguish organization-active from mainnet-live, so the actionable ask is now
+to POPULATE `statusBasis`/`statusAsOf`/`statusSourceUrl` (and `supportedNetworks`)
+per record, not merely expose the fields.
 
 ## Recommendation
 

@@ -212,6 +212,15 @@ Results stamps: `2026-07-11T15-36-44-variantA.json`,
 Raw results were 8C/18P/4W, 8C/2P/0W, and 2C/0P/0W respectively; live review calibrated the
 canonical lane to 9C/1P/0W. Results JSONs remain local-only evidence.
 
+The most recent checkpoint against this baseline is the 2026-07-11 tier-interleave round
+([`reviewed/2026-07-11-tier-interleave-round.md`](./reviewed/2026-07-11-tier-interleave-round.md),
+stamps `2026-07-11T21-44-47-variantA.json` headline, `2026-07-11T21-55-31-variantA.json` canonical
+live-10, `2026-07-11T21-59-10-variantA.json` digest-2; same v2.4/p3 + `claude-sonnet-5` contract and
+the same 30 sample ids). Raw were 12C/14P/4W, 10C/0P/0W, and 0C/2P/0W; reviewed (re-judging every
+flip) were 12C/14P/4W, 10C, and 2C — 5 confirmed stable gains and 2 confirmed regressions vs the
+baseline headline. The super-corpus baseline above remains the baseline of record; the tier-interleave
+round is a checkpoint, not a re-baseline.
+
 ## Known limitations
 
 - **Judge variance.** One Sonnet call per grade, temperature not pinned; apply the noise floor

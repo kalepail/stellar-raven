@@ -183,3 +183,27 @@ the local-only results store, so there is no reproducible per-row artifact to ci
 coordination note mentions only the fragment `2026-07-09T15-09-32`; that is not a complete
 verified filename and is deliberately **not** recorded as a result stamp. Treat the aggregate
 P1 prose as an unavailable historical artifact, not as a re-runnable stamped result.
+
+## Results — 2026-07-11 (post-tier-interleave checkpoint; run `wf_cbfb579a-c35`, artifact `results/agentic-2026-07-11-post-interleave.json`, local-only)
+
+First full row-level agentic artifact since July 6, and the **new row-level baseline of record** —
+no comparable July 9 per-row artifact exists (see above), and the July 2–4 artifacts predate
+multiple catalog changes, so this run is not compared per-row against them. Same 30 `sample.json`
+cases, Sonnet 5 low+medium, live `wrangler dev` on :8787 at runner revision `d6e443c`, case hash
+`6f810545`. Completeness gate met: 60/60 unique id×effort rows, all 30 ids at both efforts, 0 errors,
+0 retries.
+
+| scope | low pri/any | medium pri/any | prior (07-06) low / med pri |
+|---|---|---|---|
+| stellarDocs (12) | 100 / 100 | 100 / 100 | 100 / 100 |
+| scout (10) | 50 / 70 | 90 / 100 | 90 / 90 |
+| lumenloop (8) | 50 / 50 | 50 / 62.5 | 12.5 / 12.5 |
+| **overall (30)** | **70.0 / 76.7** | **83.3 / 90.0** | 73.3 / 73.3 |
+
+Reading (aggregate-only, nothing tuned): this is a **composite** post-`c8a3b4d` checkpoint (Scout
+1.7.15/Docs drift absorb `6cf5bbf` + tier interleave `bb25276` + stochasticity), so **no causal
+claim is made about `bb25276`** — the committed agentic sample is the routing-cases sample and
+contains none of the interleave-recovered extended cases. Docs held at 100% across all cells; scout
+medium recovered to 90/100; lumenloop medium rose from July 6's 12.5% to 50% and low from 12.5% to
+50% — recorded as observational, not causally attributed. Full round context and the QA/routing
+lanes are in `eval/qa/reviewed/2026-07-11-tier-interleave-round.md`.

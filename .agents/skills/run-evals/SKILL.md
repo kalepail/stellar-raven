@@ -224,8 +224,8 @@ Known judge failure modes (from `eval/qa/README.md`):
   (`JUDGE_RUBRIC` in `judge.mjs` is the current version; verdicts carry
   `{rubric, packVersion, promptSha256}` stamps). The comparability rules and the committed
   noise floor live in `eval/qa/README.md` ("Judging rubric and score comparability").
-- **Denominator note:** the owned battery (469 cases as seeded at the 2026-07-11 rebuild) is
-  the baseline denominator; pre-rebuild aggregate baselines are archival
+- **Denominator note:** the owned battery (484 cases, the authoritative denominator per
+  `eval/qa/README.md`) is the baseline denominator; pre-rebuild aggregate baselines are archival
   (`research/audits/2026-07-qa-history.md`) and are not directly comparable at the aggregate
   level. Per-id comparisons remain valid for continuing case ids (same rubric).
 - Freshness cases: sourced drift from the golden snapshot is fine; confident unsourced
