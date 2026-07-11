@@ -157,15 +157,21 @@ export function lintSurface(cases, manifest) {
 }
 
 function invariantIds(invariant) {
-  return invariant.affectedIds ?? invariant.cases ?? invariant.members ?? [];
+  return invariant.affectedCaseIds ?? [];
 }
 
 function invariantLabel(invariant) {
-  return String(invariant.claim ?? invariant.name ?? invariant.id ?? "unnamed invariant");
+  return String(invariant.label ?? "unnamed invariant");
 }
 
 function terms(text) {
-  return new Set(String(text).toLowerCase().match(/[a-z][a-z0-9-]{2,}/g) ?? []);
+  const expanded = String(text).replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
+  return new Set((expanded.match(/[a-z][a-z0-9-]{2,}/g) ?? []).map((term) => {
+    if (term === "capped") return "cap";
+    if (term.endsWith("ed") && term.length > 5) return term.slice(0, -2);
+    if (term.endsWith("s") && term.length > 4) return term.slice(0, -1);
+    return term;
+  }));
 }
 
 function claimCovers(claim, expected) {
@@ -187,7 +193,7 @@ export function lintNumericInvariants(cases, register = {}) {
       ...(invariant.forbiddenValues ?? []),
       ...(invariant.forbidden ?? [])
     ].map(String).filter(Boolean);
-    const accepted = [invariant.authoritativeValue, ...(invariant.aliases ?? [])]
+    const accepted = [invariant.authoritativeValue, ...(invariant.acceptedSpellings ?? [])]
       .filter((value) => value !== undefined && value !== null)
       .map(String);
     for (const id of invariantIds(invariant)) {
