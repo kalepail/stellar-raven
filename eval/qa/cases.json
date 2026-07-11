@@ -1,30 +1,30 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "3c6218455dd8a632e312601263ded02fec2709d4db12bd2d57bb7cabe765b245",
+  "corpusContentSha256": "a99f1ac9118147381f5fb4894f225b8cce7ed9443a5e1ae6f2da35632fe32b4d",
   "counts": {
-    "total": 379,
+    "total": 401,
     "byCategory": {
-      "assets-anchors-seps": 43,
+      "assets-anchors-seps": 45,
       "compliance-rwa-payments": 34,
-      "defi-ecosystem": 50,
+      "defi-ecosystem": 54,
       "edge-behavior": 26,
       "history-org-tokenomics": 14,
-      "protocol-core": 42,
+      "protocol-core": 44,
       "retail-consumer": 10,
-      "scf-grants-builders": 38,
-      "soroban": 64,
-      "tooling-infra": 58
+      "scf-grants-builders": 42,
+      "soroban": 67,
+      "tooling-infra": 65
     },
     "byService": {
-      "lumenloop": 35,
+      "lumenloop": 43,
       "none": 7,
-      "scout": 110,
-      "skills": 22,
-      "stellarDocs": 205
+      "scout": 121,
+      "skills": 24,
+      "stellarDocs": 206
     },
     "byFreshness": {
-      "live": 111,
+      "live": 133,
       "scheduled": 96,
       "stable": 172
     },
@@ -12499,6 +12499,1491 @@
           ]
         },
         "origin": "raven-next q-edge-xlm-price-investment-advice"
+      }
+    },
+    {
+      "id": "q-gap-av-offset-not-timestamp",
+      "question": "Can I use a Lumenloop AV `start_offset` as a video timestamp?",
+      "surface": [
+        "lumenloop.find_av_passages"
+      ],
+      "golden": {
+        "answer": "No. `find_av_passages` returned an AV passage with summary, recording metadata, link, similarity, and `start_offset`; the catalog contract defines that offset as opaque transcript-chunk ordering, not playback seconds. Cite the link and passage summary instead of constructing a timestamp deep link.",
+        "keyFacts": [
+          "Treats `start_offset` as an opaque ordering offset, not seconds.",
+          "Uses the returned recording link and passage summary for citation."
+        ],
+        "avoid": [
+          "Do NOT render `start_offset` as a timestamp or build a playback deep link from it."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded for Soroban with a passage row containing start_offset=24300, summary, URL, and created_at."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#lumenloop.find_av_passages",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/lumenloop.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Treats `start_offset` as an opaque ordering offset, not seconds.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded for Soroban with a passage row containing start_offset=24300, summary, URL, and created_at."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#lumenloop.find_av_passages",
+            "inventory/lumenloop.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-builders-person-empty",
+      "question": "What does an empty Scout builder search mean?",
+      "surface": [
+        "scout.getBuilders"
+      ],
+      "golden": {
+        "answer": "`getBuilders` is a people-profile directory. An intentionally absent query returned `builders: []`, total 0, and advisory text saying this was a filter miss while the directory held 114 profiles. Broaden/drop filters or use its suggested channels; do not conclude there are no Stellar builders.",
+        "keyFacts": [
+          "Treats builder search as a person-entity directory.",
+          "Distinguishes a zero-result filter miss from an unseeded/empty directory."
+        ],
+        "avoid": [
+          "Do NOT use an empty builder filter result as evidence that the builder ecosystem is empty."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded for an absent query with builders=[], total=0, and advisory explicitly describing a filter miss."
+      },
+      "tags": {
+        "category": "scf-grants-builders",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#scout.getBuilders",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/stellar-light.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Treats builder search as a person-entity directory.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded for an absent query with builders=[], total=0, and advisory explicitly describing a filter miss."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#scout.getBuilders",
+            "inventory/stellar-light.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-compare-hackathons",
+      "question": "How do I compare two Stellar hackathons without mixing their fields or inventing winners?",
+      "surface": [
+        "scout.compareHackathons",
+        "scout.getHackathons"
+      ],
+      "golden": {
+        "answer": "First obtain exact slugs from `getHackathons`, then call `compareHackathons` with 2–5 slugs. The observed comparison returned two snapshots and a deltas block; it compared prize pools and registered hackers. Use `getHackathon` for one event's submissions/winners, not the comparison response.",
+        "keyFacts": [
+          "Requires 2–5 resolved hackathon slugs for comparison.",
+          "Uses comparison deltas for event metrics and getHackathon for individual winner detail."
+        ],
+        "avoid": [
+          "Do NOT infer winner names or a global winner order from a comparison summary."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded for stellar-hacks-zk and stellar-agents-x402-stripe-mpp; returned two snapshots and deltas."
+      },
+      "tags": {
+        "category": "scf-grants-builders",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#scout.compareHackathons",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/stellar-light.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Requires 2–5 resolved hackathon slugs for comparison.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded for stellar-hacks-zk and stellar-agents-x402-stripe-mpp; returned two snapshots and deltas."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#scout.compareHackathons",
+            "inventory/stellar-light.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-digest-defi-adjacent",
+      "question": "How should I handle a quiet recent DeFi digest window?",
+      "surface": [
+        "skills.lumenloop.stellar-ecosystem-digest"
+      ],
+      "golden": {
+        "answer": "Run the Lumenloop ecosystem digest for the chosen theme and report its returned `window`, `items`, `counts`, `softEmpty`, and audit `calls`. A `softEmpty: true` would mean a quiet matching window, not a failed request; do not turn it into a claim that DeFi activity is absent.",
+        "keyFacts": [
+          "Checks digest softEmpty separately from call errors.",
+          "Frames any roundup by the returned date window and audit trail."
+        ],
+        "avoid": [
+          "Do NOT infer ecosystem-wide inactivity from a quiet theme window."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Runnable skill contract and its Soroban sibling live probe established the response shape; no DeFi point fact is pinned."
+      },
+      "tags": {
+        "category": "defi-ecosystem",
+        "service": "skills",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#skills.lumenloop.stellar-ecosystem-digest",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/lumenloop.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Checks digest softEmpty separately from call errors.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Runnable skill contract and its Soroban sibling live probe established the response shape; no DeFi point fact is pinned."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#skills.lumenloop.stellar-ecosystem-digest",
+            "inventory/lumenloop.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-digest-soroban-adjacent",
+      "question": "How should a recent Soroban roundup use the runnable Lumenloop digest skill?",
+      "surface": [
+        "skills.lumenloop.stellar-ecosystem-digest"
+      ],
+      "golden": {
+        "answer": "Run the digest with a theme subject such as `Soroban`. The observed result included a dated window, deduplicated typed items, per-type counts, `softEmpty`, `upcomingEvents`, and a constituent-call audit. State the returned window; a digest is a corpus roundup, not protocol authority.",
+        "keyFacts": [
+          "Uses the runnable digest and reports its returned date window.",
+          "Checks `softEmpty` and the call audit instead of treating no items as an error."
+        ],
+        "avoid": [
+          "Do NOT present roundup snippets as authoritative protocol specification."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded for Soroban over seven days; returned article, AV, event, and research items plus calls and softEmpty=false."
+      },
+      "tags": {
+        "category": "soroban",
+        "service": "skills",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#skills.lumenloop.stellar-ecosystem-digest",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/lumenloop.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Uses the runnable digest and reports its returned date window.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded for Soroban over seven days; returned article, AV, event, and research items plus calls and softEmpty=false."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#skills.lumenloop.stellar-ecosystem-digest",
+            "inventory/lumenloop.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-explainrepo-payload-ok",
+      "question": "Can Scout explain where Stellar Core transaction result codes are handled?",
+      "surface": [
+        "scout.explainRepo"
+      ],
+      "golden": {
+        "answer": "Yes: call `scout.explainRepo` with a focused code question and optionally pin `stellar/stellar-core`. The observed response routed explicitly, returned `answered`, a source-grounded answer, repo metadata, and repository/DeepWiki URLs. Check the Raven envelope before using the payload's own `ok`/`answered` fields, and verify safety-critical code claims in source.",
+        "keyFacts": [
+          "Uses `explainRepo` for a routed deep-code answer, not merely a repository search.",
+          "Checks the outer envelope separately from payload status fields.",
+          "Treats returned explanatory text as source-grounded guidance that may need source verification."
+        ],
+        "avoid": [
+          "Do NOT claim `codeVerified.isDeployableContract` means stellar-core itself is a deployable Soroban contract."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded for an explicit stellar/stellar-core query; payload included `ok`, `answered`, routing, answer, repo metadata, and source URLs."
+      },
+      "tags": {
+        "category": "soroban",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#scout.explainRepo",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/stellar-light.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Uses `explainRepo` for a routed deep-code answer, not merely a repository search.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded for an explicit stellar/stellar-core query; payload included `ok`, `answered`, routing, answer, repo metadata, and source URLs."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#scout.explainRepo",
+            "inventory/stellar-light.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-hackathon-winner-order",
+      "question": "Can I report hackathon winners in the order returned by a comparison or list response?",
+      "surface": [
+        "scout.getHackathon",
+        "scout.compareHackathons"
+      ],
+      "golden": {
+        "answer": "No. For winners, call `getHackathon` on the exact event and use its submission placement/award fields; list and comparison responses are event summaries. Preserve explicit placement rather than assuming array order expresses first-through-last winner order.",
+        "keyFacts": [
+          "Uses getHackathon detail for winners and explicit placement fields for ordering.",
+          "Does not derive winner order from list or compare response ordering."
+        ],
+        "avoid": [
+          "Do NOT announce winners in array order unless the detailed placement field supports that order."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Live comparison probe returned event snapshots and deltas, not winner roster/placement; the detail-operation separation is the catalog contract."
+      },
+      "tags": {
+        "category": "scf-grants-builders",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#scout.getHackathon",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/stellar-light.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Uses getHackathon detail for winners and explicit placement fields for ordering.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Live comparison probe returned event snapshots and deltas, not winner roster/placement; the detail-operation separation is the catalog contract."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#scout.getHackathon",
+            "inventory/stellar-light.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-leaderboard-project-not-builder",
+      "question": "Does Scout's leaderboard rank individual Stellar developers?",
+      "surface": [
+        "scout.getLeaderboard",
+        "scout.getBuilders"
+      ],
+      "golden": {
+        "answer": "No. `getLeaderboard` returned ranked projects with project GitHub rollups plus an ecosystem developer macro block; use `getBuilders` for named people. The observed activity/30d result returned Microvault and Noir as projects, not individual developer rankings.",
+        "keyFacts": [
+          "Leaderboard ranks projects and supplies aggregate developer metrics.",
+          "Uses getBuilders for person-directory questions."
+        ],
+        "avoid": [
+          "Do NOT present leaderboard rows as individual developers or use it as a people directory."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded with two project rows and an ecosystem developer snapshot."
+      },
+      "tags": {
+        "category": "defi-ecosystem",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#scout.getLeaderboard",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/stellar-light.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Leaderboard ranks projects and supplies aggregate developer metrics.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded with two project rows and an ecosystem developer snapshot."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#scout.getLeaderboard",
+            "inventory/stellar-light.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-lumen-content-tag-vocabulary",
+      "question": "Where do I get Lumenloop article and AV content tags?",
+      "surface": [
+        "lumenloop.get_tags_vocabulary"
+      ],
+      "golden": {
+        "answer": "Call `lumenloop.get_tags_vocabulary`; the observed response was an array of content-tag rows with IDs, names, slugs, and article/AV counts. It is distinct from the directory project-tag vocabulary.",
+        "keyFacts": [
+          "Uses content tags for articles and AV.",
+          "Keeps content-tag and project-tag vocabularies separate."
+        ],
+        "avoid": [
+          "Do NOT treat a content tag's count as a project-directory count."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded with content-tag rows including separate article_count and av_count."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#lumenloop.get_tags_vocabulary",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/lumenloop.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Uses content tags for articles and AV.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded with content-tag rows including separate article_count and av_count."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#lumenloop.get_tags_vocabulary",
+            "inventory/lumenloop.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-lumen-documents-browse",
+      "question": "How do I browse upcoming Lumenloop events rather than keyword-search them?",
+      "surface": [
+        "lumenloop.list_documents",
+        "lumenloop.search_documents"
+      ],
+      "golden": {
+        "answer": "Use `lumenloop.list_documents({collection: 'events', period: 'upcoming'})`. The observed result returned document summaries and pagination. Use `search_documents` only when you know exact title/URL wording; its substring search is not conceptual search.",
+        "keyFacts": [
+          "Uses `list_documents` plus the `period` argument for upcoming-event browsing.",
+          "Separates browsing from exact title/URL substring lookup."
+        ],
+        "avoid": [
+          "Do NOT pass the nonexistent `time_period` argument or claim exact search covers document body meaning."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded with period=upcoming and two event summaries plus pagination; an invalid `time_period` argument was rejected before any call."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#lumenloop.list_documents",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/lumenloop.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Uses `list_documents` plus the `period` argument for upcoming-event browsing.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded with period=upcoming and two event summaries plus pagination; an invalid `time_period` argument was rejected before any call."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#lumenloop.list_documents",
+            "inventory/lumenloop.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-lumen-exact-document-empty",
+      "question": "What does an empty Lumenloop document keyword search mean?",
+      "surface": [
+        "lumenloop.search_documents"
+      ],
+      "golden": {
+        "answer": "An exact document search for a deliberately absent title/URL token succeeded with `items: []`, pagination total 0, and a hint that matching is title/URL substring only. Treat this as a soft absence for that exact field match; use semantic content search for a conceptual question.",
+        "keyFacts": [
+          "An empty exact-document result is a successful zero-match response.",
+          "The operation searches title and URL substring fields, not semantic body meaning."
+        ],
+        "avoid": [
+          "Do NOT conclude the topic has no Lumenloop content from this exact-keyword miss."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded with items=[] and pagination.total=0 for an absent token; returned the exact-search hint."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#lumenloop.search_documents",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/lumenloop.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "An empty exact-document result is a successful zero-match response.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded with items=[] and pagination.total=0 for an absent token; returned the exact-search hint."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#lumenloop.search_documents",
+            "inventory/lumenloop.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-lumen-project-tag-vocabulary",
+      "question": "Where do I get valid Lumenloop directory project tags?",
+      "surface": [
+        "lumenloop.get_project_tags_vocabulary"
+      ],
+      "golden": {
+        "answer": "Call `lumenloop.get_project_tags_vocabulary`; the observed response returned a `count` and tag objects with name and slug. Use this project-tag vocabulary for directory tagging rather than substituting content tags.",
+        "keyFacts": [
+          "Uses the project-tag vocabulary endpoint for directory tags.",
+          "Distinguishes project tags from content tags."
+        ],
+        "avoid": [
+          "Do NOT mix this vocabulary with article/AV content tags."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded with count=85 and name/slug tag rows."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#lumenloop.get_project_tags_vocabulary",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/lumenloop.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Uses the project-tag vocabulary endpoint for directory tags.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded with count=85 and name/slug tag rows."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#lumenloop.get_project_tags_vocabulary",
+            "inventory/lumenloop.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-match-partners-degrade",
+      "question": "How should I obtain a partner shortlist for a Mexico USDC SEP-24 off-ramp need, including degradation?",
+      "surface": [
+        "scout.matchPartners",
+        "scout.getPartners"
+      ],
+      "golden": {
+        "answer": "Use `scout.matchPartners` for a plain-language ranked shortlist. The live success probe returned ranked published partners and reasons. If the operation returns its documented 503/unavailable condition, do not invent rankings; fall back to `scout.getPartners` filters and state that AI matching was unavailable.",
+        "keyFacts": [
+          "Uses matchPartners for a ranked need-based shortlist when available.",
+          "On documented 503/unavailable, falls back to getPartners rather than fabricating a ranking."
+        ],
+        "avoid": [
+          "Do NOT claim the 503 branch was observed in this probe or fabricate partner rankings during that fallback."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Success branch observed: ranked published partners returned for the Mexico/USDC/SEP-24 need. The 503 fallback is a catalog-note contract, not live-observed in this healthy run."
+      },
+      "tags": {
+        "category": "assets-anchors-seps",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#scout.matchPartners",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/stellar-light.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Uses matchPartners for a ranked need-based shortlist when available.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Success branch observed: ranked published partners returned for the Mexico/USDC/SEP-24 need. The 503 fallback is a catalog-note contract, not live-observed in this healthy run."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#scout.matchPartners",
+            "inventory/stellar-light.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-related-projects-empty",
+      "question": "What does `get_related_projects` tell me after I have a Lumenloop content item?",
+      "surface": [
+        "lumenloop.get_related_projects"
+      ],
+      "golden": {
+        "answer": "Pass the content row's numeric ID and its collection type to `get_related_projects` to obtain directory projects mentioned by that content. The probe returned a successful empty array for article ID 1, so an empty result means no linked mentioned projects for that content—not that the ecosystem has no related projects.",
+        "keyFacts": [
+          "Uses a content item ID/type, not a project slug.",
+          "Treats an empty mentioned-project array as content-specific soft absence."
+        ],
+        "avoid": [
+          "Do NOT reverse this operation into project-to-content lookup or infer ecosystem-wide absence from an empty array."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded for article id=1 with data=[]; catalog specifies content-to-mentioned-project direction."
+      },
+      "tags": {
+        "category": "assets-anchors-seps",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#lumenloop.get_related_projects",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/lumenloop.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Uses a content item ID/type, not a project slug.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded for article id=1 with data=[]; catalog specifies content-to-mentioned-project direction."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#lumenloop.get_related_projects",
+            "inventory/lumenloop.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-rpc-horizon-unindexed-reference",
+      "question": "Why might a search for one exact RPC or Horizon endpoint miss the reference page?",
+      "surface": [
+        "stellarDocs.search_rpc_horizon_data_docs",
+        "skills.stellar-dev.data"
+      ],
+      "golden": {
+        "answer": "Use the RPC/Horizon docs search for structure, migration, error, admin, and method-guide material, then follow official page links or the data skill for procedure. The exposed catalog explicitly says auto-generated per-method RPC and per-endpoint Horizon references are not in this search index; a zero search hit is not evidence that the API does not exist.",
+        "keyFacts": [
+          "Treats the docs-search index as intentionally incomplete for generated per-method/per-endpoint references.",
+          "Does not infer API absence from an unindexed search result."
+        ],
+        "avoid": [
+          "Do NOT say an RPC or Horizon API is nonexistent solely because this search operation did not return it."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Catalog note is the stable contract; live probe context was established through the local MCP execute surface."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "stellarDocs",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#stellarDocs.search_rpc_horizon_data_docs",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/stellar-docs.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Treats the docs-search index as intentionally incomplete for generated per-method/per-endpoint references.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Catalog note is the stable contract; live probe context was established through the local MCP execute surface."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#stellarDocs.search_rpc_horizon_data_docs",
+            "inventory/stellar-docs.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-scout-changelog-envelope",
+      "question": "How do I see Scout contract changes without confusing them with current ecosystem data?",
+      "surface": [
+        "scout.getChangelog",
+        "scout.getStatus"
+      ],
+      "golden": {
+        "answer": "Use `scout.getChangelog({limit})`; it returned a latest-first, contract-affecting feed with `entries`, filter metadata, and an inner payload `ok`. Use `getStatus` for current service health/freshness, not the changelog as a data source.",
+        "keyFacts": [
+          "Uses `getChangelog` for API/MCP/client contract changes.",
+          "Separates its payload `ok` from the Raven envelope and from current ecosystem data."
+        ],
+        "avoid": [
+          "Do NOT treat a changelog entry as current project, builder, or market data."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded with two latest-first entries and payload `ok=true`; status and changelog are distinct operations."
+      },
+      "tags": {
+        "category": "protocol-core",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#scout.getChangelog",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/stellar-light.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Uses `getChangelog` for API/MCP/client contract changes.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded with two latest-first entries and payload `ok=true`; status and changelog are distinct operations."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#scout.getChangelog",
+            "inventory/stellar-light.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-scout-get-skill-detail",
+      "question": "What should I use when I need the actual instructions for the Agentic Payments skill?",
+      "surface": [
+        "scout.getSkill",
+        "scout.listSkills"
+      ],
+      "golden": {
+        "answer": "After identifying the slug, call `scout.getSkill({name: 'agentic-payments'})`. The observed result contained metadata plus full `skill.content`; unknown names are an operation error with a hint to list skills. Prefer bundled `codemode.skill.read` for sectioned, pinned build playbooks when that is the requested surface.",
+        "keyFacts": [
+          "Uses `getSkill` for one known slug and full content.",
+          "Uses `listSkills` first for discovery when the name is unknown."
+        ],
+        "avoid": [
+          "Do NOT assume a missing skill is a soft-empty directory result or that all directory entries are mirrored bundled skills."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded for agentic-payments and returned `skill.content` with metadata; catalog contract documents unknown-name guidance."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#scout.getSkill",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/stellar-light.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Uses `getSkill` for one known slug and full content.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded for agentic-payments and returned `skill.content` with metadata; catalog contract documents unknown-name guidance."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#scout.getSkill",
+            "inventory/stellar-light.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-scout-list-skill-directory",
+      "question": "How can I discover an installable Soroban skill rather than retrieve an arbitrary full SKILL.md?",
+      "surface": [
+        "scout.listSkills"
+      ],
+      "golden": {
+        "answer": "Use `scout.listSkills` to browse the live installable directory, optionally filtering by source or kind. The observed SDF-filtered result returned seven entries with slug, install command, source, kind, homepage/raw URL, and compatibility. Then use `getSkill` for one named entry.",
+        "keyFacts": [
+          "Uses `listSkills` for discovery and `getSkill` for one known skill.",
+          "Treats the directory as live metadata, not proof that every entry is a bundled skill."
+        ],
+        "avoid": [
+          "Do NOT use `listSkills` as though it returns the full instructions for every skill."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded with a source=sdf filter and returned seven skill-directory entries including Soroban."
+      },
+      "tags": {
+        "category": "soroban",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#scout.listSkills",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/stellar-light.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Uses `listSkills` for discovery and `getSkill` for one known skill.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded with a source=sdf filter and returned seven skill-directory entries including Soroban."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#scout.listSkills",
+            "inventory/stellar-light.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-scout-status-envelope",
+      "question": "Before relying on Scout results, how should I check the live service contract?",
+      "surface": [
+        "scout.getStatus"
+      ],
+      "golden": {
+        "answer": "Call `scout.getStatus({})` and first check the Raven envelope's `ok`; on success the Scout payload is under `data`, where its own `data.ok`, API version, generation time, endpoint list, and source freshness are separate fields. Do not treat the inner `data.ok` as the Raven call-status flag.",
+        "keyFacts": [
+          "Distinguishes envelope `ok` from payload `data.ok`.",
+          "Uses the status payload for service/API version and source-freshness context."
+        ],
+        "avoid": [
+          "Do NOT read payload fields from the envelope root or infer success solely from `data.ok`."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded; returned envelope ok=true and payload `data.ok=true`, apiVersion, generatedAt, sources, and endpoints."
+      },
+      "tags": {
+        "category": "protocol-core",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#scout.getStatus",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/stellar-light.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Distinguishes envelope `ok` from payload `data.ok`.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded; returned envelope ok=true and payload `data.ok=true`, apiVersion, generatedAt, sources, and endpoints."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#scout.getStatus",
+            "inventory/stellar-light.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-semantic-directory-fallback",
+      "question": "What should I report if Lumenloop directory search falls back from substring matching to semantic results?",
+      "surface": [
+        "lumenloop.search_directory",
+        "lumenloop.find_similar_projects_semantic"
+      ],
+      "golden": {
+        "answer": "Inspect `match_mode`. For an intentionally nonmatching phrase, the live result returned `match_mode: 'semantic'` plus a note explaining the fallback and closest projects. Label those results as semantic fallback; do not present them as exact text matches. Use `find_similar_projects_semantic` when starting from a known project.",
+        "keyFacts": [
+          "Checks and reports the `match_mode` field.",
+          "Labels semantic-fallback results rather than calling them exact matches."
+        ],
+        "avoid": [
+          "Do NOT claim a semantic fallback row matched the submitted text literally."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded with count=2, match_mode=semantic, and a fallback explanation for an intentionally nonmatching query."
+      },
+      "tags": {
+        "category": "defi-ecosystem",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#lumenloop.search_directory",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/lumenloop.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Checks and reports the `match_mode` field.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded with count=2, match_mode=semantic, and a fallback explanation for an intentionally nonmatching query."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#lumenloop.search_directory",
+            "inventory/lumenloop.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-semantic-similar-projects",
+      "question": "How do I find projects semantically similar to Soroswap?",
+      "surface": [
+        "lumenloop.find_similar_projects_semantic",
+        "lumenloop.search_directory"
+      ],
+      "golden": {
+        "answer": "Use `find_similar_projects_semantic({slug: 'soroswap'})` for project-to-project semantic neighbors; the probe returned ranked rows with similarity scores. Use `search_directory` to start from a keyword/concept rather than a known project slug.",
+        "keyFacts": [
+          "Uses a known project slug for semantic-neighbor lookup.",
+          "Keeps project-to-project similarity distinct from directory discovery."
+        ],
+        "avoid": [
+          "Do NOT treat similarity scores as endorsements or substitute a text query for the required slug."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded for soroswap with two ranked neighbor rows and similarity values."
+      },
+      "tags": {
+        "category": "defi-ecosystem",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#lumenloop.find_similar_projects_semantic",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/lumenloop.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Uses a known project slug for semantic-neighbor lookup.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded for soroswap with two ranked neighbor rows and similarity values."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#lumenloop.find_similar_projects_semantic",
+            "inventory/lumenloop.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
+      }
+    },
+    {
+      "id": "q-gap-upcoming-hackathon-fallback",
+      "question": "What should I do when Scout reports no upcoming Stellar hackathons?",
+      "surface": [
+        "scout.getHackathons"
+      ],
+      "golden": {
+        "answer": "Return the zero upcoming result honestly and surface its `meta.fallbackChannels`; the live probe returned `hackathons: []`, counts showing zero returned, and official/community channels to check. A zero-upcoming result is not an error and does not prove no future event will be announced.",
+        "keyFacts": [
+          "Treats a zero-upcoming list as a successful response with fallback channels.",
+          "Surfaces fallbackChannels rather than dead-ending."
+        ],
+        "avoid": [
+          "Do NOT fabricate an upcoming event or state that no future hackathon can exist."
+        ],
+        "notes": "N1 live contract probe 2026-07-11: Succeeded with zero upcoming rows and fallback channels for BuildOnStellar, the Scout page, and DoraHacks."
+      },
+      "tags": {
+        "category": "scf-grants-builders",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "catalog/manifest.json#scout.getHackathons",
+            "note": "Exposed operation contract and catalog notes."
+          },
+          {
+            "class": "B",
+            "ref": "inventory/stellar-light.json",
+            "note": "Committed inventory snapshot for the service family."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Treats a zero-upcoming list as a successful response with fallback channels.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+                "observedAt": "2026-07-11",
+                "note": "Succeeded with zero upcoming rows and fallback channels for BuildOnStellar, the Scout page, and DoraHacks."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 Lane N1 gap-ops authoring",
+          "evidence": [
+            "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
+            "catalog/manifest.json#scout.getHackathons",
+            "inventory/stellar-light.json"
+          ],
+          "rootCause": [
+            "solo://project/49/scratchpad/p4/n1-gapops"
+          ]
+        },
+        "origin": "authored 2026-07 (gap-ops)"
       }
     },
     {
