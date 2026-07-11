@@ -1,16 +1,15 @@
 {
-  "changelogEntryCount": 46,
+  "changelogEntryCount": 61,
   "changelogLatest": {
-    "date": "2026-07-09",
-    "detail": "Going forward info.version bumps with every observable contract change (including description-only changes), so downstream catalogs can use it as a staleness signal instead of diffing the whole document.",
-    "summary": "Spec info.version bumped 1.6.1 → 1.7.0, covering the 2026-07-08/09 contract additions that shipped under an unchanged version: codeVerified.symbols/sdkCapabilities/mainnetContractId, Project.canonicalSlug/lifecycle/anchorProfile, typed Partner/PartnersResponse, and the getPartners `ramps` filter.",
+    "date": "2026-07-10",
+    "detail": "Directory truth change only — no shape change. Live count 871 → 832. Inactive records stay name-searchable (heavily down-ranked) and now explain themselves via lifecycle.note; they drop out of active listings, leaderboard, clusters and funding aggregates. Methodology + full evidence table: the liveness triage in our changelog-linked improvements notes.",
+    "summary": "Liveness wave: 38 provably-defunct projects flipped Live → Inactive (each individually researched with positive evidence — shutdown notices, parked/unregistered domains, abandoned footprints — recorded on the row as lifecycle.note, e.g. Whalestack wound down to a BTCPay redirect; nTokens discontinued the BRL anchor; Lumenaut's inflation pool ended with Protocol 12). 13 records whose PRODUCT is alive got their dead recorded URL repointed (stellarbeat → OBSRVR Radar, fastbuka → Choppaddi rebrand, afriex, xycloans, arst…). chainatlas merged into chainsatlas (duplicate).",
     "surfaces": [
       "api"
     ],
-    "type": "changed",
-    "version": "openapi@1.7.0"
+    "type": "changed"
   },
-  "fetchedAt": "2026-07-09T11:50:42.414Z",
+  "fetchedAt": "2026-07-10T14:10:40.561Z",
   "openapi": {
     "components": {
       "parameters": {
@@ -210,6 +209,11 @@
               "properties": {
                 "returned": {
                   "description": "Rows in this page (post limit/offset slice)",
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "semantic": {
+                  "description": "projects/search only: rows in this page served by the vector-similarity fallback rather than a keyword match (each tagged via:\"semantic\"; included in returned/total). Lets a consumer separate keyword truth from similarity guesses.",
                   "minimum": 0,
                   "type": "integer"
                 },
@@ -744,6 +748,16 @@
               },
               "type": "array"
             },
+            "tvlAsOf": {
+              "description": "When tvlUSD was fetched from DefiLlama (ISO 8601).",
+              "nullable": true,
+              "type": "string"
+            },
+            "tvlUSD": {
+              "description": "Total value locked in USD per DefiLlama, summed across the protocol's tracked components. null = NOT TRACKED on DefiLlama (never 'zero TVL'). Refreshed weekly; see tvlAsOf.",
+              "nullable": true,
+              "type": "number"
+            },
             "types": {
               "description": "Capability tags (Wallet, DEX, Lending, Oracle, SDK, RPC, Faucet, NFT, RWA, Anchor, Stablecoin, Indexer, Explorer, Security, Gaming).",
               "items": {
@@ -790,13 +804,14 @@
                 {
                   "properties": {
                     "matchMode": {
-                      "description": "Tier of match relaxation that produced these results",
+                      "description": "Tier of match relaxation that produced these results. `semantic` means NO keyword tier matched — every row is a vector-similarity fallback guess (each tagged `via: \"semantic\"`, confidence capped at medium): verify relevance before relying on them.",
                       "enum": [
                         "strict",
                         "loose-1",
                         "loose-2",
                         "loose-3",
                         "majority",
+                        "semantic",
                         "all"
                       ],
                       "type": "string"
@@ -1144,14 +1159,14 @@
         "name": "Stellar Light",
         "url": "https://stellarlight.xyz/scout"
       },
-      "description": "Read-only public API powering Stellar Scout. Aggregators, autonomous agents, and AI tools can call these endpoints directly without auth.\n\nAll endpoints are edge-cached. The same data is available via the @stellar-light/scout-mcp Model Context Protocol server (for human-driven clients) and via the @stellar-light/api-client TypeScript SDK (for autonomous aggregators).\n\nData sources merged behind these endpoints: the Stellarlight directory of curated Stellar projects + an indexed-and-scored GitHub repo index, Stellar Passport builder profiles, Electric Capital developer activity, Soroban audit corpus, SDF skills.stellar.org skill catalog, lumenloop ecosystem data, and primary research (SEPs, papers, dev docs, SCF Handbook). Live collection sizes are in GET /api/status (sources[]) — counts are intentionally not hardcoded here to avoid drift.\n\n## Versioning\nEvery response carries an `X-API-Version` header (currently `1`). The number bumps only on a breaking response-shape change; additive fields don't bump it. Pin to a version by asserting the header. Breaking changes are announced before they ship.\n\n## Rate limits\nNone enforced today — the API is public and unauthenticated. When limits are introduced they will be advertised via `X-RateLimit-*` and `Retry-After` headers and documented here BEFORE enforcement, so autonomous consumers can adopt back-off ahead of time. Be courteous: cache where `Cache-Control` allows, and prefer `offset` pagination over hammering.\n\n## Pagination\nList endpoints (`/api/projects/search`, `/api/builders`, `/api/rfps`) accept `limit` + `offset`. The response `meta.counts` carries `returned` (this page) and `total`/`matched` (all rows matching the filter, pre-slice). Page until `offset + returned >= total`.\n\n## Ordering & relevance\n`/api/projects/search` sorts by descending keyword `score` (token-overlap count) and exposes `meta.matchMode` (`strict` → `loose-1` → `majority`) so you know how much the query was relaxed. `/api/research` sorts by descending vector-similarity `score` (0–1 cosine). Use these for cross-source ranking when merging with other aggregators.",
+      "description": "Read-only public API powering Stellar Scout. Aggregators, autonomous agents, and AI tools can call these endpoints directly without auth.\n\nAll endpoints are edge-cached. The same data is available via the @stellar-light/scout-mcp Model Context Protocol server (for human-driven clients) and via the @stellar-light/api-client TypeScript SDK (for autonomous aggregators).\n\nData sources merged behind these endpoints: the Stellarlight directory of curated Stellar projects + an indexed-and-scored GitHub repo index, Stellar Passport builder profiles, Electric Capital developer activity, Soroban audit corpus, SDF skills.stellar.org skill catalog, lumenloop ecosystem data, and primary research (SEPs, papers, dev docs, SCF Handbook). Live collection sizes are in GET /api/status (sources[]) — counts are intentionally not hardcoded here to avoid drift.\n\n## Versioning\nEvery response carries an `X-API-Version` header (currently `1`). The number bumps only on a breaking response-shape change; additive fields don't bump it. Pin to a version by asserting the header. Breaking changes are announced before they ship.\n\n## Rate limits\nNone enforced today — the API is public and unauthenticated. When limits are introduced they will be advertised via `X-RateLimit-*` and `Retry-After` headers and documented here BEFORE enforcement, so autonomous consumers can adopt back-off ahead of time. Be courteous: cache where `Cache-Control` allows, and prefer `offset` pagination over hammering.\n\n## Pagination\nList endpoints (`/api/projects/search`, `/api/builders`, `/api/rfps`) accept `limit` + `offset`. The response `meta.counts` carries `returned` (this page) and `total`/`matched` (all rows matching the filter, pre-slice). Page until `offset + returned >= total`.\n\n## Ordering & relevance\n`/api/projects/search` sorts by descending keyword `score` (token-overlap count) and exposes `meta.matchMode` (`strict` → `loose-1` → `majority` → `semantic`) so you know how much the query was relaxed. `semantic` means no keyword tier matched at all — the rows are vector-similarity guesses (`via: \"semantic\"`, confidence capped at medium), not keyword-confirmed answers. `/api/research` sorts by descending vector-similarity `score` (0–1 cosine). Use these for cross-source ranking when merging with other aggregators.",
       "license": {
         "identifier": "MIT",
         "name": "MIT"
       },
       "summary": "Agent-native data layer for the Stellar ecosystem — projects, builders, hackathons, SCF, audits, research.",
       "title": "Stellar Scout API",
-      "version": "1.7.0"
+      "version": "1.7.11"
     },
     "openapi": "3.1.0",
     "paths": {
@@ -2447,6 +2462,7 @@
                   "sdf-blog",
                   "scf-handbook",
                   "sep",
+                  "cap",
                   "dev-docs",
                   "paper",
                   "scf-proposal",
@@ -2786,7 +2802,7 @@
       }
     ]
   },
-  "openapiVersion": "1.7.0",
+  "openapiVersion": "1.7.11",
   "operationCount": 24,
   "service": "stellar-light",
   "source": {
@@ -2798,7 +2814,7 @@
     "status": "https://stellarlight.xyz/api/status"
   },
   "status": {
-    "apiVersion": "1.7.0",
+    "apiVersion": "1.7.11",
     "docs": "https://stellarlight.xyz/scout",
     "endpoints": [
       "/api/status",
@@ -2830,8 +2846,8 @@
     "skill": "https://stellarlight.xyz/skills/stellar-scout.md",
     "sources": [
       {
-        "count": 920,
-        "lastUpdatedAt": "2026-07-09T00:15:32.004Z",
+        "count": 922,
+        "lastUpdatedAt": "2026-07-10T11:24:38.527Z",
         "name": "projects"
       },
       {
@@ -2842,21 +2858,21 @@
       },
       {
         "count": 114,
-        "lastUpdatedAt": "2026-07-09T06:00:39.473Z",
+        "lastUpdatedAt": "2026-07-10T06:00:34.988Z",
         "name": "builders",
         "notes": "Synced from Stellar Passport — small and growing dataset"
       },
       {
         "count": 2423,
-        "lastUpdatedAt": "2026-07-09T06:43:17.409Z",
+        "lastUpdatedAt": "2026-07-10T06:44:33.813Z",
         "name": "repos",
         "notes": "Indexed-and-scored Stellar GitHub repos (powers /api/repos/search)"
       },
       {
         "count": 1,
-        "lastUpdatedAt": "2026-07-08T16:27:55.461395+00:00",
+        "lastUpdatedAt": "2026-07-09T17:17:59.754015+00:00",
         "name": "ecosystemStats",
-        "notes": "Electric Capital snapshot, as of 2026-06-30"
+        "notes": "Electric Capital snapshot, as of 2026-07-01"
       },
       {
         "count": 7,

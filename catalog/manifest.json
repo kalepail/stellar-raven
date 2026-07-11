@@ -1345,8 +1345,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -1382,8 +1382,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -1589,8 +1589,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -1640,8 +1640,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -1749,8 +1749,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -1791,8 +1791,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -1820,6 +1820,7 @@
       },
       "keywords": [
         "returned",
+        "semantic",
         "total",
         "filters",
         "ranked"
@@ -1837,6 +1838,11 @@
                 "properties": {
                   "returned": {
                     "description": "Rows in this page (post limit/offset slice)",
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "semantic": {
+                    "description": "projects/search only: rows in this page served by the vector-similarity fallback rather than a keyword match (each tagged via:\"semantic\"; included in returned/total). Lets a consumer separate keyword truth from similarity guesses.",
                     "minimum": 0,
                     "type": "integer"
                   },
@@ -1908,8 +1914,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -1957,6 +1963,7 @@
       "keywords": [
         "counts",
         "returned",
+        "semantic",
         "filters",
         "url",
         "summary"
@@ -1979,6 +1986,11 @@
                     "properties": {
                       "returned": {
                         "description": "Rows in this page (post limit/offset slice)",
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "semantic": {
+                        "description": "projects/search only: rows in this page served by the vector-similarity fallback rather than a keyword match (each tagged via:\"semantic\"; included in returned/total). Lets a consumer separate keyword truth from similarity guesses.",
                         "minimum": 0,
                         "type": "integer"
                       },
@@ -2043,8 +2055,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -2111,8 +2123,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -2143,8 +2155,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -2224,6 +2236,7 @@
         "all",
         "counts",
         "returned",
+        "semantic",
         "total",
         "filters",
         "clients",
@@ -2288,6 +2301,11 @@
                 "properties": {
                   "returned": {
                     "description": "Rows in this page (post limit/offset slice)",
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "semantic": {
+                    "description": "projects/search only: rows in this page served by the vector-similarity fallback rather than a keyword match (each tagged via:\"semantic\"; included in returned/total). Lets a consumer separate keyword truth from similarity guesses.",
                     "minimum": 0,
                     "type": "integer"
                   },
@@ -2541,8 +2559,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -2666,8 +2684,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -2698,8 +2716,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -2821,8 +2839,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -2872,8 +2890,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -2904,8 +2922,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -2968,8 +2986,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -3288,6 +3306,11 @@
                         "minimum": 0,
                         "type": "integer"
                       },
+                      "semantic": {
+                        "description": "projects/search only: rows in this page served by the vector-similarity fallback rather than a keyword match (each tagged via:\"semantic\"; included in returned/total). Lets a consumer separate keyword truth from similarity guesses.",
+                        "minimum": 0,
+                        "type": "integer"
+                      },
                       "total": {
                         "description": "Rows matching the filter before slicing (paginated endpoints). Page until offset + returned >= total.",
                         "minimum": 0,
@@ -3314,13 +3337,14 @@
               {
                 "properties": {
                   "matchMode": {
-                    "description": "Tier of match relaxation that produced these results",
+                    "description": "Tier of match relaxation that produced these results. `semantic` means NO keyword tier matched — every row is a vector-similarity fallback guess (each tagged `via: \"semantic\"`, confidence capped at medium): verify relevance before relying on them.",
                     "enum": [
                       "strict",
                       "loose-1",
                       "loose-2",
                       "loose-3",
                       "majority",
+                      "semantic",
                       "all"
                     ],
                     "type": "string"
@@ -3788,6 +3812,16 @@
                   },
                   "type": "array"
                 },
+                "tvlAsOf": {
+                  "description": "When tvlUSD was fetched from DefiLlama (ISO 8601).",
+                  "nullable": true,
+                  "type": "string"
+                },
+                "tvlUSD": {
+                  "description": "Total value locked in USD per DefiLlama, summed across the protocol's tracked components. null = NOT TRACKED on DefiLlama (never 'zero TVL'). Refreshed weekly; see tvlAsOf.",
+                  "nullable": true,
+                  "type": "number"
+                },
                 "types": {
                   "description": "Capability tags (Wallet, DEX, Lending, Oracle, SDK, RPC, Faucet, NFT, RWA, Anchor, Stablecoin, Indexer, Explorer, Security, Gaming).",
                   "items": {
@@ -3827,8 +3861,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -3877,6 +3911,7 @@
         "offset",
         "counts",
         "returned",
+        "semantic",
         "total",
         "filters",
         "canonical",
@@ -3930,6 +3965,11 @@
                     "properties": {
                       "returned": {
                         "description": "Rows in this page (post limit/offset slice)",
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "semantic": {
+                        "description": "projects/search only: rows in this page served by the vector-similarity fallback rather than a keyword match (each tagged via:\"semantic\"; included in returned/total). Lets a consumer separate keyword truth from similarity guesses.",
                         "minimum": 0,
                         "type": "integer"
                       },
@@ -4166,8 +4206,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -4201,6 +4241,7 @@
               "sdf-blog",
               "scf-handbook",
               "sep",
+              "cap",
               "dev-docs",
               "paper",
               "scf-proposal",
@@ -4219,6 +4260,7 @@
         "type": "object"
       },
       "keywords": [
+        "cap",
         "paper",
         "proposal",
         "developer",
@@ -4229,8 +4271,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-09T11:50:42.414Z",
-        "openapiVersion": "1.7.0",
+        "fetchedAt": "2026-07-10T14:10:40.561Z",
+        "openapiVersion": "1.7.11",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -18666,8 +18708,6 @@
         "smart",
         "plugins",
         "more",
-        "meet",
-        "stella",
         "analytics",
         "platforms",
         "sandbox",
@@ -19227,6 +19267,6 @@
       }
     }
   ],
-  "generatedAt": "2026-07-09T23:33:45Z",
+  "generatedAt": "2026-07-10T14:10:40.561Z",
   "version": 1
 }
