@@ -1,0 +1,275 @@
+{
+  "id": "q-passkey-smart-account-architecture",
+  "question": "How do passkey smart wallets work on Stellar: what does __check_auth do, what does native secp256r1 provide, and what is shared versus per user?",
+  "surface": [
+    "stellarDocs.search_wallet_dapp_docs",
+    "skills.stellar-dev.dapp",
+    "skills.stellar-dev.smart-contracts"
+  ],
+  "golden": {
+    "answer": "A Stellar smart wallet is a contract account whose reserved __check_auth validates credentials and policy for the Soroban authorization context. CAP-0051 added native secp256r1/P-256 verification in Protocol 21, but that primitive alone is not complete WebAuthn validation: wallet code must bind the challenge to the Soroban authorization payload and validate client/authenticator data, RP ID/origin, and required presence or verification flags. Store the P-256 public key and, when needed, credential ID plus policy/recovery state; the private key remains in the authenticator/provider. Per-user instances commonly share one Wasm hash; an external shared verifier or policy contract is optional.",
+    "keyFacts": [
+      "A contract account implements __check_auth to validate credentials and authorization policy.",
+      "CAP-0051 added native secp256r1/P-256 verification in Protocol 21, but P-256 verification alone is not complete WebAuthn validation.",
+      "WebAuthn handling binds the challenge to the Soroban authorization payload and validates client/authenticator data, RP ID/origin, and required flags.",
+      "Store public credential and policy/recovery state on-chain as needed; the private passkey key remains in the authenticator/provider.",
+      "Per-user instances may share a Wasm hash; a shared external verifier/policy contract is optional, not required."
+    ],
+    "avoid": [
+      "A raw valid P-256 signature is complete WebAuthn assertion validation.",
+      "The private passkey key should be stored on-chain.",
+      "All users of a shared wallet Wasm hash share one contract account and balance."
+    ],
+    "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/passkeys"
+      },
+      {
+        "class": "A",
+        "ref": "https://www.w3.org/TR/webauthn-3/"
+      },
+      {
+        "class": "B",
+        "ref": "https://docs.rs/soroban-sdk/latest/soroban_sdk/auth/trait.CustomAccountInterface.html"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A contract account implements __check_auth to validate credentials and authorization policy.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/passkeys",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://docs.rs/soroban-sdk/latest/soroban_sdk/auth/trait.CustomAccountInterface.html",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "CAP-0051 added native secp256r1/P-256 verification in Protocol 21, but P-256 verification alone is not complete WebAuthn validation.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/passkeys",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://docs.rs/soroban-sdk/latest/soroban_sdk/auth/trait.CustomAccountInterface.html",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "WebAuthn handling binds the challenge to the Soroban authorization payload and validates client/authenticator data, RP ID/origin, and required flags.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/passkeys",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://docs.rs/soroban-sdk/latest/soroban_sdk/auth/trait.CustomAccountInterface.html",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Store public credential and policy/recovery state on-chain as needed; the private passkey key remains in the authenticator/provider.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/passkeys",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://docs.rs/soroban-sdk/latest/soroban_sdk/auth/trait.CustomAccountInterface.html",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Per-user instances may share a Wasm hash; a shared external verifier/policy contract is optional, not required.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/passkeys",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://docs.rs/soroban-sdk/latest/soroban_sdk/auth/trait.CustomAccountInterface.html",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "A raw valid P-256 signature is complete WebAuthn assertion validation.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/passkeys",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://docs.rs/soroban-sdk/latest/soroban_sdk/auth/trait.CustomAccountInterface.html",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "The private passkey key should be stored on-chain.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/passkeys",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://docs.rs/soroban-sdk/latest/soroban_sdk/auth/trait.CustomAccountInterface.html",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "All users of a shared wallet Wasm hash share one contract account and balance.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/passkeys",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://docs.rs/soroban-sdk/latest/soroban_sdk/auth/trait.CustomAccountInterface.html",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/build/apps/smart-wallets/passkeys",
+        "https://www.w3.org/TR/webauthn-3/",
+        "https://docs.rs/soroban-sdk/latest/soroban_sdk/auth/trait.CustomAccountInterface.html",
+        "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts"
+      ]
+    },
+    "origin": "kaan passkey-smart-wallet-architecture"
+  }
+}

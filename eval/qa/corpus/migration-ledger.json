@@ -4223,6 +4223,372 @@
         "q-tool-which-sdk-comparison"
       ],
       "reason": "The inherited maintainer table was useful but turned SDF ownership into unsupported blanket production, institutional, SLA, quality, and safety rankings. It also omitted the official community contract alternatives and did not choose by execution role first."
+    },
+    {
+      "sourceId": "agent-identity-reputation-8004",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-agent-identity-erc8004-stellar"
+      ],
+      "reason": "High-value identity/reputation distinction with community-port caveat."
+    },
+    {
+      "sourceId": "agentic-mpp-discovery",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-mpp-discovery-and-modes"
+      ],
+      "reason": "Current MPP Charge/Session semantics plus honest discovery boundary."
+    },
+    {
+      "sourceId": "agentic-payment-standard-choice",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-agent-payment-standard-choice"
+      ],
+      "reason": "Useful protocol-selection question rewritten around stable abstraction."
+    },
+    {
+      "sourceId": "anchor-discovery-integration",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-anchor-endpoint-discovery"
+      ],
+      "reason": "Strong end-to-end SEP-1/10/24 integration question."
+    },
+    {
+      "sourceId": "blend-liquidation-keeper",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "outside allocation; request-type constants and keeper implementation deserve a focused executable case."
+    },
+    {
+      "sourceId": "blend-risk-model-isolation-backstop",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "outside allocation; detailed pool/backstop constants require a dedicated DeFi verification lane."
+    },
+    {
+      "sourceId": "blend-yield-attribution",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "outside the H2 allocation and bundles vault accounting with live APY/indexer claims."
+    },
+    {
+      "sourceId": "cctp-usdc-stellar-crosschain",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-cctp-v2-usdc-stellar"
+      ],
+      "reason": "Current native-USDC route with live-fee guardrail."
+    },
+    {
+      "sourceId": "cctp-vs-intents-routing",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "provider routing and solver behavior are volatile and would duplicate the selected CCTP case."
+    },
+    {
+      "sourceId": "cctp-walletkit-integration",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "asks for a speculative API design rather than a factual current Stellar answer."
+    },
+    {
+      "sourceId": "classic-soroban-asset-data-crossing",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "useful but overlaps existing SAC/asset-interface coverage outside this fixed allocation."
+    },
+    {
+      "sourceId": "confidential-tokens-state",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "rapidly changing preview status and underspecified privacy guarantees; the selected host-function case tests the durable substrate without pinning a product state."
+    },
+    {
+      "sourceId": "cross-chain-asset-swap-stellar",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "supported pairs and routes are live provider inventory rather than durable gospel."
+    },
+    {
+      "sourceId": "dex-aggregation-stellar",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "outside allocation; router inventory and best-execution claims change quickly."
+    },
+    {
+      "sourceId": "etherfuse-stablebonds-integration",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "product currencies, KYC surface, and anchor status are partner-specific and insufficiently stable for this harvest."
+    },
+    {
+      "sourceId": "local-fast-ledger-testing",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-quickstart-manual-ledger-close"
+      ],
+      "reason": "Useful version-sensitive local testing procedure."
+    },
+    {
+      "sourceId": "noir-ultrahonk-status",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "repository/audit/CLI status is volatile and the source prompt bundles several independently moving claims; covered more safely by the proof-systems case."
+    },
+    {
+      "sourceId": "oracle-manipulation-defense-soroban",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "incident amounts/attribution remain high-risk and belong in the incident/adversarial lane, not this harvest."
+    },
+    {
+      "sourceId": "passkey-smart-wallet-architecture",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-passkey-smart-account-architecture"
+      ],
+      "reason": "Core contract-account, __check_auth, and P-256 architecture."
+    },
+    {
+      "sourceId": "passkey-wallet-constraints",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-passkey-platform-constraints"
+      ],
+      "reason": "Cross-browser/RP/device constraints materially affect integration tooling."
+    },
+    {
+      "sourceId": "passkey-wallet-recovery",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-passkey-wallet-recovery"
+      ],
+      "reason": "Distinct operational safety question, not a passkey setup duplicate."
+    },
+    {
+      "sourceId": "policy-signers-scoped-auth",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-smart-account-scoped-policy-signers"
+      ],
+      "reason": "Distinct smart-account authorization and regulated co-signing design."
+    },
+    {
+      "sourceId": "poseidon-input-encoding-soroban",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-zk-poseidon-input-encoding"
+      ],
+      "reason": "High-value interoperability failure mode with durable encoding guidance."
+    },
+    {
+      "sourceId": "prior-art-private-payments",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "project-list freshness and unverifiable maturity claims add maintenance cost without a distinct protocol invariant."
+    },
+    {
+      "sourceId": "prior-art-zk-on-stellar",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "list-style prior-art answer would age quickly and overlaps the selected proof-systems architecture."
+    },
+    {
+      "sourceId": "privacy-pool-nullifier-storage",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-zk-nullifier-storage"
+      ],
+      "reason": "Security-critical state-growth design with a clear double-spend boundary."
+    },
+    {
+      "sourceId": "private-fees-relayer",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "substantially overlaps selected fee-sponsorship case; 'private fees' framing risks conflating sponsorship with privacy."
+    },
+    {
+      "sourceId": "production-anchor-architecture",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-production-anchor-architecture"
+      ],
+      "reason": "Production architecture extends beyond protocol endpoints into operations."
+    },
+    {
+      "sourceId": "recurring-subscriptions-stellar",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-stellar-recurring-payments"
+      ],
+      "reason": "Common payments architecture with bounded delegated authorization."
+    },
+    {
+      "sourceId": "reflector-integration",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "outside allocation and mixes stable interface facts with version-specific refresh/category claims."
+    },
+    {
+      "sourceId": "rwa-asset-discovery-dashboard",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "negative 'no dashboard' claim is difficult to prove and can become false without warning."
+    },
+    {
+      "sourceId": "rwa-collateral-liquidation-oracle",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "security design is valuable but duplicates oracle-defense themes and references a volatile incident narrative."
+    },
+    {
+      "sourceId": "rwa-tokenization-stellar",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-rwa-tokenization-standards"
+      ],
+      "reason": "Covers legal/custody boundary and correct SEP-41/SEP-56 roles."
+    },
+    {
+      "sourceId": "rwa-yield-private-credit-infra",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "speculative multi-protocol architecture, not a single verifiable answer."
+    },
+    {
+      "sourceId": "sep24-vs-sep31-vs-sep6",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-sep6-sep24-sep31-choice"
+      ],
+      "reason": "Canonical choice among three easily confused anchor flows."
+    },
+    {
+      "sourceId": "sep53-sign-verify-message",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-sep53-message-signing"
+      ],
+      "reason": "Distinct signing standard with transaction-signature confusion trap."
+    },
+    {
+      "sourceId": "smart-wallet-fee-sponsorship-onboarding",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-smart-wallet-fee-sponsorship"
+      ],
+      "reason": "Separates fee sponsorship, reserves, and contract-account behavior."
+    },
+    {
+      "sourceId": "smart-wallet-stack-oz-vs-passkeykit",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "'most widely used' is not verifiable; package deprecation is covered by upstream docs rather than a popularity golden."
+    },
+    {
+      "sourceId": "soroban-storage-migration-upgrade",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-soroban-storage-migration"
+      ],
+      "reason": "Durable upgrade and storage-schema migration guidance."
+    },
+    {
+      "sourceId": "stellar-defi-exploits-history",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "incident totals, attribution, and intervention claims need dedicated blind incident verification."
+    },
+    {
+      "sourceId": "stellar-staking-yield-landscape",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "broad product recommendation question with live yield and product inventory."
+    },
+    {
+      "sourceId": "stellar-zklogin-identity",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "one community project, performance number, and deployment status are too volatile for a strong general-purpose golden."
+    },
+    {
+      "sourceId": "why-stellar-differentiators",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "broad marketing/comparison prompt lacks atomic falsifiable key facts."
+    },
+    {
+      "sourceId": "x402-mpp-analytics-dashboard",
+      "source": "kaan",
+      "disposition": "retire",
+      "reason": "negative/existence dashboard claim is highly volatile and not reliably answerable from the exposed surface."
+    },
+    {
+      "sourceId": "x402-payment-verification-stellar",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-x402-payment-verification"
+      ],
+      "reason": "Core paid-API verification and settlement boundary."
+    },
+    {
+      "sourceId": "zk-circuit-dev-workflow",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-zk-circuit-setup"
+      ],
+      "reason": "Durable proving-key and trusted-setup architecture."
+    },
+    {
+      "sourceId": "zk-host-functions-cap-roadmap",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-zk-host-functions-status"
+      ],
+      "reason": "Canonical stale-status probe for CAP-0059/0074/0075."
+    },
+    {
+      "sourceId": "zk-proving-systems-languages",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-zk-proof-systems-stellar"
+      ],
+      "reason": "Retains the broad ZK toolchain decision while correcting current Protocol 25 capability."
+    },
+    {
+      "sourceId": "zk-verification-resource-budget",
+      "source": "kaan",
+      "disposition": "redefine",
+      "destination": [
+        "q-zk-verification-resource-budget"
+      ],
+      "reason": "Production failure mode that local unlimited execution hides."
     }
   ]
 }

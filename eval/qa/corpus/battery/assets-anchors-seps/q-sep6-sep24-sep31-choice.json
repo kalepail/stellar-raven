@@ -1,0 +1,284 @@
+{
+  "id": "q-sep6-sep24-sep31-choice",
+  "question": "When should an integration use SEP-6, SEP-24, or SEP-31 for fiat on/off-ramp and cross-border flows?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "skills.stellar-dev.standards"
+  ],
+  "golden": {
+    "answer": "As of 2026-07-11, SEP-6, SEP-24, and SEP-31 are Active. Use SEP-24 for an anchor-hosted interactive deposit/withdrawal UI; use SEP-6 for programmatic deposit/withdrawal—the legacy interactive SEP-6 flow is deprecated in favor of SEP-24, not the whole SEP. For SEP-31, a Sending Anchor calls a Receiving Anchor under an established bilateral or commercial relationship for cross-border payout. Discover them through SEP-1 keys TRANSFER_SERVER, TRANSFER_SERVER_SEP0024, and DIRECT_PAYMENT_SERVER respectively. Add SEP-38 when quotes or rates are part of the corridor.",
+    "keyFacts": [
+      "SEP-24 is the anchor-hosted interactive deposit/withdrawal flow; SEP-6 is the programmatic deposit/withdrawal API.",
+      "SEP-6 remains Active; its legacy interactive flow, not the whole SEP, is deprecated in favor of SEP-24.",
+      "SEP-31 has a Sending Anchor call a Receiving Anchor under an established bilateral/commercial relationship.",
+      "SEP-6, SEP-24, SEP-31, and SEP-38 were Active as of 2026-07-11; SEP-38 applies when quotes/rates are part of the corridor.",
+      "SEP-1 keys TRANSFER_SERVER, TRANSFER_SERVER_SEP0024, and DIRECT_PAYMENT_SERVER distinguish the endpoints."
+    ],
+    "avoid": [
+      "SEP-31 is simply the newest replacement for both SEP-6 and SEP-24.",
+      "SEP-24 requires the wallet to collect and host the anchor's KYC user interface."
+    ]
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/anchoring-assets/anchor-platform"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SEP-24 is the anchor-hosted interactive deposit/withdrawal flow; SEP-6 is the programmatic deposit/withdrawal API.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/anchoring-assets/anchor-platform",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-6 remains Active; its legacy interactive flow, not the whole SEP, is deprecated in favor of SEP-24.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/anchoring-assets/anchor-platform",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-31 has a Sending Anchor call a Receiving Anchor under an established bilateral/commercial relationship.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/anchoring-assets/anchor-platform",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-6, SEP-24, SEP-31, and SEP-38 were Active as of 2026-07-11; SEP-38 applies when quotes/rates are part of the corridor.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/anchoring-assets/anchor-platform",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-1 keys TRANSFER_SERVER, TRANSFER_SERVER_SEP0024, and DIRECT_PAYMENT_SERVER distinguish the endpoints.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/anchoring-assets/anchor-platform",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-31 is simply the newest replacement for both SEP-6 and SEP-24.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/anchoring-assets/anchor-platform",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-24 requires the wallet to collect and host the anchor's KYC user interface.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/anchoring-assets/anchor-platform",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/anchoring-assets/anchor-platform",
+        "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
+        "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+        "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
+        "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md"
+      ]
+    },
+    "origin": "kaan sep24-vs-sep31-vs-sep6"
+  }
+}

@@ -1,0 +1,247 @@
+{
+  "id": "q-mpp-discovery-and-modes",
+  "question": "What is MPP on Stellar, what payment modes does it support, and how should an API advertise that agents can pay it?",
+  "surface": [
+    "skills.stellar-dev.agentic-payments",
+    "stellarDocs.search_docs"
+  ],
+  "golden": {
+    "answer": "MPP is an HTTP-402 payment-negotiation protocol. On Stellar, Charge settles SAC transfers per request and Session uses a funded unidirectional channel with cumulative off-chain commitments. Publish an OpenAPI 3.1 document, commonly /openapi.json, with x-payment-info.offers, but treat discovery metadata as advisory: the runtime 402 Challenge is authoritative for current price, token, network, expiry, and terms. Optional discovery includes MPPScan registration and the mpp.dev services registry, including the read-only https://mpp.dev/mcp/services surface. MPP and x402 are distinct protocols; expose separate adapters and never relabel payloads.",
+    "keyFacts": [
+      "MPP uses HTTP 402; Stellar Charge settles SAC transfers per request and Session uses cumulative off-chain channel commitments.",
+      "Publish OpenAPI 3.1, commonly at /openapi.json, with x-payment-info.offers.",
+      "Discovery metadata is advisory; the runtime 402 Challenge controls current price, token, network, expiry, and terms.",
+      "MPPScan and the mpp.dev services registry, including https://mpp.dev/mcp/services, are optional discovery surfaces.",
+      "MPP and x402 require separate adapters; their payloads must not be relabeled."
+    ],
+    "avoid": [
+      "MPP Session requires a new on-chain transfer for every API call.",
+      "Listing an API in an MPP directory automatically verifies all client payments."
+    ],
+    "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-11-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/mpp"
+      },
+      {
+        "class": "A",
+        "ref": "https://mpp.dev/advanced/discovery"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/mpp"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/interop-alliance/mpp-services"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "MPP uses HTTP 402; Stellar Charge settles SAC transfers per request and Session uses cumulative off-chain channel commitments.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://mpp.dev/advanced/discovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/interop-alliance/mpp-services",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Publish OpenAPI 3.1, commonly at /openapi.json, with x-payment-info.offers.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://mpp.dev/advanced/discovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/interop-alliance/mpp-services",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Discovery metadata is advisory; the runtime 402 Challenge controls current price, token, network, expiry, and terms.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://mpp.dev/advanced/discovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/interop-alliance/mpp-services",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "MPPScan and the mpp.dev services registry, including https://mpp.dev/mcp/services, are optional discovery surfaces.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://mpp.dev/advanced/discovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/interop-alliance/mpp-services",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "MPP and x402 require separate adapters; their payloads must not be relabeled.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://mpp.dev/advanced/discovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/interop-alliance/mpp-services",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "MPP Session requires a new on-chain transfer for every API call.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://mpp.dev/advanced/discovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/interop-alliance/mpp-services",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Listing an API in an MPP directory automatically verifies all client payments.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://mpp.dev/advanced/discovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/interop-alliance/mpp-services",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/build/apps/agentic-payments/mpp",
+        "https://mpp.dev/advanced/discovery",
+        "https://github.com/stellar/mpp",
+        "https://github.com/interop-alliance/mpp-services"
+      ]
+    },
+    "origin": "kaan agentic-mpp-discovery"
+  }
+}

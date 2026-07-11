@@ -1,0 +1,130 @@
+{
+  "id": "q-zk-circuit-setup",
+  "question": "When building a ZK application for Stellar, who creates the circuit and keys, and when is a trusted-setup ceremony required?",
+  "surface": [
+    "skills.stellar-dev.zk-proofs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "The application team defines the statement or circuit and uses its chosen proving toolchain to produce proving material and the verification key consumed by the Soroban verifier. Whether a ceremony is required depends on the proof system: circuit-specific Groth16 deployments normally need a Phase 2 setup, while transparent systems avoid trusted setup and universal-setup systems may reuse a common setup. The choice is a property of the proof system, not of Stellar itself.",
+    "keyFacts": [
+      "The application team authors the circuit or guest program and supplies the verification material used by the on-chain verifier.",
+      "Circuit-specific Groth16 normally requires a circuit-specific Phase 2 trusted setup.",
+      "Transparent systems avoid trusted setup, while universal-setup systems need not repeat a ceremony for every circuit."
+    ],
+    "avoid": [
+      "Stellar automatically generates proving and verification keys for every contract.",
+      "Every ZK proof system requires a new circuit-specific trusted-setup ceremony."
+    ]
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "skills",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/zk"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0059.md"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The application team authors the circuit or guest program and supplies the verification material used by the on-chain verifier.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0059.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Circuit-specific Groth16 normally requires a circuit-specific Phase 2 trusted setup.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0059.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Transparent systems avoid trusted setup, while universal-setup systems need not repeat a ceremony for every circuit.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0059.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Stellar automatically generates proving and verification keys for every contract.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0059.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Every ZK proof system requires a new circuit-specific trusted-setup ceremony.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0059.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/build/apps/zk",
+        "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0059.md"
+      ]
+    },
+    "origin": "kaan zk-circuit-dev-workflow"
+  }
+}

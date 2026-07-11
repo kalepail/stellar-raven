@@ -1,0 +1,131 @@
+{
+  "id": "q-stellar-recurring-payments",
+  "question": "How should recurring or subscription payments be implemented safely on Stellar?",
+  "surface": [
+    "stellarDocs.search_wallet_dapp_docs",
+    "skills.stellar-dev.dapp",
+    "skills.stellar-dev.smart-contracts"
+  ],
+  "golden": {
+    "answer": "Stellar does not execute a merchant's future charge merely because a prior payment occurred. Implement recurrence in an application or contract-account policy. A user can authorize a narrowly scoped session or delegated signer that permits only a named contract, asset, maximum amount, cadence, and expiry; an off-chain scheduler then submits each authorized charge. Provide revocation, pause, idempotency, receipts, failed-payment handling, and a clear distinction between a pull authorization and custody.",
+    "keyFacts": [
+      "Recurring billing requires application scheduling and/or contract-account policy; one payment does not create an automatic standing order.",
+      "A delegated credential should restrict merchant, asset, amount, cadence, and expiry.",
+      "Users need revocation and pause controls, while the billing service needs idempotency and failed-payment handling."
+    ],
+    "avoid": [
+      "Stellar automatically repeats any payment operation at a specified monthly interval.",
+      "A subscription merchant needs the user's unrestricted private key."
+    ]
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Recurring billing requires application scheduling and/or contract-account policy; one payment does not create an automatic standing order.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "A delegated credential should restrict merchant, asset, amount, cadence, and expiry.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Users need revocation and pause controls, while the billing service needs idempotency and failed-payment handling.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Stellar automatically repeats any payment operation at a specified monthly interval.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "A subscription merchant needs the user's unrestricted private key.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+        "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts"
+      ]
+    },
+    "origin": "kaan recurring-subscriptions-stellar"
+  }
+}

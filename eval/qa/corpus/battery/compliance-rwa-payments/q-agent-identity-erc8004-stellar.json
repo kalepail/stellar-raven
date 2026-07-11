@@ -1,0 +1,134 @@
+{
+  "id": "q-agent-identity-erc8004-stellar",
+  "question": "What does ERC-8004 provide for AI-agent identity and reputation, and what can a Stellar implementation legitimately claim today?",
+  "surface": [
+    "skills.stellar-dev.agentic-payments",
+    "skills.stellar-dev.standards",
+    "stellarDocs.search_docs"
+  ],
+  "golden": {
+    "answer": "ERC-8004 defines interoperable registries for agent identity, reputation feedback, and validation; it does not itself prove that an agent is honest or that a payment was made. Stellar ports such as stellar8004 are community implementations that map the registry pattern to Soroban and may expose SDK or CLI tooling. Treat any particular Stellar deployment, audit status, registry address, x402/MPP integration, or SEP analogue as status-sensitive and verify it from that project's current repository and deployment metadata before relying on it.",
+    "keyFacts": [
+      "ERC-8004 defines identity, reputation, and validation registries for agents.",
+      "Registry entries and feedback are signals; they do not by themselves guarantee trustworthiness or prove payment.",
+      "Stellar8004-style Soroban ports are community implementations, so deployment and audit claims require current project evidence."
+    ],
+    "avoid": [
+      "ERC-8004 is an official Stellar protocol feature that guarantees every registered agent is trustworthy.",
+      "An ERC-8004 identity record proves that an x402 or MPP payment settled."
+    ],
+    "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-11-15",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://eips.ethereum.org/EIPS/eip-8004"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/trionlabs/stellar-8004"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "ERC-8004 defines identity, reputation, and validation registries for agents.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://eips.ethereum.org/EIPS/eip-8004",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/trionlabs/stellar-8004",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Registry entries and feedback are signals; they do not by themselves guarantee trustworthiness or prove payment.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://eips.ethereum.org/EIPS/eip-8004",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/trionlabs/stellar-8004",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Stellar8004-style Soroban ports are community implementations, so deployment and audit claims require current project evidence.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://eips.ethereum.org/EIPS/eip-8004",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/trionlabs/stellar-8004",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "ERC-8004 is an official Stellar protocol feature that guarantees every registered agent is trustworthy.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://eips.ethereum.org/EIPS/eip-8004",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/trionlabs/stellar-8004",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "An ERC-8004 identity record proves that an x402 or MPP payment settled.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://eips.ethereum.org/EIPS/eip-8004",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/trionlabs/stellar-8004",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://eips.ethereum.org/EIPS/eip-8004",
+        "https://github.com/trionlabs/stellar-8004"
+      ]
+    },
+    "origin": "kaan agent-identity-reputation-8004"
+  }
+}

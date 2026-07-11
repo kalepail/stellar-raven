@@ -1,0 +1,220 @@
+{
+  "id": "q-x402-payment-verification",
+  "question": "How should a paid API verify and settle an x402 payment on Stellar?",
+  "surface": [
+    "skills.stellar-dev.agentic-payments",
+    "stellarDocs.search_docs"
+  ],
+  "golden": {
+    "answer": "In the current Stellar x402 scheme, the client signs a Soroban authorization entry for an exact SAC transfer and a facilitator or relayer submits it; this is not necessarily a classic payment operation from the user. Verify scheme/version, CAIP network, token contract, parties, amount, exact invocation/auth shape, expiration, simulation, unexpected effects, final successful settlement, and request-level idempotency/replay binding before fulfillment. A Horizon operation-list match is insufficient for an inner contract transfer: post-settlement audit must decode successful transaction meta/events and exact SAC effects. As of 2026-07-11, Built on Stellar offers a hosted facilitator and OpenZeppelin a self-hosted plugin; neither is mandatory.",
+    "keyFacts": [
+      "The current Stellar x402 scheme signs a Soroban authorization entry for an exact SAC transfer that a facilitator or relayer submits.",
+      "Verification covers scheme/version, CAIP network, invocation/auth shape, expiration, simulation, unexpected effects, finality, and request-level replay/idempotency.",
+      "A Horizon operation-list match is insufficient for an inner contract transfer; audit successful transaction meta/events and exact SAC effects.",
+      "Built on Stellar hosted and OpenZeppelin self-hosted facilitator paths are current attributed options as of 2026-07-11, not protocol requirements."
+    ],
+    "avoid": [
+      "Possession of any Stellar transaction hash proves the required x402 payment.",
+      "Checking only the asset code and amount is sufficient payment verification."
+    ],
+    "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/x402"
+      },
+      {
+        "class": "A",
+        "ref": "https://docs.x402.org/"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/coinbase/x402/tree/main/typescript/packages/mechanisms/stellar"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The current Stellar x402 scheme signs a Soroban authorization entry for an exact SAC transfer that a facilitator or relayer submits.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/x402",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://docs.x402.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/coinbase/x402/tree/main/typescript/packages/mechanisms/stellar",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Verification covers scheme/version, CAIP network, invocation/auth shape, expiration, simulation, unexpected effects, finality, and request-level replay/idempotency.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/x402",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://docs.x402.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/coinbase/x402/tree/main/typescript/packages/mechanisms/stellar",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "A Horizon operation-list match is insufficient for an inner contract transfer; audit successful transaction meta/events and exact SAC effects.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/x402",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://docs.x402.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/coinbase/x402/tree/main/typescript/packages/mechanisms/stellar",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Built on Stellar hosted and OpenZeppelin self-hosted facilitator paths are current attributed options as of 2026-07-11, not protocol requirements.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/x402",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://docs.x402.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/coinbase/x402/tree/main/typescript/packages/mechanisms/stellar",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Possession of any Stellar transaction hash proves the required x402 payment.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/x402",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://docs.x402.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/coinbase/x402/tree/main/typescript/packages/mechanisms/stellar",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Checking only the asset code and amount is sufficient payment verification.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/agentic-payments/x402",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://docs.x402.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/coinbase/x402/tree/main/typescript/packages/mechanisms/stellar",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/build/apps/agentic-payments/x402",
+        "https://docs.x402.org/",
+        "https://github.com/coinbase/x402/tree/main/typescript/packages/mechanisms/stellar",
+        "https://github.com/OpenZeppelin/openzeppelin-relayer"
+      ]
+    },
+    "origin": "kaan x402-payment-verification-stellar"
+  }
+}

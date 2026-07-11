@@ -1,0 +1,133 @@
+{
+  "id": "q-zk-proof-systems-stellar",
+  "question": "Which proof systems and circuit languages can I use for a zero-knowledge application on Stellar, and how are proofs verified on-chain?",
+  "surface": [
+    "skills.stellar-dev.zk-proofs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Stellar does not mandate Noir or any single ZK toolchain. Builders can use Circom/Groth16, Noir-based systems, or zkVM workflows such as RISC Zero, provided they supply a compatible Soroban verifier. On-chain verification uses a verifier contract plus native cryptographic host functions where applicable; Protocol 25 made BN254 and Poseidon/Poseidon2 primitives available, but those primitives do not by themselves create an end-to-end privacy system.",
+    "keyFacts": [
+      "Stellar does not require Noir; multiple proof systems and circuit languages can target Soroban verifiers.",
+      "Proofs are checked by compatible Soroban verifier logic, using native host functions where the curve and primitives match.",
+      "Protocol 25 provides BN254 and Poseidon/Poseidon2 building blocks, not an automatic private-payment system."
+    ],
+    "avoid": [
+      "Noir is the only supported way to build ZK applications on Stellar.",
+      "Protocol 25 automatically makes every Stellar payment private."
+    ],
+    "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/zk"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/README.md"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Stellar does not require Noir; multiple proof systems and circuit languages can target Soroban verifiers.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/README.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Proofs are checked by compatible Soroban verifier logic, using native host functions where the curve and primitives match.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/README.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Protocol 25 provides BN254 and Poseidon/Poseidon2 building blocks, not an automatic private-payment system.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/README.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Noir is the only supported way to build ZK applications on Stellar.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/README.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Protocol 25 automatically makes every Stellar payment private.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/README.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/build/apps/zk",
+        "https://github.com/stellar/stellar-protocol/blob/master/core/README.md"
+      ]
+    },
+    "origin": "kaan zk-proving-systems-languages"
+  }
+}

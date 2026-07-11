@@ -1,0 +1,247 @@
+{
+  "id": "q-passkey-platform-constraints",
+  "question": "Which browser, relying-party, and device-sync constraints must a Stellar dApp account for when using passkeys?",
+  "surface": [
+    "stellarDocs.search_wallet_dapp_docs",
+    "skills.stellar-dev.dapp"
+  ],
+  "golden": {
+    "answer": "WebAuthn's web API needs a secure context, but native apps can use platform credential or passkey APIs. Credentials are scoped to an RP ID rather than an exact page URL; validate RP ID and origin, account for permitted subdomain or related-origin designs, and bind any wallet/dApp handoff challenge to the intended Stellar authorization. Apple and Google providers support synchronized passkeys, but sync versus device-bound behavior is provider-specific. Mozilla's current Sync data-type list does not list passkeys, while Firefox may delegate to an OS/provider, so 'Firefox-local' is not a valid blanket rule. Explicit recovery remains necessary.",
+    "keyFacts": [
+      "WebAuthn's web API requires a secure context, while native apps can use platform credential/passkey APIs.",
+      "Validate RP ID and origin, qualify related-origin/subdomain designs, and bind handoff challenges to the intended Stellar authorization.",
+      "Apple and Google providers support synchronized passkeys, but sync and device-bound behavior is provider-specific.",
+      "Mozilla Sync does not currently list passkeys as a synchronized data type, while Firefox may delegate to an OS/provider.",
+      "Cross-device uncertainty requires an explicit recovery path."
+    ],
+    "avoid": [
+      "A passkey registered for one dApp domain is automatically valid for every unrelated domain.",
+      "All browsers and devices synchronize every passkey in the same way."
+    ],
+    "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-11-15",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://www.w3.org/TR/webauthn-3/"
+      },
+      {
+        "class": "A",
+        "ref": "https://developer.apple.com/passkeys/"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.google.com/identity/passkeys/supported-environments"
+      },
+      {
+        "class": "D",
+        "ref": "https://support.mozilla.org/kb/how-do-i-set-sync-my-computer"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "WebAuthn's web API requires a secure context, while native apps can use platform credential/passkey APIs.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developer.apple.com/passkeys/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "D",
+            "ref": "https://support.mozilla.org/kb/how-do-i-set-sync-my-computer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Validate RP ID and origin, qualify related-origin/subdomain designs, and bind handoff challenges to the intended Stellar authorization.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developer.apple.com/passkeys/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "D",
+            "ref": "https://support.mozilla.org/kb/how-do-i-set-sync-my-computer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Apple and Google providers support synchronized passkeys, but sync and device-bound behavior is provider-specific.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developer.apple.com/passkeys/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "D",
+            "ref": "https://support.mozilla.org/kb/how-do-i-set-sync-my-computer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Mozilla Sync does not currently list passkeys as a synchronized data type, while Firefox may delegate to an OS/provider.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developer.apple.com/passkeys/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "D",
+            "ref": "https://support.mozilla.org/kb/how-do-i-set-sync-my-computer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Cross-device uncertainty requires an explicit recovery path.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developer.apple.com/passkeys/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "D",
+            "ref": "https://support.mozilla.org/kb/how-do-i-set-sync-my-computer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "A passkey registered for one dApp domain is automatically valid for every unrelated domain.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developer.apple.com/passkeys/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "D",
+            "ref": "https://support.mozilla.org/kb/how-do-i-set-sync-my-computer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "All browsers and devices synchronize every passkey in the same way.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://www.w3.org/TR/webauthn-3/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developer.apple.com/passkeys/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "D",
+            "ref": "https://support.mozilla.org/kb/how-do-i-set-sync-my-computer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://www.w3.org/TR/webauthn-3/",
+        "https://developer.apple.com/passkeys/",
+        "https://developers.google.com/identity/passkeys/supported-environments",
+        "https://support.mozilla.org/kb/how-do-i-set-sync-my-computer"
+      ]
+    },
+    "origin": "kaan passkey-wallet-constraints"
+  }
+}

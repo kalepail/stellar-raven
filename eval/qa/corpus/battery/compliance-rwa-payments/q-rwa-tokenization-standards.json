@@ -1,0 +1,134 @@
+{
+  "id": "q-rwa-tokenization-standards",
+  "question": "What architecture and Stellar standards should a team consider when tokenizing a regulated real-world asset?",
+  "surface": [
+    "skills.stellar-dev.assets",
+    "skills.stellar-dev.standards",
+    "stellarDocs.search_asset_token_docs"
+  ],
+  "golden": {
+    "answer": "Start with the legal claim, issuer/custodian, mint-and-burn controls, reserve attestations, transfer eligibility, and redemption process; the token does not make the off-chain asset trustworthy. A classic Stellar asset can use authorization-required, authorization-revocable, and clawback controls, while a Soroban token can encode richer compliance policies. SEP-41 is the common contract-token interface. SEP-56 is a Draft tokenized-vault interface for deposits, shares, and withdrawals—not a universal RWA attestation standard. Match SEP-6/24/31 only when fiat-ramp or cross-border anchor flows are part of the product.",
+    "keyFacts": [
+      "The legal claim, custody or reserve model, eligibility controls, and redemption process are core parts of an RWA design.",
+      "Classic asset authorization and clawback controls or Soroban compliance logic can restrict regulated transfers.",
+      "SEP-41 is a token interface, while SEP-56 remains Draft and standardizes tokenized vault behavior rather than real-world attestation."
+    ],
+    "avoid": [
+      "SEP-56 proves that an off-chain asset exists and is fully reserved.",
+      "Issuing a token removes the need for custody, redemption, and securities-law analysis."
+    ],
+    "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-15",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/use-cases/tokenization"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0056.md"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The legal claim, custody or reserve model, eligibility controls, and redemption process are core parts of an RWA design.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/use-cases/tokenization",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0056.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Classic asset authorization and clawback controls or Soroban compliance logic can restrict regulated transfers.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/use-cases/tokenization",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0056.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-41 is a token interface, while SEP-56 remains Draft and standardizes tokenized vault behavior rather than real-world attestation.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/use-cases/tokenization",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0056.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-56 proves that an off-chain asset exists and is fully reserved.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/use-cases/tokenization",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0056.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Issuing a token removes the need for custody, redemption, and securities-law analysis.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/use-cases/tokenization",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0056.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://stellar.org/use-cases/tokenization",
+        "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0056.md"
+      ]
+    },
+    "origin": "kaan rwa-tokenization-stellar"
+  }
+}

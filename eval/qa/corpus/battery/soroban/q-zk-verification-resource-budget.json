@@ -1,0 +1,134 @@
+{
+  "id": "q-zk-verification-resource-budget",
+  "question": "A ZK verifier succeeds on localnet with unlimited limits but exceeds testnet or mainnet Soroban resources. What should the contract developer do?",
+  "surface": [
+    "stellarDocs.search_soroban_contract_docs",
+    "skills.stellar-dev.zk-proofs",
+    "skills.stellar-dev.smart-contracts"
+  ],
+  "golden": {
+    "answer": "Treat unlimited local execution only as a debugging aid; public networks enforce CPU, memory, ledger-footprint, transaction-size, and fee constraints. Simulate the exact transaction against the target network, inspect the returned resource estimates, and optimize the verifier and its public inputs. Prefer matching native host functions over pure-Wasm curve arithmetic, avoid large embedded tables, and choose a proof system whose verification fits current network limits. Recheck limits and fees rather than pinning old constants.",
+    "keyFacts": [
+      "Unlimited local limits do not represent the enforced resource budget on testnet or mainnet.",
+      "The exact verification transaction should be simulated against the target network and its resource estimates inspected.",
+      "Native matching cryptographic host functions and smaller verifier inputs generally reduce resource use versus pure-Wasm cryptography."
+    ],
+    "avoid": [
+      "A verifier that works with unlimited local limits is guaranteed to fit mainnet.",
+      "Hard-coding today's resource-limit numbers is a durable fix."
+    ],
+    "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-11-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/zk"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-core/blob/master/docs/software/security-protocol-release-notes.md"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Unlimited local limits do not represent the enforced resource budget on testnet or mainnet.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-core/blob/master/docs/software/security-protocol-release-notes.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "The exact verification transaction should be simulated against the target network and its resource estimates inspected.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-core/blob/master/docs/software/security-protocol-release-notes.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Native matching cryptographic host functions and smaller verifier inputs generally reduce resource use versus pure-Wasm cryptography.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-core/blob/master/docs/software/security-protocol-release-notes.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "A verifier that works with unlimited local limits is guaranteed to fit mainnet.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-core/blob/master/docs/software/security-protocol-release-notes.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Hard-coding today's resource-limit numbers is a durable fix.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/zk",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-core/blob/master/docs/software/security-protocol-release-notes.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/build/apps/zk",
+        "https://github.com/stellar/stellar-core/blob/master/docs/software/security-protocol-release-notes.md"
+      ]
+    },
+    "origin": "kaan zk-verification-resource-budget"
+  }
+}

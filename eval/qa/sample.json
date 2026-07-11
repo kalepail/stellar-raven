@@ -1,19 +1,19 @@
 {
   "$comment": "Deterministic stratified sample (N=30, by service) of the owned QA battery.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "edcdeec1d1993a27c92c4dfdc6be462d052c239fd23e7bc277ad8e13a0592733",
+  "corpusContentSha256": "1d2b72e7824b5e63ca44885549b08a984dda66f1da6bc03e1b48db6c82ea57a5",
   "counts": {
     "total": 30,
     "byCategory": {
-      "assets-anchors-seps": 6,
-      "compliance-rwa-payments": 1,
-      "defi-ecosystem": 7,
+      "assets-anchors-seps": 7,
+      "compliance-rwa-payments": 2,
+      "defi-ecosystem": 6,
       "edge-behavior": 1,
       "history-org-tokenomics": 1,
       "protocol-core": 3,
       "scf-grants-builders": 2,
       "soroban": 4,
-      "tooling-infra": 5
+      "tooling-infra": 4
     },
     "byService": {
       "lumenloop": 4,
@@ -23,8 +23,8 @@
       "stellarDocs": 17
     },
     "byFreshness": {
-      "scheduled": 14,
-      "stable": 16
+      "scheduled": 12,
+      "stable": 18
     },
     "traps": {
       "scam-check": 1
@@ -154,6 +154,140 @@
           ]
         },
         "origin": "raven-next q-aas-list-token-on-exchanges-aggregators"
+      }
+    },
+    {
+      "id": "q-agent-identity-erc8004-stellar",
+      "question": "What does ERC-8004 provide for AI-agent identity and reputation, and what can a Stellar implementation legitimately claim today?",
+      "surface": [
+        "skills.stellar-dev.agentic-payments",
+        "skills.stellar-dev.standards",
+        "stellarDocs.search_docs"
+      ],
+      "golden": {
+        "answer": "ERC-8004 defines interoperable registries for agent identity, reputation feedback, and validation; it does not itself prove that an agent is honest or that a payment was made. Stellar ports such as stellar8004 are community implementations that map the registry pattern to Soroban and may expose SDK or CLI tooling. Treat any particular Stellar deployment, audit status, registry address, x402/MPP integration, or SEP analogue as status-sensitive and verify it from that project's current repository and deployment metadata before relying on it.",
+        "keyFacts": [
+          "ERC-8004 defines identity, reputation, and validation registries for agents.",
+          "Registry entries and feedback are signals; they do not by themselves guarantee trustworthiness or prove payment.",
+          "Stellar8004-style Soroban ports are community implementations, so deployment and audit claims require current project evidence."
+        ],
+        "avoid": [
+          "ERC-8004 is an official Stellar protocol feature that guarantees every registered agent is trustworthy.",
+          "An ERC-8004 identity record proves that an x402 or MPP payment settled."
+        ],
+        "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+      },
+      "tags": {
+        "category": "compliance-rwa-payments",
+        "service": "skills",
+        "freshness": "scheduled"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "reverifyBy": "2026-11-15",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "https://eips.ethereum.org/EIPS/eip-8004"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/trionlabs/stellar-8004"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "ERC-8004 defines identity, reputation, and validation registries for agents.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://eips.ethereum.org/EIPS/eip-8004",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/trionlabs/stellar-8004",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "Registry entries and feedback are signals; they do not by themselves guarantee trustworthiness or prove payment.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://eips.ethereum.org/EIPS/eip-8004",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/trionlabs/stellar-8004",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "Stellar8004-style Soroban ports are community implementations, so deployment and audit claims require current project evidence.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://eips.ethereum.org/EIPS/eip-8004",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/trionlabs/stellar-8004",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "ERC-8004 is an official Stellar protocol feature that guarantees every registered agent is trustworthy.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://eips.ethereum.org/EIPS/eip-8004",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/trionlabs/stellar-8004",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "An ERC-8004 identity record proves that an x402 or MPP payment settled.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://eips.ethereum.org/EIPS/eip-8004",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/trionlabs/stellar-8004",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 H2 primary+blind (Solo 3411/3412)",
+          "evidence": [
+            "https://eips.ethereum.org/EIPS/eip-8004",
+            "https://github.com/trionlabs/stellar-8004"
+          ]
+        },
+        "origin": "kaan agent-identity-reputation-8004"
       }
     },
     {
@@ -333,170 +467,6 @@
           ]
         },
         "origin": "raven-next q-asset-wallet-sdk-seps"
-      }
-    },
-    {
-      "id": "q-defi-agentic-payment-standards-compare",
-      "question": "How do x402, MPP, AP2, and ACP compare for agent payments, and which are Stellar-specific vs general?",
-      "surface": [
-        "skills.stellar-dev.agentic-payments"
-      ],
-      "golden": {
-        "answer": "All four are **general/external protocols or commerce layers**; none is intrinsically a Stellar standard. Their Stellar relationship differs:\n\n- **x402:** an open HTTP-402 payment protocol created at Coinbase and now governed through the x402 Foundation/Linux Foundation ecosystem. Stellar has an available x402 scheme using signed Soroban authorization entries, a facilitator, and SEP-41 tokens such as USDC.\n- **MPP (Machine Payments Protocol):** a payment-method-agnostic Challenge–Credential–Receipt protocol. General MPP supports charge, session, and subscription intents; it is not streaming-only. The draft Stellar method supports one-time SEP-41 charge transfers and optional session/channel work.\n- **AP2 (Agent Payments Protocol):** an emerging authorization/commerce protocol built around signed mandates and moving through FIDO standardization. x402 is an optional extension/composition path, not a required AP2 settlement route.\n- **ACP (Agentic Commerce Protocol):** a beta checkout/commerce interaction protocol. It delegates payment to compatible handlers/PSPs and is not a Stellar-native settlement rail.\n- **SEP-41:** Stellar's Soroban Token Interface and the token substrate used by Stellar x402/MPP implementations. It does not turn x402 or MPP into SEPs and does not apply to AP2/ACP as whole protocols.\n\nUse dated maturity terms: available integration, beta, Draft/Internet-Draft, proposed, or emerging are not interchangeable.",
-        "keyFacts": [
-          "Classifies x402 and MPP as general protocols with available/draft Stellar integrations that can settle SEP-41 tokens.",
-          "States that MPP includes charge as well as session/channel behavior, rather than equating MPP with streaming.",
-          "Classifies AP2 as an emerging authorization/coordination protocol with optional x402 composition and ACP as a beta commerce/checkout protocol, not settlement rails.",
-          "Keeps SEP-41's Stellar token-interface role distinct from the status and scope of all four external protocols."
-        ],
-        "avoid": [
-          "Do NOT call x402 or MPP Stellar standards merely because Stellar implements methods for them.",
-          "Do NOT equate MPP with sessions/streaming or omit its one-time charge intent.",
-          "Do NOT claim AP2 always routes payment through x402 or that SEP-41/USDC applies across AP2 and ACP as whole protocols.",
-          "Do NOT describe ACP as a Stellar/blockchain settlement mechanism or MPP as a Stripe/Tempo chain."
-        ],
-        "notes": "VERIFIED 2026-06-22: developers.stellar.org/docs/build/agentic-payments documents EXACTLY TWO Stellar-settlement patterns side-by-side — x402 (Coinbase, per-request, Soroban authorization entries, facilitator verify/settle) and MPP (Machine Payments Protocol: direct on-chain settlement via Soroban SAC transfers, supporting one-time charge payments AND high-frequency off-chain payment channels). AP2 (Google Agent Payments Protocol) and ACP are general/coordination standards NOT documented as Stellar-native settlement. The AP2 'routes the actual payment through x402' framing is reasonable coordination-vs-settlement industry framing but NOT a Stellar-docs claim — DEMOTED from must_have to should_have. Freshness:true (fast-moving). 2026-06-29 RE-VERIFIED: both source docs pages (agentic-payments, agentic-payments/x402) resolve 200; AP2=Google Agent Payments Protocol composing with x402 corroborated by independent writeups (The Graph, foojay.io). No fabricated SEP/contract/project names — SEP-41 is real. Confidence stays medium (fast-moving standards space).\nAlso good if the answer: Distinguishes Stellar-settlement standards (x402, MPP) from general/coordination standards (AP2, ACP). | Notes AP2 is a coordination layer that can route the underlying payment through a settlement protocol like x402 (industry framing, not a Stellar-docs claim).\nGolden cites: At least one primary developers.stellar.org agentic-payments docs page (x402 + MPP).\nAdded 2026-07-10 after GT-12 primary + blind agreement. Grade protocol layer, optionality, and maturity precisely. The safe comparison is general protocol versus Stellar implementation/token substrate—not a binary list of 'Stellar standards' and 'coordination standards'."
-      },
-      "tags": {
-        "category": "defi-ecosystem",
-        "service": "skills",
-        "freshness": "scheduled"
-      },
-      "truth": {
-        "domain": "real-world",
-        "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-08-01",
-        "sources": [
-          {
-            "class": "A",
-            "ref": "https://developers.stellar.org/docs/build/agentic-payments",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "A",
-            "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://github.com/x402-foundation/x402",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://github.com/tempoxyz/mpp-specs",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://github.com/google-agentic-commerce/AP2",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://github.com/agentic-commerce-protocol/agentic-commerce-protocol",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "B",
-            "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0041.md",
-            "note": "class inferred at migration"
-          }
-        ],
-        "corroboration": [
-          {
-            "claim": "x402 and MPP are general protocols with Stellar implementations/methods that can use SEP-41",
-            "verdict": "confirmed",
-            "evidence": [
-              {
-                "class": "A",
-                "ref": "A/B: x402 Foundation/Linux Foundation record, x402 repo, MPP specs/paymentauth, Stellar x402 and MPP repos/SDK/docs",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "B",
-                "ref": "A/B: x402 Foundation/Linux Foundation record, x402 repo, MPP specs/paymentauth, Stellar x402 and MPP repos/SDK/docs",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "C",
-                "ref": "C/D: live Stellar Docs/Raven plus independent conflict sweeps asOf 2026-07-10",
-                "observedAt": "2026-07-10",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "D",
-                "ref": "C/D: live Stellar Docs/Raven plus independent conflict sweeps asOf 2026-07-10",
-                "observedAt": "2026-07-10",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              }
-            ]
-          },
-          {
-            "claim": "AP2 and ACP are general commerce/authorization layers; AP2's x402 composition is optional and ACP is not a settlement rail",
-            "verdict": "confirmed",
-            "evidence": [
-              {
-                "class": "A",
-                "ref": "A/B: Google/FIDO AP2 primary records and extension repo; canonical ACP repo/site and Stripe documentation",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "B",
-                "ref": "A/B: Google/FIDO AP2 primary records and extension repo; canonical ACP repo/site and Stripe documentation",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "D",
-                "ref": "D: deep Parallel/Perplexity challenge sweep with erroneous future dates rejected against primary records",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              }
-            ]
-          },
-          {
-            "claim": "SEP-41 is a Stellar token interface used by Stellar x402/MPP settlement, not a status conversion for the four external protocols",
-            "verdict": "confirmed",
-            "evidence": [
-              {
-                "class": "A",
-                "ref": "A: pinned SEP-41 primary record, Draft v0.4.1",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "B",
-                "ref": "B/C: Stellar x402/MPP implementation and developer documentation",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "C",
-                "ref": "B/C: Stellar x402/MPP implementation and developer documentation",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              }
-            ]
-          }
-        ],
-        "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — GT-12 primary and independent blind reviews (Solo 3237/3241) found that the inherited comparison collapses general protocol identity into a Stellar integration, reduces MPP to streaming/channels, and turns optional AP2+x402 composition into a universal route. The two Stellar docs pages are insufficient primary evidence for four external protocols.",
-          "evidence": [
-            "Solo scratchpad 575: GT-12 primary process 3237 and blind process 3241",
-            "Primary x402, MPP, AP2/FIDO, ACP, SEP-41, and current Stellar integration records rechecked 2026-07-10"
-          ],
-          "rootCause": [
-            "eval-side protocol-layer conflation: external standard identity, network method, settlement substrate, and optional composition were merged",
-            "improvements/stellar-docs/sd-005 — Stellar agentic-payments documentation taxonomy/content gap"
-          ]
-        },
-        "origin": "raven-next q-defi-agentic-payment-standards-compare"
       }
     },
     {
@@ -685,64 +655,96 @@
       }
     },
     {
-      "id": "q-defi-build-staking-for-own-token",
-      "question": "Since XLM has no native protocol staking, how can I build a staking or yield feature for my own Soroban token?",
+      "id": "q-defi-flash-loans",
+      "question": "Are flash loans possible on Stellar or Soroban, and how would atomic multi-contract logic work in one transaction?",
       "surface": [
         "stellarDocs.search_asset_token_docs",
         "stellarDocs.search_protocol_concepts_docs",
+        "stellarDocs.search_sdk_cli_tools_docs",
         "stellarDocs.search_soroban_contract_docs"
       ],
       "golden": {
-        "answer": "XLM does not have native protocol staking rewards. Stellar reaches consensus with SCP/FBA rather than proof-of-stake, and official docs state validators do not receive monetary rewards. A \"staking\" product for a Soroban token is therefore an application/protocol feature: the contract must define the deposited token, reward source, lock/accounting rules, emission schedule, withdrawal/claim flow, admin controls, and failure behavior.\n\nThe building blocks can include SEP-41 custom contract tokens, Stellar assets exposed through the Stellar Asset Contract, AMM liquidity incentives, vault/reward-distributor contracts, or lending/yield protocols such as Blend. The answer must distinguish staking-language from lending, liquidity mining, fixed yield, and points/rewards. It should name sustainability, securities/compliance, smart-contract, oracle/pricing, and disclosure risks, and require audits plus staged testnet/mainnet launch for user funds.",
+        "answer": "Soroban has no protocol-native flash-loan operation, but a contract can implement one through synchronous cross-contract calls inside an atomic invocation: lend, invoke borrower logic, and require repayment before return; an uncaught error rolls back the call tree. Authorization, simulation, resource/footprint limits, and reentrancy/economic controls still matter.\n\nCurrent evidence as of **2026-07-10**:\n- **Blend v2:** mainnet Fixed Pool bytecode matched the published v2.0.0 pool artifact and its interface exposes `flash_loan`—verified deployed evidence.\n- **XycLoans:** public flash-loan code and historical SCF/Futurenet evidence, but stale repo/docs and a failing current pools route; usable deployment was not verified.\n- **Slender:** operator marketing claims flash loans, while the app showed no usable state and Scout marks it Inactive; feature association is real, current deployment/liquidity unverified.\n\nDo not infer deployment from code, a closed issue, marketing, or a directory label alone.",
         "keyFacts": [
-          "States XLM does not have native protocol staking rewards like proof-of-stake chains.",
-          "Explains a custom token staking/yield feature must be implemented at the application/contract/protocol layer, with explicit reward source, lock/accounting rules, and withdrawal logic.",
-          "Mentions existing primitives may include Soroban token contracts, SAC tokens, Blend/lending markets, AMMs, vaults, or reward distributors depending on design, each with risk."
+          "Explains atomic Soroban cross-contract flash-loan mechanics and rollback constraints.",
+          "Distinguishes verified deployed Blend v2 from XycLoans code/history and Slender marketing/unverified usability."
         ],
         "avoid": [
-          "Do NOT imply users can earn native XLM staking rewards from the Stellar protocol.",
-          "Do NOT promise yield without identifying a real reward source and risks."
+          "Do NOT claim XycLoans is the sole/current mainnet implementation or that Slender has no flash-loan association.",
+          "Do NOT treat source code, marketing, issue status, or directory status alone as deployment/liquidity proof."
         ],
-        "notes": "No unresolved factual caveat; compliance/yield-risk treatment is jurisdiction- and product-specific.\nAlso good if the answer: Discusses reward sustainability, securities/compliance, smart-contract risk, oracle/pricing risk, and user disclosure. | Distinguishes staking terminology from lending, liquidity mining, and fixed-yield products.\nGolden cites: Stellar/Soroban docs for contract/token mechanics and current protocol docs for any named DeFi primitive."
+        "notes": "CORRECTED 2026-06-29: prior version misattributed flash loans to Slender. Live Scout confirms Slender is a noncustodial lending/borrowing money market (by eq-lab), NOT a flash-loan protocol. XycLoans is the credible Soroban flash-loans protocol ('a decentralized flash loans protocol that runs on Soroban... a flash loans-only protocol'), audited by OtterSec Jan 2024 (sorobansecurity.com/report/33). Slender reference removed; XycLoans is the named flash-loan provider, with dated/source evidence required before treating as production-safe.\nAlso good if the answer: Names XycLoans as the credible Soroban flash-loans protocol (flash-loans-only, per-token liquidity pools enforcing same-transaction repayment), with current evidence required for any live-availability claim. | Mentions simulation/testing for resource limits and failure behavior.\nGolden cites: Stellar/Soroban transaction and contract invocation docs, plus dated protocol docs for any live flash-loan implementation.\nCorrected 2026-07-10. Deployment evidence tiers—not an exclusive project name—are the factual gate."
       },
       "tags": {
         "category": "defi-ecosystem",
         "service": "stellarDocs",
-        "freshness": "stable"
+        "freshness": "scheduled"
       },
       "truth": {
-        "domain": "mixed",
+        "domain": "real-world",
         "status": "confirmed",
+        "asOf": "2026-07-10",
+        "reverifyBy": "2026-10-01",
         "sources": [
           {
-            "class": "A",
-            "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-consensus-protocol",
+            "class": "D",
+            "ref": "https://github.com/blend-capital/blend-contracts-v2",
             "note": "class inferred at migration"
           },
           {
-            "class": "A",
-            "ref": "https://developers.stellar.org/docs/tokens/anatomy-of-an-asset",
+            "class": "D",
+            "ref": "https://docs.blend.capital/mainnet-deployments",
             "note": "class inferred at migration"
           },
           {
-            "class": "A",
-            "ref": "https://developers.stellar.org/docs/build/smart-contracts/overview",
+            "class": "D",
+            "ref": "https://github.com/xycloo/xycloans",
             "note": "class inferred at migration"
           },
           {
-            "class": "C",
-            "ref": "https://stellarlight.xyz/project/blend",
+            "class": "D",
+            "ref": "https://app.slender.fi/",
             "note": "class inferred at migration"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Soroban flash loans are atomic call-tree patterns and Blend v2 exposes a verified mainnet flash_loan interface",
+            "verdict": "confirmed",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "A/B: Stellar invocation/rollback docs and Blend v2 source/release",
+                "observedAt": "2026-07-11",
+                "note": "verbatim legacy evidence descriptor imported at migration"
+              },
+              {
+                "class": "B",
+                "ref": "A/B: Stellar invocation/rollback docs and Blend v2 source/release",
+                "observedAt": "2026-07-11",
+                "note": "verbatim legacy evidence descriptor imported at migration"
+              },
+              {
+                "class": "F",
+                "ref": "F: mainnet pool contract bytecode/interface match",
+                "observedAt": "2026-07-11",
+                "note": "verbatim legacy evidence descriptor imported at migration"
+              }
+            ]
           }
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "GT-15-bridges-yield-comet-flashloans-lending accepted in Solo scratchpad 575 rev 291",
+          "by": "Golden-truth sweep import — GT-15 blind verification found Blend v2 flash_loan deployed on mainnet with matching published bytecode, while the inherited answer treated XycLoans as the only credible implementation and categorically denied Slender's advertised feature.",
           "evidence": [
-            "solo://proj/49/scratchpad/truth-maintenance-20--575"
+            "Blend Fixed Pool CAJJZSGMMM3PD7N33TAPHGBUGTB43OC73HVIK2L2G6BNGGGYOSSYBXBD matched v2.0.0 pool WASM and exposed flash_loan",
+            "Solo scratchpad 575 GT-15 processes 3243/3246"
+          ],
+          "rootCause": [
+            "eval-side deployment evidence drift and false mutually exclusive protocol trap"
           ]
         },
-        "origin": "raven-next q-defi-build-staking-for-own-token"
+        "origin": "raven-next q-defi-flash-loans"
       }
     },
     {
@@ -1289,22 +1291,24 @@
       }
     },
     {
-      "id": "q-infra-disbursement-platform",
-      "question": "What's the Stellar Disbursement Platform for, and how does it differ from the Anchor Platform?",
+      "id": "q-infra-friendbot-fund-testnet",
+      "question": "How do I fund a testnet account (and a contract address) with XLM using Friendbot?",
       "surface": [
-        "stellarDocs.search_anchor_sep_docs"
+        "stellarDocs.search_protocol_concepts_docs",
+        "stellarDocs.search_sdk_cli_tools_docs",
+        "stellarDocs.search_soroban_contract_docs"
       ],
       "golden": {
-        "answer": "The Stellar Disbursement Platform is SDF's open-source bulk-payments product for sending batches to recipients; the official product page currently advertises batches up to 10,000 payments. It is distinct from Anchor Platform. Current SDP Core implements SEP-10/24 flows natively and does not require an external Anchor Platform. Its Transaction Submission Service submits/monitors payments, and its Dashboard is a separate frontend. Optional wallets, anchors, and off-ramps can participate in a deployment, but they are not a universal runtime dependency.",
+        "answer": "For Testnet, call `https://friendbot.stellar.org/?addr=<G... or C...>` (GET or POST per the current service docs) to create/fund a new test account with **10,000 fake XLM**. Futurenet has its own Friendbot host, and local Quickstart can expose a local faucet. Friendbot never funds Mainnet, is rate-limited, and test networks reset. Treat HTTP status as the contract: success is 200, while invalid/already-funded requests return 400; do not pin the success response body because it is intentionally unstable.",
         "keyFacts": [
-          "Describes bulk disbursements and distinguishes SDP from Anchor Platform.",
-          "Explains current native SEP-10/24 Core, TSS, and Dashboard roles."
+          "Names Testnet/Futurenet and G/C-address support and the fake 10,000-XLM behavior.",
+          "Distinguishes status/error behavior from an unstable success payload."
         ],
         "avoid": [
-          "Do NOT say SDP is an anchor, wallet, or RPC node.",
-          "Do NOT require external Anchor Platform/SEP-31 routing for every SDP payment."
+          "Do NOT claim Mainnet funding or a permanent exact rate limit.",
+          "Do NOT require a stable success JSON schema."
         ],
-        "notes": "SDP vs Anchor Platform is the load-bearing distinction. Pairs with q-infra-anchor-platform.\nAlso good if the answer: SDP routes payments through an anchor and registers/KYCs receivers; it can batch large numbers of payments.\nGolden cites: developers.stellar.org Disbursement Platform docs or the SDP backend repo.\nGT-49 CORRECTION 2026-07-11: external Anchor Platform is optional, not a required SDP dependency."
+        "notes": "Friendbot is testnet-only; claiming mainnet funding is the trap. Verified: REST GET|POST / with ?addr=; funds G... and (when fund_contract_addresses enabled) C...; ~10,000 fake XLM; Futurenet has its own friendbot-futurenet.stellar.org.\nAlso good if the answer: Friendbot funds both `G...` account addresses and `C...` contract addresses. | The Stellar Lab also offers a Friendbot funding UI for testnet.\nGolden cites: developers.stellar.org friendbot/faucet docs or the stellar/friendbot repo.\nGT-49 CORRECTION 2026-07-11: grade network/address/status behavior, not a response-body snapshot."
       },
       "tags": {
         "category": "tooling-infra",
@@ -1319,40 +1323,40 @@
         "sources": [
           {
             "class": "A",
-            "ref": "https://stellar.org/products-and-tools/disbursement-platform",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "A",
-            "ref": "https://developers.stellar.org/docs/platforms/stellar-disbursement-platform",
+            "ref": "https://developers.stellar.org/docs/networks#friendbot",
             "note": "class inferred at migration"
           },
           {
             "class": "B",
-            "ref": "https://github.com/stellar/stellar-disbursement-platform-backend",
+            "ref": "https://github.com/stellar/friendbot/blob/main/README.md",
+            "note": "class inferred at migration"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/tools/quickstart/faucet",
             "note": "class inferred at migration"
           }
         ],
         "corroboration": [
           {
-            "claim": "SDP is SDF's open-source bulk-disbursement platform; current Core implements native SEP-10/24 without requiring external Anchor Platform, while TSS and Dashboard are separate components.",
+            "claim": "Friendbot supports Testnet/Futurenet G and C addresses with GET/POST addr; Testnet creates a new account with 10,000 fake XLM, while success-body shape is intentionally unstable and invalid/already-funded requests are HTTP 400.",
             "verdict": "confirmed",
             "evidence": [
               {
                 "class": "A",
-                "ref": "A: current SDP product/docs",
+                "ref": "A: current network/Friendbot docs",
                 "observedAt": "2026-07-11",
                 "note": "verbatim legacy evidence descriptor imported at migration"
               },
               {
                 "class": "B",
-                "ref": "B: current SDP backend README/source",
+                "ref": "B: current friendbot README/source",
                 "observedAt": "2026-07-11",
                 "note": "verbatim legacy evidence descriptor imported at migration"
               },
               {
-                "class": "D",
-                "ref": "D: independent product-architecture sweep",
+                "class": "F",
+                "ref": "F: safe invalid-input HTTP probe",
                 "observedAt": "2026-07-11",
                 "note": "verbatim legacy evidence descriptor imported at migration"
               }
@@ -1361,40 +1365,36 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited answer made an external Anchor Platform a mandatory SDP dependency. Current SDP Core implements its SEP-10/24 flow natively.",
+          "by": "Golden-truth sweep import — The core Testnet funding flow was correct but under-specified current G/C/Futurenet support and treated the success payload as stable.",
           "evidence": [
-            "Solo scratchpad 575 GT-49 primary 3335 and blind 3341 independently rejected the mandatory dependency."
+            "Solo scratchpad 575 GT-49 primary 3335 and blind 3341; no valid funding side effect was performed."
           ],
           "rootCause": [
-            "Historical architecture shorthand persisted after native SEP flow implementation."
+            "Service-surface freshness and an unjustified stable-response assumption."
           ]
         },
-        "origin": "raven-next q-infra-disbursement-platform"
+        "origin": "raven-next q-infra-friendbot-fund-testnet"
       }
     },
     {
-      "id": "q-infra-secp256r1-passkeys",
-      "question": "How does Soroban verify passkey (WebAuthn) signatures on-chain — what's the role of secp256r1?",
+      "id": "q-infra-what-is-stellar-rpc",
+      "question": "What is Stellar RPC, and is it the same thing as Soroban RPC?",
       "surface": [
-        "stellarDocs.search_protocol_concepts_docs",
-        "stellarDocs.search_soroban_contract_docs",
-        "stellarDocs.search_wallet_dapp_docs"
+        "stellarDocs.search_rpc_horizon_data_docs",
+        "stellarDocs.search_soroban_contract_docs"
       ],
       "golden": {
-        "answer": "A Stellar passkey smart account combines three layers: the browser's **WebAuthn ceremony**, the contract account's **`__check_auth` authorization policy**, and **CAP-0051's Protocol-21 secp256r1/P-256 signature-verification host primitive**. The host verifies a 65-byte uncompressed SEC1 public key, a 32-byte digest, and a 64-byte compact low-s signature; it does **not** parse or semantically validate a WebAuthn assertion.\n\nMost/common WebAuthn credentials using COSE ES256 use P-256, but WebAuthn also permits other algorithms. The relying party/verifier must bind the challenge and intended authorization payload, parse `clientDataJSON`/`authenticatorData`, and enforce the chosen origin, RP-ID hash, user-presence/verification and backup flags, credential identity, expiry/replay/counter policy, and application authorization context. A reviewed OpenZeppelin verifier supplies part of that validation and intentionally leaves several relying-party checks to application policy. A separate classic account/relayer submits and pays; fee sponsorship does not replace smart-account authorization.",
+        "answer": "**Stellar RPC** is a **JSON-RPC 2.0 server** that surfaces **Soroban smart-contract state** and lets you\n**simulate contract calls (`simulateTransaction`) and submit transactions (`sendTransaction`)**, plus\nread events, ledger entries, and network info. **It is the same product that was previously called\n\"Soroban RPC\" — renamed to \"Stellar RPC\" in November 2024** to reflect that it reaches beyond\nSoroban-only use. So \"Soroban RPC\" and \"Stellar RPC\" are **not two different services**; Soroban RPC no\nlonger exists as a separate live product. It is **distinct from Horizon** (Horizon is the REST/HAL API\nfor classic Stellar data). Both return XDR-encoded values inside JSON, decodable by the SDKs.",
         "keyFacts": [
-          "CAP-0051/P21 supplies the native P-256 verification primitive used inside contract-account authorization.",
-          "P-256/ES256 is common for WebAuthn, not the universal passkey curve.",
-          "Full WebAuthn and authorization require challenge/context, origin/RP-ID, flags, credential, replay/counter, and policy checks beyond a valid P-256 signature.",
-          "Separates the authorizing C-account from the G-account/relayer that submits and pays."
+          "Stellar RPC is a JSON-RPC 2.0 server for current/recent Classic and smart-contract data plus simulation and submission.",
+          "Stellar RPC is the November-2024 name for the product previously called Soroban RPC.",
+          "It is distinct from Horizon and from a durable full-history indexer."
         ],
         "avoid": [
-          "Do NOT claim CAP-0051 performs full WebAuthn verification or that a valid P-256 signature alone authorizes an operation.",
-          "Do NOT claim every passkey/WebAuthn credential uses P-256.",
-          "Do NOT claim origin, RP-ID, flags, counters, or replay are automatically enforced by the host primitive.",
-          "Do NOT confuse P-256 with secp256k1, Classic Ed25519 signer semantics, or fee sponsorship."
+          "Do NOT claim Stellar RPC and Soroban RPC are unrelated/currently separate products.",
+          "Do NOT describe Stellar RPC as REST, contracts-only, full-history, or a drop-in replacement for every Horizon endpoint."
         ],
-        "notes": "Verified against the smart-wallets guide: registration stores a WebAuthn (secp256r1/P-256/ES256) public key in contract state; in __check_auth the contract verifies the secp256r1 signature and applies policy checks. secp256r1 vs secp256k1 vs Ed25519 mix-up is the defining trap.\nAlso good if the answer: A smart-wallet contract account checks the signature in `__check_auth`/`check_auth`; signers can be secp256r1 (passkey), Ed25519, or policy signers.\nGolden cites: developers.stellar.org smart-wallets / contract-accounts guide.\nGT-50 SECURITY CORRECTION 2026-07-11: grade the layered WebAuthn ceremony → application/RP validation → __check_auth policy → CAP-0051 primitive model. The versioned OZ example is evidence of deliberate policy boundaries, not a universal verifier contract."
+        "notes": "The Soroban-RPC→Stellar-RPC rename (Nov 2024) is a documented naming trap agents get wrong.\nAlso good if the answer: It is distinct from Horizon (Horizon is the REST/HAL API for classic Stellar data).\nGolden cites: developers.stellar.org RPC overview or the migrate-from-horizon-to-rpc page.\nGT-50 PRECISION CORRECTION 2026-07-11: retain rename/JSON-RPC identity and require current Classic-plus-contract scope with explicit retention/indexer limits."
       },
       "tags": {
         "category": "tooling-infra",
@@ -1406,64 +1406,30 @@
         "status": "confirmed",
         "sources": [
           {
-            "class": "B",
-            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0051.md",
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/data/apis/rpc",
             "note": "class inferred at migration"
           },
           {
             "class": "A",
-            "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/smart-wallets",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://www.w3.org/TR/webauthn-3/",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://raw.githubusercontent.com/OpenZeppelin/stellar-contracts/v0.7.2/packages/accounts/src/verifiers/webauthn.rs",
+            "ref": "https://developers.stellar.org/docs/data/apis/migrate-from-horizon-to-rpc",
             "note": "class inferred at migration"
           }
         ],
         "corroboration": [
           {
-            "claim": "CAP-0051 is Final/Protocol 21 and supplies a low-level secp256r1 verification host function, not full WebAuthn parsing or authorization policy.",
-            "verdict": "confirmed",
-            "evidence": [
-              {
-                "class": "B",
-                "ref": "B: CAP-0051 and host/SDK interfaces",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "A",
-                "ref": "A: current smart-wallet/contract-auth documentation",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              }
-            ]
-          },
-          {
-            "claim": "P-256/ES256 is common for WebAuthn but not universal; origin, RP ID, flags, credential, replay/counter, and authorization-context checks remain separate.",
+            "claim": "Stellar RPC is the renamed Soroban RPC JSON-RPC service and currently covers Classic plus smart-contract transaction/current-state workflows while remaining retention-bounded.",
             "verdict": "confirmed",
             "evidence": [
               {
                 "class": "A",
-                "ref": "A: W3C WebAuthn Level 3",
+                "ref": "A: current RPC and Stellar stack documentation",
                 "observedAt": "2026-07-11",
                 "note": "verbatim legacy evidence descriptor imported at migration"
               },
               {
                 "class": "B",
-                "ref": "B: OpenZeppelin stellar-contracts v0.7.2 WebAuthn verifier source",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "F",
-                "ref": "F: GT-50 independent security-layer reconciliation",
+                "ref": "B: current stellar-rpc method/source surface",
                 "observedAt": "2026-07-11",
                 "note": "verbatim legacy evidence descriptor imported at migration"
               }
@@ -1472,16 +1438,16 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited answer universalized P-256 across WebAuthn and collapsed a full WebAuthn assertion/policy check into CAP-0051's low-level signature primitive, creating a security-sensitive false equivalence.",
+          "by": "Golden-truth sweep import — The rename and JSON-RPC identity were correct, but the answer narrowed current Stellar RPC to Soroban state and omitted its Classic transaction/current-ledger scope and explicit non-indexer limits.",
           "evidence": [
-            "Solo scratchpad 575 GT-50 primary process 3349 confirmed the most-versus-all correction; blind process 3361 independently required the fuller WebAuthn/host/__check_auth separation.",
-            "Sibling sweep checked q-protocol-passkeys-secp256r1, q-soroban-check-auth-custom-account, q-tool-passkeykit-smart-wallet, q-tool-passkey-wallet-recovery, and q-soroban-add-signer-smart-wallet-howto."
+            "Solo scratchpad 575 GT-50 primary process 3349 confirmed the identity; blind process 3361 independently supplied the Classic-plus-contract/non-indexer scope precision.",
+            "Sibling sweep checked q-protocol-horizon-vs-rpc, q-infra-horizon-rpc-migration, and q-infra-hubble-vs-rpc-layer."
           ],
           "rootCause": [
-            "Eval-side security-layer collapse: WebAuthn ceremony, signature primitive, and contract authorization policy were authored as one operation."
+            "Eval-side scope lag: post-rename product identity was retained while the broader current method surface was omitted."
           ]
         },
-        "origin": "raven-next q-infra-secp256r1-passkeys"
+        "origin": "raven-next q-infra-what-is-stellar-rpc"
       }
     },
     {
@@ -1669,125 +1635,6 @@
       }
     },
     {
-      "id": "q-rwa-stellar-vs-erc20-regulated",
-      "question": "Why do issuers say Stellar is easier than Ethereum/ERC-20 for issuing regulated, compliant RWA tokens?",
-      "surface": [
-        "stellarDocs.search_asset_token_docs",
-        "stellarDocs.search_soroban_contract_docs"
-      ],
-      "golden": {
-        "answer": "Compare layers rather than saying Stellar is native and Ethereum is bespoke.\n\n**Classic Stellar:** issuer/trustline authorization flags and CAP-35 clawback are opt-in protocol/ledger primitives with a relatively fixed surface. **SEP-8 is not ledger-native**; it is an ecosystem approval-server workflow discovered through SEP-1, layered on Required+Revocable classic controls, where the server signs/returns and the wallet submits. **SAC/CAP-46-6** exposes classic assets to contracts through a protocol-known SEP-41-compatible interface. Draft SEP-57/OpenZeppelin RWA contracts are a separate, evolving Soroban path.\n\n**Ethereum:** base ERC-20 defines the basic token interface and does not include allowlists, freezes, forced transfer, or clawback. Those can be custom logic or standardized contract suites such as **ERC-3643/T-REX**, which defines identity/compliance registries, freeze/pause, forced transfer, and recovery patterns.\n\nTradeoffs are bounded. Stellar's fixed classic primitives may reduce custom code for common issuer controls; Ethereum/Soroban contract suites can express richer policy but add implementation, upgrade, audit, interoperability, and governance surface. Neither architecture creates legal compliance or is universally easier for counsel to audit; custody, legal rights, disclosures, operational controls, and jurisdiction still govern.",
-        "keyFacts": [
-          "Separates classic ledger flags/clawback, off-chain SEP-8, SAC, and draft Soroban regulated-token contracts.",
-          "Separates base ERC-20 from standardized ERC-3643/T-REX regulated-token suites.",
-          "Frames engineering/audit tradeoffs without claiming technical controls establish legal compliance."
-        ],
-        "avoid": [
-          "Do NOT call SEP-8 itself ledger-native.",
-          "Do NOT say Ethereum has only bespoke regulated-token wrappers or ignore ERC-3643.",
-          "Do NOT claim one architecture is universally legally compliant or easier for counsel to audit."
-        ],
-        "notes": "Comparison rooted in on-chain mechanics → stellar_docs primary. Trap: claiming ERC-20 has native clawback.\nAlso good if the answer: Stellar's regulated-asset tokenization can be a no-smart-contract, few-step process, which is easier to audit for issuer counsel.\nGolden cites: developers.stellar.org asset-control docs and/or a regulated-asset case study.\nCORRECTION 2026-07-10: require layer separation. SEP-8 is off-chain; classic flags/clawback are protocol-native; SAC and draft SEP-57 are separate; ERC-3643 is a standardized Ethereum alternative."
-      },
-      "tags": {
-        "category": "compliance-rwa-payments",
-        "service": "stellarDocs",
-        "freshness": "stable"
-      },
-      "truth": {
-        "domain": "real-world",
-        "status": "confirmed",
-        "sources": [
-          {
-            "class": "A",
-            "ref": "https://developers.stellar.org/docs/tokens/control-asset-access",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "B",
-            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0035.md",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "B",
-            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0008.md",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "B",
-            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-06.md",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://eips.ethereum.org/EIPS/eip-20",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://eips.ethereum.org/EIPS/eip-3643",
-            "note": "class inferred at migration"
-          }
-        ],
-        "corroboration": [
-          {
-            "claim": "SEP-8 approval is built into the ledger",
-            "verdict": "contradicted",
-            "evidence": [
-              {
-                "class": "B",
-                "ref": "B: SEP-8 is an off-chain approval-server workflow discovered via SEP-1",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "A",
-                "ref": "A: asset-control docs separate native flags/clawback from SEP workflow",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              }
-            ]
-          },
-          {
-            "claim": "Ethereum regulated-token equivalents must be bespoke ERC-20 wrappers",
-            "verdict": "contradicted",
-            "evidence": [
-              {
-                "class": "B",
-                "ref": "B: base EIP-20 omits compliance controls",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "B",
-                "ref": "B: ERC-3643/T-REX standardizes identity, compliance, freeze, forced transfer, and recovery",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "D",
-                "ref": "Independent reviews: Solo GT-11 processes 3231/3236",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              }
-            ]
-          }
-        ],
-        "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The comparison called SEP-8 ledger-native, collapsed classic flags/clawback/SAC into one native mechanism, treated base ERC-20 as the entire Ethereum regulated-token ecosystem, and made a categorical legal/auditability judgment.",
-          "evidence": [
-            "Solo scratchpad 575 GT-11 protocol comparison matrices"
-          ],
-          "rootCause": [
-            "Protocol primitives, off-chain SEP workflow, SAC, and contract suites were collapsed into native versus custom.",
-            "An engineering tradeoff was promoted into categorical legal advice."
-          ]
-        },
-        "origin": "raven-next q-rwa-stellar-vs-erc20-regulated"
-      }
-    },
-    {
       "id": "q-scf-build-tracks",
       "question": "What are the three SCF Build tracks (Open, Integration, RFP) and how do they differ?",
       "surface": [
@@ -1958,25 +1805,23 @@
       }
     },
     {
-      "id": "q-sep-interactive-deposit-withdraw",
-      "question": "Which Stellar SEP standardizes interactive, hosted deposit and withdrawal between a wallet and an anchor, and how does it differ from the programmatic one?",
+      "id": "q-sep-1-toml",
+      "question": "What is SEP-1 and where is the stellar.toml file served?",
       "surface": [
         "stellarDocs.search_anchor_sep_docs",
-        "stellarDocs.search_protocol_concepts_docs",
-        "stellarDocs.search_soroban_contract_docs",
         "stellarDocs.search_wallet_dapp_docs"
       ],
       "golden": {
-        "answer": "**SEP-24** (\"Hosted Deposit and Withdrawal\") is the **interactive** standard: the anchor serves a\nhosted UI/webview that the wallet opens, and the anchor collects any KYC and drives the\ndeposit/withdraw flow. **SEP-6** (\"Deposit and Withdrawal API\") is the **programmatic** counterpart:\na pure API with no anchor-hosted UI, so the wallet itself collects customer data (typically via\n**SEP-12** KYC). Both authenticate the user with **SEP-10**, and the wallet discovers the anchor's\nendpoints via **SEP-1** (`stellar.toml`). Distinct from **SEP-31** (cross-border, anchor-to-anchor\n\"send\") and **SEP-38** (quotes).",
+        "answer": "- **SEP-1 (Active)** defines the **`stellar.toml`** (Stellar Info File): a TOML document where an organization publishes its Stellar metadata — anchor SEP endpoints, declared `[[CURRENCIES]]`, signing/account keys, validators, and org info [1].\n- It is served off-chain at **`https://<DOMAIN>/.well-known/stellar.toml`** (with CORS enabled) [1].\n- It is the **discovery layer**: wallets fetch it to find an anchor's SEP-6/10/12/24/31/38 endpoints and verify assets; it can also declare an `approval_server` (SEP-8) per currency [1].",
         "keyFacts": [
-          "Names SEP-24 as the interactive (anchor-hosted UI / webview) deposit & withdrawal standard.",
-          "Contrasts SEP-6 as the programmatic (API-driven, no hosted UI) deposit/withdrawal counterpart."
+          "SEP-1 defines the stellar.toml (Stellar Info File) used to publish an org's Stellar metadata and endpoints.",
+          "It is served at https://<domain>/.well-known/stellar.toml."
         ],
         "avoid": [
-          "Do NOT misnumber the standard (e.g. call interactive deposit/withdraw SEP-31 or SEP-12 or SEP-0024-as-SEP-6).",
-          "Do NOT claim SEP-31 is the wallet/anchor interactive standard (SEP-31 is cross-border anchor-to-anchor)."
+          "Do NOT misnumber the info-file standard (it is SEP-1, not SEP-2/SEP-10).",
+          "Do NOT claim stellar.toml lives on-chain rather than at a web .well-known path."
         ],
-        "notes": "Exemplar. Verified 2026-06-22: SEP-0024 'Hosted Deposit and Withdrawal' Active; SEP-0006 'Deposit and Withdrawal API' Active. SEP-6 interactive components deprecated in favor of SEP-24.\nAlso good if the answer: SEP-24 hands off KYC/UI to the anchor's hosted flow; SEP-6 requires the wallet to collect data (often via SEP-12) itself. | Both rely on SEP-10 for authentication.\nGolden cites: The SEP-24 (and ideally SEP-6) spec on the stellar-protocol GitHub repo or developers.stellar.org."
+        "notes": "Dossier §7.1, Q11. SEP-1 'Stellar Info File', Status Active (ecosystem README).\nAlso good if the answer: It is the discovery layer wallets use to find an anchor's SEP endpoints, currencies, and signing keys.\nGolden cites: SEP-0001 on the stellar-protocol repo or developers.stellar.org."
       },
       "tags": {
         "category": "assets-anchors-seps",
@@ -1989,17 +1834,57 @@
         "sources": [
           {
             "class": "B",
-            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0001.md",
+            "note": "class inferred at migration"
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "GT-05-sep-identity-auth-quotes-token-wallet accepted in Solo scratchpad 575 rev 291",
+          "evidence": [
+            "solo://proj/49/scratchpad/truth-maintenance-20--575"
+          ]
+        },
+        "origin": "raven-next q-sep-1-toml"
+      }
+    },
+    {
+      "id": "q-sep-wallet-seps-list",
+      "question": "List the common SEPs a Stellar wallet typically needs to implement to support anchors and interoperability.",
+      "surface": [
+        "stellarDocs.search_anchor_sep_docs",
+        "stellarDocs.search_wallet_dapp_docs"
+      ],
+      "golden": {
+        "answer": "A Stellar wallet supporting anchors/interoperability typically implements [1][2]:\n\n- **SEP-1** — Stellar Info File (`stellar.toml`): discover an anchor's endpoints, currencies, keys.\n- **SEP-10** — Stellar (Web) Authentication: sign a challenge tx to get a JWT and authenticate with the anchor.\n- **SEP-24** — Hosted (interactive) Deposit & Withdrawal, and/or **SEP-6** — programmatic Deposit & Withdrawal.\n- **SEP-12** — KYC API: submit customer info to the anchor.\n- **SEP-38** — Anchor RFQ/quotes: price an exchange before deposit/withdraw/send.\n- **SEP-7** — URI scheme (`web+stellar:`) for deep-link/payment-signing requests (optional).\n- **SEP-31** — Cross-Border Payments API (relevant to remittance-style wallets).\n\nSDF's TypeScript **Wallet SDK** wraps SEP-10/12/24/31/38 client-side.",
+        "keyFacts": [
+          "Names SEP-1 (stellar.toml — anchor/asset discovery metadata).",
+          "Names SEP-10 (web authentication — challenge/response to authenticate an account with an anchor).",
+          "Names SEP-24 (interactive/hosted deposit & withdrawal) and/or SEP-6 (programmatic deposit & withdrawal)."
+        ],
+        "avoid": [
+          "Do NOT misnumber the SEPs (e.g. call web auth SEP-12 or KYC SEP-10).",
+          "Do NOT invent a non-existent SEP number as a canonical wallet requirement."
+        ],
+        "notes": "Axis-C list rebalance. Enumeration of the wallet-relevant SEPs → stellar_docs_mcp. Trap = misnumbering SEP-10/12/24. All numbers verified against the ecosystem README.\nAlso good if the answer: Names SEP-12 (KYC/customer info) and SEP-38 (anchor quotes) as commonly paired with deposit/withdraw flows. | May name SEP-7 (URI request scheme) for deep-link/payment requests.\nGolden cites: A SEP overview / wallet-guide page on developers.stellar.org or the stellar-protocol SEP repo."
+      },
+      "tags": {
+        "category": "assets-anchors-seps",
+        "service": "stellarDocs",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-ecosystem-proposals",
             "note": "class inferred at migration"
           },
           {
             "class": "B",
-            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "A",
-            "ref": "https://developers.stellar.org/docs/learn/fundamentals/anchors",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/README.md",
             "note": "class inferred at migration"
           }
         ],
@@ -2010,155 +1895,68 @@
             "solo://proj/49/scratchpad/truth-maintenance-20--575"
           ]
         },
-        "origin": "raven-next q-sep-interactive-deposit-withdraw"
+        "origin": "raven-next q-sep-wallet-seps-list"
       }
     },
     {
-      "id": "q-sor-native-xlm-sac-address",
-      "question": "What is the SAC contract address for native XLM (and USDC) per network, why does native XLM not have an ERC-20-style address, how do I derive it (`stellar contract id asset --asset native`) / get it inside a contract, and how does it differ testnet vs mainnet?",
+      "id": "q-sor-msg-sender-equivalent",
+      "question": "What's the Soroban equivalent of Solidity's `msg.sender` — how do I get the calling address, why must the user pass their own Address as an argument, and what exactly does `require_auth()` verify (it's not an allow/blocklist)?",
       "surface": [
-        "stellarDocs.search_asset_token_docs",
         "stellarDocs.search_protocol_concepts_docs",
-        "stellarDocs.search_sdk_cli_tools_docs",
         "stellarDocs.search_soroban_contract_docs"
       ],
       "golden": {
-        "answer": "A SAC address is deterministic for the serialized Stellar Asset and network ID/passphrase; an issuer G-address is never the token C-address. Prefer derivation over memorized literals: `stellar contract id asset --asset native --network <network>` for XLM, or the SDK asset-contract-ID helper for an issued asset. Inside a contract, use `env.deployer().with_stellar_asset(serialized_asset_xdr_bytes).deployed_address()`; accepting an already-derived `Address` is often the simpler API. Current derived native IDs are testnet `CDLZFC...GCYSC` and mainnet `CAS3J7...XOWMA`; treat abbreviated examples as non-copyable and verify full output. The ID for a fixed asset/network does not drift, but which issuer represents canonical USDC and CLI/SDK syntax are freshness-sensitive.",
+        "answer": "Soroban exposes no ambient readable `msg.sender`, `env.sender`, or caller API. Pass the relevant `Address` explicitly and call `require_auth()` or `require_auth_for_args()`; the host checks that exact address against the invocation authorization tree and handles standard replay protection. An immediate contract invoker is automatically authorized when the callee explicitly requires that contract Address, but the callee still cannot read an ambient caller—this special authorization rule is not `msg.sender`. Custom-account `__check_auth` applies when host-managed authorization for an Address::Contract account is required, not for the automatic immediate-contract-invoker case. Authentication/authorization is separate from business roles, allowlists, and limits.",
         "keyFacts": [
-          "Derives the network-specific reserved SAC address rather than hashing code:issuer ad hoc.",
-          "Gives the exact in-contract derivation API and separates deterministic ID from issuer selection."
+          "No ambient caller; explicit Address plus invocation-tree authorization.",
+          "Distinguishes automatic immediate-contract auth from readable caller identity and custom-account authentication."
         ],
         "avoid": [
-          "Do NOT use an issuer G-address as a contract address, reuse IDs across networks, or copy abbreviated literals."
+          "Do NOT invent msg.sender/caller APIs or infer caller from transaction source.",
+          "Do NOT use the direct-invoker exception as an ambient identity API."
         ],
-        "notes": "Empirical check on 2026-06-29 with local `stellar 25.2.0`: native testnet CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC; native mainnet CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA; testnet USDC issuer from docs produced CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA; mainnet Circle USDC issuer from Stellar docs produced CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75.\nAlso good if the answer: Cites official SAC docs stating SAC implements SEP-41 and the asset parameter is the deployed contract address, not the issuer address. | Mentions `Asset.contractId(networkPassphrase)` / generated bindings as an app-side alternative.\nGolden cites: Official SAC docs or token guide for SAC/SEP-41 semantics and derivation command. | A dated empirical CLI check or current official docs for any frozen address values.\nGT-42 independently re-derived all four full literals; grade derivation and explicit network/issuer, not memorization."
+        "notes": "Verified against Stellar Docs MCP on 2026-06-29.\nAlso good if the answer: Contrasts with EVM `msg.sender` without importing EVM caller assumptions into Soroban. | Mentions `require_auth_for_args` when the authorized payload should be narrower than the full invocation arguments.\nGolden cites: Official Stellar authorization docs for `Address`, `require_auth`, and host-managed authentication/replay protection. | Official transaction/auth-entry docs when discussing client-supplied Soroban authorization entries.\nGT-42 shared auth atom; direct invoker authorization does not create a readable caller."
       },
       "tags": {
         "category": "soroban",
         "service": "stellarDocs",
-        "freshness": "scheduled"
-      },
-      "truth": {
-        "domain": "mixed",
-        "status": "confirmed",
-        "asOf": "2026-06-29",
-        "reverifyBy": "2026-10-01",
-        "sources": [
-          {
-            "class": "A",
-            "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "B",
-            "ref": "https://github.com/stellar/rs-soroban-sdk/blob/main/soroban-sdk/src/deploy.rs",
-            "note": "class inferred at migration"
-          }
-        ],
-        "corroboration": [
-          {
-            "claim": "Network-specific SAC derivation and current native/USDC IDs",
-            "verdict": "confirmed",
-            "evidence": [
-              {
-                "class": "A",
-                "ref": "A/B: SAC/SDK source",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "B",
-                "ref": "A/B: SAC/SDK source",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "F",
-                "ref": "F: stellar CLI 27 re-derived all literals",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              }
-            ]
-          }
-        ],
-        "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The deterministic values were correct, but the explicit in-contract derivation branch was missing and freshness needed asset-selection scope.",
-          "evidence": [
-            "Solo scratchpad 575 GT-42 processes 3308/3315."
-          ],
-          "rootCause": [
-            "Eval-side answer completeness."
-          ]
-        },
-        "origin": "raven-next q-sor-native-xlm-sac-address"
-      }
-    },
-    {
-      "id": "q-soroban-cli-bindings",
-      "question": "How do I generate a typed TypeScript or Rust client for a deployed contract or a local Wasm artifact with the Stellar CLI?",
-      "surface": [
-        "stellarDocs.search_sdk_cli_tools_docs",
-        "stellarDocs.search_soroban_contract_docs"
-      ],
-      "golden": {
-        "answer": "Use the language-specific subcommand. In Stellar CLI 27.0.0, TypeScript is implemented as `stellar contract bindings typescript --output-dir <dir> (--wasm <file> | --wasm-hash <hash> | --contract-id <C…>)`. Rust binding generation is implemented only from local `--wasm` and emits Rust source; for an on-chain Rust target, first fetch/export the exact Wasm and generate from that file. Python, Java, Flutter, Swift, and PHP appear as subcommands but currently exit as not implemented and direct users to external tooling—do not present them as built-in generators. Bindings snapshot the selected embedded spec and must be regenerated after interface changes. `contractimport!` is the separate in-contract Rust typed-client pattern; EVM ABI JSON/ethers is irrelevant.",
-        "keyFacts": [
-          "Gives the exact CLI-27 TypeScript versus Rust input matrix and placeholder-language boundary.",
-          "Explains spec snapshot/regeneration and contractimport! distinction."
-        ],
-        "avoid": [
-          "Do NOT generalize TypeScript's three inputs to Rust/placeholder languages, claim automatic synchronization, or use stellar contract abi/EVM ABI flows."
-        ],
-        "notes": "Command + targets (--wasm / --wasm-hash / --contract-id) and language list verified against the Stellar CLI manual. 2026-06-29 differentiation: this file is the simple CLI bindings how-to (deployed contract OR local Wasm); the no-address→discover-functions/constructor→deploy-with-constructor-args JS-SDK flow is owned by q-sor-bindings-from-wasm-no-address. Fixed q to name the local-Wasm target.\nAlso good if the answer: You can target a deployed contract id or a local .wasm to produce the bindings. | In Rust, the `contractimport!` macro is the in-code equivalent for typed cross-contract clients.\nGolden cites: The developers.stellar.org Stellar CLI bindings documentation.\nGT-44 empirical capability matrix from stellar 27.0.0; version-qualify future changes."
-      },
-      "tags": {
-        "category": "soroban",
-        "service": "stellarDocs",
-        "freshness": "scheduled"
+        "freshness": "stable"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-06-29",
-        "reverifyBy": "2026-10-01",
         "sources": [
           {
             "class": "A",
-            "ref": "https://developers.stellar.org/docs/tools/cli/stellar-cli",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "B",
-            "ref": "https://github.com/stellar/stellar-cli/blob/main/cmd/soroban-cli/src/commands/contract/bindings.rs",
+            "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization",
             "note": "class inferred at migration"
           },
           {
             "class": "A",
-            "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/types/fully-typed-contracts",
+            "ref": "https://developers.stellar.org/docs/build/guides/auth/contract-authorization",
             "note": "class inferred at migration"
           }
         ],
         "corroboration": [
           {
-            "claim": "Stellar CLI 27 binding generator capability matrix",
-            "verdict": "confirmed-as-of",
+            "claim": "Explicit Address auth and unreadable caller boundary",
+            "verdict": "confirmed",
             "evidence": [
               {
                 "class": "A",
-                "ref": "A/B: CLI manual/source",
+                "ref": "A/B: auth docs/SDK source",
                 "observedAt": "2026-07-11",
                 "note": "verbatim legacy evidence descriptor imported at migration"
               },
               {
                 "class": "B",
-                "ref": "A/B: CLI manual/source",
+                "ref": "A/B: auth docs/SDK source",
                 "observedAt": "2026-07-11",
                 "note": "verbatim legacy evidence descriptor imported at migration"
               },
               {
                 "class": "F",
-                "ref": "F: successful TS/Rust and five not-implemented probes",
+                "ref": "F: GT-42 primary/blind",
                 "observedAt": "2026-07-11",
                 "note": "verbatim legacy evidence descriptor imported at migration"
               }
@@ -2167,15 +1965,98 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited answer presented placeholder language subcommands and TypeScript input options as universally implemented CLI generators.",
+          "by": "Golden-truth sweep import — The headline was correct but needed the direct-contract-invoker auth exception to stay consistent with propagation and token-call siblings.",
           "evidence": [
-            "Solo scratchpad 575 GT-44 processes 3316/3324; stellar 27.0.0 empirical run."
+            "Solo scratchpad 575 GT-42 processes 3308/3315."
           ],
           "rootCause": [
-            "CLI capability drift/local golden overgeneralization."
+            "Eval-side cross-case auth precision."
           ]
         },
-        "origin": "raven-next q-soroban-cli-bindings"
+        "origin": "raven-next q-sor-msg-sender-equivalent"
+      }
+    },
+    {
+      "id": "q-soroban-check-auth-custom-account",
+      "question": "How do I build a custom account (smart wallet) contract in Soroban using __check_auth?",
+      "surface": [
+        "stellarDocs.search_protocol_concepts_docs",
+        "stellarDocs.search_soroban_contract_docs",
+        "stellarDocs.search_wallet_dapp_docs"
+      ],
+      "golden": {
+        "answer": "Implement reserved `CustomAccountInterface::__check_auth(signature_payload: BytesN<32>, signature: Val, auth_contexts: Vec<Context>)`. When another invocation requires that C-address, the host—not a direct user call—dispatches this function. The contract decodes/verifies its chosen signatures (Ed25519, WebAuthn/secp256r1, multisig, etc.) and applies policy over `auth_contexts`, returning success only when valid. For standard Soroban address credentials the host validates/consumes the nonce before `__check_auth`, enforces expiry/replay/invocation exhaustion, and normally makes a second contract replay nonce unnecessary; a separate application protocol may define a separate replay domain. Never call `require_auth` on the account's own address inside `__check_auth`, which recurses.",
+        "keyFacts": [
+          "Gives the reserved ABI and host-only dispatch.",
+          "Assigns signature/policy checks to the contract and standard nonce/expiry/replay to the host."
+        ],
+        "avoid": [
+          "Do NOT model this as EIP-4337, direct user invocation, mandatory home-grown standard nonce, or recursive own-address require_auth."
+        ],
+        "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections. ERC-4337 confusion is the EVM trap. scout_repos acceptable for code templates. Verified against the docs 'complex-account' multisig example + authorization docs.\nAlso good if the answer: It enables account abstraction: arbitrary signature schemes (e.g., Ed25519, secp256r1/passkeys, multisig) instead of a classic Stellar keypair. | The contract is responsible for its own replay protection (e.g., nonces) when relevant.\nGolden cites: The developers.stellar.org custom-account / authorization docs (complex-account example).\nGT-44 independently corrected the replay responsibility and generic signature: Val ABI."
+      },
+      "tags": {
+        "category": "soroban",
+        "service": "stellarDocs",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-11.md",
+            "note": "class inferred at migration"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/auth/check-auth-tutorials",
+            "note": "class inferred at migration"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization",
+            "note": "class inferred at migration"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Custom-account host/contract responsibility split",
+            "verdict": "confirmed",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "A/B: authorization docs and CAP-0046-11",
+                "observedAt": "2026-07-11",
+                "note": "verbatim legacy evidence descriptor imported at migration"
+              },
+              {
+                "class": "B",
+                "ref": "A/B: authorization docs and CAP-0046-11",
+                "observedAt": "2026-07-11",
+                "note": "verbatim legacy evidence descriptor imported at migration"
+              },
+              {
+                "class": "F",
+                "ref": "F: GT-44 primary/blind",
+                "observedAt": "2026-07-11",
+                "note": "verbatim legacy evidence descriptor imported at migration"
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "Golden-truth sweep import — The inherited answer wrongly assigned standard Soroban replay nonce management to the custom account contract and blurred the reserved ABI.",
+          "evidence": [
+            "Solo scratchpad 575 GT-44 processes 3316/3324."
+          ],
+          "rootCause": [
+            "Eval-side custom-account replay model error."
+          ]
+        },
+        "origin": "raven-next q-soroban-check-auth-custom-account"
       }
     },
     {
@@ -2261,23 +2142,25 @@
       }
     },
     {
-      "id": "q-soroban-resource-limits",
-      "question": "What resource limits can cause a Soroban transaction to fail, like CPU instructions, memory, and ledger entries?",
+      "id": "q-soroban-restore-archived-entry",
+      "question": "My contract's Persistent storage entry got archived. How do I restore it so I can use the contract again?",
       "surface": [
         "stellarDocs.search_protocol_concepts_docs",
+        "stellarDocs.search_rpc_horizon_data_docs",
+        "stellarDocs.search_sdk_cli_tools_docs",
         "stellarDocs.search_soroban_contract_docs"
       ],
       "golden": {
-        "answer": "Soroban limits several independent dimensions: transaction/envelope size, footprint entry counts and bytes, disk/ledger reads and writes, CPU instructions, memory, ledger-entry size, event bytes, and return-value size. The network settings are validator-controlled and can change. Enforcement is not uniformly 'during execution': declared transaction/footprint/size maxima can fail validation or preflight, while actual instruction, memory, I/O, event, and return usage can fail when the invocation is applied. Many resources also have ledger-wide budgets, but not every transaction resource has a one-for-one ledger analogue—for example, current configuration has a transaction memory cap without a separate ledger memory cap. Simulate and inspect the target network rather than freezing values.",
+        "answer": "For Protocol 23+ the normal path is to simulate the invocation and assemble the returned transaction data. An archived Persistent entry or contract-instance entry can then auto-restore before the host function runs only when its key is in the invocation's read-write footprint and marked in `archivedSorobanEntries`. If simulation returns a restore preamble, or the automatic restoration exceeds limits, submit the indicated `RestoreFootprintOp` restoration transaction and then re-simulate/retry the invocation. Restoration charges rent/fees and the caller should extend TTL afterward. Expired Temporary entries cannot be restored.",
         "keyFacts": [
-          "Names the multidimensional limits including event, return, entry-size, footprint, I/O, CPU, memory, and transaction size.",
-          "Distinguishes validation/preflight from apply-time enforcement and says many, not all, resources have ledger aggregates."
+          "Makes simulation plus P23 auto-restore the normal path.",
+          "Requires read-write footprint and archivedSorobanEntries metadata; keeps RestoreFootprintOp as fallback."
         ],
         "avoid": [
-          "Do NOT reduce limits to one gas scalar or freeze network numbers.",
-          "Do NOT say every limit fails only during execution or every resource has a ledger-wide analogue."
+          "Do NOT say RestoreFootprintOp is always required or that auto-restore needs no metadata.",
+          "Do NOT claim Temporary data is restorable."
         ],
-        "notes": "Freshness: limit constants are validator-voted config and retuned across protocols; reward flagging config-tunability rather than quoting a fixed number. Categories verified against the fees/resource-limits page.\nAlso good if the answer: The Wasm memory limit is a hard ceiling with no fee (you cannot pay to exceed it). | Hitting a resource limit produces a failed transaction at execution, not a soft warning.\nGolden cites: The developers.stellar.org fees/resource-limits/metering page (config settings).\nGT-47 BLIND CORRECTION 2026-07-11: phase enforcement and avoid the every-resource ledger-cap absolute."
+        "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). Freshness: auto-restore is CAP-0066/P23-gated. VERIFIED against state-archival docs (2026-06): archived Persistent/Instance entries are restorable; since Protocol 23 InvokeHostFunction auto-restores entries in the restore footprint (populated by RPC simulation), so RestoreFootprintOp is 'for the most part no longer needed'; Temporary is NOT restorable.\nAlso good if the answer: Since CAP-0066 (Protocol 23), `InvokeHostFunction` can auto-restore archived entries listed in its restore footprint within the same transaction. | After restoring, you should extend the entry's TTL (`extend_ttl()`) to keep it live.\nGolden cites: The developers.stellar.org state-archival / restore guide (and CLI restore reference).\nGT-47 CORRECTION 2026-07-11: use read-write footprint + archivedSorobanEntries for IHF auto-restore; restoration footprint names the manual op path."
       },
       "tags": {
         "category": "soroban",
@@ -2292,40 +2175,40 @@
         "sources": [
           {
             "class": "A",
-            "ref": "https://developers.stellar.org/docs/learn/fundamentals/fees-resource-limits-metering",
+            "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival",
             "note": "class inferred at migration"
           },
           {
             "class": "B",
-            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-07.md",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0066.md",
             "note": "class inferred at migration"
           },
           {
             "class": "B",
-            "ref": "https://github.com/stellar/stellar-core",
+            "ref": "https://github.com/stellar/stellar-core/blob/master/src/transactions/InvokeHostFunctionOpFrame.cpp",
             "note": "class inferred at migration"
           }
         ],
         "corroboration": [
           {
-            "claim": "Soroban resource enforcement is phased: declared size/footprint constraints can fail validation/preflight, actual execution resources fail at apply, and many but not all transaction limits have ledger aggregates.",
+            "claim": "P23 auto-restore requires the archived key in the invocation read-write footprint and archivedSorobanEntries metadata; RestoreFootprintOp is the fallback when automatic restoration cannot fit or is separated.",
             "verdict": "confirmed",
             "evidence": [
               {
                 "class": "A",
-                "ref": "A: current fees/resource limits documentation",
+                "ref": "A: current state-archival documentation",
                 "observedAt": "2026-07-11",
                 "note": "verbatim legacy evidence descriptor imported at migration"
               },
               {
                 "class": "B",
-                "ref": "B: CAP-0046-07 and current stellar-core transaction/host-frame source",
+                "ref": "B: CAP-0066 and current InvokeHostFunctionOpFrame source/tests",
                 "observedAt": "2026-07-11",
                 "note": "verbatim legacy evidence descriptor imported at migration"
               },
               {
                 "class": "F",
-                "ref": "F: CLI 27 network-settings and live read-only configuration probes",
+                "ref": "F: CLI 27 restore/simulation help",
                 "observedAt": "2026-07-11",
                 "note": "verbatim legacy evidence descriptor imported at migration"
               }
@@ -2334,124 +2217,147 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited answer correctly described multidimensional/configurable limits but falsely said all failures occur during execution and implied every resource has both transaction and ledger caps. It also omitted event, return-value, and ledger-entry-size boundaries.",
+          "by": "Golden-truth sweep import — The inherited restoration explanation used ambiguous 'restore footprint' language and led with the manual operation even though P23 automatic restore is the normal simulated invocation path.",
           "evidence": [
-            "Solo scratchpad 575 GT-47 primary 3327 and valid blind 3334; blind independently rejected the execution-only/every-resource-ledger-cap absolutes."
+            "Solo scratchpad 575 GT-47 primary 3327 and blind 3334; both required the same metadata precision, with blind distinguishing the two footprints."
           ],
           "rootCause": [
-            "Eval-side resource taxonomy flattened validation, pre-execution, and apply-time enforcement into one phase.",
-            "improvements/stellar-docs/sd-024-transaction-resource-xdr-drift.md"
+            "improvements/stellar-docs/sd-007-state-archival-auto-restore-ambiguity.md",
+            "Eval-side terminology conflated invocation restore metadata with RestoreFootprintOp's restoration footprint."
           ]
         },
-        "origin": "raven-next q-soroban-resource-limits"
+        "origin": "raven-next q-soroban-restore-archived-entry"
       }
     },
     {
-      "id": "q-ti-channel-accounts-throughput",
-      "question": "How do I submit many Stellar transactions at high throughput - channel accounts to avoid tx_bad_seq / `invalid u32` sequence overflow, which submission errors are retriable (TRY_AGAIN_LATER), and can I push the same signed tx to multiple RPC providers?",
+      "id": "q-stellar-recurring-payments",
+      "question": "How should recurring or subscription payments be implemented safely on Stellar?",
       "surface": [
-        "stellarDocs.search_protocol_concepts_docs",
-        "stellarDocs.search_rpc_horizon_data_docs",
-        "stellarDocs.search_soroban_contract_docs"
+        "stellarDocs.search_wallet_dapp_docs",
+        "skills.stellar-dev.dapp",
+        "skills.stellar-dev.smart-contracts"
       ],
       "golden": {
-        "answer": "High-throughput classic submission is mostly sequence-lane management. A Stellar transaction is bound to its source account sequence; if multiple workers build from the same stale account snapshot, all but the first can hit `tx_bad_seq`. The official error-handling page says invalid sequence errors commonly come from concurrent submissions or outdated account views, and warns that blindly rebuilding with a new sequence can duplicate payments if the original user intent was only one payment (https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/error-handling).\n\nUse channel accounts when you need parallelism: pre-create/fund N accounts, assign each worker or queue partition to one channel account as transaction source, and serialize sequence consumption within each lane. For user-funded operations, keep the user or business account as the operation source/signer where needed, but use the channel account as the transaction source that pays fees and advances sequence.\n\nRetry policy should be conservative. `TRY_AGAIN_LATER` is explicitly a temporary submission status: wait before resubmitting, because Core may already have another transaction from the same source in memory or the fee was too low and retried too soon (https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/error-handling). Terminal transaction result codes such as `tx_bad_seq`, `tx_insufficient_balance`, and `tx_insufficient_fee` are documented separately and should be handled by inspecting the result code, not by generic retry loops (https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/result-codes/transactions). Fee-bump replacement exists for the \"same sequence, higher fee\" case and has its own replacement rule (https://developers.stellar.org/docs/build/guides/transactions/fee-bump-transactions).\n\nSubmitting the same signed envelope to more than one provider is generally safe as a broadcast tactic because the transaction hash/envelope is identical; one provider may report pending, duplicate, not found yet, or accepted before another catches up. The unsafe move is changing the sequence or contents and treating that as the same intent. If a library throws `invalid u32` around sequence handling, debug the client/library typing path: Stellar sequence numbers are not a u32 throughput counter.",
+        "answer": "Stellar does not execute a merchant's future charge merely because a prior payment occurred. Implement recurrence in an application or contract-account policy. A user can authorize a narrowly scoped session or delegated signer that permits only a named contract, asset, maximum amount, cadence, and expiry; an off-chain scheduler then submits each authorized charge. Provide revocation, pause, idempotency, receipts, failed-payment handling, and a clear distinction between a pull authorization and custody.",
         "keyFacts": [
-          "Explains that a Stellar transaction consumes exactly one source-account sequence number and concurrent submissions from one source account cause `tx_bad_seq`; channel accounts are separate funded source accounts used to parallelize sequence lanes.",
-          "Warns not to blindly rebuild and resubmit payments after `tx_bad_seq`, because changing the sequence can make duplicate user intents succeed.",
-          "Classifies `TRY_AGAIN_LATER` as retryable with delay/same envelope or queue management, while terminal result codes require fixing/rebuilding the transaction.",
-          "States that pushing the same signed transaction envelope to multiple Horizon/RPC providers is idempotent at ledger level by hash, but clients must handle duplicate/pending/not-found/provider-lag responses and must not mutate the sequence/fee unless intentionally fee-bumping or rebuilding.",
-          "Mentions sequence values are 64-bit ledger/account sequence numbers; `invalid u32` usually points to a client parsing/typing bug, not a Stellar protocol sequence limit."
+          "Recurring billing requires application scheduling and/or contract-account policy; one payment does not create an automatic standing order.",
+          "A delegated credential should restrict merchant, asset, amount, cadence, and expiry.",
+          "Users need revocation and pause controls, while the billing service needs idempotency and failed-payment handling."
         ],
         "avoid": [
-          "Do NOT omit operation-source signatures or submit uncoordinated transactions in one source-account sequence lane.",
-          "Do NOT rebuild every uncertain transaction with a new sequence or treat a mutated envelope as the same transaction.",
-          "Do NOT promise fixed/linear TPS, bypass network/provider limits, or confuse channel accounts with payment channels/contract accounts."
-        ],
-        "notes": "Primary docs verify sequence and retry semantics. The multi-provider RPC submission guidance is an inference from signed-envelope/hash idempotence plus documented duplicate/pending behavior; no live two-provider submission was run in Phase 3.\nAlso good if the answer: Mentions fee-bump replacement rules where relevant instead of using sequence changes as a replacement strategy. | Cites Horizon error handling/result-code docs and Soroban/Core retry guidance.\nGolden cites: Official Stellar error-handling docs for `tx_bad_seq` and `TRY_AGAIN_LATER`. | Official result-code docs for transaction-level failures.\nGT-51 PRECISION CORRECTION 2026-07-11: require transaction-source/operation-source/signature mapping, immutable-envelope hash handling, and no throughput guarantee."
+          "Stellar automatically repeats any payment operation at a specified monthly interval.",
+          "A subscription merchant needs the user's unrestricted private key."
+        ]
       },
       "tags": {
-        "category": "tooling-infra",
+        "category": "compliance-rwa-payments",
         "service": "stellarDocs",
-        "freshness": "scheduled"
+        "freshness": "stable"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-10-01",
         "sources": [
           {
             "class": "A",
-            "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/error-handling",
-            "note": "class inferred at migration"
+            "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns"
           },
           {
-            "class": "A",
-            "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/result-codes/transactions",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "A",
-            "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/errors-and-debugging/debugging-errors",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "A",
-            "ref": "https://developers.stellar.org/docs/build/guides/transactions/fee-bump-transactions",
-            "note": "class inferred at migration"
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts"
           }
         ],
         "corroboration": [
           {
-            "claim": "Channel accounts provide independent transaction-source sequence/fee lanes while explicit operation sources retain their own balance/authorization and signatures.",
+            "claim": "Recurring billing requires application scheduling and/or contract-account policy; one payment does not create an automatic standing order.",
             "verdict": "confirmed",
             "evidence": [
               {
                 "class": "A",
-                "ref": "A: official channel-account, transaction, and result-code documentation",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+                "observedAt": "2026-07-11"
               },
               {
-                "class": "F",
-                "ref": "F: offline SDK transaction with channel source, explicit operation source, and both signatures",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "class": "B",
+                "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+                "observedAt": "2026-07-11"
               }
             ]
           },
           {
-            "claim": "Rebroadcasting the identical signed envelope preserves its transaction hash; provider status can differ, but mutating the envelope is a different transaction.",
+            "claim": "A delegated credential should restrict merchant, asset, amount, cadence, and expiry.",
             "verdict": "confirmed",
             "evidence": [
               {
                 "class": "A",
-                "ref": "A: Horizon/RPC submission and error semantics",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+                "observedAt": "2026-07-11"
               },
               {
                 "class": "B",
-                "ref": "B: envelope/hash protocol behavior",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "Users need revocation and pause controls, while the billing service needs idempotency and failed-payment handling.",
+            "verdict": "confirmed",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "Stellar automatically repeats any payment operation at a specified monthly interval.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "A subscription merchant needs the user's unrestricted private key.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+                "observedAt": "2026-07-11"
               }
             ]
           }
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited core was sound, but it under-specified transaction-source versus operation-source signatures, treated multi-provider broadcast as an unsupported inference in notes, and lacked a hard no-fixed-TPS boundary.",
+          "by": "P4 H2 primary+blind (Solo 3411/3412)",
           "evidence": [
-            "Solo scratchpad 575 GT-51 processes 3353/3360 independently retained the channel core and added the source/signature, retry, and non-guarantee precision.",
-            "Sibling sweep checked q-pc-fee-bump-channel-accounts-feepool and q-ti-tx-too-late-resubmit."
-          ],
-          "rootCause": [
-            "Eval-side architecture/rubric incompleteness: source/signature mapping and performance non-guarantees were not explicit."
+            "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+            "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts"
           ]
         },
-        "origin": "raven-next q-ti-channel-accounts-throughput"
+        "origin": "kaan recurring-subscriptions-stellar"
       }
     },
     {

@@ -1,0 +1,130 @@
+{
+  "id": "q-anchor-endpoint-discovery",
+  "question": "How does a wallet discover and integrate a Stellar anchor's SEP-24 endpoints?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "skills.stellar-dev.standards"
+  ],
+  "golden": {
+    "answer": "Begin with the asset issuer's home domain, fetch /.well-known/stellar.toml under SEP-1, and read the advertised WEB_AUTH_ENDPOINT and TRANSFER_SERVER_SEP0024 values. Authenticate with SEP-10, then call SEP-24's info and interactive endpoints and track the transaction status. A directory entry can help find an anchor, but it is not the integration contract; the issuer's signed operational domain and current stellar.toml are authoritative. Test against a sandbox before using production credentials.",
+    "keyFacts": [
+      "SEP-1 stellar.toml on the issuer's home domain advertises anchor service endpoints.",
+      "SEP-10 authentication precedes protected SEP-24 interactions.",
+      "An anchor directory is discovery metadata, not a substitute for the anchor's current stellar.toml and API responses."
+    ],
+    "avoid": [
+      "The anchor directory itself supplies every anchor's authenticated SEP-24 API endpoint.",
+      "SEP-24 can be integrated without discovering the issuer domain or authenticating when the anchor requires SEP-10."
+    ]
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/example-application-tutorial/anchor-integration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SEP-1 stellar.toml on the issuer's home domain advertises anchor service endpoints.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/example-application-tutorial/anchor-integration",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-10 authentication precedes protected SEP-24 interactions.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/example-application-tutorial/anchor-integration",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "An anchor directory is discovery metadata, not a substitute for the anchor's current stellar.toml and API responses.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/example-application-tutorial/anchor-integration",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "The anchor directory itself supplies every anchor's authenticated SEP-24 API endpoint.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/example-application-tutorial/anchor-integration",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-24 can be integrated without discovering the issuer domain or authenticating when the anchor requires SEP-10.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/example-application-tutorial/anchor-integration",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/build/apps/example-application-tutorial/anchor-integration",
+        "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md"
+      ]
+    },
+    "origin": "kaan anchor-discovery-integration"
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "id": "q-sep53-message-signing",
+  "question": "What does SEP-53 standardize for signing arbitrary messages with Stellar keys, and how is it different from signing a transaction?",
+  "surface": [
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "skills.stellar-dev.standards"
+  ],
+  "golden": {
+    "answer": "SEP-53 is Final, Version 1.0.0, updated 2026-06-18. Prefix the exact message bytes with `Stellar Signed Message:\n` including the newline, apply one SHA-256, then Ed25519-sign the 32-byte digest. Current support includes JS/TS signMessage/verifyMessage, Python snake-case equivalents, Java, Flutter/Dart, iOS/Swift, PHP, KMP, and `stellar message sign|verify`; check the installed release. SEP-43 is a separate Draft wallet API. One key signature does not prove a current multisig threshold, M-address, or contract-account policy and has no nonce or expiry unless the message includes them.",
+    "keyFacts": [
+      "SEP-53 prefixes `Stellar Signed Message:\n` including the newline, appends exact message bytes, hashes once with SHA-256, then Ed25519-signs the 32-byte digest.",
+      "SEP-53 is Final, Version 1.0.0, updated 2026-06-18.",
+      "Current SDK/CLI support spans JS/TS, Python, Java, Flutter/Dart, iOS/Swift, PHP, KMP, and stellar CLI; users must check installed releases.",
+      "SEP-43 is a separate Draft wallet API, not SEP-53's implementation.",
+      "One key signature does not prove multisig threshold, M-address, or contract-account policy control and has no nonce/expiry unless included."
+    ],
+    "avoid": [
+      "SEP-53 message signing broadcasts the signed message as a Stellar transaction.",
+      "Signing raw message bytes without SEP-53 domain separation is guaranteed cross-SDK compatible."
+    ],
+    "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-15",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-cli"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0043.md"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SEP-53 prefixes `Stellar Signed Message:\n` including the newline, appends exact message bytes, hashes once with SHA-256, then Ed25519-signs the 32-byte digest.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-cli",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0043.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-53 is Final, Version 1.0.0, updated 2026-06-18.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-cli",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0043.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Current SDK/CLI support spans JS/TS, Python, Java, Flutter/Dart, iOS/Swift, PHP, KMP, and stellar CLI; users must check installed releases.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-cli",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0043.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-43 is a separate Draft wallet API, not SEP-53's implementation.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-cli",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0043.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "One key signature does not prove multisig threshold, M-address, or contract-account policy control and has no nonce/expiry unless included.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-cli",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0043.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-53 message signing broadcasts the signed message as a Stellar transaction.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-cli",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0043.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Signing raw message bytes without SEP-53 domain separation is guaranteed cross-SDK compatible.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-cli",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0043.md",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md",
+        "https://github.com/stellar/stellar-cli",
+        "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0043.md"
+      ]
+    },
+    "origin": "kaan sep53-sign-verify-message"
+  }
+}

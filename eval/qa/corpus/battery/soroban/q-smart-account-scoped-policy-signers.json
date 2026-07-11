@@ -1,0 +1,131 @@
+{
+  "id": "q-smart-account-scoped-policy-signers",
+  "question": "How can a Stellar smart account authorize scoped calls, spending limits, time windows, and regulated co-signing without giving every signer full control?",
+  "surface": [
+    "stellarDocs.search_wallet_dapp_docs",
+    "skills.stellar-dev.dapp",
+    "skills.stellar-dev.smart-contracts"
+  ],
+  "golden": {
+    "answer": "Put the rules in the contract account's __check_auth policy: bind authorization to the invocation tree and enforce allowed contracts/functions, asset and amount caps, expiry windows, and threshold or guardian requirements. Use delegated or session credentials with narrow scope rather than sharing a master key. For many partners, route approvals through policy or verifier contracts instead of adding every participant as an unrestricted signer. Include revocation, pause, replay protection, and auditable policy updates.",
+    "keyFacts": [
+      "Contract-account authorization can bind a credential to specific calls, amounts, assets, and time windows.",
+      "Delegated or session credentials should be narrowly scoped instead of exposing a full-control key.",
+      "Policy or verifier contracts can express partner co-signing without turning every partner into an unrestricted signer."
+    ],
+    "avoid": [
+      "Classic account thresholds are the only way to implement scoped authorization on Stellar.",
+      "A session signer must receive the wallet's master private key."
+    ]
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Contract-account authorization can bind a credential to specific calls, amounts, assets, and time windows.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Delegated or session credentials should be narrowly scoped instead of exposing a full-control key.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Policy or verifier contracts can express partner co-signing without turning every partner into an unrestricted signer.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Classic account thresholds are the only way to implement scoped authorization on Stellar.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "A session signer must receive the wallet's master private key.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/build/guides/contract-accounts/advanced-patterns",
+        "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts"
+      ]
+    },
+    "origin": "kaan policy-signers-scoped-auth"
+  }
+}

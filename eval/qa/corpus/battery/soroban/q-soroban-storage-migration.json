@@ -1,0 +1,131 @@
+{
+  "id": "q-soroban-storage-migration",
+  "question": "How should stored data be migrated when a Soroban contract upgrade changes its data structures?",
+  "surface": [
+    "stellarDocs.search_soroban_contract_docs",
+    "skills.openzeppelin-stellar.upgrade-stellar-contracts",
+    "skills.stellar-dev.smart-contracts"
+  ],
+  "golden": {
+    "answer": "Updating a contract's Wasm keeps the contract address and storage; it does not rewrite stored values into a new schema. Version stored records and use either lazy migration on read/write or a controlled migration entrypoint that converts bounded batches. Keep old and new decoding paths only for the migration window, make the operation idempotent, test against production-shaped state, and retain rollback or pause controls. Large migrations should be batched to stay within transaction resources.",
+    "keyFacts": [
+      "A Wasm upgrade does not automatically transform existing contract storage.",
+      "Versioned records can be migrated lazily or through a controlled explicit migration entrypoint.",
+      "Large migrations should be idempotent and batched to fit transaction resource limits."
+    ],
+    "avoid": [
+      "Uploading new Wasm automatically re-encodes all existing storage values.",
+      "Every migration must fit into one transaction."
+    ]
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/storage/migrate-contract-storage"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/contract-utils/src/upgradeable"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A Wasm upgrade does not automatically transform existing contract storage.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/storage/migrate-contract-storage",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/contract-utils/src/upgradeable",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Versioned records can be migrated lazily or through a controlled explicit migration entrypoint.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/storage/migrate-contract-storage",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/contract-utils/src/upgradeable",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Large migrations should be idempotent and batched to fit transaction resource limits.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/storage/migrate-contract-storage",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/contract-utils/src/upgradeable",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Uploading new Wasm automatically re-encodes all existing storage values.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/storage/migrate-contract-storage",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/contract-utils/src/upgradeable",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Every migration must fit into one transaction.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/guides/storage/migrate-contract-storage",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/contract-utils/src/upgradeable",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/build/guides/storage/migrate-contract-storage",
+        "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/contract-utils/src/upgradeable"
+      ]
+    },
+    "origin": "kaan soroban-storage-migration-upgrade"
+  }
+}

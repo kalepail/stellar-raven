@@ -1,0 +1,133 @@
+{
+  "id": "q-production-anchor-architecture",
+  "question": "What components and operational controls belong in a production Stellar anchor stack?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "skills.stellar-dev.standards"
+  ],
+  "golden": {
+    "answer": "A production anchor publishes SEP-1 metadata, authenticates clients with SEP-10, gathers customer data under SEP-12, and implements SEP-24 and/or SEP-6 for deposits and withdrawals; SEP-31 is added for cross-border receiving flows. The on-chain service must be joined to KYC/AML and sanctions workflows, bank or mobile-money adapters, treasury and liquidity management, transaction state, reconciliation, and customer support. Harden it with segregated keys, approval controls, monitoring, idempotent webhooks, audit logs, incident runbooks, and ledger-versus-bank reconciliation. SDF's Anchor Platform is a reference implementation, not the off-chain bank itself.",
+    "keyFacts": [
+      "A production anchor composes the SEPs appropriate to its flow, commonly SEP-1, SEP-10, SEP-12, and SEP-24 and/or SEP-6.",
+      "The anchor must integrate off-chain KYC/compliance, banking or mobile-money rails, treasury liquidity, and reconciliation.",
+      "Production controls include key segregation, monitoring, idempotent processing, audit logs, and incident runbooks."
+    ],
+    "avoid": [
+      "Deploying Anchor Platform automatically supplies banking relationships, licenses, and fiat liquidity.",
+      "On-chain issuance alone is sufficient reconciliation for a production anchor."
+    ],
+    "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/anchor-platform/admin-guide/architecture"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/anchor-platform"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A production anchor composes the SEPs appropriate to its flow, commonly SEP-1, SEP-10, SEP-12, and SEP-24 and/or SEP-6.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/platforms/anchor-platform/admin-guide/architecture",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/anchor-platform",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "The anchor must integrate off-chain KYC/compliance, banking or mobile-money rails, treasury liquidity, and reconciliation.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/platforms/anchor-platform/admin-guide/architecture",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/anchor-platform",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Production controls include key segregation, monitoring, idempotent processing, audit logs, and incident runbooks.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/platforms/anchor-platform/admin-guide/architecture",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/anchor-platform",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Deploying Anchor Platform automatically supplies banking relationships, licenses, and fiat liquidity.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/platforms/anchor-platform/admin-guide/architecture",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/anchor-platform",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "On-chain issuance alone is sufficient reconciliation for a production anchor.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/platforms/anchor-platform/admin-guide/architecture",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/anchor-platform",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/platforms/anchor-platform/admin-guide/architecture",
+        "https://github.com/stellar/anchor-platform"
+      ]
+    },
+    "origin": "kaan production-anchor-architecture"
+  }
+}

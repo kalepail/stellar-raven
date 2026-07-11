@@ -1,0 +1,227 @@
+{
+  "id": "q-passkey-wallet-recovery",
+  "question": "How should recovery be designed for a Stellar passkey smart wallet before the primary passkey is lost?",
+  "surface": [
+    "stellarDocs.search_wallet_dapp_docs",
+    "skills.stellar-dev.dapp",
+    "skills.stellar-dev.smart-contracts"
+  ],
+  "golden": {
+    "answer": "The passkey has no Stellar seed to recover, so recovery must be pre-authorized in contract policy; an Ed25519 fallback may itself use an independently secured Stellar seed. Configure independent signers, guardians, admin, or upgrade authority before loss. Losing every authorized path is unrecoverable at protocol level. Recovery policy can add rotation/revocation, delays, notifications, cancellation, thresholds, and audit events, while explicitly disclosing guardian or provider takeover power. Platform sync improves availability but is not an independent contract recovery path.",
+    "keyFacts": [
+      "The passkey has no Stellar seed to recover; recovery must be pre-authorized in contract policy, while an Ed25519 fallback may use its own secured seed.",
+      "Loss of every signer, admin, guardian, and upgrade authority is unrecoverable at protocol level.",
+      "Recovery controls may include rotation/revocation, delays, notifications, cancellation, thresholds, and audit events.",
+      "Guardian or provider takeover power must be disclosed and constrained.",
+      "Platform passkey synchronization improves availability but is not an independent contract recovery path."
+    ],
+    "avoid": [
+      "A lost passkey can always be recreated from the Stellar contract address.",
+      "Recovery authority can be added after every existing signer, admin, guardian, and upgrade path is lost.",
+      "A correctly scoped Ed25519 recovery signer is invalid merely because it is backed by an independently secured Stellar seed."
+    ]
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/recovery"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.google.com/identity/passkeys/supported-environments"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The passkey has no Stellar seed to recover; recovery must be pre-authorized in contract policy, while an Ed25519 fallback may use its own secured seed.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/recovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Loss of every signer, admin, guardian, and upgrade authority is unrecoverable at protocol level.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/recovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Recovery controls may include rotation/revocation, delays, notifications, cancellation, thresholds, and audit events.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/recovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Guardian or provider takeover power must be disclosed and constrained.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/recovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Platform passkey synchronization improves availability but is not an independent contract recovery path.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/recovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "A lost passkey can always be recreated from the Stellar contract address.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/recovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Recovery authority can be added after every existing signer, admin, guardian, and upgrade path is lost.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/recovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "A correctly scoped Ed25519 recovery signer is invalid merely because it is backed by an independently secured Stellar seed.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/recovery",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.google.com/identity/passkeys/supported-environments",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/build/apps/smart-wallets/recovery",
+        "https://developers.google.com/identity/passkeys/supported-environments",
+        "https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/accounts"
+      ]
+    },
+    "origin": "kaan passkey-wallet-recovery"
+  }
+}

@@ -1,0 +1,255 @@
+{
+  "id": "q-agent-payment-standard-choice",
+  "question": "How should a Stellar API choose between x402, MPP, and other emerging agent-payment protocols without locking its application to one standard?",
+  "surface": [
+    "skills.stellar-dev.agentic-payments",
+    "stellarDocs.search_docs"
+  ],
+  "golden": {
+    "answer": "Choose by interaction and settlement model, then isolate it behind an adapter covering quote/payment intent, payment evidence, settlement, fulfillment, idempotency, and refunds. x402 V2 and MPP both use HTTP 402 but have different payloads and infrastructure; x402 V2 also has extensions, discovery, and session mechanisms, so it is not purely stateless. MPP Charge settles on-chain while Session uses a channel for repeated traffic. AP2 supplies authorization, mandate, and audit semantics that can sit above a rail; ACP is a beta commerce protocol for catalog, cart, checkout, and orders, not Stellar settlement. Cite each protocol's own specification and keep entitlement independent.",
+    "keyFacts": [
+      "x402 V2 and MPP are distinct HTTP-402 protocols with different payloads, settlement, and infrastructure; x402 V2 is not purely stateless.",
+      "MPP Charge settles on-chain, while MPP Session uses cumulative off-chain channel commitments.",
+      "AP2 supplies authorization/mandate/audit semantics above a rail; ACP is a beta commerce protocol, not Stellar settlement.",
+      "A protocol adapter covers quote/payment intent, payment evidence, settlement, fulfillment, idempotency, and refunds."
+    ],
+    "avoid": [
+      "x402, MPP, AP2, and ACP are interchangeable names for the same protocol.",
+      "MPP always requires one on-chain transaction for every paid response."
+    ],
+    "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-15",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://docs.x402.org/"
+      },
+      {
+        "class": "A",
+        "ref": "https://ap2-protocol.org/"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.openai.com/commerce/"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/mpp"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/google-agentic-commerce/AP2"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "x402 V2 and MPP are distinct HTTP-402 protocols with different payloads, settlement, and infrastructure; x402 V2 is not purely stateless.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://docs.x402.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://ap2-protocol.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.openai.com/commerce/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/google-agentic-commerce/AP2",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "MPP Charge settles on-chain, while MPP Session uses cumulative off-chain channel commitments.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://docs.x402.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://ap2-protocol.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.openai.com/commerce/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/google-agentic-commerce/AP2",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "AP2 supplies authorization/mandate/audit semantics above a rail; ACP is a beta commerce protocol, not Stellar settlement.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://docs.x402.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://ap2-protocol.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.openai.com/commerce/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/google-agentic-commerce/AP2",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "A protocol adapter covers quote/payment intent, payment evidence, settlement, fulfillment, idempotency, and refunds.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://docs.x402.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://ap2-protocol.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.openai.com/commerce/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/google-agentic-commerce/AP2",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "x402, MPP, AP2, and ACP are interchangeable names for the same protocol.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://docs.x402.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://ap2-protocol.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.openai.com/commerce/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/google-agentic-commerce/AP2",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "MPP always requires one on-chain transaction for every paid response.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://docs.x402.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://ap2-protocol.org/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.openai.com/commerce/",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/mpp",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/google-agentic-commerce/AP2",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://docs.x402.org/",
+        "https://ap2-protocol.org/",
+        "https://developers.openai.com/commerce/",
+        "https://github.com/stellar/mpp",
+        "https://github.com/google-agentic-commerce/AP2"
+      ]
+    },
+    "origin": "kaan agentic-payment-standard-choice"
+  }
+}

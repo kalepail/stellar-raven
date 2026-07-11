@@ -1,0 +1,221 @@
+{
+  "id": "q-smart-wallet-fee-sponsorship",
+  "question": "How can a Stellar smart-wallet user receive and use USDC without first holding XLM for transaction fees and account reserves?",
+  "surface": [
+    "skills.stellar-dev.agentic-payments",
+    "skills.stellar-dev.dapp",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "Start with the account type. A C-address can hold USDC through its Stellar Asset Contract interface/balance without a G-account or trustline reserve; a G-account still has activation and trustline reserves unless those entries are sponsored. A fee bump or relayer pays transaction fees, while beginSponsoringFutureReserves/endSponsoringFutureReserves assigns eligible reserve liability. Deployment and resources still cost someone. Token-paid FeeForwarder designs and hosted facilitators are current provider designs with caps, liquidity, and abuse controls, not a universal native paymaster.",
+    "keyFacts": [
+      "A C-address SAC balance needs no G-account or trustline reserve; a G-account retains activation and trustline reserves unless sponsored.",
+      "A fee bump or relayer pays transaction fees, while beginSponsoringFutureReserves/endSponsoringFutureReserves assigns reserve liability.",
+      "USDC is used through its Stellar Asset Contract interface/balance, not as a separate wrapped asset.",
+      "Token-paid relaying and hosted facilitators are provider designs with caps, liquidity, and abuse controls, not a universal native paymaster."
+    ],
+    "avoid": [
+      "Gasless onboarding eliminates all network and reserve costs rather than shifting them to a sponsor.",
+      "A classic account can hold an issued USDC asset without a trustline or sponsored trustline."
+    ],
+    "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-12-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/fee-sponsorship"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/encyclopedia/sponsored-reserves"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A C-address SAC balance needs no G-account or trustline reserve; a G-account retains activation and trustline reserves unless sponsored.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/fee-sponsorship",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/learn/encyclopedia/sponsored-reserves",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "A fee bump or relayer pays transaction fees, while beginSponsoringFutureReserves/endSponsoringFutureReserves assigns reserve liability.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/fee-sponsorship",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/learn/encyclopedia/sponsored-reserves",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "USDC is used through its Stellar Asset Contract interface/balance, not as a separate wrapped asset.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/fee-sponsorship",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/learn/encyclopedia/sponsored-reserves",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Token-paid relaying and hosted facilitators are provider designs with caps, liquidity, and abuse controls, not a universal native paymaster.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/fee-sponsorship",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/learn/encyclopedia/sponsored-reserves",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Gasless onboarding eliminates all network and reserve costs rather than shifting them to a sponsor.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/fee-sponsorship",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/learn/encyclopedia/sponsored-reserves",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "A classic account can hold an issued USDC asset without a trustline or sponsored trustline.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/apps/smart-wallets/fee-sponsorship",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/learn/encyclopedia/sponsored-reserves",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "evidence": [
+        "https://developers.stellar.org/docs/build/apps/smart-wallets/fee-sponsorship",
+        "https://developers.stellar.org/docs/learn/encyclopedia/sponsored-reserves",
+        "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "https://github.com/OpenZeppelin/openzeppelin-relayer"
+      ]
+    },
+    "origin": "kaan smart-wallet-fee-sponsorship-onboarding"
+  }
+}
