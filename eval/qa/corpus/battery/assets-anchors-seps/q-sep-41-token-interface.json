@@ -6,27 +6,27 @@
     "stellarDocs.search_soroban_contract_docs"
   ],
   "golden": {
-    "answer": "**SEP-41** is the Draft Soroban Token Interface: the common fungible-token surface shared by the SAC and custom contracts. It defines allowance/approve, balance, burn/burn_from, metadata, current direct `transfer(from, to: MuxedAddress, amount)`, and `transfer_from(spender, from, to: Address, amount)`. Approve's absolute expiry is named `live_until_ledger` in SEP-41 and `expiration_ledger` in some SDK/SAC docs; they are one mechanism. SEP-41 is explicitly a subset of and compatible with the CAP-46-6 SAC interface, so the SAC implements it while layering admin-specific functions. Mint/clawback are standardized events rather than required generic function names. Because SEP-41 remains Draft and signatures evolved, version-qualify current code.",
+    "answer": "Use `stellarDocs.search_asset_token_docs`, `stellarDocs.search_soroban_contract_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Names SEP-41 and its SAC/custom-token relationship. Names CAP-0046-06 and SEP-41 and their spec/interface relationship.",
     "keyFacts": [
+      "Executes the current documented lookup/workflow via stellarDocs.search_asset_token_docs, stellarDocs.search_soroban_contract_docs and labels version, UI, provider, and availability claims as observed.",
       "Names SEP-41 and its SAC/custom-token relationship.",
-      "Gives current MuxedAddress direct-transfer versus Address transfer_from and allowance-expiry semantics.",
       "Names CAP-0046-06 and SEP-41 and their spec/interface relationship."
     ],
     "avoid": [
-      "Do NOT misnumber/misclassify SEP-41, assume SAC-only admin functions are required generic methods, or freeze old signatures."
+      "Do NOT misnumber/misclassify SEP-41, assume SAC-only admin functions are required generic methods, or freeze old signatures.",
+      "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
     ],
     "notes": "Dossier §7.1, Q18. Verified: SEP-0041 'Soroban Token Interface', Status Draft; spec is a subset of the SAC interface, compatible with CAP-46-6.\nAlso good if the answer: Defines common functions like transfer, allowance/approve, balance, and burn.\nGolden cites: SEP-0041 on the stellar-protocol repo or the SAC page on developers.stellar.org.\nGT-43 current SEP-41 v0.4.1 sibling correction."
   },
   "tags": {
     "category": "assets-anchors-seps",
     "service": "stellarDocs",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
     "asOf": "2026-07-11",
-    "reverifyBy": "2026-10-01",
     "sources": [
       {
         "class": "B",
@@ -87,13 +87,10 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 Lane R absorb triage",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-43 blind 3320.",
-        "solo://proj/49/scratchpad/super-corpus-rebuild--585#lane-r-q-asset-sac-cap-sep",
-        "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-06.md",
-        "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md",
-        "https://developers.stellar.org/docs/tokens/stellar-asset-contract"
+        "P4 Lane R behavioral conversion queue, row 87 (q-sep-41-token-interface): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
+        "Current source retained for behavioral retrieval: https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md"
       ],
       "rootCause": [
         "eval-authoring"

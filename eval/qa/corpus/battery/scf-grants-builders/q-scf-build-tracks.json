@@ -6,27 +6,28 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Current SCF Build has three tracks: **Open, Integration, and RFP**; Resubmission is a path, not a fourth track. **Open** is for experienced builders proposing novel Stellar protocols/apps and may include existing traction or deep demonstrated technical knowledge; its project award decision is the only one of the three that goes to community/NQG vote. **Integration** funds work on existing Stellar building blocks or teams with significant traction. Community input may help select Integration building blocks, but individual Integration awards are reviewer/panel decisions. **RFP** funds work against published ecosystem tooling/service needs and is also reviewer/panel selected. Current cap and typical duration are up to $150K in XLM value and roughly 3–6 months.",
+    "answer": "Use `scout.getRfps`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Names Open, Integration, and RFP and treats Resubmission as a path. Distinguishes Open project voting from reviewer decisions and from community input on Integration building blocks.",
     "keyFacts": [
+      "Retrieves source-bounded live results via scout.getRfps, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Names Open, Integration, and RFP and treats Resubmission as a path.",
       "Distinguishes Open project voting from reviewer decisions and from community input on Integration building blocks."
     ],
     "avoid": [
       "Do NOT call Open brand-new-build-only or invent a fourth Build track.",
-      "Do NOT claim every track's projects are community-voted or that Integration building-block input equals a project award vote."
+      "Do NOT claim every track's projects are community-voted or that Integration building-block input equals a project award vote.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "GT-36 CORRECTION 2026-07-10: Open is not brand-new-build-only. Grade the three track identities and distinguish Open project voting, Integration building-block input, and reviewer-selected Integration/RFP awards.\nGT-36 independently confirmed by processes 3290/3291."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -72,12 +73,13 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "Golden-truth sweep import — The track names and vote distinction were right, but Open was incorrectly limited to brand-new builds and the answer obscured community selection of Integration building blocks versus project award decisions.",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-36 primary 3290 and blind 3291."
+        "P4 Lane R behavioral conversion queue, row 67 (q-scf-build-tracks): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/scf-awards/build-award"
       ],
       "rootCause": [
-        "Eval-side shorthand collapsed track eligibility and the object of community input."
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-scf-build-tracks"

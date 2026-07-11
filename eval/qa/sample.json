@@ -1,7 +1,7 @@
 {
   "$comment": "Deterministic stratified sample (N=30, by service) of the owned QA battery.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "f986309e582ad413d1303cfcb4ba074ebd77510f94016ca4ab65c9fdb1072ee2",
+  "corpusContentSha256": "45018fe392a65c243e53a5c646cab1171100f54570efe8c9bfdb125511c6ef2f",
   "counts": {
     "total": 30,
     "byCategory": {
@@ -24,8 +24,8 @@
       "stellarDocs": 17
     },
     "byFreshness": {
-      "live": 4,
-      "scheduled": 9,
+      "live": 6,
+      "scheduled": 7,
       "stable": 17
     },
     "traps": {
@@ -1733,27 +1733,26 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "The **Soroban Security Audit Bank** is an SDF-funded SCF supporting program that pays eligible third-party audit costs for SCF-funded projects; it is not a cash Build grant or vulnerability bounty. Coverage can reach **100% of audit cost**, with no published fixed dollar cap. Current scope includes testnet/nearly-mainnet projects and qualifying projects already on mainnet or seeking follow-up audits. Priority categories are **Financial Protocols, Widely Used Applications, Infrastructure Contracts, and Yield-Bearing Token Protocols**. For an ordinary initial audit, the project pays **5% upfront**, refundable if all critical/high/medium findings are remediated within 20 business days; specified Growth/Scale cohorts may have 0% initial copay, while pre-traction follow-up audits use higher 20% then 50% copays. Terms are current as of 2026-07-10 and should be rechecked.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
         "keyFacts": [
-          "Explains up-to-100% audit-cost coverage without inventing a fixed grant cap.",
-          "Describes current stage/category scope and conditional initial/follow-up copay rules."
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value."
         ],
         "avoid": [
           "Do NOT describe the Audit Bank as cash funding or the SDF Bug Bounty.",
-          "Do NOT invent a fixed dollar cap, claim it is pre-mainnet-only, or generalize the refundable 5% initial copay to every audit."
+          "Do NOT invent a fixed dollar cap, claim it is pre-mainnet-only, or generalize the refundable 5% initial copay to every audit.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "GT-36 CORRECTION 2026-07-10: grade up-to-100% cost coverage, four current priority categories, qualifying pre/post-mainnet and follow-up paths, and conditional copay semantics. The inherited avoid was truncated and is replaced in full.\nGT-36 independently confirmed by processes 3290/3291."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -1788,12 +1787,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The answer incorrectly limited Audit Bank to pre-mainnet projects, omitted the fourth priority category and copay progression/exceptions, and its second avoid item was mechanically truncated into an unusable evaluator field.",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-36 primary 3290 and blind 3291; corrupted effective avoid verified against vendored source."
+            "P4 Lane R behavioral conversion queue, row 65 (q-scf-audit-bank): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.org/grants-and-funding/soroban-audit-bank"
           ],
           "rootCause": [
-            "Eval-side stale scope compression plus mechanically truncated avoid text."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-audit-bank"
@@ -1809,28 +1809,28 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Yes. As of **2026-07-10**, the official Stellar Ambassador Program lists **Stellar India** among its active Asia-Pacific chapters, with the status **Exploratory Chapter**. Its dedicated page names Sahitya Roy of Rise In as Chapter Lead and links current joining, events, community, and education channels.\n\nThere is also direct, dated activity beyond the directory label: 2026 operator/event records include Build Station sprints and community events in several Indian cities. One current example is the **Jaipur Builders Camp, August 14–18, 2026**, a five-day Rise In / Stellar India builder residency. Treat individual events as dated operator evidence, not proof that SDF centrally runs every activation or that participation is paid.\n\nRegional chapters may guide eligible builders toward Instawards, but chapter support is not a funding commitment: SDF makes the final decision, typical initial Instawards are $1K–$5K in USD value paid in XLM, and $15K is the conditional aggregate maximum over time rather than an automatic first award.",
+        "answer": "Use `scout.getBuilders`, `scout.getHackathon`, `scout.getHackathons`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Confirms the officially listed active Stellar India Exploratory Chapter and distinguishes that label from a claim that SDF centrally operates every local event.",
         "keyFacts": [
-          "Confirms the officially listed active Stellar India Exploratory Chapter and distinguishes that label from a claim that SDF centrally operates every local event.",
-          "Uses dated official/operator evidence for current activity; Jaipur Builders Camp is August 14–18, 2026, not Goa in July."
+          "Retrieves source-bounded live results via scout.getBuilders, scout.getHackathon, scout.getHackathons, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+          "Confirms the officially listed active Stellar India Exploratory Chapter and distinguishes that label from a claim that SDF centrally operates every local event."
         ],
         "avoid": [
           "Do NOT turn a bounded Scout directory or hackathon miss into evidence that India lacks builders, events, or an official chapter.",
           "Do NOT repeat the stale Goa/July Builders Camp description or present historical project counts as current cumulative totals.",
-          "Do NOT claim regional chapters approve SCF Build or Instaward funding; SDF retains final approval."
+          "Do NOT claim regional chapters approve SCF Build or Instaward funding; SDF retains final approval.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Dossier §7.4. Near-edge: a regional-community question that stays inside Stellar corpora (vs general web). Reviewed 2026-06-29: the unverified 'Build On Stellar National Bounty (India)' DoraHacks event is not in the live catalog; replaced with corpus-confirmed India activity (Stellar Build Station Kozhikode/Kerala and Kolkata 21-day sprints, June 2026, from the Stellar weekly-roundup research corpus surfaced via scout_research). India active-region claim well-evidenced → confidence raised.\nAlso good if the answer: Notes regional chapters can recommend Instawards for local builders.\nGolden cites: Stellar Light research/builder/hackathon corpora and/or the Ambassador Program page for the India region.\nGT-39 independently reverified 2026-07-10 (Solo scratchpad 575, processes 3300/3303). Grade the official active Exploratory Chapter as the durable headline and event examples as dated operator evidence. Direct Luma controls the Jaipur/August identity over Lumenloop's stale Goa summary/slug; the service conflict is tracked in ll-007. Do not penalize independently verified current examples outside the illustrative list."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -1897,17 +1897,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — The prior corpus-first answer missed the official active India chapter, froze stale Goa/July event prose, misstated Instaward amount semantics, and prohibited independent verification. GT-39 primary and blind independently confirmed the official Exploratory Chapter and the direct Jaipur event while reproducing a Lumenloop title/date versus summary/slug conflict.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575, GT-39 primary process 3300 and blind process 3303, independently executed 2026-07-10.",
-            "Official Ambassador APAC index and dedicated India Chapter page list Stellar India as an active Exploratory Chapter led by Sahitya Roy of Rise In.",
-            "Direct Luma ajcns4mc records Jaipur Builders Camp on 2026-08-14 through 2026-08-18; Lumenloop's structured title/date agree while generated summary/slug retain Goa wording."
+            "P4 Lane R behavioral conversion queue, row 78 (q-scf-regional-india): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.gitbook.io/ambassador-program/chapters/asia-pacific"
           ],
           "rootCause": [
-            "solo://proj/49/todo/judge-rubric-corpus--826 — the avoid-clause judge-artifact class (FIXED: rubric v2.1 + eval:qa:lint, commit 18e234f)",
-            "eval-side freshness drift: the corpus-first snapshot did not incorporate the current official chapter pages or direct event record",
-            "improvements/lumenloop/ll-007-event-summary-date-prose-mismatch.md"
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-regional-india"

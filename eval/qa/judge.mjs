@@ -314,7 +314,7 @@ const PROMPT_SHA256_FIXTURES = new Map([
   ["q-edge-oos-bitcoin-price-prediction", "0ff7ade15de5183702cd74a5fc1114df9c40863958dc43ccb87d71c31ec493b2"],
   ["q-edge-send-me-free-xlm", "bf6e1331c49b9ed77696a69c2bc41794a99ab32f4f43ef5f51d6ed46e3845590"],
   ["q-edge-xlm-price-investment-advice", "de6272849c1ebd799aa1afce21ea821972fae252259bebf4516c302bd0a4cef7"],
-  ["q-scf-total-distributed", "801ce7f322ca76ba3cdeec38fb3f55aea5316b26896473a59dd4519776235683"],
+  ["q-scf-total-distributed", "803373be37abaad27b6fd2549da40911935f96b3c92e4c397448cfef89abba8b"],
   ["q-soroban-storage-types", "4e05ce325682491fc57192ac57e31f71359899c61f5484538a114b35e7e495d2"],
   ["q-ti-bindings-to-nextjs-integration", "da16c9dbcbc9828d45a175d0970503fdf4d827c0c532ddb35a53d229df81026a"]
 ]);

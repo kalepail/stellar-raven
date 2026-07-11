@@ -6,27 +6,28 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "The interest form is rolling/open; teams first undergo eligibility/referral review and only invited teams receive the full-proposal deadline. The published Build cadence is roughly six weeks: **2 weeks** for the full proposal, **1 week** for prescreen and panel review, a conditional revision step when requested, **1 week** for the Open Track community vote, then decision/notification and **1 week** for information collection/KYC. Integration and RFP decisions are panel-led and do not use the project community vote. After selection, KYC/KYB and award acceptance are distinct from delivery payments: current mechanics are four payments—10% acceptance plus three deliverable tranches of 20/30/40, generally with the next completion form due within 90 days of the prior payment. Use live round dates for a specific application.",
+    "answer": "Use `scout.getRfps`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Separates rolling interest, eligibility/invitation, proposal, prescreen/panel, revision, Open-only vote, decision, and KYC. Gives the 2/1/1/1-week stage labels and keeps post-award payments separate.",
     "keyFacts": [
+      "Retrieves source-bounded live results via scout.getRfps, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Separates rolling interest, eligibility/invitation, proposal, prescreen/panel, revision, Open-only vote, decision, and KYC.",
       "Gives the 2/1/1/1-week stage labels and keeps post-award payments separate."
     ],
     "avoid": [
       "Do NOT call the interest form an open full proposal or apply the community vote to Integration/RFP.",
-      "Do NOT call acceptance a fourth deliverable milestone or invent a universal results week."
+      "Do NOT call acceptance a fourth deliverable milestone or invent a universal results week.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "DIFFERENTIATED 2026-06-29: re-scoped to the review-side timeline + round cadence. Dropped the specific current-round number/deadline (owned by q-scf-current-round) and the applicant how-to-apply steps (owned by q-scf-how-to-apply). Build cadence ~6 weeks confirmed; exact per-stage review dates are not reliably published in static sources, so the rubric requires live checking rather than fabricated dates.\nAlso good if the answer: Distinguishes durable review mechanics/cadence from any one round's specific calendar dates. | Notes track-specific review variation: the Open Track has a community (NQG) vote, while Integration and RFP tracks are panel-oriented.\nGolden cites: The live/current SCF Community Fund source for round deadlines, plus SCF handbook/process documentation for lifecycle mechanics.\nGT-40 independently confirmed 2026-07-10. Exact calendar dates remain live; the stage-duration model and four-payment/three-deliverable distinction are the durable grading core."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-09-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -71,13 +72,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-10",
-      "by": "Golden-truth sweep import — The inherited lifecycle omitted published durations, conditional revision, the interest-to-invitation boundary, and the distinction between selection/KYC and post-award payments.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-40 processes 3301/3304, 2026-07-10."
+        "P4 Lane R behavioral conversion queue, row 82 (q-scf-submission-lifecycle-deadlines): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://communityfund.stellar.org/awards"
       ],
       "rootCause": [
-        "Eval-side lifecycle under-specification."
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-scf-submission-lifecycle-deadlines"

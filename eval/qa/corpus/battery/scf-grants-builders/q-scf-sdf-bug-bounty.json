@@ -5,27 +5,27 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "For new general SDF reports, use the **Stellar HackerOne policy**. Consolidation took effect **2026-05-07**; the old general Stellar Immunefi program is deprecated for new submissions. Under the HackerOne matrix, standard Critical/High/Medium/Low/Note maxima are **25K/15K/10K/2K/500 points**; one point is currently $1 and rewards are paid in XLM. A special core/protocol carveout can calculate a critical reward as 10% of directly affected funds, capped at **250K points**. That carveout covers `stellar-core`, `stellar-protocol`, and Soroban runtime/host code—not arbitrary third-party Soroban apps, which are outside SDF's program. The separate OpenZeppelin Stellar Contracts Immunefi bounty remains distinct, with a $25K maximum single critical payout and $250K total contest maximum. Audit Bank funds audits; it is not the vulnerability-report bounty.",
+    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Separates deprecated general Immunefi, the independent OpenZeppelin bounty, third-party apps, and Audit Bank.",
     "keyFacts": [
-      "Routes new SDF reports to current HackerOne and gives the current standard scale plus qualified core carveout.",
+      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Separates deprecated general Immunefi, the independent OpenZeppelin bounty, third-party apps, and Audit Bank."
     ],
     "avoid": [
       "Do NOT repeat a timeless $250K protocol/$50K Soroban-app split.",
-      "Do NOT send new general SDF reports to deprecated Immunefi or merge OpenZeppelin's policy into SDF's."
+      "Do NOT send new general SDF reports to deprecated Immunefi or merge OpenZeppelin's policy into SDF's.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "Dossier §5.4. Trap: swapping the $250K-XLM / $50K-USD tiers, or confusing with Audit Bank.\nAlso good if the answer: The Bug Bounty is an SDF-direct program (stellar.org/grants-and-funding), separate from the SCF.\nGolden cites: stellar.org/grants-and-funding bug-bounty section.\nGT-40 blind reversed the primary top-line after following the cited controlling policy. Policy and intake are volatile; accept dated, scope-aware figures only."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "D",
@@ -76,13 +76,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-10",
-      "by": "Golden-truth sweep import — The inherited $250K protocol versus $50K Soroban two-tier rule is obsolete after SDF's May 2026 HackerOne consolidation and confuses runtime defects with arbitrary third-party contracts.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-40 blind process 3304; controlling policies fetched 2026-07-10."
+        "P4 Lane R behavioral conversion queue, row 80 (q-scf-sdf-bug-bounty): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://hackerone.com/stellar?view_policy=true"
       ],
       "rootCause": [
-        "improvements/stellar-light-scout/sls-020-security-program-migration-supersession.md"
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-scf-sdf-bug-bounty"

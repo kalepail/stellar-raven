@@ -5,27 +5,26 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "The **Soroban Security Audit Bank** is an SDF-funded SCF supporting program that pays eligible third-party audit costs for SCF-funded projects; it is not a cash Build grant or vulnerability bounty. Coverage can reach **100% of audit cost**, with no published fixed dollar cap. Current scope includes testnet/nearly-mainnet projects and qualifying projects already on mainnet or seeking follow-up audits. Priority categories are **Financial Protocols, Widely Used Applications, Infrastructure Contracts, and Yield-Bearing Token Protocols**. For an ordinary initial audit, the project pays **5% upfront**, refundable if all critical/high/medium findings are remediated within 20 business days; specified Growth/Scale cohorts may have 0% initial copay, while pre-traction follow-up audits use higher 20% then 50% copays. Terms are current as of 2026-07-10 and should be rechecked.",
+    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
     "keyFacts": [
-      "Explains up-to-100% audit-cost coverage without inventing a fixed grant cap.",
-      "Describes current stage/category scope and conditional initial/follow-up copay rules."
+      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value."
     ],
     "avoid": [
       "Do NOT describe the Audit Bank as cash funding or the SDF Bug Bounty.",
-      "Do NOT invent a fixed dollar cap, claim it is pre-mainnet-only, or generalize the refundable 5% initial copay to every audit."
+      "Do NOT invent a fixed dollar cap, claim it is pre-mainnet-only, or generalize the refundable 5% initial copay to every audit.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "GT-36 CORRECTION 2026-07-10: grade up-to-100% cost coverage, four current priority categories, qualifying pre/post-mainnet and follow-up paths, and conditional copay semantics. The inherited avoid was truncated and is replaced in full.\nGT-36 independently confirmed by processes 3290/3291."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -60,12 +59,13 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "Golden-truth sweep import — The answer incorrectly limited Audit Bank to pre-mainnet projects, omitted the fourth priority category and copay progression/exceptions, and its second avoid item was mechanically truncated into an unusable evaluator field.",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-36 primary 3290 and blind 3291; corrupted effective avoid verified against vendored source."
+        "P4 Lane R behavioral conversion queue, row 65 (q-scf-audit-bank): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://stellar.org/grants-and-funding/soroban-audit-bank"
       ],
       "rootCause": [
-        "Eval-side stale scope compression plus mechanically truncated avoid text."
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-scf-audit-bank"

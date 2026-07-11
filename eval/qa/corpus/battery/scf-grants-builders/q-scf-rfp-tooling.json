@@ -6,27 +6,27 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "As of **2026-07-10**, the five current Q2 briefs are Trustline Onboarder, Passkey UI (Scout alias: Passkey UI Kit), Account Demolisher, Contract Source Verification Service, and OZ Accounts Policy Builder. The tooling/infrastructure subset is **Passkey UI, Contract Source Verification Service, and OZ Accounts Policy Builder**. Use the exposed `scout.getRfps` operation and exclude its synthetic `scf-round-45` metadata row; metadata says five open briefs although six rows are returned. The interest form is open, but eligibility review precedes an invitation to a full RFP proposal. RFP decisions are panel-led, not NQG project votes, and no separate per-brief bounty should be invented.",
+    "answer": "Use `scout.getRfps`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Uses scout.getRfps, excludes the synthetic round row, and explains interest-to-invitation.",
     "keyFacts": [
-      "Lists the dated five-brief roster and identifies the three tooling matches.",
+      "Retrieves source-bounded live results via scout.getRfps, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Uses scout.getRfps, excludes the synthetic round row, and explains interest-to-invitation."
     ],
     "avoid": [
       "Do NOT reference retired scout_rfps or count scf-round-45 as a sixth brief.",
-      "Do NOT claim anyone openly submits a full RFP proposal, that RFP awards use community vote, or that each brief has a published bounty."
+      "Do NOT claim anyone openly submits a full RFP proposal, that RFP awards use community vote, or that each brief has a published bounty.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "Dossier §4.2/§6.4. scout_rfps idea→RFP matching. Freshness item (3rd freshness case) — confidence stays medium (set rotates). Re-verified live 2026-06-29 (/api/rfps?status=open): matching open tooling/infra briefs = Passkey UI Kit (developer-tooling), Contract Source Verification Service (infrastructure), OZ Accounts Policy Builder (developer-tooling). Rubric gates on the freshness caveat, not the exact list.\nAlso good if the answer: Flags that the matching RFP set is quarter-dependent and may change.\nGolden cites: The live SCF RFPs feed / RFP Track handbook page.\nGT-40 independently confirmed 2026-07-10. The official page's SCF #43 label is stale against current #45; grade the dated roster and source conflict rather than the banner."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-08-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -72,14 +72,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-10",
-      "by": "Golden-truth sweep import — The inherited answer used retired/non-exposed operation names, omitted the synthetic Scout row, and blurred open interest with an invited full RFP proposal.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-39/40; live 2026-07-10 official and Scout probes."
+        "P4 Lane R behavioral conversion queue, row 79 (q-scf-rfp-tooling): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/rfp-track"
       ],
       "rootCause": [
-        "Eval-side legacy operation references.",
-        "improvements/stellar-light-scout/sls-045-rfp-synthetic-round-row-count.md"
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-scf-rfp-tooling"

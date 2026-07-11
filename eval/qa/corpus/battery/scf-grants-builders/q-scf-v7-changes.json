@@ -5,27 +5,27 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "SCF v7 launched in **January 2026** around SCF #41. It introduced three Build tracks—Open, Integration, and RFP—plus a unified interest/referral entry, Instawards as the successor/evolution of Kickstart, and stronger mainnet/UX-readiness expectations. For payments, the launch blog's 'four-tranche' shorthand should be reconciled with current detailed mechanics: **four payments**, consisting of 10% acceptance plus **three deliverable tranches** at 20%, 30%, and 40%. v7 also described multiple post-launch growth pathways; it did **not** create one unified 'Growth track.' Current Instaward, Growth Hack, Liquidity, Marketing, and other program rules must be checked separately rather than inferred from the launch blog.",
+    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: States four payments/three deliverable tranches and rejects a unified Growth track.",
     "keyFacts": [
-      "Dates v7 to January 2026/#41 and names the three tracks and entry/referral changes.",
+      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "States four payments/three deliverable tranches and rejects a unified Growth track."
     ],
     "avoid": [
       "Do NOT call acceptance a fourth deliverable milestone.",
-      "Do NOT merge distinct post-launch/supporting programs into one Growth track or freeze launch shorthand as current terms."
+      "Do NOT merge distinct post-launch/supporting programs into one Growth track or freeze launch shorthand as current terms.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "Dossier §8/§9. Version-transition fact set; trap is attributing v6 features to v7.\nAlso good if the answer: Supporting programs were consolidated into a unified Growth track; a Referral Program was added. | UX audits / user testing were added to the Build evaluation.\nGolden cites: The 'Introducing SCF v7' blog post / SCF handbook history page.\nGT-36/39/40 independently reconciled 2026-07-10. Accept 'four tranches' only when the candidate accurately distinguishes the acceptance payment from three deliverables."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -72,13 +72,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-10",
-      "by": "Golden-truth sweep import — The inherited historical summary called four payments four milestone tranches and invented one unified Growth track.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-36/39/40, 2026-07-10."
+        "P4 Lane R behavioral conversion queue, row 84 (q-scf-v7-changes): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://stellar.org/blog/ecosystem/introducing-scf-v7"
       ],
       "rootCause": [
-        "Eval-side historical shorthand promoted into current mechanics."
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-scf-v7-changes"

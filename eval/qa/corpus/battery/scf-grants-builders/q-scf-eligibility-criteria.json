@@ -5,27 +5,28 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "SCF Build accepts eligible individuals, teams, and organizations building meaningful Stellar applications/protocols; it is not limited to registered companies. The current flow has distinct gates. The initial interest/referral step establishes fit and eligibility. **Prescreen is a completeness/readiness check, not an idea-strength or traction judgment**: current criteria require a detailed self-contained submission, meaningful Stellar integration/architecture, team readiness, budget, differentiation, an open-source plan for contracts where applicable, and three deliverable tranches. The panel/review stage then evaluates ecosystem value or validated need, feasibility, roadmap, traction where relevant, and team capability. Open-track projects alone proceed to community vote; revision may occur before final selection. KYC/KYB and participant/sanctions rules apply before payout. Do not invent universal minimum-TVL, token-launch, or US-only gates, but do not deny real track/category/participant constraints.",
+    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Separates eligibility, completeness prescreen, panel merits, vote/revision, and KYC stages. States that individuals/teams may qualify while preserving real participant and track-specific constraints.",
     "keyFacts": [
+      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Separates eligibility, completeness prescreen, panel merits, vote/revision, and KYC stages.",
       "States that individuals/teams may qualify while preserving real participant and track-specific constraints."
     ],
     "avoid": [
       "Do NOT say weak traction or unclear fit is itself the prescreen definition; those are merit/fit considerations at other stages.",
-      "Do NOT invent universal TVL/token/US-only gates or claim no hard participant/category constraints exist."
+      "Do NOT invent universal TVL/token/US-only gates or claim no hard participant/category constraints exist.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "GT-37 CORRECTION 2026-07-10: prescreen is completeness/readiness, not traction or idea-strength judging. Grade the distinct eligibility, prescreen, panel merits, Open-vote/revision, and KYC stages, plus current submission criteria.\nGT-37 independently confirmed by processes 3296/3298."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -65,12 +66,13 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "Golden-truth sweep import — The golden falsely assigned traction/ecosystem-fit merit criteria to prescreen and omitted the current staged distinction among interest eligibility, completeness prescreen, panel merits, and later KYC.",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-37 primary 3296 and blind 3298; GT-36 Build-track/tranche reconciliation."
+        "P4 Lane R behavioral conversion queue, row 70 (q-scf-eligibility-criteria): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/scf-awards/build-award"
       ],
       "rootCause": [
-        "Eval-side stage conflation and stale high-level prescreen summary."
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-scf-eligibility-criteria"

@@ -1,7 +1,7 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "f986309e582ad413d1303cfcb4ba074ebd77510f94016ca4ab65c9fdb1072ee2",
+  "corpusContentSha256": "45018fe392a65c243e53a5c646cab1171100f54570efe8c9bfdb125511c6ef2f",
   "counts": {
     "total": 355,
     "byCategory": {
@@ -24,8 +24,8 @@
       "stellarDocs": 205
     },
     "byFreshness": {
-      "live": 60,
-      "scheduled": 123,
+      "live": 90,
+      "scheduled": 93,
       "stable": 172
     },
     "traps": {
@@ -16836,30 +16836,29 @@
         "stellarDocs.search_docs"
       ],
       "golden": {
-        "answer": "**Protocol 25 (X-Ray)** activated on Mainnet on **2026-01-22 at 17:00 UTC**. It added two low-level Soroban host surfaces for ZK systems:\n\n- **CAP-0074 / BN254:** `bn254_g1_add`, `bn254_g1_mul`, and `bn254_multi_pairing_check`. These give contracts native operations on the EVM-compatible pairing curve for verifier and interoperability designs.\n- **CAP-0075 / Poseidon and Poseidon2:** `poseidon_permutation` and `poseidon2_permutation` over BLS12-381 Fr or BN254 Fr. These are configurable **permutation primitives** from which a correctly parameterized hash construction can be built; they are not turnkey `poseidon_hash` helpers.\n\nBoth CAPs are Final and gated at Protocol 25. These primitives enable verifier, commitment, Merkle, and privacy-application components; they do not make Stellar transactions private by default. Current source has a documented interface erratum: CAP-0075 says `U32Val` field selector and contains one stray P24 sentence, while the shipped P25+ host environment uses a `Symbol` selector (`BLS12_381` or `BN254`). Follow the exact SDK/host version in use rather than inventing helper names.",
+        "answer": "Use `stellarDocs.search_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Pairs CAP-0074 with the exact three P25 BN254 functions. Pairs CAP-0075 with the exact two low-level permutation functions and does not call them turnkey hash APIs.",
         "keyFacts": [
+          "Executes the current documented lookup/workflow via stellarDocs.search_docs and labels version, UI, provider, and availability claims as observed.",
           "Pairs CAP-0074 with the exact three P25 BN254 functions.",
-          "Pairs CAP-0075 with the exact two low-level permutation functions and does not call them turnkey hash APIs.",
-          "States P25's completed 2026-01-22 activation and keeps these primitives distinct from default privacy and P22 BLS12-381.",
-          "Acknowledges the reproducible CAP-0075 version/field-selector source errata without inventing APIs."
+          "Pairs CAP-0075 with the exact two low-level permutation functions and does not call them turnkey hash APIs."
         ],
         "avoid": [
           "Do NOT call the CAP-0075 host functions ready-made hash helpers or invent helper names.",
           "Do NOT attribute these additions to P22/BLS12-381 or describe P25 as merely pending after 2026-01-22.",
-          "Do NOT claim these primitives create on-by-default privacy or silently choose the CAP's stale U32Val interface over the exact shipped version."
+          "Do NOT claim these primitives create on-by-default privacy or silently choose the CAP's stale U32Val interface over the exact shipped version.",
+          "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
         ],
         "notes": "GT-31 CORRECTION 2026-07-11: P25 activation completed 2026-01-22. CAP-0074 has exactly three BN254 functions; CAP-0075 exposes two configurable permutations, not turnkey hash helpers. The pinned CAP-0075 P24/P25 and U32Val/Symbol contradictions are source errata tracked separately from sd-021's Docs errors."
       },
       "tags": {
         "category": "protocol-core",
         "service": "stellarDocs",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
         "asOf": "2026-07-11",
-        "reverifyBy": "2026-10-01",
         "sources": [
           {
             "class": "B",
@@ -16928,15 +16927,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited answer correctly paired the CAPs but blurred configurable Poseidon permutations into hash APIs, used an approximate vote label after activation, and did not surface two reproducible contradictions in the current CAP-0075 source.",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-31 primary process 3280 and blind process 3282 independently required permutation-versus-hash precision and owner-correct erratum handling.",
-            "2026-07-11 author reproduced both CAP-0075 contradictions from pinned current heads; documentation/API blurring remains separately deduped in sd-021, while the protocol-spec defects are sd-036."
+            "P4 Lane R behavioral conversion queue, row 61 (q-protocol-bn254-poseidon-xray): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
+            "Current source retained for behavioral retrieval: https://github.com/stellar/stellar-protocol/blob/master/core/cap-0074.md"
           ],
           "rootCause": [
-            "Eval-side title-driven hash shorthand.",
-            "improvements/stellar-docs/sd-021-protocol-25-bn254-poseidon-source-errors.md",
-            "improvements/stellar-docs/sd-036-cap-0075-protocol-version-field-selector-errata.md"
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-protocol-bn254-poseidon-xray"
@@ -17945,28 +17942,28 @@
         "stellarDocs.search_protocol_concepts_docs"
       ],
       "golden": {
-        "answer": "Stellar protocol history from P19 through live **Protocol 27**: P19 (2022-06-08) generalized transaction preconditions and signed-payload signers; P20/Soroban (2024-02-20) introduced Wasm smart contracts; P21 (2024-06-18) added secp256r1/passkeys and TTL extension; P22 (2024-12-05) added BLS12-381 and constructors; P23/Whisk (2025-09-03) introduced CAP-0063 parallel-scheduling support, CAP-0062 live/archival separation, and unified events—but initialized the dependent-cluster setting at one, with multi-cluster activation handled later through network settings; P24 (2025-10-22) corrected Whisk archival stability; P25/X-Ray (2026-01-22) added BN254 and Poseidon/Poseidon2; P26/Yardstick (2026-05-06) added configuration, arithmetic, TTL-v2, BN254, SAC, and strkey host changes; P27/Zipper (2026-07-08) activated CAP-0071 authentication delegation/address-bound credentials at ledger 63386819. The feature mappings are durable, but re-check the live network for the latest tail and current configuration.",
+        "answer": "Use `stellarDocs.search_protocol_concepts_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Correctly maps P19-P27 headline features and dates. Describes P23 as capability introduction with initial one-cluster configuration, not immediate multi-cluster activation.",
         "keyFacts": [
+          "Executes the current documented lookup/workflow via stellarDocs.search_protocol_concepts_docs and labels version, UI, provider, and availability claims as observed.",
           "Correctly maps P19-P27 headline features and dates.",
-          "Describes P23 as capability introduction with initial one-cluster configuration, not immediate multi-cluster activation.",
-          "Keeps P27/Zipper active from 2026-07-08 and flags the tail/current settings as freshness-sensitive."
+          "Describes P23 as capability introduction with initial one-cluster configuration, not immediate multi-cluster activation."
         ],
         "avoid": [
           "Do NOT mis-pair features and protocol versions.",
-          "Do NOT call P27 pending or P26 latest after 2026-07-08, or imply P23 immediately enabled multiple dependent clusters."
+          "Do NOT call P27 pending or P26 latest after 2026-07-08, or imply P23 immediately enabled multiple dependent clusters.",
+          "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
         ],
         "notes": "GT-34 RECONCILIATION 2026-07-10: P27/Zipper is live from ledger 63386819 on 2026-07-08. P23 introduced CAP-0063 support with the dependent-cluster setting initially one; later network settings enabled multiple clusters. Grade feature/version mapping and dated live-tail verification. The P20 row says CAP-0046 series and does not imply a contiguous numbered range.\nGT-25/GT-34 independently reconciled: P27 live tail and P23 initial-one-cluster nuance are both effective; duplicate override composition was removed."
       },
       "tags": {
         "category": "protocol-core",
         "service": "stellarDocs",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "B",
@@ -18006,12 +18003,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The history list needed both the post-vote P27 tail and the P23 initial-one-cluster nuance. Two duplicate override keys silently discarded the earlier post-vote provenance, while inherited grader notes still called P27 future despite the effective answer saying it is live.",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 567 post-P27 re-verification; Solo scratchpad 575 GT-25 blind 3273 and GT-34 primary 3286/blind 3288 sibling reconciliation."
+            "P4 Lane R behavioral conversion queue, row 62 (q-protocol-version-history-list): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
+            "Current source retained for behavioral retrieval: https://github.com/stellar/stellar-protocol/tree/master/core"
           ],
           "rootCause": [
-            "Eval-side compressed P23 headline plus duplicate JSON keys that silently replaced provenance without replacing stale grader notes."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-protocol-version-history-list"
@@ -18325,30 +18323,28 @@
         "scout.searchProjects"
       ],
       "golden": {
-        "answer": "Use dated product-level evidence, not a directory roster. As of **2026-07-10**, primary-confirmed live Stellar examples include:\n\n- **Franklin Templeton BENJI / FOBXX** — a U.S.-registered fund-share/system-of-record product;\n- **WisdomTree** digital funds and **GOLD** (the Stellar code is GOLD, not WTGOLD), plus products such as CRDT with different legal instruments;\n- **Ondo USDY** — a tokenized-note product live on Stellar, with current eligibility/mint-redemption restrictions;\n- **Figure YLDS** — launched May 5, 2026 as an SEC-registered face-amount-certificate/yield-bearing-dollar product;\n- **Etherfuse Stablebonds** such as sovereign-debt products; and\n- **Spiko/Amundi SAFO** — launched with its shareholder register on Ethereum and Stellar for eligible investors.\n\nPut **DTCC/DTC's Stellar connection in a planned bucket**: DTCC says Stellar availability is expected in H1 2027. That does not mean DTCC's broader tokenization service is not live elsewhere.\n\nFor every name, preserve product, issuer, legal instrument, network deployment, custody/redemption, eligibility/jurisdiction, and as-of date. Directory/entity status is discovery only. Do not say the whole roster uses SEP-8: classic flags, SEP-8 approval, SAC/custom contracts, registries, and off-chain controls vary and must be verified per product.",
+        "answer": "Use `scout.searchProjects` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
         "keyFacts": [
-          "Separates primary-confirmed live Stellar products from announced/planned products.",
-          "Keeps DTCC's Stellar connection planned H1 2027.",
-          "Requires product/issuer/legal/network/custody/eligibility evidence and rejects roster-wide SEP-8 claims."
+          "Retrieves source-bounded live results via scout.searchProjects and reports their source and as-of date without freezing a roster, rank, count, or current value."
         ],
         "avoid": [
           "Do NOT treat directory presence or entity Live status as proof of a live Stellar-issued product.",
           "Do NOT put planned DTCC Stellar work in the live bucket.",
           "Do NOT claim all RWA products use SEP-8 or one identical legal/control model.",
-          "Do NOT freeze volatile AUM or roster counts without dated primary evidence."
+          "Do NOT freeze volatile AUM or roster counts without dated primary evidence.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "2026-06-29 re-verified dated claims and freshness-gated. Franklin Templeton (BENJI/FOBXX, ~$654M AUM on Stellar) and WisdomTree (Prime funds + gold) confirmed; Figure YLDS = SEC-registered face-amount certificate, live on Stellar May 5, 2026 (stellar.org/press/figure-announces-launch-of-ylds-on-stellar-network) — consistent with q-rwa-dtcc-tokenization which keeps DTCC's DTC service PLANNED for H1 2027 (not live). Ondo Finance also active. Landscape evolving/freshness-sensitive (quarterly). Trap: inventing projects or presenting DTCC's forward-dated plan as live.\nAlso good if the answer: Mentions other RWA/tokenization participants (e.g. DTCC's planned DTC tokenization service) and treats the landscape as evolving. | Notes these use Stellar's regulated-asset model (SEP-8 + flags).\nGolden cites: Scout/Lumenloop project directory entries and/or dated issuer sources.\nCORRECTION 2026-07-10: grade dated product-level deployment and legal/mechanism scope. DTCC is planned H1 2027 on Stellar. GOLD is the live WisdomTree code. No roster-wide SEP-8 gate."
       },
       "tags": {
         "category": "compliance-rwa-payments",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "D",
@@ -18462,15 +18458,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited roster treated directory/entity status as proof of a live Stellar-issued product and generalized SEP-8 across heterogeneous instruments. Current primary evidence distinguishes live products from planned DTCC work and shows different flags, legal instruments, custody, and transfer controls.",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-11 live/planned and mechanism matrices",
-            "improvements/stellar-light-scout/sls-023-rwa-product-deployment-status.md",
-            "improvements/lumenloop/ll-012-rwa-live-planned-recall.md"
+            "P4 Lane R behavioral conversion queue, row 63 (q-rwa-projects-tokenizing-stellar): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://www.franklintempleton.com/.well-known/stellar.toml"
           ],
           "rootCause": [
-            "Entity status and directory presence were treated as product deployment proof.",
-            "Different legal instruments/control models were collapsed into one SEP-8 implementation."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-rwa-projects-tokenizing-stellar"
@@ -18736,27 +18730,27 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Yes. As of **2026-07-10**, SDF Academic Research Grants fund scientific, technological, economic, or legal research advancing SDF goals, with a proposal cap of **$150,000** and a published historical average around **$75,000**. The eligible applicant/recipient is a **degree-granting research or higher-education institution**, led by a PI-authorized researcher; students and individuals do not apply or receive the award directly, though a grant commonly supports one graduate student or postdoc for about 12 months plus reasonable expenses. Apply through SDF Research by **Mar 31, Jun 30, Sep 30, or Dec 31**, with at most two proposals per calendar year. This is not the SCF Build application path, although an applicant ineligible for this academic program may separately consider SCF if the project fits its rules.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Correctly identifies the institution/PI applicant and distinguishes supported students from eligible recipients.",
         "keyFacts": [
-          "States the $150K cap, quarterly deadlines, and two-proposal annual limit.",
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Correctly identifies the institution/PI applicant and distinguishes supported students from eligible recipients."
         ],
         "avoid": [
           "Do NOT say students or individuals apply for or directly receive the academic grant.",
-          "Do NOT replace the $150K ceiling with the separately labeled ~$75K historical average or categorically claim SCF can never be separately relevant."
+          "Do NOT replace the $150K ceiling with the separately labeled ~$75K historical average or categorically claim SCF can never be separately relevant.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "GT-36 CORRECTION 2026-07-10: grade institution/PI eligibility, $150K ceiling, quarterly dates, two-per-year limit, and academic-path distinction. A supported student is not the applicant; the official ~$75K average may be mentioned separately; SCF is not categorically forbidden as a separate program.\nGT-36 independently confirmed by processes 3290/3291."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -18790,13 +18784,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — The golden conflated supported students with eligible applicants, called fixed quarterly deadlines a published RFP schedule, categorically excluded separate SCF eligibility, and would penalize the official historical average.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-36 primary 3290 and blind 3291; independently checked 2026-07-10."
+            "P4 Lane R behavioral conversion queue, row 64 (q-scf-academic-research-grant): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://research.stellar.org/research-grants"
           ],
           "rootCause": [
-            "Eval-side beneficiary/applicant conflation and overbroad route/amount traps."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-academic-research-grant"
@@ -18857,27 +18852,26 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "The **Soroban Security Audit Bank** is an SDF-funded SCF supporting program that pays eligible third-party audit costs for SCF-funded projects; it is not a cash Build grant or vulnerability bounty. Coverage can reach **100% of audit cost**, with no published fixed dollar cap. Current scope includes testnet/nearly-mainnet projects and qualifying projects already on mainnet or seeking follow-up audits. Priority categories are **Financial Protocols, Widely Used Applications, Infrastructure Contracts, and Yield-Bearing Token Protocols**. For an ordinary initial audit, the project pays **5% upfront**, refundable if all critical/high/medium findings are remediated within 20 business days; specified Growth/Scale cohorts may have 0% initial copay, while pre-traction follow-up audits use higher 20% then 50% copays. Terms are current as of 2026-07-10 and should be rechecked.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
         "keyFacts": [
-          "Explains up-to-100% audit-cost coverage without inventing a fixed grant cap.",
-          "Describes current stage/category scope and conditional initial/follow-up copay rules."
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value."
         ],
         "avoid": [
           "Do NOT describe the Audit Bank as cash funding or the SDF Bug Bounty.",
-          "Do NOT invent a fixed dollar cap, claim it is pre-mainnet-only, or generalize the refundable 5% initial copay to every audit."
+          "Do NOT invent a fixed dollar cap, claim it is pre-mainnet-only, or generalize the refundable 5% initial copay to every audit.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "GT-36 CORRECTION 2026-07-10: grade up-to-100% cost coverage, four current priority categories, qualifying pre/post-mainnet and follow-up paths, and conditional copay semantics. The inherited avoid was truncated and is replaced in full.\nGT-36 independently confirmed by processes 3290/3291."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -18912,12 +18906,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The answer incorrectly limited Audit Bank to pre-mainnet projects, omitted the fourth priority category and copay progression/exceptions, and its second avoid item was mechanically truncated into an unusable evaluator field.",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-36 primary 3290 and blind 3291; corrupted effective avoid verified against vendored source."
+            "P4 Lane R behavioral conversion queue, row 65 (q-scf-audit-bank): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.org/grants-and-funding/soroban-audit-bank"
           ],
           "rootCause": [
-            "Eval-side stale scope compression plus mechanically truncated avoid text."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-audit-bank"
@@ -18930,27 +18925,26 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "As of **2026-07-10**, one SCF **Build Award** is capped at **$150,000 worth of XLM**. The budget is USD-referenced, but scheduled payments are disbursed in XLM using the published XLM/USD settlement valuation; it is not a fixed number of lumens and is not paid in USDC/USD by default. The current three-track v7 structure launched in January 2026, but Build awards existed before v7. Separate accumulated/follow-on policy can allow case-by-case funding above the ordinary $150K accumulated level subject to a $300K lifetime cap; that does not change the single-award answer.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
         "keyFacts": [
-          "States the $150K single-award cap.",
-          "Explains USD-referenced value paid in XLM rather than a fixed XLM count or default stablecoin payment."
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value."
         ],
         "avoid": [
           "Do NOT substitute another SDF program's $500K cap or call $300K the ordinary single Build award.",
-          "Do NOT claim Build began with v7 or that payment is fixed XLM/USDC/USD by default."
+          "Do NOT claim Build began with v7 or that payment is fixed XLM/USDC/USD by default.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "GT-36 CORRECTION 2026-07-10: grade $150K USD-equivalent paid in XLM. The current v7 three-track structure launched January 2026; Build itself predates v7. Do not require stale sibling-program examples.\nGT-36 independently confirmed by processes 3290/3291."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -18985,12 +18979,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The $150K core was correct, but the answer carried historically overbroad v7 introduction wording and stale sibling amount/tranche claims irrelevant to the narrow cap question.",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-36 primary 3290 and blind 3291."
+            "P4 Lane R behavioral conversion queue, row 66 (q-scf-build-award-cap): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/scf-awards/build-award"
           ],
           "rootCause": [
-            "Eval answer accreted stale sibling program details around a stable narrow fact."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-build-award-cap"
@@ -19004,27 +18999,28 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Current SCF Build has three tracks: **Open, Integration, and RFP**; Resubmission is a path, not a fourth track. **Open** is for experienced builders proposing novel Stellar protocols/apps and may include existing traction or deep demonstrated technical knowledge; its project award decision is the only one of the three that goes to community/NQG vote. **Integration** funds work on existing Stellar building blocks or teams with significant traction. Community input may help select Integration building blocks, but individual Integration awards are reviewer/panel decisions. **RFP** funds work against published ecosystem tooling/service needs and is also reviewer/panel selected. Current cap and typical duration are up to $150K in XLM value and roughly 3–6 months.",
+        "answer": "Use `scout.getRfps`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Names Open, Integration, and RFP and treats Resubmission as a path. Distinguishes Open project voting from reviewer decisions and from community input on Integration building blocks.",
         "keyFacts": [
+          "Retrieves source-bounded live results via scout.getRfps, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Names Open, Integration, and RFP and treats Resubmission as a path.",
           "Distinguishes Open project voting from reviewer decisions and from community input on Integration building blocks."
         ],
         "avoid": [
           "Do NOT call Open brand-new-build-only or invent a fourth Build track.",
-          "Do NOT claim every track's projects are community-voted or that Integration building-block input equals a project award vote."
+          "Do NOT claim every track's projects are community-voted or that Integration building-block input equals a project award vote.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "GT-36 CORRECTION 2026-07-10: Open is not brand-new-build-only. Grade the three track identities and distinguish Open project voting, Integration building-block input, and reviewer-selected Integration/RFP awards.\nGT-36 independently confirmed by processes 3290/3291."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -19070,12 +19066,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The track names and vote distinction were right, but Open was incorrectly limited to brand-new builds and the answer obscured community selection of Integration building blocks versus project award decisions.",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-36 primary 3290 and blind 3291."
+            "P4 Lane R behavioral conversion queue, row 67 (q-scf-build-tracks): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/scf-awards/build-award"
           ],
           "rootCause": [
-            "Eval-side shorthand collapsed track eligibility and the object of community input."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-build-tracks"
@@ -19088,28 +19085,27 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "As of **2026-07-09**, the open build round is **SCF #45**, in the **Submission** phase, with a deadline of **August 16, 2026**. The standard Build Award cap remains up to **$150,000 worth of XLM**.\n\nThis is a volatile example, not permanent truth. SCF rounds rotate on a roughly six-week cadence, so report the round number, phase, and deadline only with an as-of date and verify them against the live communityfund.stellar.org awards page. Scout's live RFP metadata can corroborate the round/window but does not replace the official page.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Keeps the stable Build cap distinct from the changing round schedule.",
         "keyFacts": [
-          "Identifies SCF #45 as the current Submission round with an August 16, 2026 deadline, explicitly as of 2026-07-09.",
-          "Flags round/deadline information as time-sensitive and points to the live official awards page.",
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Keeps the stable Build cap distinct from the changing round schedule."
         ],
         "avoid": [
           "Do NOT present the expired July 26 deadline as current.",
-          "Do NOT assert any round/deadline as permanent or fabricate a date not grounded in a live source."
+          "Do NOT assert any round/deadline as permanent or fabricate a date not grounded in a live source.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Dossier §4. Freshness item — rotates every ~6 weeks; reward staleness-flagging. scout_rfps surfaces activeQuarter signal.\nAlso good if the answer: States the SCF Build cadence is roughly every 6 weeks. | Notes the standard $150K XLM Build cap for the round.\nGolden cites: communityfund.stellar.org/awards (the live awards page) for the current round/deadline.\nFRESHNESS CORRECTION 2026-07-09 (todo 901): SCF #45 remains current, but its deadline is August 16, 2026, not July 26. Official awards and Scout live-round metadata agree. Continue gating on dated lookup behavior rather than one frozen round."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-09",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -19154,15 +19150,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-09",
-          "by": "Golden-truth sweep import — The freshness behavior was correct but the answer's point-in-time deadline expired: SCF #45 now closes August 16, 2026 rather than July 26. The live official awards page and Scout's live-round metadata independently agree, so the dated example is refreshed without turning it into permanent truth.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 569 Batch B, 2026-07-09.",
-            "Sibling expansion found and corrected the same July 26 date in q-edge-scf-v7-centralization-myths."
+            "P4 Lane R behavioral conversion queue, row 68 (q-scf-current-round): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://communityfund.stellar.org/awards"
           ],
           "rootCause": [
-            "Ordinary freshness drift in a roughly six-week round schedule; the old case correctly warned that its date would expire.",
-            "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch B"
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-current-round"
@@ -19180,27 +19175,27 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "These are separate workflows as of **2026-07-10**. Submit an ecosystem project through the embedded **Submit Your Project** form on Stellar's ecosystem page; inquire about service-provider participation through the current service-provider page/form, without assuming acceptance. Hackathon sponsorship is event/organizer-specific unless a named official intake exists, so use the relevant event page or Stellar connect/community channel. SDF jobs are on the Foundation careers/Ashby pages; ecosystem-company jobs belong on each company's own careers page. The **Matching Fund** is a separate Enterprise Fund co-investment path for pre-seed through Series B companies: current terms require a lead investor and term sheet, a **$200K minimum check**, **1:1 matching**, up to **$500K**, meaningful Stellar integration, and diligence. It is not SCF Build, an automatic directory listing, or a sponsorship promise.",
+        "answer": "Use `scout.getHackathon`, `scout.getHackathons`, `scout.getPartners`, `scout.matchPartners`, `scout.searchProjects`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Separates listing, provider, sponsorship, SDF jobs, ecosystem jobs, and Matching Fund paths.",
         "keyFacts": [
-          "Separates listing, provider, sponsorship, SDF jobs, ecosystem jobs, and Matching Fund paths.",
-          "States the current 1:1 Matching Fund structure and $200K-$500K check range."
+          "Retrieves source-bounded live results via scout.getHackathon, scout.getHackathons, scout.getPartners, scout.matchPartners, scout.searchProjects, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+          "Separates listing, provider, sponsorship, SDF jobs, ecosystem jobs, and Matching Fund paths."
         ],
         "avoid": [
           "Do NOT promise listing/partner/sponsor acceptance or invent a universal sponsor intake.",
-          "Do NOT conflate the Matching Fund with SCF Build or general Enterprise Fund outreach."
+          "Do NOT conflate the Matching Fund with SCF Build or general Enterprise Fund outreach.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "GT-37 CORRECTION 2026-07-10: current ecosystem/provider pages expose embedded forms and SDF jobs use Ashby. Matching Fund is a specific 1:1 lead-investor path with $200K minimum and $500K maximum, separate from general Enterprise outreach and SCF.\nGT-37 independently confirmed by processes 3296/3298."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-09-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -19255,12 +19250,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The operational paths and Matching Fund distinction were sound, but the answer still treated currently visible forms as hypothetical and omitted material current Matching Fund eligibility terms.",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-37 primary 3296 and blind 3298."
+            "P4 Lane R behavioral conversion queue, row 69 (q-scf-ecosystem-listing-partner-jobs): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.org/ecosystem"
           ],
           "rootCause": [
-            "Normal operational-page drift plus an incomplete current Matching Fund summary."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-ecosystem-listing-partner-jobs"
@@ -19273,27 +19269,28 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "SCF Build accepts eligible individuals, teams, and organizations building meaningful Stellar applications/protocols; it is not limited to registered companies. The current flow has distinct gates. The initial interest/referral step establishes fit and eligibility. **Prescreen is a completeness/readiness check, not an idea-strength or traction judgment**: current criteria require a detailed self-contained submission, meaningful Stellar integration/architecture, team readiness, budget, differentiation, an open-source plan for contracts where applicable, and three deliverable tranches. The panel/review stage then evaluates ecosystem value or validated need, feasibility, roadmap, traction where relevant, and team capability. Open-track projects alone proceed to community vote; revision may occur before final selection. KYC/KYB and participant/sanctions rules apply before payout. Do not invent universal minimum-TVL, token-launch, or US-only gates, but do not deny real track/category/participant constraints.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Separates eligibility, completeness prescreen, panel merits, vote/revision, and KYC stages. States that individuals/teams may qualify while preserving real participant and track-specific constraints.",
         "keyFacts": [
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Separates eligibility, completeness prescreen, panel merits, vote/revision, and KYC stages.",
           "States that individuals/teams may qualify while preserving real participant and track-specific constraints."
         ],
         "avoid": [
           "Do NOT say weak traction or unclear fit is itself the prescreen definition; those are merit/fit considerations at other stages.",
-          "Do NOT invent universal TVL/token/US-only gates or claim no hard participant/category constraints exist."
+          "Do NOT invent universal TVL/token/US-only gates or claim no hard participant/category constraints exist.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "GT-37 CORRECTION 2026-07-10: prescreen is completeness/readiness, not traction or idea-strength judging. Grade the distinct eligibility, prescreen, panel merits, Open-vote/revision, and KYC stages, plus current submission criteria.\nGT-37 independently confirmed by processes 3296/3298."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -19333,12 +19330,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The golden falsely assigned traction/ecosystem-fit merit criteria to prescreen and omitted the current staged distinction among interest eligibility, completeness prescreen, panel merits, and later KYC.",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-37 primary 3296 and blind 3298; GT-36 Build-track/tranche reconciliation."
+            "P4 Lane R behavioral conversion queue, row 70 (q-scf-eligibility-criteria): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/scf-awards/build-award"
           ],
           "rootCause": [
-            "Eval-side stage conflation and stale high-level prescreen summary."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-eligibility-criteria"
@@ -19352,27 +19350,26 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Use Stellar Light's **`/api/analyze?dimension=categories`** for a corpus-relative aggregate, not per-project history or the currently truncated clusters endpoint. Label output per the Scout corpus with `generatedAt`, taxonomy, project/status scope, and methodology. As of **2026-07-10**, the active-project basis had 841 projects and 391 funded projects totaling a reconstructed **$39,851,645.13**. **User-Facing App** led total projects (337), funded projects (167), and reconstructed dollars (**$16.904M / 42.42%**). Dollar order was User-Facing App > Infrastructure ($7.809M) > Protocol/Contract ($7.693M) > Tooling ($6.249M). **Protocol/Contract** separately had the highest funded rate, 68/129 = 52.71%. These are dated Scout-service metrics, not official SCF category accounting; re-query rather than freezing them.",
+        "answer": "Use `scout.getClusters`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
         "keyFacts": [
-          "Uses the Scout categories analytics dimension and labels the result corpus-relative with an as-of date.",
-          "Explains category-level distribution and count/methodology basis without hard-gating exact reconstructed figures."
+          "Retrieves source-bounded live results via scout.getClusters, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value."
         ],
         "avoid": [
           "Do NOT present Scout category counts/dollar estimates as independently official SCF totals or permanent truth.",
-          "Do NOT fabricate percentages/splits or answer with per-project history when category distribution was requested."
+          "Do NOT fabricate percentages/splits or answer with per-project history when category distribution was requested.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "2nd scout_analyze case; exercises the categories dimension ('projects per category'). Refreshed 2026-06-29 via /api/analyze?dimension=categories: User-Facing App 204/103/$9.19M, Tooling 108/42/$3.28M, Infrastructure 97/34/$3.01M, Protocol/Contract 86/44/$4.48M (totalProjects 500). Live dollar figures → flipped freshness_sensitive true; ranking headline (UFA leads count+dollars, then Tooling/Infra/Protocol) unchanged.\nAlso good if the answer: Frames it as an aggregate distribution, not a per-project breakdown.\nGolden cites: Stellar Light analytics (scout_analyze categories/funding dimension).\nGT-37 REFRESH 2026-07-10: use /api/analyze as the explicit basis. UFA leads absolute count and reconstructed dollars; Protocol/Contract leads funded rate. /api/clusters truncates at 500 and must not supply this denominator until fixed. Exact values remain dated corpus analytics."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "corpus-grounded",
         "status": "mixed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-09-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "C",
@@ -19419,16 +19416,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — The category answer appropriately named Scout as its source, but its exact counts/dollar ranking could still act as gospel without an independent official aggregate or reproducible direct-SCF calculation. The correction explicitly labels the values corpus-only, keeps them illustrative and dated, and gates on method/source/basis rather than figures.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 569 Batch D, 2026-07-09; GT-37 primary 3296 and blind 3298 re-derived the full 2026-07-10 basis.",
-            "Sibling sweep covered q-scf-category-funded-ratio and q-scf-total-distributed; GT-36 proved /api/clusters is truncated and not interchangeable."
+            "P4 Lane R behavioral conversion queue, row 71 (q-scf-funding-by-category): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellarlight.xyz/api/analyze?dimension=categories"
           ],
           "rootCause": [
-            "Corpus-only analytics were too easy to read as world-grounded exact gospel despite a dated Scout label.",
-            "improvements/stellar-light-scout/sls-013 — funding-v2 fixed count-basis provenance for totals, not an independent category dataset.",
-            "solo://proj/49/todo/golden-corpus-health--901"
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-funding-by-category"
@@ -19442,27 +19437,26 @@
         "scout.getHackathons"
       ],
       "golden": {
-        "answer": "As of **2026-07-10**, the successful Stellar Light queries returned **zero active and zero upcoming rows** in their scoped catalog. **Stellar Hacks: Real-World ZK** is no longer active; it ran **2026-06-15 through 2026-07-03** and is marked completed. This is a dated catalog result, not proof that no Stellar-related event exists anywhere. Re-check the live catalog, DoraHacks SDF organization page, and `@BuildOnStellar`; if still empty, report the result and those discovery channels rather than inventing an event.",
+        "answer": "Use `scout.getHackathon`, `scout.getHackathons` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
         "keyFacts": [
-          "Reports the dated zero active/upcoming scoped result and the completion of Real-World ZK.",
-          "Treats the result as source-bounded and supplies live re-check channels."
+          "Retrieves source-bounded live results via scout.getHackathon, scout.getHackathons and reports their source and as-of date without freezing a roster, rank, count, or current value."
         ],
         "avoid": [
           "Do NOT call Real-World ZK currently active after 2026-07-03.",
-          "Do NOT turn a scoped catalog zero-result into a permanent global absence claim."
+          "Do NOT turn a scoped catalog zero-result into a permanent global absence claim.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "GT-38 CORRECTION 2026-07-10: the scoped live feed returned zero active/upcoming rows; Real-World ZK completed July 3. Grade dated source-bound reporting and live re-check guidance, not hidden operation use.\nGT-38 independently confirmed by processes 3297/3299."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "corpus-grounded",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "C",
@@ -19508,12 +19502,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The dated June answer still called Real-World ZK active after it ended and could turn a successful scoped zero-result into a global absence claim.",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-38 primary 3297 and blind 3299."
+            "P4 Lane R behavioral conversion queue, row 72 (q-scf-hackathons-active): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellarlight.xyz/hackathons"
           ],
           "rootCause": [
-            "Normal weekly event-status drift plus an eval-side global-absence risk."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-hackathons-active"
@@ -19527,27 +19522,28 @@
         "lumenloop.get_scf_submissions"
       ],
       "golden": {
-        "answer": "- Resolve the named project **Soroswap** (the Stellar/Soroban DEX/AMM, live on mainnet) and pull its SCF history via `lumenloop_get_scf_submissions`. [Lumenloop / stellarlight.xyz/project/soroswap]\n- **Yes, Soroswap is SCF-funded.** Total SCF-related funding is **$346,750 USD** (as of 2026-07-06; awards are XLM-denominated — USD is the payment-day valuation, and the official site displays rounded figures like $346.8K). [communityfund.stellar.org/project/soroswapfinance-yax]\n- **Structure (4 awarded submissions):** three numbered SCF rounds — **SCF #15 ($57,600, Legacy v4.0 Award)**, **SCF #17 ($139,150, Legacy v4.0 Award)**, **SCF #21 ($100,000, Legacy v5.0 Community Award, the Aggregator submission)** — plus a **Liquidity Award ('24 Q1, $50,000)**. The four figures sum exactly to the $346,750 total. The submissions record carries the same rows (per-submission `award_type` and `budget` fields).\n- Per-submission figures should be sourced (submissions record or communityfund.stellar.org); the numbered-round count is 3 and the awarded-submission count is 4 — both statements are correct with their respective framings.\n- Don't confuse Soroswap (the DEX) with Soroban (the smart-contract platform) or with another DEX.",
+        "answer": "Use `lumenloop.find_similar_scf_submissions`, `lumenloop.get_scf_submissions` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Resolves Soroswap (the Stellar/Soroban DEX/AMM) and returns its SCF submission history. Answers whether it was SCF-funded and the shape of the history — 3 numbered rounds (15, 17, 21) and/or 4 awarded submissions including the '24 Q1 Liquidity Award — grounded in the submissions record.",
         "keyFacts": [
+          "Retrieves source-bounded live results via lumenloop.find_similar_scf_submissions, lumenloop.get_scf_submissions and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Resolves Soroswap (the Stellar/Soroban DEX/AMM) and returns its SCF submission history.",
           "Answers whether it was SCF-funded and the shape of the history — 3 numbered rounds (15, 17, 21) and/or 4 awarded submissions including the '24 Q1 Liquidity Award — grounded in the submissions record."
         ],
         "avoid": [
           "Do NOT state per-round dollar figures without sourcing them to the submissions record or communityfund.stellar.org (unsourced figures that contradict the record's 57,600 / 139,150 / 100,000 / 50,000 are wrong).",
-          "Do NOT confuse Soroswap with Soroban (the smart-contract platform) or with another DEX."
+          "Do NOT confuse Soroswap with Soroban (the smart-contract platform) or with another DEX.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Per-project SCF history. 'Has X been funded' phrasing borders on find_similar_scf_submissions, but a named project → get_scf_submissions. Verified 2026-06-29 via /api/projects: Soroswap scf.awarded=true, totalAwarded=$346,750, category Protocol/Contract, awardedRounds [15,17,21] (3 rounds). Funding total is live → freshness-sensitive.\nAlso good if the answer: Reports the award type(s) (e.g. Build) where the record shows them.\nGolden cites: Soroswap's SCF submissions record (Lumenloop) / its communityfund project page.\nThe live submissions record and canonical official project page carry SCF #15 $57,600 + SCF #17 $139,150 + SCF #21 $100,000 + Liquidity Award '24 Q1 $50,000 = $346,750 exactly. GT-38 independently re-confirmed the structure on 2026-07-10. Record-consistent per-submission detail is not fabrication: '3 numbered rounds' and '4 awarded submissions' are both correct framings."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "lumenloop",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -19611,18 +19607,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-07",
-          "by": "Golden-truth sweep import — Golden authored when get_scf_submissions exposed rounds only; the record has since grown per-submission award_type + budget fields plus the Liquidity Award row, and the official SCF site carries the identical structure. The old answer text ('do NOT invent a per-round dollar split or specific award types') plus a transcript-blind judge turned VERBATIM record data into a 'fabrication' wrong verdict (2026-07-07T02-28-31 battery). Figures now pinned with asOf + XLM-valuation caveat; avoid clause re-armed as an answer-visible sourcing guard.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Live production execute 2026-07-07: lumenloop.get_scf_submissions({slug:'soroswap'}) -> 4 submissions with award_type + budget exactly as quoted; scout soroswap record scfTotalAwardedUSD 346750 'disclosed', rounds [15,17,21]",
-            "Class-A verification 2026-07-06: communityfund.stellar.org/project/soroswapfinance-yax (canonical page; /projects/soroswap 404s) — full corroboration matrix in Solo todo 853 close + the verification agent transcript",
-            "Judge artifact demonstrated: eval/qa/results/2026-07-07T02-28-31-variantA.json scored WRONG for 'fabricated' labels/amounts/4th submission, every one verbatim in the live record",
-            "Sibling-consistency sweep 2026-07-07: q-defi-soroswap-scf ('roughly $346,750' source-relative) and q-defi-soroswap-resolve ('~$346,750') both consistent; no golden contradicts the 4-submission structure"
+            "P4 Lane R behavioral conversion queue, row 73 (q-scf-history-soroswap): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://communityfund.stellar.org/project/soroswapfinance-yax"
           ],
           "rootCause": [
-            "solo://proj/49/todo/golden-gap-q-scf-his--853",
-            "Eval-side authoring lag, not an upstream defect: the corpus GREW richer (per-submission award_type/budget) after the golden was authored — no improvements/ finding warranted; the upstream change is an improvement",
-            "Transcript-blind judge class (third occurrence this week) — rubric-note decision deferred to a measured rubric round, recorded in todo 853 close"
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-history-soroswap"
@@ -19685,28 +19677,28 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Yes. The RFP was **Hummingbot Integration (Trading Engine)**. In the June 25, 2026 live RFP feed it is\n`status: closed`, `quarter: q1-2026`, category `defi`, so it is **not currently fundable / not open\nfor application**. [1]\n\nThe brief is explicitly framed around **Kelp's deprecation leaving a liquidity gap**. It asked for a\nStellar orderbook connector for the official Hummingbot repository so builders could run automated\nmarket-making and arbitrage strategies; optional future scope included Stellar AMMs and intra-Soroban\nAMM arbitrage. [1]\n\nIf the user wants something fundable now, Raven should point them to the current open RFP feed rather\nthan pretending this closed Q1 brief is still open.\n\nSource: [1] Stellar Light RFP record for Hummingbot Integration (Trading Engine).",
+        "answer": "Use `scout.getRfps`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Names the RFP as Hummingbot Integration (Trading Engine). Explains the Kelp-deprecation/liquidity-gap framing: Stellar wanted a Hummingbot connector for automated market-making and arbitrage.",
         "keyFacts": [
+          "Retrieves source-bounded live results via scout.getRfps, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Names the RFP as Hummingbot Integration (Trading Engine).",
-          "States it is closed / Q1 2026 / no longer currently fundable in the live RFP feed.",
           "Explains the Kelp-deprecation/liquidity-gap framing: Stellar wanted a Hummingbot connector for automated market-making and arbitrage."
         ],
         "avoid": [
           "Do NOT claim the Hummingbot/Kelp RFP is currently open or fundable if the live feed marks it closed.",
-          "Do NOT invent a different RFP title or claim no such brief existed."
+          "Do NOT invent a different RFP title or claim no such brief existed.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Added from theboycoder/StellarLight data-layer intake. Verified 2026-06-25 against /api/rfps: Hummingbot Integration (Trading Engine), category defi, author Rahim, quarter q1-2026, status closed; description explicitly says Kelp deprecation left a liquidity gap.\nAlso good if the answer: Mentions that Q2 2026 open RFPs are a different current set, so the user should check the live feed for fundable briefs.\nGolden cites: The live Scout/Stellar Light RFP feed or the Hummingbot Integration RFP page."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-06-25",
-        "reverifyBy": "2026-09-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "C",
@@ -19716,9 +19708,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "GT-39-application-instawards-liquidity-voting-rfps-regions accepted in Solo scratchpad 575 rev 291",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "solo://proj/49/scratchpad/truth-maintenance-20--575"
+            "P4 Lane R behavioral conversion queue, row 74 (q-scf-hummingbot-kelp-closed-rfp): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellarlight.xyz/ideas/hummingbot-integration"
+          ],
+          "rootCause": [
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-hummingbot-kelp-closed-rfp"
@@ -19731,27 +19727,27 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Instawards are chapter-guided, short-sprint awards for eligible early execution. A **typical initial award is $1,000–$5,000 in USD value paid in XLM**. After successful completion, a project may receive **up to two conditional follow-ons**, with **$15,000 aggregate maximum over time**; follow-ons are not automatic. There is no standard public/open application form, but there is a real chapter-guided request and scoping process. Chapter support is non-binding: **SDF alone makes the final approval and funding commitment**, generally after reviewing the scope and eligibility. Instawards are not community/NQG-voted Build grants.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Distinguishes no standard public form from no process and makes SDF approval final.",
         "keyFacts": [
-          "States $1K–$5K typical initial amount, up to two conditional follow-ons, and $15K aggregate maximum.",
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Distinguishes no standard public form from no process and makes SDF approval final."
         ],
         "avoid": [
           "Do NOT call $15K the automatic initial award or imply follow-ons are guaranteed.",
-          "Do NOT say chapter leads commit SDF funds or that Instawards use NQG voting."
+          "Do NOT say chapter leads commit SDF funds or that Instawards use NQG voting.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Dossier §2.2/§7.2. Trap: assuming an open application; it's ambassador-recommended.\nAlso good if the answer: Under SCF v7.0, Instawards replaced the prior Kickstart Award.\nGolden cites: The SCF Instawards handbook page.\nGT-39/40 atom independently confirmed 2026-07-10. Accept 'no open application' only when the answer still acknowledges the chapter-guided request/scope and final SDF review."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -19791,13 +19787,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — The inherited flat $15K framing hid the typical initial amount, conditional follow-ons, and the chapter-guided request/SDF-approval boundary.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-39 processes 3300/3303 and GT-40 process 3304, 2026-07-10."
+            "P4 Lane R behavioral conversion queue, row 75 (q-scf-instawards): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/scf-awards/instawards"
           ],
           "rootCause": [
-            "Eval-side program-version drift and amount-basis collapse."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-instawards"
@@ -19810,28 +19807,29 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "NQG is Stellar Community Fund's reputation/delegation governance system, combining Neural Governance with Quorum Delegation; it is not XLM/token voting and not Stellar Consensus Protocol. The current four-tier permissions matter: **Verified** has identity/account verification and view/discussion access; **Pathfinder** may participate by delegating weight; **Navigator** and **Pilot** may vote actively on Build Open projects; **Pilot** may also serve as a delegate and act on governance proposals. Build project-level community voting applies to the **Open Track only**. Integration and RFP awards are panel-led. Public Goods and quarterly resource-governance votes also use NQG-related signals but are distinct vote objects with different eligibility/processes.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Gives the Verified/Pathfinder/Navigator/Pilot permission matrix. Separates Build Open voting from Integration/RFP decisions and from Public Goods/quarterly governance. Explains NQG as reputation/delegation governance, not token voting or SCP.",
         "keyFacts": [
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Gives the Verified/Pathfinder/Navigator/Pilot permission matrix.",
           "Separates Build Open voting from Integration/RFP decisions and from Public Goods/quarterly governance.",
           "Explains NQG as reputation/delegation governance, not token voting or SCP."
         ],
         "avoid": [
           "Do NOT say every basic Verified member actively votes or can be a delegate.",
-          "Do NOT generalize Build Open voting to Integration/RFP or treat Public Goods as the same vote."
+          "Do NOT generalize Build Open voting to Integration/RFP or treat Public Goods as the same vote.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Dossier §3. Key trap: NQG (SCF grant governance) vs SCP quorum sets (protocol consensus) — different things despite both saying 'quorum'.\nAlso good if the answer: NQG was adopted by SCF in October 2023 and was co-developed with BlockScience. | The community vote applies to the Build Open Track (and the Public Goods Award).\nGolden cites: The SCF handbook Neural Quorum Governance / Verified Members pages.\nGT-39/40 atom independently confirmed 2026-07-10. Grade the role matrix and vote-object boundary, not the shorthand 'Verified members vote'."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -19876,13 +19874,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — The inherited answer collapsed the four Verified tiers and distinct vote objects into a generic claim that Verified Members vote.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-39 processes 3300/3303 and GT-40 process 3304, 2026-07-10."
+            "P4 Lane R behavioral conversion queue, row 76 (q-scf-nqg-voting): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/governance/neural-quorum-governance"
           ],
           "rootCause": [
-            "Eval-side governance-role and vote-object collapse."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-nqg-voting"
@@ -19896,27 +19895,26 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "As of **2026-07-10**, the official RFP page and live Scout feed agree on five current Q2 briefs: **Trustline Onboarder; Passkey UI** (Scout alias: Passkey UI Kit); **Account Demolisher; Contract Source Verification Service; and OZ Accounts Policy Builder**. Use `scout.getRfps`, re-query for current status, and exclude the synthetic `scf-round-45` row: Scout metadata reports five open RFPs while the returned array contains six rows. The official page itself has a stale SCF #43 banner while current awards/Scout context is #45, so date the roster and disclose that conflict. RFPs use the Build RFP Track and ordinary Build cap; interest is open but full proposals are invited after eligibility review, decisions are panel-led, and no per-brief bounty should be invented.",
+        "answer": "Use `scout.getRfps`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
         "keyFacts": [
-          "Lists the five dated official/live briefs and reconciles the Passkey title alias.",
-          "Uses scout.getRfps, excludes the synthetic round row, and discloses the stale official #43 banner versus current #45 context."
+          "Retrieves source-bounded live results via scout.getRfps, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value."
         ],
         "avoid": [
           "Do NOT reference retired scout_rfps, count scf-round-45 as a sixth RFP, or repeat #43 as current without the conflict.",
-          "Do NOT present the roster as permanent, invent per-RFP bounties, or claim RFP projects use NQG voting."
+          "Do NOT present the roster as permanent, invent per-RFP bounties, or claim RFP projects use NQG voting.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Dossier §4.2. scout_rfps is the exact card for 'what is SCF asking to be built'. Freshness item — confidence stays medium because the open set rotates. Re-verified live 2026-06-29 (/api/rfps): activeQuarter q2-2026, 5 open / 9 closed, open briefs unchanged (Trustline Onboarder, Passkey UI Kit, Account Demolisher, Contract Source Verification Service, OZ Accounts Policy Builder). Rubric gates on the freshness caveat, not the exact list.\nAlso good if the answer: RFPs are reviewed via the SCF Build RFP Track (panel-only, no community vote). | RFP awards follow the standard SCF Build $150K XLM cap (per-RFP bounties are not separately published).\nGolden cites: The SCF RFP Track handbook page and/or the live RFPs feed.\nGT-39/40 independently corrected 2026-07-10. The earlier corpus-only note is superseded: the official RFP page now carries the five headings, but its #43 label is stale and Scout injects a synthetic #45 row (sls-045). Grade the dated reconciled roster and source conflict."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "C",
@@ -19955,14 +19953,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-09",
-          "by": "Golden-truth sweep import — The prior corpus-only correction became false once the current official RFP page published the same five briefs; it also referenced a retired operation and failed to exclude Scout's synthetic round row.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 569 Batch F, 2026-07-09; siblings q-scf-current-round, q-scf-rfp-tooling, and q-scf-build-tracks reviewed."
+            "P4 Lane R behavioral conversion queue, row 77 (q-scf-open-rfps): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellarlight.xyz/ideas"
           ],
           "rootCause": [
-            "A volatile directory feed was presented with enough exact detail to become a de facto world-truth gate.",
-            "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch F"
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-open-rfps"
@@ -19978,28 +19976,28 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Yes. As of **2026-07-10**, the official Stellar Ambassador Program lists **Stellar India** among its active Asia-Pacific chapters, with the status **Exploratory Chapter**. Its dedicated page names Sahitya Roy of Rise In as Chapter Lead and links current joining, events, community, and education channels.\n\nThere is also direct, dated activity beyond the directory label: 2026 operator/event records include Build Station sprints and community events in several Indian cities. One current example is the **Jaipur Builders Camp, August 14–18, 2026**, a five-day Rise In / Stellar India builder residency. Treat individual events as dated operator evidence, not proof that SDF centrally runs every activation or that participation is paid.\n\nRegional chapters may guide eligible builders toward Instawards, but chapter support is not a funding commitment: SDF makes the final decision, typical initial Instawards are $1K–$5K in USD value paid in XLM, and $15K is the conditional aggregate maximum over time rather than an automatic first award.",
+        "answer": "Use `scout.getBuilders`, `scout.getHackathon`, `scout.getHackathons`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Confirms the officially listed active Stellar India Exploratory Chapter and distinguishes that label from a claim that SDF centrally operates every local event.",
         "keyFacts": [
-          "Confirms the officially listed active Stellar India Exploratory Chapter and distinguishes that label from a claim that SDF centrally operates every local event.",
-          "Uses dated official/operator evidence for current activity; Jaipur Builders Camp is August 14–18, 2026, not Goa in July."
+          "Retrieves source-bounded live results via scout.getBuilders, scout.getHackathon, scout.getHackathons, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+          "Confirms the officially listed active Stellar India Exploratory Chapter and distinguishes that label from a claim that SDF centrally operates every local event."
         ],
         "avoid": [
           "Do NOT turn a bounded Scout directory or hackathon miss into evidence that India lacks builders, events, or an official chapter.",
           "Do NOT repeat the stale Goa/July Builders Camp description or present historical project counts as current cumulative totals.",
-          "Do NOT claim regional chapters approve SCF Build or Instaward funding; SDF retains final approval."
+          "Do NOT claim regional chapters approve SCF Build or Instaward funding; SDF retains final approval.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Dossier §7.4. Near-edge: a regional-community question that stays inside Stellar corpora (vs general web). Reviewed 2026-06-29: the unverified 'Build On Stellar National Bounty (India)' DoraHacks event is not in the live catalog; replaced with corpus-confirmed India activity (Stellar Build Station Kozhikode/Kerala and Kolkata 21-day sprints, June 2026, from the Stellar weekly-roundup research corpus surfaced via scout_research). India active-region claim well-evidenced → confidence raised.\nAlso good if the answer: Notes regional chapters can recommend Instawards for local builders.\nGolden cites: Stellar Light research/builder/hackathon corpora and/or the Ambassador Program page for the India region.\nGT-39 independently reverified 2026-07-10 (Solo scratchpad 575, processes 3300/3303). Grade the official active Exploratory Chapter as the durable headline and event examples as dated operator evidence. Direct Luma controls the Jaipur/August identity over Lumenloop's stale Goa summary/slug; the service conflict is tracked in ll-007. Do not penalize independently verified current examples outside the illustrative list."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -20066,17 +20064,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — The prior corpus-first answer missed the official active India chapter, froze stale Goa/July event prose, misstated Instaward amount semantics, and prohibited independent verification. GT-39 primary and blind independently confirmed the official Exploratory Chapter and the direct Jaipur event while reproducing a Lumenloop title/date versus summary/slug conflict.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575, GT-39 primary process 3300 and blind process 3303, independently executed 2026-07-10.",
-            "Official Ambassador APAC index and dedicated India Chapter page list Stellar India as an active Exploratory Chapter led by Sahitya Roy of Rise In.",
-            "Direct Luma ajcns4mc records Jaipur Builders Camp on 2026-08-14 through 2026-08-18; Lumenloop's structured title/date agree while generated summary/slug retain Goa wording."
+            "P4 Lane R behavioral conversion queue, row 78 (q-scf-regional-india): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.gitbook.io/ambassador-program/chapters/asia-pacific"
           ],
           "rootCause": [
-            "solo://proj/49/todo/judge-rubric-corpus--826 — the avoid-clause judge-artifact class (FIXED: rubric v2.1 + eval:qa:lint, commit 18e234f)",
-            "eval-side freshness drift: the corpus-first snapshot did not incorporate the current official chapter pages or direct event record",
-            "improvements/lumenloop/ll-007-event-summary-date-prose-mismatch.md"
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-regional-india"
@@ -20090,27 +20085,27 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "As of **2026-07-10**, the five current Q2 briefs are Trustline Onboarder, Passkey UI (Scout alias: Passkey UI Kit), Account Demolisher, Contract Source Verification Service, and OZ Accounts Policy Builder. The tooling/infrastructure subset is **Passkey UI, Contract Source Verification Service, and OZ Accounts Policy Builder**. Use the exposed `scout.getRfps` operation and exclude its synthetic `scf-round-45` metadata row; metadata says five open briefs although six rows are returned. The interest form is open, but eligibility review precedes an invitation to a full RFP proposal. RFP decisions are panel-led, not NQG project votes, and no separate per-brief bounty should be invented.",
+        "answer": "Use `scout.getRfps`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Uses scout.getRfps, excludes the synthetic round row, and explains interest-to-invitation.",
         "keyFacts": [
-          "Lists the dated five-brief roster and identifies the three tooling matches.",
+          "Retrieves source-bounded live results via scout.getRfps, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Uses scout.getRfps, excludes the synthetic round row, and explains interest-to-invitation."
         ],
         "avoid": [
           "Do NOT reference retired scout_rfps or count scf-round-45 as a sixth brief.",
-          "Do NOT claim anyone openly submits a full RFP proposal, that RFP awards use community vote, or that each brief has a published bounty."
+          "Do NOT claim anyone openly submits a full RFP proposal, that RFP awards use community vote, or that each brief has a published bounty.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Dossier §4.2/§6.4. scout_rfps idea→RFP matching. Freshness item (3rd freshness case) — confidence stays medium (set rotates). Re-verified live 2026-06-29 (/api/rfps?status=open): matching open tooling/infra briefs = Passkey UI Kit (developer-tooling), Contract Source Verification Service (infrastructure), OZ Accounts Policy Builder (developer-tooling). Rubric gates on the freshness caveat, not the exact list.\nAlso good if the answer: Flags that the matching RFP set is quarter-dependent and may change.\nGolden cites: The live SCF RFPs feed / RFP Track handbook page.\nGT-40 independently confirmed 2026-07-10. The official page's SCF #43 label is stale against current #45; grade the dated roster and source conflict rather than the banner."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -20156,14 +20151,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — The inherited answer used retired/non-exposed operation names, omitted the synthetic Scout row, and blurred open interest with an invited full RFP proposal.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-39/40; live 2026-07-10 official and Scout probes."
+            "P4 Lane R behavioral conversion queue, row 79 (q-scf-rfp-tooling): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/rfp-track"
           ],
           "rootCause": [
-            "Eval-side legacy operation references.",
-            "improvements/stellar-light-scout/sls-045-rfp-synthetic-round-row-count.md"
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-rfp-tooling"
@@ -20176,27 +20171,27 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "For new general SDF reports, use the **Stellar HackerOne policy**. Consolidation took effect **2026-05-07**; the old general Stellar Immunefi program is deprecated for new submissions. Under the HackerOne matrix, standard Critical/High/Medium/Low/Note maxima are **25K/15K/10K/2K/500 points**; one point is currently $1 and rewards are paid in XLM. A special core/protocol carveout can calculate a critical reward as 10% of directly affected funds, capped at **250K points**. That carveout covers `stellar-core`, `stellar-protocol`, and Soroban runtime/host code—not arbitrary third-party Soroban apps, which are outside SDF's program. The separate OpenZeppelin Stellar Contracts Immunefi bounty remains distinct, with a $25K maximum single critical payout and $250K total contest maximum. Audit Bank funds audits; it is not the vulnerability-report bounty.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Separates deprecated general Immunefi, the independent OpenZeppelin bounty, third-party apps, and Audit Bank.",
         "keyFacts": [
-          "Routes new SDF reports to current HackerOne and gives the current standard scale plus qualified core carveout.",
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Separates deprecated general Immunefi, the independent OpenZeppelin bounty, third-party apps, and Audit Bank."
         ],
         "avoid": [
           "Do NOT repeat a timeless $250K protocol/$50K Soroban-app split.",
-          "Do NOT send new general SDF reports to deprecated Immunefi or merge OpenZeppelin's policy into SDF's."
+          "Do NOT send new general SDF reports to deprecated Immunefi or merge OpenZeppelin's policy into SDF's.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Dossier §5.4. Trap: swapping the $250K-XLM / $50K-USD tiers, or confusing with Audit Bank.\nAlso good if the answer: The Bug Bounty is an SDF-direct program (stellar.org/grants-and-funding), separate from the SCF.\nGolden cites: stellar.org/grants-and-funding bug-bounty section.\nGT-40 blind reversed the primary top-line after following the cited controlling policy. Policy and intake are volatile; accept dated, scope-aware figures only."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "D",
@@ -20247,13 +20242,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — The inherited $250K protocol versus $50K Soroban two-tier rule is obsolete after SDF's May 2026 HackerOne consolidation and confuses runtime defects with arbitrary third-party contracts.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-40 blind process 3304; controlling policies fetched 2026-07-10."
+            "P4 Lane R behavioral conversion queue, row 80 (q-scf-sdf-bug-bounty): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://hackerone.com/stellar?view_policy=true"
           ],
           "rootCause": [
-            "improvements/stellar-light-scout/sls-020-security-program-migration-supersession.md"
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-sdf-bug-bounty"
@@ -20266,27 +20262,27 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Yes—an already-launched Stellar project may apply for an SDF Marketing Grant, but being live is not a universal prerequisite: the current page covers **new and existing projects**. Grants are up to **$500,000**, with the funding index listing USD, USDC, or XLM, for growth/user acquisition work such as media, incentives, communications, agencies, and tools. Applicants need concrete use cases, timelines, budget/benchmarks, and a capable team, and must respect exclusions around manipulation or investment promotion. This is a separate SDF-direct application path, not an SCF Build track.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Describes growth purpose, execution requirements, and separate SDF application.",
         "keyFacts": [
-          "Answers yes for launched projects while including new projects and the current $500K cap.",
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Describes growth purpose, execution requirements, and separate SDF application."
         ],
         "avoid": [
           "Do NOT say only already-live/post-launch projects qualify.",
-          "Do NOT call Marketing an SCF Build track or promise approval."
+          "Do NOT call Marketing an SCF Build track or promise approval.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Dossier §5.5. Trap: applying the SCF Build $150K cap to the SDF Marketing Grant.\nAlso good if the answer: Marketing Grants are an SDF-direct program (stellar.org/grants-and-funding), separate from SCF Build.\nGolden cites: stellar.org/grants-and-funding marketing-grants section.\nGT-40 independently confirmed 2026-07-10. The dedicated current page controls over older shorthand."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -20320,13 +20316,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — The inherited answer incorrectly made an already-live product universally required even though the current detailed page admits new and existing projects.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-40 processes 3301/3304, 2026-07-10."
+            "P4 Lane R behavioral conversion queue, row 81 (q-scf-sdf-marketing-grant): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.org/grants-and-funding/marketing-grants"
           ],
           "rootCause": [
-            "Eval-side eligibility drift."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-sdf-marketing-grant"
@@ -20340,27 +20337,28 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "The interest form is rolling/open; teams first undergo eligibility/referral review and only invited teams receive the full-proposal deadline. The published Build cadence is roughly six weeks: **2 weeks** for the full proposal, **1 week** for prescreen and panel review, a conditional revision step when requested, **1 week** for the Open Track community vote, then decision/notification and **1 week** for information collection/KYC. Integration and RFP decisions are panel-led and do not use the project community vote. After selection, KYC/KYB and award acceptance are distinct from delivery payments: current mechanics are four payments—10% acceptance plus three deliverable tranches of 20/30/40, generally with the next completion form due within 90 days of the prior payment. Use live round dates for a specific application.",
+        "answer": "Use `scout.getRfps`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Separates rolling interest, eligibility/invitation, proposal, prescreen/panel, revision, Open-only vote, decision, and KYC. Gives the 2/1/1/1-week stage labels and keeps post-award payments separate.",
         "keyFacts": [
+          "Retrieves source-bounded live results via scout.getRfps, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Separates rolling interest, eligibility/invitation, proposal, prescreen/panel, revision, Open-only vote, decision, and KYC.",
           "Gives the 2/1/1/1-week stage labels and keeps post-award payments separate."
         ],
         "avoid": [
           "Do NOT call the interest form an open full proposal or apply the community vote to Integration/RFP.",
-          "Do NOT call acceptance a fourth deliverable milestone or invent a universal results week."
+          "Do NOT call acceptance a fourth deliverable milestone or invent a universal results week.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "DIFFERENTIATED 2026-06-29: re-scoped to the review-side timeline + round cadence. Dropped the specific current-round number/deadline (owned by q-scf-current-round) and the applicant how-to-apply steps (owned by q-scf-how-to-apply). Build cadence ~6 weeks confirmed; exact per-stage review dates are not reliably published in static sources, so the rubric requires live checking rather than fabricated dates.\nAlso good if the answer: Distinguishes durable review mechanics/cadence from any one round's specific calendar dates. | Notes track-specific review variation: the Open Track has a community (NQG) vote, while Integration and RFP tracks are panel-oriented.\nGolden cites: The live/current SCF Community Fund source for round deadlines, plus SCF handbook/process documentation for lifecycle mechanics.\nGT-40 independently confirmed 2026-07-10. Exact calendar dates remain live; the stage-duration model and four-payment/three-deliverable distinction are the durable grading core."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-09-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -20405,13 +20403,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — The inherited lifecycle omitted published durations, conditional revision, the interest-to-invitation boundary, and the distinction between selection/KYC and post-award payments.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-40 processes 3301/3304, 2026-07-10."
+            "P4 Lane R behavioral conversion queue, row 82 (q-scf-submission-lifecycle-deadlines): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://communityfund.stellar.org/awards"
           ],
           "rootCause": [
-            "Eval-side lifecycle under-specification."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-submission-lifecycle-deadlines"
@@ -20426,28 +20425,27 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "There is no single safe public scalar for SCF 'distributed.' Report a dated basis matrix and say whether each value is reconstructed, awarded, or paid. As of **2026-07-10/11**, Scout funding-v2 reconstructed **$39,851,645.13 across 391 distinct awarded project records**; this is not an official payment ledger. The official embedded round ledger instead summed **868 awarded submission memberships, about $63.62M awarded and $53.91M paid**. A separate public project-record pass summed roughly **$50.85M awarded and $41.72M paid**, while public banners still showed incompatible 42M/656 and 504 figures with unclear cutoffs. These populations are not interchangeable: projects differ from submission memberships, awarded differs from paid/distributed, and USD-valued budgets differ from XLM quantities. Use current source, timestamp, currency, denominator, and amount semantics; round machine totals rather than pinning floating-point tails. SCF totals are also distinct from SDF treasury, XLM supply, and Enterprise Fund investment.",
+        "answer": "Use `scout.getClusters`, `scout.searchProjects`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
         "keyFacts": [
-          "Reports the cumulative SCF distribution as a dated, source-labeled live analytics figure (the funding dimension), never a remembered or fixed number.",
-          "Gives a count of funded projects/winners alongside the total amount, and is explicit about which count basis it uses (distinct funded projects vs awarded submissions)."
+          "Retrieves source-bounded live results via scout.getClusters, scout.searchProjects, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value."
         ],
         "avoid": [
           "Do NOT state a precise total as permanently fixed (it accrues every ~6-week round, and the live analytics figure itself drifts between indexings).",
           "Do NOT conflate the distinct-funded-projects count with the awarded-submissions counters, or USD-denominated totals with XLM-denominated figures (the SCF site's '42M Awarded in XLM', older ~200M-XLM press figures) — always name the count basis and denomination.",
-          "Do NOT confuse SCF cumulative distribution with SDF treasury size, XLM total supply, or the SDF Enterprise Fund."
+          "Do NOT confuse SCF cumulative distribution with SDF treasury size, XLM total supply, or the SDF Enterprise Fund.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Dossier §11. scout_analyze funding dimension is the exact card ('how much has SCF distributed'). Re-verified live 2026-06-29: scout_analyze ?dimension=funding returned scfTotalDistributedUSD ~$19.97M, scfAwardedProjects 223, meanAwardUSD ~$89.5K (DOWN from the 2026-06-22 $21.36M/239 — the live metric recomputes and drifts in both directions). communityfund.stellar.org/awards counter showed 504 'Previously Awarded Submissions'. RECONCILED: two count bases (distinct funded projects ~223 vs awarded submissions ~504, since a project can win multiple rounds) and two denominations (USD analytics vs XLM-denominated press figures like ~200M XLM). Freshness-sensitive.\nAlso good if the answer: Flags that cumulative totals grow each round and should be confirmed against the live source, and notes the USD vs XLM denomination (budgets are set in USD, paid in XLM).\nGolden cites: Stellar Light analytics (scout_analyze funding) and/or the SCF history-of-SCF page.\nCorrected 2026-07-03 (todo 829 skeptic sweep): the prior golden pinned an unstable snapshot. Grading remains behavioral: accept dated, source-named figures and require count basis/denomination; punish fixed-truth and scope confusion. POST-FIX REOPEN 2026-07-09 (todo 901): sls-013 is fixed upstream. Live funding-v2 returned $40,160,145.13 across 398 distinct projects with computedAt, methodologyVersion, an explicit reconstruction/count basis, and populated byRound rows. This improves provenance but does not turn the reconstructed total into permanent or official truth."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "C",
@@ -20487,15 +20485,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-03",
-          "by": "Golden-truth sweep import — Skeptic sweep (todo 829, instrument 2, first run) BROKE this golden: it pinned the 06-29 corpus snapshot (~$19.97M / ~223 projects, 'report this as the live snapshot') — the live metric DOUBLED in four days ($40.74M / 400 projects on 07-03), and SDF's own cumulative statements exceeded the pin even in Jan 2025. De-pinned to behavior (dated, source-labeled reporting) per the golden-truth skill's disputed-never-pinned rule.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Skeptic sweep 2026-07-03 (scratchpad 521): live execute probe + communityfund.stellar.org fetches + SDF demo transcript, all asOf 2026-07-03"
+            "P4 Lane R behavioral conversion queue, row 83 (q-scf-total-distributed): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellarlight.xyz"
           ],
           "rootCause": [
-            "improvements/stellar-light-scout/sls-013 — fixed upstream: funding-v2 now exposes computedAt, methodologyVersion, countBasis, populated byRound data, and an explicit funnel scope; the golden remains behavior-gated because totals are volatile reconstructed snapshots",
-            "eval-side authoring: pinned a volatile corpus-only metric mid-recomputation and never ran the corpus-vs-world check against SDF's own cumulative statements",
-            "solo://proj/49/todo/corpus-health-instru--829"
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-total-distributed"
@@ -20508,27 +20505,27 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "SCF v7 launched in **January 2026** around SCF #41. It introduced three Build tracks—Open, Integration, and RFP—plus a unified interest/referral entry, Instawards as the successor/evolution of Kickstart, and stronger mainnet/UX-readiness expectations. For payments, the launch blog's 'four-tranche' shorthand should be reconciled with current detailed mechanics: **four payments**, consisting of 10% acceptance plus **three deliverable tranches** at 20%, 30%, and 40%. v7 also described multiple post-launch growth pathways; it did **not** create one unified 'Growth track.' Current Instaward, Growth Hack, Liquidity, Marketing, and other program rules must be checked separately rather than inferred from the launch blog.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: States four payments/three deliverable tranches and rejects a unified Growth track.",
         "keyFacts": [
-          "Dates v7 to January 2026/#41 and names the three tracks and entry/referral changes.",
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "States four payments/three deliverable tranches and rejects a unified Growth track."
         ],
         "avoid": [
           "Do NOT call acceptance a fourth deliverable milestone.",
-          "Do NOT merge distinct post-launch/supporting programs into one Growth track or freeze launch shorthand as current terms."
+          "Do NOT merge distinct post-launch/supporting programs into one Growth track or freeze launch shorthand as current terms.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Dossier §8/§9. Version-transition fact set; trap is attributing v6 features to v7.\nAlso good if the answer: Supporting programs were consolidated into a unified Growth track; a Referral Program was added. | UX audits / user testing were added to the Build evaluation.\nGolden cites: The 'Introducing SCF v7' blog post / SCF handbook history page.\nGT-36/39/40 independently reconciled 2026-07-10. Accept 'four tranches' only when the candidate accurately distinguishes the acceptance payment from three deliverables."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -20575,13 +20572,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — The inherited historical summary called four payments four milestone tranches and invented one unified Growth track.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-36/39/40, 2026-07-10."
+            "P4 Lane R behavioral conversion queue, row 84 (q-scf-v7-changes): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.org/blog/ecosystem/introducing-scf-v7"
           ],
           "rootCause": [
-            "Eval-side historical shorthand promoted into current mechanics."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-v7-changes"
@@ -20594,27 +20592,28 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "'Verified Members' is an umbrella with four current tiers. **Verified** is the basic identity/account-verified tier with view/discussion access; it does not by itself grant an active project vote. **Pathfinder** demonstrates expertise and may participate through delegation. **Navigator** may vote actively on Build Open projects. **Pilot** may vote actively, may serve as a delegate, and has higher governance/proposal authority. Roles and thresholds can change, so cite the current access table. Build project voting is Open-only; Public Goods has its own Pilot/current rules. Governance verification is separate from the KYC/KYB required for award payouts.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Accurately states the Verified/Pathfinder/Navigator/Pilot permissions. Separates Open voting, other program governance, and payout KYC/KYB.",
         "keyFacts": [
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Accurately states the Verified/Pathfinder/Navigator/Pilot permissions.",
           "Separates Open voting, other program governance, and payout KYC/KYB."
         ],
         "avoid": [
           "Do NOT say every Verified member actively votes, delegates, or is an expert by virtue of basic verification.",
-          "Do NOT equate governance status with award eligibility or payout KYC."
+          "Do NOT equate governance status with award eligibility or payout KYC.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Dossier §3.4. Trap: verified-membership (voting reputation) vs KYC/KYB (payout compliance). Verified 2026-06-29 vs live handbook: status is earned/dynamic/influence-based (proven expertise + governance participation + community trust); four tiers (Verified, Pathfinder, Navigator, Pilot) with tier-gated voting/delegation rights — corroborates the tiered-membership nice_to_have.\nAlso good if the answer: Verified status feeds into NQG voting weight and the ability to be nominated to Track Delegate Panels.\nGolden cites: The SCF handbook Verified Members page.\nGT-39/40 independently confirmed 2026-07-10. Grade current tier permissions, not umbrella shorthand."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -20654,13 +20653,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — The inherited answer treated basic Verified status as earned expert voting/delegate authority and conflated governance verification with payout KYC.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-39/40, 2026-07-10."
+            "P4 Lane R behavioral conversion queue, row 85 (q-scf-verified-members): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/governance/verified-members"
           ],
           "rootCause": [
-            "Eval-side governance tier collapse."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-verified-members"
@@ -20673,29 +20673,29 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Use **SCF Build** for an up-to-$150K XLM-valued development grant: the interest form is open, but eligibility/referral review precedes an invited full proposal, and only the Open Track uses project-level community voting. **SDF Marketing Grants** are a separate direct application path, up to $500K for growth/user acquisition. **Enterprise Fund** is venture-style strategic investment rather than an SCF grant. Current dedicated Enterprise pages now say Apply Now/Submit your application, although older official funding-index/mandate copy still says SDF finds companies and has no application; disclose that source conflict and follow the live form for current routing. **Matching Fund**, within Enterprise, is an explicit application track for pre-seed through Series B companies with a lead term sheet, 1:1 matching, and a $200K–$500K SDF check.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Separates SCF Build, Marketing, general Enterprise, and Matching mechanisms. Explains SCF interest-to-invitation and Open-only voting.",
         "keyFacts": [
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Separates SCF Build, Marketing, general Enterprise, and Matching mechanisms.",
-          "Explains SCF interest-to-invitation and Open-only voting.",
-          "Discloses the current Enterprise application versus older no-application conflict."
+          "Explains SCF interest-to-invitation and Open-only voting."
         ],
         "avoid": [
           "Do NOT say all SCF proposals are openly submitted/public-voted.",
           "Do NOT tell founders never to apply to Enterprise while the current application form is live, or hide the official source conflict.",
-          "Do NOT present Enterprise investment as an SCF grant or invent a general per-company cap."
+          "Do NOT present Enterprise investment as an SCF grant or invent a general per-company cap.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Dossier §1/§5/§10. THE category-defining trap: confusing SCF (open, community-voted) with the SDF Enterprise Fund (outreach-only). Higher threshold.\nAlso good if the answer: The SCF Build cap is $150K XLM; SDF-direct lines (Matching/Marketing) reach ~$500K with different mechanisms.\nGolden cites: stellar.org/grants-and-funding (SDF programs) and the SCF handbook.\nGT-40 blind reversed the primary/outreach-only conclusion after verifying the live general Enterprise application. Qualified answers may mention the older official conflict but must not prohibit the current form."
       },
       "tags": {
         "category": "scf-grants-builders",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -20745,13 +20745,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-10",
-          "by": "Golden-truth sweep import — The inherited answer said all SCF proposals are open/public-voted and that founders must never apply to the general Enterprise Fund; both are contradicted by current operational pages.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-40 processes 3301/3304; current pages fetched 2026-07-10."
+            "P4 Lane R behavioral conversion queue, row 86 (q-scf-vs-sdf-enterprise-fund): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/scf-awards/build-award"
           ],
           "rootCause": [
-            "Official current Enterprise application contradicts older outreach-only copy; eval preserved the older statement."
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-scf-vs-sdf-enterprise-fund"
@@ -21013,27 +21014,27 @@
         "stellarDocs.search_soroban_contract_docs"
       ],
       "golden": {
-        "answer": "**SEP-41** is the Draft Soroban Token Interface: the common fungible-token surface shared by the SAC and custom contracts. It defines allowance/approve, balance, burn/burn_from, metadata, current direct `transfer(from, to: MuxedAddress, amount)`, and `transfer_from(spender, from, to: Address, amount)`. Approve's absolute expiry is named `live_until_ledger` in SEP-41 and `expiration_ledger` in some SDK/SAC docs; they are one mechanism. SEP-41 is explicitly a subset of and compatible with the CAP-46-6 SAC interface, so the SAC implements it while layering admin-specific functions. Mint/clawback are standardized events rather than required generic function names. Because SEP-41 remains Draft and signatures evolved, version-qualify current code.",
+        "answer": "Use `stellarDocs.search_asset_token_docs`, `stellarDocs.search_soroban_contract_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Names SEP-41 and its SAC/custom-token relationship. Names CAP-0046-06 and SEP-41 and their spec/interface relationship.",
         "keyFacts": [
+          "Executes the current documented lookup/workflow via stellarDocs.search_asset_token_docs, stellarDocs.search_soroban_contract_docs and labels version, UI, provider, and availability claims as observed.",
           "Names SEP-41 and its SAC/custom-token relationship.",
-          "Gives current MuxedAddress direct-transfer versus Address transfer_from and allowance-expiry semantics.",
           "Names CAP-0046-06 and SEP-41 and their spec/interface relationship."
         ],
         "avoid": [
-          "Do NOT misnumber/misclassify SEP-41, assume SAC-only admin functions are required generic methods, or freeze old signatures."
+          "Do NOT misnumber/misclassify SEP-41, assume SAC-only admin functions are required generic methods, or freeze old signatures.",
+          "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
         ],
         "notes": "Dossier §7.1, Q18. Verified: SEP-0041 'Soroban Token Interface', Status Draft; spec is a subset of the SAC interface, compatible with CAP-46-6.\nAlso good if the answer: Defines common functions like transfer, allowance/approve, balance, and burn.\nGolden cites: SEP-0041 on the stellar-protocol repo or the SAC page on developers.stellar.org.\nGT-43 current SEP-41 v0.4.1 sibling correction."
       },
       "tags": {
         "category": "assets-anchors-seps",
         "service": "stellarDocs",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
         "asOf": "2026-07-11",
-        "reverifyBy": "2026-10-01",
         "sources": [
           {
             "class": "B",
@@ -21094,13 +21095,10 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "P4 Lane R absorb triage",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Solo scratchpad 575 GT-43 blind 3320.",
-            "solo://proj/49/scratchpad/super-corpus-rebuild--585#lane-r-q-asset-sac-cap-sep",
-            "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-06.md",
-            "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md",
-            "https://developers.stellar.org/docs/tokens/stellar-asset-contract"
+            "P4 Lane R behavioral conversion queue, row 87 (q-sep-41-token-interface): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
+            "Current source retained for behavioral retrieval: https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md"
           ],
           "rootCause": [
             "eval-authoring"
@@ -21116,27 +21114,28 @@
         "stellarDocs.search_wallet_dapp_docs"
       ],
       "golden": {
-        "answer": "- **SEP-43 — \"Standard Web Wallet API Interface\"** (Status: **Draft**, created 2024-04-11) defines a common JavaScript API that web wallets expose to dapps so developers integrate once instead of writing per-wallet abstractions [1].\n- The interface methods are **`getAddress`, `signTransaction`, `signAuthEntry`, `signMessage`, and `getNetwork`**, plus standardized error shapes (`message`/`code`/`ext`, with codes -1 internal, -2 external service, -3 invalid request, -4 user rejected) [1].\n- It exists as `ecosystem/sep-0043.md` in stellar/stellar-protocol — it is **not** an unassigned gap [1].",
+        "answer": "Use `stellarDocs.search_wallet_dapp_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: SEP-43 is 'Standard Web Wallet API Interface' — a standard interface (getAddress, signTransaction, signAuthEntry, signMessage, getNetwork) for web wallets so dapps integrate once. Does NOT claim SEP-43 is unpublished/nonexistent (the sep-0043.md file exists in stellar-protocol/ecosystem).",
         "keyFacts": [
+          "Executes the current documented lookup/workflow via stellarDocs.search_wallet_dapp_docs and labels version, UI, provider, and availability claims as observed.",
           "SEP-43 is 'Standard Web Wallet API Interface' — a standard interface (getAddress, signTransaction, signAuthEntry, signMessage, getNetwork) for web wallets so dapps integrate once.",
           "Does NOT claim SEP-43 is unpublished/nonexistent (the sep-0043.md file exists in stellar-protocol/ecosystem)."
         ],
         "avoid": [
           "Do NOT claim SEP-43 does not exist or that the numbering skips 43 (it does exist as of 2024-04).",
-          "Do NOT invent an unrelated scope (e.g. call it an auth/anchor/payment standard)."
+          "Do NOT invent an unrelated scope (e.g. call it an auth/anchor/payment standard).",
+          "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
         ],
         "notes": "CORRECTION vs dossier: SEP-43 DOES exist (sep-0043.md, 'Standard Web Wallet API Interface', Draft, created 2024-04-11) — verified live in the master ecosystem dir. The dossier (and the Phase-1 'nonexistent' framing) is stale: the ecosystem README main table omits it but the file is present. The repo also now has sep-0042 and sep-0044. Freshness-sensitive (status could advance).\nAlso good if the answer: States SEP-43 is in Draft status. | Notes its purpose: remove the need for per-wallet abstractions by defining one common wallet API + standard error shapes.\nGolden cites: The SEP-0043 spec in stellar/stellar-protocol (ecosystem/sep-0043.md)."
       },
       "tags": {
         "category": "assets-anchors-seps",
         "service": "stellarDocs",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2024-04-11",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "B",
@@ -21146,9 +21145,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "GT-05-sep-identity-auth-quotes-token-wallet accepted in Solo scratchpad 575 rev 291",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "solo://proj/49/scratchpad/truth-maintenance-20--575"
+            "P4 Lane R behavioral conversion queue, row 88 (q-sep-43-web-wallet-api): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
+            "Current source retained for behavioral retrieval: https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0043.md"
+          ],
+          "rootCause": [
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-sep-43-web-wallet-api"
@@ -21164,26 +21167,27 @@
         "stellarDocs.search_wallet_dapp_docs"
       ],
       "golden": {
-        "answer": "Yes — it is **SEP-45, \"Stellar Web Authentication for Contract Accounts\"** (Status: **Draft**),\nthe Soroban smart-account analog of SEP-10 [1]. It defines how a client authenticates on behalf of\na **contract (`C…`) account** by signing **Soroban authorization entries** (a `web_auth_verify`\ninvocation against a `WEB_AUTH_CONTRACT_ID` declared in the anchor's `stellar.toml`), exchanging\nthe signed challenge for a session JWT. It is **based on SEP-10 but does not replace it**: SEP-10\ncovers `G`/`M` accounts, SEP-45 covers `C` accounts, and a service that wants both must implement\nboth [1]. Contract-account auth is **SEP-45, not SEP-10 and not SEP-43**; SEP-43 exists but is the\nunrelated **Standard Web Wallet API Interface** (Draft) [2]. Freshness caveat: SEP-45 is still Draft\n(v0.1.1) and may advance.\n\nSources: [1] stellar-protocol `ecosystem/sep-0045.md` (Draft, updated 2025-12-16);\n[2] `ecosystem/sep-0043.md` (Standard Web Wallet API Interface, Draft) + `ecosystem/README.md` (registry).",
+        "answer": "Use `stellarDocs.search_anchor_sep_docs`, `stellarDocs.search_protocol_concepts_docs`, `stellarDocs.search_soroban_contract_docs`, `stellarDocs.search_wallet_dapp_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Names SEP-45 as Stellar Web Authentication for Contract Accounts (the Soroban smart-account analog of SEP-10).",
         "keyFacts": [
+          "Executes the current documented lookup/workflow via stellarDocs.search_anchor_sep_docs, stellarDocs.search_protocol_concepts_docs, stellarDocs.search_soroban_contract_docs, stellarDocs.search_wallet_dapp_docs and labels version, UI, provider, and availability claims as observed.",
           "Names SEP-45 as Stellar Web Authentication for Contract Accounts (the Soroban smart-account analog of SEP-10)."
         ],
         "avoid": [
           "Do NOT misnumber it (contract-account auth is SEP-45, not SEP-43 or SEP-10).",
-          "Do NOT claim SEP-45 is final/active if the current status is Draft."
+          "Do NOT claim SEP-45 is final/active if the current status is Draft.",
+          "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
         ],
         "notes": "Newer SEP. Freshness-sensitive. Verified 2026-06-22: SEP-0045 'Stellar Web Authentication for Contract Accounts', Status Draft (v0.1.1, updated 2025-12-16); reference web-auth contract deployed on pubnet. (SEP-43 DOES exist separately — 'Standard Web Wallet API Interface', Draft — but is unrelated to contract-account auth; do not claim it is missing.)\nAlso good if the answer: Notes SEP-45 is in Draft status (not yet final). | Contrasts it with SEP-10, which authenticates classic accounts.\nGolden cites: SEP-0045 on the stellar-protocol repo."
       },
       "tags": {
         "category": "assets-anchors-seps",
         "service": "stellarDocs",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-06-22",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "B",
@@ -21203,9 +21207,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "GT-05-sep-identity-auth-quotes-token-wallet accepted in Solo scratchpad 575 rev 291",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "solo://proj/49/scratchpad/truth-maintenance-20--575"
+            "P4 Lane R behavioral conversion queue, row 89 (q-sep-45-contract-auth): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
+            "Current source retained for behavioral retrieval: https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0045.md"
+          ],
+          "rootCause": [
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-sep-45-contract-auth"
@@ -22598,29 +22606,29 @@
         "stellarDocs.search_soroban_contract_docs"
       ],
       "golden": {
-        "answer": "The target is **`wasm32v1-none`**. The typo `wasm32v1- none` is just a typo, and\n`wasm32-unknown-unknown` is not the current target for new Soroban contracts. Stellar's Rust dialect\ndocs say new contracts should use Rust 1.84.0+ and `wasm32v1-none`; they also explain that\n`wasm32-unknown-unknown` is unsupported for Soroban builds on Rust 1.82+ because it enables Wasm\nfeatures the Soroban runtime does not support\n(https://developers.stellar.org/docs/learn/fundamentals/contract-development/rust-dialect).\n\nUse:\n\n```sh\nrustup target add wasm32v1-none\nstellar contract build\n```\n\nThe Hello World docs state that `stellar contract build` is a small wrapper around Cargo that sets the\ntarget to `wasm32v1-none` and the profile to release, and emits Wasm under\n`target/wasm32v1-none/release/` (https://developers.stellar.org/docs/build/smart-contracts/getting-started/hello-world).\nOpenZeppelin's Stellar setup guidance matches this: build with `stellar contract build`, which is a\nshortcut for `cargo build --target wasm32v1-none --release`\n(https://github.com/OpenZeppelin/stellar-contracts).\n\nFor `can't find crate for 'core'`, install the target for the active Rust toolchain. The setup docs\nexplicitly note the target is installed per toolchain, so after a Rust upgrade you may need to run\n`rustup target add wasm32v1-none` again\n(https://developers.stellar.org/docs/build/smart-contracts/getting-started/setup). If someone insists\non raw Cargo, make it equivalent to the CLI target/release settings; otherwise prefer\n`stellar contract build` and use `--print-commands-only` to inspect what it will run.",
+        "answer": "Use `stellarDocs.search_sdk_cli_tools_docs`, `stellarDocs.search_soroban_contract_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Explains `stellar contract build` is a wrapper around Cargo that selects `wasm32v1-none`, release profile, and Stellar contract build settings automatically. Explains why `wasm32-unknown-unknown` is wrong for Rust 1.82+ Soroban builds: it enables Wasm features unsupported by the Soroban runtime. Fixes `can't find crate for core` by installing/reinstalling the target with `rustup target add wasm32v1-none` for the active Rust toolchain.",
         "keyFacts": [
-          "Corrects the spelling to `wasm32v1-none` and states current new Soroban contracts should build with Rust 1.84+ and that target.",
+          "Executes the current documented lookup/workflow via stellarDocs.search_sdk_cli_tools_docs, stellarDocs.search_soroban_contract_docs and labels version, UI, provider, and availability claims as observed.",
           "Explains `stellar contract build` is a wrapper around Cargo that selects `wasm32v1-none`, release profile, and Stellar contract build settings automatically.",
           "Explains why `wasm32-unknown-unknown` is wrong for Rust 1.82+ Soroban builds: it enables Wasm features unsupported by the Soroban runtime.",
           "Fixes `can't find crate for core` by installing/reinstalling the target with `rustup target add wasm32v1-none` for the active Rust toolchain."
         ],
         "avoid": [
           "Do not use the misspelled target `wasm32v1- none` or old `wasm32-unknown-unknown` guidance as the final answer.",
-          "Do not tell users to hand-edit generated Wasm or bypass the CLI without explaining the target and release profile."
+          "Do not tell users to hand-edit generated Wasm or bypass the CLI without explaining the target and release profile.",
+          "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
         ],
         "notes": "Verified with Stellar Docs MCP and local `stellar contract build --help` from CLI 25.2.0. The dossier mentions newer protocol/SDK releases, but the target guidance is stable in current docs.\nAlso good if the answer: Mentions output path `target/wasm32v1-none/release/<contract>.wasm`. | Notes target installation is per toolchain, so after Rust upgrades the target may need reinstalling.\nGolden cites: Must cite current Stellar setup/Hello World or Rust dialect docs for `wasm32v1-none`. | Freshness-sensitive answer should cite a dated/current official docs source or local CLI evidence."
       },
       "tags": {
         "category": "soroban",
         "service": "stellarDocs",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
         "asOf": "2026-07-11",
-        "reverifyBy": "2026-10-01",
         "sources": [
           {
             "class": "A",
@@ -22645,9 +22653,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "GT-41-bindings-target-dex-confidentiality-claims-deploy-porting accepted in Solo scratchpad 575 rev 291",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "solo://proj/49/scratchpad/truth-maintenance-20--575"
+            "P4 Lane R behavioral conversion queue, row 90 (q-sor-build-target-wasm32v1): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
+            "Current source retained for behavioral retrieval: https://developers.stellar.org/docs/build/smart-contracts/getting-started/hello-world"
+          ],
+          "rootCause": [
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-sor-build-target-wasm32v1"

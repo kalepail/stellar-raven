@@ -5,27 +5,27 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Instawards are chapter-guided, short-sprint awards for eligible early execution. A **typical initial award is $1,000–$5,000 in USD value paid in XLM**. After successful completion, a project may receive **up to two conditional follow-ons**, with **$15,000 aggregate maximum over time**; follow-ons are not automatic. There is no standard public/open application form, but there is a real chapter-guided request and scoping process. Chapter support is non-binding: **SDF alone makes the final approval and funding commitment**, generally after reviewing the scope and eligibility. Instawards are not community/NQG-voted Build grants.",
+    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Distinguishes no standard public form from no process and makes SDF approval final.",
     "keyFacts": [
-      "States $1K–$5K typical initial amount, up to two conditional follow-ons, and $15K aggregate maximum.",
+      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Distinguishes no standard public form from no process and makes SDF approval final."
     ],
     "avoid": [
       "Do NOT call $15K the automatic initial award or imply follow-ons are guaranteed.",
-      "Do NOT say chapter leads commit SDF funds or that Instawards use NQG voting."
+      "Do NOT say chapter leads commit SDF funds or that Instawards use NQG voting.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "Dossier §2.2/§7.2. Trap: assuming an open application; it's ambassador-recommended.\nAlso good if the answer: Under SCF v7.0, Instawards replaced the prior Kickstart Award.\nGolden cites: The SCF Instawards handbook page.\nGT-39/40 atom independently confirmed 2026-07-10. Accept 'no open application' only when the answer still acknowledges the chapter-guided request/scope and final SDF review."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -65,13 +65,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-10",
-      "by": "Golden-truth sweep import — The inherited flat $15K framing hid the typical initial amount, conditional follow-ons, and the chapter-guided request/SDF-approval boundary.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-39 processes 3300/3303 and GT-40 process 3304, 2026-07-10."
+        "P4 Lane R behavioral conversion queue, row 75 (q-scf-instawards): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/scf-awards/instawards"
       ],
       "rootCause": [
-        "Eval-side program-version drift and amount-basis collapse."
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-scf-instawards"

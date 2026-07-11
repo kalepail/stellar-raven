@@ -5,27 +5,27 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Yes. As of **2026-07-10**, SDF Academic Research Grants fund scientific, technological, economic, or legal research advancing SDF goals, with a proposal cap of **$150,000** and a published historical average around **$75,000**. The eligible applicant/recipient is a **degree-granting research or higher-education institution**, led by a PI-authorized researcher; students and individuals do not apply or receive the award directly, though a grant commonly supports one graduate student or postdoc for about 12 months plus reasonable expenses. Apply through SDF Research by **Mar 31, Jun 30, Sep 30, or Dec 31**, with at most two proposals per calendar year. This is not the SCF Build application path, although an applicant ineligible for this academic program may separately consider SCF if the project fits its rules.",
+    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Correctly identifies the institution/PI applicant and distinguishes supported students from eligible recipients.",
     "keyFacts": [
-      "States the $150K cap, quarterly deadlines, and two-proposal annual limit.",
+      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Correctly identifies the institution/PI applicant and distinguishes supported students from eligible recipients."
     ],
     "avoid": [
       "Do NOT say students or individuals apply for or directly receive the academic grant.",
-      "Do NOT replace the $150K ceiling with the separately labeled ~$75K historical average or categorically claim SCF can never be separately relevant."
+      "Do NOT replace the $150K ceiling with the separately labeled ~$75K historical average or categorically claim SCF can never be separately relevant.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "GT-36 CORRECTION 2026-07-10: grade institution/PI eligibility, $150K ceiling, quarterly dates, two-per-year limit, and academic-path distinction. A supported student is not the applicant; the official ~$75K average may be mentioned separately; SCF is not categorically forbidden as a separate program.\nGT-36 independently confirmed by processes 3290/3291."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -59,13 +59,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-10",
-      "by": "Golden-truth sweep import — The golden conflated supported students with eligible applicants, called fixed quarterly deadlines a published RFP schedule, categorically excluded separate SCF eligibility, and would penalize the official historical average.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-36 primary 3290 and blind 3291; independently checked 2026-07-10."
+        "P4 Lane R behavioral conversion queue, row 64 (q-scf-academic-research-grant): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://research.stellar.org/research-grants"
       ],
       "rootCause": [
-        "Eval-side beneficiary/applicant conflation and overbroad route/amount traps."
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-scf-academic-research-grant"

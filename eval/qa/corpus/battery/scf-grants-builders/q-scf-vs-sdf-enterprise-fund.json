@@ -5,29 +5,29 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use **SCF Build** for an up-to-$150K XLM-valued development grant: the interest form is open, but eligibility/referral review precedes an invited full proposal, and only the Open Track uses project-level community voting. **SDF Marketing Grants** are a separate direct application path, up to $500K for growth/user acquisition. **Enterprise Fund** is venture-style strategic investment rather than an SCF grant. Current dedicated Enterprise pages now say Apply Now/Submit your application, although older official funding-index/mandate copy still says SDF finds companies and has no application; disclose that source conflict and follow the live form for current routing. **Matching Fund**, within Enterprise, is an explicit application track for pre-seed through Series B companies with a lead term sheet, 1:1 matching, and a $200K–$500K SDF check.",
+    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Separates SCF Build, Marketing, general Enterprise, and Matching mechanisms. Explains SCF interest-to-invitation and Open-only voting.",
     "keyFacts": [
+      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Separates SCF Build, Marketing, general Enterprise, and Matching mechanisms.",
-      "Explains SCF interest-to-invitation and Open-only voting.",
-      "Discloses the current Enterprise application versus older no-application conflict."
+      "Explains SCF interest-to-invitation and Open-only voting."
     ],
     "avoid": [
       "Do NOT say all SCF proposals are openly submitted/public-voted.",
       "Do NOT tell founders never to apply to Enterprise while the current application form is live, or hide the official source conflict.",
-      "Do NOT present Enterprise investment as an SCF grant or invent a general per-company cap."
+      "Do NOT present Enterprise investment as an SCF grant or invent a general per-company cap.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "Dossier §1/§5/§10. THE category-defining trap: confusing SCF (open, community-voted) with the SDF Enterprise Fund (outreach-only). Higher threshold.\nAlso good if the answer: The SCF Build cap is $150K XLM; SDF-direct lines (Matching/Marketing) reach ~$500K with different mechanisms.\nGolden cites: stellar.org/grants-and-funding (SDF programs) and the SCF handbook.\nGT-40 blind reversed the primary/outreach-only conclusion after verifying the live general Enterprise application. Qualified answers may mention the older official conflict but must not prohibit the current form."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -77,13 +77,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-10",
-      "by": "Golden-truth sweep import — The inherited answer said all SCF proposals are open/public-voted and that founders must never apply to the general Enterprise Fund; both are contradicted by current operational pages.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-40 processes 3301/3304; current pages fetched 2026-07-10."
+        "P4 Lane R behavioral conversion queue, row 86 (q-scf-vs-sdf-enterprise-fund): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/scf-awards/build-award"
       ],
       "rootCause": [
-        "Official current Enterprise application contradicts older outreach-only copy; eval preserved the older statement."
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-scf-vs-sdf-enterprise-fund"

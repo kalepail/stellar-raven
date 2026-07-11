@@ -5,27 +5,27 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Yes—an already-launched Stellar project may apply for an SDF Marketing Grant, but being live is not a universal prerequisite: the current page covers **new and existing projects**. Grants are up to **$500,000**, with the funding index listing USD, USDC, or XLM, for growth/user acquisition work such as media, incentives, communications, agencies, and tools. Applicants need concrete use cases, timelines, budget/benchmarks, and a capable team, and must respect exclusions around manipulation or investment promotion. This is a separate SDF-direct application path, not an SCF Build track.",
+    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Describes growth purpose, execution requirements, and separate SDF application.",
     "keyFacts": [
-      "Answers yes for launched projects while including new projects and the current $500K cap.",
+      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Describes growth purpose, execution requirements, and separate SDF application."
     ],
     "avoid": [
       "Do NOT say only already-live/post-launch projects qualify.",
-      "Do NOT call Marketing an SCF Build track or promise approval."
+      "Do NOT call Marketing an SCF Build track or promise approval.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "Dossier §5.5. Trap: applying the SCF Build $150K cap to the SDF Marketing Grant.\nAlso good if the answer: Marketing Grants are an SDF-direct program (stellar.org/grants-and-funding), separate from SCF Build.\nGolden cites: stellar.org/grants-and-funding marketing-grants section.\nGT-40 independently confirmed 2026-07-10. The dedicated current page controls over older shorthand."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -59,13 +59,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-10",
-      "by": "Golden-truth sweep import — The inherited answer incorrectly made an already-live product universally required even though the current detailed page admits new and existing projects.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-40 processes 3301/3304, 2026-07-10."
+        "P4 Lane R behavioral conversion queue, row 81 (q-scf-sdf-marketing-grant): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://stellar.org/grants-and-funding/marketing-grants"
       ],
       "rootCause": [
-        "Eval-side eligibility drift."
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-scf-sdf-marketing-grant"

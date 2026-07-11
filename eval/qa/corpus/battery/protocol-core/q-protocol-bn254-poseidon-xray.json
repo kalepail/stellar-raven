@@ -5,30 +5,29 @@
     "stellarDocs.search_docs"
   ],
   "golden": {
-    "answer": "**Protocol 25 (X-Ray)** activated on Mainnet on **2026-01-22 at 17:00 UTC**. It added two low-level Soroban host surfaces for ZK systems:\n\n- **CAP-0074 / BN254:** `bn254_g1_add`, `bn254_g1_mul`, and `bn254_multi_pairing_check`. These give contracts native operations on the EVM-compatible pairing curve for verifier and interoperability designs.\n- **CAP-0075 / Poseidon and Poseidon2:** `poseidon_permutation` and `poseidon2_permutation` over BLS12-381 Fr or BN254 Fr. These are configurable **permutation primitives** from which a correctly parameterized hash construction can be built; they are not turnkey `poseidon_hash` helpers.\n\nBoth CAPs are Final and gated at Protocol 25. These primitives enable verifier, commitment, Merkle, and privacy-application components; they do not make Stellar transactions private by default. Current source has a documented interface erratum: CAP-0075 says `U32Val` field selector and contains one stray P24 sentence, while the shipped P25+ host environment uses a `Symbol` selector (`BLS12_381` or `BN254`). Follow the exact SDK/host version in use rather than inventing helper names.",
+    "answer": "Use `stellarDocs.search_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Pairs CAP-0074 with the exact three P25 BN254 functions. Pairs CAP-0075 with the exact two low-level permutation functions and does not call them turnkey hash APIs.",
     "keyFacts": [
+      "Executes the current documented lookup/workflow via stellarDocs.search_docs and labels version, UI, provider, and availability claims as observed.",
       "Pairs CAP-0074 with the exact three P25 BN254 functions.",
-      "Pairs CAP-0075 with the exact two low-level permutation functions and does not call them turnkey hash APIs.",
-      "States P25's completed 2026-01-22 activation and keeps these primitives distinct from default privacy and P22 BLS12-381.",
-      "Acknowledges the reproducible CAP-0075 version/field-selector source errata without inventing APIs."
+      "Pairs CAP-0075 with the exact two low-level permutation functions and does not call them turnkey hash APIs."
     ],
     "avoid": [
       "Do NOT call the CAP-0075 host functions ready-made hash helpers or invent helper names.",
       "Do NOT attribute these additions to P22/BLS12-381 or describe P25 as merely pending after 2026-01-22.",
-      "Do NOT claim these primitives create on-by-default privacy or silently choose the CAP's stale U32Val interface over the exact shipped version."
+      "Do NOT claim these primitives create on-by-default privacy or silently choose the CAP's stale U32Val interface over the exact shipped version.",
+      "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
     ],
     "notes": "GT-31 CORRECTION 2026-07-11: P25 activation completed 2026-01-22. CAP-0074 has exactly three BN254 functions; CAP-0075 exposes two configurable permutations, not turnkey hash helpers. The pinned CAP-0075 P24/P25 and U32Val/Symbol contradictions are source errata tracked separately from sd-021's Docs errors."
   },
   "tags": {
     "category": "protocol-core",
     "service": "stellarDocs",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
     "asOf": "2026-07-11",
-    "reverifyBy": "2026-10-01",
     "sources": [
       {
         "class": "B",
@@ -97,15 +96,13 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "Golden-truth sweep import — The inherited answer correctly paired the CAPs but blurred configurable Poseidon permutations into hash APIs, used an approximate vote label after activation, and did not surface two reproducible contradictions in the current CAP-0075 source.",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-31 primary process 3280 and blind process 3282 independently required permutation-versus-hash precision and owner-correct erratum handling.",
-        "2026-07-11 author reproduced both CAP-0075 contradictions from pinned current heads; documentation/API blurring remains separately deduped in sd-021, while the protocol-spec defects are sd-036."
+        "P4 Lane R behavioral conversion queue, row 61 (q-protocol-bn254-poseidon-xray): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
+        "Current source retained for behavioral retrieval: https://github.com/stellar/stellar-protocol/blob/master/core/cap-0074.md"
       ],
       "rootCause": [
-        "Eval-side title-driven hash shorthand.",
-        "improvements/stellar-docs/sd-021-protocol-25-bn254-poseidon-source-errors.md",
-        "improvements/stellar-docs/sd-036-cap-0075-protocol-version-field-selector-errata.md"
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-protocol-bn254-poseidon-xray"

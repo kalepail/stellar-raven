@@ -5,30 +5,28 @@
     "scout.searchProjects"
   ],
   "golden": {
-    "answer": "Use dated product-level evidence, not a directory roster. As of **2026-07-10**, primary-confirmed live Stellar examples include:\n\n- **Franklin Templeton BENJI / FOBXX** — a U.S.-registered fund-share/system-of-record product;\n- **WisdomTree** digital funds and **GOLD** (the Stellar code is GOLD, not WTGOLD), plus products such as CRDT with different legal instruments;\n- **Ondo USDY** — a tokenized-note product live on Stellar, with current eligibility/mint-redemption restrictions;\n- **Figure YLDS** — launched May 5, 2026 as an SEC-registered face-amount-certificate/yield-bearing-dollar product;\n- **Etherfuse Stablebonds** such as sovereign-debt products; and\n- **Spiko/Amundi SAFO** — launched with its shareholder register on Ethereum and Stellar for eligible investors.\n\nPut **DTCC/DTC's Stellar connection in a planned bucket**: DTCC says Stellar availability is expected in H1 2027. That does not mean DTCC's broader tokenization service is not live elsewhere.\n\nFor every name, preserve product, issuer, legal instrument, network deployment, custody/redemption, eligibility/jurisdiction, and as-of date. Directory/entity status is discovery only. Do not say the whole roster uses SEP-8: classic flags, SEP-8 approval, SAC/custom contracts, registries, and off-chain controls vary and must be verified per product.",
+    "answer": "Use `scout.searchProjects` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
     "keyFacts": [
-      "Separates primary-confirmed live Stellar products from announced/planned products.",
-      "Keeps DTCC's Stellar connection planned H1 2027.",
-      "Requires product/issuer/legal/network/custody/eligibility evidence and rejects roster-wide SEP-8 claims."
+      "Retrieves source-bounded live results via scout.searchProjects and reports their source and as-of date without freezing a roster, rank, count, or current value."
     ],
     "avoid": [
       "Do NOT treat directory presence or entity Live status as proof of a live Stellar-issued product.",
       "Do NOT put planned DTCC Stellar work in the live bucket.",
       "Do NOT claim all RWA products use SEP-8 or one identical legal/control model.",
-      "Do NOT freeze volatile AUM or roster counts without dated primary evidence."
+      "Do NOT freeze volatile AUM or roster counts without dated primary evidence.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "2026-06-29 re-verified dated claims and freshness-gated. Franklin Templeton (BENJI/FOBXX, ~$654M AUM on Stellar) and WisdomTree (Prime funds + gold) confirmed; Figure YLDS = SEC-registered face-amount certificate, live on Stellar May 5, 2026 (stellar.org/press/figure-announces-launch-of-ylds-on-stellar-network) — consistent with q-rwa-dtcc-tokenization which keeps DTCC's DTC service PLANNED for H1 2027 (not live). Ondo Finance also active. Landscape evolving/freshness-sensitive (quarterly). Trap: inventing projects or presenting DTCC's forward-dated plan as live.\nAlso good if the answer: Mentions other RWA/tokenization participants (e.g. DTCC's planned DTC tokenization service) and treats the landscape as evolving. | Notes these use Stellar's regulated-asset model (SEP-8 + flags).\nGolden cites: Scout/Lumenloop project directory entries and/or dated issuer sources.\nCORRECTION 2026-07-10: grade dated product-level deployment and legal/mechanism scope. DTCC is planned H1 2027 on Stellar. GOLD is the live WisdomTree code. No roster-wide SEP-8 gate."
   },
   "tags": {
     "category": "compliance-rwa-payments",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "D",
@@ -142,15 +140,13 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "Golden-truth sweep import — The inherited roster treated directory/entity status as proof of a live Stellar-issued product and generalized SEP-8 across heterogeneous instruments. Current primary evidence distinguishes live products from planned DTCC work and shows different flags, legal instruments, custody, and transfer controls.",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-11 live/planned and mechanism matrices",
-        "improvements/stellar-light-scout/sls-023-rwa-product-deployment-status.md",
-        "improvements/lumenloop/ll-012-rwa-live-planned-recall.md"
+        "P4 Lane R behavioral conversion queue, row 63 (q-rwa-projects-tokenizing-stellar): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://www.franklintempleton.com/.well-known/stellar.toml"
       ],
       "rootCause": [
-        "Entity status and directory presence were treated as product deployment proof.",
-        "Different legal instruments/control models were collapsed into one SEP-8 implementation."
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-rwa-projects-tokenizing-stellar"

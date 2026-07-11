@@ -8,26 +8,27 @@
     "stellarDocs.search_wallet_dapp_docs"
   ],
   "golden": {
-    "answer": "Yes — it is **SEP-45, \"Stellar Web Authentication for Contract Accounts\"** (Status: **Draft**),\nthe Soroban smart-account analog of SEP-10 [1]. It defines how a client authenticates on behalf of\na **contract (`C…`) account** by signing **Soroban authorization entries** (a `web_auth_verify`\ninvocation against a `WEB_AUTH_CONTRACT_ID` declared in the anchor's `stellar.toml`), exchanging\nthe signed challenge for a session JWT. It is **based on SEP-10 but does not replace it**: SEP-10\ncovers `G`/`M` accounts, SEP-45 covers `C` accounts, and a service that wants both must implement\nboth [1]. Contract-account auth is **SEP-45, not SEP-10 and not SEP-43**; SEP-43 exists but is the\nunrelated **Standard Web Wallet API Interface** (Draft) [2]. Freshness caveat: SEP-45 is still Draft\n(v0.1.1) and may advance.\n\nSources: [1] stellar-protocol `ecosystem/sep-0045.md` (Draft, updated 2025-12-16);\n[2] `ecosystem/sep-0043.md` (Standard Web Wallet API Interface, Draft) + `ecosystem/README.md` (registry).",
+    "answer": "Use `stellarDocs.search_anchor_sep_docs`, `stellarDocs.search_protocol_concepts_docs`, `stellarDocs.search_soroban_contract_docs`, `stellarDocs.search_wallet_dapp_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Names SEP-45 as Stellar Web Authentication for Contract Accounts (the Soroban smart-account analog of SEP-10).",
     "keyFacts": [
+      "Executes the current documented lookup/workflow via stellarDocs.search_anchor_sep_docs, stellarDocs.search_protocol_concepts_docs, stellarDocs.search_soroban_contract_docs, stellarDocs.search_wallet_dapp_docs and labels version, UI, provider, and availability claims as observed.",
       "Names SEP-45 as Stellar Web Authentication for Contract Accounts (the Soroban smart-account analog of SEP-10)."
     ],
     "avoid": [
       "Do NOT misnumber it (contract-account auth is SEP-45, not SEP-43 or SEP-10).",
-      "Do NOT claim SEP-45 is final/active if the current status is Draft."
+      "Do NOT claim SEP-45 is final/active if the current status is Draft.",
+      "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
     ],
     "notes": "Newer SEP. Freshness-sensitive. Verified 2026-06-22: SEP-0045 'Stellar Web Authentication for Contract Accounts', Status Draft (v0.1.1, updated 2025-12-16); reference web-auth contract deployed on pubnet. (SEP-43 DOES exist separately — 'Standard Web Wallet API Interface', Draft — but is unrelated to contract-account auth; do not claim it is missing.)\nAlso good if the answer: Notes SEP-45 is in Draft status (not yet final). | Contrasts it with SEP-10, which authenticates classic accounts.\nGolden cites: SEP-0045 on the stellar-protocol repo."
   },
   "tags": {
     "category": "assets-anchors-seps",
     "service": "stellarDocs",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-06-22",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "B",
@@ -47,9 +48,13 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "GT-05-sep-identity-auth-quotes-token-wallet accepted in Solo scratchpad 575 rev 291",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+        "P4 Lane R behavioral conversion queue, row 89 (q-sep-45-contract-auth): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
+        "Current source retained for behavioral retrieval: https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0045.md"
+      ],
+      "rootCause": [
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-sep-45-contract-auth"

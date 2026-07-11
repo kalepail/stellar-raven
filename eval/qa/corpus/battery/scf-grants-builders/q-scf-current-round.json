@@ -5,28 +5,27 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "As of **2026-07-09**, the open build round is **SCF #45**, in the **Submission** phase, with a deadline of **August 16, 2026**. The standard Build Award cap remains up to **$150,000 worth of XLM**.\n\nThis is a volatile example, not permanent truth. SCF rounds rotate on a roughly six-week cadence, so report the round number, phase, and deadline only with an as-of date and verify them against the live communityfund.stellar.org awards page. Scout's live RFP metadata can corroborate the round/window but does not replace the official page.",
+    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Keeps the stable Build cap distinct from the changing round schedule.",
     "keyFacts": [
-      "Identifies SCF #45 as the current Submission round with an August 16, 2026 deadline, explicitly as of 2026-07-09.",
-      "Flags round/deadline information as time-sensitive and points to the live official awards page.",
+      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Keeps the stable Build cap distinct from the changing round schedule."
     ],
     "avoid": [
       "Do NOT present the expired July 26 deadline as current.",
-      "Do NOT assert any round/deadline as permanent or fabricate a date not grounded in a live source."
+      "Do NOT assert any round/deadline as permanent or fabricate a date not grounded in a live source.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "Dossier §4. Freshness item — rotates every ~6 weeks; reward staleness-flagging. scout_rfps surfaces activeQuarter signal.\nAlso good if the answer: States the SCF Build cadence is roughly every 6 weeks. | Notes the standard $150K XLM Build cap for the round.\nGolden cites: communityfund.stellar.org/awards (the live awards page) for the current round/deadline.\nFRESHNESS CORRECTION 2026-07-09 (todo 901): SCF #45 remains current, but its deadline is August 16, 2026, not July 26. Official awards and Scout live-round metadata agree. Continue gating on dated lookup behavior rather than one frozen round."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-09",
-    "reverifyBy": "2026-08-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -71,15 +70,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-09",
-      "by": "Golden-truth sweep import — The freshness behavior was correct but the answer's point-in-time deadline expired: SCF #45 now closes August 16, 2026 rather than July 26. The live official awards page and Scout's live-round metadata independently agree, so the dated example is refreshed without turning it into permanent truth.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 569 Batch B, 2026-07-09.",
-        "Sibling expansion found and corrected the same July 26 date in q-edge-scf-v7-centralization-myths."
+        "P4 Lane R behavioral conversion queue, row 68 (q-scf-current-round): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://communityfund.stellar.org/awards"
       ],
       "rootCause": [
-        "Ordinary freshness drift in a roughly six-week round schedule; the old case correctly warned that its date would expire.",
-        "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch B"
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-scf-current-round"
