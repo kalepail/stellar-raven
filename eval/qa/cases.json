@@ -1,32 +1,32 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "a6efdd3c69a814fbe805882ca5e6544d0e64c3390d46a599925f56ecdf066304",
+  "corpusContentSha256": "eb90100ecb92deb9297b855b886ba1ae69f455cd7b56936218822a7c43b36859",
   "counts": {
-    "total": 460,
+    "total": 484,
     "byCategory": {
       "assets-anchors-seps": 47,
-      "compliance-rwa-payments": 38,
-      "defi-ecosystem": 55,
-      "edge-behavior": 40,
+      "compliance-rwa-payments": 39,
+      "defi-ecosystem": 57,
+      "edge-behavior": 45,
       "history-org-tokenomics": 19,
-      "protocol-core": 48,
+      "protocol-core": 49,
       "retail-consumer": 33,
-      "scf-grants-builders": 46,
-      "soroban": 69,
-      "tooling-infra": 65
+      "scf-grants-builders": 48,
+      "soroban": 72,
+      "tooling-infra": 75
     },
     "byService": {
-      "lumenloop": 54,
+      "lumenloop": 60,
       "none": 22,
-      "scout": 128,
-      "skills": 25,
-      "stellarDocs": 231
+      "scout": 132,
+      "skills": 33,
+      "stellarDocs": 237
     },
     "byFreshness": {
-      "live": 138,
+      "live": 154,
       "scheduled": 121,
-      "stable": 201
+      "stable": 209
     },
     "traps": {
       "ambiguous": 2,
@@ -5355,6 +5355,61 @@
       }
     },
     {
+      "id": "q-crp-partner-detail-after-discovery",
+      "question": "After finding a candidate provider in Scout's partner directory, how do I inspect its full published profile without inventing capabilities?",
+      "surface": [
+        "scout.getPartner"
+      ],
+      "golden": {
+        "answer": "Take the exact slug returned by partner discovery and call getPartner. Report only fields in the published profile—such as services, sectors, regions, contact or documentation links, verification, and freshness—and preserve the profile URL. Discovery selects candidates; detail verifies one candidate's public profile.",
+        "keyFacts": [
+          "Calls getPartner with an exact slug obtained from partner discovery.",
+          "Reports capabilities and freshness only when present in the returned profile."
+        ],
+        "avoid": [
+          "Do NOT fabricate a service, corridor, contact method, or compliance claim absent from the profile.",
+          "Do NOT use a display name where the operation requires a slug."
+        ],
+        "notes": "Live behavioral partner-detail case; no provider roster is pinned."
+      },
+      "tags": {
+        "category": "compliance-rwa-payments",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "catalog/manifest.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; getPartners supplied slug trustless-work and getPartner returned its published detail envelope.",
+            "catalog/manifest.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
       "id": "q-crp-regional-offramp-mobilemoney",
       "question": "Which wallets or anchors let users cash Stellar USDC or XLM out to local bank, card, or mobile-money rails, and how should a builder integrate last-mile cash-out?",
       "surface": [
@@ -8944,6 +8999,114 @@
       }
     },
     {
+      "id": "q-defi-skill-ecosystem-scout",
+      "question": "I need a structured landscape of a Stellar sector—projects, categories, regions, and related content—not a random list. Which workflow is the best source?",
+      "surface": [
+        "skills.lumenloop.stellar-ecosystem-scout"
+      ],
+      "golden": {
+        "answer": "Use Stellar Ecosystem Scout. Define the sector, search the directory with short terms, expand semantically from strong seeds, fetch canonical project details, use live category/region vocabularies, gather related content with source URLs, and synthesize a landscape that distinguishes directory coverage from real-world completeness.",
+        "keyFacts": [
+          "Combines keyword discovery, semantic expansion, canonical details, vocabulary, and related content.",
+          "Frames the output as a sourced landscape rather than a complete market census."
+        ],
+        "avoid": [
+          "Do NOT declare a sector empty merely because one directory query returned no hits.",
+          "Do NOT mix category, region, and tag vocabularies as if they were interchangeable."
+        ],
+        "notes": "Best-source case for the bundled Stellar Ecosystem Scout skill."
+      },
+      "tags": {
+        "category": "defi-ecosystem",
+        "service": "skills",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "ecosystem-skills/skills/lumenloop/stellar-ecosystem-scout/SKILL.md",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
+            "ecosystem-skills/skills/lumenloop/stellar-ecosystem-scout/SKILL.md exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
+      "id": "q-defi-skill-project-dossier",
+      "question": "I need due diligence on one named Stellar project across its canonical profile, related content, talks, SCF history, and similar projects. Which workflow should structure the dossier?",
+      "surface": [
+        "skills.lumenloop.stellar-project-dossier"
+      ],
+      "golden": {
+        "answer": "Use Stellar Project Dossier. Resolve the canonical project first, collect its profile and links, retrieve content and talks associated with it, inspect SCF submissions, expand to similar projects, reconcile evidence and freshness, and emit the dossier in the playbook's structured form. Unknown fields and corpus gaps remain explicit.",
+        "keyFacts": [
+          "Resolves a single canonical project before collecting its content and SCF history.",
+          "Adds comparable projects and explicit provenance/coverage caveats to the dossier."
+        ],
+        "avoid": [
+          "Do NOT merge similarly named projects without canonical resolution.",
+          "Do NOT invent funding, team, or activity facts for fields the corpus does not supply."
+        ],
+        "notes": "Best-source case for the bundled Stellar Project Dossier skill."
+      },
+      "tags": {
+        "category": "defi-ecosystem",
+        "service": "skills",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "ecosystem-skills/skills/lumenloop/stellar-project-dossier/SKILL.md",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
+            "ecosystem-skills/skills/lumenloop/stellar-project-dossier/SKILL.md exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
       "id": "q-defi-soroswap-vs-stellarx",
       "question": "What's the difference between Soroswap and StellarX — are they the same kind of thing?",
       "surface": [
@@ -11341,6 +11504,171 @@
       }
     },
     {
+      "id": "q-edge-doc-category-filter-empty",
+      "question": "How should category-scoped docs search report a query that has corpus-wide matches but none inside the requested category?",
+      "surface": [
+        "stellarDocs.search_docs_in_category"
+      ],
+      "golden": {
+        "answer": "Preserve the soft-empty distinction: the index may have matched pages before adapter filtering, but none belong to the requested docs category. Do not return cross-category hits as if they satisfied the filter. Suggest the correct category or a corpus-wide search when the user's scope allows it.",
+        "keyFacts": [
+          "Distinguishes category-filtered soft-empty from a total index zero result.",
+          "Does not leak cross-category matches into the scoped answer."
+        ],
+        "avoid": [
+          "Do NOT present a validators page as a tokens-category result.",
+          "Do NOT report the filtered empty response as a network outage."
+        ],
+        "notes": "NEG / soft-empty category-filter contract."
+      },
+      "tags": {
+        "category": "edge-behavior",
+        "service": "stellarDocs",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "specs/stellar-docs.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; a tokens/validator-quorum mismatch returned envelope ok=false with kind soft-empty and category guidance.",
+            "specs/stellar-docs.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
+      "id": "q-edge-doc-page-sections-soft-empty",
+      "question": "How should get_doc_page_sections behave for a valid-looking /docs path that is not present in the Stellar docs index?",
+      "surface": [
+        "stellarDocs.get_doc_page_sections"
+      ],
+      "golden": {
+        "answer": "Return and preserve a soft-empty path-not-indexed outcome. Do not fabricate sections and do not call it a network failure. Recover by using a path copied from url_without_anchor in a real search hit; remember that some auto-generated API-reference pages are intentionally not indexed.",
+        "keyFacts": [
+          "Treats an absent indexed path as soft-empty rather than data or transport error.",
+          "Recovers with url_without_anchor from a real docs search hit."
+        ],
+        "avoid": [
+          "Do NOT invent page sections for an unindexed path.",
+          "Do NOT claim every developer-site URL must exist in the Algolia index."
+        ],
+        "notes": "NEG / soft-empty docs-index contract."
+      },
+      "tags": {
+        "category": "edge-behavior",
+        "service": "stellarDocs",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "specs/stellar-docs.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; an unindexed path returned envelope ok=false with kind soft-empty and a path-not-in-index message.",
+            "specs/stellar-docs.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
+      "id": "q-edge-doc-title-zero-hits",
+      "question": "What does a zero result from Stellar Docs title-only search mean, and what should I try next?",
+      "surface": [
+        "stellarDocs.search_doc_titles"
+      ],
+      "golden": {
+        "answer": "Treat the title search as a reliable zero-hit for that title query in the indexed corpus, not proof that the concept does not exist anywhere. Do not fabricate a page. Retry with plausible title words or use broader body search; if a known developer-site page is auto-generated or unindexed, consult the operation's index constraint instead.",
+        "keyFacts": [
+          "Preserves the title search zero-hit without fabricating a page.",
+          "Broadens the query or search mode while keeping the claim scoped to the index."
+        ],
+        "avoid": [
+          "Do NOT convert an indexed-title zero result into a universal claim that no documentation exists.",
+          "Do NOT invent a canonical URL from the query words."
+        ],
+        "notes": "NEG / zero-result title-search behavior."
+      },
+      "tags": {
+        "category": "edge-behavior",
+        "service": "stellarDocs",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "specs/stellar-docs.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; a nonsense title returned envelope ok=false with kind soft-empty and reliable zero-hit guidance.",
+            "specs/stellar-docs.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
       "id": "q-edge-exchange-memo-lost-funds",
       "question": "I sent XLM or USDC to an exchange and forgot or used the wrong memo, so it never credited. Where did the funds go and can I recover them?",
       "surface": [
@@ -12184,6 +12512,61 @@
       }
     },
     {
+      "id": "q-edge-lumenloop-person-entity-empty",
+      "question": "What should I conclude when LumenLoop person-entity lookup succeeds but every content collection is empty?",
+      "surface": [
+        "lumenloop.find_content_by_entity"
+      ],
+      "golden": {
+        "answer": "Treat this person-entity result as a successful soft-empty lookup: no indexed articles, AV, events, proposals, or SCF submissions were linked to that exact person entity. It is not an outage and not proof the person has no real-world footprint. Report the index-scoped absence and, if useful, retry exact-name variants or broader content search.",
+        "keyFacts": [
+          "Recognizes the person entity envelope can succeed while all content arrays are empty.",
+          "Scopes the conclusion to no linked content in the LumenLoop index."
+        ],
+        "avoid": [
+          "Do NOT claim the person does not exist or has no public work.",
+          "Do NOT convert empty arrays into a transport or authorization error."
+        ],
+        "notes": "Dedicated person entity empty catalog-note trap; NEG / soft-empty lane."
+      },
+      "tags": {
+        "category": "edge-behavior",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "catalog/manifest.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; find_content_by_entity for an unknown person returned envelope ok=true with empty articles, av, events, proposals, and scf_submissions arrays.",
+            "catalog/manifest.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
       "id": "q-edge-metamask-evm-mental-model",
       "question": "Can I add Stellar to MetaMask or use an XLM contract address like on Ethereum, and if not how do I hold, buy, or move XLM?",
       "surface": [
@@ -12762,6 +13145,61 @@
           ]
         },
         "origin": "raven-next q-edge-oos-solana-vs-aptos"
+      }
+    },
+    {
+      "id": "q-edge-partner-detail-soft-empty",
+      "question": "What should happen when Scout getPartner receives an unknown or unpublished partner slug?",
+      "surface": [
+        "scout.getPartner"
+      ],
+      "golden": {
+        "answer": "Treat the response as a soft-empty/not-found outcome, not as a successful empty profile and not as a transport outage. Preserve the returned 404-style status and hint, tell the user that the slug is not a published partner, and return to partner discovery for valid slugs.",
+        "keyFacts": [
+          "Distinguishes the soft-empty not-found envelope from both data and service failure.",
+          "Uses partner discovery as the recovery path for a valid published slug."
+        ],
+        "avoid": [
+          "Do NOT fabricate a partner profile for an unknown slug.",
+          "Do NOT describe the expected not-found response as a Scout outage."
+        ],
+        "notes": "NEG / soft-empty behavioral contract."
+      },
+      "tags": {
+        "category": "edge-behavior",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "catalog/manifest.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; getPartner on an unpublished slug returned envelope ok=false, kind soft-empty, status 404, with a directory hint.",
+            "catalog/manifest.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
       }
     },
     {
@@ -20196,6 +20634,61 @@
           ]
         },
         "origin": "authored 2026-07 (cross-service)"
+      }
+    },
+    {
+      "id": "q-pc-doc-category-validator-search",
+      "question": "General docs search mixes unrelated pages. How do I restrict a quorum query to Stellar validator documentation?",
+      "surface": [
+        "stellarDocs.search_docs_in_category"
+      ],
+      "golden": {
+        "answer": "Call search_docs_in_category with query quorum and category validators. Verify returned paths are in the validator area, inspect breadcrumbs/snippets, and then open the relevant page. Category restriction is adapter-side because the upstream hierarchy field is not a reliable facet; use only the operation's supported category values.",
+        "keyFacts": [
+          "Uses the validators category to constrain the quorum search.",
+          "Checks the returned paths and follows the relevant result for full content."
+        ],
+        "avoid": [
+          "Do NOT invent a category outside the operation's supported vocabulary.",
+          "Do NOT assume an upstream hierarchy facet performed the category restriction."
+        ],
+        "notes": "Behavioral docs-category case; result ordering and content are live."
+      },
+      "tags": {
+        "category": "protocol-core",
+        "service": "stellarDocs",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "specs/stellar-docs.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; a validators/quorum query returned envelope ok=true and validator-prefixed hits.",
+            "specs/stellar-docs.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
       }
     },
     {
@@ -29184,6 +29677,114 @@
       }
     },
     {
+      "id": "q-scf-skill-stellar-scout",
+      "question": "I want to vet a Stellar idea against projects, open RFPs, repos, research, builders, funding, and audits, then choose next steps. Which bundled workflow governs that full scout?",
+      "surface": [
+        "skills.stellar-light.stellar-scout"
+      ],
+      "golden": {
+        "answer": "Use the Stellar Scout playbook. Route by user type, use conversational mode for bounded questions or its complete deep-dive/specialized workflow for idea vetting, SCF pitches, audit-firm research, or RFP comparison. Ground claims in returned project/RFP/repo/research evidence, state when the corpus is incomplete, and never invent builders, funding, winners, or partner capabilities.",
+        "keyFacts": [
+          "Selects conversational or deep-dive/specialized mode based on the user's intent.",
+          "Grounds the landscape and next steps in Scout endpoints while making coverage limits explicit."
+        ],
+        "avoid": [
+          "Do NOT declare a full market gap from one zero-result endpoint.",
+          "Do NOT invent builders, RFPs, awards, audit evidence, or partner capabilities."
+        ],
+        "notes": "Best-source case for the bundled Stellar Scout skill."
+      },
+      "tags": {
+        "category": "scf-grants-builders",
+        "service": "skills",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "ecosystem-skills/skills/stellar-light/stellar-scout/SKILL.md",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
+            "ecosystem-skills/skills/stellar-light/stellar-scout/SKILL.md exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
+      "id": "q-scf-skill-submission-radar",
+      "question": "I have an SCF idea and want a repeatable positioning brief against prior submissions, funding outcomes, and live competitors. What workflow should I use?",
+      "surface": [
+        "skills.lumenloop.scf-submission-radar"
+      ],
+      "golden": {
+        "answer": "Use the SCF Submission Radar playbook. Search similar submissions by natural-language idea, inspect award_type separately from mere submission, profile linked projects and team history, expand from a close submission, reality-check live competitors, confirm the live category vocabulary, then synthesize a positioning brief. It researches and positions; it does not submit an application.",
+        "keyFacts": [
+          "Searches prior SCF submissions and distinguishes funded outcomes from proposals that were not awarded.",
+          "Combines submission history, project profiles, live competitors, and category fit into a positioning brief."
+        ],
+        "avoid": [
+          "Do NOT describe every prior submission as funded.",
+          "Do NOT claim the read-only workflow submits an SCF application."
+        ],
+        "notes": "Best-source case for the bundled SCF Submission Radar skill."
+      },
+      "tags": {
+        "category": "scf-grants-builders",
+        "service": "skills",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "ecosystem-skills/skills/lumenloop/scf-submission-radar/SKILL.md",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
+            "ecosystem-skills/skills/lumenloop/scf-submission-radar/SKILL.md exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
       "id": "q-scf-submission-lifecycle-deadlines",
       "question": "After I submit an SCF proposal, what does the review timeline look like — prescreen, track/panel review, community vote, results, KYC — and what is the round cadence and how long does each review stage take?",
       "surface": [
@@ -32234,6 +32835,61 @@
       }
     },
     {
+      "id": "q-sor-doc-page-sections-followup",
+      "question": "After docs search gives me a Stellar developer-docs page path, how do I read that whole page in section order rather than rely on one snippet?",
+      "surface": [
+        "stellarDocs.get_doc_page_sections"
+      ],
+      "golden": {
+        "answer": "Pass the exact url_without_anchor path from the search hit to get_doc_page_sections. Keep includeContent enabled when reading the page, then consume the returned headings, breadcrumbs, anchors, and content in on-page order. This is a page-follow-up operation; it is not a corpus-wide search.",
+        "keyFacts": [
+          "Uses the exact path from a prior docs hit, without the domain or anchor.",
+          "Reads ordered section headings and content rather than treating one search snippet as the page."
+        ],
+        "avoid": [
+          "Do NOT pass a full external URL or fragment where the operation requires a /docs or /meetings path.",
+          "Do NOT treat one snippet as the complete page."
+        ],
+        "notes": "Live docs-index behavioral case."
+      },
+      "tags": {
+        "category": "soroban",
+        "service": "stellarDocs",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "specs/stellar-docs.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; get_doc_page_sections returned envelope ok=true for the storing-data path with ordered headings and content.",
+            "specs/stellar-docs.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
       "id": "q-sor-doc-timestamping-manage-data",
       "question": "How do I anchor a document's SHA-256 hash on Stellar for tamper-proof timestamping (Manage Data op + its size/reserve limits, or a Soroban contract, optionally with IPFS) while keeping the file off-chain?",
       "surface": [
@@ -32322,6 +32978,61 @@
           ]
         },
         "origin": "raven-next q-sor-doc-timestamping-manage-data"
+      }
+    },
+    {
+      "id": "q-sor-doc-title-discovery",
+      "question": "When I roughly know a Stellar docs page is called State Archival, what is the fastest precise way to find its canonical page before reading it?",
+      "surface": [
+        "stellarDocs.search_doc_titles"
+      ],
+      "golden": {
+        "answer": "Use search_doc_titles with the expected page or section title words. Inspect the returned breadcrumb and url_without_anchor to choose the canonical page, then follow with get_doc_page_sections or a content-bearing docs search. Title search is deliberately heading-focused and should not be treated as full-body research.",
+        "keyFacts": [
+          "Uses title-only search to locate pages or headings by their expected name.",
+          "Follows the selected url_without_anchor with a page-reading operation."
+        ],
+        "avoid": [
+          "Do NOT claim title hits contain the complete page body.",
+          "Do NOT choose a result solely from a highlighted word without checking its breadcrumb and path."
+        ],
+        "notes": "Live docs title-discovery behavior; exact hit ordering may drift."
+      },
+      "tags": {
+        "category": "soroban",
+        "service": "stellarDocs",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "specs/stellar-docs.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; search_doc_titles returned envelope ok=true with title/heading hits for State Archival.",
+            "specs/stellar-docs.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
       }
     },
     {
@@ -33119,6 +33830,60 @@
           ]
         },
         "origin": "raven-next q-sor-sep41-transfer-vs-transferfrom"
+      }
+    },
+    {
+      "id": "q-sor-skill-openzeppelin-setup",
+      "question": "What is the best bundled workflow for setting up a Soroban contract project with OpenZeppelin Contracts for Stellar?",
+      "surface": [
+        "skills.openzeppelin-stellar.setup-stellar-contracts"
+      ],
+      "golden": {
+        "answer": "Use the OpenZeppelin setup-stellar-contracts playbook. Follow its toolchain checks, initialize a Soroban project, add the documented OpenZeppelin Stellar dependencies to Cargo.toml, and use the Stellar/Soroban import and contract patterns it specifies. Validate the scaffold with the playbook's build/test steps before adding application logic.",
+        "keyFacts": [
+          "Uses the OpenZeppelin Stellar setup playbook for toolchain, project initialization, dependencies, and imports.",
+          "Builds or tests the scaffold before application-specific changes."
+        ],
+        "avoid": [
+          "Do NOT substitute EVM Solidity setup instructions for the Soroban Rust workflow.",
+          "Do NOT guess dependency names or import paths outside the playbook."
+        ],
+        "notes": "Best-source case for the bundled OpenZeppelin setup skill."
+      },
+      "tags": {
+        "category": "soroban",
+        "service": "skills",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "ecosystem-skills/skills/openzeppelin-stellar/setup-stellar-contracts/SKILL.md",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
+            "ecosystem-skills/skills/openzeppelin-stellar/setup-stellar-contracts/SKILL.md exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
       }
     },
     {
@@ -37764,6 +38529,61 @@
       }
     },
     {
+      "id": "q-ti-explain-repo-payload-status",
+      "question": "I need a source-grounded explanation of where Stellar transaction result codes are implemented. How should Scout's repo explanation response be interpreted?",
+      "surface": [
+        "scout.explainRepo"
+      ],
+      "golden": {
+        "answer": "Use explainRepo with the deep code question and optionally pin the authoritative repo. Check both the host envelope and the upstream payload's data.ok. Treat the routed repository and repo URL as provenance; the generated explanation can degrade to routing metadata when no answer is available and should be verified against code for safety-critical conclusions.",
+        "keyFacts": [
+          "Uses explainRepo for a deep implementation question, optionally with an explicit owner/repo.",
+          "Checks data.ok separately from the host envelope and preserves routed-repo provenance."
+        ],
+        "avoid": [
+          "Do NOT treat envelope success alone as proof that the upstream produced an answer.",
+          "Do NOT present an AI-generated repo explanation as stronger than the cited source code."
+        ],
+        "notes": "Behavioral contract case for Scout's nested payload status and graceful degradation."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "catalog/manifest.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; explainRepo returned envelope ok=true and payload data.ok=true with an explicitly routed stellar/stellar-core answer and repo sources.",
+            "catalog/manifest.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
       "id": "q-ti-fetch-all-balances-classic-sac",
       "question": "How do I fetch every asset balance held by an account or a contract (C…) address — classic trustline assets AND Soroban/SAC balances — given Horizon's account endpoint doesn't return Soroban assets (getSACBalance)?",
       "surface": [
@@ -38664,6 +39484,61 @@
       }
     },
     {
+      "id": "q-ti-related-projects-from-content",
+      "question": "I found a LumenLoop article. How should I identify which directory projects that specific content item mentions?",
+      "surface": [
+        "lumenloop.get_related_projects"
+      ],
+      "golden": {
+        "answer": "Resolve a concrete content result first, preserve its numeric id and content type, then call get_related_projects with both values. Report only the returned directory projects. This relation is content → projects; do not substitute a general keyword search or reverse it into project → content.",
+        "keyFacts": [
+          "Uses a concrete content id plus its content type with get_related_projects.",
+          "Treats the result as projects mentioned by that content item."
+        ],
+        "avoid": [
+          "Do NOT claim every project matching the article's keywords was mentioned by the article.",
+          "Do NOT reverse the relation into content about a project."
+        ],
+        "notes": "Behavioral service-contract case; returned project identities are live data."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "catalog/manifest.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; a semantic content seed (article 8290) resolved through get_related_projects to an ok envelope with one mentioned project.",
+            "catalog/manifest.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
       "id": "q-ti-rpc-gettransactions-pagination-xdr",
       "question": "How do I reliably page Stellar RPC getTransactions/ getEvents with the cursor (and detect when my poller falls behind the per-call 200 limit), and decode resultMetaXdr to extract ops, affected accounts, and trustline changes?",
       "surface": [
@@ -38942,6 +39817,61 @@
           "note": "GT-53 final state imported from process 3153; near-term re-verification retained by design."
         },
         "origin": "raven-next q-ti-scaffold-stellar"
+      }
+    },
+    {
+      "id": "q-ti-scout-changelog-contract-check",
+      "question": "Before relying on a cached Scout client contract, how do I check what API or MCP behavior changed recently?",
+      "surface": [
+        "scout.getChangelog"
+      ],
+      "golden": {
+        "answer": "Query getChangelog, optionally bounding it with since and limit. Read the latest-first entries and use their date, type, surfaces, summary, detail, and version where present to identify contract-affecting changes. Use getStatus for current health and freshness, and the data endpoints for ecosystem facts; the changelog is not a substitute for either.",
+        "keyFacts": [
+          "Uses getChangelog as the curated latest-first feed of contract-affecting changes.",
+          "Separates change history from current health and actual ecosystem data."
+        ],
+        "avoid": [
+          "Do NOT infer current service health from a historical changelog entry.",
+          "Do NOT treat changelog summaries as the current project or funding dataset."
+        ],
+        "notes": "Behavioral service-contract case; specific entries are intentionally not pinned."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "catalog/manifest.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; getChangelog returned envelope ok=true and a latest-first entries payload.",
+            "catalog/manifest.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
       }
     },
     {
@@ -39281,6 +40211,168 @@
           ]
         },
         "origin": "raven-next q-ti-self-host-retention-backfill"
+      }
+    },
+    {
+      "id": "q-ti-skill-builder-quickstart",
+      "question": "I have a half-formed Stellar product idea. What repeatable workflow turns it into primitives, prior-art choices, a stack, and first build steps?",
+      "surface": [
+        "skills.lumenloop.stellar-builder-quickstart"
+      ],
+      "golden": {
+        "answer": "Use Stellar Builder Quickstart: clarify the idea, map it to Stellar primitives, search LumenLoop for prior art, prefer integration where an existing project covers part of the need, choose the contract/token/frontend/data/oracle/SEP stack, and emit a concise build plan with deeper build references. LumenLoop supports discovery; implementation guidance comes from the relevant build skills and official docs.",
+        "keyFacts": [
+          "Maps the idea to explicit Stellar primitives before choosing a stack.",
+          "Checks ecosystem prior art and produces a build plan that routes to deeper implementation references."
+        ],
+        "avoid": [
+          "Do NOT recommend rebuilding an existing integration without checking prior art.",
+          "Do NOT treat LumenLoop directory summaries as contract implementation guidance."
+        ],
+        "notes": "Best-source case for the bundled Stellar Builder Quickstart skill."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "skills",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "ecosystem-skills/skills/lumenloop/stellar-builder-quickstart/SKILL.md",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
+            "ecosystem-skills/skills/lumenloop/stellar-builder-quickstart/SKILL.md exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
+      "id": "q-ti-skill-content-auditor",
+      "question": "I have draft Stellar copy with project names, handles, and factual claims. What workflow should audit and enrich it before publication?",
+      "surface": [
+        "skills.lumenloop.stellar-content-auditor"
+      ],
+      "golden": {
+        "answer": "Use Stellar Content Auditor. Resolve named projects to canonical directory records, validate handles and names, search indexed content for support, preserve source URLs, separate supported facts from unsupported claims, and return an audit report with corrections and citation-ready enrichment. Treat summaries as leads and verify consequential specifics at their sources.",
+        "keyFacts": [
+          "Resolves canonical project names and handles before editing the draft.",
+          "Separates supported claims from unsupported ones and preserves source URLs."
+        ],
+        "avoid": [
+          "Do NOT silently replace an uncertain handle with a guessed one.",
+          "Do NOT turn an indexed summary into an unattributed primary-source claim."
+        ],
+        "notes": "Best-source case for the bundled Stellar Content Auditor skill."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "skills",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "ecosystem-skills/skills/lumenloop/stellar-content-auditor/SKILL.md",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
+            "ecosystem-skills/skills/lumenloop/stellar-content-auditor/SKILL.md exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
+      "id": "q-ti-skill-integration-finder",
+      "question": "I need to choose an existing Stellar wallet, oracle, anchor, DEX, or indexer to integrate. What workflow avoids a shallow name list?",
+      "surface": [
+        "skills.lumenloop.stellar-integration-finder"
+      ],
+      "golden": {
+        "answer": "Use Stellar Integration Finder. Clarify the required capability and constraints, discover candidates through short directory queries and semantic neighbors, inspect canonical project details and supporting content, compare integration-relevant evidence, then route the chosen dependency to the matching build skill. Recommend only supported candidates and state coverage gaps.",
+        "keyFacts": [
+          "Starts from capability and constraints, then discovers and compares concrete integration candidates.",
+          "Routes the selected dependency to the appropriate deeper build workflow."
+        ],
+        "avoid": [
+          "Do NOT rank integrations from name recognition alone.",
+          "Do NOT claim compatibility, maintenance, or regional support absent from the returned evidence."
+        ],
+        "notes": "Best-source case for the bundled Stellar Integration Finder skill."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "skills",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "ecosystem-skills/skills/lumenloop/stellar-integration-finder/SKILL.md",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
+            "ecosystem-skills/skills/lumenloop/stellar-integration-finder/SKILL.md exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
       }
     },
     {
@@ -39819,6 +40911,226 @@
           ]
         },
         "origin": "raven-next q-ti-video-tutorials"
+      }
+    },
+    {
+      "id": "q-ti-vocab-content-tags-live",
+      "question": "Which vocabulary should I query for tags on LumenLoop articles and AV content?",
+      "surface": [
+        "lumenloop.get_tags_vocabulary"
+      ],
+      "golden": {
+        "answer": "Use get_tags_vocabulary for the live content-tag rows used by articles and AV. Keep that vocabulary separate from directory project tags returned by get_project_tags_vocabulary, and use the exact returned tag identity rather than guessing from project labels.",
+        "keyFacts": [
+          "Uses get_tags_vocabulary as the content-tag VOCAB source.",
+          "Separates content tags from directory project tags."
+        ],
+        "avoid": [
+          "Do NOT use project-tag values as if they were guaranteed content tags.",
+          "Do NOT invent a content tag absent from the returned vocabulary."
+        ],
+        "notes": "Dedicated VOCAB / content-tag discovery case."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "catalog/manifest.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; get_tags_vocabulary returned envelope ok=true with content-tag rows.",
+            "catalog/manifest.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
+      "id": "q-ti-vocab-project-categories-live",
+      "question": "Before filtering or labeling LumenLoop directory projects, how do I obtain the accepted project-category values?",
+      "surface": [
+        "lumenloop.get_categories"
+      ],
+      "golden": {
+        "answer": "Call get_categories and use the returned category names/slugs exactly. This is the controlled project-category vocabulary for LumenLoop; do not substitute Scout categories, project tags, content tags, or remembered values. Re-query when current values matter.",
+        "keyFacts": [
+          "Uses get_categories as the controlled project-category VOCAB source.",
+          "Keeps categories distinct from tags, regions, and other services' taxonomies."
+        ],
+        "avoid": [
+          "Do NOT invent a category string absent from the returned list.",
+          "Do NOT substitute Scout's category taxonomy for LumenLoop's."
+        ],
+        "notes": "Dedicated VOCAB discovery case; values are live and intentionally not pinned."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "catalog/manifest.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; get_categories returned envelope ok=true with the live controlled category rows.",
+            "catalog/manifest.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
+      "id": "q-ti-vocab-project-tags-live",
+      "question": "Which vocabulary should I query for tags on LumenLoop directory projects?",
+      "surface": [
+        "lumenloop.get_project_tags_vocabulary"
+      ],
+      "golden": {
+        "answer": "Use get_project_tags_vocabulary for the live directory-project tag rows. Keep it separate from article/AV content tags and from the small project-category vocabulary. Use exact returned names/slugs when filtering or labeling and re-query when current values matter.",
+        "keyFacts": [
+          "Uses get_project_tags_vocabulary as the directory-project tag VOCAB source.",
+          "Separates project tags from content tags and project categories."
+        ],
+        "avoid": [
+          "Do NOT substitute content tags or categories for directory project tags.",
+          "Do NOT invent a project-tag value absent from the returned vocabulary."
+        ],
+        "notes": "Dedicated VOCAB / project-tag discovery case."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "catalog/manifest.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; get_project_tags_vocabulary returned envelope ok=true with project-tag rows.",
+            "catalog/manifest.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
+      }
+    },
+    {
+      "id": "q-ti-vocab-regions-live",
+      "question": "Before filtering LumenLoop projects geographically, how should I discover the region values actually in use?",
+      "surface": [
+        "lumenloop.get_regions"
+      ],
+      "golden": {
+        "answer": "Call get_regions and inspect the returned strings before filtering. Treat them as the live distinct values drawn from directory records, not automatically as a normalized controlled enum: variants in case or geographic granularity may coexist. Match deliberately and report normalization assumptions.",
+        "keyFacts": [
+          "Uses get_regions for live region VOCAB discovery.",
+          "Treats returned regions as variant-prone values rather than assuming a clean canonical enum."
+        ],
+        "avoid": [
+          "Do NOT invent a fixed region enum from memory.",
+          "Do NOT silently collapse case or geography variants without explaining the normalization."
+        ],
+        "notes": "Dedicated VOCAB / region-vocab behavioral case."
+      },
+      "tags": {
+        "category": "tooling-infra",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "catalog/manifest.json",
+            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+          },
+          {
+            "class": "C",
+            "ref": "http://localhost:8787/mcp",
+            "note": "Live localhost search→execute probe."
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "evidence": [
+            "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; get_regions returned envelope ok=true with live region strings including case variants, demonstrating a variant-prone discovery list.",
+            "catalog/manifest.json exists and supports the behavioral golden.",
+            "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (coverage)"
       }
     },
     {

@@ -1,0 +1,55 @@
+{
+  "id": "q-ti-vocab-content-tags-live",
+  "question": "Which vocabulary should I query for tags on LumenLoop articles and AV content?",
+  "surface": [
+    "lumenloop.get_tags_vocabulary"
+  ],
+  "golden": {
+    "answer": "Use get_tags_vocabulary for the live content-tag rows used by articles and AV. Keep that vocabulary separate from directory project tags returned by get_project_tags_vocabulary, and use the exact returned tag identity rather than guessing from project labels.",
+    "keyFacts": [
+      "Uses get_tags_vocabulary as the content-tag VOCAB source.",
+      "Separates content tags from directory project tags."
+    ],
+    "avoid": [
+      "Do NOT use project-tag values as if they were guaranteed content tags.",
+      "Do NOT invent a content tag absent from the returned vocabulary."
+    ],
+    "notes": "Dedicated VOCAB / content-tag discovery case."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "lumenloop",
+    "freshness": "live"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "catalog/manifest.json",
+        "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+      },
+      {
+        "class": "C",
+        "ref": "http://localhost:8787/mcp",
+        "note": "Live localhost search→execute probe."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 coverage-closure lane (Solo process 3427)",
+      "evidence": [
+        "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; get_tags_vocabulary returned envelope ok=true with content-tag rows.",
+        "catalog/manifest.json exists and supports the behavioral golden.",
+        "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (coverage)"
+  }
+}

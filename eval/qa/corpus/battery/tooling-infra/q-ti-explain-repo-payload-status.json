@@ -1,0 +1,55 @@
+{
+  "id": "q-ti-explain-repo-payload-status",
+  "question": "I need a source-grounded explanation of where Stellar transaction result codes are implemented. How should Scout's repo explanation response be interpreted?",
+  "surface": [
+    "scout.explainRepo"
+  ],
+  "golden": {
+    "answer": "Use explainRepo with the deep code question and optionally pin the authoritative repo. Check both the host envelope and the upstream payload's data.ok. Treat the routed repository and repo URL as provenance; the generated explanation can degrade to routing metadata when no answer is available and should be verified against code for safety-critical conclusions.",
+    "keyFacts": [
+      "Uses explainRepo for a deep implementation question, optionally with an explicit owner/repo.",
+      "Checks data.ok separately from the host envelope and preserves routed-repo provenance."
+    ],
+    "avoid": [
+      "Do NOT treat envelope success alone as proof that the upstream produced an answer.",
+      "Do NOT present an AI-generated repo explanation as stronger than the cited source code."
+    ],
+    "notes": "Behavioral contract case for Scout's nested payload status and graceful degradation."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "scout",
+    "freshness": "live"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "catalog/manifest.json",
+        "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+      },
+      {
+        "class": "C",
+        "ref": "http://localhost:8787/mcp",
+        "note": "Live localhost search→execute probe."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 coverage-closure lane (Solo process 3427)",
+      "evidence": [
+        "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; explainRepo returned envelope ok=true and payload data.ok=true with an explicitly routed stellar/stellar-core answer and repo sources.",
+        "catalog/manifest.json exists and supports the behavioral golden.",
+        "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (coverage)"
+  }
+}

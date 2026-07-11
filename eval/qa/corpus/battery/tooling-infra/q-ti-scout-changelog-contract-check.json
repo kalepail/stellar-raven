@@ -1,0 +1,55 @@
+{
+  "id": "q-ti-scout-changelog-contract-check",
+  "question": "Before relying on a cached Scout client contract, how do I check what API or MCP behavior changed recently?",
+  "surface": [
+    "scout.getChangelog"
+  ],
+  "golden": {
+    "answer": "Query getChangelog, optionally bounding it with since and limit. Read the latest-first entries and use their date, type, surfaces, summary, detail, and version where present to identify contract-affecting changes. Use getStatus for current health and freshness, and the data endpoints for ecosystem facts; the changelog is not a substitute for either.",
+    "keyFacts": [
+      "Uses getChangelog as the curated latest-first feed of contract-affecting changes.",
+      "Separates change history from current health and actual ecosystem data."
+    ],
+    "avoid": [
+      "Do NOT infer current service health from a historical changelog entry.",
+      "Do NOT treat changelog summaries as the current project or funding dataset."
+    ],
+    "notes": "Behavioral service-contract case; specific entries are intentionally not pinned."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "scout",
+    "freshness": "live"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "catalog/manifest.json",
+        "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+      },
+      {
+        "class": "C",
+        "ref": "http://localhost:8787/mcp",
+        "note": "Live localhost search→execute probe."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 coverage-closure lane (Solo process 3427)",
+      "evidence": [
+        "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; getChangelog returned envelope ok=true and a latest-first entries payload.",
+        "catalog/manifest.json exists and supports the behavioral golden.",
+        "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (coverage)"
+  }
+}

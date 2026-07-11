@@ -1,0 +1,55 @@
+{
+  "id": "q-ti-vocab-project-categories-live",
+  "question": "Before filtering or labeling LumenLoop directory projects, how do I obtain the accepted project-category values?",
+  "surface": [
+    "lumenloop.get_categories"
+  ],
+  "golden": {
+    "answer": "Call get_categories and use the returned category names/slugs exactly. This is the controlled project-category vocabulary for LumenLoop; do not substitute Scout categories, project tags, content tags, or remembered values. Re-query when current values matter.",
+    "keyFacts": [
+      "Uses get_categories as the controlled project-category VOCAB source.",
+      "Keeps categories distinct from tags, regions, and other services' taxonomies."
+    ],
+    "avoid": [
+      "Do NOT invent a category string absent from the returned list.",
+      "Do NOT substitute Scout's category taxonomy for LumenLoop's."
+    ],
+    "notes": "Dedicated VOCAB discovery case; values are live and intentionally not pinned."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "lumenloop",
+    "freshness": "live"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "catalog/manifest.json",
+        "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+      },
+      {
+        "class": "C",
+        "ref": "http://localhost:8787/mcp",
+        "note": "Live localhost search→execute probe."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 coverage-closure lane (Solo process 3427)",
+      "evidence": [
+        "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; get_categories returned envelope ok=true with the live controlled category rows.",
+        "catalog/manifest.json exists and supports the behavioral golden.",
+        "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (coverage)"
+  }
+}

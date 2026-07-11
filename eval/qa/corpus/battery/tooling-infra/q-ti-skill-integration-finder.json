@@ -1,0 +1,54 @@
+{
+  "id": "q-ti-skill-integration-finder",
+  "question": "I need to choose an existing Stellar wallet, oracle, anchor, DEX, or indexer to integrate. What workflow avoids a shallow name list?",
+  "surface": [
+    "skills.lumenloop.stellar-integration-finder"
+  ],
+  "golden": {
+    "answer": "Use Stellar Integration Finder. Clarify the required capability and constraints, discover candidates through short directory queries and semantic neighbors, inspect canonical project details and supporting content, compare integration-relevant evidence, then route the chosen dependency to the matching build skill. Recommend only supported candidates and state coverage gaps.",
+    "keyFacts": [
+      "Starts from capability and constraints, then discovers and compares concrete integration candidates.",
+      "Routes the selected dependency to the appropriate deeper build workflow."
+    ],
+    "avoid": [
+      "Do NOT rank integrations from name recognition alone.",
+      "Do NOT claim compatibility, maintenance, or regional support absent from the returned evidence."
+    ],
+    "notes": "Best-source case for the bundled Stellar Integration Finder skill."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "skills",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "ecosystem-skills/skills/lumenloop/stellar-integration-finder/SKILL.md",
+        "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+      },
+      {
+        "class": "C",
+        "ref": "http://localhost:8787/mcp",
+        "note": "Live localhost search→execute probe."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 coverage-closure lane (Solo process 3427)",
+      "evidence": [
+        "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
+        "ecosystem-skills/skills/lumenloop/stellar-integration-finder/SKILL.md exists and supports the behavioral golden.",
+        "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (coverage)"
+  }
+}

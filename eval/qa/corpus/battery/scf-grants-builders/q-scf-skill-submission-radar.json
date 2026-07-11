@@ -1,0 +1,54 @@
+{
+  "id": "q-scf-skill-submission-radar",
+  "question": "I have an SCF idea and want a repeatable positioning brief against prior submissions, funding outcomes, and live competitors. What workflow should I use?",
+  "surface": [
+    "skills.lumenloop.scf-submission-radar"
+  ],
+  "golden": {
+    "answer": "Use the SCF Submission Radar playbook. Search similar submissions by natural-language idea, inspect award_type separately from mere submission, profile linked projects and team history, expand from a close submission, reality-check live competitors, confirm the live category vocabulary, then synthesize a positioning brief. It researches and positions; it does not submit an application.",
+    "keyFacts": [
+      "Searches prior SCF submissions and distinguishes funded outcomes from proposals that were not awarded.",
+      "Combines submission history, project profiles, live competitors, and category fit into a positioning brief."
+    ],
+    "avoid": [
+      "Do NOT describe every prior submission as funded.",
+      "Do NOT claim the read-only workflow submits an SCF application."
+    ],
+    "notes": "Best-source case for the bundled SCF Submission Radar skill."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "skills",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "ecosystem-skills/skills/lumenloop/scf-submission-radar/SKILL.md",
+        "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+      },
+      {
+        "class": "C",
+        "ref": "http://localhost:8787/mcp",
+        "note": "Live localhost search→execute probe."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 coverage-closure lane (Solo process 3427)",
+      "evidence": [
+        "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
+        "ecosystem-skills/skills/lumenloop/scf-submission-radar/SKILL.md exists and supports the behavioral golden.",
+        "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (coverage)"
+  }
+}

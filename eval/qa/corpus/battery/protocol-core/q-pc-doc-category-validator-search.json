@@ -1,0 +1,55 @@
+{
+  "id": "q-pc-doc-category-validator-search",
+  "question": "General docs search mixes unrelated pages. How do I restrict a quorum query to Stellar validator documentation?",
+  "surface": [
+    "stellarDocs.search_docs_in_category"
+  ],
+  "golden": {
+    "answer": "Call search_docs_in_category with query quorum and category validators. Verify returned paths are in the validator area, inspect breadcrumbs/snippets, and then open the relevant page. Category restriction is adapter-side because the upstream hierarchy field is not a reliable facet; use only the operation's supported category values.",
+    "keyFacts": [
+      "Uses the validators category to constrain the quorum search.",
+      "Checks the returned paths and follows the relevant result for full content."
+    ],
+    "avoid": [
+      "Do NOT invent a category outside the operation's supported vocabulary.",
+      "Do NOT assume an upstream hierarchy facet performed the category restriction."
+    ],
+    "notes": "Behavioral docs-category case; result ordering and content are live."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "live"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "specs/stellar-docs.json",
+        "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+      },
+      {
+        "class": "C",
+        "ref": "http://localhost:8787/mcp",
+        "note": "Live localhost search→execute probe."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 coverage-closure lane (Solo process 3427)",
+      "evidence": [
+        "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; a validators/quorum query returned envelope ok=true and validator-prefixed hits.",
+        "specs/stellar-docs.json exists and supports the behavioral golden.",
+        "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (coverage)"
+  }
+}

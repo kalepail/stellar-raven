@@ -1,0 +1,55 @@
+{
+  "id": "q-edge-doc-title-zero-hits",
+  "question": "What does a zero result from Stellar Docs title-only search mean, and what should I try next?",
+  "surface": [
+    "stellarDocs.search_doc_titles"
+  ],
+  "golden": {
+    "answer": "Treat the title search as a reliable zero-hit for that title query in the indexed corpus, not proof that the concept does not exist anywhere. Do not fabricate a page. Retry with plausible title words or use broader body search; if a known developer-site page is auto-generated or unindexed, consult the operation's index constraint instead.",
+    "keyFacts": [
+      "Preserves the title search zero-hit without fabricating a page.",
+      "Broadens the query or search mode while keeping the claim scoped to the index."
+    ],
+    "avoid": [
+      "Do NOT convert an indexed-title zero result into a universal claim that no documentation exists.",
+      "Do NOT invent a canonical URL from the query words."
+    ],
+    "notes": "NEG / zero-result title-search behavior."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "stellarDocs",
+    "freshness": "live"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "specs/stellar-docs.json",
+        "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+      },
+      {
+        "class": "C",
+        "ref": "http://localhost:8787/mcp",
+        "note": "Live localhost search→execute probe."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 coverage-closure lane (Solo process 3427)",
+      "evidence": [
+        "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; a nonsense title returned envelope ok=false with kind soft-empty and reliable zero-hit guidance.",
+        "specs/stellar-docs.json exists and supports the behavioral golden.",
+        "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (coverage)"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "id": "q-ti-vocab-project-tags-live",
+  "question": "Which vocabulary should I query for tags on LumenLoop directory projects?",
+  "surface": [
+    "lumenloop.get_project_tags_vocabulary"
+  ],
+  "golden": {
+    "answer": "Use get_project_tags_vocabulary for the live directory-project tag rows. Keep it separate from article/AV content tags and from the small project-category vocabulary. Use exact returned names/slugs when filtering or labeling and re-query when current values matter.",
+    "keyFacts": [
+      "Uses get_project_tags_vocabulary as the directory-project tag VOCAB source.",
+      "Separates project tags from content tags and project categories."
+    ],
+    "avoid": [
+      "Do NOT substitute content tags or categories for directory project tags.",
+      "Do NOT invent a project-tag value absent from the returned vocabulary."
+    ],
+    "notes": "Dedicated VOCAB / project-tag discovery case."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "lumenloop",
+    "freshness": "live"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "catalog/manifest.json",
+        "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+      },
+      {
+        "class": "C",
+        "ref": "http://localhost:8787/mcp",
+        "note": "Live localhost search→execute probe."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 coverage-closure lane (Solo process 3427)",
+      "evidence": [
+        "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; get_project_tags_vocabulary returned envelope ok=true with project-tag rows.",
+        "catalog/manifest.json exists and supports the behavioral golden.",
+        "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (coverage)"
+  }
+}

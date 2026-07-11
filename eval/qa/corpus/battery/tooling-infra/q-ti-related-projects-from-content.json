@@ -1,0 +1,55 @@
+{
+  "id": "q-ti-related-projects-from-content",
+  "question": "I found a LumenLoop article. How should I identify which directory projects that specific content item mentions?",
+  "surface": [
+    "lumenloop.get_related_projects"
+  ],
+  "golden": {
+    "answer": "Resolve a concrete content result first, preserve its numeric id and content type, then call get_related_projects with both values. Report only the returned directory projects. This relation is content → projects; do not substitute a general keyword search or reverse it into project → content.",
+    "keyFacts": [
+      "Uses a concrete content id plus its content type with get_related_projects.",
+      "Treats the result as projects mentioned by that content item."
+    ],
+    "avoid": [
+      "Do NOT claim every project matching the article's keywords was mentioned by the article.",
+      "Do NOT reverse the relation into content about a project."
+    ],
+    "notes": "Behavioral service-contract case; returned project identities are live data."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "lumenloop",
+    "freshness": "live"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "catalog/manifest.json",
+        "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+      },
+      {
+        "class": "C",
+        "ref": "http://localhost:8787/mcp",
+        "note": "Live localhost search→execute probe."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 coverage-closure lane (Solo process 3427)",
+      "evidence": [
+        "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; a semantic content seed (article 8290) resolved through get_related_projects to an ok envelope with one mentioned project.",
+        "catalog/manifest.json exists and supports the behavioral golden.",
+        "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (coverage)"
+  }
+}

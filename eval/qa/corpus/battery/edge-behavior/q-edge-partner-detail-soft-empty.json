@@ -1,0 +1,55 @@
+{
+  "id": "q-edge-partner-detail-soft-empty",
+  "question": "What should happen when Scout getPartner receives an unknown or unpublished partner slug?",
+  "surface": [
+    "scout.getPartner"
+  ],
+  "golden": {
+    "answer": "Treat the response as a soft-empty/not-found outcome, not as a successful empty profile and not as a transport outage. Preserve the returned 404-style status and hint, tell the user that the slug is not a published partner, and return to partner discovery for valid slugs.",
+    "keyFacts": [
+      "Distinguishes the soft-empty not-found envelope from both data and service failure.",
+      "Uses partner discovery as the recovery path for a valid published slug."
+    ],
+    "avoid": [
+      "Do NOT fabricate a partner profile for an unknown slug.",
+      "Do NOT describe the expected not-found response as a Scout outage."
+    ],
+    "notes": "NEG / soft-empty behavioral contract."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "scout",
+    "freshness": "live"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "catalog/manifest.json",
+        "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+      },
+      {
+        "class": "C",
+        "ref": "http://localhost:8787/mcp",
+        "note": "Live localhost search→execute probe."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 coverage-closure lane (Solo process 3427)",
+      "evidence": [
+        "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; getPartner on an unpublished slug returned envelope ok=false, kind soft-empty, status 404, with a directory hint.",
+        "catalog/manifest.json exists and supports the behavioral golden.",
+        "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (coverage)"
+  }
+}

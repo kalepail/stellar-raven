@@ -1,0 +1,55 @@
+{
+  "id": "q-edge-doc-page-sections-soft-empty",
+  "question": "How should get_doc_page_sections behave for a valid-looking /docs path that is not present in the Stellar docs index?",
+  "surface": [
+    "stellarDocs.get_doc_page_sections"
+  ],
+  "golden": {
+    "answer": "Return and preserve a soft-empty path-not-indexed outcome. Do not fabricate sections and do not call it a network failure. Recover by using a path copied from url_without_anchor in a real search hit; remember that some auto-generated API-reference pages are intentionally not indexed.",
+    "keyFacts": [
+      "Treats an absent indexed path as soft-empty rather than data or transport error.",
+      "Recovers with url_without_anchor from a real docs search hit."
+    ],
+    "avoid": [
+      "Do NOT invent page sections for an unindexed path.",
+      "Do NOT claim every developer-site URL must exist in the Algolia index."
+    ],
+    "notes": "NEG / soft-empty docs-index contract."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "stellarDocs",
+    "freshness": "live"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "specs/stellar-docs.json",
+        "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+      },
+      {
+        "class": "C",
+        "ref": "http://localhost:8787/mcp",
+        "note": "Live localhost search→execute probe."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 coverage-closure lane (Solo process 3427)",
+      "evidence": [
+        "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; an unindexed path returned envelope ok=false with kind soft-empty and a path-not-in-index message.",
+        "specs/stellar-docs.json exists and supports the behavioral golden.",
+        "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (coverage)"
+  }
+}
