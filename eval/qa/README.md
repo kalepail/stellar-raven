@@ -5,7 +5,7 @@ driving this MCP server end-to-end (**search → execute → answer**) produce a
 correct, current, non-fabricated answer** to a real Stellar-ecosystem question?
 
 The battery is **owned**: one hand-authored JSON file per case under `eval/qa/corpus/battery/`,
-469 cases, edited directly and reviewed like code. Provenance is first-class (`truth` block per
+484 cases, edited directly and reviewed like code. Provenance is first-class (`truth` block per
 case), gospel changes are CI-linted at the moment of change, and the compiled artifacts are
 generated + byte-pinned. History — the vendored-corpus/override era, rubric evolution, and the
 run archaeology through 2026-07-10 — lives in
@@ -197,9 +197,20 @@ unsourced contradiction is not.
   passes (pairwise score disagreement 15.6%). Isolated single-run score movement at or below
   that scale is variance until confirmed by live transcript review or a repeated mechanism.
   Read `wrong` counts before `correct` counts; compare variants on the same sample.
-- **Denominator note**: the owned 469-case battery is the baseline denominator as of the
-  2026-07-11 rebuild. Pre-rebuild aggregate baselines are archival
+- **Denominator note**: the owned 484-case battery is the baseline denominator as of the
+  2026-07-11 re-anchor. The approximately 469-case pre-rebuild aggregate baselines are archival
   (see the history doc); per-id comparisons remain valid for continuing cases (same rubric).
+
+## Current baseline of record
+
+The 2026-07-11 post-rebuild baseline is recorded in
+[`reviewed/2026-07-super-corpus-baseline.md`](./reviewed/2026-07-super-corpus-baseline.md).
+It ran the designed deterministic headline sample-30 plus the separately denominated canonical
+live-10 and digest-2 contracts with `claude-sonnet-5` answering and judging under v2.4/p3.
+Results stamps: `2026-07-11T15-36-44-variantA.json`,
+`2026-07-11T15-50-19-variantA.json`, and `2026-07-11T15-52-51-variantA.json`.
+Raw results were 8C/18P/4W, 8C/2P/0W, and 2C/0P/0W respectively; live review calibrated the
+canonical lane to 9C/1P/0W. Results JSONs remain local-only evidence.
 
 ## Known limitations
 
