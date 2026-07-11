@@ -1,0 +1,99 @@
+{
+  "id": "q-scf-confidential-tokens-preview",
+  "question": "What was the June 2026 Confidential Tokens release on Stellar: a Mainnet launch, or a developer preview?",
+  "surface": [
+    "lumenloop.search_content_semantic",
+    "lumenloop.search_documents"
+  ],
+  "golden": {
+    "answer": "On June 29, 2026, SDF announced Confidential Tokens as a developer preview. The contract was live on Testnet, not approved for Mainnet, while contract and verifier audits were underway. The OpenZeppelin wrapper can add private balances and transfer amounts to a SEP-41 token; sender and recipient addresses remain visible, so 'confidential' does not mean fully anonymous. Mainnet timing was a target, not a shipped fact.",
+    "keyFacts": [
+      "The June 29, 2026 release was a developer preview live on Testnet, not an approved Mainnet launch.",
+      "Audits were still underway as of the announcement.",
+      "It hides balances and transfer amounts while leaving sender and recipient addresses visible."
+    ],
+    "avoid": [
+      "Do NOT claim Confidential Tokens were production-ready or live on Mainnet on June 29, 2026.",
+      "Do NOT describe the preview as hiding counterparties as well as amounts."
+    ],
+    "notes": "Status is moving. Grade against the dated preview boundary and accept a newer primary-sourced Mainnet status if one exists."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/developer-preview-confidential-tokens-on-stellar"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/feat/confidential-verifier-ultrahonk/packages/tokens/src/confidential"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/NethermindEth/rs-soroban-ultrahonk"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "On 2026-06-29 Confidential Tokens was a Testnet developer preview not yet approved for Mainnet, with audits underway",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/developers/developer-preview-confidential-tokens-on-stellar",
+            "observedAt": "2026-07-11",
+            "note": "Editor's note states the exact Testnet/Mainnet/audit boundary."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/feat/confidential-verifier-ultrahonk/packages/tokens/src/confidential",
+            "observedAt": "2026-07-11",
+            "note": "Preview implementation exists on a feature branch rather than as proof of Mainnet approval."
+          }
+        ]
+      },
+      {
+        "claim": "The wrapper hides balances and amounts but leaves counterparties visible",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/developers/developer-preview-confidential-tokens-on-stellar",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/NethermindEth/rs-soroban-ultrahonk",
+            "observedAt": "2026-07-11",
+            "note": "Verifier implementation corroborates the stated proof architecture."
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 N2 primary+blind (Solo 3417/3423)",
+      "evidence": [
+        "solo://proj/49/process/3417",
+        "solo://proj/49/process/3423",
+        "scratchpad/p4/n2-events-blind/reconciliation.md",
+        "https://stellar.org/blog/developers/developer-preview-confidential-tokens-on-stellar",
+        "https://github.com/OpenZeppelin/stellar-contracts/tree/feat/confidential-verifier-ultrahonk/packages/tokens/src/confidential",
+        "https://github.com/NethermindEth/rs-soroban-ultrahonk"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (2026-events)"
+  }
+}

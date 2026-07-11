@@ -1,0 +1,102 @@
+{
+  "id": "q-pc-protocol-27-zipper",
+  "question": "What did Stellar Protocol 27 \"Zipper\" activate, and how can you distinguish its July 8 vote date from its live Mainnet status?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "lumenloop.search_content_semantic"
+  ],
+  "golden": {
+    "answer": "The Protocol 27 Zipper Mainnet upgrade vote was scheduled for July 8, 2026, and live Horizon reported protocol version 27 on July 11, confirming activation. Zipper comprises CAP-0071-01, which adds built-in authentication delegation for custom accounts, and CAP-0071-02, which adds the address-bound SOROBAN_CREDENTIALS_ADDRESS_V2 credential. The older SOROBAN_CREDENTIALS_ADDRESS remains valid only through Protocol 27 and is replaced in Protocol 28. A vote schedule alone is not proof of passage; use a dated live-network or post-vote source for activation.",
+    "keyFacts": [
+      "The Mainnet vote date was July 8, 2026, and Protocol 27 was live when independently checked on July 11, 2026.",
+      "CAP-0071-01 adds authentication delegation for custom accounts.",
+      "CAP-0071-02 adds SOROBAN_CREDENTIALS_ADDRESS_V2 with an address-bound payload."
+    ],
+    "avoid": [
+      "Do NOT treat the pre-vote upgrade guide by itself as proof that the vote passed.",
+      "Do NOT claim Protocol 27 remained pending after the dated live-network check.",
+      "Do NOT attribute CAP-0072 contract signers for classic G-accounts to Protocol 27."
+    ],
+    "notes": "Grade the historical activation and CAP split. A newer truthful network version must not be penalized if the answer preserves Protocol 27's activation history."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0071-01.md"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0071-02.md"
+      },
+      {
+        "class": "F",
+        "ref": "https://horizon.stellar.org/"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Protocol 27's Mainnet vote was 2026-07-08 and the protocol was active by 2026-07-11",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+            "observedAt": "2026-07-11",
+            "note": "Official guide gives the July 8 vote schedule."
+          },
+          {
+            "class": "F",
+            "ref": "https://horizon.stellar.org/",
+            "observedAt": "2026-07-11",
+            "note": "Live Horizon root and latest-ledger probe returned current_protocol_version/protocol_version 27."
+          }
+        ]
+      },
+      {
+        "claim": "CAP-0071-01 and CAP-0071-02 define delegation and address-bound V2 credentials for Protocol 27",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0071-01.md",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 N2 primary+blind (Solo 3417/3423)",
+      "evidence": [
+        "solo://proj/49/process/3417",
+        "solo://proj/49/process/3423",
+        "scratchpad/p4/n2-events-blind/reconciliation.md",
+        "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+        "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0071-01.md",
+        "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0071-02.md",
+        "https://horizon.stellar.org/"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (2026-events)"
+  }
+}

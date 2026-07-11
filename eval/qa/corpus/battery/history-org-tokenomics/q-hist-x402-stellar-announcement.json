@@ -1,0 +1,124 @@
+{
+  "id": "q-hist-x402-stellar-announcement",
+  "question": "When was x402 on Stellar announced, what did that announcement mean, and what SEP number does x402 have?",
+  "surface": [
+    "lumenloop.search_content_semantic",
+    "lumenloop.search_documents"
+  ],
+  "golden": {
+    "answer": "SDF announced x402 on Stellar on March 10, 2026. x402 uses HTTP 402 Payment Required for programmatic per-request payments; Stellar's documented flow uses Soroban authorization and SEP-41-compatible tokens. At announcement, the settlement layer was live, while the agent tooling and MCP integration were still being built or in active development. x402 was not itself a Stellar Ecosystem Proposal and had no SEP number as of July 11, 2026; SEP-41 is the token interface, not ‘SEP-402.’",
+    "keyFacts": [
+      "SDF's x402-on-Stellar announcement date was March 10, 2026.",
+      "x402 enables programmatic per-request HTTP payments on Stellar using the documented Soroban/token flow.",
+      "As of July 11, 2026, x402 was not a SEP and had no SEP number.",
+      "At announcement, settlement was live but agent/MCP tooling was still being built."
+    ],
+    "avoid": [
+      "Do NOT invent SEP-402 or any other SEP number for x402.",
+      "Do NOT say SEP-41 is the x402 protocol specification; it is the token interface used by Stellar's implementation.",
+      "Do NOT imply every x402 agent or MCP integration was production-live on March 10, 2026."
+    ],
+    "notes": "The no-SEP statement is explicitly as-of and was checked against the official ecosystem proposal directory plus a web sweep."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/x402-on-stellar"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402"
+      },
+      {
+        "class": "B",
+        "ref": "https://api.github.com/repos/stellar/stellar-protocol/contents/ecosystem?ref=master"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/x402-stellar"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SDF announced x402 on Stellar on 2026-03-10",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/x402-on-stellar",
+            "observedAt": "2026-07-11",
+            "note": "Official page carries 2026-03-10 publication date."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/x402-stellar",
+            "observedAt": "2026-07-11",
+            "note": "Official implementation repository was created in the same launch window and documents Stellar x402 tooling."
+          }
+        ]
+      },
+      {
+        "claim": "x402 had no SEP number as of 2026-07-11",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "https://api.github.com/repos/stellar/stellar-protocol/contents/ecosystem?ref=master",
+            "observedAt": "2026-07-11",
+            "note": "Official SEP directory inventory contains no x402 proposal."
+          },
+          {
+            "class": "D",
+            "ref": "https://www.google.com/search?q=site%3Agithub.com%2Fstellar%2Fstellar-protocol+x402+SEP",
+            "observedAt": "2026-07-11",
+            "note": "Explicit general-web absence sweep found implementation/docs references but no SEP identity."
+          }
+        ]
+      },
+      {
+        "claim": "At the March 10 announcement, the settlement layer was live while agent tooling and MCP integration remained in active development.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/x402-on-stellar",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/x402-stellar",
+            "observedAt": "2026-07-11",
+            "note": "Repository contains the agent-facing tools and examples; the official announcement supplies the live-settlement versus active-development status boundary."
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 N2 primary+blind (Solo 3417/3423)",
+      "evidence": [
+        "solo://proj/49/process/3417",
+        "solo://proj/49/process/3423",
+        "scratchpad/p4/n2-events-blind/reconciliation.md",
+        "https://stellar.org/blog/foundation-news/x402-on-stellar",
+        "https://developers.stellar.org/docs/build/agentic-payments/x402",
+        "https://api.github.com/repos/stellar/stellar-protocol/contents/ecosystem?ref=master",
+        "https://github.com/stellar/x402-stellar"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (2026-events)"
+  }
+}

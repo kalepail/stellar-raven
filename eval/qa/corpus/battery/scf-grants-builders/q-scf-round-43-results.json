@@ -1,0 +1,147 @@
+{
+  "id": "q-scf-round-43-results",
+  "question": "What were the final headline results of Stellar Community Fund round 43?",
+  "surface": [
+    "lumenloop.search_content_semantic",
+    "lumenloop.search_documents"
+  ],
+  "golden": {
+    "answer": "The official SCF #43 recap was published June 2, 2026 and reports 85 submissions, 29 awarded projects, and $3,139,069 worth of XLM. The recipients break down as 10 Open Track and 19 Integration Track projects; the round operated a third RFP Track but the recap lists no round-43 RFP recipients. A June 11 Stellar social post later repeated the results, so June 11 is a post date rather than an established conclusion date. A July 11 dashboard snapshot showed 28 visible selected cards totaling $3,049,069, with only 10 then labeled `Awarded`; those transient card/payment lifecycle states do not revise the official 29 / $3,139,069 selection result.",
+    "keyFacts": [
+      "The official SCF #43 recap was published June 2, 2026 and reports 85 submissions.",
+      "29 projects were awarded: 10 Open Track and 19 Integration Track; no round-43 RFP recipients are listed.",
+      "The official selection total was $3,139,069 worth of XLM; the dashboard’s transient 28 / $3,049,069 snapshot is not the final result."
+    ],
+    "avoid": [
+      "Do NOT report 3,139,069 as the number of XLM tokens awarded.",
+      "Do NOT substitute a cumulative SCF program total for the round-43 total.",
+      "Do NOT infer the round concluded June 11 merely from the date of a later social post.",
+      "Do NOT treat the dashboard’s paid-state `Awarded` count or its incomplete 28-card / $3,049,069 snapshot as the final selection result."
+    ],
+    "notes": "Official selection result: 29 / $3,139,069. Dashboard card and payment states are transient; do not use them to overwrite the recap."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://medium.com/feed/stellar-community"
+      },
+      {
+        "class": "A",
+        "ref": "https://x.com/StellarOrg/status/2065181135135559896"
+      },
+      {
+        "class": "C",
+        "ref": "https://communityfund.stellar.org/awards/reciQ16Y1ztmnmE3N"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The official SCF #43 recap was published 2026-06-02 and reports 85 submissions, 29 projects, and $3,139,069 worth of XLM.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://medium.com/feed/stellar-community",
+            "observedAt": "2026-07-11",
+            "note": "Official feed timestamp: 2026-06-02T21:39:51Z."
+          },
+          {
+            "class": "C",
+            "ref": "https://communityfund.stellar.org/awards/reciQ16Y1ztmnmE3N",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "The official breakdown is 10 Open Track and 19 Integration Track recipients, with no round-43 RFP recipients listed.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://medium.com/feed/stellar-community",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "A 2026-07-11 dashboard snapshot showed 28 selected cards totaling $3,049,069 and only 10 cards in the paid-state `Awarded` label.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "https://communityfund.stellar.org/awards/reciQ16Y1ztmnmE3N",
+            "observedAt": "2026-07-11",
+            "note": "Transient card/payment lifecycle snapshot; not a final-results revision."
+          },
+          {
+            "class": "A",
+            "ref": "https://medium.com/feed/stellar-community",
+            "observedAt": "2026-07-11",
+            "note": "Official recap remains 29 / $3,139,069."
+          }
+        ]
+      },
+      {
+        "claim": "SCF #43 concluded on June 11 merely because a later social post was dated June 11.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://medium.com/feed/stellar-community",
+            "observedAt": "2026-07-11",
+            "note": "Official recap was published June 2."
+          },
+          {
+            "class": "A",
+            "ref": "https://x.com/StellarOrg/status/2065181135135559896",
+            "observedAt": "2026-07-11",
+            "note": "June 11 is the later social-post date."
+          }
+        ]
+      },
+      {
+        "claim": "SCF #43’s final result was only 28 projects / $3,049,069.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://medium.com/feed/stellar-community",
+            "observedAt": "2026-07-11",
+            "note": "Official recap gives 29 / $3,139,069."
+          },
+          {
+            "class": "C",
+            "ref": "https://communityfund.stellar.org/awards/reciQ16Y1ztmnmE3N",
+            "observedAt": "2026-07-11",
+            "note": "Shows why a transient dashboard snapshot can undercount."
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 N2 primary+blind (Solo 3417/3423)",
+      "evidence": [
+        "solo://proj/49/process/3417",
+        "solo://proj/49/process/3423",
+        "scratchpad/p4/n2-events-blind/reconciliation.md",
+        "https://medium.com/feed/stellar-community",
+        "https://x.com/StellarOrg/status/2065181135135559896",
+        "https://communityfund.stellar.org/awards/reciQ16Y1ztmnmE3N",
+        "Sibling sweep: q-edge-fresh-latest-scf-round identifies SCF #43 as concluded but pins no conflicting result date or amount."
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (2026-events)"
+  }
+}

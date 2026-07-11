@@ -1,0 +1,100 @@
+{
+  "id": "q-hist-quantum-preparedness-plan",
+  "question": "What did Stellar's June 2026 Quantum Preparedness Plan commit to, and which quantum-safe features were still roadmap items?",
+  "surface": [
+    "lumenloop.search_content_semantic",
+    "lumenloop.search_documents"
+  ],
+  "golden": {
+    "answer": "SDF published the Quantum Preparedness Plan on June 9, 2026 as a three-stage roadmap, not an announcement that Stellar was already quantum-safe. Stage 1 targets ML-DSA-44 and ML-DSA-65 signature-verification host functions for Soroban during 2026 so contract accounts can adopt quantum-safe authentication. Stage 2 targets protocol-level opt-in migration in 2027, and the plan says every Stellar account is expected to be able to add a quantum-safe signer by the end of 2027. The article explicitly says the quantum-safe signer type and verification primitives were missing at publication, so dates and capabilities are plans/expectations rather than shipped guarantees.",
+    "keyFacts": [
+      "SDF published the Quantum Preparedness Plan on June 9, 2026.",
+      "Stage 1 plans ML-DSA-44/65 verification host functions for Soroban contract accounts during 2026.",
+      "The plan is a roadmap; it did not mean Stellar accounts were already quantum-safe by default."
+    ],
+    "avoid": [
+      "Do NOT claim ML-DSA host functions or a native quantum-safe signer had already shipped when the plan was published.",
+      "Do NOT turn the 2026/2027 targets into guaranteed completion dates."
+    ],
+    "notes": "Roadmap status is volatile and must be reverified. Grade the dated distinction between planned and shipped behavior."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/introducing-the-quantum-preparedness-plan"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/protocol-upgrades"
+      },
+      {
+        "class": "F",
+        "ref": "https://horizon.stellar.org/"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SDF published the three-stage Quantum Preparedness Plan on 2026-06-09",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/introducing-the-quantum-preparedness-plan",
+            "observedAt": "2026-07-11",
+            "note": "Primary page embeds date 2026-06-09 and describes the stages."
+          },
+          {
+            "class": "D",
+            "ref": "https://www.google.com/search?q=%22Quantum+Preparedness+Plan%22+Stellar+June+9+2026",
+            "observedAt": "2026-07-11",
+            "note": "General-web sweep corroborates the dated SDF announcement and found no earlier shipped-feature claim."
+          }
+        ]
+      },
+      {
+        "claim": "ML-DSA-44/65 host functions and a quantum-safe signer were planned rather than shipped as of 2026-07-11",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/introducing-the-quantum-preparedness-plan",
+            "observedAt": "2026-07-11",
+            "note": "Article says the signer type and verification primitives are the piece missing today and places them on the roadmap."
+          },
+          {
+            "class": "F",
+            "ref": "https://horizon.stellar.org/",
+            "observedAt": "2026-07-11",
+            "note": "Live Mainnet reported Protocol 27; checked against the official protocol-upgrade inventory, which did not list ML-DSA host functions as activated."
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 N2 primary+blind (Solo 3417/3423)",
+      "evidence": [
+        "solo://proj/49/process/3417",
+        "solo://proj/49/process/3423",
+        "scratchpad/p4/n2-events-blind/reconciliation.md",
+        "https://stellar.org/blog/foundation-news/introducing-the-quantum-preparedness-plan",
+        "https://stellar.org/protocol-upgrades",
+        "https://horizon.stellar.org/"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (2026-events)"
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "id": "q-pc-protocol-26-yardstick",
+  "question": "When did Stellar Protocol 26 \"Yardstick\" go live on Mainnet, and which CAPs define its main changes?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "lumenloop.search_content_semantic"
+  ],
+  "golden": {
+    "answer": "Protocol 26, Yardstick, went live on Stellar Mainnet on May 6, 2026 after the validator vote. Its included changes were CAP-0073 (SAC management of G-account balances), CAP-0077 (validator-governed freezing of ledger entries through network configuration), CAP-0078 (bounded TTL-extension host functions), CAP-0079 (muxed-address StrKey conversions), CAP-0080 (additional efficient BN254/ZK host functions), CAP-0081 (TTL-ordered eviction), and CAP-0082 (checked 256-bit integer arithmetic). Do not collapse Yardstick's BN254 work into Protocol 25: Protocol 25 introduced BN254/Poseidon primitives, while CAP-0080 extended the BN254 host-function set in Protocol 26.",
+    "keyFacts": [
+      "Protocol 26 Yardstick went live on Mainnet on May 6, 2026.",
+      "Names CAP-0073, 0077, 0078, 0079, 0080, 0081, and 0082 with materially correct roles.",
+      "Distinguishes CAP-0080's Protocol 26 extensions from the BN254/Poseidon primitives introduced in Protocol 25."
+    ],
+    "avoid": [
+      "Do NOT say the May 6, 2026 date was only a testnet upgrade or an uncompleted plan.",
+      "Do NOT attribute all BN254 and Poseidon support first introduced on Stellar to Protocol 26."
+    ],
+    "notes": "Historical protocol membership is stable. CAP registry labels such as Accepted or Implemented are not substitutes for the dated network-activation source."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/yardstick-stellar-protocol-26"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/protocol-upgrades"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0073.md"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0077.md"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0078.md"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0079.md"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0080.md"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0081.md"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0082.md"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Protocol 26 Yardstick went live on Mainnet on 2026-05-06",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/yardstick-stellar-protocol-26",
+            "observedAt": "2026-07-11",
+            "note": "SDF states that Yardstick went live on Mainnet on May 6 following the validator vote."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0077.md",
+            "observedAt": "2026-07-11",
+            "note": "CAP preamble binds the marquee freeze mechanism to protocol version 26."
+          }
+        ]
+      },
+      {
+        "claim": "Protocol 26 includes CAP-0073, 0077, 0078, 0079, 0080, 0081, and 0082 with the summarized roles",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/protocol-upgrades",
+            "observedAt": "2026-07-11",
+            "note": "Official seven-CAP Protocol 26 inventory."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0073.md",
+            "observedAt": "2026-07-11",
+            "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0077.md",
+            "observedAt": "2026-07-11",
+            "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0078.md",
+            "observedAt": "2026-07-11",
+            "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0079.md",
+            "observedAt": "2026-07-11",
+            "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0080.md",
+            "observedAt": "2026-07-11",
+            "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0081.md",
+            "observedAt": "2026-07-11",
+            "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0082.md",
+            "observedAt": "2026-07-11",
+            "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 N2 primary+blind (Solo 3417/3423)",
+      "evidence": [
+        "solo://proj/49/process/3417",
+        "solo://proj/49/process/3423",
+        "scratchpad/p4/n2-events-blind/reconciliation.md",
+        "https://stellar.org/blog/foundation-news/yardstick-stellar-protocol-26",
+        "https://stellar.org/protocol-upgrades",
+        "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0073.md",
+        "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0077.md",
+        "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0078.md",
+        "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0079.md",
+        "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0080.md",
+        "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0081.md",
+        "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0082.md"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (2026-events)"
+  }
+}

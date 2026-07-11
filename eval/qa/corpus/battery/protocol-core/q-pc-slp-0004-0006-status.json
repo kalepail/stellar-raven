@@ -1,0 +1,105 @@
+{
+  "id": "q-pc-slp-0004-0006-status",
+  "question": "What are Stellar Limits Proposals SLP-0004 and SLP-0006, and which one was final versus still draft as of July 11, 2026?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "lumenloop.search_documents"
+  ],
+  "golden": {
+    "answer": "As of July 11, 2026, SLP-0004 was Final. It raised Soroban limits including per-transaction instructions from 100 million to 400 million, write entries from 50 to 200, and footprint size from 100 to 200 entries; it also proposed roughly fourfold reductions for most non-refundable resource fees. SLP-0006 was still Draft. It proposes moving the existing overlay-layer block on three accounts associated with the February 22 YieldBlox V2 exploit into network configuration using CAP-0077. SLPs are Stellar Limits Proposals, not CAPs or SEPs, and SLP-0006's Draft text is not proof that its freeze configuration has been approved or applied.",
+    "keyFacts": [
+      "As of July 11, 2026, SLP-0004 was Final and SLP-0006 was Draft.",
+      "SLP-0004 raised per-transaction instructions 100M to 400M, write entries 50 to 200, and footprint 100 to 200, while reducing most non-refundable fees about fourfold.",
+      "SLP-0006 proposes using CAP-0077 network configuration for three already overlay-blocked YieldBlox exploit accounts."
+    ],
+    "avoid": [
+      "Do NOT call either proposal a SEP or CAP.",
+      "Do NOT say SLP-0006's proposed network-configuration freeze was already approved or applied as of July 11, 2026."
+    ],
+    "notes": "SLP-0006 is status-sensitive. Preserve the as-of date and accept a newer sourced status rather than pinning Draft forever."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "mixed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0004.md"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0006.md"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getLedgerEntries"
+      },
+      {
+        "class": "D",
+        "ref": "https://protos.com/yieldblox-lending-pool-hit-by-10m-hack-on-stellar/"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SLP-0004 is Final and raised 100M to 400M instructions, 50 to 200 write entries, and 100 to 200 footprint entries with about 4x fee reductions",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0004.md",
+            "observedAt": "2026-07-11",
+            "note": "Proposal preamble, limit table, and fee table."
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getLedgerEntries",
+            "observedAt": "2026-07-11",
+            "note": "Current RPC docs independently reflect the 200-ledger-key ceiling from the raised footprint era."
+          }
+        ]
+      },
+      {
+        "claim": "SLP-0006 remained Draft and proposed a CAP-0077 configuration freeze for three already overlay-blocked accounts",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0006.md",
+            "observedAt": "2026-07-11",
+            "note": "Preamble says Draft; settings list three account ledger keys."
+          },
+          {
+            "class": "D",
+            "ref": "https://protos.com/yieldblox-lending-pool-hit-by-10m-hack-on-stellar/",
+            "observedAt": "2026-07-11",
+            "note": "Independent incident coverage corroborates the pre-proposal account-freeze response."
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 N2 primary+blind (Solo 3417/3423)",
+      "evidence": [
+        "solo://proj/49/process/3417",
+        "solo://proj/49/process/3423",
+        "scratchpad/p4/n2-events-blind/reconciliation.md",
+        "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0004.md",
+        "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0006.md",
+        "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getLedgerEntries",
+        "https://protos.com/yieldblox-lending-pool-hit-by-10m-hack-on-stellar/"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (2026-events)"
+  }
+}

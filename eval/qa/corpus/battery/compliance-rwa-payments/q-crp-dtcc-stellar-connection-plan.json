@@ -1,0 +1,92 @@
+{
+  "id": "q-crp-dtcc-stellar-connection-plan",
+  "question": "What did DTCC announce about connecting DTC's tokenization service to Stellar in May 2026, and were DTC-tokenized assets already live on Stellar?",
+  "surface": [
+    "lumenloop.search_content_semantic",
+    "lumenloop.search_documents"
+  ],
+  "golden": {
+    "answer": "On May 27, 2026, DTCC announced plans to connect DTC's tokenization service to the Stellar public blockchain as part of a multi-chain strategy. The announcement did not say DTC-tokenized assets were already live on Stellar: availability on Stellar was expected in the first half of 2027. The planned connection covers tokenization and lifecycle support for eligible DTC-custodied assets and builds on DTC's December 2025 SEC no-action letter.",
+    "keyFacts": [
+      "DTCC announced the Stellar connection on May 27, 2026.",
+      "DTC-tokenized assets were expected on Stellar in the first half of 2027, not already live.",
+      "The plan is part of DTC/DTCC's multi-chain tokenization strategy."
+    ],
+    "avoid": [
+      "Do NOT claim DTC-tokenized assets were live on Stellar in May 2026.",
+      "Do NOT turn the expected first-half-2027 target into a guaranteed completion date."
+    ],
+    "notes": "Forward-looking status is scheduled. Accept newer dated primary evidence after the target window."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2027-04-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/case-studies/dtcc"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.coindesk.com/business/2026/05/27/dtcc-plans-to-bring-tokenized-assets-to-stellar-in-latest-wall-street-blockchain-push"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "DTCC announced the planned Stellar connection on 2026-05-27, with DTC-tokenized assets expected in H1 2027 rather than live.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/case-studies/dtcc",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "D",
+            "ref": "https://www.coindesk.com/business/2026/05/27/dtcc-plans-to-bring-tokenized-assets-to-stellar-in-latest-wall-street-blockchain-push",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "DTC-tokenized assets were already live on Stellar in May 2026.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/case-studies/dtcc",
+            "observedAt": "2026-07-11",
+            "note": "SDF case study says planned connection and expected first-half-2027 availability."
+          },
+          {
+            "class": "D",
+            "ref": "https://www.coindesk.com/business/2026/05/27/dtcc-plans-to-bring-tokenized-assets-to-stellar-in-latest-wall-street-blockchain-push",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 N2 primary+blind (Solo 3417/3423)",
+      "evidence": [
+        "solo://proj/49/process/3417",
+        "solo://proj/49/process/3423",
+        "scratchpad/p4/n2-events-blind/reconciliation.md",
+        "https://stellar.org/case-studies/dtcc",
+        "https://www.coindesk.com/business/2026/05/27/dtcc-plans-to-bring-tokenized-assets-to-stellar-in-latest-wall-street-blockchain-push"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (2026-events)"
+  }
+}

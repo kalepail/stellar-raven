@@ -1,0 +1,105 @@
+{
+  "id": "q-hist-meridian-2026-corrected-venue",
+  "question": "Where and when is Meridian 2026 scheduled, given that older announcements named Abu Dhabi?",
+  "surface": [
+    "lumenloop.search_content_semantic",
+    "lumenloop.search_documents"
+  ],
+  "golden": {
+    "answer": "As of July 11, 2026, the current official Meridian site schedules Meridian 2026 for October 28–29 at Convento do Beato in Lisbon, Portugal; HackMeridian is scheduled for October 25–26. Older sources saying October 21–22 at Yas Marina in Abu Dhabi reflect the original announcement, not the current schedule. SDF publicly announced the move to Lisbon and new dates on April 1, 2026. Because the event is still upcoming, answers should cite the current official site and an as-of date.",
+    "keyFacts": [
+      "As of July 11, 2026, Meridian 2026 is scheduled for October 28–29 at Convento do Beato in Lisbon.",
+      "HackMeridian is scheduled for October 25–26, 2026.",
+      "Abu Dhabi October 21–22 was the superseded schedule; SDF announced the Lisbon change on April 1, 2026."
+    ],
+    "avoid": [
+      "Do NOT present Abu Dhabi/Yas Marina on October 21–22 as the current Meridian 2026 schedule.",
+      "Do NOT state the Lisbon schedule without an as-of qualifier while the event remains upcoming."
+    ],
+    "notes": "Corrected-fact, freshness-sensitive case. The stale CoinDesk sponsored recap is useful evidence of the prior schedule but must not override the current official event site."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://meridian.stellar.org/"
+      },
+      {
+        "class": "A",
+        "ref": "https://meridian.stellar.org/event-details"
+      },
+      {
+        "class": "A",
+        "ref": "https://x.com/StellarOrg/status/2039405316803031315"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.coindesk.com/sponsored-content/what-you-missed-at-the-stellar-meridian-conference"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "As of 2026-07-11 Meridian 2026 is scheduled for Lisbon October 28-29, with HackMeridian October 25-26",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://meridian.stellar.org/event-details",
+            "observedAt": "2026-07-11",
+            "note": "Official FAQ gives dates, venue, city, and hackathon dates."
+          },
+          {
+            "class": "D",
+            "ref": "https://luma.com/meridian2026ll",
+            "observedAt": "2026-07-11",
+            "note": "Independent event listing points to Lisbon and defers to the official site."
+          }
+        ]
+      },
+      {
+        "claim": "Abu Dhabi October 21-22 is the current Meridian 2026 schedule",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://x.com/StellarOrg/status/2039405316803031315",
+            "observedAt": "2026-07-11",
+            "note": "Official April 1 post announces new city Lisbon and new dates October 28-29."
+          },
+          {
+            "class": "D",
+            "ref": "https://www.coindesk.com/sponsored-content/what-you-missed-at-the-stellar-meridian-conference",
+            "observedAt": "2026-07-11",
+            "note": "Older page preserves the superseded Abu Dhabi October 21-22 announcement and explains the stale-source trap."
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 N2 primary+blind (Solo 3417/3423)",
+      "evidence": [
+        "solo://proj/49/process/3417",
+        "solo://proj/49/process/3423",
+        "scratchpad/p4/n2-events-blind/reconciliation.md",
+        "https://meridian.stellar.org/",
+        "https://meridian.stellar.org/event-details",
+        "https://x.com/StellarOrg/status/2039405316803031315",
+        "https://www.coindesk.com/sponsored-content/what-you-missed-at-the-stellar-meridian-conference"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (2026-events)"
+  }
+}

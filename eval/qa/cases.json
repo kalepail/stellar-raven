@@ -1,32 +1,32 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "fc504c35598f28110ef0eeb6dd1a57c76aba42438f3bf230a040ad800eaf63ae",
+  "corpusContentSha256": "a6efdd3c69a814fbe805882ca5e6544d0e64c3390d46a599925f56ecdf066304",
   "counts": {
-    "total": 448,
+    "total": 460,
     "byCategory": {
       "assets-anchors-seps": 47,
-      "compliance-rwa-payments": 36,
+      "compliance-rwa-payments": 38,
       "defi-ecosystem": 55,
       "edge-behavior": 40,
-      "history-org-tokenomics": 14,
-      "protocol-core": 45,
+      "history-org-tokenomics": 19,
+      "protocol-core": 48,
       "retail-consumer": 33,
-      "scf-grants-builders": 44,
+      "scf-grants-builders": 46,
       "soroban": 69,
       "tooling-infra": 65
     },
     "byService": {
-      "lumenloop": 45,
+      "lumenloop": 54,
       "none": 22,
       "scout": 128,
       "skills": 25,
-      "stellarDocs": 228
+      "stellarDocs": 231
     },
     "byFreshness": {
       "live": 138,
-      "scheduled": 115,
-      "stable": 195
+      "scheduled": 121,
+      "stable": 201
     },
     "traps": {
       "ambiguous": 2,
@@ -4806,6 +4806,112 @@
       }
     },
     {
+      "id": "q-crp-cme-xlm-futures-dates",
+      "question": "When were CME's Stellar Lumens futures announced versus actually launched, and what are the standard and micro contract sizes?",
+      "surface": [
+        "lumenloop.search_content_semantic",
+        "lumenloop.search_documents"
+      ],
+      "golden": {
+        "answer": "CME Group announced the planned Lumens futures on January 15, 2026, with a February 9 launch pending regulatory review. CME later confirmed that trading actually began Monday, February 9, 2026. The standard Lumens futures contract is 250,000 XLM and the Micro Lumens contract is 12,500 XLM. January 15 is the announcement date, not the trading launch date.",
+        "keyFacts": [
+          "Announcement: January 15, 2026; trading launch: February 9, 2026.",
+          "Standard Lumens futures size: 250,000 XLM.",
+          "Micro Lumens futures size: 12,500 XLM."
+        ],
+        "avoid": [
+          "Do NOT say CME XLM futures began trading on January 15, 2026.",
+          "Do NOT use unrelated Coinbase perpetual-futures contract sizes for the CME contracts."
+        ],
+        "notes": "This is an announcement-versus-launch date trap. The February 11 CME release retrospectively confirms the February 9 start."
+      },
+      "tags": {
+        "category": "compliance-rwa-payments",
+        "service": "lumenloop",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "https://www.cmegroup.com/content/dam/cmegroup/notices/ser/2026/01/ser-9663.pdf"
+          },
+          {
+            "class": "A",
+            "ref": "https://www.cmegroup.com/markets/cryptocurrencies/stellar-lumens/lumens.calendar.html"
+          },
+          {
+            "class": "A",
+            "ref": "https://www.cmegroup.com/markets/cryptocurrencies/ada-link-lumens-futures.html"
+          },
+          {
+            "class": "D",
+            "ref": "https://fxnewsgroup.com/forex-news/cryptocurrency/cme-group-reports-first-trades-for-new-cardano-chainlink-and-stellar-crypto-futures/"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "CME announced the initial listing on 2026-01-15 and Lumens futures first traded on 2026-02-09.",
+            "verdict": "confirmed",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://www.cmegroup.com/content/dam/cmegroup/notices/ser/2026/01/ser-9663.pdf",
+                "observedAt": "2026-07-11",
+                "note": "Dated Special Executive Report sets the February 9 trade date."
+              },
+              {
+                "class": "A",
+                "ref": "https://www.cmegroup.com/markets/cryptocurrencies/stellar-lumens/lumens.calendar.html",
+                "observedAt": "2026-07-11",
+                "note": "Official contract calendar shows first trade on February 9."
+              },
+              {
+                "class": "D",
+                "ref": "https://fxnewsgroup.com/forex-news/cryptocurrency/cme-group-reports-first-trades-for-new-cardano-chainlink-and-stellar-crypto-futures/",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "CME contract sizes are 250,000 XLM standard and 12,500 XLM micro.",
+            "verdict": "confirmed",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://www.cmegroup.com/content/dam/cmegroup/notices/ser/2026/01/ser-9663.pdf",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "A",
+                "ref": "https://www.cmegroup.com/markets/cryptocurrencies/ada-link-lumens-futures.html",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 N2 primary+blind (Solo 3417/3423)",
+          "evidence": [
+            "solo://proj/49/process/3417",
+            "solo://proj/49/process/3423",
+            "scratchpad/p4/n2-events-blind/reconciliation.md",
+            "https://www.cmegroup.com/content/dam/cmegroup/notices/ser/2026/01/ser-9663.pdf",
+            "https://www.cmegroup.com/markets/cryptocurrencies/stellar-lumens/lumens.calendar.html",
+            "https://www.cmegroup.com/markets/cryptocurrencies/ada-link-lumens-futures.html",
+            "https://fxnewsgroup.com/forex-news/cryptocurrency/cme-group-reports-first-trades-for-new-cardano-chainlink-and-stellar-crypto-futures/"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (2026-events)"
+      }
+    },
+    {
       "id": "q-crp-custodial-vs-noncustodial-wallets",
       "question": "What's the difference between custodial and non-custodial wallets on Stellar, and how should a remittance or SEP-31 app choose between them?",
       "surface": [
@@ -4873,6 +4979,98 @@
           ]
         },
         "origin": "raven-next q-crp-custodial-vs-noncustodial-wallets"
+      }
+    },
+    {
+      "id": "q-crp-dtcc-stellar-connection-plan",
+      "question": "What did DTCC announce about connecting DTC's tokenization service to Stellar in May 2026, and were DTC-tokenized assets already live on Stellar?",
+      "surface": [
+        "lumenloop.search_content_semantic",
+        "lumenloop.search_documents"
+      ],
+      "golden": {
+        "answer": "On May 27, 2026, DTCC announced plans to connect DTC's tokenization service to the Stellar public blockchain as part of a multi-chain strategy. The announcement did not say DTC-tokenized assets were already live on Stellar: availability on Stellar was expected in the first half of 2027. The planned connection covers tokenization and lifecycle support for eligible DTC-custodied assets and builds on DTC's December 2025 SEC no-action letter.",
+        "keyFacts": [
+          "DTCC announced the Stellar connection on May 27, 2026.",
+          "DTC-tokenized assets were expected on Stellar in the first half of 2027, not already live.",
+          "The plan is part of DTC/DTCC's multi-chain tokenization strategy."
+        ],
+        "avoid": [
+          "Do NOT claim DTC-tokenized assets were live on Stellar in May 2026.",
+          "Do NOT turn the expected first-half-2027 target into a guaranteed completion date."
+        ],
+        "notes": "Forward-looking status is scheduled. Accept newer dated primary evidence after the target window."
+      },
+      "tags": {
+        "category": "compliance-rwa-payments",
+        "service": "lumenloop",
+        "freshness": "scheduled"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "reverifyBy": "2027-04-01",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/case-studies/dtcc"
+          },
+          {
+            "class": "D",
+            "ref": "https://www.coindesk.com/business/2026/05/27/dtcc-plans-to-bring-tokenized-assets-to-stellar-in-latest-wall-street-blockchain-push"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "DTCC announced the planned Stellar connection on 2026-05-27, with DTC-tokenized assets expected in H1 2027 rather than live.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/case-studies/dtcc",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "D",
+                "ref": "https://www.coindesk.com/business/2026/05/27/dtcc-plans-to-bring-tokenized-assets-to-stellar-in-latest-wall-street-blockchain-push",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "DTC-tokenized assets were already live on Stellar in May 2026.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/case-studies/dtcc",
+                "observedAt": "2026-07-11",
+                "note": "SDF case study says planned connection and expected first-half-2027 availability."
+              },
+              {
+                "class": "D",
+                "ref": "https://www.coindesk.com/business/2026/05/27/dtcc-plans-to-bring-tokenized-assets-to-stellar-in-latest-wall-street-blockchain-push",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 N2 primary+blind (Solo 3417/3423)",
+          "evidence": [
+            "solo://proj/49/process/3417",
+            "solo://proj/49/process/3423",
+            "scratchpad/p4/n2-events-blind/reconciliation.md",
+            "https://stellar.org/case-studies/dtcc",
+            "https://www.coindesk.com/business/2026/05/27/dtcc-plans-to-bring-tokenized-assets-to-stellar-in-latest-wall-street-blockchain-push"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (2026-events)"
       }
     },
     {
@@ -14484,6 +14682,344 @@
       }
     },
     {
+      "id": "q-hist-cctp-stellar-live-announcement",
+      "question": "On what date did SDF and Circle publicly announce that CCTP was live on Stellar, and what does CCTP do with USDC?",
+      "surface": [
+        "lumenloop.search_content_semantic",
+        "lumenloop.search_documents"
+      ],
+      "golden": {
+        "answer": "SDF and Circle publicly announced CCTP live on Stellar on May 19, 2026. Circle's release notes separately record Stellar mainnet support on May 18, 2026; that technical-support milestone is not the public-announcement date. May 8 is contradicted as the announcement date. CCTP moves native USDC across supported chains by burning on the source chain and minting on the destination after attestation; it does not create wrapped USDC.",
+        "keyFacts": [
+          "Public live announcement: May 19, 2026; Circle mainnet-support milestone: May 18, 2026.",
+          "CCTP uses native burn-and-mint USDC transfers rather than wrapped USDC.",
+          "May 8, 2026 is contradicted as the SDF/Circle CCTP-live announcement date."
+        ],
+        "avoid": [
+          "Do NOT state May 8, 2026 as the SDF/Circle public live-announcement date without a primary source explaining a different milestone.",
+          "Do NOT describe CCTP as locking USDC and issuing a wrapped token on Stellar."
+        ],
+        "notes": "Corrected-fact encoding: the July recon/timeline lead said May 8, but the live SDF page date and Circle's official-post snowflake both resolve to May 19. Existing corpus material may separately identify an earlier technical/domain deployment; do not merge milestones."
+      },
+      "tags": {
+        "category": "history-org-tokenomics",
+        "service": "lumenloop",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar"
+          },
+          {
+            "class": "A",
+            "ref": "https://x.com/circle/status/2056767949445472739"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.circle.com/release-notes/cctp-2026"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.circle.com/cctp/references/stellar"
+          },
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/bringing-stellar-to-the-regions-that-matter"
+          },
+          {
+            "class": "D",
+            "ref": "https://www.crossmint.com/announcement/cctp-stellar"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "SDF and Circle publicly announced CCTP live on Stellar on 2026-05-19.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "A",
+                "ref": "https://x.com/circle/status/2056767949445472739",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "D",
+                "ref": "https://www.crossmint.com/announcement/cctp-stellar",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "Circle release notes record Stellar mainnet support on 2026-05-18.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://developers.circle.com/release-notes/cctp-2026",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "A",
+                "ref": "https://developers.circle.com/cctp/references/stellar",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "The SDF/Circle public CCTP-live announcement was 2026-05-08.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/blog/foundation-news/bringing-stellar-to-the-regions-that-matter",
+                "observedAt": "2026-07-11",
+                "note": "SDF’s May 8 article concerns regional expansion, not CCTP."
+              },
+              {
+                "class": "A",
+                "ref": "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar",
+                "observedAt": "2026-07-11",
+                "note": "The CCTP announcement is dated May 19."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 N2 primary+blind (Solo 3417/3423)",
+          "evidence": [
+            "solo://proj/49/process/3417",
+            "solo://proj/49/process/3423",
+            "scratchpad/p4/n2-events-blind/reconciliation.md",
+            "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar",
+            "https://x.com/circle/status/2056767949445472739",
+            "https://developers.circle.com/release-notes/cctp-2026",
+            "https://developers.circle.com/cctp/references/stellar",
+            "https://stellar.org/blog/foundation-news/bringing-stellar-to-the-regions-that-matter",
+            "https://www.crossmint.com/announcement/cctp-stellar",
+            "Sibling sweep: q-cctp-v2-usdc-stellar and q-tool-cctp-stellar-integration contain no conflicting announcement-date claim."
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (2026-events)"
+      }
+    },
+    {
+      "id": "q-hist-meridian-2026-corrected-venue",
+      "question": "Where and when is Meridian 2026 scheduled, given that older announcements named Abu Dhabi?",
+      "surface": [
+        "lumenloop.search_content_semantic",
+        "lumenloop.search_documents"
+      ],
+      "golden": {
+        "answer": "As of July 11, 2026, the current official Meridian site schedules Meridian 2026 for October 28–29 at Convento do Beato in Lisbon, Portugal; HackMeridian is scheduled for October 25–26. Older sources saying October 21–22 at Yas Marina in Abu Dhabi reflect the original announcement, not the current schedule. SDF publicly announced the move to Lisbon and new dates on April 1, 2026. Because the event is still upcoming, answers should cite the current official site and an as-of date.",
+        "keyFacts": [
+          "As of July 11, 2026, Meridian 2026 is scheduled for October 28–29 at Convento do Beato in Lisbon.",
+          "HackMeridian is scheduled for October 25–26, 2026.",
+          "Abu Dhabi October 21–22 was the superseded schedule; SDF announced the Lisbon change on April 1, 2026."
+        ],
+        "avoid": [
+          "Do NOT present Abu Dhabi/Yas Marina on October 21–22 as the current Meridian 2026 schedule.",
+          "Do NOT state the Lisbon schedule without an as-of qualifier while the event remains upcoming."
+        ],
+        "notes": "Corrected-fact, freshness-sensitive case. The stale CoinDesk sponsored recap is useful evidence of the prior schedule but must not override the current official event site."
+      },
+      "tags": {
+        "category": "history-org-tokenomics",
+        "service": "lumenloop",
+        "freshness": "scheduled"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "reverifyBy": "2026-10-01",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "https://meridian.stellar.org/"
+          },
+          {
+            "class": "A",
+            "ref": "https://meridian.stellar.org/event-details"
+          },
+          {
+            "class": "A",
+            "ref": "https://x.com/StellarOrg/status/2039405316803031315"
+          },
+          {
+            "class": "D",
+            "ref": "https://www.coindesk.com/sponsored-content/what-you-missed-at-the-stellar-meridian-conference"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "As of 2026-07-11 Meridian 2026 is scheduled for Lisbon October 28-29, with HackMeridian October 25-26",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://meridian.stellar.org/event-details",
+                "observedAt": "2026-07-11",
+                "note": "Official FAQ gives dates, venue, city, and hackathon dates."
+              },
+              {
+                "class": "D",
+                "ref": "https://luma.com/meridian2026ll",
+                "observedAt": "2026-07-11",
+                "note": "Independent event listing points to Lisbon and defers to the official site."
+              }
+            ]
+          },
+          {
+            "claim": "Abu Dhabi October 21-22 is the current Meridian 2026 schedule",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://x.com/StellarOrg/status/2039405316803031315",
+                "observedAt": "2026-07-11",
+                "note": "Official April 1 post announces new city Lisbon and new dates October 28-29."
+              },
+              {
+                "class": "D",
+                "ref": "https://www.coindesk.com/sponsored-content/what-you-missed-at-the-stellar-meridian-conference",
+                "observedAt": "2026-07-11",
+                "note": "Older page preserves the superseded Abu Dhabi October 21-22 announcement and explains the stale-source trap."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 N2 primary+blind (Solo 3417/3423)",
+          "evidence": [
+            "solo://proj/49/process/3417",
+            "solo://proj/49/process/3423",
+            "scratchpad/p4/n2-events-blind/reconciliation.md",
+            "https://meridian.stellar.org/",
+            "https://meridian.stellar.org/event-details",
+            "https://x.com/StellarOrg/status/2039405316803031315",
+            "https://www.coindesk.com/sponsored-content/what-you-missed-at-the-stellar-meridian-conference"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (2026-events)"
+      }
+    },
+    {
+      "id": "q-hist-quantum-preparedness-plan",
+      "question": "What did Stellar's June 2026 Quantum Preparedness Plan commit to, and which quantum-safe features were still roadmap items?",
+      "surface": [
+        "lumenloop.search_content_semantic",
+        "lumenloop.search_documents"
+      ],
+      "golden": {
+        "answer": "SDF published the Quantum Preparedness Plan on June 9, 2026 as a three-stage roadmap, not an announcement that Stellar was already quantum-safe. Stage 1 targets ML-DSA-44 and ML-DSA-65 signature-verification host functions for Soroban during 2026 so contract accounts can adopt quantum-safe authentication. Stage 2 targets protocol-level opt-in migration in 2027, and the plan says every Stellar account is expected to be able to add a quantum-safe signer by the end of 2027. The article explicitly says the quantum-safe signer type and verification primitives were missing at publication, so dates and capabilities are plans/expectations rather than shipped guarantees.",
+        "keyFacts": [
+          "SDF published the Quantum Preparedness Plan on June 9, 2026.",
+          "Stage 1 plans ML-DSA-44/65 verification host functions for Soroban contract accounts during 2026.",
+          "The plan is a roadmap; it did not mean Stellar accounts were already quantum-safe by default."
+        ],
+        "avoid": [
+          "Do NOT claim ML-DSA host functions or a native quantum-safe signer had already shipped when the plan was published.",
+          "Do NOT turn the 2026/2027 targets into guaranteed completion dates."
+        ],
+        "notes": "Roadmap status is volatile and must be reverified. Grade the dated distinction between planned and shipped behavior."
+      },
+      "tags": {
+        "category": "history-org-tokenomics",
+        "service": "lumenloop",
+        "freshness": "scheduled"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "reverifyBy": "2026-10-01",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/introducing-the-quantum-preparedness-plan"
+          },
+          {
+            "class": "A",
+            "ref": "https://stellar.org/protocol-upgrades"
+          },
+          {
+            "class": "F",
+            "ref": "https://horizon.stellar.org/"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "SDF published the three-stage Quantum Preparedness Plan on 2026-06-09",
+            "verdict": "confirmed",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/blog/foundation-news/introducing-the-quantum-preparedness-plan",
+                "observedAt": "2026-07-11",
+                "note": "Primary page embeds date 2026-06-09 and describes the stages."
+              },
+              {
+                "class": "D",
+                "ref": "https://www.google.com/search?q=%22Quantum+Preparedness+Plan%22+Stellar+June+9+2026",
+                "observedAt": "2026-07-11",
+                "note": "General-web sweep corroborates the dated SDF announcement and found no earlier shipped-feature claim."
+              }
+            ]
+          },
+          {
+            "claim": "ML-DSA-44/65 host functions and a quantum-safe signer were planned rather than shipped as of 2026-07-11",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/blog/foundation-news/introducing-the-quantum-preparedness-plan",
+                "observedAt": "2026-07-11",
+                "note": "Article says the signer type and verification primitives are the piece missing today and places them on the roadmap."
+              },
+              {
+                "class": "F",
+                "ref": "https://horizon.stellar.org/",
+                "observedAt": "2026-07-11",
+                "note": "Live Mainnet reported Protocol 27; checked against the official protocol-upgrade inventory, which did not list ML-DSA host functions as activated."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 N2 primary+blind (Solo 3417/3423)",
+          "evidence": [
+            "solo://proj/49/process/3417",
+            "solo://proj/49/process/3423",
+            "scratchpad/p4/n2-events-blind/reconciliation.md",
+            "https://stellar.org/blog/foundation-news/introducing-the-quantum-preparedness-plan",
+            "https://stellar.org/protocol-upgrades",
+            "https://horizon.stellar.org/"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (2026-events)"
+      }
+    },
+    {
       "id": "q-hist-remittance-corridors",
       "question": "What real-world remittance deployments run on Stellar?",
       "surface": [
@@ -14823,6 +15359,316 @@
           ]
         },
         "origin": "raven-next q-hist-unhcr-stellar-aid-assist"
+      }
+    },
+    {
+      "id": "q-hist-x402-stellar-announcement",
+      "question": "When was x402 on Stellar announced, what did that announcement mean, and what SEP number does x402 have?",
+      "surface": [
+        "lumenloop.search_content_semantic",
+        "lumenloop.search_documents"
+      ],
+      "golden": {
+        "answer": "SDF announced x402 on Stellar on March 10, 2026. x402 uses HTTP 402 Payment Required for programmatic per-request payments; Stellar's documented flow uses Soroban authorization and SEP-41-compatible tokens. At announcement, the settlement layer was live, while the agent tooling and MCP integration were still being built or in active development. x402 was not itself a Stellar Ecosystem Proposal and had no SEP number as of July 11, 2026; SEP-41 is the token interface, not ‘SEP-402.’",
+        "keyFacts": [
+          "SDF's x402-on-Stellar announcement date was March 10, 2026.",
+          "x402 enables programmatic per-request HTTP payments on Stellar using the documented Soroban/token flow.",
+          "As of July 11, 2026, x402 was not a SEP and had no SEP number.",
+          "At announcement, settlement was live but agent/MCP tooling was still being built."
+        ],
+        "avoid": [
+          "Do NOT invent SEP-402 or any other SEP number for x402.",
+          "Do NOT say SEP-41 is the x402 protocol specification; it is the token interface used by Stellar's implementation.",
+          "Do NOT imply every x402 agent or MCP integration was production-live on March 10, 2026."
+        ],
+        "notes": "The no-SEP statement is explicitly as-of and was checked against the official ecosystem proposal directory plus a web sweep."
+      },
+      "tags": {
+        "category": "history-org-tokenomics",
+        "service": "lumenloop",
+        "freshness": "scheduled"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "reverifyBy": "2026-10-01",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/x402-on-stellar"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402"
+          },
+          {
+            "class": "B",
+            "ref": "https://api.github.com/repos/stellar/stellar-protocol/contents/ecosystem?ref=master"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/x402-stellar"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "SDF announced x402 on Stellar on 2026-03-10",
+            "verdict": "confirmed",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/blog/foundation-news/x402-on-stellar",
+                "observedAt": "2026-07-11",
+                "note": "Official page carries 2026-03-10 publication date."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/x402-stellar",
+                "observedAt": "2026-07-11",
+                "note": "Official implementation repository was created in the same launch window and documents Stellar x402 tooling."
+              }
+            ]
+          },
+          {
+            "claim": "x402 had no SEP number as of 2026-07-11",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "B",
+                "ref": "https://api.github.com/repos/stellar/stellar-protocol/contents/ecosystem?ref=master",
+                "observedAt": "2026-07-11",
+                "note": "Official SEP directory inventory contains no x402 proposal."
+              },
+              {
+                "class": "D",
+                "ref": "https://www.google.com/search?q=site%3Agithub.com%2Fstellar%2Fstellar-protocol+x402+SEP",
+                "observedAt": "2026-07-11",
+                "note": "Explicit general-web absence sweep found implementation/docs references but no SEP identity."
+              }
+            ]
+          },
+          {
+            "claim": "At the March 10 announcement, the settlement layer was live while agent tooling and MCP integration remained in active development.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/blog/foundation-news/x402-on-stellar",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/x402-stellar",
+                "observedAt": "2026-07-11",
+                "note": "Repository contains the agent-facing tools and examples; the official announcement supplies the live-settlement versus active-development status boundary."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 N2 primary+blind (Solo 3417/3423)",
+          "evidence": [
+            "solo://proj/49/process/3417",
+            "solo://proj/49/process/3423",
+            "scratchpad/p4/n2-events-blind/reconciliation.md",
+            "https://stellar.org/blog/foundation-news/x402-on-stellar",
+            "https://developers.stellar.org/docs/build/agentic-payments/x402",
+            "https://api.github.com/repos/stellar/stellar-protocol/contents/ecosystem?ref=master",
+            "https://github.com/stellar/x402-stellar"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (2026-events)"
+      }
+    },
+    {
+      "id": "q-hist-yieldblox-v2-2026-exploit",
+      "question": "What happened in the February 2026 YieldBlox V2 / Reflector USTRY incident, and which XLM figures must not be conflated?",
+      "surface": [
+        "lumenloop.search_content_semantic",
+        "lumenloop.search_documents"
+      ],
+      "golden": {
+        "answer": "On February 22, 2026, an attacker manipulated the thin USTRY/USDC market used by Reflector's price feed, inflated USTRY collateral value, and borrowed from the YieldBlox V2 Blend pool. The two headline on-chain borrow transfers were 61,249,278.31 XLM and 1,000,196.70 USDC; a separate earlier 14,000-USDC borrow makes the gross USDC total about 1,014,196.70, while SLP-0006 rounds the incident figures to about 61.3M XLM and 1.01M USDC. Blockaid reports 48,069,094 XLM quarantined, which is a different quantity and does not mean recovered or reimbursed. Sources value the incident from about $10.2M to $10.97M depending on the XLM price and valuation basis, so no single exact USD loss is pinned. This is the 2026 V2 oracle-manipulation incident, not the separate 2022 YieldBlox hack.",
+        "keyFacts": [
+          "The incident occurred on February 22, 2026 and involved manipulation of the USTRY price feed used by the YieldBlox V2 Blend pool.",
+          "Headline borrowed transfers: 61,249,278.31 XLM and 1,000,196.70 USDC; separately, 48,069,094 XLM was quarantined.",
+          "USD valuations are disputed and valuation-dependent, with sourced estimates spanning about $10.2M–$10.97M."
+        ],
+        "avoid": [
+          "Do NOT say only 48,069,094 XLM was borrowed; that is the separately reported quarantined amount.",
+          "Do NOT conflate the February 2026 V2 oracle incident with the 2022 YieldBlox exploit.",
+          "Do NOT pin one exact USD loss without attributing its price basis and source.",
+          "Do NOT equate quarantined or frozen XLM with recovered, returned, or reimbursed funds."
+        ],
+        "notes": "The token quantities are exact on-chain/source figures. A separate earlier 14,000-USDC borrow explains the sibling incident case's approximately 1,014,196.70-USDC gross total; this case preserves the blind-reviewed 1,000,196.70-USDC headline transfer. Sources disagree on USD valuation; do not penalize a sourced estimate within roughly $10.2M–$10.97M when its valuation basis is clear, and never treat one USD figure as invariant."
+      },
+      "tags": {
+        "category": "history-org-tokenomics",
+        "service": "lumenloop",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "mixed",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0006.md"
+          },
+          {
+            "class": "A",
+            "ref": "https://x.com/in_reflector/status/2025700358626877576"
+          },
+          {
+            "class": "D",
+            "ref": "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain"
+          },
+          {
+            "class": "A",
+            "ref": "https://blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack",
+            "note": "Incident responder’s own report."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/DK27ss/YieldBlox-10M-PoC"
+          },
+          {
+            "class": "D",
+            "ref": "https://rekt.news/yieldblox-rekt"
+          },
+          {
+            "class": "F",
+            "ref": "https://stellar.expert/explorer/public/tx/ae721cacee382bdecac8d2c47286ecd42cb4711f658bb2aec7cba60dc64a31ff"
+          },
+          {
+            "class": "F",
+            "ref": "https://stellar.expert/explorer/public/tx/3e81a3f7b6e17cc22d0a1f33e9dcf90e5664b125b9e61f108b8d2f082f2d4657"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "The YieldBlox V2 oracle-manipulation incident occurred on 2026-02-22.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "F",
+                "ref": "https://stellar.expert/explorer/public/tx/ae721cacee382bdecac8d2c47286ecd42cb4711f658bb2aec7cba60dc64a31ff",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "F",
+                "ref": "https://stellar.expert/explorer/public/tx/3e81a3f7b6e17cc22d0a1f33e9dcf90e5664b125b9e61f108b8d2f082f2d4657",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "D",
+                "ref": "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "The exact borrowed transfers were 61,249,278.31 XLM and 1,000,196.70 USDC.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "F",
+                "ref": "https://stellar.expert/explorer/public/tx/3e81a3f7b6e17cc22d0a1f33e9dcf90e5664b125b9e61f108b8d2f082f2d4657",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "F",
+                "ref": "https://stellar.expert/explorer/public/tx/ae721cacee382bdecac8d2c47286ecd42cb4711f658bb2aec7cba60dc64a31ff",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/DK27ss/YieldBlox-10M-PoC",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "D",
+                "ref": "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "Exactly 48,069,094 XLM was quarantined; quarantined does not mean recovered or reimbursed.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0006.md",
+                "observedAt": "2026-07-11",
+                "note": "SLP-0006 independently gives the rounded 48M-XLM context."
+              }
+            ]
+          },
+          {
+            "claim": "USD valuations are disputed and valuation-dependent, with sourced estimates spanning about $10.2M–$10.97M; no source-independent exact USD incident total is established.",
+            "verdict": "disputed",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack",
+                "observedAt": "2026-07-11",
+                "note": "Reports about $10.2M."
+              },
+              {
+                "class": "D",
+                "ref": "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain",
+                "observedAt": "2026-07-11",
+                "note": "Reports $10M+ and leg valuations totaling about $10.85M."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/DK27ss/YieldBlox-10M-PoC",
+                "observedAt": "2026-07-11",
+                "note": "Computes $10,857,337.06 at the exploit-oracle XLM price."
+              },
+              {
+                "class": "D",
+                "ref": "https://rekt.news/yieldblox-rekt",
+                "observedAt": "2026-07-11",
+                "note": "Reports $10.97M."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 N2 primary+blind (Solo 3417/3423)",
+          "evidence": [
+            "solo://proj/49/process/3417",
+            "solo://proj/49/process/3423",
+            "scratchpad/p4/n2-events-blind/reconciliation.md",
+            "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0006.md",
+            "https://x.com/in_reflector/status/2025700358626877576",
+            "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain",
+            "https://blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack",
+            "https://github.com/DK27ss/YieldBlox-10M-PoC",
+            "https://rekt.news/yieldblox-rekt",
+            "https://stellar.expert/explorer/public/tx/ae721cacee382bdecac8d2c47286ecd42cb4711f658bb2aec7cba60dc64a31ff",
+            "https://stellar.expert/explorer/public/tx/3e81a3f7b6e17cc22d0a1f33e9dcf90e5664b125b9e61f108b8d2f082f2d4657",
+            "Sibling sweep: q-comp-yieldblox-oracle-incident reconciled as gross total (includes a separate earlier 14,000-USDC borrow), not a contradiction."
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (2026-events)",
+        "asOf": "2026-07-11"
       }
     },
     {
@@ -19880,6 +20726,272 @@
       }
     },
     {
+      "id": "q-pc-protocol-26-yardstick",
+      "question": "When did Stellar Protocol 26 \"Yardstick\" go live on Mainnet, and which CAPs define its main changes?",
+      "surface": [
+        "stellarDocs.search_protocol_concepts_docs",
+        "lumenloop.search_content_semantic"
+      ],
+      "golden": {
+        "answer": "Protocol 26, Yardstick, went live on Stellar Mainnet on May 6, 2026 after the validator vote. Its included changes were CAP-0073 (SAC management of G-account balances), CAP-0077 (validator-governed freezing of ledger entries through network configuration), CAP-0078 (bounded TTL-extension host functions), CAP-0079 (muxed-address StrKey conversions), CAP-0080 (additional efficient BN254/ZK host functions), CAP-0081 (TTL-ordered eviction), and CAP-0082 (checked 256-bit integer arithmetic). Do not collapse Yardstick's BN254 work into Protocol 25: Protocol 25 introduced BN254/Poseidon primitives, while CAP-0080 extended the BN254 host-function set in Protocol 26.",
+        "keyFacts": [
+          "Protocol 26 Yardstick went live on Mainnet on May 6, 2026.",
+          "Names CAP-0073, 0077, 0078, 0079, 0080, 0081, and 0082 with materially correct roles.",
+          "Distinguishes CAP-0080's Protocol 26 extensions from the BN254/Poseidon primitives introduced in Protocol 25."
+        ],
+        "avoid": [
+          "Do NOT say the May 6, 2026 date was only a testnet upgrade or an uncompleted plan.",
+          "Do NOT attribute all BN254 and Poseidon support first introduced on Stellar to Protocol 26."
+        ],
+        "notes": "Historical protocol membership is stable. CAP registry labels such as Accepted or Implemented are not substitutes for the dated network-activation source."
+      },
+      "tags": {
+        "category": "protocol-core",
+        "service": "stellarDocs",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/yardstick-stellar-protocol-26"
+          },
+          {
+            "class": "A",
+            "ref": "https://stellar.org/protocol-upgrades"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0073.md"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0077.md"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0078.md"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0079.md"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0080.md"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0081.md"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0082.md"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Protocol 26 Yardstick went live on Mainnet on 2026-05-06",
+            "verdict": "confirmed",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/blog/foundation-news/yardstick-stellar-protocol-26",
+                "observedAt": "2026-07-11",
+                "note": "SDF states that Yardstick went live on Mainnet on May 6 following the validator vote."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0077.md",
+                "observedAt": "2026-07-11",
+                "note": "CAP preamble binds the marquee freeze mechanism to protocol version 26."
+              }
+            ]
+          },
+          {
+            "claim": "Protocol 26 includes CAP-0073, 0077, 0078, 0079, 0080, 0081, and 0082 with the summarized roles",
+            "verdict": "confirmed",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/protocol-upgrades",
+                "observedAt": "2026-07-11",
+                "note": "Official seven-CAP Protocol 26 inventory."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0073.md",
+                "observedAt": "2026-07-11",
+                "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0077.md",
+                "observedAt": "2026-07-11",
+                "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0078.md",
+                "observedAt": "2026-07-11",
+                "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0079.md",
+                "observedAt": "2026-07-11",
+                "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0080.md",
+                "observedAt": "2026-07-11",
+                "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0081.md",
+                "observedAt": "2026-07-11",
+                "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0082.md",
+                "observedAt": "2026-07-11",
+                "note": "CAP preamble identifies Protocol version 26 and the proposal title/behavior."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 N2 primary+blind (Solo 3417/3423)",
+          "evidence": [
+            "solo://proj/49/process/3417",
+            "solo://proj/49/process/3423",
+            "scratchpad/p4/n2-events-blind/reconciliation.md",
+            "https://stellar.org/blog/foundation-news/yardstick-stellar-protocol-26",
+            "https://stellar.org/protocol-upgrades",
+            "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0073.md",
+            "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0077.md",
+            "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0078.md",
+            "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0079.md",
+            "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0080.md",
+            "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0081.md",
+            "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0082.md"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (2026-events)"
+      }
+    },
+    {
+      "id": "q-pc-protocol-27-zipper",
+      "question": "What did Stellar Protocol 27 \"Zipper\" activate, and how can you distinguish its July 8 vote date from its live Mainnet status?",
+      "surface": [
+        "stellarDocs.search_protocol_concepts_docs",
+        "lumenloop.search_content_semantic"
+      ],
+      "golden": {
+        "answer": "The Protocol 27 Zipper Mainnet upgrade vote was scheduled for July 8, 2026, and live Horizon reported protocol version 27 on July 11, confirming activation. Zipper comprises CAP-0071-01, which adds built-in authentication delegation for custom accounts, and CAP-0071-02, which adds the address-bound SOROBAN_CREDENTIALS_ADDRESS_V2 credential. The older SOROBAN_CREDENTIALS_ADDRESS remains valid only through Protocol 27 and is replaced in Protocol 28. A vote schedule alone is not proof of passage; use a dated live-network or post-vote source for activation.",
+        "keyFacts": [
+          "The Mainnet vote date was July 8, 2026, and Protocol 27 was live when independently checked on July 11, 2026.",
+          "CAP-0071-01 adds authentication delegation for custom accounts.",
+          "CAP-0071-02 adds SOROBAN_CREDENTIALS_ADDRESS_V2 with an address-bound payload."
+        ],
+        "avoid": [
+          "Do NOT treat the pre-vote upgrade guide by itself as proof that the vote passed.",
+          "Do NOT claim Protocol 27 remained pending after the dated live-network check.",
+          "Do NOT attribute CAP-0072 contract signers for classic G-accounts to Protocol 27."
+        ],
+        "notes": "Grade the historical activation and CAP split. A newer truthful network version must not be penalized if the answer preserves Protocol 27's activation history."
+      },
+      "tags": {
+        "category": "protocol-core",
+        "service": "stellarDocs",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0071-01.md"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0071-02.md"
+          },
+          {
+            "class": "F",
+            "ref": "https://horizon.stellar.org/"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Protocol 27's Mainnet vote was 2026-07-08 and the protocol was active by 2026-07-11",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+                "observedAt": "2026-07-11",
+                "note": "Official guide gives the July 8 vote schedule."
+              },
+              {
+                "class": "F",
+                "ref": "https://horizon.stellar.org/",
+                "observedAt": "2026-07-11",
+                "note": "Live Horizon root and latest-ledger probe returned current_protocol_version/protocol_version 27."
+              }
+            ]
+          },
+          {
+            "claim": "CAP-0071-01 and CAP-0071-02 define delegation and address-bound V2 credentials for Protocol 27",
+            "verdict": "confirmed",
+            "evidence": [
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0071-01.md",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "A",
+                "ref": "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 N2 primary+blind (Solo 3417/3423)",
+          "evidence": [
+            "solo://proj/49/process/3417",
+            "solo://proj/49/process/3423",
+            "scratchpad/p4/n2-events-blind/reconciliation.md",
+            "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+            "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0071-01.md",
+            "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0071-02.md",
+            "https://horizon.stellar.org/"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (2026-events)"
+      }
+    },
+    {
       "id": "q-pc-protocol-upgrade-timing",
       "question": "When is the next protocol upgrade, how do validators vote it in, and what SDK-upgrade deadlines must developers meet?",
       "surface": [
@@ -20134,6 +21246,111 @@
           ]
         },
         "origin": "raven-next q-pc-sequence-numbers-ordering-replace"
+      }
+    },
+    {
+      "id": "q-pc-slp-0004-0006-status",
+      "question": "What are Stellar Limits Proposals SLP-0004 and SLP-0006, and which one was final versus still draft as of July 11, 2026?",
+      "surface": [
+        "stellarDocs.search_protocol_concepts_docs",
+        "lumenloop.search_documents"
+      ],
+      "golden": {
+        "answer": "As of July 11, 2026, SLP-0004 was Final. It raised Soroban limits including per-transaction instructions from 100 million to 400 million, write entries from 50 to 200, and footprint size from 100 to 200 entries; it also proposed roughly fourfold reductions for most non-refundable resource fees. SLP-0006 was still Draft. It proposes moving the existing overlay-layer block on three accounts associated with the February 22 YieldBlox V2 exploit into network configuration using CAP-0077. SLPs are Stellar Limits Proposals, not CAPs or SEPs, and SLP-0006's Draft text is not proof that its freeze configuration has been approved or applied.",
+        "keyFacts": [
+          "As of July 11, 2026, SLP-0004 was Final and SLP-0006 was Draft.",
+          "SLP-0004 raised per-transaction instructions 100M to 400M, write entries 50 to 200, and footprint 100 to 200, while reducing most non-refundable fees about fourfold.",
+          "SLP-0006 proposes using CAP-0077 network configuration for three already overlay-blocked YieldBlox exploit accounts."
+        ],
+        "avoid": [
+          "Do NOT call either proposal a SEP or CAP.",
+          "Do NOT say SLP-0006's proposed network-configuration freeze was already approved or applied as of July 11, 2026."
+        ],
+        "notes": "SLP-0006 is status-sensitive. Preserve the as-of date and accept a newer sourced status rather than pinning Draft forever."
+      },
+      "tags": {
+        "category": "protocol-core",
+        "service": "stellarDocs",
+        "freshness": "scheduled"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "mixed",
+        "asOf": "2026-07-11",
+        "reverifyBy": "2026-10-01",
+        "sources": [
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0004.md"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0006.md"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getLedgerEntries"
+          },
+          {
+            "class": "D",
+            "ref": "https://protos.com/yieldblox-lending-pool-hit-by-10m-hack-on-stellar/"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "SLP-0004 is Final and raised 100M to 400M instructions, 50 to 200 write entries, and 100 to 200 footprint entries with about 4x fee reductions",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0004.md",
+                "observedAt": "2026-07-11",
+                "note": "Proposal preamble, limit table, and fee table."
+              },
+              {
+                "class": "A",
+                "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getLedgerEntries",
+                "observedAt": "2026-07-11",
+                "note": "Current RPC docs independently reflect the 200-ledger-key ceiling from the raised footprint era."
+              }
+            ]
+          },
+          {
+            "claim": "SLP-0006 remained Draft and proposed a CAP-0077 configuration freeze for three already overlay-blocked accounts",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0006.md",
+                "observedAt": "2026-07-11",
+                "note": "Preamble says Draft; settings list three account ledger keys."
+              },
+              {
+                "class": "D",
+                "ref": "https://protos.com/yieldblox-lending-pool-hit-by-10m-hack-on-stellar/",
+                "observedAt": "2026-07-11",
+                "note": "Independent incident coverage corroborates the pre-proposal account-freeze response."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 N2 primary+blind (Solo 3417/3423)",
+          "evidence": [
+            "solo://proj/49/process/3417",
+            "solo://proj/49/process/3423",
+            "scratchpad/p4/n2-events-blind/reconciliation.md",
+            "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0004.md",
+            "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0006.md",
+            "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getLedgerEntries",
+            "https://protos.com/yieldblox-lending-pool-hit-by-10m-hack-on-stellar/"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (2026-events)"
       }
     },
     {
@@ -25504,6 +26721,105 @@
       }
     },
     {
+      "id": "q-scf-confidential-tokens-preview",
+      "question": "What was the June 2026 Confidential Tokens release on Stellar: a Mainnet launch, or a developer preview?",
+      "surface": [
+        "lumenloop.search_content_semantic",
+        "lumenloop.search_documents"
+      ],
+      "golden": {
+        "answer": "On June 29, 2026, SDF announced Confidential Tokens as a developer preview. The contract was live on Testnet, not approved for Mainnet, while contract and verifier audits were underway. The OpenZeppelin wrapper can add private balances and transfer amounts to a SEP-41 token; sender and recipient addresses remain visible, so 'confidential' does not mean fully anonymous. Mainnet timing was a target, not a shipped fact.",
+        "keyFacts": [
+          "The June 29, 2026 release was a developer preview live on Testnet, not an approved Mainnet launch.",
+          "Audits were still underway as of the announcement.",
+          "It hides balances and transfer amounts while leaving sender and recipient addresses visible."
+        ],
+        "avoid": [
+          "Do NOT claim Confidential Tokens were production-ready or live on Mainnet on June 29, 2026.",
+          "Do NOT describe the preview as hiding counterparties as well as amounts."
+        ],
+        "notes": "Status is moving. Grade against the dated preview boundary and accept a newer primary-sourced Mainnet status if one exists."
+      },
+      "tags": {
+        "category": "scf-grants-builders",
+        "service": "lumenloop",
+        "freshness": "scheduled"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "confirmed",
+        "asOf": "2026-07-11",
+        "reverifyBy": "2026-10-01",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/developers/developer-preview-confidential-tokens-on-stellar"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/feat/confidential-verifier-ultrahonk/packages/tokens/src/confidential"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/NethermindEth/rs-soroban-ultrahonk"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "On 2026-06-29 Confidential Tokens was a Testnet developer preview not yet approved for Mainnet, with audits underway",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/blog/developers/developer-preview-confidential-tokens-on-stellar",
+                "observedAt": "2026-07-11",
+                "note": "Editor's note states the exact Testnet/Mainnet/audit boundary."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/feat/confidential-verifier-ultrahonk/packages/tokens/src/confidential",
+                "observedAt": "2026-07-11",
+                "note": "Preview implementation exists on a feature branch rather than as proof of Mainnet approval."
+              }
+            ]
+          },
+          {
+            "claim": "The wrapper hides balances and amounts but leaves counterparties visible",
+            "verdict": "confirmed",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/blog/developers/developer-preview-confidential-tokens-on-stellar",
+                "observedAt": "2026-07-11"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/NethermindEth/rs-soroban-ultrahonk",
+                "observedAt": "2026-07-11",
+                "note": "Verifier implementation corroborates the stated proof architecture."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 N2 primary+blind (Solo 3417/3423)",
+          "evidence": [
+            "solo://proj/49/process/3417",
+            "solo://proj/49/process/3423",
+            "scratchpad/p4/n2-events-blind/reconciliation.md",
+            "https://stellar.org/blog/developers/developer-preview-confidential-tokens-on-stellar",
+            "https://github.com/OpenZeppelin/stellar-contracts/tree/feat/confidential-verifier-ultrahonk/packages/tokens/src/confidential",
+            "https://github.com/NethermindEth/rs-soroban-ultrahonk"
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (2026-events)"
+      }
+    },
+    {
       "id": "q-scf-contract-verification-rfp-live",
       "question": "Is there a currently open Stellar RFP for Soroban contract source verification, and what does the live brief ask builders to create?",
       "surface": [
@@ -27543,6 +28859,153 @@
           ]
         },
         "origin": "core-35 rfps-and-hackathons"
+      }
+    },
+    {
+      "id": "q-scf-round-43-results",
+      "question": "What were the final headline results of Stellar Community Fund round 43?",
+      "surface": [
+        "lumenloop.search_content_semantic",
+        "lumenloop.search_documents"
+      ],
+      "golden": {
+        "answer": "The official SCF #43 recap was published June 2, 2026 and reports 85 submissions, 29 awarded projects, and $3,139,069 worth of XLM. The recipients break down as 10 Open Track and 19 Integration Track projects; the round operated a third RFP Track but the recap lists no round-43 RFP recipients. A June 11 Stellar social post later repeated the results, so June 11 is a post date rather than an established conclusion date. A July 11 dashboard snapshot showed 28 visible selected cards totaling $3,049,069, with only 10 then labeled `Awarded`; those transient card/payment lifecycle states do not revise the official 29 / $3,139,069 selection result.",
+        "keyFacts": [
+          "The official SCF #43 recap was published June 2, 2026 and reports 85 submissions.",
+          "29 projects were awarded: 10 Open Track and 19 Integration Track; no round-43 RFP recipients are listed.",
+          "The official selection total was $3,139,069 worth of XLM; the dashboard’s transient 28 / $3,049,069 snapshot is not the final result."
+        ],
+        "avoid": [
+          "Do NOT report 3,139,069 as the number of XLM tokens awarded.",
+          "Do NOT substitute a cumulative SCF program total for the round-43 total.",
+          "Do NOT infer the round concluded June 11 merely from the date of a later social post.",
+          "Do NOT treat the dashboard’s paid-state `Awarded` count or its incomplete 28-card / $3,049,069 snapshot as the final selection result."
+        ],
+        "notes": "Official selection result: 29 / $3,139,069. Dashboard card and payment states are transient; do not use them to overwrite the recap."
+      },
+      "tags": {
+        "category": "scf-grants-builders",
+        "service": "lumenloop",
+        "freshness": "stable"
+      },
+      "truth": {
+        "domain": "real-world",
+        "status": "confirmed",
+        "sources": [
+          {
+            "class": "A",
+            "ref": "https://medium.com/feed/stellar-community"
+          },
+          {
+            "class": "A",
+            "ref": "https://x.com/StellarOrg/status/2065181135135559896"
+          },
+          {
+            "class": "C",
+            "ref": "https://communityfund.stellar.org/awards/reciQ16Y1ztmnmE3N"
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "The official SCF #43 recap was published 2026-06-02 and reports 85 submissions, 29 projects, and $3,139,069 worth of XLM.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://medium.com/feed/stellar-community",
+                "observedAt": "2026-07-11",
+                "note": "Official feed timestamp: 2026-06-02T21:39:51Z."
+              },
+              {
+                "class": "C",
+                "ref": "https://communityfund.stellar.org/awards/reciQ16Y1ztmnmE3N",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "The official breakdown is 10 Open Track and 19 Integration Track recipients, with no round-43 RFP recipients listed.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://medium.com/feed/stellar-community",
+                "observedAt": "2026-07-11"
+              }
+            ]
+          },
+          {
+            "claim": "A 2026-07-11 dashboard snapshot showed 28 selected cards totaling $3,049,069 and only 10 cards in the paid-state `Awarded` label.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "https://communityfund.stellar.org/awards/reciQ16Y1ztmnmE3N",
+                "observedAt": "2026-07-11",
+                "note": "Transient card/payment lifecycle snapshot; not a final-results revision."
+              },
+              {
+                "class": "A",
+                "ref": "https://medium.com/feed/stellar-community",
+                "observedAt": "2026-07-11",
+                "note": "Official recap remains 29 / $3,139,069."
+              }
+            ]
+          },
+          {
+            "claim": "SCF #43 concluded on June 11 merely because a later social post was dated June 11.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://medium.com/feed/stellar-community",
+                "observedAt": "2026-07-11",
+                "note": "Official recap was published June 2."
+              },
+              {
+                "class": "A",
+                "ref": "https://x.com/StellarOrg/status/2065181135135559896",
+                "observedAt": "2026-07-11",
+                "note": "June 11 is the later social-post date."
+              }
+            ]
+          },
+          {
+            "claim": "SCF #43’s final result was only 28 projects / $3,049,069.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://medium.com/feed/stellar-community",
+                "observedAt": "2026-07-11",
+                "note": "Official recap gives 29 / $3,139,069."
+              },
+              {
+                "class": "C",
+                "ref": "https://communityfund.stellar.org/awards/reciQ16Y1ztmnmE3N",
+                "observedAt": "2026-07-11",
+                "note": "Shows why a transient dashboard snapshot can undercount."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-11",
+          "by": "P4 N2 primary+blind (Solo 3417/3423)",
+          "evidence": [
+            "solo://proj/49/process/3417",
+            "solo://proj/49/process/3423",
+            "scratchpad/p4/n2-events-blind/reconciliation.md",
+            "https://medium.com/feed/stellar-community",
+            "https://x.com/StellarOrg/status/2065181135135559896",
+            "https://communityfund.stellar.org/awards/reciQ16Y1ztmnmE3N",
+            "Sibling sweep: q-edge-fresh-latest-scf-round identifies SCF #43 as concluded but pins no conflicting result date or amount."
+          ],
+          "rootCause": [
+            "eval-authoring"
+          ]
+        },
+        "origin": "authored 2026-07 (2026-events)"
       }
     },
     {

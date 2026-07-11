@@ -1,0 +1,106 @@
+{
+  "id": "q-crp-cme-xlm-futures-dates",
+  "question": "When were CME's Stellar Lumens futures announced versus actually launched, and what are the standard and micro contract sizes?",
+  "surface": [
+    "lumenloop.search_content_semantic",
+    "lumenloop.search_documents"
+  ],
+  "golden": {
+    "answer": "CME Group announced the planned Lumens futures on January 15, 2026, with a February 9 launch pending regulatory review. CME later confirmed that trading actually began Monday, February 9, 2026. The standard Lumens futures contract is 250,000 XLM and the Micro Lumens contract is 12,500 XLM. January 15 is the announcement date, not the trading launch date.",
+    "keyFacts": [
+      "Announcement: January 15, 2026; trading launch: February 9, 2026.",
+      "Standard Lumens futures size: 250,000 XLM.",
+      "Micro Lumens futures size: 12,500 XLM."
+    ],
+    "avoid": [
+      "Do NOT say CME XLM futures began trading on January 15, 2026.",
+      "Do NOT use unrelated Coinbase perpetual-futures contract sizes for the CME contracts."
+    ],
+    "notes": "This is an announcement-versus-launch date trap. The February 11 CME release retrospectively confirms the February 9 start."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://www.cmegroup.com/content/dam/cmegroup/notices/ser/2026/01/ser-9663.pdf"
+      },
+      {
+        "class": "A",
+        "ref": "https://www.cmegroup.com/markets/cryptocurrencies/stellar-lumens/lumens.calendar.html"
+      },
+      {
+        "class": "A",
+        "ref": "https://www.cmegroup.com/markets/cryptocurrencies/ada-link-lumens-futures.html"
+      },
+      {
+        "class": "D",
+        "ref": "https://fxnewsgroup.com/forex-news/cryptocurrency/cme-group-reports-first-trades-for-new-cardano-chainlink-and-stellar-crypto-futures/"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "CME announced the initial listing on 2026-01-15 and Lumens futures first traded on 2026-02-09.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://www.cmegroup.com/content/dam/cmegroup/notices/ser/2026/01/ser-9663.pdf",
+            "observedAt": "2026-07-11",
+            "note": "Dated Special Executive Report sets the February 9 trade date."
+          },
+          {
+            "class": "A",
+            "ref": "https://www.cmegroup.com/markets/cryptocurrencies/stellar-lumens/lumens.calendar.html",
+            "observedAt": "2026-07-11",
+            "note": "Official contract calendar shows first trade on February 9."
+          },
+          {
+            "class": "D",
+            "ref": "https://fxnewsgroup.com/forex-news/cryptocurrency/cme-group-reports-first-trades-for-new-cardano-chainlink-and-stellar-crypto-futures/",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "CME contract sizes are 250,000 XLM standard and 12,500 XLM micro.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://www.cmegroup.com/content/dam/cmegroup/notices/ser/2026/01/ser-9663.pdf",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://www.cmegroup.com/markets/cryptocurrencies/ada-link-lumens-futures.html",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 N2 primary+blind (Solo 3417/3423)",
+      "evidence": [
+        "solo://proj/49/process/3417",
+        "solo://proj/49/process/3423",
+        "scratchpad/p4/n2-events-blind/reconciliation.md",
+        "https://www.cmegroup.com/content/dam/cmegroup/notices/ser/2026/01/ser-9663.pdf",
+        "https://www.cmegroup.com/markets/cryptocurrencies/stellar-lumens/lumens.calendar.html",
+        "https://www.cmegroup.com/markets/cryptocurrencies/ada-link-lumens-futures.html",
+        "https://fxnewsgroup.com/forex-news/cryptocurrency/cme-group-reports-first-trades-for-new-cardano-chainlink-and-stellar-crypto-futures/"
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (2026-events)"
+  }
+}

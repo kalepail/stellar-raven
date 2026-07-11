@@ -1,0 +1,133 @@
+{
+  "id": "q-hist-cctp-stellar-live-announcement",
+  "question": "On what date did SDF and Circle publicly announce that CCTP was live on Stellar, and what does CCTP do with USDC?",
+  "surface": [
+    "lumenloop.search_content_semantic",
+    "lumenloop.search_documents"
+  ],
+  "golden": {
+    "answer": "SDF and Circle publicly announced CCTP live on Stellar on May 19, 2026. Circle's release notes separately record Stellar mainnet support on May 18, 2026; that technical-support milestone is not the public-announcement date. May 8 is contradicted as the announcement date. CCTP moves native USDC across supported chains by burning on the source chain and minting on the destination after attestation; it does not create wrapped USDC.",
+    "keyFacts": [
+      "Public live announcement: May 19, 2026; Circle mainnet-support milestone: May 18, 2026.",
+      "CCTP uses native burn-and-mint USDC transfers rather than wrapped USDC.",
+      "May 8, 2026 is contradicted as the SDF/Circle CCTP-live announcement date."
+    ],
+    "avoid": [
+      "Do NOT state May 8, 2026 as the SDF/Circle public live-announcement date without a primary source explaining a different milestone.",
+      "Do NOT describe CCTP as locking USDC and issuing a wrapped token on Stellar."
+    ],
+    "notes": "Corrected-fact encoding: the July recon/timeline lead said May 8, but the live SDF page date and Circle's official-post snowflake both resolve to May 19. Existing corpus material may separately identify an earlier technical/domain deployment; do not merge milestones."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar"
+      },
+      {
+        "class": "A",
+        "ref": "https://x.com/circle/status/2056767949445472739"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.circle.com/release-notes/cctp-2026"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.circle.com/cctp/references/stellar"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/bringing-stellar-to-the-regions-that-matter"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.crossmint.com/announcement/cctp-stellar"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SDF and Circle publicly announced CCTP live on Stellar on 2026-05-19.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://x.com/circle/status/2056767949445472739",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "D",
+            "ref": "https://www.crossmint.com/announcement/cctp-stellar",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Circle release notes record Stellar mainnet support on 2026-05-18.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.circle.com/release-notes/cctp-2026",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.circle.com/cctp/references/stellar",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "The SDF/Circle public CCTP-live announcement was 2026-05-08.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/bringing-stellar-to-the-regions-that-matter",
+            "observedAt": "2026-07-11",
+            "note": "SDF’s May 8 article concerns regional expansion, not CCTP."
+          },
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar",
+            "observedAt": "2026-07-11",
+            "note": "The CCTP announcement is dated May 19."
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "P4 N2 primary+blind (Solo 3417/3423)",
+      "evidence": [
+        "solo://proj/49/process/3417",
+        "solo://proj/49/process/3423",
+        "scratchpad/p4/n2-events-blind/reconciliation.md",
+        "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar",
+        "https://x.com/circle/status/2056767949445472739",
+        "https://developers.circle.com/release-notes/cctp-2026",
+        "https://developers.circle.com/cctp/references/stellar",
+        "https://stellar.org/blog/foundation-news/bringing-stellar-to-the-regions-that-matter",
+        "https://www.crossmint.com/announcement/cctp-stellar",
+        "Sibling sweep: q-cctp-v2-usdc-stellar and q-tool-cctp-stellar-integration contain no conflicting announcement-date claim."
+      ],
+      "rootCause": [
+        "eval-authoring"
+      ]
+    },
+    "origin": "authored 2026-07 (2026-events)"
+  }
+}
