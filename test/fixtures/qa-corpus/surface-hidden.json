@@ -1,0 +1,28 @@
+{
+  "id": "q-fixture-hidden-surface",
+  "question": "Can lumenloop.request_research be invoked from this server?",
+  "surface": ["lumenloop.request_research"],
+  "golden": {
+    "answer": "No hidden operation should be advertised.",
+    "keyFacts": ["Only manifest operations are exposed."],
+    "avoid": []
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "lumenloop",
+    "freshness": "stable",
+    "trap": "out-of-scope"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [{ "class": "B", "ref": "scripts/exposure.mjs" }],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "fixture verification",
+      "evidence": ["scripts/exposure.mjs"],
+      "rootCause": ["surface-policy"]
+    },
+    "origin": "authored fixture"
+  }
+}

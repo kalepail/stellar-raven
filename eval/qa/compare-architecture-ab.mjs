@@ -92,6 +92,7 @@ export function analyzeArchitectureRow(row) {
   const ravenToolCalls = transcript.filter(isRavenTool).length;
   return {
     id: row.id,
+    truth: row.truth ?? null,
     verdict: scoreOf(row),
     turns: row.agent?.turns ?? null,
     agentCostUsd: row.agent?.costUsd ?? 0,

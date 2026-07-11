@@ -10,12 +10,28 @@ import path from "node:path";
 
 export const QA_DIR = path.dirname(fileURLToPath(import.meta.url));
 export const CASES_PATH = path.join(QA_DIR, "cases.json");
+export const SAMPLE_PATH = path.join(QA_DIR, "sample.json");
+
+export const QA_CATEGORIES = new Set([
+  "protocol-core",
+  "soroban",
+  "tooling-infra",
+  "assets-anchors-seps",
+  "defi-ecosystem",
+  "scf-grants-builders",
+  "compliance-rwa-payments",
+  "history-org-tokenomics",
+  "retail-consumer",
+  "edge-behavior"
+]);
+export const QA_SERVICES = new Set(["stellarDocs", "scout", "lumenloop", "skills", "none"]);
 
 /** corpus expected_service → our catalog namespace (same map as eval/routing-cases.json) */
 export const SERVICE_MAP = {
   stellar_docs: "stellarDocs",
   stellar_light: "scout",
   lumenloop: "lumenloop",
+  skills: "skills",
   none: "none"
 };
 

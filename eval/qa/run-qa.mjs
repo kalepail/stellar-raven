@@ -31,14 +31,14 @@
  *                      default; running B requires a build that exposes a
  *                      code-shaped tool plus an explicit --search-tool.
  *   --search-tool name explicit search tool name override
- *   --sample N         deterministic stratified subset (same picks as
- *                      compile-qa.mjs --sample N)
+ *   --sample N         deterministic stratified subset (same sampler used by
+ *                      compile-qa.mjs for the committed sample.json)
  *   --ids a,b,c        run only these case ids (smoke tests)
  *   --port N           wrangler dev port (default 8788)
  *   --cases path       battery file (default eval/qa/cases.json). Named
- *                      hand-authored contracts include live-data-canonical-v1
- *                      (live-cases.json) and live-digest-supplement-v1
- *                      (live-digest-supplement-cases.json); run separately.
+ *                      hand-authored contracts include live-data-canonical-v2
+ *                      (corpus/live/live-cases.json) and live-digest-supplement-v2
+ *                      (corpus/live/live-digest-supplement-cases.json); run separately.
  *   --model name       answering-agent model (default claude-sonnet-5)
  *   --judge-model name judge model (default judge.mjs JUDGE_MODEL)
  *   --surface name     search-execute (default) | per-operation. The latter
@@ -375,6 +375,10 @@ async function main() {
         id: c.id,
         question: c.question,
         tags: c.tags,
+        truth: {
+          status: c.truth.status,
+          ...(c.truth.asOf ? { asOf: c.truth.asOf } : {})
+        },
         answer: run.answer,
         transcript: run.transcript,
         agent: {

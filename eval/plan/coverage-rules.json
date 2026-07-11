@@ -203,9 +203,20 @@
       }
     },
     {
-      "id": "edge-governance",
+      "id": "retail-consumer",
+      "why": "Retail wallet, payment, scam-awareness, and consumer-flow questions can use wallet/payment docs and skills plus Scout/Lumenloop ecosystem records; any of those documented surfaces may anchor the answer.",
+      "match": { "category": "retail-consumer" },
+      "plan": {
+        "required": [],
+        "anyOf": ["stellarDocs", "skills", "scout", "lumenloop"],
+        "acceptable": ["stellarDocs", "skills", "scout", "lumenloop"],
+        "progressionExpected": false
+      }
+    },
+    {
+      "id": "edge-behavior",
       "why": "Governance/edge questions span three documented surfaces: docs meeting notes + protocol pages (stellar-docs-algolia.md; stellarDocs.search_meeting_notes), lumenloop governance proposals (lumenloop.md overview lists governance proposals as a content type), and scout research corpus incl. incidents (stellar-light.md source enum). Any one is a legitimate anchor. No progression demanded.",
-      "match": { "category": "edge-governance" },
+      "match": { "category": "edge-behavior" },
       "plan": {
         "required": [],
         "anyOf": ["stellarDocs", "scout", "lumenloop"],

@@ -64,7 +64,7 @@ describe("matchPlanRule — ordered rules, first match wins", () => {
   });
 
   it("traps (service none) match first; unknown categories hit the catch-all", () => {
-    const trap = matchPlanRule(row({ category: "edge-governance", service: "none" }), rulesDoc);
+    const trap = matchPlanRule(row({ category: "edge-behavior", service: "none" }), rulesDoc);
     expect(trap.ruleId).toBe("trap-none");
     expect(trap.plan.required).toEqual([]);
     const misc = matchPlanRule(row({ category: "brand-new-category", service: "scout" }), rulesDoc);

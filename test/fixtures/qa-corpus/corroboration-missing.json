@@ -1,0 +1,28 @@
+{
+  "id": "q-fixture-corroboration",
+  "question": "How should a disputed protocol claim be presented?",
+  "surface": ["stellarDocs.search_docs"],
+  "golden": {
+    "answer": "Primary sources disagree, so the answer must preserve the dispute.",
+    "keyFacts": ["The status is disputed."],
+    "avoid": []
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-10",
+    "sources": [{ "class": "A", "ref": "https://developers.stellar.org/fixture" }],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "fixture verification",
+      "evidence": ["https://developers.stellar.org/fixture"],
+      "rootCause": ["source-disagreement"]
+    },
+    "origin": "authored fixture"
+  }
+}

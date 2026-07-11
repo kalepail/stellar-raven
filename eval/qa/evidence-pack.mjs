@@ -73,8 +73,8 @@ function sanitizeUrlsInText(value) {
   return String(value ?? "").replace(/https?:\/\/[^\s"'<>\\]+/g, (raw) => sanitizeUrl(raw) || "");
 }
 
-export function extractEvidenceTerms({ candidateAnswer = "", golden, graderNotes = "" }) {
-  const text = `${candidateAnswer}\n${golden?.answer ?? ""}\n${(golden?.keyFacts ?? []).join("\n")}\n${(golden?.avoid ?? []).join("\n")}\n${graderNotes}`;
+export function extractEvidenceTerms({ candidateAnswer = "", golden }) {
+  const text = `${candidateAnswer}\n${golden?.answer ?? ""}\n${(golden?.keyFacts ?? []).join("\n")}\n${(golden?.avoid ?? []).join("\n")}\n${golden?.notes ?? ""}`;
   const terms = [];
 
   for (const match of text.matchAll(/`([^`\n]{3,80})`/g)) terms.push(match[1]);
@@ -177,7 +177,7 @@ function extractCandidateClaimTerms({ candidateAnswer = "", question = "", golde
 }
 
 function shouldIncludeTranscriptEvidence(tags = {}) {
-  return Boolean(tags.liveData || tags.freshness || tags.transcriptEvidence);
+  return tags.freshness !== "stable";
 }
 
 function executeEntries(transcript) {
@@ -598,14 +598,13 @@ export function buildTranscriptEvidencePack({
   question = "",
   golden,
   tags,
-  graderNotes = "",
   maxChars = EVIDENCE_PACK_MAX_CHARS
 }) {
   if (!shouldIncludeTranscriptEvidence(tags)) return "";
   const entries = executeEntries(transcript);
   if (!entries.length) return "";
 
-  const terms = extractEvidenceTerms({ candidateAnswer, golden, graderNotes });
+  const terms = extractEvidenceTerms({ candidateAnswer, golden });
   const items = collectSourceItems(entries);
   const ranked = rankedItems(items, terms);
   const facts = collectRelevantFacts(entries, terms);

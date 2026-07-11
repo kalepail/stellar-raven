@@ -1,0 +1,29 @@
+{
+  "id": "q-fixture-stale",
+  "question": "What behavior should be rechecked?",
+  "surface": ["stellarDocs.search_docs"],
+  "golden": {
+    "answer": "Use the dated documentation snapshot.",
+    "keyFacts": ["The answer is explicitly dated."],
+    "avoid": []
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-01-01",
+    "reverifyBy": "2026-02-01",
+    "sources": [{ "class": "A", "ref": "https://developers.stellar.org/fixture" }],
+    "verified": {
+      "date": "2026-01-01",
+      "by": "fixture verification",
+      "evidence": ["https://developers.stellar.org/fixture"],
+      "rootCause": ["freshness-drift"]
+    },
+    "origin": "authored fixture"
+  }
+}

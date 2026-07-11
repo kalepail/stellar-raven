@@ -5,6 +5,7 @@
  * fixed 15-case fixture spread. No judge process or network call is made.
  */
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -118,10 +119,14 @@ function rendererInput(c, format, futureFreshness) {
 
 function main() {
   const args = new Set(process.argv.slice(2));
-  if (![...args].every((arg) => arg === "--dry")) {
-    throw new Error("only --dry is supported; this verifier never writes files");
+  if (![...args].every((arg) => arg === "--dry" || arg === "--full")) {
+    throw new Error("supported modes are --dry and --full; this verifier never writes files");
   }
-  const oldCases = readJson(path.join(QA_DIR, "cases.json")).cases;
+  const oldCases = JSON.parse(execFileSync(
+    "git",
+    ["show", "2def7be:eval/qa/cases.json"],
+    { cwd: ROOT, encoding: "utf8", maxBuffer: 32 * 1024 * 1024 }
+  )).cases;
   const newCases = loadOwnedCases();
   if (oldCases.length !== 469 || newCases.length !== 469) {
     throw new Error(`expected 469 old/new cases, found ${oldCases.length}/${newCases.length}`);

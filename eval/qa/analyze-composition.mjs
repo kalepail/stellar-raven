@@ -145,6 +145,7 @@ export function analyzeRow(row, runnerOps) {
 
   return {
     id: row.id,
+    truth: row.truth ?? null,
     verdict: row.verdict?.score ?? null,
     executeScripts: executeEntries.length,
     adoption,

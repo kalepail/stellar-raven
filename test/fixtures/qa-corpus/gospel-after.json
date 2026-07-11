@@ -1,0 +1,27 @@
+{
+  "id": "q-fixture-gospel",
+  "question": "How is persistent contract storage described?",
+  "surface": ["stellarDocs.search_docs"],
+  "golden": {
+    "answer": "Contract storage is persisted by the ledger.",
+    "keyFacts": ["Storage is ledger-backed."],
+    "avoid": []
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [{ "class": "A", "ref": "https://developers.stellar.org/fixture" }],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "fixture verification",
+      "evidence": ["https://developers.stellar.org/fixture"],
+      "rootCause": ["migration"]
+    },
+    "origin": "fixture q-fixture-gospel"
+  }
+}

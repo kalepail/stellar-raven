@@ -35,13 +35,15 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
+import { QA_CATEGORIES, QA_SERVICES } from "../qa/lib.mjs";
 
 const PLAN_DIR = path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_RULES_PATH = path.join(PLAN_DIR, "coverage-rules.json");
 export const OP_CLASSES_PATH = path.join(PLAN_DIR, "op-classes.json");
 
 /** Services that count toward the plan set; meta-discovery is bookkeeping. */
-const PLAN_SERVICES = new Set(["lumenloop", "scout", "stellarDocs", "skills"]);
+const PLAN_SERVICES = new Set([...QA_SERVICES].filter((service) => service !== "none"));
+export const PLAN_CATEGORIES = new Set(QA_CATEGORIES);
 
 // One combined regex so op order inside a script is preserved (match.index).
 // skill.run must precede skill.read in the alternation only for readability —

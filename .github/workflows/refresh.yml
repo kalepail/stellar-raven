@@ -33,6 +33,8 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: fail on stale QA gospel
+        run: node eval/qa/lint-corpus.mjs --stale
       # refresh-inventory.mjs reads .env at the repo root; the runner is
       # ephemeral and .env is never uploaded anywhere.
       - name: materialize .env from repo secrets

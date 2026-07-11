@@ -1,292 +1,226 @@
 #!/usr/bin/env node
-/**
- * compile-qa.mjs — compile the golden Q→A ANSWER-ACCURACY battery.
- *
- * Reads the raven-next golden corpus (READ-ONLY; content is fair input, its
- * schema/eval code is not — we design our own case format, see README.md):
- *
- *   - compiled/golden.json           → question, canonicalAnswer, answerGuidance,
- *                                      sources, freshnessSensitive, category
- *   - <sourceFile> YAML frontmatter  → expected_service, query_type, should_fire,
- *                                      difficulty, confidence, freshness_horizon
- *                                      (labels the compiled file drops)
- *
- * Then applies eval/qa/golden-overrides.json — hand-authored, live-verified golden
- * corrections (the corpus snapshot is verbatim/read-only per eval/corpus/PROVENANCE.md,
- * so eval-side fixes land as overrides, never as archive edits). Load-time supplement,
- * committed, never touched by recompiles.
- *
- * Selection (deterministic; every drop recorded in `skipped` with a reason):
- *   keep  expected_service ∈ {stellar_docs, stellar_light, lumenloop}  — answerable
- *         by our catalog (three services + skills)
- *   keep  a curated subset of expected_service=none traps (TRAP_KEEP below) —
- *         grading "correctly says not-available / declines" is in-spirit
- *   drop  perplexity / parallel cases (general-web; not in our catalog)
- *   drop  remaining none-traps (raven-specific framing or trap-quota)
- *
- * Usage:
- *   node eval/qa/compile-qa.mjs [--corpus <dir>] [--sample N]
- *
- *   --corpus   corpus root containing research/golden/ (default: the vendored
- *              snapshot at eval/corpus/raven-next — see eval/corpus/PROVENANCE.md)
- *   --sample N also write eval/qa/sample.json — deterministic stratified subset
- *              (by service; same function run-qa.mjs uses)
- */
-import { readFileSync } from "node:fs";
+/** Compile the owned one-file-per-case QA battery into deterministic artifacts. */
+import { createHash } from "node:crypto";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { writeFileAtomic } from "../../scripts/lib/shared.mjs";
-import { QA_DIR, CASES_PATH, SERVICE_MAP, stratifiedSample } from "./lib.mjs";
-import { applyGraderNotesOverride } from "./grader-notes.mjs";
+import {
+  CASES_PATH,
+  QA_CATEGORIES,
+  QA_DIR,
+  QA_SERVICES,
+  SAMPLE_PATH,
+  stratifiedSample
+} from "./lib.mjs";
 
-const DEFAULT_CORPUS_ROOT = path.resolve(QA_DIR, "../corpus/raven-next");
-// Repo root, so the committed `corpus` path is machine-independent (determinism
-// convention: tracked generated artifacts must be byte-stable across checkouts).
-const REPO_ROOT = path.resolve(QA_DIR, "../..");
-
-// ---- curated trap keep-list (expected_service=none) -------------------------
-// Kept: traps that translate to OUR system (out-of-scope, injection, scams,
-// ambiguity, can't-do requests). Dropped none-cases are raven-agent-specific
-// (its brand identity, its Airtable backend, its web-fetch tool) or beyond the
-// "a few traps" quota — each gets an explicit reason below.
-const TRAP_KEEP = new Map([
-  ["q-edge-ambig-best-wallet", "ambiguous"],
-  ["q-edge-oos-ethereum-gas-optimization", "out-of-scope"],
-  ["q-edge-oos-solana-vs-aptos", "out-of-scope"],
-  ["q-edge-oos-react-state-management", "out-of-scope"],
-  ["q-edge-oos-bitcoin-price-prediction", "out-of-scope"],
-  ["q-edge-inject-exfiltrate-secrets", "injection"],
-  ["q-edge-jailbreak-generate-secret-keys", "injection"],
-  ["q-edge-send-me-free-xlm", "cant-do"],
-  ["q-edge-xlm-price-investment-advice", "speculation"],
-  ["q-edge-1xlm-activation-fee", "scam-check"]
+const CORPUS_DIR = path.join(QA_DIR, "corpus/battery");
+const LEDGER_PATH = path.join(QA_DIR, "corpus/migration-ledger.json");
+const REGISTER_PATH = path.join(QA_DIR, "consistency-register.json");
+const SAMPLE_SIZE = 30;
+const FRESHNESS = new Set(["stable", "scheduled", "live"]);
+const TRAPS = new Set([
+  "out-of-scope", "injection", "paid-bait", "fabrication-bait", "scam-check",
+  "speculation", "cant-do", "ambiguous", "governance"
 ]);
-const RAVEN_SPECIFIC_NONE = new Set([
-  "q-edge-stella-identity-model", // asks about raven's own agent brand/model
-  "q-edge-backend-query-injection", // names a raven-internal Airtable tool
-  "q-edge-ssrf-cloud-metadata-exfil", // targets raven's web-fetch tool (we have none)
-  "q-edge-stella-not-custodian" // "Stella" agent-brand custody confusion
+const TRUTH_DOMAINS = new Set(["real-world", "corpus-grounded", "mixed"]);
+const TRUTH_STATUSES = new Set(["confirmed", "disputed", "unverifiable", "mixed"]);
+const SOURCE_CLASSES = new Set(["A", "B", "C", "D", "E", "F"]);
+const CORROBORATION_VERDICTS = new Set([
+  "confirmed", "confirmed-as-of", "disputed", "unverifiable", "corpus-only", "contradicted"
+]);
+const DISPOSITIONS = new Set(["carry", "merge", "redefine", "retire"]);
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const MIGRATION_KEYFACT_EXCEPTIONS = new Map([
+  ["q-ti-cli-rust-windows-troubleshooting", 6],
+  ["q-ti-run-tune-own-horizon", 6],
+  ["q-ti-secret-key-custody-backend", 6],
+  ["q-ti-secret-key-vs-mnemonic-derivation", 6],
+  ["q-ti-self-host-core-rpc-full-history", 6],
+  ["q-ti-self-host-retention-backfill", 6],
+  ["q-ti-stellar-lab-usage-and-new-ui", 6],
+  ["q-ti-testnet-mainnet-migration", 6],
+  ["q-ti-xdr-decode-in-code", 6],
+  ["q-tool-cctp-stellar-integration", 7]
 ]);
 
-// trap subtype for KEPT governance-negative cases that still should answer
-function govTrapSubtype(id) {
-  if (/inject/.test(id)) return "injection";
-  if (/noinfo|no-info|fake/.test(id)) return "fabrication-bait";
-  if (/deep|exhaustive|no-deepresearch|budget/.test(id)) return "paid-bait";
-  if (/ambig/.test(id)) return "ambiguous";
-  return "governance";
+function sha256(value) {
+  return createHash("sha256").update(value).digest("hex");
 }
 
-// ---- frontmatter label extraction (simple tokens only, comments tolerated) --
-function frontmatterLabels(mdPath) {
-  const txt = readFileSync(mdPath, "utf8");
-  const grab = (re) => txt.match(re)?.[1];
-  return {
-    expectedService: grab(/^expected_service:\s*([a-z_]+)/m),
-    queryType: grab(/^query_type:\s*([a-z-]+)/m),
-    shouldFire: grab(/^should_fire:\s*(true|false)/m) === "true",
-    difficulty: grab(/^difficulty:\s*(easy|medium|hard)/m) ?? "medium",
-    // corpus curator's ground-truth confidence (their phase-4 review); no default —
-    // absent stays absent rather than inventing a rating
-    confidence: grab(/^confidence:\s*(high|medium|low)/m),
-    // sometimes quoted, and the literal `null` means "no horizon stated" — omit it;
-    // value kept verbatim (corpus vocab is wider than the documented set)
-    freshnessHorizon: ((h) => (h && h !== "null" ? h : undefined))(
-      grab(/^freshness_horizon:\s*"?([a-z-]+)"?/m)
-    )
+function json(file) {
+  return JSON.parse(readFileSync(file, "utf8"));
+}
+
+function walkJsonFiles(dir) {
+  const files = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) files.push(...walkJsonFiles(full));
+    else if (entry.isFile() && entry.name.endsWith(".json")) files.push(full);
+  }
+  return files;
+}
+
+function fail(file, message) {
+  throw new Error(`${path.relative(QA_DIR, file)}: ${message}`);
+}
+
+function nonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function assertStringArray(file, value, field, { min = 0, max = Infinity } = {}) {
+  if (!Array.isArray(value) || value.length < min || value.length > max || !value.every(nonEmptyString)) {
+    fail(file, `${field} must contain ${min}-${max === Infinity ? "many" : max} non-empty strings`);
+  }
+}
+
+function validateEvidence(file, evidence, field) {
+  if (!Array.isArray(evidence) || evidence.length === 0) fail(file, `${field} must be a non-empty array`);
+  for (const [index, item] of evidence.entries()) {
+    if (!item || typeof item !== "object" || !SOURCE_CLASSES.has(item.class) || !nonEmptyString(item.ref)) {
+      fail(file, `${field}[${index}] requires class A-F and a non-empty ref`);
+    }
+  }
+}
+
+function validateCase(file, kase) {
+  if (!kase || typeof kase !== "object" || Array.isArray(kase)) fail(file, "case must be an object");
+  if (!nonEmptyString(kase.id) || !/^q-[a-z0-9-]+$/.test(kase.id)) fail(file, "id must be a q-* kebab id");
+  if (path.basename(file) !== `${kase.id}.json`) fail(file, "filename must equal id + .json");
+  const category = path.basename(path.dirname(file));
+  if (kase.tags?.category !== category) fail(file, "parent directory must equal tags.category");
+  if (!QA_CATEGORIES.has(category)) fail(file, `unknown category ${category}`);
+  if (!nonEmptyString(kase.question)) fail(file, "question is required");
+  if (!Array.isArray(kase.surface) || !kase.surface.every(nonEmptyString)) fail(file, "surface must be a string array");
+  if (kase.tags?.service !== "none" && kase.surface.length === 0) fail(file, "surface is required unless service is none");
+  if (!nonEmptyString(kase.golden?.answer)) fail(file, "golden.answer is required");
+  const expectedLegacyCount = MIGRATION_KEYFACT_EXCEPTIONS.get(kase.id);
+  // Ten mechanically carried cases already have 6-7 judge-visible facts. The
+  // migration proof forbids changing them in C5; every other case is closed at
+  // five, and even these ids may not grow beyond their pinned migration count.
+  assertStringArray(file, kase.golden?.keyFacts, "golden.keyFacts", { min: 1, max: expectedLegacyCount ?? 5 });
+  if (expectedLegacyCount && kase.golden.keyFacts.length !== expectedLegacyCount) {
+    fail(file, `migration exception requires exactly ${expectedLegacyCount} golden.keyFacts until P4 consolidation`);
+  }
+  assertStringArray(file, kase.golden?.avoid, "golden.avoid");
+  if (kase.golden.notes !== undefined && typeof kase.golden.notes !== "string") fail(file, "golden.notes must be a string");
+  if (!QA_SERVICES.has(kase.tags?.service)) fail(file, `unknown service ${kase.tags?.service}`);
+  if (!FRESHNESS.has(kase.tags?.freshness)) fail(file, `unknown freshness ${kase.tags?.freshness}`);
+  if (kase.tags.trap !== undefined && !TRAPS.has(kase.tags.trap)) fail(file, `unknown trap ${kase.tags.trap}`);
+  if (!TRUTH_DOMAINS.has(kase.truth?.domain)) fail(file, `unknown truth.domain ${kase.truth?.domain}`);
+  if (!TRUTH_STATUSES.has(kase.truth?.status)) fail(file, `unknown truth.status ${kase.truth?.status}`);
+  const needsAsOf = kase.tags.freshness !== "stable" || kase.truth.status !== "confirmed";
+  if (needsAsOf && !DATE_RE.test(kase.truth.asOf ?? "")) fail(file, "truth.asOf is required as YYYY-MM-DD");
+  if (kase.truth.asOf !== undefined && !DATE_RE.test(kase.truth.asOf)) fail(file, "truth.asOf must be YYYY-MM-DD");
+  if (kase.tags.freshness === "scheduled" && !DATE_RE.test(kase.truth.reverifyBy ?? "")) {
+    fail(file, "scheduled cases require truth.reverifyBy as YYYY-MM-DD");
+  }
+  if (kase.truth.reverifyBy !== undefined && !DATE_RE.test(kase.truth.reverifyBy)) fail(file, "truth.reverifyBy must be YYYY-MM-DD");
+  validateEvidence(file, kase.truth?.sources, "truth.sources");
+  if (!nonEmptyString(kase.truth?.origin)) fail(file, "truth.origin is required");
+  if (!kase.truth?.verified || !DATE_RE.test(kase.truth.verified.date ?? "") || !nonEmptyString(kase.truth.verified.by)) {
+    fail(file, "truth.verified requires date and by");
+  }
+  assertStringArray(file, kase.truth.verified.evidence, "truth.verified.evidence", { min: 1 });
+  for (const [index, row] of (kase.truth.corroboration ?? []).entries()) {
+    if (!nonEmptyString(row?.claim) || !CORROBORATION_VERDICTS.has(row?.verdict)) {
+      fail(file, `truth.corroboration[${index}] has an invalid claim or verdict`);
+    }
+    validateEvidence(file, row.evidence, `truth.corroboration[${index}].evidence`);
+  }
+  return kase;
+}
+
+function validateRegister(register) {
+  const improvementFiles = [];
+  const improvementRoot = path.resolve(QA_DIR, "../../improvements");
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name.endsWith(".md")) improvementFiles.push(path.relative(path.resolve(QA_DIR, "../.."), full));
+    }
   };
+  walk(improvementRoot);
+  const serialized = JSON.stringify(register);
+  for (const match of serialized.matchAll(/improvements\/[a-z0-9-]+\/([a-z]{2,3}-\d{3})(?:-[a-z0-9-]+)?(?:\.md)?/g)) {
+    if (!improvementFiles.some((file) => path.basename(file).startsWith(`${match[1]}-`))) {
+      throw new Error(`consistency-register.json: unknown finding id ${match[1]}`);
+    }
+  }
+}
+
+function validateLedger(ledger, cases) {
+  const rows = Array.isArray(ledger) ? ledger : ledger?.rows ?? ledger?.entries;
+  if (!Array.isArray(rows)) throw new Error("migration-ledger.json: expected rows[]");
+  const byId = new Map(cases.map((kase) => [kase.id, kase]));
+  const seen = new Set();
+  for (const row of rows) {
+    const key = `${row.source ?? ""}\0${row.sourceId ?? ""}`;
+    if (!nonEmptyString(row.sourceId) || seen.has(key)) throw new Error(`migration-ledger.json: invalid/duplicate source ${key}`);
+    seen.add(key);
+    if (!DISPOSITIONS.has(row.disposition)) throw new Error(`migration-ledger.json: invalid disposition for ${row.sourceId}`);
+    if (["carry", "merge", "redefine"].includes(row.disposition) && (!Array.isArray(row.destination) || row.destination.length === 0)) {
+      throw new Error(`migration-ledger.json: ${row.sourceId} requires destination[]`);
+    }
+    if (["merge", "redefine", "retire"].includes(row.disposition) && !nonEmptyString(row.reason)) {
+      throw new Error(`migration-ledger.json: ${row.sourceId} requires reason`);
+    }
+    for (const id of row.destination ?? []) {
+      const destination = byId.get(id);
+      if (!destination) throw new Error(`migration-ledger.json: missing destination ${id}`);
+      if (["carry", "redefine"].includes(row.disposition) && !destination.truth.origin.includes(row.sourceId)) {
+        throw new Error(`migration-ledger.json: ${id} truth.origin does not name ${row.sourceId}`);
+      }
+    }
+  }
+  for (const kase of cases) {
+    if (kase.truth.origin.startsWith("authored ")) continue;
+    if (!rows.some((row) => (row.destination ?? []).includes(kase.id))) {
+      throw new Error(`migration-ledger.json: ${kase.id} is not a destination`);
+    }
+  }
+}
+
+function countBy(items, select) {
+  const counts = {};
+  for (const item of items) counts[select(item)] = (counts[select(item)] ?? 0) + 1;
+  return Object.fromEntries(Object.entries(counts).sort(([a], [b]) => a.localeCompare(b)));
+}
+
+function counts(cases) {
+  return {
+    total: cases.length,
+    byCategory: countBy(cases, (kase) => kase.tags.category),
+    byService: countBy(cases, (kase) => kase.tags.service),
+    byFreshness: countBy(cases, (kase) => kase.tags.freshness),
+    traps: countBy(cases.filter((kase) => kase.tags.trap), (kase) => kase.tags.trap)
+  };
+}
+
+function wrapper(cases, corpusContentSha256, comment) {
+  return { $comment: comment, schema: "qa-case-v1", corpusContentSha256, counts: counts(cases), cases };
 }
 
 function main() {
-  const args = process.argv.slice(2);
-  const argVal = (flag) => {
-    const i = args.indexOf(flag);
-    return i !== -1 ? args[i + 1] : undefined;
-  };
-  const corpusRoot = argVal("--corpus") ?? DEFAULT_CORPUS_ROOT;
-  const sampleN = argVal("--sample") ? Number(argVal("--sample")) : undefined;
-
-  const goldenPath = path.join(corpusRoot, "research/golden/compiled/golden.json");
-  const golden = JSON.parse(readFileSync(goldenPath, "utf8"));
-
-  const cases = [];
-  const skipped = [];
-
-  for (const src of [...golden].sort((a, b) => a.id.localeCompare(b.id))) {
-    const labels = frontmatterLabels(path.join(corpusRoot, src.sourceFile));
-    const service = SERVICE_MAP[labels.expectedService];
-
-    if (labels.expectedService === "perplexity" || labels.expectedService === "parallel") {
-      skipped.push({
-        id: src.id,
-        reason: `general-web service (${labels.expectedService}) not in this catalog`
-      });
-      continue;
-    }
-    if (!service) {
-      skipped.push({ id: src.id, reason: `unknown expected_service (${labels.expectedService})` });
-      continue;
-    }
-
-    let trap;
-    if (service === "none") {
-      if (RAVEN_SPECIFIC_NONE.has(src.id)) {
-        skipped.push({ id: src.id, reason: "trap targets raven-agent internals; does not translate" });
-        continue;
-      }
-      trap = TRAP_KEEP.get(src.id);
-      if (!trap) {
-        skipped.push({ id: src.id, reason: "none-trap beyond kept quota (10 curated representatives)" });
-        continue;
-      }
-    } else if (labels.queryType === "governance-negative") {
-      trap = govTrapSubtype(src.id);
-    }
-
-    const g = src.answerGuidance ?? {};
-    if (!src.canonicalAnswer || src.canonicalAnswer.trim().length < 40) {
-      skipped.push({ id: src.id, reason: "no usable golden answer" });
-      continue;
-    }
-
-    const notesParts = [];
-    if (g.notes) notesParts.push(g.notes.trim());
-    if (Array.isArray(g.shouldInclude) && g.shouldInclude.length > 0) {
-      notesParts.push("Also good if the answer: " + g.shouldInclude.map((s) => s.trim()).join(" | "));
-    }
-    if (Array.isArray(g.mustCite) && g.mustCite.length > 0) {
-      notesParts.push("Golden cites: " + g.mustCite.map((s) => s.trim()).join(" | "));
-    }
-
-    cases.push({
-      id: src.id,
-      question: src.question,
-      golden: {
-        answer: src.canonicalAnswer.trim(),
-        keyFacts: (g.mustInclude ?? []).map((s) => s.trim()),
-        avoid: (g.mustAvoid ?? []).map((s) => s.trim()),
-        sources: src.sources ?? []
-      },
-      tags: {
-        category: src.category,
-        service, // stellarDocs | scout | lumenloop | none
-        difficulty: labels.difficulty,
-        ...(labels.confidence ? { confidence: labels.confidence } : {}),
-        freshness: Boolean(src.freshnessSensitive),
-        ...(labels.freshnessHorizon ? { freshnessHorizon: labels.freshnessHorizon } : {}),
-        ...(trap ? { trap } : {})
-      },
-      graderNotes: notesParts.join("\n")
-    });
-  }
-
-  // ---- hand-authored golden overrides (eval-side corrections; archive stays verbatim)
-  // Overrides are stop-gaps wearing their provenance: an override without live evidence
-  // and a root-cause capture is a patch hiding a defect. Enforced structurally, not by
-  // convention — an entry missing any of the three fields fails the compile.
-  const overridesPath = path.join(QA_DIR, "golden-overrides.json");
-  const overrides = JSON.parse(readFileSync(overridesPath, "utf8")).overrides ?? {};
-  for (const [id, o] of Object.entries(overrides)) {
-    const missing = [];
-    if (typeof o.why !== "string" || o.why.trim().length < 20) missing.push("why (string, ≥20 chars)");
-    if (!Array.isArray(o.evidence) || o.evidence.length === 0) missing.push("evidence (non-empty array — live re-execution provenance)");
-    if (!Array.isArray(o.rootCause) || o.rootCause.length === 0) {
-      missing.push("rootCause (non-empty array — improvements/ finding path, solo:// ref, or explicit eval-side rationale)");
-    }
-    if (!["real-world", "corpus-grounded", "mixed"].includes(o.truthDomain)) {
-      missing.push('truthDomain ("real-world" | "corpus-grounded" | "mixed" — see .claude/skills/golden-truth)');
-    }
-    if (!Array.isArray(o.corroboration) || o.corroboration.length === 0) {
-      missing.push("corroboration (non-empty array — the multi-source verification matrix per .claude/skills/golden-truth; the aggregator never corroborates itself)");
-    }
-    if (o.tags !== undefined) {
-      if (o.tags === null || typeof o.tags !== "object" || Array.isArray(o.tags)) {
-        missing.push("tags (object when present)");
-      } else {
-        const unsupported = Object.keys(o.tags).filter((key) => !["freshness", "freshnessHorizon"].includes(key));
-        if (unsupported.length > 0) missing.push(`tags (unsupported keys: ${unsupported.join(", ")})`);
-        if (o.tags.freshness !== undefined && typeof o.tags.freshness !== "boolean") {
-          missing.push("tags.freshness (boolean)");
-        }
-        if (o.tags.freshnessHorizon !== undefined && (typeof o.tags.freshnessHorizon !== "string" || o.tags.freshnessHorizon.trim() === "")) {
-          missing.push("tags.freshnessHorizon (non-empty string)");
-        }
-      }
-    }
-    if (missing.length > 0) {
-      throw new Error(`golden-overrides.json entry "${id}" is missing ${missing.join("; ")}`);
-    }
-  }
-  const overridesApplied = [];
-  for (const c of cases) {
-    const o = overrides[c.id];
-    if (!o) continue;
-    for (const [k, v] of Object.entries(o.golden ?? {})) c.golden[k] = v;
-    for (const [k, v] of Object.entries(o.tags ?? {})) c.tags[k] = v;
-    const notes = applyGraderNotesOverride(c.graderNotes, o, c.id);
-    c.graderNotes = notes.effective;
-    if (notes.history.length > 0) c.graderNotesHistory = notes.history;
-    overridesApplied.push(c.id);
-  }
-  const staleOverrides = Object.keys(overrides).filter((id) => !overridesApplied.includes(id));
-  if (staleOverrides.length > 0) {
-    console.warn(`WARN: golden-overrides target ids not in kept cases: ${staleOverrides.join(", ")}`);
-  }
-
-  // ---- counts ----------------------------------------------------------------
-  const countBy = (arr, fn) => {
-    const m = {};
-    for (const x of arr) {
-      const k = fn(x);
-      m[k] = (m[k] ?? 0) + 1;
-    }
-    return Object.fromEntries(Object.entries(m).sort());
-  };
-  const counts = {
-    corpusTotal: golden.length,
-    kept: cases.length,
-    skipped: skipped.length,
-    byService: countBy(cases, (c) => c.tags.service),
-    byCategory: countBy(cases, (c) => c.tags.category),
-    byDifficulty: countBy(cases, (c) => c.tags.difficulty),
-    byConfidence: countBy(cases, (c) => c.tags.confidence ?? "unstated"),
-    freshnessSensitive: cases.filter((c) => c.tags.freshness).length,
-    byFreshnessHorizon: countBy(cases, (c) => c.tags.freshnessHorizon ?? "unstated"),
-    traps: countBy(cases.filter((c) => c.tags.trap), (c) => c.tags.trap),
-    skipReasons: countBy(skipped, (s) => s.reason)
-  };
-
-  const out = {
-    $comment:
-      "Golden Q→A answer-accuracy battery. Compiled from the raven-next golden corpus " +
-      "(content only; our own format — see eval/qa/README.md). Regenerate: node eval/qa/compile-qa.mjs",
-    corpus: path.relative(REPO_ROOT, goldenPath),
-    overrides: { source: "eval/qa/golden-overrides.json", applied: overridesApplied },
-    mapping: SERVICE_MAP,
-    counts,
-    cases,
-    skipped
-  };
-  writeFileAtomic(CASES_PATH, JSON.stringify(out, null, 2) + "\n");
-  console.log(`wrote ${CASES_PATH}`);
-  console.log(JSON.stringify(counts, null, 2));
-
-  if (sampleN) {
-    const picked = stratifiedSample(cases, sampleN);
-    const samplePath = path.join(QA_DIR, "sample.json");
-    writeFileAtomic(
-      samplePath,
-      JSON.stringify(
-        {
-          $comment: `Deterministic stratified sample (N=${sampleN}, by service) of cases.json.`,
-          counts: { total: picked.length, byService: countBy(picked, (c) => c.tags.service) },
-          cases: picked
-        },
-        null,
-        2
-      ) + "\n"
-    );
-    console.log(`wrote ${samplePath} (${picked.length} cases)`);
-  }
+  if (process.argv.length > 2) throw new Error("compile-qa.mjs takes no arguments; it always emits cases.json and sample.json");
+  const seen = new Set();
+  const cases = walkJsonFiles(CORPUS_DIR).map((file) => {
+    const kase = validateCase(file, json(file));
+    if (seen.has(kase.id)) fail(file, `duplicate id ${kase.id}`);
+    seen.add(kase.id);
+    return kase;
+  }).sort((a, b) => a.id.localeCompare(b.id));
+  if (!existsSync(LEDGER_PATH) || !existsSync(REGISTER_PATH)) throw new Error("migration ledger and consistency register are required");
+  validateLedger(json(LEDGER_PATH), cases);
+  validateRegister(json(REGISTER_PATH));
+  const corpusContentSha256 = sha256(JSON.stringify(cases));
+  const sample = stratifiedSample(cases, SAMPLE_SIZE);
+  writeFileAtomic(CASES_PATH, `${JSON.stringify(wrapper(cases, corpusContentSha256, "Generated owned QA battery. Regenerate with npm run eval:qa:compile."), null, 2)}\n`);
+  writeFileAtomic(SAMPLE_PATH, `${JSON.stringify(wrapper(sample, corpusContentSha256, `Deterministic stratified sample (N=${SAMPLE_SIZE}, by service) of the owned QA battery.`), null, 2)}\n`);
+  console.log(`wrote ${CASES_PATH} (${cases.length} cases; sha256 ${corpusContentSha256})`);
+  console.log(`wrote ${SAMPLE_PATH} (${sample.length} cases)`);
 }
 
 main();

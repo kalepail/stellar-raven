@@ -55,7 +55,7 @@ Examples:
   npm run eval:playground -- --dry-run
   npm run eval:playground -- --confirm-paid --sample 5 --seed baseline-a
   npm run eval:playground -- --confirm-paid --ids q-aas-burn-clawback-redemption-mechanics
-  npm run eval:playground -- --confirm-paid --cases eval/qa/live-cases.json --full
+  npm run eval:playground -- --confirm-paid --cases eval/qa/corpus/live/live-cases.json --full
 `;
 }
 
@@ -391,6 +391,10 @@ async function main() {
       id: item.id,
       question: item.question,
       tags: item.tags,
+      truth: {
+        status: item.truth.status,
+        ...(item.truth.asOf ? { asOf: item.truth.asOf } : {})
+      },
       answer: run.answer,
       transcript: run.transcript,
       frames: run.frames,

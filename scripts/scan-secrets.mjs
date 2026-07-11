@@ -60,6 +60,9 @@ const KNOWN_PUBLIC = new Set([
 // C/D) — layers A/B still apply everywhere.
 const IGNORE_GLOBS = [
   /^eval\/corpus\//,
+  // Public per-case SHA-256 maps include ids ending in "auth"/"token";
+  // line-oriented assignment heuristics otherwise misclassify those hashes.
+  /^eval\/qa\/consistency-register\.json$/,
   /\.(gz|zip|tar|tgz|png|jpg|jpeg|gif|pdf|webp|ico|woff2?)$/i,
 ];
 

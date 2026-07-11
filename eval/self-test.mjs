@@ -233,12 +233,10 @@ check("frontmatterRouting: extracts service, fire flag, and both card lists", ()
 // --- content-pinned hand-authored QA lane contracts (todo 913) --------------------
 const caseContentDigest = (cases) => createHash("sha256").update(JSON.stringify(cases)).digest("hex");
 
-check("live-data-canonical-v1 pins membership and full case content", () => {
-  const canonical = JSON.parse(readFileSync(new URL("./qa/live-cases.json", import.meta.url), "utf8"));
-  assert.equal(canonical.contract, "live-data-canonical-v1");
-  assert.deepEqual(
-    canonical.cases.map((c) => c.id),
-    [
+check("live-data-canonical-v2 pins contract, ordered membership, and full case content", () => {
+  const canonical = JSON.parse(readFileSync(new URL("./qa/corpus/live/live-cases.json", import.meta.url), "utf8"));
+  assert.equal(canonical.contract, "live-data-canonical-v2");
+  const expectedMembership = [
       "q-live-rfps-open-now",
       "q-live-rfps-passkey-smart-account",
       "q-live-hackathon-recent-winners",
@@ -249,15 +247,16 @@ check("live-data-canonical-v1 pins membership and full case content", () => {
       "q-live-ll-scf-latest-round",
       "q-live-ll-regions-vocab",
       "q-live-trap-market-price"
-    ]
-  );
+    ];
+  assert.deepEqual(canonical.membership, expectedMembership);
+  assert.deepEqual(canonical.cases.map((c) => c.id), expectedMembership);
   const services = canonical.cases.map((c) => c.tags.service);
   assert.deepEqual(
     Object.fromEntries([...new Set(services)].sort().map((service) => [service, services.filter((x) => x === service).length])),
     { lumenloop: 2, none: 1, scout: 7 }
   );
   assert.equal(canonical.cases.find((c) => c.tags.service === "none")?.tags.trap, "cant-do");
-  const expectedDigest = "efa0e4e1655ac7d09d446c49f480939aa4bbeeb3152081717ceaefe54645d790";
+  const expectedDigest = "d5fd27a15c3ef0dd711df565e9809c15ebfb6d62f1a414738f47f41484866a90";
   assert.equal(caseContentDigest(canonical.cases), expectedDigest);
   assert.equal(
     canonical.contractProvenance.caseContentDigest,
@@ -265,20 +264,19 @@ check("live-data-canonical-v1 pins membership and full case content", () => {
   );
 });
 
-check("live-digest-supplement-v1 pins membership and full case content", () => {
-  const canonical = JSON.parse(readFileSync(new URL("./qa/live-cases.json", import.meta.url), "utf8"));
+check("live-digest-supplement-v2 pins contract, ordered membership, and full case content", () => {
+  const canonical = JSON.parse(readFileSync(new URL("./qa/corpus/live/live-cases.json", import.meta.url), "utf8"));
   const supplement = JSON.parse(
-    readFileSync(new URL("./qa/live-digest-supplement-cases.json", import.meta.url), "utf8")
+    readFileSync(new URL("./qa/corpus/live/live-digest-supplement-cases.json", import.meta.url), "utf8")
   );
-  assert.equal(supplement.contract, "live-digest-supplement-v1");
-  assert.deepEqual(
-    supplement.cases.map((c) => c.id),
-    ["q-live-digest-rwa-recent", "q-live-digest-blend-coverage"]
-  );
+  assert.equal(supplement.contract, "live-digest-supplement-v2");
+  const expectedMembership = ["q-live-digest-rwa-recent", "q-live-digest-blend-coverage"];
+  assert.deepEqual(supplement.membership, expectedMembership);
+  assert.deepEqual(supplement.cases.map((c) => c.id), expectedMembership);
   assert.ok(supplement.cases.every((c) => c.tags.service === "lumenloop"));
   const canonicalIds = new Set(canonical.cases.map((c) => c.id));
   assert.ok(supplement.cases.every((c) => !canonicalIds.has(c.id)));
-  const expectedDigest = "0997e6ffa22a9ca164898dda3895af1c1777ea031de4601696ef741db246a664";
+  const expectedDigest = "a0e8ec59360c27d7acb50ff4ee76240cfc78c87e73204b1ecc458ce865e11900";
   assert.equal(caseContentDigest(supplement.cases), expectedDigest);
   assert.equal(
     supplement.contractProvenance.caseContentDigest,

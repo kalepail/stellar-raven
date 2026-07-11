@@ -43,7 +43,7 @@ function main() {
         const text = String(fact ?? "").trim();
         if (!text) continue;
         const klass = classifyMissingFact(text);
-        groups[klass].push({ file: path.basename(file), id: row.id, text });
+        groups[klass].push({ file: path.basename(file), id: row.id, truth: row.truth ?? null, text });
         factCount += 1;
       }
     }

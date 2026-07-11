@@ -9,10 +9,10 @@ describe("live evidence pack for the per-operation A/B arm", () => {
       golden: {
         answer: "Use the current returned winner.",
         keyFacts: ["Names the live returned winner."],
-        avoid: ["Do not invent a winner absent from returned data."]
+        avoid: ["Do not invent a winner absent from returned data."],
+        notes: "Behavioral live-data case."
       },
-      tags: { liveData: true, freshness: true },
-      graderNotes: "Behavioral live-data case."
+      tags: { freshness: "live" }
     };
     const direct = buildTranscriptEvidence({
       ...common,
