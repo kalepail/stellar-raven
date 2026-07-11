@@ -5,14 +5,16 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
+    "answer": "A grounded answer obtains the requested current value or state from the live Stellar Scout directory or research data, states the measurement basis, and makes the observation date visible. As of 2026-07-10, the verified sources supported this observed answer:\n\nThe **Soroban Security Audit Bank** is an SDF-funded SCF supporting program that pays eligible third-party audit costs for SCF-funded projects; it is not a cash Build grant or vulnerability bounty. Coverage can reach **100% of audit cost**, with no published fixed dollar cap. Current scope includes testnet/nearly-mainnet projects and qualifying projects already on mainnet or seeking follow-up audits. Priority categories are **Financial Protocols, Widely Used Applications, Infrastructure Contracts, and Yield-Bearing Token Protocols**. For an ordinary initial audit, the project pays **5% upfront**, refundable if all critical/high/medium findings are remediated within 20 business days; specified Growth/Scale cohorts may have 0% initial copay, while pre-traction follow-up audits use higher 20% then 50% copays. Terms are current as of 2026-07-10 and should be rechecked.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value."
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+      "Explains the current Audit Bank purpose and eligibility boundary."
     ],
     "avoid": [
       "Do NOT describe the Audit Bank as cash funding or the SDF Bug Bounty.",
       "Do NOT invent a fixed dollar cap, claim it is pre-mainnet-only, or generalize the refundable 5% initial copay to every audit.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present a changeable current measurement without its provider, scope, and observation date; registered invariants and explicitly historical quantities are not current measurements."
     ],
     "notes": "GT-36 CORRECTION 2026-07-10: grade up-to-100% cost coverage, four current priority categories, qualifying pre/post-mainnet and follow-up paths, and conditional copay semantics. The inherited avoid was truncated and is replaced in full.\nGT-36 independently confirmed by processes 3290/3291."
   },
@@ -24,7 +26,7 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "A",
@@ -59,13 +61,17 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 65 (q-scf-audit-bank): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://stellar.org/grants-and-funding/soroban-audit-bank"
+        "Solo scratchpad 575 GT-36 primary 3290 and blind 3291; corrupted effective avoid verified against vendored source.",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "Eval-side stale scope compression plus mechanically truncated avoid text.",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-scf-audit-bank"

@@ -5,9 +5,10 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Frames Stellar as useful for fast low-cost settlement but not a complete remittance business by itself. Explains the corridor design needs source on-ramp, Stellar settlement asset, FX/quote path, destination off-ramp, KYC/AML/sanctions, liquidity, reconciliation, and customer support (the business architecture, not just a protocol). Drives stablecoin selection by issuer quality, liquidity, destination/geography, redemption, and regulatory fit (e.g. USDC vs EURC vs a local-currency stablecoin) rather than defaulting to XLM or one asset universally.",
+    "answer": "A grounded answer derives its named examples and status claims from the live Stellar Scout directory or research data, then dates the roster so it is not presented as permanent. As of 2026-06-29, the verified sources supported this observed answer:\n\nStellar can be a good settlement layer for a remittance business because it gives fast settlement, standardized anchor protocols, and liquid stablecoin rails, but it is not a complete remittance company by itself. A real corridor needs: source on-ramp, customer onboarding/KYC, settlement asset, FX/quote path, destination off-ramp, liquidity/float, sanctions/fraud controls, reconciliation, refunds, customer support, and legal/compliance coverage in each jurisdiction.\n\nMap rails to the job. SEP-1 lets wallets discover anchor metadata; SEP-10 authenticates account control; SEP-12 handles KYC/customer data; SEP-24/SEP-6 handle deposit and withdrawal flows; SEP-31 handles cross-border payments; SEP-38 gives price/FX quotes. MoneyGram Access is an example of a USDC cash-in/cash-out integration using SEP-10 and SEP-24, not proof that every remittance corridor is available.\n\nStablecoin choice should be corridor-specific: use issuer quality, liquidity, redemption, geography, compliance fit, and anchor support rather than defaulting universally to XLM or one stablecoin. Most founders should first integrate existing anchors/ramp partners in a narrow corridor, measure quote quality and failure handling, and only become an anchor where owning licensing, payout rails, liquidity, and support creates an advantage.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
       "Frames Stellar as useful for fast low-cost settlement but not a complete remittance business by itself.",
       "Explains the corridor design needs source on-ramp, Stellar settlement asset, FX/quote path, destination off-ramp, KYC/AML/sanctions, liquidity, reconciliation, and customer support (the business architecture, not just a protocol).",
       "Drives stablecoin selection by issuer quality, liquidity, destination/geography, redemption, and regulatory fit (e.g. USDC vs EURC vs a local-currency stablecoin) rather than defaulting to XLM or one asset universally."
@@ -15,7 +16,7 @@
     "avoid": [
       "Do NOT give legal or licensing advice as definitive for all jurisdictions.",
       "Do NOT imply Stellar removes the need for fiat partners, KYC/AML, liquidity, or customer remediation.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present the observed live result set as a complete or permanent roster; explicitly historical facts remain historical."
     ],
     "notes": "2026-06-29: Differentiated toward stablecoin-selection + business architecture — promoted stablecoin-choice to a 5-weight must_have, demoted the SEP rail-map to should_have (the rail-map lane is owned by q-crp-become-an-anchor-licensing). Specific corridor/provider recommendations still require fresh provider checks; architecture/stablecoin-selection guidance is high confidence.\nAlso good if the answer: Maps relevant SEP rails as applicable: SEP-1 discovery, SEP-10 auth, SEP-12 KYC, SEP-24/6 deposit-withdrawal, SEP-31 cross-border payments, SEP-38 quotes. | Mentions integrating existing anchors is usually lower lift than becoming an anchor in every corridor.\nGolden cites: Stellar SEP/anchor docs plus dated corridor/provider sources for concrete recommendations."
   },
@@ -27,7 +28,7 @@
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-06-29",
     "sources": [
       {
         "class": "A",
@@ -52,13 +53,16 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 16 (q-crp-remittance-founder-advisory): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://developers.stellar.org/docs/learn/fundamentals/anchors"
+        "solo://proj/49/scratchpad/truth-maintenance-20--575",
+        "Preserved main's 2026-06-29 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-crp-remittance-founder-advisory"

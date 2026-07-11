@@ -5,16 +5,18 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Gives a venue-specific deposit/withdraw checklist and distinguishes classic pool-share operations from Soroban contract/vault flows. Covers liquidity, issuer, contract/admin, oracle/keeper, reward-token, lock/queue, and withdrawal risks.",
+    "answer": "A grounded answer derives its named examples and status claims from the live Stellar Scout directory or research data, then dates the roster so it is not presented as permanent. As of 2026-07-10, the verified sources supported this observed answer:\n\nStart by identifying the exact venue and asset contracts/issuers. For a **classic Stellar constant-product pool**, establish the asset trustlines and pool-share trustline, submit `LiquidityPoolDeposit` with price bounds/minimums, retain the non-transferable pool shares, and later use `LiquidityPoolWithdraw` for a pro-rata redemption; classic pools charge the protocol-defined swap fee. For a **Soroban venue or vault**, review/approve the exact contract flow and verify admin/upgrades, reward contracts, oracle/keeper dependencies, lock or withdrawal queues, and current UI-contract provenance—mechanics are not interchangeable.\n\nCompare returns in separate dated components: swap-fee APR, reward-token emissions, lending/vault yield, and costs/slippage. **Impermanent loss** is LP underperformance versus simply holding the two reserve assets after their relative price changes; withdrawing realizes that relative outcome, and fees/incentives may or may not offset it. Check pool depth, volume, asset/issuer risk, contract/admin risk, oracle/keeper risk, reward-token price, lock/queue terms, and whether exits currently work. Use small test amounts. Never treat APY/TVL or withdrawals as guaranteed.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
-      "Gives a venue-specific deposit/withdraw checklist and distinguishes classic pool-share operations from Soroban contract/vault flows.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+      "Gives a venue-specific deposit/withdraw checklist.",
+      "Distinguishes classic pool-share operations from Soroban contract/vault flows.",
       "Covers liquidity, issuer, contract/admin, oracle/keeper, reward-token, lock/queue, and withdrawal risks."
     ],
     "avoid": [
       "Do NOT promise returns, freeze APY/TVL, or assume all Stellar LP venues share the same deposit/withdraw mechanics.",
       "Do NOT describe impermanent loss as a guaranteed permanent loss before comparing the LP position with holding and accounting for fees/incentives.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present the observed live result set as a complete or permanent roster; explicitly historical facts remain historical."
     ],
     "notes": "Do not preserve any APY/TVL number without a date. Phase 3 should re-check protocol UIs/DeFiLlama if a numeric yield/TVL claim appears. REVIEWED 2026-06-29: re-verified named LP/swap venues live on Scout — Soroswap (first Soroban DEX/aggregator, Live), Aquarius (AMM/AQUA, Live), Phoenix (DeFi Hub AMM, PHO, Live); Soroswap aggregates Soroswap/Phoenix/Aquarius liquidity. No static APY/TVL numbers asserted in the gospel (risk-framed, source-gated) — kept that way. Stellar-docs SDEX/liquidity-pools source URL returns 200.\nAlso good if the answer: Explains withdrawal may depend on pool liquidity, protocol health, wallet support, lockups/incentive terms, and contract state. | Mentions comparing net returns after fees, slippage, incentives, and asset price exposure.\nGolden cites: Current protocol/project sources or Scout records for any named yield/liquidity claim.\nExpanded 2026-07-10. The answer must be operational and risk-specific, not merely a warning against yield promotion."
   },
@@ -26,7 +28,7 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "A",
@@ -67,13 +69,17 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 27 (q-defi-provide-liquidity-impermanent-loss): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://developers.stellar.org/docs/learn/fundamentals/liquidity-on-stellar-sdex-liquidity-pools"
+        "Solo scratchpad 575 GT-16 primary 3244 and blind 3245",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "eval-side answer completeness: correct warnings did not answer deposit/withdraw, yield comparison, or impermanent-loss mechanics",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-defi-provide-liquidity-impermanent-loss"

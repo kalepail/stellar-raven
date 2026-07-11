@@ -10,14 +10,16 @@
     "lumenloop.search_directory"
   ],
   "golden": {
-    "answer": "Use `lumenloop.get_categories`, `lumenloop.get_project`, `lumenloop.get_project_tags_vocabulary`, `lumenloop.get_regions`, `lumenloop.get_tags_vocabulary`, `lumenloop.search_directory` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
+    "answer": "A grounded answer derives its named examples and status claims from the current LumenLoop corpus, then dates the roster so it is not presented as permanent. As of 2026-07-11, the region source returned 95 values and visibly contained case variants such as `africa` and `Africa`, so it was not a clean enum.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via lumenloop.get_categories, lumenloop.get_project, lumenloop.get_project_tags_vocabulary, lumenloop.get_regions, lumenloop.get_tags_vocabulary, lumenloop.search_directory and reports their source and as-of date without freezing a roster, rank, count, or current value."
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+      "Characterizes the returned region values as variant-prone free text rather than a canonical enum."
     ],
     "avoid": [
       "Do NOT call these values canonical, normalized, or shared with Scout builders.",
       "Do NOT cite the Scout builders page as the source for Lumenloop project-region values.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present a changeable current measurement without its provider, scope, and observation date; registered invariants and explicitly historical quantities are not current measurements."
     ],
     "notes": "GT-35 CORRECTION 2026-07-10: get_regions is a dated raw distinct-value list for project geography, not a controlled enum or builder taxonomy. Grade truthful scoping, live enumeration, and duplicate/alias disclosure.\nTreat count and members as freshness-sensitive despite the inherited static tag; ll-003 owns normalization recurrence."
   },
@@ -65,13 +67,18 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 7 (q-builder-lumenloop-regions-vocab): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://api.lumenloop.com/v1/tools/get_regions"
+        "Solo scratchpad 575 GT-35 primary 3287 and blind 3289; 2026-07-10 recurrence.",
+        "2026-07-11 localhost:8787 search→execute probe observed: the region source returned 95 values and visibly contained case variants such as `africa` and `Africa`, so it was not a clean enum.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "A desired future normalization contract was presented as current truth.",
+        "improvements/lumenloop/ll-003-region-vocabulary-free-text.md",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-builder-lumenloop-regions-vocab"

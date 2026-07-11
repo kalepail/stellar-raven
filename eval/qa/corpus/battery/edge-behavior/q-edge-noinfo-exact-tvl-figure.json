@@ -5,15 +5,16 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Requires provider, endpoint, retrieval/as-of time, inclusion basis, and pricing methodology.",
+    "answer": "A grounded answer obtains the requested current value or state from the live Stellar Scout directory or research data, states the measurement basis, and makes the observation date visible. As of 2026-07-10, the verified sources supported this observed answer:\n\nThere is no protocol-defined, universally exact Stellar DeFi TVL **as of this moment**. A provider snapshot may be quoted, but it must carry the provider and endpoint/dashboard, retrieval time, provider data-as-of time if supplied, tracked-protocol inclusion rule, and pricing methodology. On 2026-07-10, DefiLlama's API, page, and completed daily series exposed different values in the same broad observation window; the API's many decimal places represented its current calculation, not objective to-the-dollar truth. Re-query before answering, label the result as provider-scoped, and do not silently sum overlapping protocol, RWA, and asset rows. An approximate range is optional, not mandatory, when a properly scoped live snapshot is available.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
       "Requires provider, endpoint, retrieval/as-of time, inclusion basis, and pricing methodology."
     ],
     "avoid": [
       "Do NOT present any provider value as an exact objective chain fact.",
       "Do NOT claim Raven cannot access a live scalar, assert that TVL necessarily moves block-by-block, or silently combine incompatible scopes.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present a changeable current measurement without its provider, scope, and observation date; registered invariants and explicitly historical quantities are not current measurements."
     ],
     "notes": "GT-25 CORRECTION 2026-07-10: precise live provider scalars are accessible, but they are provider-defined snapshots rather than universal truth. Grade provider/endpoint/as-of/method scope and no false exactness; do not require an approximate range or claim block-by-block movement.\nGT-25 independently confirmed by processes 3268/3273; reuse sls-031/sls-038 rather than duplicate findings."
   },
@@ -26,7 +27,7 @@
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "D",
@@ -67,13 +68,20 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 41 (q-edge-noinfo-exact-tvl-figure): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://defillama.com/data-definitions"
+        "Solo scratchpad 575 GT-25 primary 3268 and blind 3273; both independently observed DefiLlama /v2/chains value 229093918.7739924 at separate times.",
+        "Existing improvements/stellar-light-scout/sls-031 and sls-038 cover provenance and ecosystem-rollup contract gaps.",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "improvements/stellar-light-scout/sls-031-tvl-methodology-provenance.md",
+        "improvements/stellar-light-scout/sls-038-analyze-tvl-contract-mismatch.md",
+        "Eval-side aggregation/cadence explanation was overclaimed.",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-edge-noinfo-exact-tvl-figure"

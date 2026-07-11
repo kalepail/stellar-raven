@@ -6,17 +6,18 @@
     "stellarDocs.search_soroban_contract_docs"
   ],
   "golden": {
-    "answer": "Use `stellarDocs.search_sdk_cli_tools_docs`, `stellarDocs.search_soroban_contract_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Explains `stellar contract build` is a wrapper around Cargo that selects `wasm32v1-none`, release profile, and Stellar contract build settings automatically. Explains why `wasm32-unknown-unknown` is wrong for Rust 1.82+ Soroban builds: it enables Wasm features unsupported by the Soroban runtime. Fixes `can't find crate for core` by installing/reinstalling the target with `rustup target add wasm32v1-none` for the active Rust toolchain.",
+    "answer": "A grounded answer derives its named examples and status claims from the current official Stellar documentation, then dates the roster so it is not presented as permanent. As of 2026-07-11, the current documentation search returned build examples using `stellar contract build` and output under `target/wasm32v1-none/release/`.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Executes the current documented lookup/workflow via stellarDocs.search_sdk_cli_tools_docs, stellarDocs.search_soroban_contract_docs and labels version, UI, provider, and availability claims as observed.",
-      "Explains `stellar contract build` is a wrapper around Cargo that selects `wasm32v1-none`, release profile, and Stellar contract build settings automatically.",
-      "Explains why `wasm32-unknown-unknown` is wrong for Rust 1.82+ Soroban builds: it enables Wasm features unsupported by the Soroban runtime.",
-      "Fixes `can't find crate for core` by installing/reinstalling the target with `rustup target add wasm32v1-none` for the active Rust toolchain."
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+      "Names `wasm32v1-none` as the current build target for new Soroban contracts.",
+      "Explains that `stellar contract build` selects the target and release profile.",
+      "Explains why `wasm32-unknown-unknown` is unsuitable for current Soroban builds.",
+      "Fixes a missing `core` crate by installing the target for the active Rust toolchain."
     ],
     "avoid": [
       "Do not use the misspelled target `wasm32v1- none` or old `wasm32-unknown-unknown` guidance as the final answer.",
       "Do not tell users to hand-edit generated Wasm or bypass the CLI without explaining the target and release profile.",
-      "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
+      "Do NOT present the observed live result set as a complete or permanent roster; explicitly historical facts remain historical."
     ],
     "notes": "Verified with Stellar Docs MCP and local `stellar contract build --help` from CLI 25.2.0. The dossier mentions newer protocol/SDK releases, but the target guidance is stable in current docs.\nAlso good if the answer: Mentions output path `target/wasm32v1-none/release/<contract>.wasm`. | Notes target installation is per toolchain, so after Rust upgrades the target may need reinstalling.\nGolden cites: Must cite current Stellar setup/Hello World or Rust dialect docs for `wasm32v1-none`. | Freshness-sensitive answer should cite a dated/current official docs source or local CLI evidence."
   },
@@ -53,13 +54,16 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 90 (q-sor-build-target-wasm32v1): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
-        "Current source retained for behavioral retrieval: https://developers.stellar.org/docs/build/smart-contracts/getting-started/hello-world"
+        "solo://proj/49/scratchpad/truth-maintenance-20--575",
+        "2026-07-11 localhost:8787 search→execute probe observed: the current documentation search returned build examples using `stellar contract build` and output under `target/wasm32v1-none/release/`.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-sor-build-target-wasm32v1"

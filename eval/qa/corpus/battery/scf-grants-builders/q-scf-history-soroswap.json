@@ -6,16 +6,17 @@
     "lumenloop.get_scf_submissions"
   ],
   "golden": {
-    "answer": "Use `lumenloop.find_similar_scf_submissions`, `lumenloop.get_scf_submissions` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Resolves Soroswap (the Stellar/Soroban DEX/AMM) and returns its SCF submission history. Answers whether it was SCF-funded and the shape of the history — 3 numbered rounds (15, 17, 21) and/or 4 awarded submissions including the '24 Q1 Liquidity Award — grounded in the submissions record.",
+    "answer": "A grounded answer consults the current LumenLoop corpus, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-11, the live submission lookup returned four Soroswap awards, including records for rounds 15, 17, and 21.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via lumenloop.find_similar_scf_submissions, lumenloop.get_scf_submissions and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
       "Resolves Soroswap (the Stellar/Soroban DEX/AMM) and returns its SCF submission history.",
       "Answers whether it was SCF-funded and the shape of the history — 3 numbered rounds (15, 17, 21) and/or 4 awarded submissions including the '24 Q1 Liquidity Award — grounded in the submissions record."
     ],
     "avoid": [
       "Do NOT state per-round dollar figures without sourcing them to the submissions record or communityfund.stellar.org (unsourced figures that contradict the record's 57,600 / 139,150 / 100,000 / 50,000 are wrong).",
       "Do NOT confuse Soroswap with Soroban (the smart-contract platform) or with another DEX.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "Per-project SCF history. 'Has X been funded' phrasing borders on find_similar_scf_submissions, but a named project → get_scf_submissions. Verified 2026-06-29 via /api/projects: Soroswap scf.awarded=true, totalAwarded=$346,750, category Protocol/Contract, awardedRounds [15,17,21] (3 rounds). Funding total is live → freshness-sensitive.\nAlso good if the answer: Reports the award type(s) (e.g. Build) where the record shows them.\nGolden cites: Soroswap's SCF submissions record (Lumenloop) / its communityfund project page.\nThe live submissions record and canonical official project page carry SCF #15 $57,600 + SCF #17 $139,150 + SCF #21 $100,000 + Liquidity Award '24 Q1 $50,000 = $346,750 exactly. GT-38 independently re-confirmed the structure on 2026-07-10. Record-consistent per-submission detail is not fabrication: '3 numbered rounds' and '4 awarded submissions' are both correct framings."
   },
@@ -92,13 +93,22 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 73 (q-scf-history-soroswap): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://communityfund.stellar.org/project/soroswapfinance-yax"
+        "Live production execute 2026-07-07: lumenloop.get_scf_submissions({slug:'soroswap'}) -> 4 submissions with award_type + budget exactly as quoted; scout soroswap record scfTotalAwardedUSD 346750 'disclosed', rounds [15,17,21]",
+        "Class-A verification 2026-07-06: communityfund.stellar.org/project/soroswapfinance-yax (canonical page; /projects/soroswap 404s) — full corroboration matrix in Solo todo 853 close + the verification agent transcript",
+        "Judge artifact demonstrated: eval/qa/results/2026-07-07T02-28-31-variantA.json scored WRONG for 'fabricated' labels/amounts/4th submission, every one verbatim in the live record",
+        "Sibling-consistency sweep 2026-07-07: q-defi-soroswap-scf ('roughly $346,750' source-relative) and q-defi-soroswap-resolve ('~$346,750') both consistent; no golden contradicts the 4-submission structure",
+        "2026-07-11 localhost:8787 search→execute probe observed: the live submission lookup returned four Soroswap awards, including records for rounds 15, 17, and 21.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "solo://proj/49/todo/golden-gap-q-scf-his--853",
+        "Eval-side authoring lag, not an upstream defect: the corpus GREW richer (per-submission award_type/budget) after the golden was authored — no improvements/ finding warranted; the upstream change is an improvement",
+        "Transcript-blind judge class (third occurrence this week) — rubric-note decision deferred to a measured rubric round, recorded in todo 853 close",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-scf-history-soroswap"

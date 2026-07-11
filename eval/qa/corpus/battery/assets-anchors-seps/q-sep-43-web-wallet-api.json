@@ -5,16 +5,17 @@
     "stellarDocs.search_wallet_dapp_docs"
   ],
   "golden": {
-    "answer": "Use `stellarDocs.search_wallet_dapp_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: SEP-43 is 'Standard Web Wallet API Interface' — a standard interface (getAddress, signTransaction, signAuthEntry, signMessage, getNetwork) for web wallets so dapps integrate once. Does NOT claim SEP-43 is unpublished/nonexistent (the sep-0043.md file exists in stellar-protocol/ecosystem).",
+    "answer": "A grounded answer consults the current official Stellar documentation, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2024-04-11, the verified sources supported this observed answer:\n\n- **SEP-43 — \"Standard Web Wallet API Interface\"** (Status: **Draft**, created 2024-04-11) defines a common JavaScript API that web wallets expose to dapps so developers integrate once instead of writing per-wallet abstractions [1].\n- The interface methods are **`getAddress`, `signTransaction`, `signAuthEntry`, `signMessage`, and `getNetwork`**, plus standardized error shapes (`message`/`code`/`ext`, with codes -1 internal, -2 external service, -3 invalid request, -4 user rejected) [1].\n- It exists as `ecosystem/sep-0043.md` in stellar/stellar-protocol — it is **not** an unassigned gap [1].\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Executes the current documented lookup/workflow via stellarDocs.search_wallet_dapp_docs and labels version, UI, provider, and availability claims as observed.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
       "SEP-43 is 'Standard Web Wallet API Interface' — a standard interface (getAddress, signTransaction, signAuthEntry, signMessage, getNetwork) for web wallets so dapps integrate once.",
       "Does NOT claim SEP-43 is unpublished/nonexistent (the sep-0043.md file exists in stellar-protocol/ecosystem)."
     ],
     "avoid": [
       "Do NOT claim SEP-43 does not exist or that the numbering skips 43 (it does exist as of 2024-04).",
       "Do NOT invent an unrelated scope (e.g. call it an auth/anchor/payment standard).",
-      "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "CORRECTION vs dossier: SEP-43 DOES exist (sep-0043.md, 'Standard Web Wallet API Interface', Draft, created 2024-04-11) — verified live in the master ecosystem dir. The dossier (and the Phase-1 'nonexistent' framing) is stale: the ecosystem README main table omits it but the file is present. The repo also now has sep-0042 and sep-0044. Freshness-sensitive (status could advance).\nAlso good if the answer: States SEP-43 is in Draft status. | Notes its purpose: remove the need for per-wallet abstractions by defining one common wallet API + standard error shapes.\nGolden cites: The SEP-0043 spec in stellar/stellar-protocol (ecosystem/sep-0043.md)."
   },
@@ -26,7 +27,7 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2024-04-11",
     "sources": [
       {
         "class": "B",
@@ -36,13 +37,16 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 88 (q-sep-43-web-wallet-api): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
-        "Current source retained for behavioral retrieval: https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0043.md"
+        "solo://proj/49/scratchpad/truth-maintenance-20--575",
+        "Preserved main's 2024-04-11 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-sep-43-web-wallet-api"

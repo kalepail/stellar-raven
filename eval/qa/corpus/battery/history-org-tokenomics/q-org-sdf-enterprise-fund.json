@@ -5,15 +5,16 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Separates the MoneyGram cash-treasury investment from the Enterprise Fund.",
+    "answer": "A grounded answer obtains the requested current value or state from the live Stellar Scout directory or research data, states the measurement basis, and makes the observation date visible. As of 2026-07-10, the verified sources supported this observed answer:\n\nThe **SDF Enterprise Fund** is a venture-style fund investing in companies that grow the Stellar ecosystem. As of **2026-07-10**, SDF says its **portfolio totals over $100 million**. That is SDF's portfolio wording—not a precise reconciled cumulative-cash-deployed total, fair value, or cost basis. Historical public totals do not fully reconcile, so do not manufacture a lifetime scalar. The **MoneyGram** stake was explicitly funded from SDF's cash treasury, not the Enterprise Fund. Cite separate dated announcements for any individual investee amount.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
       "Separates the MoneyGram cash-treasury investment from the Enterprise Fund."
     ],
     "avoid": [
       "Do NOT convert 'portfolio totals over $100m' into an exact cumulative cash-invested or current fair-value number.",
       "Do NOT attribute the MoneyGram stake to the Enterprise Fund or quote unsourced investee amounts.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present a changeable current measurement without its provider, scope, and observation date; registered invariants and explicitly historical quantities are not current measurements."
     ],
     "notes": "GT-28 CORRECTION 2026-07-10: SDF says its portfolio totals over $100m. Do not grade that as exact cumulative deployed cash, fair value, or cost basis; historical public series do not fully reconcile. MoneyGram remains cash-treasury funded.\nGT-28 independently confirmed by processes 3274/3275."
   },
@@ -25,7 +26,7 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "A",
@@ -67,13 +68,17 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 52 (q-org-sdf-enterprise-fund): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://stellar.org/enterprise-fund"
+        "Solo scratchpad 575 GT-28 primary 3274 and blind 3275.",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "Eval-side portfolio-value/cost-basis/cumulative-cash metric conflation.",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-org-sdf-enterprise-fund"

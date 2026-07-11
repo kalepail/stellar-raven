@@ -5,14 +5,17 @@
     "lumenloop.find_av_passages"
   ],
   "golden": {
-    "answer": "Use `lumenloop.find_av_passages` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
+    "answer": "A grounded answer obtains the requested current value or state from the current LumenLoop corpus, states the measurement basis, and makes the observation date visible. As of 2026-07-11, the live research corpus returned a June 2026 Messari interview reporting about $2.8B of tokenized RWAs, while older dated results carried smaller figures.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via lumenloop.find_av_passages and reports their source and as-of date without freezing a roster, rank, count, or current value."
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+      "Reports a current tokenized-RWA value with a dated source.",
+      "States the measurement scope for the reported RWA value."
     ],
     "avoid": [
       "Do NOT assert a precise TVL/RWA figure as a permanent fact without a date or freshness caveat.",
       "Do NOT fabricate a number not grounded in a cited report.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present a changeable current measurement without its provider, scope, and observation date; registered invariants and explicitly historical quantities are not current measurements."
     ],
     "notes": "Freshness item — figure is genuinely contested across sources, so the rubric gates on dated/caveated behavior, NOT one number. Live re-check 2026-06-29: rwa.xyz/networks/stellar resolves and shows ~$2.40B distributed asset value (69 RWA tokens, ~18.4k holders), down from the ~$2.84B seen earlier in June — still low-single-digit $B, confirming the order-of-magnitude gate. SDF announced 'crossed $2B' on 2026-04-11/14 (~4x YoY); Messari Q1-2026 tracked ~$1.2-1.5B excluding stablecoins. Issuers: Spiko, Franklin Templeton (BENJI), Ondo, WisdomTree.\nAlso good if the answer: Cites a dated source in the right order of magnitude (low-single-digit $B tokenized RWA on Stellar as of early/mid 2026, ~4x YoY growth). | Explicitly flags the figure as time-sensitive / as-of-date.\nGolden cites: A dated State-of-Stellar / network report or analytics source (e.g. SDF, Messari, rwa.xyz).\nCorrected 2026-07-03 (todo 829 contradiction sweep + deep verification): the prior '$1.2-1.5B excluding stablecoins' Messari range was a third-party paraphrase — the written report says $796M → $1.52B at Q1-end, crossed $2B Apr 11 (all EXCL. stablecoins, on rwa.xyz data the report itself links). The ~$2.8B is a June-2026 point-in-time rwa.xyz value (also stated by the SDF president in Messari's 2026-06-04 INTERVIEW — not the written report). All figures share one ex-stablecoin scope; differences are temporal, not methodological. Any dated figure on that trajectory is correct; never require one number."
   },
@@ -71,13 +74,18 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 2 (q-asset-rwa-tokenized-freshness): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://app.rwa.xyz/networks/stellar"
+        "eval/qa/consistency-register.json sweep 2026-07-03 (the contradiction record); deep-verification quotes/URLs in Solo scratchpad 521",
+        "2026-07-11 localhost:8787 search→execute probe observed: the live research corpus returned a June 2026 Messari interview reporting about $2.8B of tokenized RWAs, while older dated results carried smaller figures.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "eval-side authoring: the '$1.2-1.5B' range came from a third-party paraphrase, not the report; single-source-class verification",
+        "solo://proj/49/todo/corpus-health-instru--829 (contradiction-scan instrument, first sweep) — sibling sweep 2026-07-03: grep for 2.8B/2.84/1.52/Messari/rwa.xyz hits exactly the three RWA cases, all corrected in this pass",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-asset-rwa-tokenized-freshness"

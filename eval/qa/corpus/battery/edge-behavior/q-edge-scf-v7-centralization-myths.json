@@ -5,15 +5,16 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Separates grant administration from protocol-level ability to erase an independently operated app.",
+    "answer": "A grounded answer consults the live Stellar Scout directory or research data, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-10, the verified sources supported this observed answer:\n\nSCF payment terms and Stellar Mainnet authority are separate. As of **2026-07-10**, the published Build Award schedule is **10% on award acceptance, 20% after MVP, 30% after Testnet/equivalent, and 40% after verified Mainnet launch plus UX readiness**. Later payments require verified deliverables. Current public guidelines require each completion form within 90 calendar days of the preceding payment and allow SDF, absent timely written delay notice and acknowledgement, to deem unpaid tranches forfeited and the award terminated. Project-specific agreements and future terms may differ.\n\nThat structure shifts execution and cash-flow risk to recipients; whether it is 'predatory' or fair is an evaluative judgment, not established by the 10% fact alone. SDF can administer, suspend, modify, or end its grants and control its sites/branding. That does **not** create a unilateral protocol switch to delete an independently operated Mainnet contract/app, though an app can depend on its own admins, issuers, front end, SDF-operated services, and network/quorum choices.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
       "Separates grant administration from protocol-level ability to erase an independently operated app."
     ],
     "avoid": [
       "Do NOT infer fairness/predation from 10% alone, claim already-paid funds are automatically clawed back, or duplicate the current-round/deadline answer here.",
       "Do NOT claim SCF acceptance gives SDF unilateral protocol power to delete a Mainnet app.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "GT-26 2026-07-10: grade the dated 10/20/30/40 schedule, current 90-day/unpaid-tranche term, normative fairness caution, and grant-versus-protocol authority distinction. Current-round facts belong to the dedicated SCF-round cases.\nGT-26 CORRECTION 2026-07-10: replace current-round scope creep with the actual Build payment/forfeiture terms and durable grant-versus-network distinction."
   },
@@ -25,7 +26,7 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "A",
@@ -107,13 +108,20 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 43 (q-edge-scf-v7-centralization-myths): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://stellar.org/blog/ecosystem/introducing-scf-v7"
+        "Solo scratchpad 569 Batch B, 2026-07-09.",
+        "Sibling sweep covered q-scf-current-round and found the same expired date in both cases.",
+        "Solo scratchpad 575 GT-26 primary 3269 and blind 3271; current 90-day/unpaid-tranche terms checked 2026-07-10.",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "Ordinary freshness drift in a duplicated current-round example; the durable grant-versus-mainnet-control claim was not contradicted.",
+        "solo://proj/49/todo/golden-corpus-health--901 — q-scf-current-round sibling expansion",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-edge-scf-v7-centralization-myths"

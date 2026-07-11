@@ -5,14 +5,17 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
+    "answer": "A grounded answer obtains the requested current value or state from the live Stellar Scout directory or research data, states the measurement basis, and makes the observation date visible. As of 2026-07-11, the live SCF Handbook result stated an award size of up to $150,000 worth of XLM, paid through milestone-based tranches.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value."
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+      "States that the SCF Build single-award cap is $150,000 worth of XLM.",
+      "States that Build funding is paid through milestone-based tranches."
     ],
     "avoid": [
       "Do NOT substitute another SDF program's $500K cap or call $300K the ordinary single Build award.",
       "Do NOT claim Build began with v7 or that payment is fixed XLM/USDC/USD by default.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present a changeable current measurement without its provider, scope, and observation date; registered invariants and explicitly historical quantities are not current measurements."
     ],
     "notes": "GT-36 CORRECTION 2026-07-10: grade $150K USD-equivalent paid in XLM. The current v7 three-track structure launched January 2026; Build itself predates v7. Do not require stale sibling-program examples.\nGT-36 independently confirmed by processes 3290/3291."
   },
@@ -59,13 +62,17 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 66 (q-scf-build-award-cap): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/scf-awards/build-award"
+        "Solo scratchpad 575 GT-36 primary 3290 and blind 3291.",
+        "2026-07-11 localhost:8787 search→execute probe observed: the live SCF Handbook result stated an award size of up to $150,000 worth of XLM, paid through milestone-based tranches.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "Eval answer accreted stale sibling program details around a stable narrow fact.",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-scf-build-award-cap"

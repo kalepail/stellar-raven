@@ -5,15 +5,17 @@
     "lumenloop.search_content_semantic"
   ],
   "golden": {
-    "answer": "Use `lumenloop.search_content_semantic` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Uses an explicit window/asOf, validates and labels the date field, chronologically post-sorts candidates, and excludes undated rows. Separates recency from editorial significance and states the digest is non-exhaustive.",
+    "answer": "A grounded answer obtains the requested current value or state from the current LumenLoop corpus, states the measurement basis, and makes the observation date visible. As of 2026-07-11, the live research search returned a 2026-06-26 LumenLoop item, `Constellations: how the Stellar ecosystem connects`, among its dated results.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via lumenloop.search_content_semantic and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
       "Uses an explicit window/asOf, validates and labels the date field, chronologically post-sorts candidates, and excludes undated rows.",
-      "Separates recency from editorial significance and states the digest is non-exhaustive."
+      "Separates recency from editorial significance.",
+      "States the digest is non-exhaustive."
     ],
     "avoid": [
       "Do NOT treat the top semantic hit, ingestion/scrape time, or an undated row as the newest publication/event; do not fabricate news or expose retired/non-manifest operation names.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "GT-23 2026-07-10: require explicit window/asOf, eligible date-field validation, chronological post-sort, exclusion of undated rows, significance rationale, and non-exhaustive scope. Semantic relevance is not chronology; publication, event, ingestion, and scrape dates are distinct.\nGT-23 CORRECTION 2026-07-10: current exposed-surface wording and chronology checks replace legacy operation names and top-hit=newest assumptions."
   },
@@ -78,13 +80,17 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 40 (q-edge-fresh-most-recent-news): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://stellar.org/blog"
+        "Solo scratchpad 575 GT-23 primary 3264 and blind 3267; ll-006 recurrence. July 6 UNDP/SDF and July 8 P27 are illustrative, not gating.",
+        "2026-07-11 localhost:8787 search→execute probe observed: the live research search returned a 2026-06-26 LumenLoop item, `Constellations: how the Stellar ecosystem connects`, among its dated results.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "Prior-art routing metadata leaked into gospel and a generic freshness template treated relevance rank as sufficiently recent.",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-edge-fresh-most-recent-news"

@@ -5,15 +5,16 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Distinguishes no standard public form from no process and makes SDF approval final.",
+    "answer": "A grounded answer consults the live Stellar Scout directory or research data, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-10, the verified sources supported this observed answer:\n\nInstawards are chapter-guided, short-sprint awards for eligible early execution. A **typical initial award is $1,000–$5,000 in USD value paid in XLM**. After successful completion, a project may receive **up to two conditional follow-ons**, with **$15,000 aggregate maximum over time**; follow-ons are not automatic. There is no standard public/open application form, but there is a real chapter-guided request and scoping process. Chapter support is non-binding: **SDF alone makes the final approval and funding commitment**, generally after reviewing the scope and eligibility. Instawards are not community/NQG-voted Build grants.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
       "Distinguishes no standard public form from no process and makes SDF approval final."
     ],
     "avoid": [
       "Do NOT call $15K the automatic initial award or imply follow-ons are guaranteed.",
       "Do NOT say chapter leads commit SDF funds or that Instawards use NQG voting.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "Dossier §2.2/§7.2. Trap: assuming an open application; it's ambassador-recommended.\nAlso good if the answer: Under SCF v7.0, Instawards replaced the prior Kickstart Award.\nGolden cites: The SCF Instawards handbook page.\nGT-39/40 atom independently confirmed 2026-07-10. Accept 'no open application' only when the answer still acknowledges the chapter-guided request/scope and final SDF review."
   },
@@ -25,7 +26,7 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "A",
@@ -66,13 +67,17 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 75 (q-scf-instawards): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://stellar.gitbook.io/scf-handbook/scf-awards/instawards"
+        "Solo scratchpad 575 GT-39 processes 3300/3303 and GT-40 process 3304, 2026-07-10.",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "Eval-side program-version drift and amount-basis collapse.",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-scf-instawards"

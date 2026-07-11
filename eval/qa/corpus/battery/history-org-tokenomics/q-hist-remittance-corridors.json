@@ -6,13 +6,16 @@
     "scout.matchPartners"
   ],
   "golden": {
-    "answer": "Use `scout.getPartners`, `scout.matchPartners` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
+    "answer": "A grounded answer consults the live Stellar Scout directory or research data, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-10, the verified sources supported this observed answer:\n\nUse a dated status table rather than one timeless deployment list. **MoneyGram Ramps** is a current Stellar/USDC cash-in/out example, with exact coverage stated from a dated operator source. **Nium's ~190-country statement** is a 2022 platform capability claim; **Velo/PDAX** described an agreement/intended Philippines corridor; **Coins.ph** is a historical Stellar route; and Onafriq's broad corporate footprint does not by itself prove current Stellar consumer availability in every market. For every row label live, historical, announced, or capability-only, identify the actual settlement asset when known, and verify current corridor/provider availability.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.getPartners, scout.matchPartners and reports their source and as-of date without freezing a roster, rank, count, or current value."
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+      "Names specific remittance corridors supported by dated evidence.",
+      "Distinguishes historical corridor evidence from current availability."
     ],
     "avoid": [
       "Do NOT present every historic/announced capability as a current corridor, equate corporate footprint with Stellar coverage, globally ban XLM settlement, or freeze one coverage count.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "GT-27 2026-07-10: grade dated row-level lifecycle and settlement-asset evidence. MoneyGram is current; Nium/Velo-PDAX/Coins.ph/Onafriq require capability, announcement, historical, or coverage caveats. Counts remain source/time scoped.\nGT-27 CORRECTION 2026-07-10: a partner roster is not a current deployment census."
   },
@@ -24,7 +27,7 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "A",
@@ -71,13 +74,19 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 44 (q-hist-remittance-corridors): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://stellar.org/products-and-tools/moneygram"
+        "Solo scratchpad 575 GT-27 primary 3270 and blind 3272; corridor sibling sweep.",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "Partner capability, announcement, historic route, and live consumer deployment were collapsed.",
+        "improvements/lumenloop/ll-008-directory-record-coverage-field-quality.md",
+        "improvements/stellar-light-scout/sls-024-project-lifecycle-operator-conflicts.md",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-hist-remittance-corridors"

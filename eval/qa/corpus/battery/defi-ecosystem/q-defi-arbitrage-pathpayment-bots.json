@@ -6,9 +6,10 @@
     "stellarDocs.search_protocol_concepts_docs"
   ],
   "golden": {
-    "answer": "Use `stellarDocs.search_asset_token_docs`, `stellarDocs.search_protocol_concepts_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Explains Stellar supports path payments and pathfinding concepts such as strict-send and strict-receive, but profitability is not guaranteed. Mentions realistic bot profitability depends on liquidity, spreads, fees, slippage, latency, failed transactions, competition, and capital, especially for small accounts. Explains path queries/simulation should be used to estimate destination amounts and guard with minimum/maximum constraints such as destination-min or send-max.",
+    "answer": "A grounded answer consults the current official Stellar documentation, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-11, the verified sources supported this observed answer:\n\nStellar supports path payments through `PathPaymentStrictSend` and `PathPaymentStrictReceive`; path payments can traverse orderbook liquidity, but the protocol does not make arbitrage or market making profitable. A strict-send quote fixes the source amount and estimates destination output, then the submitted transaction should protect the user with `destination_min`; a strict-receive quote fixes destination amount and protects the sender with `send_max`. If liquidity moves before inclusion, the operation can fail with path-payment result codes such as `UNDER_DESTMIN`, `OVER_SENDMAX`, or no usable path / too-few-offers. Sources: Stellar path-payment guide and Horizon operation-specific result-code docs.\n\nFor a small-capital bot, the defensible answer is \"possible to build, not reliably profitable.\" Expected costs and risks include spreads, slippage, base fees and surge pricing, failed transactions, stale quotes, minimum reserves/trustlines, path disappearance, competition, latency, inventory imbalance, and thin pools. Backtesting and testnet/paper trading are required before risking funds; Raven should not recommend a strategy as a guaranteed return.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Executes the current documented lookup/workflow via stellarDocs.search_asset_token_docs, stellarDocs.search_protocol_concepts_docs and labels version, UI, provider, and availability claims as observed.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
       "Explains Stellar supports path payments and pathfinding concepts such as strict-send and strict-receive, but profitability is not guaranteed.",
       "Mentions realistic bot profitability depends on liquidity, spreads, fees, slippage, latency, failed transactions, competition, and capital, especially for small accounts.",
       "Explains path queries/simulation should be used to estimate destination amounts and guard with minimum/maximum constraints such as destination-min or send-max."
@@ -16,7 +17,7 @@
     "avoid": [
       "Do NOT promise profit or imply small-capital arbitrage is reliably profitable.",
       "Do NOT provide financial advice as a guaranteed strategy.",
-      "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "Profitability is intentionally not gated on a current numeric estimate; Phase 3 should attack any answer that turns pathfinding mechanics into financial advice.\nAlso good if the answer: Mentions circular/same-asset arbitrage and batching should be tested carefully because paths can disappear or execute differently by submission time. | Mentions result-code traps such as under-destination-min or no-path when quoting and submitting.\nGolden cites: Stellar docs for path payments/pathfinding and dated market/liquidity sources for current profitability claims."
   },
@@ -53,13 +54,16 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 21 (q-defi-arbitrage-pathpayment-bots): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
-        "Current source retained for behavioral retrieval: https://developers.stellar.org/docs/build/guides/transactions/path-payments"
+        "solo://proj/49/scratchpad/truth-maintenance-20--575",
+        "Preserved main's 2026-07-11 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-defi-arbitrage-pathpayment-bots"

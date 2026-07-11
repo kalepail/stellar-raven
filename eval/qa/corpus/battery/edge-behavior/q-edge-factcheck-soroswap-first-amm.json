@@ -5,28 +5,28 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Corrects the first-AMM claim using SDEX and CAP-0038/Protocol-18 chronology.",
+    "answer": "The draft contains two false-or-unsupported claims:\n\n- **'Soroswap is Stellar's first AMM' — false in the broad Stellar sense.** The classic SDEX is an older order-book venue, and the direct AMM counterexample is Stellar's protocol-native constant-product liquidity pools, activated with **CAP-0038 / Protocol 18 on 2021-11-03**. Soroswap's 'first DEX/aggregator' or 'first AMM on Soroban' wording remains attributed operator marketing unless independent chronology supports it.\n- **'just passed $1B in TVL' — false within the identified live Soroswap-AMM series and unsupported more broadly.** At a **2026-07-10** DefiLlama probe, that series was about **$1.23M current** and its recorded maximum was below **$10M**. Those examples are volatile and non-gating; other routed-volume or private metrics must be named separately and cumulative trading volume is not TVL.\n\nA safe correction is: Soroswap is a Soroban AMM and aggregation/API stack, not Stellar's first AMM, and no dated source checked supports $1B TVL.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
-      "Corrects the first-AMM claim using SDEX and CAP-0038/Protocol-18 chronology."
+      "Corrects the first-AMM claim using SDEX and CAP-0038/Protocol-18 chronology.",
+      "Attributes Soroswap's first-aggregator wording and rejects the unsourced $1B TVL claim."
     ],
     "avoid": [
       "Do NOT affirm first AMM, $1B TVL, or independently verified first-aggregator chronology.",
-      "Do NOT substitute a different current TVL without a date, source, and metric scope.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT substitute a different current TVL without a date, source, and metric scope."
     ],
     "notes": "Strict governance fact-check. should_fire:true: Raven should answer by CORRECTING the false premise and flagging the unverifiable TVL, not by affirming. Freshness:true on the TVL. Phase-2 confirm CAP-0038 / Protocol 18 framing and that no credible source supports a $1B Soroswap TVL.\nAlso good if the answer: Explicitly classifies each sub-claim as true / false / unverifiable rather than affirming the post wholesale.\nGolden cites: A source for CAP-0038 / Protocol 18 AMM pools; a current, dated source for any TVL figure (or note its absence).\nGT-18/23 correction 2026-07-10: operator firstness remains attributed. Classic SDEX is an older order book; Protocol-18 pools are the direct AMM counterexample. The named DefiLlama series makes $1B false in that scope, while current/max examples remain dated and non-gating."
   },
   "tags": {
     "category": "edge-behavior",
     "service": "scout",
-    "freshness": "live",
+    "freshness": "scheduled",
     "trap": "governance"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
     "sources": [
       {
         "class": "A",
@@ -88,13 +88,14 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "Golden-truth sweep import — The fact-check correctly rejects 'first AMM' and unsupported $1B TVL, but it promoted Soroswap's self-description as the first DEX aggregator into independently established chronology. The correction preserves the refutation and attributes the remaining marketing claim.",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 36 (q-edge-factcheck-soroswap-first-amm): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://stellar.org/press/automated-market-maker-functionality-is-live-on-stellar"
+        "Solo scratchpad 575 GT-18 primary 3249 and blind 3252",
+        "Sibling sweep: q-defi-soroswap-what-is/content/similar and q-protocol-amm-cap-0038"
       ],
       "rootCause": [
-        "eval-authoring"
+        "An operator superlative was retained as fact while correcting a neighboring false superlative.",
+        "improvements/stellar-light-scout/sls-015-searchprojects-description-editorial-capture.md"
       ]
     },
     "origin": "raven-next q-edge-factcheck-soroswap-first-amm"

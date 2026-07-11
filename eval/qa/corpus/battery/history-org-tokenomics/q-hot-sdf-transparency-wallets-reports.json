@@ -6,14 +6,16 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use `scout.searchProjects`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Uses official mandate/account attribution and the reports landing page, dates balances, and separates named examples from exhaustive holdings.",
+    "answer": "A grounded answer consults the live Stellar Scout directory or research data, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-10, the verified sources supported this observed answer:\n\nStart with SDF's official **Mandate** page for current bucket definitions, displayed timestamps, and named StellarExpert account links, and use the **Quarterly Reports** landing page for the report series. Date every balance or bucket total. Treat official mandate attribution—not account size alone—as the ownership evidence, then verify point-in-time state on Horizon/explorer. Sample linked addresses are not an exhaustive wallet list, and mechanical sums across buckets with different timestamps are not a universal current SDF total.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.searchProjects, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
-      "Uses official mandate/account attribution and the reports landing page, dates balances, and separates named examples from exhaustive holdings."
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+      "Uses official mandate/account attribution and the reports landing page, dates balances.",
+      "Separates named examples from exhaustive holdings."
     ],
     "avoid": [
       "Do NOT fabricate addresses/totals, infer ownership from size, sum mismatched timestamps, or treat sample accounts/a single report as exhaustive/current.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "GT-27 2026-07-10: use mandate-linked attribution and the quarterly-reports series, date every balance, and keep sample accounts/mismatched bucket timestamps non-exhaustive. Explorer size alone is not ownership evidence.\nGT-27 PRECISION 2026-07-10: current report-series and mandate mapping replace sample-list ambiguity."
   },
@@ -25,7 +27,7 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "A",
@@ -71,13 +73,18 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 45 (q-hot-sdf-transparency-wallets-reports): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://stellar.org/foundation/mandate"
+        "Solo scratchpad 575 GT-27 primary 3270 and blind 3272; transparency/holdings sibling sweep.",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "A single report pointer and two examples could be read as a complete current wallet/accounting set.",
+        "improvements/stellar-docs/sd-012-mandate-wallet-label-drift.md",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-hot-sdf-transparency-wallets-reports"

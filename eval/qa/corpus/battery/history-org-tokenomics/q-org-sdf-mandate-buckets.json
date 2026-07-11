@@ -5,14 +5,16 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
+    "answer": "A grounded answer consults the live Stellar Scout directory or research data, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-10, the verified sources supported this observed answer:\n\nSDF organizes its work under mandate buckets funded from entrusted XLM rather than shareholder equity. The framework has changed: **2019** used Direct Development, Ecosystem Support, Use-Case Investment, and User Acquisition; the **2025-era** framing uses SDF Development, Stellar Growth, Product and Innovation, and Assets and Liquidity. The live page says allocation updates are in progress and its account/bucket rows can have different timestamps. Cite the applicable dated mandate, attach an as-of date to any balance, and do not invent an exact allocation split or mechanically sum asynchronous rows as one synchronized total.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value."
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+      "Separates the 2019 mandate bucket names from the 2025-era mandate bucket names."
     ],
     "avoid": [
       "Do NOT use the 2017 previous-mandate route as proof of the 2019 taxonomy.",
       "Do NOT invent precise allocations, sum mixed timestamps as one current total, or describe shareholder capital.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "GT-28 CORRECTION 2026-07-10: use /foundation/mandate/2019 for the 2019 taxonomy; /foundation/previous-mandate is the 2017 version. Current allocation updates are in progress and displayed rows are not one synchronized snapshot.\nGT-28 independently confirmed by processes 3274/3275; sd-012 owns current label/timestamp drift."
   },
@@ -24,7 +26,7 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "A",
@@ -64,13 +66,18 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 53 (q-org-sdf-mandate-buckets): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://stellar.org/foundation/mandate"
+        "Solo scratchpad 575 GT-28 primary 3274 and blind 3275; blind caught the 2017/2019 route mismatch.",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "Eval-side historical route/version confusion and detached timestamp semantics.",
+        "improvements/stellar-docs/sd-012-mandate-wallet-label-drift.md",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-org-sdf-mandate-buckets"

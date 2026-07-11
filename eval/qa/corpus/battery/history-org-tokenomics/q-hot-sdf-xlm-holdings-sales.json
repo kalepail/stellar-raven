@@ -5,14 +5,16 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
+    "answer": "A grounded answer consults the live Stellar Scout directory or research data, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-10, the verified sources supported this observed answer:\n\nSDF uses XLM entrusted under its published mandate and describes selling existing XLM through **Kraken, Coinbase, Bitstamp, and direct sales** to fund operating expenses and broader mandate work. Those sales do not mint new XLM. Current disclosures discuss liquidity and price discovery, but they do not promise an XLM price peg, floor, or guarantee. SDF's **November 2019** burn announcement also said it would not burn additional lumens. As of **2026-07-10**, no newer primary SDF announcement of another burn was found in the current mandate/reporting surfaces. Treat both the 2019 statement and current absence as dated evidence—not a perpetual guarantee or forecast. Use the live mandate/dashboard or latest quarterly report for any balance, and do not sum mixed-timestamp bucket rows as a synchronized exhaustive holding.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value."
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+      "Reports SDF holdings or sales figures with their report date and accounting scope."
     ],
     "avoid": [
       "Do NOT claim SDF pegs or guarantees XLM's price.",
       "Do NOT predict a burn, turn the 2019 statement into a protocol impossibility, or treat named mixed-timestamp accounts as exhaustive current holdings.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "Snapshot 2026-06-29. No current primary source found announcing another burn (the November 2019 burn remains a one-time historical event). Reserve/sales details are report-sensitive; verify the latest SDF report if exact figures are needed. DIFFERENTIATED from q-hot-sdf-transparency-wallets-reports (which owns address/report discovery); this file owns the price-support-myth plus future-burn-myth debunk.\nAlso good if the answer: References SDF mandate, transparency, or quarterly reporting as the proper source for current reserve/use disclosures. | Contrasts the 2019 supply burn as a one-time historical event rather than a recurring tokenomics mechanism.\nGolden cites: A current SDF mandate/transparency/reporting source, plus a dated source for any stated future-burn claim.\nGT-28 CORRECTION 2026-07-10: sales fund operations/mandate work; no price guarantee is disclosed. The 2019 no-additional-burn statement and the current no-new-plan sweep are dated evidence, not eternal promises."
   },
@@ -24,7 +26,7 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "A",
@@ -64,13 +66,18 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 46 (q-hot-sdf-xlm-holdings-sales): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://stellar.org/foundation/mandate"
+        "Solo scratchpad 575 GT-28 primary 3274 and blind 3275; seven-case substantive agreement.",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "Eval-side negative-claim provenance collapsed a dated policy statement and current search absence.",
+        "improvements/stellar-docs/sd-012-mandate-wallet-label-drift.md",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-hot-sdf-xlm-holdings-sales"

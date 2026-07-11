@@ -8,9 +8,10 @@
     "lumenloop.search_directory"
   ],
   "golden": {
-    "answer": "Use `lumenloop.find_similar_scf_submissions`, `lumenloop.get_project`, `lumenloop.get_scf_submissions`, `lumenloop.search_directory` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Uses official submission status and URL to identify representative Awarded RWA/tokenization work. Separates official status from award_type, directory status, semantic similarity, and reconstructed totals.",
+    "answer": "A grounded answer consults the current LumenLoop corpus, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-10, the verified sources supported this observed answer:\n\n**Yes.** Search the current official SCF submissions and report the submission's explicit status and URL—not only a semantic match, directory flag, `award_type`, or reconstructed aggregate. As of **2026-07-10**, official pages marked these representative RWA/tokenization submissions **Awarded**:\n\n- 0xAuth — SCF #27, $45,000\n- Metafyed RWA marketplace — SCF #27, $50,000\n- Verseprop real-estate tokenization — SCF #33 Build, $112,020\n- KYC Token & UI for RWA — SCF #22, $45,000\n- Spydra RWA Tokenization — SCF #31 Build, $132,000\n- Bando Tokenized CETES — SCF #42 Build, $75,000\n- Constellation Protocol — SCF #23, $100,000\n- Excellar — SCF #17, $88,750\n\nBy contrast, Talwex was at **Test Transaction**, Lend tokenized real estate at **Ready for Payment**, and TERWA Wine Asset Vault at **Information Collection** even though their rows carried a Build award type/amount. Do not call those Awarded. No exact BENJI/FOBXX, CRDT, or USDY match appeared on the official funded-projects page in this read; phrase that as a dated source-relative result, not proof that no SCF relationship ever existed.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via lumenloop.find_similar_scf_submissions, lumenloop.get_project, lumenloop.get_scf_submissions, lumenloop.search_directory and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
       "Uses official submission status and URL to identify representative Awarded RWA/tokenization work.",
       "Separates official status from award_type, directory status, semantic similarity, and reconstructed totals."
     ],
@@ -18,7 +19,7 @@
       "Do NOT treat award_type=Build, a proposed amount, or a semantic match as proof the submission is Awarded.",
       "Do NOT call OrbitCDP or another historical award recipient currently live solely from SCF history.",
       "Do NOT assert BENJI, CRDT, or USDY never had any SCF relationship without a matching exhaustive official record.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "GROUNDED 2026-07-10: semantic/directory results are discovery only. Grade explicit official submission status and URL, distinguish Awarded from Test Transaction/Ready for Payment/Information Collection, and do not infer current project status from an award.\nAlso good if the answer says issuer primaries describe BENJI/CRDT/USDY as issuer-led and no exact official funded-page match was found asOf, without turning that into a timeless no-SCF claim.\nGolden cites: SCF archive matches (or an explicit 'none found' note).\nGT-17 CORRECTION 2026-07-10: current official status wins over semantic award fields; all amounts/statuses are dated and submission-specific."
   },
@@ -30,7 +31,7 @@
   "truth": {
     "domain": "mixed",
     "status": "mixed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "A",
@@ -110,13 +111,20 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 28 (q-defi-rwa-scf-similar): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://communityfund.stellar.org/submissions/rec2UJLCx1DBLgdm4"
+        "Solo scratchpad 575 GT-17 primary process 3247 and blind process 3248, including exact official submission IDs/statuses asOf 2026-07-10.",
+        "Sibling sweep: q-scf-funded-similar-oracle, q-scf-history-orbit-cdp, q-defi-orbit-cdp, and BENJI/CRDT/USDY product cases.",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "Semantic similarity, directory status, reconstructed totals, and award_type were collapsed into official award/current-product truth.",
+        "improvements/lumenloop/ll-013-scf-submission-award-fields.md",
+        "improvements/stellar-light-scout/sls-026-scf-status-aggregate-conflict.md",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-defi-rwa-scf-similar"

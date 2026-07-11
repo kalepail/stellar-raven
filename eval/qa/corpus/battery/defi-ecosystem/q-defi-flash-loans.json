@@ -8,16 +8,17 @@
     "stellarDocs.search_soroban_contract_docs"
   ],
   "golden": {
-    "answer": "Use `stellarDocs.search_asset_token_docs`, `stellarDocs.search_protocol_concepts_docs`, `stellarDocs.search_sdk_cli_tools_docs`, `stellarDocs.search_soroban_contract_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Explains atomic Soroban cross-contract flash-loan mechanics and rollback constraints. Distinguishes verified deployed Blend v2 from XycLoans code/history and Slender marketing/unverified usability.",
+    "answer": "A grounded answer consults the current official Stellar documentation, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-10, the verified sources supported this observed answer:\n\nSoroban has no protocol-native flash-loan operation, but a contract can implement one through synchronous cross-contract calls inside an atomic invocation: lend, invoke borrower logic, and require repayment before return; an uncaught error rolls back the call tree. Authorization, simulation, resource/footprint limits, and reentrancy/economic controls still matter.\n\nCurrent evidence as of **2026-07-10**:\n- **Blend v2:** mainnet Fixed Pool bytecode matched the published v2.0.0 pool artifact and its interface exposes `flash_loan`—verified deployed evidence.\n- **XycLoans:** public flash-loan code and historical SCF/Futurenet evidence, but stale repo/docs and a failing current pools route; usable deployment was not verified.\n- **Slender:** operator marketing claims flash loans, while the app showed no usable state and Scout marks it Inactive; feature association is real, current deployment/liquidity unverified.\n\nDo not infer deployment from code, a closed issue, marketing, or a directory label alone.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Executes the current documented lookup/workflow via stellarDocs.search_asset_token_docs, stellarDocs.search_protocol_concepts_docs, stellarDocs.search_sdk_cli_tools_docs, stellarDocs.search_soroban_contract_docs and labels version, UI, provider, and availability claims as observed.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
       "Explains atomic Soroban cross-contract flash-loan mechanics and rollback constraints.",
       "Distinguishes verified deployed Blend v2 from XycLoans code/history and Slender marketing/unverified usability."
     ],
     "avoid": [
       "Do NOT claim XycLoans is the sole/current mainnet implementation or that Slender has no flash-loan association.",
       "Do NOT treat source code, marketing, issue status, or directory status alone as deployment/liquidity proof.",
-      "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "CORRECTED 2026-06-29: prior version misattributed flash loans to Slender. Live Scout confirms Slender is a noncustodial lending/borrowing money market (by eq-lab), NOT a flash-loan protocol. XycLoans is the credible Soroban flash-loans protocol ('a decentralized flash loans protocol that runs on Soroban... a flash loans-only protocol'), audited by OtterSec Jan 2024 (sorobansecurity.com/report/33). Slender reference removed; XycLoans is the named flash-loan provider, with dated/source evidence required before treating as production-safe.\nAlso good if the answer: Names XycLoans as the credible Soroban flash-loans protocol (flash-loans-only, per-token liquidity pools enforcing same-transaction repayment), with current evidence required for any live-availability claim. | Mentions simulation/testing for resource limits and failure behavior.\nGolden cites: Stellar/Soroban transaction and contract invocation docs, plus dated protocol docs for any live flash-loan implementation.\nCorrected 2026-07-10. Deployment evidence tiers—not an exclusive project name—are the factual gate."
   },
@@ -29,7 +30,7 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "D",
@@ -80,13 +81,18 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 24 (q-defi-flash-loans): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
-        "Current source retained for behavioral retrieval: https://github.com/blend-capital/blend-contracts-v2"
+        "Blend Fixed Pool CAJJZSGMMM3PD7N33TAPHGBUGTB43OC73HVIK2L2G6BNGGGYOSSYBXBD matched v2.0.0 pool WASM and exposed flash_loan",
+        "Solo scratchpad 575 GT-15 processes 3243/3246",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "eval-side deployment evidence drift and false mutually exclusive protocol trap",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-defi-flash-loans"

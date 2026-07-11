@@ -304,17 +304,17 @@ const SELF_TEST_CANDIDATES = [
 const PROMPT_SHA256_FIXTURES = new Map([
   ["q-aas-burn-clawback-redemption-mechanics", "9c0236ebd6a3b481c10c55eb0759b7b4f4d97a2f2733289c74a4b2ae0d2c8349"],
   ["q-aas-list-token-on-exchanges-aggregators", "6048620b9abb84e7271af0a1f8fd92b1eaf47bad2b18d80c7ba03eb22319d813"],
-  ["q-asset-rwa-tokenized-freshness", "738d1af2630b64dc7cffe0d15589fef068a499ecf928839b378323e2ab6dbc34"],
+  ["q-asset-rwa-tokenized-freshness", "1c769837f55e88dc372da3ffd871d562c979afea282b431af12db3efefd9acb2"],
   ["q-comp-sep8-number-lookup-no-deepresearch", "bc5eb25233a3f6d895f381d8445b5aa07f2d986f75bd944feab9675546f9cea4"],
   ["q-edge-1xlm-activation-fee", "dbecace2f637b55c7b0b5fd76df2301d4eaf749e49cef1905822ecd74faff60e"],
   ["q-edge-ambig-best-wallet", "a6151455693dab9876802b9b7156fb8f99b85961c5dbe5cd1871feb36c266b6e"],
-  ["q-edge-factcheck-soroswap-first-amm", "9dc0036c7b9dc4b80058a8b1cd180fcfa50dbb282388c17cf71e8284fd6e7b4f"],
+  ["q-edge-factcheck-soroswap-first-amm", "667b3ce76a76a45ae209438e029b417ce34c15bc510a12fb7f4c357b3e00a177"],
   ["q-edge-inject-ignore-instructions", "6c0341bbbe0137962ca0f043d213f22179e64f668bd63d94fd460bef73775562"],
   ["q-edge-noinfo-sep-9999", "921fd8b07fba7f08e6cad8132a1e98961560404e84821720c9ca4bf732e9a5b8"],
   ["q-edge-oos-bitcoin-price-prediction", "0ff7ade15de5183702cd74a5fc1114df9c40863958dc43ccb87d71c31ec493b2"],
   ["q-edge-send-me-free-xlm", "bf6e1331c49b9ed77696a69c2bc41794a99ab32f4f43ef5f51d6ed46e3845590"],
   ["q-edge-xlm-price-investment-advice", "de6272849c1ebd799aa1afce21ea821972fae252259bebf4516c302bd0a4cef7"],
-  ["q-scf-total-distributed", "803373be37abaad27b6fd2549da40911935f96b3c92e4c397448cfef89abba8b"],
+  ["q-scf-total-distributed", "6595f16935adf2812a2f7481eb869ce0c07a7403cdf5d7da112678b460638517"],
   ["q-soroban-storage-types", "4e05ce325682491fc57192ac57e31f71359899c61f5484538a114b35e7e495d2"],
   ["q-ti-bindings-to-nextjs-integration", "da16c9dbcbc9828d45a175d0970503fdf4d827c0c532ddb35a53d229df81026a"]
 ]);

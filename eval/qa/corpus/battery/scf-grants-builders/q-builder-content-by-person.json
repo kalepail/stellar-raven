@@ -5,15 +5,16 @@
     "lumenloop.search_content_semantic"
   ],
   "golden": {
-    "answer": "Use `lumenloop.search_content_semantic` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Treats empty person-lane results and semantic matches according to their evidence limits.",
+    "answer": "A grounded answer consults the current LumenLoop corpus, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-10, the verified sources supported this observed answer:\n\nPublished material about **Tyler van der Hoeven (`kalepail`)** includes the official Developer Docs author index (seven posts), the **2024-06-13 developer meeting** covering Super Peach, Passkey Kit, and Launchtube, **Practical Path Payments** (2020-04-10), the **Turing Complete Contract Proposal for Stellar** talk (whose page has a date conflict that should be disclosed), the **SDF Developer Advocates AMA** (2023-05-04), and the 2022 SDF Stellar Lounge at SXSW video. Current project context includes `passkey-kit` and `stellar/launchtube`; Passkey Kit now labels itself a legacy precursor/demo and points new work to Smart Account Kit. Use official Docs/Scout research first. Lumenloop semantic results are candidate discovery only and require exact-name/source/date validation; its current exact-person lane returning empty is a service limitation, not evidence that nothing exists.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via lumenloop.search_content_semantic and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
       "Treats empty person-lane results and semantic matches according to their evidence limits."
     ],
     "avoid": [
       "Do NOT infer no publication from an all-empty person response.",
       "Do NOT attribute semantic A/V results without exact-name and source validation.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "GT-35 CORRECTION 2026-07-10: the exact Lumenloop person lane is all-empty and Scout has no Tyler row. Grade a bounded official-source roster and explicit validation of semantic candidates; empty service output is inconclusive.\nGT-35 independently confirmed by processes 3287/3289; this case is freshness-sensitive despite its inherited tag."
   },
@@ -25,7 +26,7 @@
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "A",
@@ -86,13 +87,19 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 6 (q-builder-content-by-person): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://developers.stellar.org/meetings/authors/kalepail"
+        "Solo scratchpad 575 GT-35 primary 3287 and blind 3289; live probes and official-source roster on 2026-07-10.",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "Route recipe was treated as truth and an empty data-shaped response was mistaken for absence.",
+        "improvements/lumenloop/ll-005-person-entity-empty-lane.md",
+        "improvements/lumenloop/ll-017-semantic-person-match-provenance.md",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-builder-content-by-person"

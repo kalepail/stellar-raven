@@ -8,16 +8,18 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use `scout.getBuilders`, `scout.getHackathon`, `scout.getHackathons`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Confirms the officially listed active Stellar India Exploratory Chapter and distinguishes that label from a claim that SDF centrally operates every local event.",
+    "answer": "A grounded answer consults the live Stellar Scout directory or research data, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-10, the verified sources supported this observed answer:\n\nYes. As of **2026-07-10**, the official Stellar Ambassador Program lists **Stellar India** among its active Asia-Pacific chapters, with the status **Exploratory Chapter**. Its dedicated page names Sahitya Roy of Rise In as Chapter Lead and links current joining, events, community, and education channels.\n\nThere is also direct, dated activity beyond the directory label: 2026 operator/event records include Build Station sprints and community events in several Indian cities. One current example is the **Jaipur Builders Camp, August 14–18, 2026**, a five-day Rise In / Stellar India builder residency. Treat individual events as dated operator evidence, not proof that SDF centrally runs every activation or that participation is paid.\n\nRegional chapters may guide eligible builders toward Instawards, but chapter support is not a funding commitment: SDF makes the final decision, typical initial Instawards are $1K–$5K in USD value paid in XLM, and $15K is the conditional aggregate maximum over time rather than an automatic first award.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Retrieves source-bounded live results via scout.getBuilders, scout.getHackathon, scout.getHackathons, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
-      "Confirms the officially listed active Stellar India Exploratory Chapter and distinguishes that label from a claim that SDF centrally operates every local event."
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+      "Confirms the officially listed active Stellar India Exploratory Chapter.",
+      "Distinguishes that label from a claim that SDF centrally operates every local event."
     ],
     "avoid": [
       "Do NOT turn a bounded Scout directory or hackathon miss into evidence that India lacks builders, events, or an official chapter.",
       "Do NOT repeat the stale Goa/July Builders Camp description or present historical project counts as current cumulative totals.",
       "Do NOT claim regional chapters approve SCF Build or Instaward funding; SDF retains final approval.",
-      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+      "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
     ],
     "notes": "Dossier §7.4. Near-edge: a regional-community question that stays inside Stellar corpora (vs general web). Reviewed 2026-06-29: the unverified 'Build On Stellar National Bounty (India)' DoraHacks event is not in the live catalog; replaced with corpus-confirmed India activity (Stellar Build Station Kozhikode/Kerala and Kolkata 21-day sprints, June 2026, from the Stellar weekly-roundup research corpus surfaced via scout_research). India active-region claim well-evidenced → confidence raised.\nAlso good if the answer: Notes regional chapters can recommend Instawards for local builders.\nGolden cites: Stellar Light research/builder/hackathon corpora and/or the Ambassador Program page for the India region.\nGT-39 independently reverified 2026-07-10 (Solo scratchpad 575, processes 3300/3303). Grade the official active Exploratory Chapter as the durable headline and event examples as dated operator evidence. Direct Luma controls the Jaipur/August identity over Lumenloop's stale Goa summary/slug; the service conflict is tracked in ll-007. Do not penalize independently verified current examples outside the illustrative list."
   },
@@ -29,7 +31,7 @@
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "A",
@@ -97,13 +99,21 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 78 (q-scf-regional-india): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-        "Current source retained for behavioral retrieval: https://stellar.gitbook.io/ambassador-program/chapters/asia-pacific"
+        "Solo scratchpad 575, GT-39 primary process 3300 and blind process 3303, independently executed 2026-07-10.",
+        "Official Ambassador APAC index and dedicated India Chapter page list Stellar India as an active Exploratory Chapter led by Sahitya Roy of Rise In.",
+        "Direct Luma ajcns4mc records Jaipur Builders Camp on 2026-08-14 through 2026-08-18; Lumenloop's structured title/date agree while generated summary/slug retain Goa wording.",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "solo://proj/49/todo/judge-rubric-corpus--826 — the avoid-clause judge-artifact class (FIXED: rubric v2.1 + eval:qa:lint, commit 18e234f)",
+        "eval-side freshness drift: the corpus-first snapshot did not incorporate the current official chapter pages or direct event record",
+        "improvements/lumenloop/ll-007-event-summary-date-prose-mismatch.md",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-scf-regional-india"

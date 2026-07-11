@@ -7,17 +7,19 @@
     "stellarDocs.search_protocol_concepts_docs"
   ],
   "golden": {
-    "answer": "Use `stellarDocs.search_anchor_sep_docs`, `stellarDocs.search_asset_token_docs`, `stellarDocs.search_protocol_concepts_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Identifies Stellar USDC plus SEP-10/SEP-24. Treats country coverage as source-, date-, and direction-specific and separates corporate/broader marketing scopes.",
+    "answer": "A grounded answer derives its named examples and status claims from the current official Stellar documentation, then dates the roster so it is not presented as permanent. As of 2026-07-10, the verified sources supported this observed answer:\n\nMoneyGram Ramps lets supported wallets/exchanges move **USDC on Stellar** between digital wallets and MoneyGram cash locations. The integration uses **SEP-10 authentication** and **SEP-24 interactive deposit/withdrawal**. It is distinct from SDP.\n\nAs of **2026-07-10**, Production Mainnet limits are direction-specific: **on-ramp 5–950 USDC per transaction** and **off-ramp 5–2,500 USDC per transaction**. Production Preview is a separate test tier at **10–20 USDC per transaction and 100 USDC aggregate**. Recheck these operator values before treating them as current.\n\nCoverage is disputed across MoneyGram's own surfaces. Integration prose says 174 off-ramp countries, while its linked live sheet currently yields 168 cash-out and 27 cash-in rows; consumer marketing says 170+ cash countries. Broader 180+ fiat-rail/presence and 200+ corporate-footprint figures are not Stellar cash-ramp coverage. Cite the exact surface/date/direction or omit a country total rather than choosing one magic number.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
-      "Executes the current documented lookup/workflow via stellarDocs.search_anchor_sep_docs, stellarDocs.search_asset_token_docs, stellarDocs.search_protocol_concepts_docs and labels version, UI, provider, and availability claims as observed.",
+      "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+      "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
       "Identifies Stellar USDC plus SEP-10/SEP-24.",
-      "Treats country coverage as source-, date-, and direction-specific and separates corporate/broader marketing scopes."
+      "Treats country coverage as source-, date-, and direction-specific.",
+      "Separates corporate/broader marketing scopes."
     ],
     "avoid": [
       "Do NOT use the off-ramp maximum as the on-ramp maximum.",
       "Do NOT pin 174, 180+, or 200+ as one current bidirectional Stellar cash-coverage count.",
       "Do NOT conflate MoneyGram Ramps with SDP.",
-      "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
+      "Do NOT present the observed live result set as a complete or permanent roster; explicitly historical facts remain historical."
     ],
     "notes": "Verified: Ramps uses SEP-24 + USDC on Stellar; MainNet off-ramp limit 5 USDC min / 2,500 USDC max per tx; available in 174 countries (per MoneyGram dev docs, June 2026). Limits/country counts are freshness-sensitive. Trap: wrong SEP (it's SEP-24, not SEP-6/31).\nAlso good if the answer: Cites per-transaction off-ramp limits (e.g. ~$5 USDC min to ~$2,500 USDC max) and flags these can change. | Notes the global retail agent footprint (cash-out at hundreds of thousands of locations across 170+ countries).\nGolden cites: developers.stellar.org MoneyGram Ramps docs and/or MoneyGram developer docs.\nCORRECTION 2026-07-10: grade direction-specific limits and dated source scope. The 174 prose conflicts with the linked live sheet; accept honest dispute/omission, not a universal count."
   },
@@ -29,7 +31,7 @@
   "truth": {
     "domain": "real-world",
     "status": "disputed",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-10",
     "sources": [
       {
         "class": "D",
@@ -99,13 +101,18 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "P4 conversions (Solo 3418)",
+      "by": "P4 conversions rework after independent Fable copy/quality review",
       "evidence": [
-        "P4 Lane R behavioral conversion queue, row 54 (q-pay-moneygram-ramps): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
-        "Current source retained for behavioral retrieval: https://developer.moneygram.com/moneygram-developer/docs/integrate-moneygram-ramps"
+        "Solo scratchpad 575 GT-02 blind and GT-11 primary/blind MoneyGram matrices",
+        "improvements/lumenloop/ll-008-directory-record-coverage-field-quality.md",
+        "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+        "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ],
       "rootCause": [
-        "eval-authoring"
+        "Direction-specific operator data and multiple marketing scopes were compressed into one product figure.",
+        "eval-authoring",
+        "solo://proj/49/scratchpad/super-corpus-rebuild--585"
       ]
     },
     "origin": "raven-next q-pay-moneygram-ramps"

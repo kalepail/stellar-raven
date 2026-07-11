@@ -1,7 +1,7 @@
 {
   "$comment": "Deterministic stratified sample (N=30, by service) of the owned QA battery.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "45018fe392a65c243e53a5c646cab1171100f54570efe8c9bfdb125511c6ef2f",
+  "corpusContentSha256": "c8d9610b900865eadec9561d9f4b6ac101bc5463fd0d9d0b4fc6b5dac69bc0a4",
   "counts": {
     "total": 30,
     "byCategory": {
@@ -343,14 +343,17 @@
         "lumenloop.find_av_passages"
       ],
       "golden": {
-        "answer": "Use `lumenloop.find_av_passages` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
+        "answer": "A grounded answer obtains the requested current value or state from the current LumenLoop corpus, states the measurement basis, and makes the observation date visible. As of 2026-07-11, the live research corpus returned a June 2026 Messari interview reporting about $2.8B of tokenized RWAs, while older dated results carried smaller figures.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
         "keyFacts": [
-          "Retrieves source-bounded live results via lumenloop.find_av_passages and reports their source and as-of date without freezing a roster, rank, count, or current value."
+          "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+          "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+          "Reports a current tokenized-RWA value with a dated source.",
+          "States the measurement scope for the reported RWA value."
         ],
         "avoid": [
           "Do NOT assert a precise TVL/RWA figure as a permanent fact without a date or freshness caveat.",
           "Do NOT fabricate a number not grounded in a cited report.",
-          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+          "Do NOT present a changeable current measurement without its provider, scope, and observation date; registered invariants and explicitly historical quantities are not current measurements."
         ],
         "notes": "Freshness item — figure is genuinely contested across sources, so the rubric gates on dated/caveated behavior, NOT one number. Live re-check 2026-06-29: rwa.xyz/networks/stellar resolves and shows ~$2.40B distributed asset value (69 RWA tokens, ~18.4k holders), down from the ~$2.84B seen earlier in June — still low-single-digit $B, confirming the order-of-magnitude gate. SDF announced 'crossed $2B' on 2026-04-11/14 (~4x YoY); Messari Q1-2026 tracked ~$1.2-1.5B excluding stablecoins. Issuers: Spiko, Franklin Templeton (BENJI), Ondo, WisdomTree.\nAlso good if the answer: Cites a dated source in the right order of magnitude (low-single-digit $B tokenized RWA on Stellar as of early/mid 2026, ~4x YoY growth). | Explicitly flags the figure as time-sensitive / as-of-date.\nGolden cites: A dated State-of-Stellar / network report or analytics source (e.g. SDF, Messari, rwa.xyz).\nCorrected 2026-07-03 (todo 829 contradiction sweep + deep verification): the prior '$1.2-1.5B excluding stablecoins' Messari range was a third-party paraphrase — the written report says $796M → $1.52B at Q1-end, crossed $2B Apr 11 (all EXCL. stablecoins, on rwa.xyz data the report itself links). The ~$2.8B is a June-2026 point-in-time rwa.xyz value (also stated by the SDF president in Messari's 2026-06-04 INTERVIEW — not the written report). All figures share one ex-stablecoin scope; differences are temporal, not methodological. Any dated figure on that trajectory is correct; never require one number."
       },
@@ -409,13 +412,18 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "P4 conversions (Solo 3418)",
+          "by": "P4 conversions rework after independent Fable copy/quality review",
           "evidence": [
-            "P4 Lane R behavioral conversion queue, row 2 (q-asset-rwa-tokenized-freshness): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-            "Current source retained for behavioral retrieval: https://app.rwa.xyz/networks/stellar"
+            "eval/qa/consistency-register.json sweep 2026-07-03 (the contradiction record); deep-verification quotes/URLs in Solo scratchpad 521",
+            "2026-07-11 localhost:8787 search→execute probe observed: the live research corpus returned a June 2026 Messari interview reporting about $2.8B of tokenized RWAs, while older dated results carried smaller figures.",
+            "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
           "rootCause": [
-            "eval-authoring"
+            "eval-side authoring: the '$1.2-1.5B' range came from a third-party paraphrase, not the report; single-source-class verification",
+            "solo://proj/49/todo/corpus-health-instru--829 (contradiction-scan instrument, first sweep) — sibling sweep 2026-07-03: grep for 2.8B/2.84/1.52/Messari/rwa.xyz hits exactly the three RWA cases, all corrected in this pass",
+            "eval-authoring",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ]
         },
         "origin": "raven-next q-asset-rwa-tokenized-freshness"
@@ -480,9 +488,10 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Frames Stellar as useful for fast low-cost settlement but not a complete remittance business by itself. Explains the corridor design needs source on-ramp, Stellar settlement asset, FX/quote path, destination off-ramp, KYC/AML/sanctions, liquidity, reconciliation, and customer support (the business architecture, not just a protocol). Drives stablecoin selection by issuer quality, liquidity, destination/geography, redemption, and regulatory fit (e.g. USDC vs EURC vs a local-currency stablecoin) rather than defaulting to XLM or one asset universally.",
+        "answer": "A grounded answer derives its named examples and status claims from the live Stellar Scout directory or research data, then dates the roster so it is not presented as permanent. As of 2026-06-29, the verified sources supported this observed answer:\n\nStellar can be a good settlement layer for a remittance business because it gives fast settlement, standardized anchor protocols, and liquid stablecoin rails, but it is not a complete remittance company by itself. A real corridor needs: source on-ramp, customer onboarding/KYC, settlement asset, FX/quote path, destination off-ramp, liquidity/float, sanctions/fraud controls, reconciliation, refunds, customer support, and legal/compliance coverage in each jurisdiction.\n\nMap rails to the job. SEP-1 lets wallets discover anchor metadata; SEP-10 authenticates account control; SEP-12 handles KYC/customer data; SEP-24/SEP-6 handle deposit and withdrawal flows; SEP-31 handles cross-border payments; SEP-38 gives price/FX quotes. MoneyGram Access is an example of a USDC cash-in/cash-out integration using SEP-10 and SEP-24, not proof that every remittance corridor is available.\n\nStablecoin choice should be corridor-specific: use issuer quality, liquidity, redemption, geography, compliance fit, and anchor support rather than defaulting universally to XLM or one stablecoin. Most founders should first integrate existing anchors/ramp partners in a narrow corridor, measure quote quality and failure handling, and only become an anchor where owning licensing, payout rails, liquidity, and support creates an advantage.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
         "keyFacts": [
-          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+          "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+          "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
           "Frames Stellar as useful for fast low-cost settlement but not a complete remittance business by itself.",
           "Explains the corridor design needs source on-ramp, Stellar settlement asset, FX/quote path, destination off-ramp, KYC/AML/sanctions, liquidity, reconciliation, and customer support (the business architecture, not just a protocol).",
           "Drives stablecoin selection by issuer quality, liquidity, destination/geography, redemption, and regulatory fit (e.g. USDC vs EURC vs a local-currency stablecoin) rather than defaulting to XLM or one asset universally."
@@ -490,7 +499,7 @@
         "avoid": [
           "Do NOT give legal or licensing advice as definitive for all jurisdictions.",
           "Do NOT imply Stellar removes the need for fiat partners, KYC/AML, liquidity, or customer remediation.",
-          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+          "Do NOT present the observed live result set as a complete or permanent roster; explicitly historical facts remain historical."
         ],
         "notes": "2026-06-29: Differentiated toward stablecoin-selection + business architecture — promoted stablecoin-choice to a 5-weight must_have, demoted the SEP rail-map to should_have (the rail-map lane is owned by q-crp-become-an-anchor-licensing). Specific corridor/provider recommendations still require fresh provider checks; architecture/stablecoin-selection guidance is high confidence.\nAlso good if the answer: Maps relevant SEP rails as applicable: SEP-1 discovery, SEP-10 auth, SEP-12 KYC, SEP-24/6 deposit-withdrawal, SEP-31 cross-border payments, SEP-38 quotes. | Mentions integrating existing anchors is usually lower lift than becoming an anchor in every corridor.\nGolden cites: Stellar SEP/anchor docs plus dated corridor/provider sources for concrete recommendations."
       },
@@ -502,7 +511,7 @@
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-11",
+        "asOf": "2026-06-29",
         "sources": [
           {
             "class": "A",
@@ -527,13 +536,16 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "P4 conversions (Solo 3418)",
+          "by": "P4 conversions rework after independent Fable copy/quality review",
           "evidence": [
-            "P4 Lane R behavioral conversion queue, row 16 (q-crp-remittance-founder-advisory): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-            "Current source retained for behavioral retrieval: https://developers.stellar.org/docs/learn/fundamentals/anchors"
+            "solo://proj/49/scratchpad/truth-maintenance-20--575",
+            "Preserved main's 2026-06-29 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+            "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
           "rootCause": [
-            "eval-authoring"
+            "eval-authoring",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ]
         },
         "origin": "raven-next q-crp-remittance-founder-advisory"
@@ -642,16 +654,17 @@
         "stellarDocs.search_soroban_contract_docs"
       ],
       "golden": {
-        "answer": "Use `stellarDocs.search_asset_token_docs`, `stellarDocs.search_protocol_concepts_docs`, `stellarDocs.search_sdk_cli_tools_docs`, `stellarDocs.search_soroban_contract_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Explains atomic Soroban cross-contract flash-loan mechanics and rollback constraints. Distinguishes verified deployed Blend v2 from XycLoans code/history and Slender marketing/unverified usability.",
+        "answer": "A grounded answer consults the current official Stellar documentation, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-10, the verified sources supported this observed answer:\n\nSoroban has no protocol-native flash-loan operation, but a contract can implement one through synchronous cross-contract calls inside an atomic invocation: lend, invoke borrower logic, and require repayment before return; an uncaught error rolls back the call tree. Authorization, simulation, resource/footprint limits, and reentrancy/economic controls still matter.\n\nCurrent evidence as of **2026-07-10**:\n- **Blend v2:** mainnet Fixed Pool bytecode matched the published v2.0.0 pool artifact and its interface exposes `flash_loan`—verified deployed evidence.\n- **XycLoans:** public flash-loan code and historical SCF/Futurenet evidence, but stale repo/docs and a failing current pools route; usable deployment was not verified.\n- **Slender:** operator marketing claims flash loans, while the app showed no usable state and Scout marks it Inactive; feature association is real, current deployment/liquidity unverified.\n\nDo not infer deployment from code, a closed issue, marketing, or a directory label alone.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
         "keyFacts": [
-          "Executes the current documented lookup/workflow via stellarDocs.search_asset_token_docs, stellarDocs.search_protocol_concepts_docs, stellarDocs.search_sdk_cli_tools_docs, stellarDocs.search_soroban_contract_docs and labels version, UI, provider, and availability claims as observed.",
+          "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+          "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
           "Explains atomic Soroban cross-contract flash-loan mechanics and rollback constraints.",
           "Distinguishes verified deployed Blend v2 from XycLoans code/history and Slender marketing/unverified usability."
         ],
         "avoid": [
           "Do NOT claim XycLoans is the sole/current mainnet implementation or that Slender has no flash-loan association.",
           "Do NOT treat source code, marketing, issue status, or directory status alone as deployment/liquidity proof.",
-          "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
+          "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
         ],
         "notes": "CORRECTED 2026-06-29: prior version misattributed flash loans to Slender. Live Scout confirms Slender is a noncustodial lending/borrowing money market (by eq-lab), NOT a flash-loan protocol. XycLoans is the credible Soroban flash-loans protocol ('a decentralized flash loans protocol that runs on Soroban... a flash loans-only protocol'), audited by OtterSec Jan 2024 (sorobansecurity.com/report/33). Slender reference removed; XycLoans is the named flash-loan provider, with dated/source evidence required before treating as production-safe.\nAlso good if the answer: Names XycLoans as the credible Soroban flash-loans protocol (flash-loans-only, per-token liquidity pools enforcing same-transaction repayment), with current evidence required for any live-availability claim. | Mentions simulation/testing for resource limits and failure behavior.\nGolden cites: Stellar/Soroban transaction and contract invocation docs, plus dated protocol docs for any live flash-loan implementation.\nCorrected 2026-07-10. Deployment evidence tiers—not an exclusive project name—are the factual gate."
       },
@@ -663,7 +676,7 @@
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-11",
+        "asOf": "2026-07-10",
         "sources": [
           {
             "class": "D",
@@ -714,13 +727,18 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "P4 conversions (Solo 3418)",
+          "by": "P4 conversions rework after independent Fable copy/quality review",
           "evidence": [
-            "P4 Lane R behavioral conversion queue, row 24 (q-defi-flash-loans): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
-            "Current source retained for behavioral retrieval: https://github.com/blend-capital/blend-contracts-v2"
+            "Blend Fixed Pool CAJJZSGMMM3PD7N33TAPHGBUGTB43OC73HVIK2L2G6BNGGGYOSSYBXBD matched v2.0.0 pool WASM and exposed flash_loan",
+            "Solo scratchpad 575 GT-15 processes 3243/3246",
+            "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+            "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
           "rootCause": [
-            "eval-authoring"
+            "eval-side deployment evidence drift and false mutually exclusive protocol trap",
+            "eval-authoring",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ]
         },
         "origin": "raven-next q-defi-flash-loans"
@@ -1466,9 +1484,10 @@
         "stellarDocs.search_protocol_concepts_docs"
       ],
       "golden": {
-        "answer": "Use `stellarDocs.search_protocol_concepts_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Explains CAP-0071 delegation chains and address-bound V2 credentials. Distinguishes the CAP's Accepted registry status from implementation and network activation.",
+        "answer": "A grounded answer consults the current official Stellar documentation, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-11, the verified sources supported this observed answer:\n\nThe question's word **queued** is stale: **Protocol 27 (Zipper)** has been live on Stellar Mainnet since **ledger 63386819**, closed **2026-07-08 at 17:00:10 UTC**; ledger 63386818 was the final P26 ledger. Two independent Pubnet RPCs still reported protocol 27 on **2026-07-11**.\n\n**CAP-0071** adds first-class authentication delegation for custom accounts through `SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES` and recursive `SorobanDelegateSignature` chains. It also adds `SOROBAN_CREDENTIALS_ADDRESS_V2`, which binds the credential to its account address to prevent cross-account credential reuse. This is a Soroban authorization/credential change, not ZK, consensus, or parallel execution. The current CAP registry still labels CAP-0071 **Accepted**; that normative document status is distinct from the already-completed software implementation and Mainnet activation.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
         "keyFacts": [
-          "Executes the current documented lookup/workflow via stellarDocs.search_protocol_concepts_docs and labels version, UI, provider, and availability claims as observed.",
+          "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+          "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
           "Explains CAP-0071 delegation chains and address-bound V2 credentials.",
           "Distinguishes the CAP's Accepted registry status from implementation and network activation."
         ],
@@ -1477,7 +1496,7 @@
           "Do NOT mis-describe CAP-0071 as a consensus, ZK, or parallelism change.",
           "Do NOT infer network activation or non-activation from the CAP status label alone.",
           "Do NOT present network status without a dated live source or freshness caveat.",
-          "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
+          "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
         ],
         "notes": "GT-31 CORRECTION 2026-07-11: the queued premise and pending/future judge prose are stale. P27 is live from ledger 63386819; CAP-0071 remains labelled Accepted in the registry, demonstrating that normative status and actual network activation are distinct. Grade delegation chains and address-bound V2 mechanics."
       },
@@ -1547,13 +1566,20 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "P4 conversions (Solo 3418)",
+          "by": "P4 conversions rework after independent Fable copy/quality review",
           "evidence": [
-            "P4 Lane R behavioral conversion queue, row 59 (q-protocol-27-cap-0071): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
-            "Current source retained for behavioral retrieval: https://horizon.stellar.org/ledgers/63386819"
+            "Solo scratchpad 575 GT-31 primary process 3280 and blind process 3282 independently retained the mechanics and required replacement of stale pending/future judge prose.",
+            "2026-07-11 author re-check: Horizon P26/P27 boundary, two independent Pubnet RPCs, current CAP-0071 source, and official Zipper guide.",
+            "Preserved main's 2026-07-11 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+            "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
           "rootCause": [
-            "eval-authoring"
+            "eval-side date-contingent status trap expired after the scheduled Mainnet vote and survived as contradictory inherited judge prose",
+            "solo://proj/49/todo/date-contingent-trap--831",
+            "improvements/stellar-docs/sd-008-protocol-27-mainnet-status-lag.md",
+            "eval-authoring",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ]
         },
         "origin": "raven-next q-protocol-27-cap-0071"
@@ -1733,14 +1759,16 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
+        "answer": "A grounded answer obtains the requested current value or state from the live Stellar Scout directory or research data, states the measurement basis, and makes the observation date visible. As of 2026-07-10, the verified sources supported this observed answer:\n\nThe **Soroban Security Audit Bank** is an SDF-funded SCF supporting program that pays eligible third-party audit costs for SCF-funded projects; it is not a cash Build grant or vulnerability bounty. Coverage can reach **100% of audit cost**, with no published fixed dollar cap. Current scope includes testnet/nearly-mainnet projects and qualifying projects already on mainnet or seeking follow-up audits. Priority categories are **Financial Protocols, Widely Used Applications, Infrastructure Contracts, and Yield-Bearing Token Protocols**. For an ordinary initial audit, the project pays **5% upfront**, refundable if all critical/high/medium findings are remediated within 20 business days; specified Growth/Scale cohorts may have 0% initial copay, while pre-traction follow-up audits use higher 20% then 50% copays. Terms are current as of 2026-07-10 and should be rechecked.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
         "keyFacts": [
-          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value."
+          "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+          "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+          "Explains the current Audit Bank purpose and eligibility boundary."
         ],
         "avoid": [
           "Do NOT describe the Audit Bank as cash funding or the SDF Bug Bounty.",
           "Do NOT invent a fixed dollar cap, claim it is pre-mainnet-only, or generalize the refundable 5% initial copay to every audit.",
-          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+          "Do NOT present a changeable current measurement without its provider, scope, and observation date; registered invariants and explicitly historical quantities are not current measurements."
         ],
         "notes": "GT-36 CORRECTION 2026-07-10: grade up-to-100% cost coverage, four current priority categories, qualifying pre/post-mainnet and follow-up paths, and conditional copay semantics. The inherited avoid was truncated and is replaced in full.\nGT-36 independently confirmed by processes 3290/3291."
       },
@@ -1752,7 +1780,7 @@
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-11",
+        "asOf": "2026-07-10",
         "sources": [
           {
             "class": "A",
@@ -1787,13 +1815,17 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "P4 conversions (Solo 3418)",
+          "by": "P4 conversions rework after independent Fable copy/quality review",
           "evidence": [
-            "P4 Lane R behavioral conversion queue, row 65 (q-scf-audit-bank): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-            "Current source retained for behavioral retrieval: https://stellar.org/grants-and-funding/soroban-audit-bank"
+            "Solo scratchpad 575 GT-36 primary 3290 and blind 3291; corrupted effective avoid verified against vendored source.",
+            "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+            "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
           "rootCause": [
-            "eval-authoring"
+            "Eval-side stale scope compression plus mechanically truncated avoid text.",
+            "eval-authoring",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ]
         },
         "origin": "raven-next q-scf-audit-bank"
@@ -1809,16 +1841,18 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Use `scout.getBuilders`, `scout.getHackathon`, `scout.getHackathons`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Confirms the officially listed active Stellar India Exploratory Chapter and distinguishes that label from a claim that SDF centrally operates every local event.",
+        "answer": "A grounded answer consults the live Stellar Scout directory or research data, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-10, the verified sources supported this observed answer:\n\nYes. As of **2026-07-10**, the official Stellar Ambassador Program lists **Stellar India** among its active Asia-Pacific chapters, with the status **Exploratory Chapter**. Its dedicated page names Sahitya Roy of Rise In as Chapter Lead and links current joining, events, community, and education channels.\n\nThere is also direct, dated activity beyond the directory label: 2026 operator/event records include Build Station sprints and community events in several Indian cities. One current example is the **Jaipur Builders Camp, August 14–18, 2026**, a five-day Rise In / Stellar India builder residency. Treat individual events as dated operator evidence, not proof that SDF centrally runs every activation or that participation is paid.\n\nRegional chapters may guide eligible builders toward Instawards, but chapter support is not a funding commitment: SDF makes the final decision, typical initial Instawards are $1K–$5K in USD value paid in XLM, and $15K is the conditional aggregate maximum over time rather than an automatic first award.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
         "keyFacts": [
-          "Retrieves source-bounded live results via scout.getBuilders, scout.getHackathon, scout.getHackathons, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
-          "Confirms the officially listed active Stellar India Exploratory Chapter and distinguishes that label from a claim that SDF centrally operates every local event."
+          "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
+          "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
+          "Confirms the officially listed active Stellar India Exploratory Chapter.",
+          "Distinguishes that label from a claim that SDF centrally operates every local event."
         ],
         "avoid": [
           "Do NOT turn a bounded Scout directory or hackathon miss into evidence that India lacks builders, events, or an official chapter.",
           "Do NOT repeat the stale Goa/July Builders Camp description or present historical project counts as current cumulative totals.",
           "Do NOT claim regional chapters approve SCF Build or Instaward funding; SDF retains final approval.",
-          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
+          "Do NOT present version-, provider-, interface-, or availability-sensitive observations as timeless; date the changeable part without weakening stable protocol or historical facts."
         ],
         "notes": "Dossier §7.4. Near-edge: a regional-community question that stays inside Stellar corpora (vs general web). Reviewed 2026-06-29: the unverified 'Build On Stellar National Bounty (India)' DoraHacks event is not in the live catalog; replaced with corpus-confirmed India activity (Stellar Build Station Kozhikode/Kerala and Kolkata 21-day sprints, June 2026, from the Stellar weekly-roundup research corpus surfaced via scout_research). India active-region claim well-evidenced → confidence raised.\nAlso good if the answer: Notes regional chapters can recommend Instawards for local builders.\nGolden cites: Stellar Light research/builder/hackathon corpora and/or the Ambassador Program page for the India region.\nGT-39 independently reverified 2026-07-10 (Solo scratchpad 575, processes 3300/3303). Grade the official active Exploratory Chapter as the durable headline and event examples as dated operator evidence. Direct Luma controls the Jaipur/August identity over Lumenloop's stale Goa summary/slug; the service conflict is tracked in ll-007. Do not penalize independently verified current examples outside the illustrative list."
       },
@@ -1830,7 +1864,7 @@
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-11",
+        "asOf": "2026-07-10",
         "sources": [
           {
             "class": "A",
@@ -1898,13 +1932,21 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "P4 conversions (Solo 3418)",
+          "by": "P4 conversions rework after independent Fable copy/quality review",
           "evidence": [
-            "P4 Lane R behavioral conversion queue, row 78 (q-scf-regional-india): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
-            "Current source retained for behavioral retrieval: https://stellar.gitbook.io/ambassador-program/chapters/asia-pacific"
+            "Solo scratchpad 575, GT-39 primary process 3300 and blind process 3303, independently executed 2026-07-10.",
+            "Official Ambassador APAC index and dedicated India Chapter page list Stellar India as an active Exploratory Chapter led by Sahitya Roy of Rise In.",
+            "Direct Luma ajcns4mc records Jaipur Builders Camp on 2026-08-14 through 2026-08-18; Lumenloop's structured title/date agree while generated summary/slug retain Goa wording.",
+            "Preserved main's 2026-07-10 observation date and prior evidence; this rewording does not claim a 2026-07-11 re-observation.",
+            "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
           "rootCause": [
-            "eval-authoring"
+            "solo://proj/49/todo/judge-rubric-corpus--826 — the avoid-clause judge-artifact class (FIXED: rubric v2.1 + eval:qa:lint, commit 18e234f)",
+            "eval-side freshness drift: the corpus-first snapshot did not incorporate the current official chapter pages or direct event record",
+            "improvements/lumenloop/ll-007-event-summary-date-prose-mismatch.md",
+            "eval-authoring",
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ]
         },
         "origin": "raven-next q-scf-regional-india"
