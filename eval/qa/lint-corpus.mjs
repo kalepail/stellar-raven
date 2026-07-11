@@ -229,10 +229,22 @@ export function lintGospelChanges(currentCases, previousCases) {
   const previousById = new Map(previousCases.map((kase) => [kase.id, kase]));
   for (const current of currentCases) {
     const previous = previousById.get(current.id);
-    // The owned corpus first appears as a mechanical carry in C4/C5. Its
-    // verifier and ledger prove continuity; future authored cases still enter
-    // this lane immediately.
-    if (!previous && !String(current.truth?.origin ?? "").startsWith("authored ")) continue;
+    if (!previous) {
+      // A new id is new gospel regardless of origin: it must arrive wearing
+      // verification evidence. Authored cases additionally owe a rootCause;
+      // harvest/redefine lineage lives in the migration ledger.
+      const verified = current.truth?.verified;
+      if (!validStringArray(verified?.evidence)) {
+        findings.push(finding("error", "gospel", current.id, "new case requires non-empty truth.verified.evidence"));
+      }
+      if (String(current.truth?.origin ?? "").startsWith("authored ") && !validStringArray(verified?.rootCause)) {
+        findings.push(finding("error", "gospel", current.id, "authored case requires non-empty truth.verified.rootCause"));
+      }
+      if (validStringArray(verified?.rootCause) && !verified.rootCause.includes("freshness-drift") && scoreOnlyRootCause(verified.rootCause)) {
+        findings.push(finding("error", "gospel", current.id, "truth.verified.rootCause cannot be only a score/result rationale"));
+      }
+      continue;
+    }
     if (!changedJudgeFacing(current, previous)) continue;
     const verified = current.truth?.verified;
     if (previous && same(verified, previous.truth?.verified)) {
@@ -510,12 +522,31 @@ function main() {
   const registerPath = path.resolve(options.register ?? DEFAULTS.registerPath);
   const ledgerPath = path.resolve(options.ledger ?? DEFAULTS.ledgerPath);
   const since = options.since ?? ciSinceRef();
+  if (process.env.CI && !since) {
+    // Fail closed: in CI the gospel lane is a required guard, so an
+    // unresolvable base ref is an error, never a silent skip.
+    console.error(
+      "[lint-corpus] ERROR [gospel] no base ref in CI — set GITHUB_BASE_SHA/GITHUB_BASE_REF or pass --since <ref>"
+    );
+    process.exitCode = 1;
+    return;
+  }
+  let previousCases;
+  if (since) {
+    previousCases = loadCasesAtRef(since, corpusDir);
+    if (previousCases.length === 0) {
+      console.log(`[lint-corpus] NOTE gospel lane skipped: no owned corpus at ${since} (pre-migration base)`);
+      previousCases = undefined;
+    }
+  } else {
+    console.log("[lint-corpus] NOTE gospel lane skipped: no --since ref");
+  }
   const findings = runLint({
     cases: loadCases(corpusDir),
     manifest: json(manifestPath),
     register: existsSync(registerPath) ? json(registerPath) : {},
     ledger: existsSync(ledgerPath) ? json(ledgerPath) : undefined,
-    previousCases: since ? loadCasesAtRef(since, corpusDir) : undefined,
+    previousCases,
     coverage: options.coverage,
     enforceFloors: options.enforceFloors,
     stale: options.stale,

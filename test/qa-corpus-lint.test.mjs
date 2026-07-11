@@ -36,6 +36,31 @@ describe("QA corpus lint lanes", () => {
     expect(lintGospelChanges([drift], [before])).toEqual([]);
   });
 
+  it("requires verification evidence on every new case id, whatever its origin", () => {
+    const fresh = load("gospel-after.json");
+    fresh.id = "q-fixture-harvested";
+    fresh.truth.origin = "kaan k-31";
+    fresh.truth.verified = { ...fresh.truth.verified, evidence: [] };
+    const findings = lintGospelChanges([fresh], [load("gospel-before.json")]);
+    expect(findings).toEqual(expect.arrayContaining([
+      expect.objectContaining({ level: "error", lane: "gospel", id: "q-fixture-harvested", message: expect.stringContaining("new case requires non-empty truth.verified.evidence") })
+    ]));
+    const withEvidence = structuredClone(fresh);
+    withEvidence.truth.verified.evidence = ["solo://proj/49/scratchpad/fixture"];
+    expect(lintGospelChanges([withEvidence], [load("gospel-before.json")]).filter((item) => item.id === "q-fixture-harvested")).toEqual([]);
+  });
+
+  it("additionally requires a rootCause on new authored cases", () => {
+    const authored = load("gospel-after.json");
+    authored.id = "q-fixture-authored";
+    authored.truth.origin = "authored 2026-07";
+    authored.truth.verified = { ...authored.truth.verified, evidence: ["https://example.test/evidence"], rootCause: [] };
+    const findings = lintGospelChanges([authored], [load("gospel-before.json")]);
+    expect(findings).toEqual(expect.arrayContaining([
+      expect.objectContaining({ level: "error", lane: "gospel", id: "q-fixture-authored", message: expect.stringContaining("authored case requires non-empty truth.verified.rootCause") })
+    ]));
+  });
+
   it("fails the stale gate after truth.reverifyBy", () => {
     const findings = lintStale([load("stale.json")], "2026-07-11");
     expect(findings).toEqual([
