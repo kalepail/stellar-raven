@@ -1,0 +1,131 @@
+{
+  "id": "q-crp-export-tx-history-taxes",
+  "question": "How do I export a complete Stellar account transaction history for tax or accounting, and what should I know about TurboTax or CoinTracker-style integrations?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "First determine the data source's retained range. Horizon pagination can enumerate the classic transactions, operations, and effects that **that Horizon instance still retains**, but reaching the final page does not prove all-time completeness. Check history_elder_ledger/provider retention and record the export's first and last ledger.\n\nFor complete historical coverage, use an archival/indexed source such as **Hubble/BigQuery**, a Galexie-derived data lake, or another provider that explicitly documents the needed history. RPC getTransactions scans a retained **ledger range**; it is not an account-history endpoint, and ordinary getTransactions/getEvents retention is not made all-time merely because getLedgers archival export exists.\n\nExport more than payments: transactions, operations, effects/ledger-entry changes, fees, trades, claimable balances, and contract events as relevant. Decode XDR with a current SDK. Deduplicate/idempotently checkpoint by transaction/operation/event identity and reconcile classic plus contract activity.\n\nTax software is a separate, volatile provider workflow. As of 2026-07-10, CoinTracker documents CSV import for Stellar rather than direct sync; verify current format, jurisdiction, plan, and transaction limits. This is data-export guidance, not tax advice.",
+    "keyFacts": [
+      "Checks provider retention/history_elder_ledger before treating paginated Horizon results as complete.",
+      "Uses Hubble/BigQuery or another explicitly archival source for all-time history.",
+      "States that RPC getTransactions is ledger-range and retention-bound, not account-filtered full history.",
+      "Exports and reconciles all relevant operation/effect/event/fee data rather than payments alone."
+    ],
+    "avoid": [
+      "Do NOT equate page exhaustion with network-history exhaustion.",
+      "Do NOT call RPC getTransactions account-filtered or all-time because getLedgers archival export exists.",
+      "Do NOT export payments only or give definitive tax advice."
+    ],
+    "notes": "CoinTracker support was verified through search extraction but curl returned 403; Phase 3 should browser-check provider support if exact tax-tool wording matters.\nAlso good if the answer: Mentions reconciling CSV/export data with wallet/exchange records and fiat cost basis where applicable. | Notes Horizon is not the only possible data source; RPC/indexers/archive providers may be relevant for historical completeness.\nGolden cites: Stellar Horizon/RPC/indexer docs for export mechanics and dated tax-tool docs for named integrations.\nCORRECTION 2026-07-10 (GT-10 processes 3230/3232): gate retention-aware source selection, not volatile ledger numbers. Horizon/RPC pagination exhausts retained data only; RPC getTransactions is ledger-range."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/indexers/hubble",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getTransactions",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/galexie",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.cointracker.io/integrations/stellar",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Exhausted Horizon pagination proves all-time account history",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Horizon retention/ingestion and Hubble documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live public Horizon history_elder_ledger and earliest transaction probe on 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "Independent reviews: Solo GT-10 processes 3230/3232",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "RPC getTransactions is an account-history/full-history export",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: current RPC getTransactions method is ledger-range and retention-bound",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: current RPC getTransactions method is ledger-range and retention-bound",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live RPC rejected startLedger outside its retained range",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: RPC archive/data-lake integration applies to ledger archives rather than converting getTransactions into account history",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The answer equated exhausting Horizon/RPC pagination with exhausting network history. Pagination only exhausts the provider's retained dataset; public Horizon and RPC both expose bounded ranges, and RPC getTransactions is ledger-range rather than account-filtered.",
+      "evidence": [
+        "Solo scratchpad 575 GT-10 primary and blind matrices",
+        "Sibling sweep matched Hubble/retention goldens"
+      ],
+      "rootCause": [
+        "Collection pagination was mistaken for datastore retention.",
+        "A ledger-range RPC method was mistaken for an account-filtered export."
+      ]
+    },
+    "origin": "raven-next q-crp-export-tx-history-taxes"
+  }
+}

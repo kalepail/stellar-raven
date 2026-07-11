@@ -1,0 +1,48 @@
+{
+  "id": "q-protocol-network-passphrases-list",
+  "question": "List the Stellar network passphrases for the public network, testnet, and futurenet — what is the exact passphrase string for each?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "Exact passphrase string per network [1][2]:\n\n- **Public network**: `Public Global Stellar Network ; September 2015`\n- **Testnet**: `Test SDF Network ; September 2015`\n- **Futurenet**: `Test SDF Future Network ; October 2022`\n\nThere is no separate \"mainnet\" passphrase distinct from the public-network one. (Why the passphrase matters — network-id hashing, replay protection, signing — is covered by `q-protocol-network-passphrases`; this variant is the bare per-network enumeration.)",
+    "keyFacts": [
+      "Gives the public-network passphrase exactly: 'Public Global Stellar Network ; September 2015'.",
+      "Gives the testnet passphrase exactly: 'Test SDF Network ; September 2015'."
+    ],
+    "avoid": [
+      "Do NOT garble the passphrase strings (e.g. wrong date, missing the ' ; ' separator, or swapping public/test strings).",
+      "Do NOT invent a separate 'mainnet' passphrase distinct from the public-network one."
+    ],
+    "notes": "Reviewed 2026-06-29: differentiated from q-protocol-network-passphrases by stripping the 'why they matter' rationale (network-id hashing / replay / signing) — this is the bare-enumeration variant; the rationale now lives only in the factual sibling. Strings verified against developers.stellar.org/docs/networks. Trap = garbling the strings.\nAlso good if the answer: Gives the futurenet passphrase exactly ('Test SDF Future Network ; October 2022').\nGolden cites: A networks / network-passphrase page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/networks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/networks",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-33-passphrases-operations-parallel-passkeys-consensus accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-network-passphrases-list"
+  }
+}

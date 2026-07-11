@@ -1,0 +1,95 @@
+{
+  "id": "q-infra-testnet-vs-futurenet",
+  "question": "What's the difference between Stellar's Testnet and Futurenet, and when should I use each?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "**Testnet** and **Futurenet** are separate public test networks with fake XLM and no real-value assets. Use Testnet for stable, near-production integration testing; use Futurenet to exercise the next/pre-release protocol and features. They have different passphrases, endpoints, ledgers, accounts, assets, and contract IDs, and neither promises production availability or permanent state. Testnet resets on a planned cadence; Futurenet resets as needed and is more volatile.\n\nFriendbot funds **accounts** on the applicable test network; it does not directly fund a contract. Provider coverage and live protocol versions change, so consult the current Networks/Providers pages and date any exact snapshot rather than using it to define the networks forever.",
+    "keyFacts": [
+      "Testnet is the stable integration network; Futurenet previews upcoming protocol/features.",
+      "The networks have distinct passphrases/state/identifiers and fake, valueless XLM.",
+      "Reset, provider, and protocol-version claims are freshness-sensitive; Friendbot funds accounts, not contracts."
+    ],
+    "avoid": [
+      "Do NOT swap Testnet/Futurenet roles, equate either with Mainnet, or claim real-value assets.",
+      "Do NOT reuse passphrases/accounts/assets/contracts across networks or promise persistence/SLA.",
+      "Do NOT freeze provider counts or protocol versions without an as-of date."
+    ],
+    "notes": "Verified against the networks docs: both are public, fake-XLM networks separate from Mainnet; Testnet is stable (resets ~2-4×/yr), Futurenet runs bleeding-edge/pre-release protocol features (irregular resets). Both fundable via Friendbot (~10,000 fake XLM). Role swap is the trap.\nAlso good if the answer: Use Testnet for normal app testing and Futurenet only when you need to exercise pre-release protocol features. | Far fewer RPC providers support Futurenet than Testnet/Mainnet.\nGolden cites: developers.stellar.org networks docs (testnet/futurenet).\nGT-50 CORRECTION 2026-07-11: gate durable roles and network separation, not a provider count or protocol snapshot. Friendbot funds accounts."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/networks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/providers",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Testnet is the stable near-production integration network and Futurenet previews the next protocol; they have separate passphrases, state, resets, and fake XLM.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Networks documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live getNetwork/getVersionInfo/getHealth probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Provider and protocol-version coverage is volatile and must be dated rather than used as a permanent role definition.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Providers page",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: dated Testnet/Futurenet live snapshot",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited durable role split was correct, but it made undated provider coverage a fact, said Friendbot funds contracts, and marked a reset/provider-sensitive case non-fresh.",
+      "evidence": [
+        "Solo scratchpad 575 GT-50 primary/blind matrices independently confirmed the durable roles and freshness correction.",
+        "Sibling sweep checked q-protocol-futurenet-vs-testnet, q-protocol-network-passphrases, q-ti-testnet-mainnet-migration, and q-tool-cli-testnet-identity-howto."
+      ],
+      "rootCause": [
+        "Plain freshness drift plus eval-side wording error: provider coverage was frozen and Friendbot account funding was misstated as contract funding."
+      ]
+    },
+    "origin": "raven-next q-infra-testnet-vs-futurenet"
+  }
+}

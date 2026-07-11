@@ -1,0 +1,45 @@
+{
+  "id": "q-asset-sdex-vs-amm",
+  "question": "Compare the Stellar DEX (SDEX) orderbook with Stellar's AMM liquidity pools — how do they price trades and what are the cost differences?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- **SDEX** is an on-chain **central-limit orderbook**: accounts post offers via `ManageBuyOffer`/`ManageSellOffer`/`CreatePassiveSellOffer`; matching is on-ledger and atomic. Offers can be priced **tighter or wider** at the maker's discretion [1].\n- **AMM liquidity pools** price via a **constant-product (x·y=k)** curve; each swap charges a **fixed 30 basis points (0.30%)** fee, separate from the network fee. Fees accrue into the pool (growing `k`) and are paid out to LPs proportional to their pool shares [1].\n- Both live **in-ledger (no off-chain matching engine)**, and a single **path payment** can route across **both** offers and pools in one atomic transaction [1].\n- **AMM pool-share trustlines cost two base reserves** (vs one for a normal asset trustline). High-volume pairs tend to concentrate on offers; exotic/long-tail pairs on pools [1].",
+    "keyFacts": [
+      "SDEX is an on-chain central-limit orderbook (offers via ManageBuy/SellOffer); AMM pools price via a constant-product (x*y=k) curve.",
+      "AMM swaps charge a fixed 30 basis points (0.30%) fee, separate from the network fee; orderbook offers can be priced tighter or wider."
+    ],
+    "avoid": [
+      "Do NOT state the AMM fee is a different number (e.g. 0.03%, 1%, 0.25%) as the canonical Stellar pool fee.",
+      "Do NOT claim Stellar's DEX is an off-chain or order-matching-server based exchange."
+    ],
+    "notes": "Required comparison (SDEX vs AMM). Dossier §3, §8.2. AMM fee = fixed 30 bps.\nAlso good if the answer: Both live in-ledger (no off-chain matching engine); path payments can route across both. | AMM pool-share trustlines cost two base reserves; LPs earn the accumulated fees proportional to their share.\nGolden cites: The SDEX / liquidity-pools page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/liquidity-on-stellar-sdex-liquidity-pools",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-04-sac-stablecoins-issuance-fx accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-sdex-vs-amm"
+  }
+}

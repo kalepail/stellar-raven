@@ -1,0 +1,78 @@
+{
+  "id": "q-soroban-fee-structure",
+  "question": "How are Soroban transaction fees structured, and which part can be refunded?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "A Soroban transaction pays an inclusion fee plus a resource fee. The inclusion bid is non-refundable. The resource fee meters CPU instructions, ledger-entry access and read/write bytes, transaction/bandwidth size, events, return values, and state rent. Execution/I-O components are non-refundable; rent/events/return-value capacity is charged as a refundable budget before execution and unused refundable budget is returned after actual usage is known. Fees are in stroops. Use RPC simulation or `stellar tx simulate` to estimate resources and fees before signing/submission.",
+    "keyFacts": [
+      "Separates inclusion and resource fees and names execution, ledger I/O/bytes, size, events, return values, and rent.",
+      "States that unused refundable budget is reconciled; not every declared resource charge is refunded."
+    ],
+    "avoid": [
+      "Do NOT reduce Soroban fees to Ethereum gas-price language.",
+      "Do NOT claim the entire fee is refundable or that none of the refundable budget can be returned."
+    ],
+    "notes": "gas/gwei is the EVM trap; refundable-portion is the defining fact. Per the fees page the refundable portion is specifically rent + events + return values; the non-refundable is CPU + read/write bytes + bandwidth.\nAlso good if the answer: The non-refundable portion covers CPU instructions, read/write bytes, and bandwidth/size; the refundable portion covers rent, events, and return values (charged up front, refunded by actual usage). | Fees are denominated in stroops (1 XLM = 10,000,000 stroops).\nGolden cites: The developers.stellar.org fees & metering documentation (or CAP-0046 fee section).\nGT-46 CORRECTION 2026-07-11: fee component wording follows current host fees.rs and distinguishes unused refundable budget."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/fees-resource-limits-metering",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-env/blob/v27.0.0/soroban-env-host/src/fees.rs",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Soroban fees comprise inclusion plus resource fees, with non-refundable metered execution/I-O components and a refundable rent/events/return-value budget reconciled to use.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current fees/resource limits documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: rs-soroban-env v27 fees.rs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: stellar CLI v27 tx simulation help",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The core inclusion-plus-resource split was correct, but the non-refundable resource list was incomplete and the refund wording could be read as refunding all declared resources rather than unused refundable budget.",
+      "evidence": [
+        "Solo scratchpad 575 GT-46 primary 3326 and valid blind 3329; blind confirmed the taxonomy with precision."
+      ],
+      "rootCause": [
+        "Eval-side fee summary omitted ledger-entry access/I-O detail and overcompressed refundable-budget reconciliation."
+      ]
+    },
+    "origin": "raven-next q-soroban-fee-structure"
+  }
+}

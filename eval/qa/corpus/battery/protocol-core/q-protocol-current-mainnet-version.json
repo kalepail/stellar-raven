@@ -1,0 +1,102 @@
+{
+  "id": "q-protocol-current-mainnet-version",
+  "question": "What is the current protocol version running on Stellar Mainnet, and when did it activate?",
+  "surface": [
+    "stellarDocs.search_meeting_notes",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-09**, Stellar Mainnet runs **Protocol 27 (Zipper)**. The activation boundary is observable directly in Horizon: ledger **63386818** closed under Protocol 26 at **2026-07-08 17:00:05 UTC**, and ledger **63386819** closed under Protocol 27 at **17:00:10 UTC**. Zipper brings CAP-0071's authentication delegation and address-bound Soroban credentials. This is freshness-sensitive: confirm the current protocol against live Horizon/RPC or protocol history before relying on a remembered number. The official Software Versions page was still showing P27 as Testnet-only when checked on 2026-07-09, so it should not override the live ledger.",
+    "keyFacts": [
+      "Identifies Protocol 27 ('Zipper') as the current Mainnet protocol as of 2026-07-09, activated on 2026-07-08 at ledger 63386819.",
+      "Flags current protocol status as freshness-sensitive and points to a live network source such as Horizon/RPC or protocol history."
+    ],
+    "avoid": [
+      "Do NOT assert Protocol 26 or an older version as the current Mainnet protocol after the 2026-07-08 upgrade.",
+      "Do NOT claim Protocol 27 is still queued or Testnet-only.",
+      "Do NOT state the current version without a dated live source or staleness caveat."
+    ],
+    "notes": "GT-31 OVERLAP RECONCILIATION 2026-07-11: replace the expired P26/pending-P27 judge premise. Horizon and two independent RPCs establish P27 live from ledger 63386819; grade a dated live-network lookup and keep release, CAP status, and activation distinct."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://horizon.stellar.org/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://horizon.stellar.org/ledgers/63386819",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current Stellar Mainnet protocol is 27",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: Horizon root current_protocol_version=27 and latest ledger protocol_version=27 asOf 2026-07-09",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar-core v27.1.0 Config.cpp sets CURRENT_LEDGER_PROTOCOL_VERSION=27",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Mainnet activation occurred at ledger 63386819 on 2026-07-08T17:00:10Z",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: adjacent Horizon ledgers 63386818/63386819 show the P26→P27 boundary",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: SDF Zipper guide scheduled the Mainnet vote for 2026-07-08",
+            "observedAt": "2026-07-08",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-09",
+      "by": "Golden-truth sweep import — This case's key fact and avoid clause expired at the Protocol 27 Mainnet vote. The live network now reports protocol 27, so continuing to require P26 or forbid P27 would manufacture judge failures.",
+      "evidence": [
+        "2026-07-09 independent P27 re-verification in Solo scratchpad 567",
+        "Sibling consistency sweep covered nine P27/Zipper-related cases"
+      ],
+      "rootCause": [
+        "eval-side date-contingent trap expired after the scheduled validator vote",
+        "solo://proj/49/todo/date-contingent-trap--831",
+        "improvements/stellar-docs/sd-008-protocol-27-mainnet-status-lag.md"
+      ]
+    },
+    "origin": "raven-next q-protocol-current-mainnet-version"
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "id": "q-tool-go-sdk-ingest",
+  "question": "I'm building a Go service to stream Stellar ledger data — what's the official Go SDK and which package handles ingestion?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs"
+  ],
+  "golden": {
+    "answer": "Use SDF's current Go module **`github.com/stellar/go-stellar-sdk`**. For a ledger-streaming/ingestion service, import **`github.com/stellar/go-stellar-sdk/ingest`** to parse raw ledger XDR into higher-level models and use **`github.com/stellar/go-stellar-sdk/ingest/ledgerbackend`** for the selected ledger source. Backend choice is architecture-specific: Captive Core, history/data-lake/Galexie, or supported RPC/archive inputs have different retention and operating costs.\n\nThe module also contains `txnbuild`, `clients/horizonclient`, and `clients/rpcclient`, but Horizon API polling is not the same thing as raw ledger ingestion. The old **`github.com/stellar/go/...`** SDK import path and `stellar/go` monorepo provenance are deprecated/archived after the October 2025 split; do not start new code there. As of **2026-07-11**, the split SDK release was v0.6.0, but recheck Go module/release metadata before pinning.",
+    "keyFacts": [
+      "Names the current official module `github.com/stellar/go-stellar-sdk`.",
+      "Uses `github.com/stellar/go-stellar-sdk/ingest` and `.../ingest/ledgerbackend` for raw ledger parsing and source backends.",
+      "Rejects deprecated `github.com/stellar/go/...` imports and distinguishes raw ingestion from Horizon polling."
+    ],
+    "avoid": [
+      "Do NOT cite or import `github.com/stellar/go/ingest` as the current SDK path.",
+      "Do NOT claim Go lacks ingestion support, require Horizon polling for ledger streaming, or confuse Horizon/API streaming with raw ledger ingestion.",
+      "Do NOT promise one backend has unbounded history or pin a release without a date."
+    ],
+    "notes": "GT-55 CORRECTION 2026-07-11: current module/import root is github.com/stellar/go-stellar-sdk; ingestion packages are /ingest and /ingest/ledgerbackend. The former stellar/go SDK path is deprecated/archived and must not be taught as current."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/sdks/client-sdks#go",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/ingest-sdk/overview",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/go-stellar-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/go-stellar-sdk/tree/main/ingest",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/go-stellar-sdk/tree/main/ingest/ledgerbackend",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/go",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The current official Go module/import root is github.com/stellar/go-stellar-sdk and raw ledger ingestion lives under /ingest with source backends under /ingest/ledgerbackend.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current official Client SDKs and Ingest SDK documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: go-stellar-sdk go.mod, repository tree, and v0.6.0 release",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-as-of-2026-07-11."
+      },
+      {
+        "claim": "Former github.com/stellar/go SDK package paths are deprecated after the October 2025 split.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: archived/deprecated stellar/go repository and module notice",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: pkg.go.dev deprecation notice",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-55 primary/blind reconciliation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited functional recommendation was correct, but its source and grader provenance taught the archived `stellar/go` repository and could lead users to deprecated `github.com/stellar/go/...` imports after the SDK split.",
+      "evidence": [
+        "GT-55 primary 3392 and sealed blind 3393 independently agreed on the module/repository correction and ingestion package paths.",
+        "Current official docs import `github.com/stellar/go-stellar-sdk/ingest` and `github.com/stellar/go-stellar-sdk/ingest/ledgerbackend`.",
+        "Sibling sweep checked q-tool-official-sdks-list, q-tool-official-sdks-repos, q-ti-js-go-sdk-package-migration, and raw XDR/ingestion cases; their current paths already use go-stellar-sdk."
+      ],
+      "rootCause": [
+        "Eval-side repository/module provenance drift after the October 2025 Go SDK split; upstream docs and repository are already current."
+      ]
+    },
+    "origin": "raven-next q-tool-go-sdk-ingest"
+  }
+}

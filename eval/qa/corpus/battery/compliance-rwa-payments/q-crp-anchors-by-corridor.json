@@ -1,0 +1,134 @@
+{
+  "id": "q-crp-anchors-by-corridor",
+  "question": "Which Stellar anchors serve a specific country or currency corridor, what do anchor-to-anchor costs depend on, and when should I build my own anchor instead?",
+  "surface": [
+    "lumenloop.get_project",
+    "lumenloop.search_content_semantic",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "Anchors are the businesses that connect Stellar assets to external banking, cash, or payment rails; Stellar supplies open protocols, not a global table of guaranteed corridors or prices. Treat a corridor question as a SELECTION problem: use official anchor docs for the model, then compare candidate providers on current/dated evidence. SEP-24 covers interactive deposit/withdrawal flows, SEP-31 covers cross-border payments, and SEP-38 covers quotes; none of those standards proves that USD->PKR, TZS->KES, or NGN/KES/ZMW is live with a given provider, nor what it costs.\n\nAnchor-to-anchor cost is not a single protocol number. It depends on each provider's fee schedule, FX/quote spread (typically surfaced through SEP-38), the payout rail, available liquidity, the country and amount, the customer's KYC tier, and settlement time. So Raven should return a short provider-discovery and comparison workflow: identify candidate anchors/wallets in Stellar ecosystem directories or Scout/LumenLoop; open each provider's docs, `/info`, quote, fee, and country/currency support surfaces; compare supported assets, limits, KYC/KYB, fees, FX spread, settlement time, refunds, and support; then cite the dated provider page. MoneyGram Ramps is one cited example of an anchor-like integration surface (Stellar USDC, SEP-10/SEP-24, published production limits/country availability), but that is one provider, not proof of any other corridor.\n\nBuild your own anchor only when you need a corridor no suitable provider exposes, or when you need to own onboarding, liquidity, pricing, risk, and support. Becoming an anchor means compliance/licensing, bank or payout relationships, liquidity/float, treasury reconciliation, customer support, and SEP/API implementation. If an existing anchor covers the route with acceptable economics and compliance terms, integration is usually the lower-risk first launch path. (Last-mile mobile-money/agent-network payout integration is a separate question.)",
+    "keyFacts": [
+      "Frames the task as SELECTING among candidate anchors for a corridor, treating coverage as live and source-dependent rather than a fixed protocol fact.",
+      "Explains anchor-to-anchor cost depends on each provider's fee schedule, FX/quote spread (SEP-38), payout rail, liquidity, country, amount, KYC tier, and settlement time, not a single protocol price.",
+      "Lays out the build-vs-integrate decision: integrating an existing anchor is usually the lower-risk first launch, while building your own anchor requires licensing/compliance, banking/payout relationships, liquidity/float, and SEP/API implementation."
+    ],
+    "avoid": [
+      "Do NOT name a specific anchor-to-country/currency corridor pairing (e.g. 'anchor X currently serves country Y') as currently live without citing a dated source for that pairing.",
+      "Do NOT attribute MoneyGram's 200+-country corporate money-transfer footprint (all-rails boilerplate: 'over 200 countries and territories') to its Stellar USDC off-ramp — MoneyGram's own developer docs put the off-ramp at 174 countries (as of 2026-07; marketing rounds to 170+, older SDF material says 180+). Any figure in the 170-180 band traceable to MoneyGram/SDF is acceptable; 185+ or 200+ for the Stellar cash-out network is not supported by any source.",
+      "Do NOT confuse SEP-defined APIs with a guarantee of liquidity, licensing, or coverage.",
+      "Do NOT collapse this into a last-mile mobile-money payout how-to; this question owns corridor selection, cost structure, and build-vs-integrate."
+    ],
+    "notes": "2026-06-29: Differentiated to own corridor SELECTION + anchor-to-anchor cost structure + build-vs-integrate; dropped mobile-money lane (now owned by q-crp-regional-offramp-mobilemoney) and added a must_avoid against collapsing into a last-mile payout how-to. MoneyGram Ramps figures (174 off-ramp countries, USDC SEP-10/24, $5-$2,500 off-ramp) re-verified against developer.moneygram.com. Corridor/provider coverage stays monthly-freshness.\nAlso good if the answer: Names candidate discovery surfaces such as ecosystem directories, anchor docs, or specific anchor quote/info/interactive endpoints to compare corridors. | Avoids giving universal per-transaction costs without querying dated anchor quote sources.\nGolden cites: Dated anchor directory or anchor documentation for any named corridor; SEP docs for API flow claims.\nAvoid list re-armed 2026-07-03 (todo 826 residual), deep-verified same day per the golden-truth skill (todo 828): dated-citation guard is answer-visible (and satisfiable — matchPartners returns dated, freshness-stamped corridor matches); the conflation trap is triangulated across MoneyGram dev docs (174, exact), MoneyGram marketing (170+), SDF material (180+), and corporate boilerplate (200+ all-rails). Accept any Stellar-off-ramp figure in the 170-180 band with a MoneyGram/SDF source; punish 185+ and 200+ attributed to the Stellar cash-out network (unsourced anywhere). The conflation framing resists rot better than a bare number: the corporate footprint always exceeds off-ramp coverage. Secondary caution: the ON-ramp is only 30+ countries — don't let candidates conflate on-ramp and off-ramp coverage."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-03",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/anchors",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://developer.moneygram.com/moneygram-developer/docs/integrate-moneygram-ramps",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "MoneyGram's Stellar USDC off-ramp covers 174 countries (developer docs, exact) / 170+ (marketing); the 200+ figure is corporate all-rails footprint",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: developer.moneygram.com integrate-moneygram-ramps — 'Off ramps Available in 174 countries' (fetched 2026-07-03)",
+            "observedAt": "2026-07-03",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: moneygram.com/us/en/ramps — 'cash in 170+ countries'",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: PR Newswire Ramps launch 2025-05 — off-ramp 170+, corporate 'over 200 countries and territories'; eco.com 2026-06 draws the same distinction explicitly",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "No primary source puts the Stellar off-ramp at 185+ or 200+; but SDF material says 180+ (stellar.org press 2023-09 'cash-out in 180+ countries', stellar.org/moneygram 'presence in over 180 countries')",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: stellar.org press + stellar.org/moneygram (live 2026-07-03)",
+            "observedAt": "2026-07-03",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: stellar.org press + stellar.org/moneygram (live 2026-07-03)",
+            "observedAt": "2026-07-03",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: web sweep — the corpus '185+' figure unsourced everywhere",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Dated corridor sources are reachable in-corpus (matchPartners returns generatedAt + per-partner freshness), so the dated-citation guard is satisfiable",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live production execute 2026-07-03 (matchPartners USDC→NGN: Yellow Card 92 / HoneyCoin 88 / Fonbnk 72, dated)",
+            "observedAt": "2026-07-03",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-03",
+      "by": "Golden-truth sweep import — Judge-blind avoid item ('without dated evidence from the anchor or ecosystem directory') re-armed: the corpus-side condition dropped for a purely answer-visible dated-citation guard, plus a concrete trap on the MoneyGram footprint conflation the corpus itself contains. Trap band widened 170-174 → 170-180 after deep verification found SDF's own press material says 'cash-out in 180+ countries' — the original band would have punished an SDF-sourced true claim.",
+      "evidence": [
+        "Live production execute 2026-07-03: scout 19 Live Anchor-type projects with named coverage (Yellow Card 20 African countries, HoneyCoin 18+ markets, Coins.ph PHP, MYKOBO EURC, ClickPesa TZS, Trace Finance BRL, Bitso/Alfred Pay LATAM, Fonbnk); scout.matchPartners returns dated (generatedAt) per-partner freshness — dated corridor sources are reachable, so the guard is satisfiable",
+        "MoneyGram figures mutually inconsistent in-corpus: Scout '170+ cash-out countries' (Stellar off-ramp), Beans record '185+', LumenLoop moneygram record 'over 200 countries and territories' (corporate money-transfer footprint, undistinguished + undated); golden graderNotes verified 174 off-ramp countries 2026-06-29",
+        "Solo project 49: todo 826 comment 2224, scratchpad 521 follow-up section"
+      ],
+      "rootCause": [
+        "solo://proj/49/todo/judge-rubric-corpus--826 — judge-blind avoid phrasing (eval-side authoring)",
+        "improvements/stellar-light-scout/sls-012 — original root cause was no structured corridor/coverage fields anywhere (free-text prose only); fixed upstream in 2026-07-08 drift with Project.coverage.{countries,currencies,seps,asOf}; remaining retrieval/ranking gap tracked separately as sls-018",
+        "improvements/lumenloop/ll-008 — the moneygram record presents the corporate 200+-country footprint undistinguished from the Stellar off-ramp; the in-corpus source of the conflation this trap catches"
+      ]
+    },
+    "origin": "raven-next q-crp-anchors-by-corridor"
+  }
+}

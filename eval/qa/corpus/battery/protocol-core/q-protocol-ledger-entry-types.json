@@ -1,0 +1,72 @@
+{
+  "id": "q-protocol-ledger-entry-types",
+  "question": "What does a Stellar ledger contain, and what are the entry types stored in ledger state?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Current Protocol 27 XDR defines ten `LedgerEntryType` variants: `ACCOUNT`, `TRUSTLINE`, `OFFER`, `DATA`, `CLAIMABLE_BALANCE`, `LIQUIDITY_POOL`, `CONTRACT_DATA`, `CONTRACT_CODE`, `CONFIG_SETTING`, and `TTL`. Trustlines represent non-native asset balances/authorization rather than a generic balance entry; native XLM lives on Account entries. Contract code/data, configuration, and TTL are distinct Soroban-era entries. If giving only examples, label them as examples rather than an exhaustive list.",
+    "keyFacts": [
+      "Enumerates all ten current P27 ledger-entry variants.",
+      "Distinguishes account/trustline and contract data/code/config/TTL roles."
+    ],
+    "avoid": [
+      "Do NOT present an abbreviated subset as exhaustive or collapse trustline/contract variants."
+    ],
+    "notes": "List-style. Liquidity pools (P18) and contract data (P20) are the modern additions; trap is UTXO/EVM model confusion.\nAlso good if the answer: Notes each ledger links to the previous ledger via its hash (genesis ledger sequence number is 1, N+1 references N). | Mentions ledger state is summarized by a bucket list hash in the ledger header.\nGolden cites: The ledgers / data-structures page on developers.stellar.org.\nGT-32 CORRECTION 2026-07-10: exhaustive list is source-derived from P27 XDR."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-xdr/blob/v27.0/Stellar-ledger-entries.x",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "P27 LedgerEntryType has ten variants including DATA, CONTRACT_CODE, CONFIG_SETTING, and TTL.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: stellar-xdr v27 LedgerEntryType",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/E: current ledger-entry documentation/index",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "E",
+            "ref": "A/E: current ledger-entry documentation/index",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The answer called a pedagogical subset the ledger-entry types and omitted four current P27 XDR variants.",
+      "evidence": [
+        "Solo scratchpad 575 GT-32 primary 3281 and blind 3284; full agreement."
+      ],
+      "rootCause": [
+        "Old pedagogical subset fossilized after protocol extensions."
+      ]
+    },
+    "origin": "raven-next q-protocol-ledger-entry-types"
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "id": "q-scf-funding-by-category",
+  "question": "How is SCF funding distributed across ecosystem categories — which categories get the most?",
+  "surface": [
+    "scout.getClusters",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Use Stellar Light's **`/api/analyze?dimension=categories`** for a corpus-relative aggregate, not per-project history or the currently truncated clusters endpoint. Label output per the Scout corpus with `generatedAt`, taxonomy, project/status scope, and methodology. As of **2026-07-10**, the active-project basis had 841 projects and 391 funded projects totaling a reconstructed **$39,851,645.13**. **User-Facing App** led total projects (337), funded projects (167), and reconstructed dollars (**$16.904M / 42.42%**). Dollar order was User-Facing App > Infrastructure ($7.809M) > Protocol/Contract ($7.693M) > Tooling ($6.249M). **Protocol/Contract** separately had the highest funded rate, 68/129 = 52.71%. These are dated Scout-service metrics, not official SCF category accounting; re-query rather than freezing them.",
+    "keyFacts": [
+      "Uses the Scout categories analytics dimension and labels the result corpus-relative with an as-of date.",
+      "Explains category-level distribution and count/methodology basis without hard-gating exact reconstructed figures."
+    ],
+    "avoid": [
+      "Do NOT present Scout category counts/dollar estimates as independently official SCF totals or permanent truth.",
+      "Do NOT fabricate percentages/splits or answer with per-project history when category distribution was requested."
+    ],
+    "notes": "2nd scout_analyze case; exercises the categories dimension ('projects per category'). Refreshed 2026-06-29 via /api/analyze?dimension=categories: User-Facing App 204/103/$9.19M, Tooling 108/42/$3.28M, Infrastructure 97/34/$3.01M, Protocol/Contract 86/44/$4.48M (totalProjects 500). Live dollar figures → flipped freshness_sensitive true; ranking headline (UFA leads count+dollars, then Tooling/Infra/Protocol) unchanged.\nAlso good if the answer: Frames it as an aggregate distribution, not a per-project breakdown.\nGolden cites: Stellar Light analytics (scout_analyze categories/funding dimension).\nGT-37 REFRESH 2026-07-10: use /api/analyze as the explicit basis. UFA leads absolute count and reconstructed dollars; Protocol/Contract leads funded rate. /api/clusters truncates at 500 and must not supply this denominator until fixed. Exact values remain dated corpus analytics."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "mixed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/analyze?dimension=categories",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/projects",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Scout's categories dimension reported the inherited June 29 category counts/dollar estimates",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: Stellar Light analyze categories snapshot recorded in the corpus/override evidence",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "This confirms what the corpus reported, not independent real-world truth."
+      },
+      {
+        "claim": "The exact category aggregate is independently published by official SCF records",
+        "verdict": "unverifiable",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: communityfund.stellar.org awards is the official program surface but does not publish this category aggregate",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: Scout is the sole calculation witness; it cannot corroborate itself",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The category answer appropriately named Scout as its source, but its exact counts/dollar ranking could still act as gospel without an independent official aggregate or reproducible direct-SCF calculation. The correction explicitly labels the values corpus-only, keeps them illustrative and dated, and gates on method/source/basis rather than figures.",
+      "evidence": [
+        "Solo scratchpad 569 Batch D, 2026-07-09; GT-37 primary 3296 and blind 3298 re-derived the full 2026-07-10 basis.",
+        "Sibling sweep covered q-scf-category-funded-ratio and q-scf-total-distributed; GT-36 proved /api/clusters is truncated and not interchangeable."
+      ],
+      "rootCause": [
+        "Corpus-only analytics were too easy to read as world-grounded exact gospel despite a dated Scout label.",
+        "improvements/stellar-light-scout/sls-013 — funding-v2 fixed count-basis provenance for totals, not an independent category dataset.",
+        "solo://proj/49/todo/golden-corpus-health--901"
+      ]
+    },
+    "origin": "raven-next q-scf-funding-by-category"
+  }
+}

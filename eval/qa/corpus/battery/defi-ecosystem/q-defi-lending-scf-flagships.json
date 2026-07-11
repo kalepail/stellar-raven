@@ -1,0 +1,113 @@
+{
+  "id": "q-defi-lending-scf-flagships",
+  "question": "I'm scoping a new lending protocol on Soroban. Who has already built lending or yield/credit primitives on Stellar, and which of those teams have SCF backing?",
+  "surface": [
+    "scout.searchProjects",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Stellar lending/yield/credit is **not greenfield**, but answer with a dated category-and-lifecycle matrix, not one flagship list. As of **2026-07-10**:\n\n**Live/materially current:** Blend v2 is mainnet money-market infrastructure with a direct $50K Blend project award; Peridot is a current lending app with an SCF #38 $91,750 award; Templar has current mainnet lending markets but no award was located in the audited official/Lumenloop set; Untangled operates credit infrastructure with two awarded records; DeFindex is live vault/yield routing, not a base lender; YieldBlox/OptionBlox has an active Blend v2 pool and official historical funding.\n\n**Build/testnet or unverified deployment:** Laina says early/testnet despite Scout Live; Hatom has an SCF #41 award but no verified Stellar deployment; XycLoans has code/awards but a stale repo and failing current pool surface.\n\n**Legacy/inactive/constrained:** Slender's site remains reachable but its app showed no usable state and Scout says Inactive; Orbit/OrbitCDP has SCF history but its Blend Orbit V2 pool is frozen/suspended and Scout marks the lineage inactive.\n\n**Adjacent:** FxDAO is development-stage CDP/stablecoin credit infrastructure.\n\nKeep direct money markets, vault routers, CDPs, and RWA/credit tools separate. Cite official award rows per amount; reconstructed cumulative totals are not automatically official. Funding, payment, deployment, liquidity, and lifecycle are separate claims.",
+    "keyFacts": [
+      "States lending is not greenfield and names multiple current/historical Stellar-native projects with dated evidence.",
+      "Separates direct lenders from vault/yield routers, CDPs, and credit/RWA infrastructure.",
+      "Separates official SCF awards from current deployment/lifecycle and encodes Slender/Laina/Orbit conflicts honestly."
+    ],
+    "avoid": [
+      "Do NOT claim lending is greenfield or that no one has built lending on Stellar.",
+      "Do NOT list only generic EVM protocols such as Aave/Compound instead of Stellar-native projects.",
+      "Do NOT call Slender, Laina, OrbitCDP, or another project unqualifiedly Live/Inactive from one directory or operator surface.",
+      "Do NOT use an SCF flag or cumulative reconstruction as proof of current deployment, liquidity, or official aggregate truth.",
+      "Do NOT claim OrbitCDP lacks SCF backing or collapse Orbit Finance into a distinct unfunded project without evidence."
+    ],
+    "notes": "Added from theboycoder/StellarLight data-layer intake. Freshness-sensitive because Scout project records and SCF totals move. Live Scout re-check 2026-06-29 confirms Blend, Slender (noncustodial money-market by eq-lab), DeFindex as live lending/yield records; Orbit naming fuzzy (Orbit Finance unfunded in project search, OrbitCDP appears in research/audit context), so Orbit is not a hard gate. This file OWNS the SCF-backed-landscape lane (scout_projects; 'who built lending + which have SCF backing') — DISTINCT from q-defi-blend-alternatives (find_similar; 'are there direct substitutes for Blend').\nAlso good if the answer: Distinguishes direct lenders from Blend-routing yield vaults, CDPs, leveraged-spot, or keeper/automation infrastructure. | Uses dated directory/project records for SCF status and avoids treating dollar amounts as permanent.\nGolden cites: Current Scout/Stellar Light project records or SCF submission records for each named funded project.\nRewritten 2026-07-10 after GT-15 independent agreement. Grade dated category/lifecycle/funding separation rather than one exact roster or cumulative dollar table."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://docs.blend.capital/mainnet-deployments",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.defindex.io/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://app.slender.fi/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://orbitcdp.finance/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A dated lifecycle/funding/category matrix is required; SCF Awarded does not prove current deployment",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B/F: official SCF pages plus current operator/code/on-chain deployment checks for Blend, Peridot, Templar, Untangled, DeFindex, YieldBlox, Laina, Hatom, XycLoans, Slender, Orbit, and FxDAO",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B/F: official SCF pages plus current operator/code/on-chain deployment checks for Blend, Peridot, Templar, Untangled, DeFindex, YieldBlox, Laina, Hatom, XycLoans, Slender, Orbit, and FxDAO",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "A/B/F: official SCF pages plus current operator/code/on-chain deployment checks for Blend, Peridot, Templar, Untangled, DeFindex, YieldBlox, Laina, Hatom, XycLoans, Slender, Orbit, and FxDAO",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: live Scout/Lumenloop and independent conflict sweeps asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: live Scout/Lumenloop and independent conflict sweeps asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-15 primary and blind golden-truth reviews (Solo 3243/3246, 2026-07-10) confirmed that lending is not greenfield but found the inherited roster materially stale. It calls Slender live, collapses awards into lifecycle, omits current/funded lineages, and treats direct lenders, vault routers, CDPs, and credit infrastructure as one category. The prior override repaired only an Orbit avoid clause.",
+      "evidence": [
+        "Solo scratchpad 575 GT-15 primary 3243 and independent blind 3246",
+        "Official Awarded-row reconstructions and current operator/app/on-chain evidence gathered 2026-07-10"
+      ],
+      "rootCause": [
+        "improvements/stellar-light-scout/sls-024 — source-specific lifecycle conflicts",
+        "eval-side category/funding/lifecycle conflation and stale narrow roster"
+      ]
+    },
+    "origin": "raven-next q-defi-lending-scf-flagships"
+  }
+}

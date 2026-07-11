@@ -1,0 +1,48 @@
+{
+  "id": "q-soroban-upgradeable-storage-compat",
+  "question": "When upgrading a Soroban contract, what do I have to keep compatible so I don't corrupt existing state?",
+  "surface": [
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "A Soroban upgrade **replaces the Wasm but keeps all existing storage** (and the same contract address).\nSo the new code must remain compatible with the data already on the ledger: [sdf]\n\n- **Keep the same storage keys and value types/layout** for existing entries. The host deserializes\n  stored values using the **new** code's type definitions, so renaming a key or changing a value's type\n  without migration leaves old data **stranded or mis-decoded (a trap)**. [oz]\n- **Migrate explicitly** when the schema changes. OZ documents three patterns: eager `migrate()` for\n  bounded instance data (guarded by a stored **schema-version** flag), **lazy/versioned** conversion on\n  read for unbounded persistent data, and a **plan-ahead enum wrapper**. Run migration atomically with\n  the upgrade via an **`Upgrader`** contract (the new impl only takes effect after the current call).\n  [oz]\n- The **contract address is preserved**, so external callers/integrations keep working. [sdf]\n\nTraps: claiming the upgrade wipes storage / starts state fresh; or importing the EVM proxy\n**storage-slot-collision** model — Soroban addresses storage by **named keys**, not slot indices.",
+    "keyFacts": [
+      "Because storage survives an upgrade, the new code must keep the same storage keys and value types/layout for existing entries (or migrate them explicitly).",
+      "Changing a storage key's name/type without migration leaves the old data stranded / mis-decoded."
+    ],
+    "avoid": [
+      "Do NOT claim upgrading wipes storage / starts state fresh.",
+      "Do NOT describe EVM proxy storage-slot collision (delegatecall slot layout) as the Soroban concern (Soroban uses named keys, not slots)."
+    ],
+    "notes": "Storage survives the Wasm replacement; keys/types must stay compatible or be migrated. Soroban uses named keys (not EVM slots). Verified against the SDF upgrade guide + OZ migration patterns.\nAlso good if the answer: Use a migration function (run atomically with the upgrade, e.g., an Upgrader/migrate hook) to transform state to the new layout. | The contract address is preserved across the upgrade, so external callers/integrations keep working.\nGolden cites: A developers.stellar.org or OpenZeppelin Stellar upgrade/migration guide."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/conventions/upgrading-contracts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.openzeppelin.com/stellar-contracts/utils/upgradeable",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-48-token-ttl-tests-upgrades-vulns-wasm-x402-zk accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-soroban-upgradeable-storage-compat"
+  }
+}

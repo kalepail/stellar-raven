@@ -1,0 +1,48 @@
+{
+  "id": "q-protocol-stellar-core-what-is",
+  "question": "What is stellar-core, what language is it written in, and how does its version relate to the protocol version?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "stellar-core is the reference **C++** implementation of the Stellar Consensus Protocol (SCP) and the\nStellar protocol — the node software validators run to reach consensus and apply ledgers [1]. It is\nopen source at github.com/stellar/stellar-core [1]. Its major release number tracks the protocol\nversion it supports (stellar-core v26.x → Protocol 26, v27.x → Protocol 27) [2]. Operators install the\nmatching release (Docker image / `.deb`) ahead of an upgrade vote [2]. It is **not** Rust/Go/JS, and is\ndistinct from Horizon (the REST API) and Stellar RPC [1][2].\n\n- [1] github.com/stellar/stellar-core\n- [2] developers.stellar.org/docs/networks/software-versions",
+    "keyFacts": [
+      "States stellar-core is the reference C++ implementation of SCP and the Stellar protocol that validators run to reach consensus and apply ledgers."
+    ],
+    "avoid": [
+      "Do NOT claim stellar-core is written in Rust, Go, or JavaScript (it is C++).",
+      "Do NOT confuse stellar-core (the consensus node) with Horizon (the REST API) or Stellar RPC."
+    ],
+    "notes": "stellar-core = C++ consensus node; version tracks protocol. Trap is wrong language or confusing with Horizon/RPC.\nAlso good if the answer: Notes the stellar-core repo is github.com/stellar/stellar-core (open source). | Notes the major release number tracks the protocol version it supports (e.g. stellar-core v26.x → Protocol 26, v27.x → Protocol 27).\nGolden cites: The stellar-core repo (github.com/stellar/stellar-core) and/or the validators/software-versions docs."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-core",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/networks/software-versions",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-34-soroban-launch-archival-core-tier1-validators-history accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-stellar-core-what-is"
+  }
+}

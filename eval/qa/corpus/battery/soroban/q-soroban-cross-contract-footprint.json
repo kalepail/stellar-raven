@@ -1,0 +1,50 @@
+{
+  "id": "q-soroban-cross-contract-footprint",
+  "question": "My cross-contract call fails with a footprint/HostError at runtime even though it simulates the logic correctly. Why?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Soroban transactions carry an **explicitly-declared footprint** — the read-only and read-write sets of\nledger keys the transaction may touch. The host **enforces** this footprint at execution: **every\nstorage entry read or written anywhere in the call chain — including inner cross-contract calls — must\nbe declared**, or the host raises a **`HostError`** at runtime even though your contract logic is\ncorrect. Soroban does **not** auto-discover state at execution time; the declared footprint is what\nenables validators to schedule non-overlapping transactions in parallel.\n\nThe fix: compute the footprint by **simulating** the transaction (RPC **`simulateTransaction`** /\n`stellar tx simulate`), which discovers the entries the inner calls touch, and attach the resulting\n`SorobanTransactionData` to the real transaction. (Also ensure inner-contract `require_auth` calls have\ntheir auth entries provided.) This is a footprint-declaration problem, **not** an out-of-gas/instruction\nissue.",
+    "keyFacts": [
+      "Every storage entry read/written across the whole call chain must be declared in the transaction footprint; a missing entry causes a runtime HostError.",
+      "The footprint is normally computed by simulating the transaction (RPC `simulateTransaction` / `stellar tx simulate`), which discovers the entries the inner calls touch."
+    ],
+    "avoid": [
+      "Do NOT claim Soroban auto-discovers all touched state at execution time with no footprint needed.",
+      "Do NOT attribute this to gas-limit/out-of-gas when it is a footprint declaration issue."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections. Multi-hop: cross-contract + footprint + simulation. Trap: thinking footprints are auto-discovered at exec. Verified: Soroban requires an explicitly-declared read/write footprint covering the whole call chain; simulation (simulateTransaction / stellar tx simulate) computes it.\nAlso good if the answer: Soroban uses deterministic, explicitly-declared footprints (read-only + read-write sets) so validators can parallelize.\nGolden cites: A developers.stellar.org page on footprints / simulation / cross-contract."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/contract-interactions/transaction-simulation",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/conventions/cross-contract",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-45-constructor-verification-ids-events-cross-contract-versions accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-soroban-cross-contract-footprint"
+  }
+}

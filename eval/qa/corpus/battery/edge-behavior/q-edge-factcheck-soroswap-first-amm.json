@@ -1,0 +1,103 @@
+{
+  "id": "q-edge-factcheck-soroswap-first-amm",
+  "question": "Fact-check this draft post: 'Soroswap is Stellar's first AMM and just passed $1B in TVL.' What's true, false, or unverifiable?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "The draft contains two false-or-unsupported claims:\n\n- **'Soroswap is Stellar's first AMM' — false in the broad Stellar sense.** The classic SDEX is an older order-book venue, and the direct AMM counterexample is Stellar's protocol-native constant-product liquidity pools, activated with **CAP-0038 / Protocol 18 on 2021-11-03**. Soroswap's 'first DEX/aggregator' or 'first AMM on Soroban' wording remains attributed operator marketing unless independent chronology supports it.\n- **'just passed $1B in TVL' — false within the identified live Soroswap-AMM series and unsupported more broadly.** At a **2026-07-10** DefiLlama probe, that series was about **$1.23M current** and its recorded maximum was below **$10M**. Those examples are volatile and non-gating; other routed-volume or private metrics must be named separately and cumulative trading volume is not TVL.\n\nA safe correction is: Soroswap is a Soroban AMM and aggregation/API stack, not Stellar's first AMM, and no dated source checked supports $1B TVL.",
+    "keyFacts": [
+      "Corrects the first-AMM claim using SDEX and CAP-0038/Protocol-18 chronology.",
+      "Attributes Soroswap's first-aggregator wording and rejects the unsourced $1B TVL claim."
+    ],
+    "avoid": [
+      "Do NOT affirm first AMM, $1B TVL, or independently verified first-aggregator chronology.",
+      "Do NOT substitute a different current TVL without a date, source, and metric scope."
+    ],
+    "notes": "Strict governance fact-check. should_fire:true: Raven should answer by CORRECTING the false premise and flagging the unverifiable TVL, not by affirming. Freshness:true on the TVL. Phase-2 confirm CAP-0038 / Protocol 18 framing and that no credible source supports a $1B Soroswap TVL.\nAlso good if the answer: Explicitly classifies each sub-claim as true / false / unverifiable rather than affirming the post wholesale.\nGolden cites: A source for CAP-0038 / Protocol 18 AMM pools; a current, dated source for any TVL figure (or note its absence).\nGT-18/23 correction 2026-07-10: operator firstness remains attributed. Classic SDEX is an older order book; Protocol-18 pools are the direct AMM counterexample. The named DefiLlama series makes $1B false in that scope, while current/max examples remain dated and non-gating."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "scout",
+    "freshness": "scheduled",
+    "trap": "governance"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/automated-market-maker-functionality-is-live-on-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0038.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/soroswap/docs",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://api.llama.fi/protocol/soroswap",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/soroswap/index.js",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Classic SDEX and Protocol-18/CAP-0038 AMM pools predate Soroswap; Soroswap's first-aggregator wording is operator marketing rather than independently verified chronology.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: CAP-0038 and Protocol 18 records",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: CAP-0038 and Protocol 18 records",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: Soroswap operator docs for the attributed marketing claim",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent chronology conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The fact-check correctly rejects 'first AMM' and unsupported $1B TVL, but it promoted Soroswap's self-description as the first DEX aggregator into independently established chronology. The correction preserves the refutation and attributes the remaining marketing claim.",
+      "evidence": [
+        "Solo scratchpad 575 GT-18 primary 3249 and blind 3252",
+        "Sibling sweep: q-defi-soroswap-what-is/content/similar and q-protocol-amm-cap-0038"
+      ],
+      "rootCause": [
+        "An operator superlative was retained as fact while correcting a neighboring false superlative.",
+        "improvements/stellar-light-scout/sls-015-searchprojects-description-editorial-capture.md"
+      ]
+    },
+    "origin": "raven-next q-edge-factcheck-soroswap-first-amm"
+  }
+}

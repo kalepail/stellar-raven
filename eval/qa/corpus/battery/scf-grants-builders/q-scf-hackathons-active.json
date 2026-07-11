@@ -1,0 +1,85 @@
+{
+  "id": "q-scf-hackathons-active",
+  "question": "What Stellar hackathons are currently active or upcoming that I could join?",
+  "surface": [
+    "scout.getHackathon",
+    "scout.getHackathons"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, the successful Stellar Light queries returned **zero active and zero upcoming rows** in their scoped catalog. **Stellar Hacks: Real-World ZK** is no longer active; it ran **2026-06-15 through 2026-07-03** and is marked completed. This is a dated catalog result, not proof that no Stellar-related event exists anywhere. Re-check the live catalog, DoraHacks SDF organization page, and `@BuildOnStellar`; if still empty, report the result and those discovery channels rather than inventing an event.",
+    "keyFacts": [
+      "Reports the dated zero active/upcoming scoped result and the completion of Real-World ZK.",
+      "Treats the result as source-bounded and supplies live re-check channels."
+    ],
+    "avoid": [
+      "Do NOT call Real-World ZK currently active after 2026-07-03.",
+      "Do NOT turn a scoped catalog zero-result into a permanent global absence claim."
+    ],
+    "notes": "GT-38 CORRECTION 2026-07-10: the scoped live feed returned zero active/upcoming rows; Real-World ZK completed July 3. Grade dated source-bound reporting and live re-check guidance, not hidden operation use.\nGT-38 independently confirmed by processes 3297/3299."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/hackathons",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://dorahacks.io/org/3096",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://dorahacks.io/hackathon/stellar-hacks-zk/detail",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://x.com/BuildOnStellar",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The dated Scout feed returned zero active and zero upcoming rows on 2026-07-10; Real-World ZK completed July 3",
+        "verdict": "corpus-only",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: successful live Scout active/upcoming queries",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: official DoraHacks Real-World ZK event page",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-source-relative."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The dated June answer still called Real-World ZK active after it ended and could turn a successful scoped zero-result into a global absence claim.",
+      "evidence": [
+        "Solo scratchpad 575 GT-38 primary 3297 and blind 3299."
+      ],
+      "rootCause": [
+        "Normal weekly event-status drift plus an eval-side global-absence risk."
+      ]
+    },
+    "origin": "raven-next q-scf-hackathons-active"
+  }
+}

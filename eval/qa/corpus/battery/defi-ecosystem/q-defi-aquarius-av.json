@@ -1,0 +1,77 @@
+{
+  "id": "q-defi-aquarius-av",
+  "question": "Have any Stellar talks or podcasts discussed Aquarius or AMM liquidity incentives?",
+  "surface": [
+    "lumenloop.find_av_passages",
+    "lumenloop.find_content_by_entity",
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions"
+  ],
+  "golden": {
+    "answer": "Search the A/V corpus for Aquarius and Stellar AMM-liquidity-incentive passages, then return each result with its parent recording title and URL. Clearly label the returned passage text as an **AI-generated summary**. The exposed payload does **not** return transcript text; its `start_offset` is an opaque chunk/order key, not playback seconds or a timestamp. Do not render it as `mm:ss` or quote the summary as words spoken by a named participant. If chronology matters, verify the publication date on the parent YouTube/X/event source because corpus metadata can conflict with older titles.",
+    "keyFacts": [
+      "Returns source-linked Aquarius/AMM A/V discoveries and labels their passage text as AI summaries rather than transcripts or quotes.",
+      "Treats start_offset as opaque ordering metadata, not a playback timestamp, and verifies parent chronology where needed."
+    ],
+    "avoid": [
+      "Do NOT fabricate a talk, speaker, transcript quote, or timestamp.",
+      "Do NOT present an AI summary as verbatim speech or convert start_offset into seconds/timecode."
+    ],
+    "notes": "Behavior/routing test for the A/V transcript lane. Aquarius is grounded as the Stellar AMM / liquidity-rewards project (Scout: DEX, Live, SCF $391K; AQUA token, liquidity pools). The 'answer' is the correct BEHAVIOR: search talk/podcast transcripts and return what is (or isn't) in the corpus, each passage carrying its talk/podcast source — never fabricate a talk, quote, or speaker. Transcript search → lumenloop_find_av_passages. 2026-06-29 reviewed: re-confirmed Aquarius identity on Scout (Live DEX, SCF $391K) and that lumenloop_find_av_passages exists in CARDS.md. Confidence kept medium (behavior test, corpus contents unknowable a priori).\nAlso good if the answer: Frames Aquarius as the Stellar AMM / liquidity-rewards project when surfacing passages.\nGolden cites: Each surfaced passage carries its talk/podcast source.\nCorrected 2026-07-10. This is an output-semantics gate: source-linked AI summaries are correct; quote/timestamp claims require evidence the current operation does not expose."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/aquarius",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Aquarius A/V discovery returns source-linked AI passage summaries, not verbatim transcript text or timestamps",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Lumenloop find_av_passages payload and operation descriptor re-probed 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/D: parent YouTube/X recordings and independent chronology checks",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A/D: parent YouTube/X recordings and independent chronology checks",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-04-23",
+      "by": "Golden-truth sweep import — GT-13 primary and blind reviews empirically confirmed useful Aquarius A/V hits but contradicted the inherited transcript/timestamp semantics. The exposed Lumenloop operation returns AI summaries with parent metadata and opaque ordering offsets, not transcript excerpts or playback seconds.",
+      "evidence": [
+        "Solo scratchpad 575: GT-13 primary 3238 and blind 3240",
+        "Live results included DeFi on Stellar with Aquarius, an April recap Space, a 2026-04-23 developer meeting, and Liquidity: AMMs on Stellar"
+      ],
+      "rootCause": [
+        "improvements/skills/sk-004 — A/V output semantics overstate transcript/quote/timestamp support",
+        "eval-side rubric mirrored the stale card wording instead of the live payload"
+      ]
+    },
+    "origin": "raven-next q-defi-aquarius-av"
+  }
+}

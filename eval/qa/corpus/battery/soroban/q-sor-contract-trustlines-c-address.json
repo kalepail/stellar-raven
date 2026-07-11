@@ -1,0 +1,71 @@
+{
+  "id": "q-sor-contract-trustlines-c-address",
+  "question": "Does a Soroban contract / smart-wallet (C…) need a trustline (and an XLM minimum balance) to receive/hold/send a classic asset like USDC, can I send USDC directly to a C-address like a normal payment, and how does a contract send assets back out?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "Use the **Stellar Asset Contract (SAC)** mental model. Contracts interact with classic assets through\nthe SAC, not by behaving exactly like a G-address receiving a classic Payment operation. The SAC docs\nstate it is the only way for contracts to interact with native XLM or issued Stellar assets\n(https://developers.stellar.org/docs/tokens/stellar-asset-contract).\n\nFor `Address::Account`, the balance must exist in a classic account/native balance or trustline; if\nthe trustline/account is missing, a function touching that balance fails. For `Address::Contract`, the\nbalance and authorization state live in contract storage, not a classic trustline, and balances are\nstored as i128 rather than trustline i64\n(https://developers.stellar.org/docs/tokens/stellar-asset-contract). So a `C...` contract/smart-wallet\ndoes not \"open a trustline\" with classic Change Trust the way a `G...` account does.\n\nTo receive/send USDC with a C-address, route through SAC transfer flows. The C-account guide describes\npayments to/from contract accounts as SAC transfers and notes RPC/Horizon monitoring needs to look at\nSAC/unified asset events\n(https://developers.stellar.org/docs/build/guides/transactions/send-and-receive-c-accounts). To send\nassets back out, the contract/smart wallet invokes the SAC `transfer` with the required Soroban\nauthorization. If the recipient is a G-address and lacks a trustline, Protocol 26's SAC `trust`\nfunction can create it as part of an invocation, but it still preserves opt-in authorization and the\naccount must satisfy the base reserve for the new trustline\n(https://developers.stellar.org/docs/build/guides/tokens/custom-sac-admin).",
+    "keyFacts": [
+      "Explains that contracts interact with classic assets through the Stellar Asset Contract (SAC), not by receiving a classic payment operation exactly like a G-address.",
+      "Distinguishes operationally that a `C...` contract holds a classic asset's balance in contract storage (no classic trustline) whereas a `G...` account holds it in a trustline/native balance; the exact ledger-entry/integer-width internals are out of scope here.",
+      "States that a C-address does not open a classic trustline like a G-address, but sending/receiving through SAC creates/uses contract-address balance and authorization state.",
+      "Explains outbound asset movement is a SAC `transfer` invocation from the contract/smart wallet, with Soroban authorization as required.",
+      "Mentions G-address recipients still need a trustline and enough XLM/base reserve unless the SAC `trust` function creates the trustline under Protocol 26 with the address's authorization."
+    ],
+    "avoid": [
+      "Do not tell users to use classic Change Trust on a C-address.",
+      "Do not treat native XLM, classic issued assets, SAC balances, and custom SEP-41 tokens as the same storage/accounting model.",
+      "Do not say a normal classic payment operation to a C-address is always equivalent to a G-address payment."
+    ],
+    "notes": "Verified with official docs plus Scout high-confidence dev-docs result for SAC/trustline behavior. Protocol 26 SAC `trust` (CAP-0073, Implemented) wording is grounded in the current SAC integration docs. 2026-06-29 differentiation: this file owns the operational how-to lane (does a C-address need a trustline, can I send USDC directly, how does a contract send out); the exact i64-trustline vs i128-contract-storage internals are deferred to q-soroban-sac-balance-storage so the two no longer share the G-vs-C integer-width must_have.\nAlso good if the answer: Mentions Horizon/RPC monitoring of contract-account payments via SAC/unified asset events rather than only classic payment records. | Warns exchanges/memo-based services may not support payments from contract accounts.\nGolden cites: Must cite the Stellar Asset Contract docs and C-account send/receive docs."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/send-and-receive-c-accounts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/tokens/custom-sac-admin",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-41-bindings-target-dex-confidentiality-claims-deploy-porting accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-sor-contract-trustlines-c-address"
+  }
+}

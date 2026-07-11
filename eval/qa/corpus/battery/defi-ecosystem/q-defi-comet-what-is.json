@@ -1,0 +1,92 @@
+{
+  "id": "q-defi-comet-what-is",
+  "question": "What is Comet on Stellar — is it a major live DEX?",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_project",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.search_content_semantic",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "**Comet** began as an SCF-funded Balancer-style weighted-AMM design for Soroban/Futurenet. It received **$150K in SCF #13** and **$141K in SCF #18**. Its public standalone repo/frontend are stale, and no current TVL/volume evidence establishes a major standalone DEX.\n\nComet is not merely dead prior art: its weighted-pool implementation is deployed on mainnet as Blend's **BLND:USDC 80/20 backstop**. The safe identity is therefore an SCF-funded weighted-AMM project whose code now serves embedded Blend infrastructure, not an unfunded prototype and not a dominant independent exchange.",
+    "keyFacts": [
+      "Identifies Comet as an SCF-funded weighted-AMM design with two awards totaling $291K.",
+      "Explains the current Blend-backstop deployment while avoiding unsupported standalone traffic/adoption claims."
+    ],
+    "avoid": [
+      "Do NOT say Comet was not SCF-funded or has no mainnet deployment.",
+      "Do NOT call the Blend backstop proof that Comet is a major standalone DEX."
+    ],
+    "notes": "RE-VERIFIED 2026-06-29: live Scout confirms Comet (Protocol/Contract, type DEX, status Live, NOT SCF-awarded, github cometdex): 'a weighted-pool AMM and DEX primitive on Stellar Soroban (a Balancer-style port). It lets builders create custom-weight, multi-token liquidity pools (e.g. 80/20)...' This GROUNDS the Balancer-style weighted-AMM identity. CAVEAT: Scout lists status 'Live' and gives no traffic/TVL signal — it is unfunded and low-prominence, so the 'reference/primitive rather than high-traffic dominant DEX' framing is supported by absence of activity signals but is a soft judgment, not a hard 'low activity' datum (must_have softened accordingly). Per-project IDENTITY (lumenloop_get_project) — DISTINCT lane from q-defi-comet-content's topic-coverage corpus search (lumenloop_search_content_semantic).\nAlso good if the answer: Notes it originated from Stellar's Soroban Financial Innovation showcase / SCF submission and was demoed at Meridian 2023.\nGolden cites: A Stellar source on Comet as the Soroban weighted-AMM reference (Stellar Soroban showcase, SCF submission, or Lumenloop record).\nCorrected 2026-07-10. Primary SCF and mainnet deployment evidence supersede the directory negative."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recG7Kj7ouwAFP2XY",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recIRbsKDA1ayFXCF",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.blend.capital/pool-creators/backstop-bootstrapping",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.blend.capital/mainnet-deployments",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Comet is SCF-funded and its weighted-pool code is live as Blend infrastructure",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: two official Awarded SCF pages and Blend deployment docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/F: repo and mainnet bytecode/interface reads",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "B/F: repo and mainnet bytecode/interface reads",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — GT-15 blind evidence directly disproved the inherited 'not SCF-funded' claim and verified a current mainnet Blend backstop deployment while preserving the non-dominant standalone conclusion.",
+      "evidence": [
+        "Solo scratchpad 575 GT-15 primary 3243 and blind 3246"
+      ],
+      "rootCause": [
+        "one Scout funding flag and a historical Futurenet label were promoted over primary awards/deployment evidence"
+      ]
+    },
+    "origin": "raven-next q-defi-comet-what-is"
+  }
+}

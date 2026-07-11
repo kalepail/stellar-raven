@@ -1,0 +1,45 @@
+{
+  "id": "q-asset-two-account-issuer",
+  "question": "What's the recommended account structure for issuing a custom asset on Stellar, and why?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- Recommended structure is **two accounts**: a separate **issuing account** and a **distribution account** [1].\n- The **issuing account** mints supply (by sending the asset) and manages authorization flags; it should be **locked down / cold storage** and used rarely. The **distribution account** is the public-facing account that sends the asset to users and holds a working float [1].\n- Rationale is **blast-radius / segregation of duties**: if the hot distribution account is compromised, only the **float** is at risk, not the total supply, and the issuer retains flag/clawback control [1].\n- Assets are defined by the **`(asset_code, issuer)`** pair, and holders need a **trustline**; a single-account setup is acceptable only for testing [1].",
+    "keyFacts": [
+      "Recommends two accounts: a separate issuing account and a distribution account.",
+      "The issuing account holds/creates supply and manages auth flags; the distribution account is public-facing and sends to users."
+    ],
+    "avoid": [
+      "Do NOT claim a single account is the recommended/canonical issuing pattern for production assets.",
+      "Do NOT claim Stellar assets are deployed as ERC-20 / Solidity contracts."
+    ],
+    "notes": "Classic asset model basics. Dossier §1.1, §1.6. 'Best practice is to create two accounts when issuing an asset' (control-asset-access).\nAlso good if the answer: Rationale is blast-radius / security: a compromised distribution (hot) account only risks the float, not total supply. | Issuing account should be kept locked down / cold storage.\nGolden cites: An asset-issuance / control-asset-access page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/control-asset-access",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-04-sac-stablecoins-issuance-fx accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-two-account-issuer"
+  }
+}

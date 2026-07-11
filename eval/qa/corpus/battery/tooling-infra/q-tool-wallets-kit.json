@@ -1,0 +1,127 @@
+{
+  "id": "q-tool-wallets-kit",
+  "question": "How do I support multiple Stellar wallets (Freighter, LOBSTR, xBull, hardware wallets) in one dApp with a single integration?",
+  "surface": [
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "Use the community-maintained **Creit-Tech Stellar Wallets Kit** when a dapp needs one integration over multiple external Stellar wallets. For new v2 work, prefer the JSR package **`@creit-tech/stellar-wallets-kit`**; JSR showed **v2.5.0 published 2026-06-29**. Treat **`@creit.tech/stellar-wallets-kit`** as the legacy npm compatibility scope, not the preferred new installation path, and recheck the maintainer's migration guidance before pinning.\n\nUse the current static initialization model: import `StellarWalletsKit` from the SDK subpath and `defaultModules` from the modules utility, then call **`StellarWalletsKit.init({ modules: defaultModules() })`** (plus the current network/configuration required by the selected version). Describe only modules actually configured. `defaultModules()` excludes modules needing extra dependencies or configuration; WalletConnect needs project metadata/project ID, and Ledger/Trezor have hardware/environment considerations. Verify each module's support for transaction signing, auth-entry signing, messages, network reporting, or sign-and-submit rather than promising uniform capabilities. The kit is not a wallet, custodian, Freighter, or SDF product.",
+    "keyFacts": [
+      "Recommends community Creit-Tech Wallets Kit for multi-wallet dapp integration, not as a wallet product.",
+      "Prefers v2 JSR @creit-tech/stellar-wallets-kit and dates v2.5.0 to 2026-06-29; labels @creit.tech as legacy npm scope.",
+      "Uses the current static StellarWalletsKit.init({ modules: defaultModules() }) model.",
+      "Separates configured/default modules from optional modules and verifies per-module capabilities and prerequisites."
+    ],
+    "avoid": [
+      "Do NOT present the dotted @creit.tech npm scope as the preferred new v2 install or use the v1 constructor/allowAllModules API as current.",
+      "Do NOT call the kit a wallet, custodian, SDF product, or Freighter itself.",
+      "Do NOT promise every exported or named module is included by default or supports every signing method.",
+      "Do NOT collapse WalletConnect into a wallet app or Ledger/Trezor hardware modules into ordinary browser wallets."
+    ],
+    "notes": "GT-56 PACKAGE/API CORRECTION 2026-07-11: prefer v2 JSR @creit-tech/stellar-wallets-kit (2.5.0 on 2026-06-29); dotted @creit.tech is legacy npm compatibility. Grade static StellarWalletsKit.init with configured/defaultModules, and require per-module capability/configuration checks."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://stellarwalletskit.dev/installation.html",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://stellarwalletskit.dev/kit-structure.html",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://stellarwalletskit.dev/wallets/create-wallet-module.html",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://jsr.io/@creit-tech/stellar-wallets-kit",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/developer-tools/wallets",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The current v2 distribution is the JSR package @creit-tech/stellar-wallets-kit; v2.5.0 was published 2026-06-29, while @creit.tech/stellar-wallets-kit is the legacy npm scope.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "D",
+            "ref": "A-product: current maintainer installation/migration documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "registry: JSR v2.5.0 and legacy npm metadata",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current Creit-Tech repository/release",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-as-of-date."
+      },
+      {
+        "claim": "The current API uses static StellarWalletsKit.init with configured modules/defaultModules; optional WalletConnect and hardware modules have extra configuration/environment requirements and non-uniform capabilities.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: current repository exports/source and v2 examples",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A-product: current kit structure and module authoring documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer treated the dotted legacy npm scope as the primary package, described an outdated instance-style API, and implied a broad wallet/module roster without separating defaults from modules requiring configuration or dependencies.",
+      "evidence": [
+        "Solo scratchpad 575 GT-56 primary process 3394 confirmed v2.5.0/module source; sealed blind process 3398 independently required the JSR-first scope, static init API, and configured/default/optional distinction.",
+        "Sibling sweep checked q-tool-wallets-comparison and q-ti-connect-wallet-button-code; WalletConnect remains a protocol/module and Ledger/Trezor remain hardware products.",
+        "Owner-specific drift is filed separately as improvements/stellar-docs/sd-035-wallets-kit-jsr-package-api-drift.md and improvements/skills/sk-010-wallets-kit-jsr-scope-dapp-skill.md."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-035-wallets-kit-jsr-package-api-drift.md",
+        "improvements/skills/sk-010-wallets-kit-jsr-scope-dapp-skill.md",
+        "Eval-side package/API freshness drift."
+      ]
+    },
+    "origin": "raven-next q-tool-wallets-kit"
+  }
+}

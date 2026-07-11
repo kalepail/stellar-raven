@@ -1,0 +1,73 @@
+{
+  "id": "q-scf-sdf-marketing-grant",
+  "question": "Does the SDF offer marketing funding for a project that already launched on Stellar, and how much?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Yes—an already-launched Stellar project may apply for an SDF Marketing Grant, but being live is not a universal prerequisite: the current page covers **new and existing projects**. Grants are up to **$500,000**, with the funding index listing USD, USDC, or XLM, for growth/user acquisition work such as media, incentives, communications, agencies, and tools. Applicants need concrete use cases, timelines, budget/benchmarks, and a capable team, and must respect exclusions around manipulation or investment promotion. This is a separate SDF-direct application path, not an SCF Build track.",
+    "keyFacts": [
+      "Answers yes for launched projects while including new projects and the current $500K cap.",
+      "Describes growth purpose, execution requirements, and separate SDF application."
+    ],
+    "avoid": [
+      "Do NOT say only already-live/post-launch projects qualify.",
+      "Do NOT call Marketing an SCF Build track or promise approval."
+    ],
+    "notes": "Dossier §5.5. Trap: applying the SCF Build $150K cap to the SDF Marketing Grant.\nAlso good if the answer: Marketing Grants are an SDF-direct program (stellar.org/grants-and-funding), separate from SCF Build.\nGolden cites: stellar.org/grants-and-funding marketing-grants section.\nGT-40 independently confirmed 2026-07-10. The dedicated current page controls over older shorthand."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/grants-and-funding/marketing-grants",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/grants-and-funding",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current Marketing Grant eligibility and cap",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current dedicated application page and funding index",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-40 primary/blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The inherited answer incorrectly made an already-live product universally required even though the current detailed page admits new and existing projects.",
+      "evidence": [
+        "Solo scratchpad 575 GT-40 processes 3301/3304, 2026-07-10."
+      ],
+      "rootCause": [
+        "Eval-side eligibility drift."
+      ]
+    },
+    "origin": "raven-next q-scf-sdf-marketing-grant"
+  }
+}

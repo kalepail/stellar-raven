@@ -1,0 +1,75 @@
+{
+  "id": "q-edge-oos-ethereum-gas-optimization",
+  "question": "How do I optimize gas usage in my Ethereum Solidity contract?",
+  "surface": [],
+  "golden": {
+    "answer": "I can't responsibly assess or optimize an EVM/Solidity contract from this Stellar-only source set. Ethereum gas and Soroban resource fees are different models, so Soroban docs are not a substitute answer. If you are porting to Soroban, I can explain its resource metering; otherwise use current Ethereum/Solidity primary docs or an Ethereum-focused auditor.",
+    "keyFacts": [
+      "States the coverage limit, does not conflate Ethereum gas with Soroban metering, and gives a useful porting-or-primary-source redirect."
+    ],
+    "avoid": [
+      "Do NOT provide unsourced Ethereum optimization advice, present Soroban fees as equivalent, or expose internal tool/card names."
+    ],
+    "notes": "GT-26 2026-07-10: require a concise source-coverage statement, no Ethereum/Soroban equivalence, and a useful porting or Ethereum-primary-source redirect.\nGT-26 OOS REWRITE 2026-07-10: helpful redirect is core behavior; internal routing names are removed."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "none",
+    "freshness": "stable",
+    "trap": "out-of-scope"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/fees-resource-limits-metering",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Ethereum gas optimization is outside this source set and Soroban resource metering is a different model; a porting-specific redirect is useful but not a substitute Ethereum answer.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B/C: manifest/README/live source coverage",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "B/C: manifest/README/live source coverage",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/E: official Stellar resource-metering documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "E",
+            "ref": "A/E: official Stellar resource-metering documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The non-equivalence is correct, but the useful migration/resource-model redirect was optional and the answer leaked an internal retired tool name.",
+      "evidence": [
+        "Solo scratchpad 575 GT-26 primary 3269 and blind 3271."
+      ],
+      "rootCause": [
+        "A routing gate became refusal-first prose and leaked internal card terminology."
+      ]
+    },
+    "origin": "raven-next q-edge-oos-ethereum-gas-optimization"
+  }
+}

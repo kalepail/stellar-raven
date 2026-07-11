@@ -1,0 +1,89 @@
+{
+  "id": "q-soroban-current-sdk-cli-version",
+  "question": "What are the current soroban-sdk and stellar-cli versions I should be using, and what protocol do they target?",
+  "surface": [
+    "scout.searchRepos",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-09**, the live release feeds show **soroban-sdk v27.0.0** as a stable release and **stellar-cli v27.0.0** as the current v27 CLI release. Both align with Protocol 27, now live on Mainnet. Exact versions move frequently, so a correct answer should query and date the GitHub release feeds (or crates.io) instead of freezing these examples. Use the current `stellar` CLI name, not the deprecated `soroban` binary name, and pin to a supported SDK major appropriate for the deployed protocol/toolchain.",
+    "keyFacts": [
+      "Reports current soroban-sdk and stellar-cli versions from dated live release feeds (v27.0.0 for both as of 2026-07-09) and relates them to Protocol 27.",
+      "Flags exact versions as volatile and points to GitHub releases/crates.io rather than treating the examples as permanent."
+    ],
+    "avoid": [
+      "Do NOT call soroban-sdk v27.0.0 an RC after its stable 2026-07-08 release.",
+      "Do NOT present exact SDK/CLI versions as permanent without a dated live source.",
+      "Do NOT recommend the deprecated `soroban` binary as the current CLI name."
+    ],
+    "notes": "Freshness:true (weekly). Re-checked official release feeds 2026-07-11: stable soroban-sdk and stellar-cli are both v27.0.0. Do not gate permanently on these numbers; gate on reporting dated current releases and flagging re-checks against GitHub releases, crates.io, and the software-versions page.\nAlso good if the answer: SDF supports the two most recent SDK majors with critical fixes, so pin to a supported major. | Run the latest CLI to get the newest protocol's features (e.g., P27 AddressV2 auth).\nGolden cites: The stellar-cli / rs-soroban-sdk GitHub releases or developers.stellar.org software-versions page.\nPOST-RELEASE CORRECTION 2026-07-11: stable soroban-sdk v27.0.0 shipped on 2026-07-08. The stale v26/RC assertion is replaced rather than retained alongside the correction."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk/releases/tag/v27.0.0",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-cli/releases/tag/v27.0.0",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/networks/software-versions",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "rs-soroban-sdk v27.0.0 is a stable release and stellar-cli v27.0.0 remains the current v27 CLI release",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: stellar/rs-soroban-sdk latest release v27.0.0, prerelease=false, published 2026-07-08T19:48:45Z",
+            "observedAt": "2026-07-08",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar/stellar-cli latest release v27.0.0, prerelease=false, published 2026-06-17T22:43:34Z",
+            "observedAt": "2026-06-17",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: Software Versions page still shows TBD for P27 Rust SDK/CLI, demonstrating docs lag rather than contradicting the release feeds",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-09",
+      "by": "Golden-truth sweep import — The freshness-sensitive golden still described soroban-sdk v27 as a release candidate after v27.0.0 became a stable GitHub release on 2026-07-08. The behavioral gate was sound, but the pinned example and grader note were stale.",
+      "evidence": [
+        "GitHub releases API rechecked 2026-07-09 for rs-soroban-sdk and stellar-cli",
+        "P27 sibling sweep in Solo scratchpad 567"
+      ],
+      "rootCause": [
+        "plain release freshness drift after the corpus snapshot",
+        "solo://proj/49/todo/date-contingent-trap--831",
+        "improvements/stellar-docs/sd-008-protocol-27-mainnet-status-lag.md"
+      ]
+    },
+    "origin": "raven-next q-soroban-current-sdk-cli-version"
+  }
+}

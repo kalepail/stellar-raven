@@ -1,0 +1,93 @@
+{
+  "id": "q-eco-pyusd-stellar-freshness",
+  "question": "Is PayPal's PYUSD live on Stellar, and when did it launch?",
+  "surface": [
+    "lumenloop.find_content_by_entity"
+  ],
+  "golden": {
+    "answer": "**PayPal USD (PYUSD) is live on Stellar.** It launched on **September 18, 2025**. PYUSD is PayPal-branded and **issued by Paxos**. The 2025 SDF launch release and Paxos Stellar metadata name **Paxos Trust Company, LLC**; Paxos's current product page names **Paxos Trust Company, N.A.** Treat this as a dated source/time-slice disagreement—not evidence of a corporate transition unless corporate or regulatory proof establishes one.\n\nThe mainnet issuer is `GDQE7IXJ4HUHV6RQHIUPRJSEZE4DRS5WY577O2FY6YQ5LVWZ7JZTU2V5`; do not confuse it with PayPal's documented testnet issuer. Current supply/circulation is volatile, so cite a ledger/date for any amount and distinguish brand, legal issuer, testnet, mainnet, and SAC identities.",
+    "keyFacts": [
+      "Confirms PYUSD launched on Stellar on September 18, 2025.",
+      "Distinguishes PayPal's product/brand from Paxos as issuer and dates any LLC-versus-N.A. legal-entity wording.",
+      "Treats current circulating/supply figures as freshness-sensitive."
+    ],
+    "avoid": [
+      "Do NOT claim PayPal itself is the legal issuer, or hard-code one Paxos legal entity without a date/source while the primary disclosures differ.",
+      "Do NOT claim PYUSD is absent from Stellar or give a current supply figure without a dated source."
+    ],
+    "notes": "FRESHNESS + entity. Verified: PayPal's PYUSD launched on Stellar Sep 18, 2025 (SDF press), part of the Sep-2025 RWA/stablecoin cluster around Meridian 2025. Issuer = PayPal (with Paxos). Any circulating/supply figure is volatile — gate on a dated source + staleness caveat.\nAlso good if the answer: Attributes PYUSD to PayPal and frames it as part of the issuer-led stablecoin set on Stellar.\nGolden cites: A dated source for PYUSD on Stellar (Sep 2025).\nGT-20 RE-VERIFIED 2026-07-10: replace inherited 'issuer=PayPal (with Paxos)' shorthand with PayPal-branded, Paxos-issued. LLC-versus-N.A. is a source/time-slice disagreement, not proof of a corporate transition. Mainnet/testnet/SAC addresses and any supply require explicit network/date provenance."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/paypal-pyusd-is-now-available-on-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.paxos.com/pyusd/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://developer.paypal.com/community/blog/pyusd-on-stellar/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://token-metadata.paxos.com/.well-known/stellar.toml",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "PayPal USD is live on Stellar since 2025-09-18, PayPal-branded and Paxos-issued; exact legal-entity wording differs across dated first-party surfaces.",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: SDF PYUSD launch release dated 2025-09-18 explicitly names Paxos Trust Company, LLC as issuer",
+            "observedAt": "2025-09-18",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: PayPal developer page and Paxos stellar.toml confirm Stellar issuer/network identity; current Paxos product page names the N.A.",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: Horizon confirms the mainnet asset record and a volatile ledger-dated supply observation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: disputed-time-slice."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The answer already corrected PayPal-brand versus Paxos-issuer roles. GT-20 adds provider TOML, PayPal's mainnet/testnet integration page, and a live Horizon read, while clarifying that LLC-versus-N.A. is a source/time-slice disagreement—not proof of a corporate transition.",
+      "evidence": [
+        "Solo scratchpad 569 Batches D and G and stablecoin sibling sweep, 2026-07-09.",
+        "Solo scratchpad 575 GT-20 primary 3256 and blind 3257; provider TOML/Horizon evidence asOf 2026-07-10."
+      ],
+      "rootCause": [
+        "Eval-side brand-versus-issuer shorthand in inherited notes.",
+        "solo://proj/49/todo/golden-corpus-health--901"
+      ]
+    },
+    "origin": "raven-next q-eco-pyusd-stellar-freshness"
+  }
+}

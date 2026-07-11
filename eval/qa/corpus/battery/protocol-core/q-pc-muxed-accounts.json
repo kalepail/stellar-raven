@@ -1,0 +1,89 @@
+{
+  "id": "q-pc-muxed-accounts",
+  "question": "What is a muxed M-account, how does it relate to the underlying G-account sequence number, how does it differ from a memo, where can I use it, and how do I convert M to G plus memo?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "A muxed `M...` address encodes an underlying `G...` Ed25519 account plus a uint64 ID. It is not a separate ledger account: the G-account owns funds, reserves, authorization, and sequence. Decode M to G + unsigned 8-byte ID; that conversion moves nothing. M differs from a transaction memo because the ID travels in a supported account field. Current protocol positions include transaction/operation source, fee-bump fee source, Payment and strict-send/strict-receive path-payment destination, AccountMerge destination, and Clawback `from`. Not every AccountID field accepts M, and current InvokeHostFunction transactions reject muxed transaction/operation sources. Wallet/exchange/anchor support changes, so verify the receiving service as of use time; otherwise use its required G+memo flow.",
+    "keyFacts": [
+      "Defines M as G+uint64 with the underlying G owning sequence/funds/state.",
+      "Lists current supported positions and warns that Soroban/source and service support are not universal."
+    ],
+    "avoid": [
+      "Do NOT call M an independent account or say it replaces memos everywhere.",
+      "Do NOT assume every AccountID field, InvokeHostFunction source, or service accepts M."
+    ],
+    "notes": "Verified against official pooled-account docs, CAP-0027, and SEP-0023. Compatibility caveat remains service-specific: some wallets/exchanges still require G+memo.\nAlso good if the answer: Explains conversion requires decoding the muxed account into base G-account and ID, not changing ownership.\nGolden cites: At least one primary Stellar source such as developers.stellar.org, stellar-core docs, or the stellar-protocol repository.\nGT-29 CORRECTION 2026-07-10: grade the official supported-position matrix and current InvokeHostFunction source restriction; external service support is dated."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/pooled-accounts-muxed-accounts-memos",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0027.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0023.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Muxed accounts are accepted only in specified account positions; current InvokeHostFunction transactions reject muxed transaction/operation sources, and service support remains dated/conditional.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: pooled-account docs, CAP-0027, SEP-0023",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: pooled-account docs, CAP-0027, SEP-0023",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/F: current Core validation and CLI StrKey round-trip",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "B/F: current Core validation and CLI StrKey round-trip",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The G+ID/sequence semantics are correct, but the explicit where-can-I-use-it clause was unanswered and compatibility was left as an undated generic caveat.",
+      "evidence": [
+        "Solo scratchpad 575 GT-29 blind 3278; primary 3276 independently confirmed identity/sequence/memo mechanics."
+      ],
+      "rootCause": [
+        "Eval-side supported-field matrix and freshness omission."
+      ]
+    },
+    "origin": "raven-next q-pc-muxed-accounts"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "id": "q-eco-defi-market-map",
+  "question": "Where is the Stellar DeFi ecosystem crowded versus where is there whitespace to build?",
+  "surface": [
+    "scout.getClusters",
+    "scout.searchProjects"
+  ],
+  "golden": {
+    "answer": "A defensible market map must be a **dated, source-relative snapshot**, not a timeless verdict. As of **2026-07-10**, Scout's type clusters showed many directory-tagged entries in RWA, DEX, wallets, lending, and NFTs, but those counts mix roles and lifecycle states and do not measure independent competitors, maturity, TVL, or usage. Map each lane with: directory count/source, independently verified live products, role, deployment state, and an observable concentration metric. Treat liquid staking, insurance, identity/attestation, perps, and RWA composability as **opportunity hypotheses to verify**, not empty categories. Named counterexamples already make absolute equity/real-estate, identity, and NFT whitespace claims unsafe.",
+    "keyFacts": [
+      "Uses dated source-relative counts plus operator/status/usage checks and distinguishes directory density from competition or maturity."
+    ],
+    "avoid": [
+      "Do NOT hard-code a timeless crowded/whitespace map, infer maturity from tags, or assert a category is empty without a strict dated search and operator verification.",
+      "Do NOT flatten announced, testnet, pre-release, and mainnet-live projects into one status."
+    ],
+    "notes": "ANALYTIC saturation lane (crowded-vs-whitespace → scout_clusters/scout_analyze) — DISTINCT from q-eco-defi-projects-discovery (flat directory roster → scout_projects). Re-verified 2026-06-29. CORRECTED vs dossier whitespace list. Live Scout (2026-06-22) shows perps are NOT whitespace but EMERGING — funded testnet/pre-release entrants Noether, Stellars Finance, Zenex; NO confirmed mainnet perp DEX yet. (Turbolong is leveraged SPOT via Blend loops, NOT a perp — keep it out of the perps list.) NFT marketplaces exist (Litemint Stellar-native, Rarible multichain). Oracles are NOT single-provider (Band + RedStone live on mainnet; DIA/Lightecho/Orally too). Genuinely thin lanes that survive verification: liquid staking, on-chain identity/attestation, insurance. Scout /api/analyze?dimension=categories gives coarse buckets (User-Facing App 204, Tooling 109, Infra 104, Protocol/Contract 78) — use finer directory searches for the DeFi sub-lanes. Gate now forbids the stale 'perps/NFT = whitespace' claim.\nAlso good if the answer: Notes lending and oracles each have a clear leader (Blend; Reflector) but are NOT strictly single-provider (e.g. Orbit CDP/DeFindex in lending; DIA/Band/Lightecho/RedStone in oracles). | Notes RWA has a few flagship issuers (BENJI, CRDT, USDY) but equity/real-estate tokenization is whitespace.\nGolden cites: Scout clusters/analyze for the crowded categories and directory searches for the thin/whitespace conclusions.\nGT-19 CORRECTION 2026-07-10: grade methodology and dated evidence, not the inherited static map. Cluster/tag counts are not competitor, maturity, or capital metrics; whitespace claims are hypotheses, not absolutes."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/clusters?dimension=types",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/analyze?dimension=categories",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/ecosystem/what-the-defi-is-happening-on-stellar",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Directory cluster counts are source-relative taxonomy counts, not competitor, maturity, usage, or capital-concentration measures.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Scout clusters/analyze 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/D: current operator pages and SDF ecosystem survey",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A/D: current operator pages and SDF ecosystem survey",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited static market map promotes directory tags and old snapshots into maturity, competition, and whitespace claims. Current Scout counts and named counterexamples invalidate several absolutes.",
+      "evidence": [
+        "Solo scratchpad 575 GT-19 primary 3254 and blind 3258; sibling sweep of lending, perps, liquid staking, RWA, NFT, and oracle cases."
+      ],
+      "rootCause": [
+        "Snapshot promotion, taxonomy/behavior conflation, and unsupported negative claims."
+      ]
+    },
+    "origin": "raven-next q-eco-defi-market-map"
+  }
+}

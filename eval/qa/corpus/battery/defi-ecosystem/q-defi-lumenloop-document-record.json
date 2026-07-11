@@ -1,0 +1,66 @@
+{
+  "id": "q-defi-lumenloop-document-record",
+  "question": "Pull the full record for that specific content item — the one in the 'research' collection with id rfl-oracle-design — I want the complete document, not just a snippet.",
+  "surface": [
+    "lumenloop.list_research"
+  ],
+  "golden": {
+    "answer": "`lumenloop.get_document` requires a valid **collection plus numeric document ID**. The supplied `research / rfl-oracle-design` string does not validate as an ID, and the public lane did not resolve that string to a numeric record as of **2026-07-10**. Report the invalid/unresolved locator rather than substituting another item.\n\nEven with a valid numeric ID, external callers receive a **summary projection**—such as id, title, URL/slug, summary/long summary, tags, dates, and status—not the complete body or transcript verbatim. Use content search to discover the correct numeric ID, then fetch the projection; do not promise inaccessible full text.",
+    "keyFacts": [
+      "Explains that get_document needs a numeric id plus collection and that the supplied string locator is invalid/unresolved.",
+      "States that the exposed result is a summary projection, not full document or transcript text."
+    ],
+    "avoid": [
+      "Do NOT fabricate content, silently substitute another item, or claim the soft-empty search proves global absence.",
+      "Do NOT promise a verbatim/full-body record that the external operation does not expose."
+    ],
+    "notes": "EXPANSION-LANE behavioral case (no external fact to verify). lumenloop_get_document is id-gated — reached only after lumenloop_search_content_semantic (or similar) surfaces the collection+id/slug — so the semantic-search card is the acceptable upstream discovery card. The id 'research / rfl-oracle-design' is ILLUSTRATIVE: the test is the routing/behavior (id-gated single-record fetch + anti-fabrication on a non-resolving id), not that this exact id resolves. Grading is about the gate, not a factual essay. REVIEWED 2026-06-29: routing model re-checked against CARDS.md — get_document is the id-gated detail/expansion lane and search_content_semantic the upstream discovery card; both card ids valid. No factual claim to re-ground (illustrative id by design); anti-fabrication-on-non-resolving-id gate preserved.\nAlso good if the answer: Notes that retrieving a specific document needs a prior collection+id (or slug) — surfaced by an upstream semantic search.\nGolden cites: The Lumenloop document record (lumenloop_get_document) for the given collection+id, with its source.\nCorrected 2026-07-10: grade schema honesty and projection boundaries, not an impossible full-body fetch."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://api.lumenloop.com/v1/tools/get_document",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "get_document requires numeric id and exposes only a summary projection to external callers",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live operation descriptor and invalid-argument probe 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: Lumenloop get_document operator contract",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — GT-16 primary and blind empirical probes found the supplied string ID is schema-invalid: get_document requires collection plus numeric id. The public operation returns a summary projection, not full body/transcript text, so the inherited promise of a verbatim record is impossible.",
+      "evidence": [
+        "Solo scratchpad 575 GT-16 processes 3244/3245; string id failed before upstream call and exact searches were soft-empty/inconclusive"
+      ],
+      "rootCause": [
+        "eval-side stale card/schema semantics: string slug and full-body exposure were assumed"
+      ]
+    },
+    "origin": "raven-next q-defi-lumenloop-document-record"
+  }
+}

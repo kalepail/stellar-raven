@@ -1,0 +1,95 @@
+{
+  "id": "q-ti-multisig-recover-lobstr-vault",
+  "question": "How do I remove signers or change thresholds on an existing multisig, and what are my options if I lost the LOBSTR Vault recovery phrase but still control the source account?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs"
+  ],
+  "golden": {
+    "answer": "Classic Stellar multisig is account state: signer entries and weights, master-key weight, and low/medium/high thresholds. `SetOptions` changes those fields. Removing a signer means setting its weight to `0`, and the change must be authorized by the signer set that exists **before** the change, normally meeting the current high threshold.\n\nLOBSTR Vault has its own recovery phrase, distinct from the main LOBSTR-wallet phrase. Reinstalling Vault and entering the correct Vault phrase restores the Vault signing identity. If that phrase is lost, recovery is possible only when other still-accessible authorized signers have enough aggregate weight to meet the current high threshold; that quorum can submit `SetOptions` directly to add/test a replacement and then remove the lost signer. Merely possessing a master/source secret is insufficient when its on-ledger weight is zero or below threshold.\n\nThere is no LOBSTR/SDF/network backdoor. If neither the Vault phrase nor a sufficient surviving signer set exists, recovery is cryptographically impossible. Inspect current signers and thresholds first, add and test replacement authority before removal, and never set the master weight to zero until the recovery path is proven.",
+    "keyFacts": [
+      "Explains signer weights and current high-threshold authorization for SetOptions changes.",
+      "States that the LOBSTR Vault recovery phrase is distinct from the main wallet phrase and restores the Vault signer.",
+      "Explains that any valid surviving quorum meeting the current high threshold can rotate the lost signer; the LOBSTR UI is not the only protocol route.",
+      "States that source-secret possession does not override on-ledger weights and no sufficient phrase/quorum means no recovery."
+    ],
+    "avoid": [
+      "Do NOT confuse the Vault recovery phrase with the main wallet phrase.",
+      "Do NOT claim any surviving source/master secret can always remove a signer regardless of its weight.",
+      "Do NOT promise LOBSTR support can bypass missing on-ledger authority.",
+      "Do NOT remove old authority or zero the master weight before a replacement threshold path is tested."
+    ],
+    "notes": "GT-53 verified 2026-07-11: first-party LOBSTR support and both mobile implementations confirm the distinct Vault recovery phrase; Stellar docs/source confirm that current high-threshold signer weight controls any rotation.\nAlso good if the answer: Mentions checking the current signer set and thresholds in Horizon/Lab/CLI before submitting changes. | Notes reserve and result-code caveats for adding signers, including low reserve and the 20-signer limit.\nGolden cites: Primary Stellar docs for Set Options signer/threshold semantics and account signer fields.\nGrade the decision tree, not a product-UI-only workflow: a sufficient surviving quorum may submit SetOptions directly; without the phrase or such a quorum, there is no recovery."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://lobstrvault.freshdesk.com/support/solutions/articles/151000001581-recover-my-lobstr-vault-account",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/signatures-multisig",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/list-of-operations#set-options",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Lobstrco/vault-android/blob/master/app/src/main/java/com/lobstr/stellar/vault/domain/recovery_key/RecoverKeyInteractorImpl.kt",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Lobstrco/Vault-iOS/blob/master/LOBSTR%20Vault/Classes/Core/Helpers/MnemonicHelper.swift",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Vault phrase restoration and signer removal are governed by distinct product and on-ledger authorization rules",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: LOBSTR Vault recovery support plus Stellar multisig/SetOptions documentation, accessed 2026-07-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: Android and iOS Vault recovery-key implementations, inspected 2026-07-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The protocol core was correct, but the inherited corpus omitted the first-party Vault recovery path and could imply that controlling the source secret always permits signer removal. GT-53 confirmed the distinct Vault phrase and current-threshold decision tree.",
+      "evidence": [
+        "Solo scratchpad 575, GT-53 primary 3372 and blind 3378; both derived current-high-threshold authority, phrase recovery, and no-backdoor semantics.",
+        "Blind child 3380 report was harvested before close and reconciled only after the independent matrix seal."
+      ],
+      "rootCause": [
+        "Eval-side product-provenance omission: the golden relied on generic Stellar threshold docs without the current LOBSTR Vault recovery material."
+      ]
+    },
+    "origin": "raven-next q-ti-multisig-recover-lobstr-vault"
+  }
+}

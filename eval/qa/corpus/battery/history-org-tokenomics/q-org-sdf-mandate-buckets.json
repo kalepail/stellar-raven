@@ -1,0 +1,79 @@
+{
+  "id": "q-org-sdf-mandate-buckets",
+  "question": "How does the Stellar Development Foundation organize its work / spending priorities?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "SDF organizes its work under mandate buckets funded from entrusted XLM rather than shareholder equity. The framework has changed: **2019** used Direct Development, Ecosystem Support, Use-Case Investment, and User Acquisition; the **2025-era** framing uses SDF Development, Stellar Growth, Product and Innovation, and Assets and Liquidity. The live page says allocation updates are in progress and its account/bucket rows can have different timestamps. Cite the applicable dated mandate, attach an as-of date to any balance, and do not invent an exact allocation split or mechanically sum asynchronous rows as one synchronized total.",
+    "keyFacts": [
+      "Correctly separates the 2019 and 2025-era mandate bucket names.",
+      "Treats current allocation/account rows as dated, evolving, and potentially asynchronous."
+    ],
+    "avoid": [
+      "Do NOT use the 2017 previous-mandate route as proof of the 2019 taxonomy.",
+      "Do NOT invent precise allocations, sum mixed timestamps as one current total, or describe shareholder capital."
+    ],
+    "notes": "GT-28 CORRECTION 2026-07-10: use /foundation/mandate/2019 for the 2019 taxonomy; /foundation/previous-mandate is the 2017 version. Current allocation updates are in progress and displayed rows are not one synchronized snapshot.\nGT-28 independently confirmed by processes 3274/3275; sd-012 owns current label/timestamp drift."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2027-07-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/foundation/mandate",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/foundation/mandate/2019",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/an-updated-mandate-for-a-growing-stellar-ecosystem",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "2019 and 2025 mandate bucket names differ as stated; the current page says allocation updates are in progress and exposes mixed-timestamp rows.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current mandate and /foundation/mandate/2019",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: linked-account/dashboard reads",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The two dated bucket frames are correct, but the inherited 2019 source route points to the 2017 mandate and current bucket/account rows are asynchronously updated while allocation changes remain in progress.",
+      "evidence": [
+        "Solo scratchpad 575 GT-28 primary 3274 and blind 3275; blind caught the 2017/2019 route mismatch."
+      ],
+      "rootCause": [
+        "Eval-side historical route/version confusion and detached timestamp semantics.",
+        "improvements/stellar-docs/sd-012-mandate-wallet-label-drift.md"
+      ]
+    },
+    "origin": "raven-next q-org-sdf-mandate-buckets"
+  }
+}

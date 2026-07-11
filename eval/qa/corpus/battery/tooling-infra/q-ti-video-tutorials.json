@@ -1,0 +1,119 @@
+{
+  "id": "q-ti-video-tutorials",
+  "question": "Are there official video/YouTube tutorials for learning Stellar/Soroban, and which should a beginner start with?",
+  "surface": [
+    "lumenloop.find_av_passages"
+  ],
+  "golden": {
+    "answer": "Start with the official **Stellar Development Foundation** YouTube channel and its **Developer Tutorials** playlist, then pair each video with current written docs and release notes. Current Lab documentation links a Lumen Loop Lab playlist, and current Scaffold/getting-started docs provide concrete full-stack/smart-contract video entry points.\n\nAs of **2026-07-11**, the Developer Tutorials playlist inspection found 59 entries, a latest update of 2026-03-12, and one unavailable item. Those are live observations, not grading requirements: membership, titles, dates and availability can change. A video's upload date or playlist update does not prove its CLI, SDK, RPC, UI or network examples remain current. Older “Soroban” videos may preserve useful concepts while commands, package names, endpoints and branding have drifted; verify executable steps against current docs/releases.\n\nUse a real playback timestamp only when the media source exposes one. LumenLoop AV `start_offset` is an opaque passage offset and must not automatically be rendered as seconds. Community creators can supplement the official path, but label them as secondary and do not invent titles, timestamps or official status.",
+    "keyFacts": [
+      "Names the official SDF channel and Developer Tutorials playlist plus current Lab/Scaffold/docs entry points.",
+      "Dates playlist count/update/unavailable observations to 2026-07-11 and makes them non-gating.",
+      "Separates upload/playlist metadata from current command/version applicability.",
+      "Explains older Soroban concepts may remain useful while executable details must be checked.",
+      "Requires source-exposed playback timestamps and rejects treating LumenLoop start_offset as seconds."
+    ],
+    "avoid": [
+      "Do NOT pin playlist counts, latest dates, membership or availability as durable facts.",
+      "Do NOT call upload date a compatibility guarantee or copy stale commands without current docs/release checks.",
+      "Do NOT convert LumenLoop start_offset into playback seconds unless the source contract explicitly defines it.",
+      "Do NOT invent video titles/timestamps or present unofficial results as official tutorials."
+    ],
+    "notes": "GT-54 CORRECTION 2026-07-11: the official Developer Tutorials playlist was directly inspected. Grade a docs/release freshness check and honest timestamp semantics; playlist counts/dates/availability and the opaque LumenLoop offset are not golden gates."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://www.youtube.com/c/StellarDevelopmentFoundation",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.youtube.com/playlist?list=PLmr3tp_7-7GiyTrRhKjlznmWe7AqFPq6i",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/lab",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/scaffold-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/getting-started",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The SDF channel and Developer Tutorials playlist are official discovery points; current Lab/Scaffold docs provide additional video entry points",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live official SDF YouTube channel/playlist metadata",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: official Stellar Lab, Scaffold and getting-started documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-as-of-2026-07-11."
+      },
+      {
+        "claim": "Playlist membership/availability/update dates are volatile and neither upload time nor a LumenLoop start_offset proves current commands or an exact playback timestamp",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live playlist inspection found changing membership and one unavailable item",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/B: current docs/releases provide the executable-version comparison baseline",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: current docs/releases provide the executable-version comparison baseline",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The recommendation core was reasonable but incorrectly tagged static, lacked a concrete current official playlist, and allowed opaque LumenLoop AV offsets or upload dates to stand in for real playback timestamps and code applicability.",
+      "evidence": [
+        "Solo scratchpad 575, GT-54 primary 3383 and blind 3386 independently required freshness/timestamp repair; helper 3388's complete video row was harvested before seal.",
+        "Sibling sweep checked AV/recommendation, Lab, Scaffold and CLI getting-started cases; official status, media metadata and current command applicability remain distinct."
+      ],
+      "rootCause": [
+        "Plain freshness and source-semantics drift: a live media catalog was tagged static and an aggregator offset was allowed to masquerade as a playback timestamp."
+      ]
+    },
+    "origin": "raven-next q-ti-video-tutorials"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "id": "q-infra-anchor-platform",
+  "question": "Is there an official SEP-aligned framework for building a Stellar anchor / on-off ramp?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-11**, Anchor Platform is SDF's open-source Java/Kotlin platform for building Stellar anchor on/off-ramp services. The canonical repository is `stellar/anchor-platform`; `stellar/java-stellar-anchor-sdk` is a redirected legacy name. Current docs describe support for SEP-1, 6, 10, 12, 24, receive-side 31, 38, and 45. Those modules still require correct configuration, business-server integration, custody/compliance operations, and live testing—adopting the software does not automatically make an operator SEP-compliant. Keep it distinct from the Stellar Disbursement Platform.",
+    "keyFacts": [
+      "Identifies the anchor/on-off-ramp role and canonical current repo.",
+      "Dates current SEP coverage and rejects automatic-compliance claims."
+    ],
+    "avoid": [
+      "Do NOT conflate Anchor Platform with SDP, a wallet, or an RPC node.",
+      "Do NOT call the legacy repo canonical or imply installation alone guarantees conformance."
+    ],
+    "notes": "Anchor Platform vs SDP confusion is the trap; SEP set is the must_have. Verified: repo is stellar/java-stellar-anchor-sdk; covers SEP-1/6/10/12/24/31/38.\nAlso good if the answer: Adopting/forking the Anchor Platform inherits SEP conformance rather than re-implementing the protocols. | It also covers further SEPs (e.g. SEP-6 programmatic deposit/withdrawal, SEP-38 quotes).\nGolden cites: developers.stellar.org Anchor Platform docs or the stellar/anchor-platform repo.\nGT-49 CORRECTION 2026-07-11: grade durable role first; repo/SEP enumeration is dated."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/anchor-platform",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/anchor-platform",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/anchor-platform/releases/tag/4.5.0",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Anchor Platform is SDF's open-source on/off-ramp platform; the canonical repo is stellar/anchor-platform and current documented coverage includes SEPs 1,6,10,12,24,31 receive-only,38,45.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Anchor Platform docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: canonical repo and 4.5.0 release",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent current-source sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited product description used the redirected legacy repository and omitted current SEP-45 coverage while risking the implication that installing software alone guarantees operational conformance.",
+      "evidence": [
+        "Solo scratchpad 575 GT-49 primary 3335 and pre-read-locked blind 3341; full agreement with blind precision."
+      ],
+      "rootCause": [
+        "Plain product/repository/SEP-list freshness drift."
+      ]
+    },
+    "origin": "raven-next q-infra-anchor-platform"
+  }
+}

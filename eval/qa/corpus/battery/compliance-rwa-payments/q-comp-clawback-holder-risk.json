@@ -1,0 +1,50 @@
+{
+  "id": "q-comp-clawback-holder-risk",
+  "question": "What counterparty risk does clawback create for holders of a regulated Stellar asset, and is it a protocol vulnerability?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- Clawback is an **intentional, issuer-only feature** of clawback-enabled assets — a **regulatory tool,\n  not a protocol bug/exploit** [1].\n- It exposes holders to **issuer-side counterparty risk**: the issuer can **burn the asset from a holder's\n  balance** (e.g. after fraud, error, or a sanctions/regulatory action) [1].\n- It applies **only** to assets explicitly issued with **`AUTH_REVOCABLE` + `AUTH_CLAWBACK_ENABLED`**;\n  **XLM and ordinary assets without the flag are not clawbackable**, and **no arbitrary account** can claw\n  back another's funds — only that asset's issuer [1][2].\n- Holders can **inspect an asset's flags** before trusting it.\n\nSources: [1] developers.stellar.org clawbacks; [2] control-asset-access.",
+    "keyFacts": [
+      "Clawback is an intentional, issuer-only feature for clawback-enabled assets (a regulatory tool), not a protocol bug/vulnerability.",
+      "It exposes holders to issuer-side counterparty risk: the issuer can burn the asset from a holder's balance (e.g. after fraud, error, or regulatory/sanctions action)."
+    ],
+    "avoid": [
+      "Do NOT frame clawback as a hack/exploit or claim any account can claw back another's funds.",
+      "Do NOT claim all Stellar assets (including XLM) are subject to issuer clawback."
+    ],
+    "notes": "Risk framing rooted in protocol mechanics → stellar_docs. Clawback is opt-in (AUTH_REVOCABLE+AUTH_CLAWBACK_ENABLED), issuer-only; XLM/ordinary assets without the flag aren't clawbackable. Trap: framing clawback as an exploit or universal.\nAlso good if the answer: Only assets explicitly issued with clawback enabled (AUTH_REVOCABLE + AUTH_CLAWBACK_ENABLED) carry this; XLM and ordinary assets without the flag are not clawbackable.\nGolden cites: developers.stellar.org clawbacks / control-asset-access docs."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/clawbacks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/control-asset-access",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-07-regulated-controls-anchor-security accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-comp-clawback-holder-risk"
+  }
+}

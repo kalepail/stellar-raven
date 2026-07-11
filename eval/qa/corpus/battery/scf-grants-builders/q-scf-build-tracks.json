@@ -1,0 +1,85 @@
+{
+  "id": "q-scf-build-tracks",
+  "question": "What are the three SCF Build tracks (Open, Integration, RFP) and how do they differ?",
+  "surface": [
+    "scout.getRfps",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Current SCF Build has three tracks: **Open, Integration, and RFP**; Resubmission is a path, not a fourth track. **Open** is for experienced builders proposing novel Stellar protocols/apps and may include existing traction or deep demonstrated technical knowledge; its project award decision is the only one of the three that goes to community/NQG vote. **Integration** funds work on existing Stellar building blocks or teams with significant traction. Community input may help select Integration building blocks, but individual Integration awards are reviewer/panel decisions. **RFP** funds work against published ecosystem tooling/service needs and is also reviewer/panel selected. Current cap and typical duration are up to $150K in XLM value and roughly 3–6 months.",
+    "keyFacts": [
+      "Names Open, Integration, and RFP and treats Resubmission as a path.",
+      "Distinguishes Open project voting from reviewer decisions and from community input on Integration building blocks."
+    ],
+    "avoid": [
+      "Do NOT call Open brand-new-build-only or invent a fourth Build track.",
+      "Do NOT claim every track's projects are community-voted or that Integration building-block input equals a project award vote."
+    ],
+    "notes": "GT-36 CORRECTION 2026-07-10: Open is not brand-new-build-only. Grade the three track identities and distinguish Open project voting, Integration building-block input, and reviewer-selected Integration/RFP awards.\nGT-36 independently confirmed by processes 3290/3291."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/open-track",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/integration-track",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/rfp-track",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current Build tracks are Open, Integration, and RFP; only Open project awards use community voting",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Build and track/review pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: versioned SCF handbook source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-qualification."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The track names and vote distinction were right, but Open was incorrectly limited to brand-new builds and the answer obscured community selection of Integration building blocks versus project award decisions.",
+      "evidence": [
+        "Solo scratchpad 575 GT-36 primary 3290 and blind 3291."
+      ],
+      "rootCause": [
+        "Eval-side shorthand collapsed track eligibility and the object of community input."
+      ]
+    },
+    "origin": "raven-next q-scf-build-tracks"
+  }
+}

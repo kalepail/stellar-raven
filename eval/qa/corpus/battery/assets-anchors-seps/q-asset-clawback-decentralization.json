@@ -1,0 +1,49 @@
+{
+  "id": "q-asset-clawback-decentralization",
+  "question": "If an asset issuer enables clawback, what does that mean for the asset's censorship-resistance, and why does Stellar support it anyway?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "An asset whose issuer has enabled clawback is, **by design, not censorship-resistant**: the issuer\ncan use `ClawbackOp` to **burn a holder's balance back to itself** without the holder's consent [1].\nStellar supports this deliberately so the network is viable for **regulated assets / securities**,\nwhere law (e.g. court orders, sanctions, error correction) requires the ability to actually **remove**\nassets, not merely freeze them — this was the rationale of **CAP-0035 \"Asset Clawback\" (Final),\nactivated at protocol 17** [1][2]. It is a conscious **compliance-vs-decentralization trade-off**,\nand it is **opt-in**: clawback only applies to issued assets whose issuer set\n`AUTH_CLAWBACK_ENABLED_FLAG` (which itself requires `AUTH_REVOCABLE_FLAG`) **before** the trustline\nopened, so a holder can **inspect the issuer's flags before trusting the asset** [1][2]. Native\n**XLM is never clawback-able** — this is purely an issued-asset feature. Clawback does **not** make\nan asset more decentralized or trustless, and it does **not** apply to every Stellar asset.\n\nSources: [1] developers.stellar.org Clawbacks guide; [2] stellar-protocol `core/cap-0035.md`\n(Asset Clawback, Final, protocol 17).",
+    "keyFacts": [
+      "An asset whose issuer can clawback is, by design, not censorship-resistant — the issuer can burn holders' balances.",
+      "Stellar supports clawback to make the network viable for regulated assets/securities where actual asset removal (not just freezing) is required."
+    ],
+    "avoid": [
+      "Do NOT claim clawback makes the asset more decentralized or trustless.",
+      "Do NOT claim every Stellar asset is clawback-able regardless of issuer flags."
+    ],
+    "notes": "Design-tension comparison. Dossier §8.2(2). Verified: clawback = CAP-0035 'Asset Clawback' (Final), activated at protocol 17; requires AUTH_CLAWBACK_ENABLED_FLAG (which itself requires AUTH_REVOCABLE_FLAG).\nAlso good if the answer: This is a deliberate trade-off: regulatory compliance vs. decentralization/trust-minimization. | Clawback is opt-in (requires AUTH_CLAWBACK_ENABLED + AUTH_REVOCABLE); a holder can inspect the flags before trusting the asset.\nGolden cites: The clawback page on developers.stellar.org or CAP-0035."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/clawbacks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0035.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-03-classic-assets-clawback-trustlines-paths accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-clawback-decentralization"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "id": "q-asset-trustline-basics",
+  "question": "What is a trustline on Stellar and what does it cost to hold an asset?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- A **trustline** is an explicit **opt-in** (created with **`ChangeTrust`**) for an account to hold a specific non-native asset from a given issuer; it records the holder's balance and limit for that `(asset_code, issuer)` [1].\n- **Without a trustline, payments of that asset fail/bounce** — the account cannot receive an asset it has not trusted [1].\n- A trustline raises the account's minimum balance by **one base reserve (0.5 XLM)** — this is a held minimum, not a spent fee [2]. **Pool-share (AMM) trustlines cost two base reserves (1.0 XLM)**.\n- **XLM (native) needs no trustline**; only non-native assets require one [1].",
+    "keyFacts": [
+      "A trustline is an explicit opt-in (via ChangeTrust) for an account to hold a specific non-native asset from an issuer.",
+      "Without a trustline, payments of that asset fail/bounce."
+    ],
+    "avoid": [
+      "Do NOT claim assets can be received without any trustline (like ERC-20 on Ethereum).",
+      "Do NOT state the base reserve is a flat fee that is consumed/spent rather than a held minimum balance."
+    ],
+    "notes": "Foundational. Dossier §1.2. Base reserve = 0.5 XLM; trustline = 1 base reserve; pool-share trustline = 2.\nAlso good if the answer: Each trustline reserves one base reserve (0.5 XLM). | Pool-share (AMM) trustlines cost two base reserves.\nGolden cites: A trustlines page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/basics/verify-trustlines",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/lumens",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-04-sac-stablecoins-issuance-fx accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-trustline-basics"
+  }
+}

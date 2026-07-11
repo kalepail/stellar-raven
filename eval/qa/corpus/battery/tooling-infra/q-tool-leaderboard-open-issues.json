@@ -1,0 +1,122 @@
+{
+  "id": "q-tool-leaderboard-open-issues",
+  "question": "Which Stellar projects have the most open issues right now — rank them so I can see where the most active maintenance/backlog is.",
+  "surface": [
+    "scout.getLeaderboard",
+    "scout.searchRepos"
+  ],
+  "golden": {
+    "answer": "Re-run **`scout.getLeaderboard({ sort: \"issues\", range: \"all\", limit: ... })`**, whose upstream route is **`/api/leaderboard`**, and report the response's `generatedAt`, filters/range/category, rank, project, Scout-labelled `openIssuesTotal`, `repoCount`, and `lastActivityAt`. This is an answer-time snapshot; do not reuse a stored ordering.\n\nFor illustration only, the **2026-07-11T07:17:34.351Z** Scout snapshot began Noir 619, Drips 162, Stellar CLI 141, Solar Wallet 131, and OpenGrants 94. Those names/counts are not durable grading requirements. They are cached project rollups over Scout's included repository universe, not a timeless issue-only GitHub census. If corroborating against GitHub, map the exact included repositories and use `is:issue is:open`; repository `open_issues_count` includes pull requests. Disclose cache/scope mismatches and do not average unlike project, organization, and repository counts.\n\nOpen-issue volume is a **backlog-size signal**, not proof of current maintenance activity, code quality, popularity, or need for help. Use `lastActivityAt` or a separately defined activity metric for activity, and keep `issues`, `stars`, and `activity` as distinct leaderboard sorts.",
+    "keyFacts": [
+      "Uses `/api/leaderboard`/`scout.getLeaderboard` with `sort=issues` and reports generatedAt plus filter/range/category scope.",
+      "Returns rank and Scout openIssuesTotal with repoCount/lastActivityAt while treating values as a current cached project rollup.",
+      "Frames issue volume as backlog rather than activity/quality and keeps issues, stars, and activity distinct.",
+      "Uses GitHub issue-only searches for corroboration, notes repository open_issues_count includes PRs, and discloses scope/cache disagreement."
+    ],
+    "avoid": [
+      "Do NOT route the primary request to `/api/repos/search?sort=issues`; the current route is `/api/leaderboard`.",
+      "Do NOT present a ranking without generatedAt/scope or freeze the illustrative 2026-07-11 names/counts.",
+      "Do NOT call open-issue volume active maintenance or quality, or substitute stars/activity/repoScore.",
+      "Do NOT use GitHub repository open_issues_count as issue-only or silently mix/average project, org, and repo scopes."
+    ],
+    "notes": "GT-55 CORRECTION 2026-07-11: primary route is /api/leaderboard via scout.getLeaderboard(sort=issues), not repo search. Require answer-time generatedAt and scope, treat openIssuesTotal as a cached project rollup/backlog rather than activity or quality, and use GitHub issue-only search rather than repository open_issues_count when corroborating."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/leaderboard",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/leaderboard",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/status",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.github.com/en/rest/repos/repos#get-a-repository",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.github.com/en/search-github/searching-on-github/searching-issues-and-pull-requests",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The current Scout route is /api/leaderboard with sort=issues; it returns generatedAt, filters, project rank, openIssuesTotal, repoCount, and lastActivityAt.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live scout.getLeaderboard payload and /api/status endpoint enumeration",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current Scout OpenAPI snapshot in inventory/stellar-light.json",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-at-answer-time."
+      },
+      {
+        "claim": "The ranking is a cached project/repository-universe backlog snapshot, not activity or quality, and GitHub repo open_issues_count includes pull requests rather than proving issue-only totals.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Scout project rollups and source timestamps",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: contemporaneous GitHub issue-only searches plus GitHub REST field semantics",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-55 sealed blind reconciliation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-scope-disagreement."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited behavioral caution was sound, but it cited the repo-search route instead of `/api/leaderboard`, used weekly freshness for a 'right now' ranking, and did not make generatedAt, project/repository scope, GitHub issue-only semantics, or backlog-versus-activity explicit.",
+      "evidence": [
+        "Live author probe at 2026-07-11T07:17:34.351Z returned `sort=issues`, `range=all`, rank/openIssuesTotal/repoCount/lastActivityAt, and a separate repository source timestamp from /api/status.",
+        "Scout and contemporaneous GitHub issue-only counts differed for sampled leaders; the correction preserves the disagreement rather than averaging unlike scopes.",
+        "GT-55 primary 3392 kept the weekly behavioral golden; sealed blind 3393 independently required the route, answer-time stamp, scope/cache, issue-only, and backlog-not-activity corrections. The recurrence is recorded in sls-036."
+      ],
+      "rootCause": [
+        "improvements/stellar-light-scout/sls-036-leaderboard-metric-filter-semantics.md",
+        "Eval-side route and freshness provenance drift: repo search and leaderboard semantics were conflated."
+      ]
+    },
+    "origin": "raven-next q-tool-leaderboard-open-issues"
+  }
+}

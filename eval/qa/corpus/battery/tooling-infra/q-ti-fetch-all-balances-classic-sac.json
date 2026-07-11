@@ -1,0 +1,113 @@
+{
+  "id": "q-ti-fetch-all-balances-classic-sac",
+  "question": "How do I fetch every asset balance held by an account or a contract (C…) address — classic trustline assets AND Soroban/SAC balances — given Horizon's account endpoint doesn't return Soroban assets (getSACBalance)?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Use separate discovery/accounting paths. For a `G...` account, Horizon `/accounts/{G}` returns native XLM plus Classic trustline and LP-share rows. When that G account uses a Classic asset through its SAC interface, it is the **same underlying account/trustline balance**, not a second wrapped copy—do not double-count it.\n\nFor a `C...` address, SAC/custom-token balances are contract state. For a **known** token, call its SEP-41 `balance(address)` interface or use the corresponding ledger/indexed state. There is no standard one-call Horizon/RPC operation that discovers every SAC and arbitrary SEP-41 token held by any address. Use complete token-event/indexer data to discover candidate contracts, then query current balance/metadata. Arbitrary SEP-41 storage layout is not standardized, so generic contract-data parsing is not universally valid. Return network, snapshot ledger/source, full asset/contract identity, decimals/units, and amount provenance.",
+    "keyFacts": [
+      "Uses Horizon for G-account native/Classic balances and forbids counting a second SAC copy.",
+      "Uses token/SAC contract state for C-address or known-token balances.",
+      "States that all-token discovery requires an indexed token universe/events and current validation.",
+      "Does not assume arbitrary SEP-41 storage; reports identity, decimals, source, network, and snapshot."
+    ],
+    "avoid": [
+      "Do NOT promise all token balances from one RPC/Horizon call or double-count a G trustline as a SAC copy.",
+      "Do NOT parse arbitrary SEP-41 storage as standardized or mix raw values without decimals/identity.",
+      "Do NOT imply Horizon account JSON lists C-address contract token state."
+    ],
+    "notes": "No verified universal all-token discovery API; answer gates on splitting classic account balances from known/indexed token-contract balances.\nAlso good if the answer: Mentions that custom SEP-41 tokens and SACs share the token-interface subset, but SACs add asset-specific/admin functionality.\nGolden cites: SAC docs and Horizon account/balances docs.\nGT-52 CORRECTION 2026-07-11: grade the no-double-count and discovery/provenance boundaries; a provider convenience API is acceptable only when dated and scoped."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/resources/accounts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getLedgerEntries",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/analytics/hubble/analyst-guide/queries-for-horizon-like-data",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Horizon account balances cover native XLM and Classic trustlines/LP shares; a G-account SAC view uses the same underlying Classic balance and must not be counted twice.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Horizon account and SAC accounting documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Horizon asset/account aggregate checks",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "C-address/known-token balances are contract state/interface reads, but no standard one-call registry discovers every SAC/custom SEP-41 token and arbitrary storage is not standardized.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: SAC, getLedgerEntries, Hubble, and token docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: SEP-41 interface/events specification",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited storage split was correct but omitted the no-double-count rule for a G account's Classic asset through SAC, the candidate-token discovery boundary, arbitrary SEP-41 storage limits, and balance provenance/units.",
+      "evidence": [
+        "Solo scratchpad 575 GT-52 primary/blind matrices independently confirmed the storage split; blind required the no-double-count, discovery, decimals, and arbitrary-storage precision.",
+        "Sibling sweep checked q-asset-trustline-vs-sac, q-sor-contract-trustlines-c-address, q-soroban-sac-balance-storage, and q-ti-enumerate-holders-airdrop."
+      ],
+      "rootCause": [
+        "Eval-side accounting/discovery incompleteness; unified portfolio-discovery guidance is recorded as a research candidate."
+      ]
+    },
+    "origin": "raven-next q-ti-fetch-all-balances-classic-sac"
+  }
+}

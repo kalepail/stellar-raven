@@ -1,0 +1,119 @@
+{
+  "id": "q-ti-enumerate-holders-airdrop",
+  "question": "How do I enumerate every holder (trustline) of an asset (paginating past Horizon's 200-record limit / avoiding 414) and distribute a batched, retry-safe airdrop or %-bonus to all of them?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "For Classic `G...` trustlines, paginate Horizon **`GET /accounts?asset=CODE:ISSUER`** and follow the server-provided next link/cursor; do not build a giant account-ID URL. The collection represents trustline accounts and can include a zero balance, so inspect the target balance row and apply the campaign's positive-balance/authorization rules. It does not include `C...` contract balances.\n\nA multi-page live crawl is not an atomic exact-ledger snapshot. For deterministic distribution, pin the network and target ledger and use Hubble/owned ingestion or another provider that explicitly supplies snapshot semantics. Define treatment of claimable balances, liquidity pools, frozen/unauthorized trustlines, issuer/distribution accounts, muxed IDs, and contract holders. For SAC/custom SEP-41 holders, use complete indexed state/events plus current-balance validation; SEP-41 does not standardize storage enumeration. Freeze a recipient ledger, store computed amount/tx hash/status/retry count, manage sequence/fees, dry-run/canary, and make retries idempotent.",
+    "keyFacts": [
+      "Uses cursor-paginated `/accounts?asset=CODE:ISSUER` for Classic trustlines and filters zero balances/eligibility.",
+      "States that the Horizon collection excludes C-address token balances and a moving crawl is not an atomic historical snapshot.",
+      "Pins network/ledger and defines claimable/pool/auth/issuer/muxed/contract eligibility.",
+      "Requires an idempotent recipient ledger and retry/sequence/fee/canary controls."
+    ],
+    "avoid": [
+      "Do NOT equate trustline existence with a positive holder or claim `/accounts?asset` includes contract holders.",
+      "Do NOT call a moving Horizon crawl an exact-ledger snapshot or stuff hundreds of IDs into one URL.",
+      "Do NOT airdrop before defining holder classes/deduplication or without idempotent retry state."
+    ],
+    "notes": "Classic holder enumeration is well grounded. Exact table/SQL choices depend on Hubble schema and whether the asset is classic trustline-only or has contract-address balances.\nAlso good if the answer: Mentions Horizon public-history limits and recommends Hubble or an indexer for full historical/bulk analytics. | Mentions that distribution should use normal Stellar payment transactions or claimable balances depending on whether recipients must opt in/claim.\nGolden cites: Horizon pagination/account docs or Hubble/indexer docs for the data-source choice.\nGT-52 CORRECTION 2026-07-11: require snapshot and eligibility semantics; do not grade a cursor-paginated live crawl as an exact-ledger holder set."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/list-all-accounts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/structure/pagination",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/analytics/hubble/analyst-guide/queries-for-horizon-like-data",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "For Classic G-account trustlines, Horizon `/accounts?asset=CODE:ISSUER` is cursor-paginated and may include zero-balance trustlines; it excludes C-address contract balances.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Horizon accounts/pagination and SAC/Hubble docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live `/accounts?asset` cursor response with a zero-balance trustline",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "A deterministic airdrop requires an exact-ledger/provider snapshot contract plus explicit eligibility and idempotent distribution state.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Hubble state/history and token-interface docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: SEP-41 interface/event standard",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: independent GT-52 operational reconciliation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited paging/idempotency core omitted the actual Horizon asset-holder endpoint, zero-balance trustlines, non-atomic moving crawls, C-address exclusions, and the eligibility classes needed for a deterministic airdrop snapshot.",
+      "evidence": [
+        "Solo scratchpad 575 GT-52 processes 3356/3368 independently retained paging/idempotency and required the current-snapshot split; blind added zero-balance, exact-ledger, and holder-class semantics.",
+        "Sibling sweep checked q-asset-trustline-vs-sac, q-sor-contract-trustlines-c-address, q-soroban-sac-balance-storage, q-ti-fetch-all-balances-classic-sac, and claimable-balance cases."
+      ],
+      "rootCause": [
+        "Eval-side snapshot/eligibility incompleteness; exact-ledger holder snapshot guidance remains a documented research candidate, not a manufactured finding."
+      ]
+    },
+    "origin": "raven-next q-ti-enumerate-holders-airdrop"
+  }
+}

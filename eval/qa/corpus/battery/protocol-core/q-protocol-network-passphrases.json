@@ -1,0 +1,46 @@
+{
+  "id": "q-protocol-network-passphrases",
+  "question": "What are the network passphrases for Stellar Mainnet, Testnet, and Futurenet, and why do they matter?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "The network passphrases are exact, case- and punctuation-sensitive strings [1]:\n\n- **Mainnet / Pubnet**: `Public Global Stellar Network ; September 2015`\n- **Testnet**: `Test SDF Network ; September 2015`\n- **Futurenet**: `Test SDF Future Network ; October 2022`\n\nThe passphrase is hashed into the transaction signing payload, so signing with the wrong passphrase produces an **invalid signature (`txBAD_AUTH`)** when the tx is submitted to a given network [1]. Testnet/Futurenet are free (friendbot-funded); Mainnet requires real XLM. Soroban runs on these same networks and uses the **same passphrases** — there is no separate Soroban passphrase [1].",
+    "keyFacts": [
+      "Gives the Mainnet/Pubnet passphrase exactly: 'Public Global Stellar Network ; September 2015'.",
+      "Gives the Testnet passphrase exactly: 'Test SDF Network ; September 2015'.",
+      "Gives the Futurenet passphrase exactly: 'Test SDF Future Network ; October 2022'."
+    ],
+    "avoid": [
+      "Do NOT swap the Testnet and Mainnet passphrases or alter their exact wording/date.",
+      "Do NOT give the Futurenet date as September 2015 (it is October 2022).",
+      "Do NOT invent a separate passphrase for Soroban (Soroban runs on the same networks/passphrases)."
+    ],
+    "notes": "Exact-string fact; high pass threshold. Traps are swapping passphrases or wrong Futurenet date.\nAlso good if the answer: Explains the passphrase is hashed into the transaction signing payload, so the wrong passphrase produces an invalid signature (txBAD_AUTH).\nGolden cites: The networks page on developers.stellar.org/docs/networks."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/networks",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-32-cap-sep-current-fees-networks-rpc-ledgers-limits accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-network-passphrases"
+  }
+}

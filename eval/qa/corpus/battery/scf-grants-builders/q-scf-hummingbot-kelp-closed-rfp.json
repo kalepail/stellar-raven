@@ -1,0 +1,47 @@
+{
+  "id": "q-scf-hummingbot-kelp-closed-rfp",
+  "question": "Was there an SCF RFP about replacing Kelp or market-making bots on Stellar, and can I still apply to it?",
+  "surface": [
+    "scout.getRfps",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Yes. The RFP was **Hummingbot Integration (Trading Engine)**. In the June 25, 2026 live RFP feed it is\n`status: closed`, `quarter: q1-2026`, category `defi`, so it is **not currently fundable / not open\nfor application**. [1]\n\nThe brief is explicitly framed around **Kelp's deprecation leaving a liquidity gap**. It asked for a\nStellar orderbook connector for the official Hummingbot repository so builders could run automated\nmarket-making and arbitrage strategies; optional future scope included Stellar AMMs and intra-Soroban\nAMM arbitrage. [1]\n\nIf the user wants something fundable now, Raven should point them to the current open RFP feed rather\nthan pretending this closed Q1 brief is still open.\n\nSource: [1] Stellar Light RFP record for Hummingbot Integration (Trading Engine).",
+    "keyFacts": [
+      "Names the RFP as Hummingbot Integration (Trading Engine).",
+      "States it is closed / Q1 2026 / no longer currently fundable in the live RFP feed.",
+      "Explains the Kelp-deprecation/liquidity-gap framing: Stellar wanted a Hummingbot connector for automated market-making and arbitrage."
+    ],
+    "avoid": [
+      "Do NOT claim the Hummingbot/Kelp RFP is currently open or fundable if the live feed marks it closed.",
+      "Do NOT invent a different RFP title or claim no such brief existed."
+    ],
+    "notes": "Added from theboycoder/StellarLight data-layer intake. Verified 2026-06-25 against /api/rfps: Hummingbot Integration (Trading Engine), category defi, author Rahim, quarter q1-2026, status closed; description explicitly says Kelp deprecation left a liquidity gap.\nAlso good if the answer: Mentions that Q2 2026 open RFPs are a different current set, so the user should check the live feed for fundable briefs.\nGolden cites: The live Scout/Stellar Light RFP feed or the Hummingbot Integration RFP page."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-06-25",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/ideas/hummingbot-integration",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-39-application-instawards-liquidity-voting-rfps-regions accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-scf-hummingbot-kelp-closed-rfp"
+  }
+}

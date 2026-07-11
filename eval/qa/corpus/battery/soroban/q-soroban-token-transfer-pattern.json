@@ -1,0 +1,85 @@
+{
+  "id": "q-soroban-token-transfer-pattern",
+  "question": "What's the correct pattern for moving SAC/SEP-41 tokens from inside a Soroban contract, and what authorization does it need?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Use a typed SAC/SEP-41 token client. Current direct `transfer(from: Address, to: MuxedAddress, amount: i128)` requires `from` authorization. When the contract sends its own balance, use its contract address as `from`; the immediate contract invoker is automatically authorized, so no external user signature or `authorize_as_current_contract` entry is needed for that direct token call. Explicit current-contract authorization is only for deeper calls. For allowance-based pulls use `transfer_from(spender, from, to: Address, amount)`, where spender auth and the owner's prior bounded allowance apply. Validate amount/order state, follow checks-effects-interactions, and rely on rollback for atomic failure. Current SAC/CAP-67 transfer events append the asset topic. SEP-41 is Draft, so version-qualify MuxedAddress support.",
+    "keyFacts": [
+      "Uses current direct MuxedAddress transfer/from auth and automatic direct-contract invoker rule.",
+      "Separates allowance-based transfer_from and deeper authorization."
+    ],
+    "avoid": [
+      "Do NOT require ERC-20 allowance dance for every transfer, require an external signature to move the contract's own balance, or type current direct destination as plain Address."
+    ],
+    "notes": "Auth-for-transfer nuance; SAC/SEP-41 transfer(from,to,amount) requires from.require_auth(). When the contract spends its own balance, the contract address is `from` and it authorizes by invoking. 2026-06-29 differentiation: this file owns in-contract token movement + authorization; the interface/method choice (transfer vs approve/transfer_from and the absolute expiration_ledger) is owned by q-sor-sep41-transfer-vs-transferfrom.\nAlso good if the answer: Amounts are i128; validate non-negative/within-range amounts to avoid overflow/abort. | Follow checks-effects-interactions discipline: update internal state before/around external token calls.\nGolden cites: The developers.stellar.org token / SEP-41 / SAC interface documentation.\nGT-42/43 atomic auth/signature/event alignment."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-06-29",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current typed token transfer and direct-contract auth pattern",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: SEP-41/SDK/auth source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: SEP-41/SDK/auth source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-42/43",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The auth pattern was correct but the current direct-transfer destination is MuxedAddress and the explicit spec/version boundary was missing.",
+      "evidence": [
+        "Solo scratchpad 575 GT-42/43 blind reviews."
+      ],
+      "rootCause": [
+        "Eval-side Draft signature drift."
+      ]
+    },
+    "origin": "raven-next q-soroban-token-transfer-pattern"
+  }
+}

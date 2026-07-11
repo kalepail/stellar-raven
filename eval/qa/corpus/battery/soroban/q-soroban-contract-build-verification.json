@@ -1,0 +1,52 @@
+{
+  "id": "q-soroban-contract-build-verification",
+  "question": "How can I verify a deployed Soroban contract's WASM matches its published source, and which Stellar standards cover it?",
+  "surface": [
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "You verify a deployed Soroban contract's WASM against published source via **reproducible/attested\nbuilds** — there are **two complementary, Draft standards**:\n\n- **SEP-55 \"Contract Build Verification\" (Draft)** — *attestation-based*. A CI workflow (e.g. the\n  stellar-expert **`soroban-build-workflow`** GitHub Action) builds the WASM and produces **GitHub\n  Attestations**; the WASM embeds a **`contractmetav0`** `source_repo=github:<org>/<repo>` (and\n  optional `home_domain`) entry. A verifier fetches the attestation by the WASM's SHA-256 hash and\n  confirms it was built from that repo.\n- **SEP-58 \"Contract Build Reproducibility for Verification\" (Draft)** — *rebuild-based*. It defines a\n  vocabulary (`bldimg` digest-pinned build image, `bldopt` flags, `source_sha256`/`source_uri`) so an\n  independent party can **rebuild the WASM and compare bytes** without trusting a CI. It is explicitly\n  **complementary to SEP-55**; a contract can carry both.\n\nThese are surfaced by tooling (e.g. **Stellar Lab / explorers Build Info**, `stellar contract info\nmeta`).\n\nImportant nuances: \"**build verified**\" attests **how** the WASM was built (the workflow/source), **not**\nthat the source is safe or audited. And Stellar does **not** store contract source code on-chain — only\nmetadata + attestations pointing to it.",
+    "keyFacts": [
+      "Verification works by building the WASM in CI and producing GitHub Attestations (SEP-55, e.g. the soroban-build-workflow) and/or by reproducibly rebuilding it and comparing bytes (SEP-58).",
+      "The WASM carries contractmetav0 metadata (e.g. a source_repo / source_sha256 entry) linking it to the source.",
+      "Build/verification info is surfaced in tooling such as Stellar Lab / explorers (Build Info) or `stellar contract info meta`.",
+      "The relevant standards are SEP-55 (Contract Build Verification, Draft) and SEP-58 (Contract Build Reproducibility for Verification, Draft)."
+    ],
+    "avoid": [
+      "Do NOT call contract build verification SEP-49 (SEP-49 is Upgradeable Contracts).",
+      "Do NOT claim Stellar stores the contract source code on-chain."
+    ],
+    "notes": "Freshness:true — SEP-55/SEP-58 are Draft and numbers/titles can change. VERIFIED against the SEP repo (2026-06): SEP-55 = 'Contract Build Verification' (Draft, v0.4.1), attestation-based via GitHub Attestations + contractmetav0 source_repo; SEP-58 = 'Contract Build Reproducibility for Verification' (Draft, v0.5.0), rebuild-based via bldimg/bldopt/source_sha256 meta, explicitly complementary to SEP-55. NOT SEP-49 (that is Upgradeable Contracts). Both confirm Stellar does not store source on-chain. SEP-58 title is 'Contract Build Reproducibility for Verification' (the rubric/body now match).\nAlso good if the answer: 'Build verified' attests that the published build workflow produced the WASM, not that the source is safe/audited.\nGolden cites: A primary developers.stellar.org / SEP repo source for SEP-55 / SEP-58 and the build-verification workflow."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0055.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0058.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-45-constructor-verification-ids-events-cross-contract-versions accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-soroban-contract-build-verification"
+  }
+}

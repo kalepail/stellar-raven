@@ -1,0 +1,93 @@
+{
+  "id": "q-defi-soroswap-content",
+  "question": "Find everything Stellar coverage has on Soroswap — news, talks, research.",
+  "surface": [
+    "lumenloop.find_av_passages",
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.search_content_semantic"
+  ],
+  "golden": {
+    "answer": "Run a dated Soroswap content search and return the actual matching items by content type, with each item's title, original date, source URL, and a short relevance note. Treat the result as **source-relative and non-exhaustive**: live 2026-07-10 retrieval mixed valid Soroswap coverage with adjacent or false-positive rows, so validate every item rather than replacing the list with a project biography.\n\nIf context is useful, describe Soroswap only with separately sourced facts: PaltaLabs' open-source Soroban AMM plus Aggregator/API/SDK/frontend. Attribute 'first' or 'best' claims to Soroswap; distinguish the on-chain aggregator's Soroban-AMM adapters from API/service routing that can include classic SDEX liquidity; and do not insert funding totals unless the returned content concerns SCF.",
+    "keyFacts": [
+      "Returns dated, sourced Soroswap content rows rather than a static identity essay.",
+      "Labels the result non-exhaustive and validates false-positive-prone semantic matches."
+    ],
+    "avoid": [
+      "Do NOT fabricate or silently promote adjacent content as Soroswap coverage.",
+      "Do NOT hard-code identity, funding, routing, or marketing claims that were not returned by the cited content item."
+    ],
+    "notes": "All-content-for-one-project → lumenloop_find_content_about_project. Grounded on Scout: Soroswap = first DEX + DEX aggregator on Soroban, live mainnet; open-source AMM + an aggregator routing across Soroban AMMs (Soroswap, Phoenix, Aquarius) and the Stellar classic DEX (SDEX) via a swap Route API. SCF-awarded ~$346,750; repos under github.com/soroswap (core/aggregator/frontend).\nAlso good if the answer: Frames Soroswap as the aggregator/AMM with REST API and Earn when surfacing coverage.\nGolden cites: Each surfaced item carries its source.\nGT-18 CORRECTION 2026-07-10 supersedes the inherited static-profile guidance. Grade the returned content set, provenance, dates, and false-positive discipline; do not require the inherited first/best, funding, or routing composite."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://soroswap.finance/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/soroswap/docs",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://lumenloop.com/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Lumenloop returns mixed Soroswap articles, audiovisual items, events, and research, including false positives; it is not an exhaustive identity record.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Lumenloop Soroswap content retrieval on 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/B: Soroswap operator docs and repos validate identity/routing separately",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Soroswap operator docs and repos validate identity/routing separately",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent Parallel/Perplexity conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited content answer substituted a static identity/funding essay for the requested content set, promoted Soroswap marketing and routing layers into facts, and ignored false-positive/semantic retrieval behavior. Independent live content calls confirm that each returned item must remain dated and source-relative.",
+      "evidence": [
+        "Solo scratchpad 575 GT-18 primary process 3249 and blind process 3252",
+        "Sibling sweep: q-defi-soroswap-what-is, q-defi-soroswap-resolve, q-defi-soroswap-scf, q-edge-factcheck-soroswap-first-amm"
+      ],
+      "rootCause": [
+        "A project profile and marketing copy were promoted into an all-content answer.",
+        "improvements/lumenloop/ll-006-article-ranking-freshness.md"
+      ]
+    },
+    "origin": "raven-next q-defi-soroswap-content"
+  }
+}

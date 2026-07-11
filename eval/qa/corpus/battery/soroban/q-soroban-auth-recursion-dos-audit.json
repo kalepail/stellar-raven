@@ -1,0 +1,82 @@
+{
+  "id": "q-soroban-auth-recursion-dos-audit",
+  "question": "Did Soroban's core auth ever have a critical authorization-recursion DoS finding in an audit, and was it actually exploitable?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "The historical Veridise V2 report labeled the investigated Critical item **V-SOR-VUL-002**, “Denial of Service During Authorization.” In V2.1 Appendix A.2.2 the same authorization-recursion item is renumbered **V-SOR-APP-VUL-003**; V-SOR-VUL-002 in the V2.1 taxonomy is a different low-severity metering item. Always state the report version. The investigated path involved `require_auth_enforcing()`, but V2.1 moved it to invalid issues: failed `require_auth` propagates `Err`, making work linear in trackers, while constructing enough trackers is itself costly. It is not a CVE, confirmed practical exploit, or evidence of Ethereum-style reentrancy.",
+    "keyFacts": [
+      "Preserves Critical/Investigated historical metadata and the later invalid/practical-cost conclusion.",
+      "Version-qualifies V2 versus V2.1 identifiers."
+    ],
+    "avoid": [
+      "Do NOT cite an unversioned finding ID, convert hypothetical impact into a live exploit, or call it reentrancy."
+    ],
+    "notes": "Added from theboycoder/StellarLight data-layer intake. Verified 2026-06-25 via Scout research audit corpus: Veridise Stellar Soroban Core report V-SOR-VUL-002 / Denial of Service During Authorization, severity Critical, file rs-soroban-env/src/auth.rs, location require_auth_enforcing(), status Investigated; V2.1 report explains why invalid: Err propagation makes iterations linear in trackers and many trackers are costly.\nAlso good if the answer: Connects the finding to Soroban's contract-auth model rather than generic EVM reentrancy.\nGolden cites: The Veridise Stellar Soroban Core audit record from Soroban Security Portal / Scout research.\nGT-44 independently reconciled the V2/V2.1 renumbering."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://veridise.com/wp-content/uploads/2025/02/VAR_Stellar_Soroban.pdf",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://sorobansecurity.com/report/28",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://sorobansecurity.com/report/42",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Authorization-recursion finding history and invalid disposition",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: Veridise V2.1 PDF and Security Portal reports 28/42",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Veridise V2.1 PDF and Security Portal reports 28/42",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: Scout preserves historical report",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-versioned-id."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The exploit conclusion was sound, but the finding identifier changed between Veridise V2 and V2.1 and must be version-qualified.",
+      "evidence": [
+        "Solo scratchpad 575 GT-44 primary 3316 and blind 3324."
+      ],
+      "rootCause": [
+        "Eval-side report-version provenance omission."
+      ]
+    },
+    "origin": "raven-next q-soroban-auth-recursion-dos-audit"
+  }
+}

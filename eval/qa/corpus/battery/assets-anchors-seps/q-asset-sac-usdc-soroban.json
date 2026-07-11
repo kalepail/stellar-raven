@@ -1,0 +1,44 @@
+{
+  "id": "q-asset-sac-usdc-soroban",
+  "question": "Can a Soroban smart contract move USDC, and does it need a separate 'USDC-on-Soroban' token to do it?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "**Yes — and no separate token is needed.** A Soroban contract moves USDC by calling into USDC's\n**Stellar Asset Contract (SAC)** by its contract ID; the SAC is the protocol-reserved on-chain\ninterface to the **same classic USDC asset**, not a wrapped or re-issued token [1]. Every Stellar\nasset has a **reserved contract address** the SAC can be deployed to, so there is no\n\"USDC-on-Soroban\" to bridge or keep in sync — Soroban and classic share one source of truth [1].\nUnder the hood, the SAC moves balances via USDC's classic **trustline** ledger entries (contract-to-\ncontract movements use contract-data entries), and Circle remains the issuer/admin (so mint and\nclawback stay issuer-only) [1].\n\nSource: [1] developers.stellar.org Stellar Asset Contract page.",
+    "keyFacts": [
+      "Yes — a Soroban contract calls into USDC's reserved Stellar Asset Contract (SAC) by contract ID.",
+      "No separate/wrapped 'USDC-on-Soroban' token is needed; the SAC is the same classic USDC asset."
+    ],
+    "avoid": [
+      "Do NOT claim USDC must be bridged or re-issued as a new Soroban token to be used in a contract."
+    ],
+    "notes": "SAC↔stablecoin interop. Dossier §2.5. Verified: every Stellar asset has a reserved contract address the SAC can be deployed to; the SAC is the same classic asset exposed to Soroban (developers.stellar.org SAC page).\nAlso good if the answer: The underlying movement still uses USDC's classic trustline ledger entry.\nGolden cites: The Stellar Asset Contract page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-04-sac-stablecoins-issuance-fx accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-sac-usdc-soroban"
+  }
+}

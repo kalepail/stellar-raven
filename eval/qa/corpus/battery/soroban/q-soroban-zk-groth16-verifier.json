@@ -1,0 +1,89 @@
+{
+  "id": "q-soroban-zk-groth16-verifier",
+  "question": "Are there example Soroban contracts or repos that implement a Groth16 / ZK proof verifier on Stellar?",
+  "surface": [
+    "skills.stellar-dev.zk-proofs"
+  ],
+  "golden": {
+    "answer": "Concrete examples exist, but they are not interchangeable or production endorsements. The official `stellar/soroban-examples/groth16_verifier` is a **BLS12-381** demonstration that computes the verification-key linear combination and calls `pairing_check`; the repo also has a BLS12-381 privacy-pools proof of concept. `NethermindEth/stellar-risc0-verifier` contains a separate **BN254/RISC Zero Groth16** verifier using newer primitives. Both are described as demonstration/unaudited code. Production contracts must pin/control the verifying key, validate public-input meaning and lengths, bind proof acceptance to the intended action/context and replay/nullifier state, and match the exact curve/proof encoding. Proof validity alone does not prove application intent or prevent replay.",
+    "keyFacts": [
+      "Names the official BLS12-381 and Nethermind BN254 Groth16 examples and their distinct systems.",
+      "Requires unaudited/demo caveats, verifying-key control, input semantics, context and replay binding."
+    ],
+    "avoid": [
+      "Do NOT say no examples exist or call the official example BN254.",
+      "Do NOT claim examples are audited/production-safe or that a valid proof alone prevents replay/proves business intent."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). Targets scout_repos for code discovery. Trap: citing a Solidity Verifier.sol. VERIFIED: developers.stellar.org/docs/build/apps/zk references native BN254/Poseidon (P25) plus Noir/RISC Zero tooling and a 'Noir Ultrahonk Soroban Verifier Contract' + P25-preview verifier examples; BLS12-381 (CAP-0059/P22) underpins pairing-based Groth16 verification natively. Concrete repo names shift — gate on 'name real Soroban verifier repos/examples', not a fixed URL.\nAlso good if the answer: Surfaces concrete repos/examples (the answer should name candidate repos rather than say none exist), e.g., Noir/Circom→Stellar verifier projects. | Notes the developers.stellar.org ZK proofs page as a starting reference.\nGolden cites: A graded GitHub repo implementing a Soroban ZK verifier, or the developers.stellar.org ZK page.\nGT-48 CORRECTION 2026-07-11: require a correctly identified repo plus curve/system and production-security caveats."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/soroban-examples/tree/main/groth16_verifier",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/soroban-examples/tree/main/privacy-pools",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/NethermindEth/stellar-risc0-verifier",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/privacy",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Official soroban-examples includes an unaudited BLS12-381 Groth16 verifier and privacy-pools PoC; Nethermind's stellar-risc0-verifier supplies a separate unaudited BN254/RISC Zero Groth16 example.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: exact official and Nethermind repositories/source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: current Stellar privacy docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: official Groth16 example test under SDK 27",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer failed to name verified current repositories and blurred curves/proof systems while underplaying production verification-key, context, replay, and audit boundaries.",
+      "evidence": [
+        "Solo scratchpad 575 GT-48 primary 3333 and blind 3342 independently required concrete repos, curve/system distinctions, and audit caveats."
+      ],
+      "rootCause": [
+        "Generic ZK ecosystem prose substituted for verifiable implementation provenance."
+      ]
+    },
+    "origin": "raven-next q-soroban-zk-groth16-verifier"
+  }
+}

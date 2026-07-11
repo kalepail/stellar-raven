@@ -1,0 +1,103 @@
+{
+  "id": "q-scf-nontechnical-participation",
+  "question": "I have no coding/design experience — what are legitimate ways for a non-technical person, such as a student, to participate in or earn from the Stellar ecosystem?",
+  "surface": [
+    "scout.searchProjects",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Legitimate nontechnical participation can include community support, education, translations and content, event organization, operations, user support, product or marketing work, partnerships, design, and Ambassador/chapter activity. Current SDF or ecosystem jobs and project contracts may also include nontechnical roles when openings exist.\n\nParticipation is not guaranteed income. A contribution does not automatically qualify for a salary, grant, prize, event budget, Instaward, or Public Goods award. Instawards require a concrete eligible execution scope and final SDF approval; Public Goods has its own maintainer/steward and governance eligibility. Check the current official program, chapter, careers, or project source for availability and terms. Stellar does not provide ordinary users mining or staking rewards, guaranteed airdrops, or free XLM merely for joining.",
+    "keyFacts": [
+      "Names legitimate nontechnical contribution and employment paths while keeping availability dated and source-bound.",
+      "Separates participation from compensation and from Instaward/Public Goods eligibility.",
+      "Rejects guaranteed income, mining, staking rewards, airdrops, and free-XLM claims."
+    ],
+    "avoid": [
+      "Do NOT imply ordinary community or content participation automatically qualifies for an Instaward, Public Goods award, salary, or stipend.",
+      "Do NOT promise income, free XLM, mining, staking rewards, guaranteed grants, or airdrops.",
+      "Do NOT present operator-specific Ambassador opportunities as universal SDF compensation."
+    ],
+    "notes": "Snapshot 2026-06-29. Legitimate participation exists, but earning opportunities are not guaranteed and vary by program/location/role.\nAlso good if the answer: Mentions SCF or SDF programs only where non-technical contributors/projects are actually eligible. | Advises checking official Stellar/SDF/community sources for current openings or program status.\nGolden cites: Official Stellar/SDF/community program sources or sourced ecosystem directory/content for the named opportunities.\nGT-39 independently confirmed 2026-07-10. Accept broad legitimate participation examples, but require compensation and funding claims to remain tied to a current real role/program and its eligibility."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/community",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/foundation/careers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://jobs.ashbyhq.com/stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/ambassador-program",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/instawards/official-rules",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/supporting-programs/public-goods-award/official-rules",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Legitimate nontechnical participation exists, but compensation and program eligibility are role- and program-specific",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Ambassador, community, careers, and SCF rules",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: current SDF jobs and operator chapter pathways",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-39 primary/blind independent review",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The inherited answer correctly rejected guaranteed income but blurred participation with paid-program eligibility and could imply that ordinary community work qualifies for an Instaward or Public Goods award.",
+      "evidence": [
+        "Solo scratchpad 575, GT-39 primary process 3300 and blind process 3303, 2026-07-10.",
+        "Official careers and Ashby listings showed current nontechnical departments; official Instaward and Public Goods rules impose concrete eligibility and approval boundaries."
+      ],
+      "rootCause": [
+        "Eval-side boundary imprecision: contribution examples were allowed to imply paid eligibility."
+      ]
+    },
+    "origin": "raven-next q-scf-nontechnical-participation"
+  }
+}

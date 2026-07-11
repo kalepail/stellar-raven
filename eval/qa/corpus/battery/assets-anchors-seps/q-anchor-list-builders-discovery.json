@@ -1,0 +1,51 @@
+{
+  "id": "q-anchor-list-builders-discovery",
+  "question": "Which projects in the Stellar ecosystem operate as anchors or build anchor infrastructure?",
+  "surface": [
+    "scout.getPartners",
+    "scout.matchPartners",
+    "scout.searchProjects",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "This is a **directory-discovery** question: the correct behavior is to **surface named anchor /\non-off-ramp projects from the ecosystem directory** (Scout / Lumenloop), not to emit generic prose\nor a docs paragraph. A grounded answer should:\n\n- Return **actual directory-listed anchor implementations** — e.g. **MoneyGram Ramps** (which runs\n  on the Stellar \"Ramps\" standard) and other directory-listed on/off-ramp operators [1].\n- **Distinguish operators from tooling**: anchor *operators* (run fiat ramps) vs. anchor\n  *infrastructure* (SDF's **Anchor Platform** / **Wallet SDK** / **SDP**), which are tooling, not\n  anchors themselves.\n- **Flag freshness** — the anchor roster shifts over time, so the list should be presented as a\n  point-in-time directory snapshot.\n\nThe defining failure is **fabricating anchor names** not in the corpus. (Names beyond MoneyGram\nshould be sourced live from the directory rather than asserted from memory.)\n\nSources: [1] stellar.org Ramps / MoneyGram; the Scout / Lumenloop ecosystem project directory.",
+    "keyFacts": [
+      "Surfaces named anchor / on-off-ramp projects from the ecosystem directory rather than generic prose."
+    ],
+    "avoid": [
+      "Do NOT fabricate anchor names that are not in the corpus/directory."
+    ],
+    "notes": "Discovery → scout_projects. Freshness-sensitive (anchor roster shifts). The 'answer' is correct routing + a directory-grounded list, not a fixed roster. Source list anchors the routing/grounding requirement; named operators must come from the live directory, not be invented. Verified 2026-06-29: stellar.org/use-cases/ramps and developers.stellar.org/docs/learn/fundamentals/anchors both resolve and describe Ramps/MoneyGram + Anchor Platform tooling.\nAlso good if the answer: Includes recognizable anchor implementations (e.g. MoneyGram Ramps and/or other directory-listed anchors). | Distinguishes anchor operators from anchor tooling (e.g. SDF's Anchor Platform).\nGolden cites: The Stellar Light / Scout project directory."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "asOf": "2026-06-29",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/use-cases/ramps",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/anchors",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-02-anchor-discovery-platform-disbursement accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-anchor-list-builders-discovery"
+  }
+}

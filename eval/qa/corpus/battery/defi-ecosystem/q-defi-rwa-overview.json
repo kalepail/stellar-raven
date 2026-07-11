@@ -1,0 +1,142 @@
+{
+  "id": "q-defi-rwa-overview",
+  "question": "What real-world-asset (RWA) products are live on Stellar?",
+  "surface": [
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, primary/operator records and read-only Stellar checks support a broader, non-exhaustive live RWA set:\n\n- **Franklin Templeton BENJI/FOBXX** — regulated U.S. government money-market fund shares; on Stellar since 2021.\n- **WisdomTree digital funds** — including private-credit **CRDT**, money-market/fund products, **GOLD**, and equity-fund **EQTY** assets exposed in its current Stellar metadata.\n- **Ondo USDY** — Treasuries-backed yieldcoin launched for eligible non-U.S. users in 2025.\n- **Figure YLDS** — SEC-registered yield-bearing security launched on Stellar in May 2026; the exact asset was live on-chain.\n- **Etherfuse Stablebonds** — current metadata and chain state exposed USTRY, CETES, TESOURO, EUROB, KTB, and GILTS sovereign-debt products.\n- **RedSwan** — SDF/provider materials describe commercial-real-estate tokenization on Stellar, but this audit did not pin an exact public asset roster; retain that weaker evidence tier.\n\nThis is representative, not exhaustive. Separate empirically identified assets from provider-announced/tokenization infrastructure, preserve eligibility and issuer terms, and date any value/ranking. Do not reduce Stellar RWAs to only Treasuries/private credit or claim universal category whitespace.",
+    "keyFacts": [
+      "Names representative live products across money-market funds, private credit, gold/equity funds, registered yield securities, and sovereign-debt tokens with source and evidence tiers.",
+      "Distinguishes empirically identified live assets from provider-announced/tokenization claims and keeps the roster explicitly non-exhaustive and dated."
+    ],
+    "avoid": [
+      "Do NOT claim equities, real estate, or commodities are timeless whitespace; current evidence includes WisdomTree EQTY/GOLD and provider-announced RedSwan real-estate tokenization.",
+      "Do NOT invent an RWA issuer/product not in the source data or misattribute a product to the wrong issuer."
+    ],
+    "notes": "FRESHNESS-GATED 2026-07-10: grade a dated representative product matrix and evidence tiers. WisdomTree EQTY/GOLD, Figure YLDS, and Etherfuse products contradict the inherited Treasuries/private-credit-only and equity/commodity-whitespace framing. REVIEWED 2026-07-10: the earlier $2.8B report attribution and whitespace conclusion are invalid. Current primary metadata and chain state establish additional product classes; keep totals and rosters dated and source-scoped.\nAlso good if the answer: Notes BENJI has been on Stellar since 2021 (FOBXX = first US-registered mutual fund using a public blockchain as system of record). | Flags these figures/launches are time-sensitive and the RWA set keeps expanding.\nGolden cites: Each named RWA product carries a dated source (Lumenloop/news/issuer).\nGT-17 CORRECTION 2026-07-10: retain the July-3 metric-attribution caution and July-9 no-ranking rule, but replace the three-product/Treasuries-plus-private-credit overview with current product-class evidence."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "mixed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/franklin-templeton-stellar-development-foundation-mark-five-years-of-benji-the-first-u-s-registered-tokenized-money-market-fund",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://ir.wisdomtree.com/news-events/press-releases/detail/755/wisdomtree-brings-private-credit-onchain-with-the-launch-of",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/ondo-finance-launches-usdy-on-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://lumenloop.com/research/stellar-weekly-roundup-week-29-2026",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "~$2.8B is a June-2026 figure (SDF president, Messari interview 2026-06-04: 'we are at 2.8 billion... 3.5x in these five months... top four chains'; rwa.xyz ~$2.84B distributed asOf 06-25), not a written-Q1-report figure",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "D",
+            "ref": "D: youtube.com/watch?v=t0agtgLajhg transcript (2026-06-04)",
+            "observedAt": "2026-06-04",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: app.rwa.xyz networks table (asOf 06-25, fetched 2026-07-03); messari.io written report (pinned $1.52B Q1-end, no $2.8B anywhere)",
+            "observedAt": "2026-07-03",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: lumenloop.com/research/stellar-weekly-roundup-week-29-2026 — the misattributing witness; its 'report' hyperlink target IS the interview URL",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Stellar has a live, institutionally issued RWA stack anchored by BENJI/FOBXX, WisdomTree CRDT, and Ondo USDY; the stronger claim that it is the 'deepest' of every non-EVM L1 is not established by a defined comparison",
+        "verdict": "unverifiable",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Franklin Templeton/SDF 2026-04-30 BENJI release confirms BENJI on Stellar since 2021",
+            "observedAt": "2026-04-30",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: WisdomTree 2025-09-12 CRDT release and SDF Ondo USDY release confirm the named products",
+            "observedAt": "2025-09-12",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: 2026-07-09 general-web refute sweep found no primary comparative methodology supporting the absolute 'deepest non-EVM L1' ranking",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Per golden-truth, retain the independently confirmed product facts and remove the undefined comparative superlative."
+      },
+      {
+        "claim": "Live Stellar RWA products are limited to Treasuries and private credit.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current WisdomTree and Etherfuse stellar.toml records plus Figure/SDF YLDS and RedSwan/SDF product announcements",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: Horizon confirmed exact live balances/accounts for WisdomTree GOLD, WTGX, CRDT, EQTY, Figure YLDS, and six Etherfuse Stablebond assets",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent conflict sweep corroborated the broader product classes and rejected a timeless whitespace claim",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — Earlier passes corrected the ~$2.8B attribution and removed unsupported depth/whitespace comparisons. GT-17 then found the three-product overview materially incomplete: current provider TOML and on-chain reads confirmed WisdomTree equity/gold products, Figure YLDS, and six Etherfuse Stablebonds in addition to BENJI, CRDT, and USDY.",
+      "evidence": [
+        "eval/qa/consistency-register.json sweep 2026-07-03; deep-verification quotes/URLs in Solo scratchpad 521",
+        "Solo scratchpad 569 Batches B and G, 2026-07-09: primary issuer/product sources confirm the named stack, while no defined source supports either the absolute non-EVM-L1 depth ranking or a cross-category absence-at-scale conclusion",
+        "Solo scratchpad 575 GT-17 primary process 3247 and blind process 3248: current provider TOML, primary launch pages, and read-only Horizon product checks asOf 2026-07-10."
+      ],
+      "rootCause": [
+        "improvements/lumenloop/ll-009 — Lumenloop roundup + media page misattribute the June $2.8B (and the Electric Capital dev stat) to 'Messari's State of Stellar Q1 2026 report'; agents answering from the corpus reproduce it",
+        "solo://proj/49/todo/corpus-health-instru--829 — sibling sweep hits exactly the three RWA cases, all corrected in this pass",
+        "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch removed an unverifiable comparative superlative"
+      ]
+    },
+    "origin": "raven-next q-defi-rwa-overview"
+  }
+}

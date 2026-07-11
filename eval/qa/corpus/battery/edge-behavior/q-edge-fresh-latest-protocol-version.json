@@ -1,0 +1,84 @@
+{
+  "id": "q-edge-fresh-latest-protocol-version",
+  "question": "What is the very latest Stellar protocol version live on Pubnet right now?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "**Freshness-honesty case — gate the behavior, not a frozen number.** As of **2026-07-09**, Mainnet runs **Protocol 27, Zipper**; live Horizon shows the P26→P27 boundary at ledger **63386819** on **2026-07-08 17:00:10 UTC**. A correct answer should still perform a dated lookup against an authoritative live network source, state the observed version and as-of time, and warn that validator upgrade votes can make it stale. Software release tags are supporting context, not proof of network activation.",
+    "keyFacts": [
+      "Gives the current protocol version from a dated authoritative live-network lookup and flags that it may become stale after a validator upgrade vote.",
+      "Treats Protocol 27 as live on Mainnet after 2026-07-08, while preserving the behavior-first rather than frozen-number grading rule."
+    ],
+    "avoid": [
+      "Do NOT state a protocol version as definitively current without a dated source or staleness flag.",
+      "Do NOT claim Protocol 26 is still current or that the Protocol 27 Mainnet vote remains pending.",
+      "Do NOT infer live network activation solely from a software release tag."
+    ],
+    "notes": "GT-23 2026-07-10: Pubnet runs Protocol 27; Horizon/RPC establish activation at ledger 63386819 on 2026-07-08T17:00:10Z. Grade a dated live-network lookup and release-versus-activation distinction, not a frozen latest-ledger number.\nAlso good if the answer: Points the user to an authoritative live source (e.g. dashboard / stellar-core release / docs) to confirm the current version.\nGolden cites: Cite a dated source for the version (docs / stellar-core release / network dashboard).\nPOST-VOTE GT-23 CORRECTION 2026-07-10: the stale P26/pending-vote paragraph is replaced rather than left as contradictory judge context."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://horizon.stellar.org/ledgers/63386819",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-core/releases",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Protocol 27 is the current Mainnet protocol after activation on 2026-07-08",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: Horizon P26→P27 boundary at ledgers 63386818/63386819",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: SDF Zipper upgrade guide; B: CAP-0071 and stellar-core v27 release line",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-09",
+      "by": "Golden-truth sweep import — The behavior-first rubric was sound, but both its illustrative answer and grader notes froze Protocol 26 as current and the July 8 Protocol 27 vote as pending. That expired narrative can steer a judge even though the case explicitly says not to hard-gate on a number.",
+      "evidence": [
+        "2026-07-09 sibling sweep and independent final diff review in Solo scratchpad 567",
+        "Horizon first-P27 ledger 63386819 closed 2026-07-08T17:00:10Z"
+      ],
+      "rootCause": [
+        "eval-side date-contingent example expired while the durable behavior gate remained valid",
+        "solo://proj/49/todo/date-contingent-trap--831",
+        "improvements/stellar-docs/sd-008-protocol-27-mainnet-status-lag.md"
+      ]
+    },
+    "origin": "raven-next q-edge-fresh-latest-protocol-version"
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "id": "q-tool-smart-wallet-repos-discovery",
+  "question": "Show me open-source code for Stellar passkey / smart-wallet implementations I can learn from.",
+  "surface": [
+    "scout.searchRepos",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Run the **live Scout repository search** with exact owner/name and broader smart-account/passkey vocabulary, then report only the rows actually returned, with `generatedAt`/as-of, exact URL, role, owner, activity/archive state, and maturity/audit caveat. At the GT-56 check on **2026-07-11**, exact `passkey-kit` and `smart-account-kit` searches returned zero; say that honestly, broaden the query, and never turn the zero into repository absence.\n\nFor direct current verification outside the Scout rows, label the source boundary explicitly: **`kalepail/smart-account-kit`** is the current TypeScript integration SDK; **`OpenZeppelin/stellar-contracts` account packages** are the underlying account framework; **`kalepail/passkey-kit`** is the legacy, explicitly unaudited demo predecessor. Direct links may supplement a current Scout result, but must not be attributed to Scout if absent from its response. Repository/indexer discovery neither proves control nor supplies signer recovery, and an audit claim applies only to the exact artifact/release reviewed.",
+    "keyFacts": [
+      "Returns only observed live Scout rows and dates the response.",
+      "States that exact passkey-kit/smart-account-kit zero results are retrieval results, not proof of absence, and broadens vocabulary.",
+      "Labels direct Smart Account Kit, OpenZeppelin account contracts, and legacy Passkey Kit verification separately from Scout.",
+      "Distinguishes current versus legacy purpose and keeps discovery separate from audit, authorization, custody, and recovery."
+    ],
+    "avoid": [
+      "Do NOT claim Scout surfaced a repository it did not return or treat an exact zero result as repository absence.",
+      "Do NOT freeze repoScore/order or infer maintenance, security, audit scope, or production readiness from search rank.",
+      "Do NOT recommend legacy Passkey Kit without its unaudited/no-real-value warning.",
+      "Do NOT call repository or indexer discovery proof of account control or a recovery mechanism."
+    ],
+    "notes": "GT-56 LIVE-RETRIEVAL CORRECTION 2026-07-11: exact Scout searches for passkey-kit and smart-account-kit returned zero while direct repositories existed. Grade only observed Scout rows; label direct GitHub supplements separately, treat zero as no absence proof, and preserve current Smart Account Kit/OZ versus legacy unaudited Passkey Kit."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/repos/search",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/kalepail/smart-account-kit",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/accounts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.openzeppelin.com/stellar-contracts/accounts/smart-account",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/kalepail/passkey-kit",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Exact Scout repository searches for passkey-kit and smart-account-kit returned zero on 2026-07-11; zero was a retrieval miss, not proof the repositories were absent.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live exact Scout repository probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: direct public GitHub repositories and current source activity",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-at-answer-time."
+      },
+      {
+        "claim": "Smart Account Kit and OpenZeppelin account contracts are current direct learning targets, while Passkey Kit is a legacy unaudited predecessor; audit scope and control cannot be inferred from discovery.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: current Smart Account Kit, Passkey Kit, and OpenZeppelin account sources",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A-product: OpenZeppelin smart-account documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer falsely claimed Scout surfaced the Kalepail Passkey Kit and Smart Account Kit repositories. Exact live searches returned zero, while direct repositories proved existence; the answer also needed current successor, audit-scope, and discovery-versus-control boundaries.",
+      "evidence": [
+        "Solo scratchpad 575 GT-56 primary process 3394 reproduced zero exact Scout rows and direct repository existence; sealed blind process 3398 independently classified this as an sls-025 alias-recall recurrence.",
+        "Sibling sweep checked q-tool-passkeykit-smart-wallet, q-tool-passkey-wallet-recovery, and q-infra-secp256r1-passkeys; no discovery result is treated as audit, authorization, custody, or recovery proof.",
+        "Recurrence appended to improvements/stellar-light-scout/sls-025-agent-standard-alias-recall.md; no smart-wallet-only duplicate was created."
+      ],
+      "rootCause": [
+        "improvements/stellar-light-scout/sls-025-agent-standard-alias-recall.md",
+        "Eval-side source-attribution error: directly verified repositories were presented as if the live Scout response had returned them."
+      ]
+    },
+    "origin": "raven-next q-tool-smart-wallet-repos-discovery"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "id": "q-soroban-upgrade-wasm",
+  "question": "How do I upgrade a deployed Soroban contract's code without changing its contract address?",
+  "surface": [
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Soroban supports **in-place Wasm replacement** — the contract **keeps its same address and storage**:\n\n1. **Upload** the new Wasm (`stellar contract upload`) to get its **Wasm hash**.\n2. Inside an **admin-gated `upgrade` function** (protected with `require_auth`), call\n   **`env.deployer().update_current_contract_wasm(new_wasm_hash)`** to swap the contract's code.\n\nBecause the **address and persistent storage survive** the swap, the new code must keep the\n**storage-key layout compatible**. The upgrade entrypoint **must be access-controlled** so only an\nauthorized party can invoke it.\n\nThis is the **canonical Soroban upgrade path** — no separate proxy is required (a data-vs-impl proxy\nsplit is a possible alternative, not the norm). It is **not** an EVM proxy/`delegatecall`/UUPS pattern,\nand you do **not** need to redeploy to a new address (which would lose state). OpenZeppelin's\n**Upgradeable** module for Stellar wraps this pattern.",
+    "keyFacts": [
+      "Soroban supports in-place Wasm replacement: upload the new Wasm, then have the contract call `env.deployer().update_current_contract_wasm(new_wasm_hash)` to swap its code while keeping the same address and storage.",
+      "The upgrade entrypoint must be gated by authorization (e.g., an admin `require_auth`) so only an authorized party can upgrade."
+    ],
+    "avoid": [
+      "Do NOT claim you must redeploy to a new address (losing state) to change a contract's code.",
+      "Do NOT prescribe an EVM proxy pattern (delegatecall/UUPS/transparent proxy) as the required Soroban mechanism.",
+      "Do NOT omit that the upgrade must be access-controlled."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). EVM proxy pattern is the trap; native update_current_contract_wasm is the Soroban way. Verified: in-place Wasm replacement via env.deployer().update_current_contract_wasm(hash), admin-gated, address+storage preserved.\nAlso good if the answer: Storage/state persists across the upgrade, so the new code must keep storage-key layout compatible. | The new Wasm must first be uploaded (`stellar contract upload`) to get its hash.\nGolden cites: A developers.stellar.org upgrading-contracts guide (or OpenZeppelin Upgradeable for Stellar).\nGT-48 SOURCE REPAIR 2026-07-11: answer retained; broken upgrade URLs replaced with current guide/SDK/SEP/example sources."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/conventions/upgrading-contracts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk/blob/main/soroban-sdk/src/deploy.rs",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0049.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/soroban-examples/tree/main/upgradeable_contract",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current authorized upgrade mechanics remain upload Wasm then call update_current_contract_wasm; address/storage remain and the change applies after successful invocation.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current upgrading-contracts guide",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: SDK deployer source and SEP-0049",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: official upgradeable_contract test under SDK 27",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The upgrade mechanics were correct, but both inherited upgrade-case source URLs were broken. The golden needs current reachable documentation/source provenance without changing the verified answer.",
+      "evidence": [
+        "Solo scratchpad 575 GT-48 primary 3333 and blind 3342; blind verified the two compiled sources returned 404 and current replacements were reachable."
+      ],
+      "rootCause": [
+        "Plain documentation URL drift."
+      ]
+    },
+    "origin": "raven-next q-soroban-upgrade-wasm"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "id": "q-soroban-wasm-size-limit",
+  "question": "Is there a maximum size for a deployed Soroban contract's Wasm, and what should I do if my contract is too big?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-11**, Mainnet and Testnet report `contract_max_size_bytes=131072`—**128 KiB**—for uploaded contract Wasm. The separate `contract_data_entry_size_bytes=65536` value is not the code cap. These are network settings, so inspect the target network with Stellar Lab or `stellar network settings` instead of treating either number as permanent. Current Stellar CLI builds optimize by default; `--optimize` is accepted but redundant, `--optimize=false` disables it, and the standalone `stellar contract optimize` command is deprecated. Reduce dependencies/features and split logic across contracts when needed.",
+    "keyFacts": [
+      "Reports the dated 128-KiB code cap and distinguishes the 64-KiB contract-data setting.",
+      "Explains current default-on build optimization and deprecated standalone command."
+    ],
+    "avoid": [
+      "Do NOT call 64 KiB the current contract-code limit or a universal ledger-entry limit.",
+      "Do NOT teach standalone contract optimize as the preferred current workflow."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections. The 24KB EVM limit (EIP-170) is the cross-chain confusion trap. VERIFIED: the per-ledger-entry size limit is 64 KB (a network config setting) — this caps the contract-code (Wasm) entry and instance storage. It is tunable by validator vote, so the rubric gates on the durable fact (~64 KB ledger-entry cap, config-set) rather than a hard byte constant; kept medium because the exact byte value can drift.\nAlso good if the answer: Building with optimization (`stellar contract build --optimize`, wasm-opt) reduces binary size. | Spec/dead-code shaking and `#![no_std]` keep the binary small.\nGolden cites: A developers.stellar.org page on contract limits / build optimization.\nGT-48 CORRECTION 2026-07-11: live network setting controls; code and data-entry caps are distinct."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/fees-resource-limits-metering",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/cli/stellar-cli",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-cli",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "As of 2026-07-11 Mainnet/Testnet contract_max_size_bytes is 131072 while contract_data_entry_size_bytes is 65536; CLI 27 build optimization is enabled by default and standalone contract optimize is deprecated.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current resource/CLI docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: Core config enforcement and CLI source/help",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live network settings and local CLI 27 help",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited size answer treated 64 KiB as the contract-code cap and missed current CLI optimization behavior. Live P27 settings separate 131072-byte code from 65536-byte contract-data entries.",
+      "evidence": [
+        "Solo scratchpad 575 GT-48 primary 3333 and blind 3342; blind materially corrected the primary's limit interpretation."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-016-live-network-limits-stale.md",
+        "improvements/stellar-docs/sd-026-cli-optimize-command-drift.md"
+      ]
+    },
+    "origin": "raven-next q-soroban-wasm-size-limit"
+  }
+}

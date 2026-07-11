@@ -1,0 +1,153 @@
+{
+  "id": "q-eco-wallets-overview",
+  "question": "Which wallets can I use on Stellar, and how do they differ?",
+  "surface": [
+    "scout.searchProjects",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Representative Stellar wallet/signing options, checked **2026-07-10**, include:\n- **Freighter** — SDF-provided, non-custodial, with browser and mobile surfaces;\n- **LOBSTR** — Ultra Stellar's non-custodial consumer wallet;\n- **Hana** — a non-custodial multi-chain wallet with Stellar support;\n- **xBull** — Creit-Tech's open-source, non-custodial Stellar wallet;\n- **Rabet/Albedo** — browser/delegated signing alternatives;\n- **Ledger/Trezor** — hardware-wallet class; and **WalletConnect** — a connection protocol rather than one wallet product.\n\nThis is a representative comparison, not a market-share ranking or exhaustive list. Compare custody/key control, browser/mobile/web/hardware surface, Stellar-only versus multichain support, transaction/auth-entry capabilities, current maintenance, jurisdiction, and operator evidence. A current multi-wallet interface such as Stellar Wallets Kit can be useful when the app needs several providers, but it is not mandatory for every product. Re-verify operator, platforms, and support before recommending.",
+    "keyFacts": [
+      "Provides representative wallet/signing classes and correct operator/custody distinctions.",
+      "Explains comparison axes and makes multi-wallet integration conditional rather than mandatory."
+    ],
+    "avoid": [
+      "Do NOT call a small example set exhaustive or 'main' without a defined usage/share metric.",
+      "Do NOT rank wallets by reconstructed SCF totals or marketing-scale claims.",
+      "Do NOT treat directory discovery as proof of current custody, platform, maintenance, or app-store availability."
+    ],
+    "notes": "Directory discovery → scout_projects. This file OWNS the sponsor/model differentiation lane (Freighter=SDF, LOBSTR=Ultra Stellar, Hana multi-chain, xBull=Creit-Tech) — distinct from q-eco-stellar-wallets-list (flat enumeration probe) and q-eco-wallets-similar (find_similar routing). Added the directory-not-general-web guard as must_avoid (2026-06-29) to keep it in the directory lane. All grounded on Scout: Freighter (SDF official, browser+iOS/Android), LOBSTR (Ultra Stellar, SCF ~$232K), Hana (multi-chain, SCF ~$132K), xBull (Creit-Tech, SCF ~$56.2K). Devs use Stellar Wallets Kit to stay wallet-agnostic.\nAlso good if the answer: Notes scope differences: Freighter and xBull are Stellar-focused; LOBSTR and Hana are multi-chain (LOBSTR adds XRP Ledger; Hana is broadly multi-chain). | Notes developers should integrate the Stellar Wallets Kit to stay wallet-agnostic.\nGolden cites: A source for each named wallet and its sponsor/model.\nGT-20 CORRECTION 2026-07-10: grade representative examples, functional classes, comparison axes, and current primary verification—not an undefined 'main' roster or mandatory Wallets Kit recommendation. Wallet operator/platform/support facts are quarterly-freshness claims even though inherited tags cannot yet be overridden."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "mixed",
+    "asOf": "2026-07-10",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/developer-tools/wallets",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://freighter.app/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://lobstr.co/terms/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://hana.money/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Creit-Tech/xBull-Wallet",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Freighter is an SDF/Stellar wallet; LOBSTR is an Ultra Stellar product; xBull is built under Creit-Tech; Hana supports Stellar in a multi-chain wallet",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: stellar/freighter and Creit-Tech/xBull-Wallet repositories",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: ultrastellar.com lists LOBSTR as an Ultra Stellar product",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: hana.money documents Stellar among supported networks",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "The exact wallet SCF totals in the inherited overview are official, independently verified award totals",
+        "verdict": "unverifiable",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: the figures came from Scout directory reconstructions",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: the official SCF surface does not publish the complete per-award trail needed to reproduce those cumulative figures",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Remove the amounts; they are not needed to answer the sponsor/model question."
+      },
+      {
+        "claim": "Freighter, LOBSTR, Hana, and xBull are representative examples, not a proven exhaustive or market-share-ranked 'main' set.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: current operator sites, repos, and Stellar wallet integration docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: current operator sites, repos, and Stellar wallet integration docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Scout exact Wallet-type snapshot is much broader and volatile",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent wallet conflict sweep found no usage/share ranking",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The prior correction removed reconstructed SCF totals, but GT-20 found that four examples were still presented as the 'main' wallets without a ranking metric, omitted functional classes, overstated Wallets Kit as a default, and carried false non-freshness/routing assumptions.",
+      "evidence": [
+        "Solo scratchpad 569 Batch D, 2026-07-09.",
+        "Solo scratchpad 575 GT-20 primary 3256 and blind 3257, 2026-07-10.",
+        "Sibling sweep covered q-eco-wallets-similar, q-eco-lobstr-wallet, and q-eco-stellar-wallets-list."
+      ],
+      "rootCause": [
+        "Corpus-grounded directory rows were promoted into unqualified numeric facts in a case whose actual purpose is wallet sponsor/model differentiation.",
+        "improvements/stellar-light-scout/sls-011 — fixed basis disclosure does not make reconstructed project totals official.",
+        "solo://proj/49/todo/golden-corpus-health--901"
+      ]
+    },
+    "origin": "raven-next q-eco-wallets-overview"
+  }
+}

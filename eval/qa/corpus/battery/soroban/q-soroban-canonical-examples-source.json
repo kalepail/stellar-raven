@@ -1,0 +1,106 @@
+{
+  "id": "q-soroban-canonical-examples-source",
+  "question": "Where are the canonical Stellar examples and recommended libraries a coding agent should cite to build a Soroban contract or a Freighter payment flow?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "Return sources, not generated implementation. Use Stellar Docs' smart-contract examples and the official `stellar/soroban-examples` repository; use `soroban-sdk` for Rust contract work. For a Freighter JS client, cite `@stellar/stellar-sdk` plus the Freighter API. Stellar Wallets Kit is an optional multi-wallet abstraction when multiple providers are desired, not mandatory for every Freighter-only flow. Use OpenZeppelin Stellar Contracts for maintained reusable components when appropriate. Name/pin versions and sources rather than presenting generated code as evidence.",
+    "keyFacts": [
+      "Selects canonical Stellar examples and direct current contract/client library sources.",
+      "Frames Wallets Kit as optional multi-wallet abstraction and OpenZeppelin as a maintained component library."
+    ],
+    "avoid": [
+      "Do NOT cite generated code as provenance, require Wallets Kit for every Freighter flow, or recommend stale soroban CLI/abandoned SDKs."
+    ],
+    "notes": "The code-gen REFRAME case: point a coding agent at canonical SOURCES + recommended libraries, NOT writing code. Confirmed the getting-started section (hello world / storing data / increment / deploy-to-testnet) and the soroban-examples repo are current; CLI is `stellar` not legacy `soroban`.\nAlso good if the answer: Frames the answer as sourced evidence + recommended libraries (where to look), not a finished implementation.\nGolden cites: A primary developers.stellar.org getting-started/examples page and the soroban-examples repo.\nGT-44 source coverage rechecked 2026-07-11."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/example-contracts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/soroban-examples",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/js-stellar-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/freighter",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/OpenZeppelin/stellar-contracts",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current canonical example/library roster",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Stellar examples/docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current repos",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-44 primary/blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The canonical-source behavior was sound but the library list lacked direct provenance and implied Wallets Kit was mandatory for Freighter-only flows.",
+      "evidence": [
+        "Solo scratchpad 575 GT-44 processes 3316/3324."
+      ],
+      "rootCause": [
+        "Eval-side source completeness."
+      ]
+    },
+    "origin": "raven-next q-soroban-canonical-examples-source"
+  }
+}

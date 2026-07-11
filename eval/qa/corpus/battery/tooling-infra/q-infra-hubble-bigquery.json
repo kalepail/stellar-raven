@@ -1,0 +1,86 @@
+{
+  "id": "q-infra-hubble-bigquery",
+  "question": "What is Hubble and how do I query Stellar's full history with SQL?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs"
+  ],
+  "golden": {
+    "answer": "Hubble is SDF's public, read-only Stellar historical analytics dataset in BigQuery. The canonical project/dataset path is `crypto-stellar.crypto_stellar`, usable from the BigQuery UI, SDKs, SQL tools, and Looker-style analytics. It is for bulk historical queries, not transaction submission or low-latency current-state reads. Current docs describe intraday batch updates but no guaranteed same-day cadence, so date exact table/schema/freshness claims and do not call it real time.",
+    "keyFacts": [
+      "Names the public BigQuery dataset path and historical analytics workload.",
+      "Rejects real-time/submission use and qualifies cadence/schema freshness."
+    ],
+    "avoid": [
+      "Do NOT describe Hubble as RPC, a wallet, or a real-time guaranteed feed.",
+      "Do NOT invent a dataset path or freeze schema/cadence."
+    ],
+    "notes": "The crypto-stellar.crypto_stellar BigQuery path is the load-bearing fact — verified against connecting-to-bigquery (project crypto-stellar, dataset crypto_stellar; UI/SDK/Looker access; billing-enabled GCP project required).\nAlso good if the answer: You can access it via the BigQuery UI, the BigQuery client SDK (e.g. google-cloud-bigquery), or Looker Studio. | Example tables include current-state tables like `accounts_current`.\nGolden cites: developers.stellar.org Hubble docs (analytics/hubble, connecting-to-bigquery).\nGT-49 CORRECTION 2026-07-11: gate dataset identity/workload; exact cadence/schema is dated."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/analytics/hubble",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/analytics/hubble/developer-guide/connecting-to-bigquery",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/analytics/hubble/developer-guide/backfill/data-import",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Hubble is SDF's public read-only BigQuery history dataset at crypto-stellar.crypto_stellar, updated in intraday batches without a same-day guarantee and accessed through BigQuery UI/SDK/Looker surfaces.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Hubble/connect/backfill docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current ingestion tooling/source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent hosted-dataset sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The core dataset identity was correct but exact cadence/schema claims were treated as timeless and could imply real-time freshness.",
+      "evidence": [
+        "Solo scratchpad 575 GT-49 primary 3335 and blind 3341."
+      ],
+      "rootCause": [
+        "Hosted dataset cadence/schema freshness was not encoded."
+      ]
+    },
+    "origin": "raven-next q-infra-hubble-bigquery"
+  }
+}

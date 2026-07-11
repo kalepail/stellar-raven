@@ -1,0 +1,78 @@
+{
+  "id": "q-scf-hackathon-detail-results",
+  "question": "Give me the full results and winners of the Stellar Hacks: Agents hackathon — tracks, prize pools, and which projects placed.",
+  "surface": [
+    "scout.getHackathon",
+    "scout.getHackathons",
+    "scout.searchProjects"
+  ],
+  "golden": {
+    "answer": "**Stellar Hacks: Agents (x402 + Stripe MPP)** ran **2026-03-30 through 2026-04-13** with one open-innovation / “All BUIDLs” track and **$10,000** in XLM-value prizes. The ranked results were: **1. Cards402.com — $5,000; 2. clevercon — $2,000; 3. RenderGate — $1,250; 4. x402-mcp-stellar-template — $1,000; 5. TollPay — $750**. The tiers sum to $10,000. DoraHacks displays 262 BUIDLs while one Scout aggregate says 258, so omit or disclose that nonessential count instead of silently choosing one.",
+    "keyFacts": [
+      "Returns the single open track, exact five prize tiers, and five ranked winners.",
+      "Discloses or omits the disputed submission count rather than treating it as settled."
+    ],
+    "avoid": [
+      "Do NOT invent additional tracks, winners, or prize tiers.",
+      "Do NOT pin 258 or 262 submissions without naming the source conflict."
+    ],
+    "notes": "GT-38 CORRECTION 2026-07-10: grade the factual one-track $10K result and exact five ranked winners. Hidden operation routing is not an answer-content gate; the 258/262 submission count is disputed and nonessential.\nGT-38 independently confirmed by processes 3297/3299."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://dorahacks.io/hackathon/stellar-agents-x402-stripe-mpp/detail",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://dorahacks.io/hackathon/stellar-agents-x402-stripe-mpp/winner",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/hackathons",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Stellar Hacks: Agents ran one open-innovation track with a $10,000 five-tier prize allocation and five ranked winners",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official DoraHacks event and winners pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Scout detail record and ranked winners output",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The golden answered a factual results question with routing instructions and omitted the actual track, prize tiers, and winners; it also carried stale operation/event rationale.",
+      "evidence": [
+        "Solo scratchpad 575 GT-38 primary 3297 and blind 3299; independently re-derived 2026-07-10."
+      ],
+      "rootCause": [
+        "Eval-side routing prose was promoted into the factual answer; no upstream service defect."
+      ]
+    },
+    "origin": "raven-next q-scf-hackathon-detail-results"
+  }
+}

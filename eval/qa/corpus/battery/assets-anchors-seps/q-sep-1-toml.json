@@ -1,0 +1,44 @@
+{
+  "id": "q-sep-1-toml",
+  "question": "What is SEP-1 and where is the stellar.toml file served?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "- **SEP-1 (Active)** defines the **`stellar.toml`** (Stellar Info File): a TOML document where an organization publishes its Stellar metadata — anchor SEP endpoints, declared `[[CURRENCIES]]`, signing/account keys, validators, and org info [1].\n- It is served off-chain at **`https://<DOMAIN>/.well-known/stellar.toml`** (with CORS enabled) [1].\n- It is the **discovery layer**: wallets fetch it to find an anchor's SEP-6/10/12/24/31/38 endpoints and verify assets; it can also declare an `approval_server` (SEP-8) per currency [1].",
+    "keyFacts": [
+      "SEP-1 defines the stellar.toml (Stellar Info File) used to publish an org's Stellar metadata and endpoints.",
+      "It is served at https://<domain>/.well-known/stellar.toml."
+    ],
+    "avoid": [
+      "Do NOT misnumber the info-file standard (it is SEP-1, not SEP-2/SEP-10).",
+      "Do NOT claim stellar.toml lives on-chain rather than at a web .well-known path."
+    ],
+    "notes": "Dossier §7.1, Q11. SEP-1 'Stellar Info File', Status Active (ecosystem README).\nAlso good if the answer: It is the discovery layer wallets use to find an anchor's SEP endpoints, currencies, and signing keys.\nGolden cites: SEP-0001 on the stellar-protocol repo or developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0001.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-05-sep-identity-auth-quotes-token-wallet accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-sep-1-toml"
+  }
+}

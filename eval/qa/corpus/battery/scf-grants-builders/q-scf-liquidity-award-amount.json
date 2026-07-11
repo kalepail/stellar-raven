@@ -1,0 +1,118 @@
+{
+  "id": "q-scf-liquidity-award-amount",
+  "question": "Exactly how much XLM does the Stellar Liquidity Award pay, and how do I apply for it?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-09**, the official rules publish a **$50,000-in-XLM Base Liquidity Award** plus an optional **additional $50,000-in-XLM Supplemental Liquidity Award**, for **up to $100,000 of XLM value total**. The rules state dollar-denominated values paid in XLM; they do not promise a fixed number of XLM tokens, because the XLM amount depends on valuation/settlement.\n\nThe supplemental award is not automatic. A project must first qualify for and receive the initial award, then meet the supplemental criteria, including demonstrating seven consecutive days of recognized-asset TVL above $250K.\n\nThe program is **invitation-only** for audited financial protocols with a live Stellar Mainnet implementation that pass business, technical, legal/KYC, risk, and due-diligence checks. There is no public self-service application: qualifying projects are invited and receive the application form by email from SCF. The landing page directs questions to communityfund@stellar.org or the SDF team.\n\nDo not confuse the program maximum with a particular recipient's award. For example, Soroswap's official history records a $50K Liquidity Award; that does not establish that it received, or that every project receives, the optional supplemental amount.",
+    "keyFacts": [
+      "States the dated published structure: $50K in XLM base plus an optional additional $50K in XLM supplemental award, up to $100K total.",
+      "Explains that these are dollar-denominated values paid in XLM, not a fixed number of XLM tokens.",
+      "States that the program is invitation-only for audited, mainnet-live financial protocols and that invited projects receive the application form by email."
+    ],
+    "avoid": [
+      "Do NOT claim the Liquidity Award amount or cap is undisclosed; the current official rules publish the $50K base, optional additional $50K, and $100K total maximum.",
+      "Do NOT promise a fixed XLM token count or imply every recipient automatically receives $100K; the values are dollar-denominated in XLM and the supplemental award is conditional.",
+      "Do NOT describe a public self-service application or open interest form; eligible projects are invited and receive the application by email."
+    ],
+    "notes": "Historical corpus note invalidated: the current official rules disclose the award structure; use the dated correction below.\nAlso good if the answer: Explains it is not a self-apply program — SDF/SCF reaches out; there is no open application form.\nGolden cites: the SCF Stellar Liquidity Award landing page and current Official Rules; the inherited undisclosed-cap characterization is invalid.\nHISTORICAL NOTE INVALIDATION — CORRECTION 2026-07-09 (todo 901): disregard the inherited preceding 'not disclosed' review note and anti-amount trap; they are false under the current official rules. Reward the dated structure ($50K base + optional additional $50K, up to $100K total) and distinguish dollar-denominated XLM value from a fixed number of lumens. Preserve the invite-only/no-public-form behavior. Soroswap's $50K award is compatible with the base amount but the official row does not label it Base versus Supplemental, so do not require that classification."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award/official-rules.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/dashboard/submissions/recDy2knwdmwAPWBd",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current published Liquidity Award terms are $50K in XLM base plus an optional additional $50K in XLM supplemental award, up to $100K total",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: SCF Liquidity Award Official Rules fetched 2026-07-09 — 'up to $100,000 of XLM total' and the Base/Supplemental award table",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent 2026-05-25 developer-program overview reports the same $50K base plus $50K supplemental structure",
+            "observedAt": "2026-05-25",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "The program is invitation-only and eligible projects receive an application form by email",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: SCF Liquidity Award landing page fetched 2026-07-09 — audited, live-mainnet financial protocols can be invited and receive the application form by email",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: Official Rules eligibility and program-phase sections describe invited applicants, pre-screening, review, due diligence, test transaction, distribution, and reporting",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Soroswap's $50K Liquidity Award is an individual award, not evidence that every recipient receives the $100K program maximum",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official SCF Soroswap submission row reports budget 50000 for Liquidity Award '24 Q1",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: Soroswap's dated 2024-08-23 publication independently reports its $50,000 award",
+            "observedAt": "2024-08-23",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-09",
+      "by": "Golden-truth sweep import — The case's central honesty trap was inverted: it penalized any specific amount even though the current official rules publish the program structure. The answer now states the dated $50K base plus optional $50K supplemental terms, preserves invitation-only application mechanics, and refuses to invent an exact number of XLM tokens from dollar-denominated XLM value.",
+      "evidence": [
+        "/tmp/scf-liquidity-award-official.json, fetched 2026-07-09, preserves the exact official landing-page and rules content.",
+        "Independent SCF matrix from Solo process 3157 and coordinator-verified external corroboration are recorded under scratchpad 569.",
+        "Sibling sweep reconciled q-scf-award-tiers-list and q-scf-history-soroswap: Soroswap's $50K row is one awarded submission and does not imply receipt of the $100K maximum."
+      ],
+      "rootCause": [
+        "Eval-side source-coverage/freshness failure: the old golden stopped at the landing page and converted missing amount text there into a negative claim, instead of following the linked authoritative rules.",
+        "The archived corpus remains read-only; this override records the correction so the false nondisclosure trap cannot be resurrected.",
+        "solo://proj/49/todo/golden-corpus-health--901"
+      ]
+    },
+    "origin": "raven-next q-scf-liquidity-award-amount"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "id": "q-sep-41-token-interface",
+  "question": "What is SEP-41 and how does it relate to the Stellar Asset Contract?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "**SEP-41** is the Draft Soroban Token Interface: the common fungible-token surface shared by the SAC and custom contracts. It defines allowance/approve, balance, burn/burn_from, metadata, current direct `transfer(from, to: MuxedAddress, amount)`, and `transfer_from(spender, from, to: Address, amount)`. Approve's absolute expiry is named `live_until_ledger` in SEP-41 and `expiration_ledger` in some SDK/SAC docs; they are one mechanism. SEP-41 is explicitly a subset of and compatible with the CAP-46-6 SAC interface, so the SAC implements it while layering admin-specific functions. Mint/clawback are standardized events rather than required generic function names. Because SEP-41 remains Draft and signatures evolved, version-qualify current code.",
+    "keyFacts": [
+      "Names SEP-41 and its SAC/custom-token relationship.",
+      "Gives current MuxedAddress direct-transfer versus Address transfer_from and allowance-expiry semantics."
+    ],
+    "avoid": [
+      "Do NOT misnumber/misclassify SEP-41, assume SAC-only admin functions are required generic methods, or freeze old signatures."
+    ],
+    "notes": "Dossier §7.1, Q18. Verified: SEP-0041 'Soroban Token Interface', Status Draft; spec is a subset of the SAC interface, compatible with CAP-46-6.\nAlso good if the answer: Defines common functions like transfer, allowance/approve, balance, and burn.\nGolden cites: SEP-0041 on the stellar-protocol repo or the SAC page on developers.stellar.org.\nGT-43 current SEP-41 v0.4.1 sibling correction."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/token-interface",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current SEP-41 v0.4.1 interface",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: SEP/SDK source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-43",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The interface relationship was correct but current Draft transfer signature, expiry naming, and freshness were missing.",
+      "evidence": [
+        "Solo scratchpad 575 GT-43 blind 3320."
+      ],
+      "rootCause": [
+        "Eval-side draft-interface drift."
+      ]
+    },
+    "origin": "raven-next q-sep-41-token-interface"
+  }
+}

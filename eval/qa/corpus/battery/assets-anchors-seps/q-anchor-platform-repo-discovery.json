@@ -1,0 +1,47 @@
+{
+  "id": "q-anchor-platform-repo-discovery",
+  "question": "Where's the source code for SDF's anchor and disbursement tooling, and which repos should I look at?",
+  "surface": [
+    "scout.searchRepos",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "The canonical SDF anchor/disbursement source lives under the **`stellar` GitHub org** [1][2]:\n\n- **`stellar/anchor-platform`** — the **Anchor Platform** (Java/Kotlin): turn-key anchor backend\n  implementing the SEP-6/10/12/24/31/38 endpoints [1].\n- **`stellar/stellar-disbursement-platform-backend`** — the **SDP backend** (Go): bulk-payment\n  disbursement service, with native SEP-10/SEP-24 implementations [2].\n- **`stellar/typescript-wallet-sdk`** — the **Wallet SDK** (TypeScript): the wallet-side library\n  for consuming anchor SEP flows.\n\nThese are the repos to look at, each mapped to its role (anchor backend / disbursement backend /\nwallet SDK). Do not invent names like a `stellar/anchor-sdk` — these three are the real ones.\n\nSources: [1] github.com/stellar/anchor-platform; [2] github.com/stellar/stellar-disbursement-platform-backend.",
+    "keyFacts": [
+      "Surfaces the canonical SDF repos: stellar/anchor-platform, stellar/typescript-wallet-sdk, and stellar/stellar-disbursement-platform-backend."
+    ],
+    "avoid": [
+      "Do NOT invent repo names/orgs that do not exist (e.g. a fabricated 'stellar/anchor-sdk')."
+    ],
+    "notes": "Code-shaped discovery → scout_repos. All three repos confirmed live on the stellar GitHub org (2026-06-22).\nAlso good if the answer: Maps each repo to its role (anchor backend / wallet SDK / disbursement backend).\nGolden cites: The Stellar Light / Scout repo index or the stellar GitHub org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/anchor-platform",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-disbursement-platform-backend",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-02-anchor-discovery-platform-disbursement accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-anchor-platform-repo-discovery"
+  }
+}

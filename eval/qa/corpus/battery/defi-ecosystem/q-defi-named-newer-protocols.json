@@ -1,0 +1,97 @@
+{
+  "id": "q-defi-named-newer-protocols",
+  "question": "What are FxDAO, OrbitCDP, zenex.trade, and named market makers such as JST in the Stellar DeFi ecosystem?",
+  "surface": [
+    "scout.searchProjects",
+    "scout.searchRepos"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**:\n- **FxDAO** describes itself as a decentralized stablecoin protocol on Stellar and explicitly says it is still in development; its public smart-contract repo supports the identity, not a production-mainnet claim.\n- **OrbitCDP** is a Soroban CDP/RWA-collateral protocol. Scout says it was live, shut down in 2026, and pivoted to Zenex, while the current operator site still presents Orbit. A reachable site is not proof of operation, but the shutdown/pivot is also not independently settled: report the conflict.\n- **Zenex** is a Soroban perpetual-futures exchange whose current FAQ says deployment is on Stellar testnet; mainnet production was not verified.\n- **JST Capital/JST Digital** had a documented 2019 SDF/SDEX market-making relationship and remains a general crypto market maker, but a current Stellar-specific mandate was not verified. It is a firm, not a DeFi protocol.\n\nDo not collapse these entities or turn discovery status into production proof.",
+    "keyFacts": [
+      "Separately identifies FxDAO, OrbitCDP, Zenex, and JST with dated evidence and current uncertainty.",
+      "Encodes Orbit's source conflict, Zenex testnet state, FxDAO development state, and JST's historical-versus-current scope."
+    ],
+    "avoid": [
+      "Do NOT call OrbitCDP unqualifiedly live or definitively shut down/pivoted while current sources conflict.",
+      "Do NOT call Zenex mainnet-live, FxDAO production-ready, or JST a current Stellar-specific DeFi protocol without dated evidence."
+    ],
+    "notes": "Scout found OrbitCDP and Zenex directly. FxDAO was verified primarily through Scout codeReferences plus GitHub repo metadata, not a first-class project row in the returned search. JST was not verified as a Stellar DeFi market maker in Scout search.\nAlso good if the answer: Separates testnet/pre-launch/announced status from mainnet-live status. | Mentions alternate spellings/domains only when sourced.\nGolden cites: Dated Scout/LumenLoop/project/web sources for every named entity claim.\nCorrected 2026-07-10. Grade honest entity/status separation; a directory row or live-looking site alone is not deployment proof."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://fxdao.io/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://orbitcdp.finance/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.zenex.trade/faq",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/FxDAO/FxDAO-SC",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The four names require separate dated identities and uncertainty boundaries",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: fxdao.io/repos, orbitcdp.finance, Zenex FAQ/repo, historical Stellar roundup, and current JST operator material",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: fxdao.io/repos, orbitcdp.finance, Zenex FAQ/repo, historical Stellar roundup, and current JST operator material",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: Scout rows plus independent Parallel/Perplexity conflict sweeps asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: Scout rows plus independent Parallel/Perplexity conflict sweeps asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — GT-16 independent lanes found the inherited entity/status summary false or incomplete: OrbitCDP status conflicts between Scout and its operator surface; FxDAO says still in development; Zenex is testnet; JST has a historical Stellar market-making relationship but current Stellar scope is unverified.",
+      "evidence": [
+        "Solo scratchpad 575 GT-16 primary 3244 and blind 3245"
+      ],
+      "rootCause": [
+        "improvements/stellar-light-scout/sls-024 — lifecycle labels conflict with operator deployment language",
+        "eval-side entity resolution promoted one directory status and treated a failed exact search as nonexistence"
+      ]
+    },
+    "origin": "raven-next q-defi-named-newer-protocols"
+  }
+}

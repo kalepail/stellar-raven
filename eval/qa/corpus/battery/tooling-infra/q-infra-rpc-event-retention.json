@@ -1,0 +1,118 @@
+{
+  "id": "q-infra-rpc-event-retention",
+  "question": "How far back can I query contract events from Stellar RPC, and what do I do if I need older history?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "There is no provider-independent number of days. Stellar RPC **`getEvents`** reads only the endpoint's configured recent ledger window. Current stock source and the public endpoints probed on **2026-07-11** used **120,960 ledgers** (roughly seven days at typical close times), but operators may configure a different positive window. Inspect `getHealth.oldestLedger`, `latestLedger`, and `ledgerRetentionWindow`, plus provider documentation, and handle range errors.\n\nThe generated getEvents page still contains both a 24-hour-default statement and a seven-day-maximum statement; those conflict with current source/admin/live behavior and are not universal grading gates. For older events, continuously ingest and deduplicate them or use a historical indexer/Hubble. RPC Archive/data-lake integration extends **`getLedgers` only**; it does not backfill historical `getEvents`.",
+    "keyFacts": [
+      "Treats event history as a bounded, provider-configured ledger range and directs users to getHealth/provider docs.",
+      "Uses 120,960 ledgers only as a dated current stock/live observation, not a universal maximum.",
+      "Uses continuous ingestion, an indexer, or Hubble for older events and keeps archive getLedgers separate."
+    ],
+    "avoid": [
+      "Do NOT pin a universal 24-hour default or seven-day maximum.",
+      "Do NOT claim RPC retains full event history.",
+      "Do NOT infer historical getEvents coverage from an RPC Archive/getLedgers capability."
+    ],
+    "notes": "2026-06-29 re-verified + retention phrasing normalized across tooling-infra: getEvents reference says ~24h default / 7-day max queryable; the unified HISTORY_RETENTION_WINDOW config default is 120960 ledgers (~7 days) for transactions and events. This file owns the simple FAQ lane (24h-default/7d-max + use indexer/Hubble); q-ti-historical-events-beyond-retention owns the archive-RPC/data-lake/TTL/CAP-67 lane. Durable fact = bounded window, not full history.\nAlso good if the answer: Hubble provides a complete historical record; third-party indexers (SubQuery, Goldsky Mirrors, OBSRVR) cover filtered historical queries.\nGolden cites: developers.stellar.org getEvents method page and/or indexers/Hubble docs.\nGT-50/GT-52 CORRECTION 2026-07-11: grade bounded/provider-configured retention plus getHealth/provider verification. Accept candidates that disclose the official source conflict; reject universal day-count and archive-getEvents claims."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getEvents",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/admin-guide/configuring",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getHealth",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/admin-guide/data-lake-integration",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc/blob/main/cmd/stellar-rpc/internal/config/options.go",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "getEvents history is bounded by each endpoint's configured retained ledger range, not one provider-independent day count.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: getEvents page says 24-hour default/seven-day maximum while RPC configuring/getHealth docs expose a ledger window",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar-rpc config defaults HISTORY_RETENTION_WINDOW to 120960 and validates positivity rather than a universal seven-day ceiling",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: SDF Testnet/Futurenet and Ankr reported 120960; below-oldest getEvents failed",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-source-conflict."
+      },
+      {
+        "claim": "Archive/data-lake integration extends getLedgers only, not getEvents.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: RPC data-lake admin guide",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: Quasar archive served ledger 2 through getLedgers but rejected getEvents at ledger 2",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited FAQ made the getEvents page's conflicting 24-hour/seven-day prose a universal truth even though current source, admin configuration, and live endpoints expose a provider-configured ledger window.",
+      "evidence": [
+        "Solo scratchpad 575 GT-50 processes 3349/3361 and GT-52 processes 3356/3368 independently agreed on the provider/configuration formulation and getLedgers-only boundary.",
+        "Sibling sweep covered q-infra-query-contract-events-rpc-howto, q-ti-historical-events-beyond-retention, q-ti-self-host-retention-backfill, and q-infra-rpc-provider-archive-tier; all now use the same method-specific model."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-023-rpc-event-retention-config-drift.md"
+      ]
+    },
+    "origin": "raven-next q-infra-rpc-event-retention"
+  }
+}

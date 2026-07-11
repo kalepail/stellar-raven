@@ -1,0 +1,116 @@
+{
+  "id": "q-tool-python-sdk",
+  "question": "Is there a Python SDK for Stellar, and does it support the new Stellar RPC as well as Horizon?",
+  "surface": [
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs"
+  ],
+  "golden": {
+    "answer": "Yes. Use the community-maintained PyPI package **`stellar-sdk`**, whose repository is **`StellarCN/py-stellar-base`**: `pip install --upgrade stellar-sdk`, then import from `stellar_sdk`. It is an **off-chain client SDK** for transaction/XDR work and provides clients for both **Horizon and Stellar RPC**; it is not the Rust on-chain contract SDK.\n\nAs of **2026-07-04**, PyPI showed stable **15.0.0** with **Python >=3.10,<4**. The current project README documented **PyPy 3.11**. Recheck PyPI and the repository before pinning because those values are release-sensitive. Keep the similarly named Python package separate from the deprecated unscoped npm `stellar-sdk`, whose current JavaScript successor is `@stellar/stellar-sdk`.",
+    "keyFacts": [
+      "Names PyPI package stellar-sdk and repository StellarCN/py-stellar-base and labels them community-maintained.",
+      "States current Horizon and Stellar RPC client support and the off-chain client role.",
+      "Dates 15.0.0 to 2026-07-04 with Python >=3.10,<4 and project-documented PyPy 3.11.",
+      "Distinguishes the Python package from both Rust soroban-sdk and the deprecated unscoped npm package."
+    ],
+    "avoid": [
+      "Do NOT call the Python SDK SDF-maintained, Horizon-only, or an on-chain Python contract SDK.",
+      "Do NOT install a package named py-stellar-base when the published package is stellar-sdk.",
+      "Do NOT freeze 14.1.1, PyPy 3.10, or any current version/runtime value without an as-of date.",
+      "Do NOT confuse PyPI stellar-sdk with the deprecated npm package of the same unscoped name."
+    ],
+    "notes": "GT-56 FRESHNESS CORRECTION 2026-07-11: PyPI stellar-sdk / StellarCN py-stellar-base is community-maintained and supports Horizon plus RPC. Stable 15.0.0 was released 2026-07-04 with Python >=3.10,<4; the project documents PyPy 3.11. Date and recheck versions."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/sdks/client-sdks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/StellarCN/py-stellar-base",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://pypi.org/project/stellar-sdk/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://stellar-sdk.readthedocs.io/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The community-maintained Python package is stellar-sdk from StellarCN/py-stellar-base and supports both Horizon and Stellar RPC.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: current StellarCN/py-stellar-base README and source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "registry: current PyPI project metadata",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: official Python RPC examples",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "PyPI showed 15.0.0 released 2026-07-04 with Python >=3.10,<4, while the project documented PyPy 3.11.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "D",
+            "ref": "registry: PyPI stellar-sdk release metadata",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current project README/runtime matrix",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-as-of-date."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited package identity and Horizon/RPC capability were correct, but its pinned 14.1.1 and PyPy 3.10 claims had already drifted and the current official SDK catalog still omitted the RPC capability.",
+      "evidence": [
+        "Solo scratchpad 575 GT-56 primary process 3394 and sealed blind process 3398 independently confirmed package/repository identity and Horizon+RPC support while correcting version and PyPy drift.",
+        "Sibling sweep checked q-tool-official-sdks-list, q-tool-which-sdk-comparison, q-ti-provision-wallet-per-user, and q-ti-sdk-package-rename; the Python package is kept distinct from the deprecated npm name.",
+        "The documentation omission was already filed as improvements/stellar-docs/sd-033-python-sdk-rpc-capability-omitted.md; no duplicate was created."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-033-python-sdk-rpc-capability-omitted.md",
+        "Eval-side package/runtime freshness drift from a prior PyPI snapshot."
+      ]
+    },
+    "origin": "raven-next q-tool-python-sdk"
+  }
+}

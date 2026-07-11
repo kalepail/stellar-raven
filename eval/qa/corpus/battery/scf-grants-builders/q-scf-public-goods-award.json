@@ -1,0 +1,100 @@
+{
+  "id": "q-scf-public-goods-award",
+  "question": "What is the SCF Public Goods Award and who is eligible for it?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "The SCF Public Goods Award funds maintenance, security, documentation, and evolution of broadly useful Stellar ecosystem public goods. The durable amount is **up to $50,000 in USD value paid in XLM per proposal per quarter (roughly every three months)**.\n\nCurrent detailed handbook rules are **Pilot-gated**, not open to every basic Verified Member: proposing/team and voting eligibility are tied to the Pilot tier and NQG-based governance. It is distinct from the Build Open community vote and is not a standard Build application.\n\nAs of **2026-07-10**, the operating process is source-conflicted. The handbook still describes a Soft-Launch path using Airtable and a testnet Soroban Governor, while the public maintenance working group and Q2 operator report describe GitHub intake, Pilot quorum, PG Atlas/Tansu, and a Tansu vote. State that transition rather than asserting one platform or threshold as undisputed current truth.",
+    "keyFacts": [
+      "Funds ecosystem public-goods maintenance/evolution at up to $50K USD value in XLM per proposal per quarter.",
+      "Current detailed eligibility is Pilot-gated; basic Verified status alone does not grant proposing or voting eligibility.",
+      "Discloses the handbook-versus-current-operator process/platform conflict and keeps Public Goods distinct from Build Open."
+    ],
+    "avoid": [
+      "Do NOT say any generic Verified Member may submit or vote.",
+      "Do NOT hard-gate Soroban Governor, Tansu, Airtable, GitHub, or one voting threshold without dated source/conflict language.",
+      "Do NOT call it an ordinary open Build application or conflate its governance with Build Open."
+    ],
+    "notes": "Dossier §2.2/§11. Connects to NQG governance (voted via Soroban Governor). Verified 2026-06-29 vs live handbook: up to $50K in XLM per proposal per quarter, invitation-only, managed via Soroban Governor with NQG-weighted voting by SCF verified members.\nAlso good if the answer: It is invitation/governance-driven rather than a general open application.\nGolden cites: The SCF Public Goods Award handbook page.\nGT-39 independently reconciled 2026-07-10. Gate purpose, cap, Pilot eligibility, and explicit current-source conflict; do not penalize a sourced candidate for choosing either platform only when it dates and qualifies the authority boundary."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/supporting-programs/public-goods-award",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/supporting-programs/public-goods-award/official-rules",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://scf-public-goods-maintenance.github.io/public-goods-award/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://tansu.dev/blog/public-goods-award-q2",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Purpose and $50K quarterly cap are stable; eligibility and operating platform need current-source conflict language",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: official handbook and pinned source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: official handbook and pinned source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: Public Goods maintenance working group and Tansu Q2 report",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-39 primary/blind independent review",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-conflict."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The inherited answer treated generic Verified membership and Soroban Governor as durable current facts. Current official detailed rules are Pilot-gated and internally inconsistent, while current maintenance/operator records describe a GitHub/Tansu transition path.",
+      "evidence": [
+        "Solo scratchpad 575, GT-39 primary process 3300 and blind process 3303, 2026-07-10.",
+        "Official rules require Pilot proposers/team members and Pilot voters, but contain conflicting threshold/process passages.",
+        "Current maintenance and Tansu records report a GitHub/Pilot-quorum/Tansu transition and Q2 operation; their authority does not silently supersede the handbook."
+      ],
+      "rootCause": [
+        "Eval-side freshness and authority collapse: generic Verified eligibility and one platform were promoted into durable facts despite current-source conflict."
+      ]
+    },
+    "origin": "raven-next q-scf-public-goods-award"
+  }
+}

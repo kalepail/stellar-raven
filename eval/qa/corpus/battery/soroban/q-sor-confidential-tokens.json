@@ -1,0 +1,85 @@
+{
+  "id": "q-sor-confidential-tokens",
+  "question": "Does Stellar support confidential/private tokens, and how would an auditor verify a confidential multi-chain payment when a leaf is offline?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs"
+  ],
+  "golden": {
+    "answer": "Ordinary Stellar assets, SAC transfers, and SEP-41 tokens are public unless an application implements a privacy protocol. As of **2026-07-10**, Stellar Confidential Tokens is a **Testnet developer preview**, not audited/approved Mainnet default infrastructure; its stated model hides balances and amounts while addresses remain visible. BLS12-381 and BN254/Poseidon host functions are cryptographic primitives, not a turnkey privacy product.\n\nThere is no universal Stellar 'offline leaf' audit package. Evidence depends on the specific cross-chain/privacy protocol and auditor role. A verifier may need the protocol's commitment/ciphertext, authenticated chain inclusion/finality evidence, domain-separated public inputs binding chain/asset/nonce/policy, the applicable proof, and—only where the protocol defines it—a Merkle path, disclosure key, viewing key, or selective-disclosure witness. If required disclosure/witness material was never retained or published, public chain data alone may be insufficient. Do not invent a generic Merkle-leaf recipe or claim that primitives guarantee auditability.",
+    "keyFacts": [
+      "Distinguishes public-by-default assets from the dated Testnet Confidential Tokens developer preview and its field-visibility boundary.",
+      "Treats ZK host functions as primitives and makes audit evidence protocol- and role-conditional rather than a standardized Stellar recipe."
+    ],
+    "avoid": [
+      "Do NOT claim ordinary tokens are confidential by default or that the developer preview is approved/audited Mainnet infrastructure.",
+      "Do NOT claim missing witness/disclosure data can be recovered from chain data alone."
+    ],
+    "notes": "Phase 3 verified CAP-0059 is Final/Protocol 22 and CAP-0074/0075 are Final/Protocol 25 in stellar-protocol on 2026-06-29. Answers should still verify the target network protocol and SDK availability before promising deployability.\nAlso good if the answer: Cites the Confidential Token Association / Stellar privacy docs and CAP or ZK docs for protocol primitives. | Warns to verify target network protocol/software version and SDK support before deploying BN254/Poseidon-dependent code.\nGolden cites: Must cite Stellar privacy/ZK docs or CAPs for confidential-token and cryptographic primitive status.\nGT-25/41 REFRESH 2026-07-10: Confidential Tokens is a Testnet developer preview. Grade protocol-conditional audit evidence; do not require the inherited Merkle/offline-leaf prescription unless the named protocol defines it."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/privacy",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/zk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0074.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0075.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Confidential Tokens is a Testnet developer preview as of 2026-06-29, not a Mainnet-approved default token property.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Confidential Tokens announcement and privacy docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: contract/protocol source and CAP assignments",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The dated preview boundary is sound, but the inherited answer presented one application-specific Merkle/witness recipe as if Stellar standardized offline-leaf audit evidence.",
+      "evidence": [
+        "Solo scratchpad 575 GT-25 primary 3268 and blind 3273 privacy sibling reconciliation."
+      ],
+      "rootCause": [
+        "Eval-side deployment-status freshness drift."
+      ]
+    },
+    "origin": "raven-next q-sor-confidential-tokens"
+  }
+}

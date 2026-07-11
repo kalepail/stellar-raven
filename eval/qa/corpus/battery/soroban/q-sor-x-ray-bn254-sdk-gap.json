@@ -1,0 +1,85 @@
+{
+  "id": "q-sor-x-ray-bn254-sdk-gap",
+  "question": "Is Protocol 25 (X-Ray) live, and given the BN254 host functions exist at the protocol level but soroban-sdk (e.g. v23.4.0/v25) doesn't expose them, how do I actually verify a BN254 proof / use Poseidon on testnet today (exact g1_add/g1_mul/pairing_check signatures, byte layout, endianness, EIP-197 compat)?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Protocol 25 introduced CAP-0074 BN254 and CAP-0075 Poseidon/Poseidon2 host functions. The claimed v25 SDK gap is false: pinned `soroban-sdk =25.0.0` compiles `Bn254G1Affine`, `Bn254G2Affine`, `Fr`, `env.crypto().bn254().g1_add/g1_mul/pairing_check`; v23.4 lacks the surface, and current v27 uses `Bn254Fr` with deprecated `Fr` alias. For raw Poseidon in v25, enable `hazmat-crypto` and call `env.crypto_hazmat().poseidon_permutation` / `poseidon2_permutation`; higher-level hashes are in the version-matched `soroban-poseidon` crate. Host ABI remains `bn254_g1_add(BytesObject,BytesObject)`, `bn254_g1_mul(BytesObject,U256Val)`, and `bn254_multi_pairing_check(VecObject,VecObject)`, distinct from safe Rust wrappers. G1 is 64-byte big-endian X||Y; G2 is 128-byte Xc1||Xc0||Yc1||Yc0; infinity is zero and pairing vectors must be equal/nonempty. Shipped v25+ ABI uses Symbol `BN254`/`BLS12_381` for Poseidon field selection although checked-in CAP-0075 says U32Val 0/1 and contains P24/P25 tension; use shipped interface and disclose the spec conflict. This is EIP operation/encoding compatibility, not identical Ethereum calldata or a privacy product.",
+    "keyFacts": [
+      "Corrects v25 wrapper availability and gives exact raw/high-level Poseidon routes.",
+      "Separates host ABI, SDK wrappers, point encodings, activation, and CAP/shipped-ABI conflict."
+    ],
+    "avoid": [
+      "Do NOT claim v25 lacks wrappers, call v23 current, construct private CryptoHazmat directly, or equate Stellar API/calldata/privacy with Ethereum precompiles."
+    ],
+    "notes": "Verified CAP status/signatures, current docs, and software-versions page on 2026-06-29. Developer docs list Protocol 25 Mainnet on 2026-01-22 and show SDK docs/resources for BN254/Poseidon; exact imported guest APIs remain SDK-version-sensitive.\nAlso good if the answer: Mentions validating proof tooling test vectors and network protocol support before mainnet/testnet deployment.\nGolden cites: Official ZK/X-Ray docs. | CAP-0074 and CAP-0075. | A dated/current source for network/protocol activation if asserting live status.\nGT-43 pinned v25 compile proof controls; CAP-0075 text conflict must not be used to fail shipped Symbol API answers."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-06-29",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0074.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0075.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk/blob/v25.0.0/soroban-sdk/src/crypto/bn254.rs",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/zk",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "P25 host/SDK BN254 and Poseidon availability",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: CAP/env.json/SDK source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: pinned v23/v25/v27 compile probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-source-conflict."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The premise that SDK v25 lacked BN254 wrappers is false; the inherited answer also missed the exact v25 Poseidon path and CAP-versus-shipped ABI conflict.",
+      "evidence": [
+        "Solo scratchpad 575 GT-43 processes 3311/3320."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-021-p25-bn254-poseidon-source-links.md"
+      ]
+    },
+    "origin": "raven-next q-sor-x-ray-bn254-sdk-gap"
+  }
+}

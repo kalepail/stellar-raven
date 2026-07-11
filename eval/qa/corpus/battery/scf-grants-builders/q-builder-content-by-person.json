@@ -1,0 +1,101 @@
+{
+  "id": "q-builder-content-by-person",
+  "question": "What has been published about Stellar contributor Tyler van der Hoeven across the ecosystem?",
+  "surface": [
+    "lumenloop.search_content_semantic"
+  ],
+  "golden": {
+    "answer": "Published material about **Tyler van der Hoeven (`kalepail`)** includes the official Developer Docs author index (seven posts), the **2024-06-13 developer meeting** covering Super Peach, Passkey Kit, and Launchtube, **Practical Path Payments** (2020-04-10), the **Turing Complete Contract Proposal for Stellar** talk (whose page has a date conflict that should be disclosed), the **SDF Developer Advocates AMA** (2023-05-04), and the 2022 SDF Stellar Lounge at SXSW video. Current project context includes `passkey-kit` and `stellar/launchtube`; Passkey Kit now labels itself a legacy precursor/demo and points new work to Smart Account Kit. Use official Docs/Scout research first. Lumenloop semantic results are candidate discovery only and require exact-name/source/date validation; its current exact-person lane returning empty is a service limitation, not evidence that nothing exists.",
+    "keyFacts": [
+      "Returns a bounded official-source publication/appearance roster for Tyler.",
+      "Treats empty person-lane results and semantic matches according to their evidence limits."
+    ],
+    "avoid": [
+      "Do NOT infer no publication from an all-empty person response.",
+      "Do NOT attribute semantic A/V results without exact-name and source validation."
+    ],
+    "notes": "GT-35 CORRECTION 2026-07-10: the exact Lumenloop person lane is all-empty and Scout has no Tyler row. Grade a bounded official-source roster and explicit validation of semantic candidates; empty service output is inconclusive.\nGT-35 independently confirmed by processes 3287/3289; this case is freshness-sensitive despite its inherited tag."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/meetings/authors/kalepail",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/meetings/2024/06/13",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/events/community/practical-path-payments",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/events/community/ama-with-sdfs-new-developer-advocates",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/kalepail/passkey-kit",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/launchtube",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Tyler has verifiable official publications/appearances, but the current Lumenloop person lane cannot retrieve them reliably",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: exact person/full-name probes empty and A/V semantic results unrelated",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/B: official Docs author/events pages and Tyler-linked repositories",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: official Docs author/events pages and Tyler-linked repositories",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The prescribed exact-person Lumenloop lane returns silent all-empty groups for Tyler, its A/V fallback returns semantic false positives, and Scout has no Tyler profile, while official sources contain a substantial publication roster.",
+      "evidence": [
+        "Solo scratchpad 575 GT-35 primary 3287 and blind 3289; live probes and official-source roster on 2026-07-10."
+      ],
+      "rootCause": [
+        "Route recipe was treated as truth and an empty data-shaped response was mistaken for absence.",
+        "improvements/lumenloop/ll-005-person-entity-empty-lane.md",
+        "improvements/lumenloop/ll-017-semantic-person-match-provenance.md"
+      ]
+    },
+    "origin": "raven-next q-builder-content-by-person"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "q-edge-oos-react-state-management",
+  "question": "What's the best state management library for a React app — Redux, Zustand, or Jotai?",
+  "surface": [],
+  "golden": {
+    "answer": "I don't have current source coverage to name a universal winner among Redux, Zustand, and Jotai. For the generic choice, compare current library docs against your state shape, team familiarity, debugging needs, and bundle constraints. If this is a Stellar dApp, I can help with wallet, network, signing, or transaction-state integration.",
+    "keyFacts": [
+      "Avoids an unsupported universal winner and offers both a practical decision framework and a relevant Stellar-dApp redirect."
+    ],
+    "avoid": [
+      "Do NOT manufacture a Stellar answer, make a stale authoritative library recommendation, call the request unsafe, or stop at generic refusal."
+    ],
+    "notes": "GT-26 2026-07-10: require a concise coverage limit, practical current-doc decision criteria, and optional Stellar-dApp state redirect. Bare refusal is insufficient.\nGT-26 OOS REWRITE 2026-07-10: helpful task-specific redirection is part of answer quality."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "none",
+    "freshness": "stable",
+    "trap": "out-of-scope"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "eval/corpus/raven-next/research/golden/edge-governance/q-edge-oos-react-state-management.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A universal Redux/Zustand/Jotai winner is app- and freshness-dependent, while Stellar wallet/signing/transaction state is a distinct in-scope problem.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B/C: current manifest/source coverage",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "B/C: current manifest/source coverage",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: in-corpus Stellar dApp transaction-state cases",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The benign general-frontend question allowed refusal without a decision framework or task-specific Stellar-dApp redirect.",
+      "evidence": [
+        "Solo scratchpad 575 GT-26 primary 3269 and blind 3271."
+      ],
+      "rootCause": [
+        "Internal scope handling was not translated into user-facing assistance."
+      ]
+    },
+    "origin": "raven-next q-edge-oos-react-state-management"
+  }
+}

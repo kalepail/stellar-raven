@@ -1,0 +1,133 @@
+{
+  "id": "q-eco-wallets-similar",
+  "question": "I use Freighter — what are similar Stellar wallets I could offer my users instead?",
+  "surface": [
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions"
+  ],
+  "golden": {
+    "answer": "Define what 'similar' means before recommending peers. Current examples include:\n- **xBull** and **Rabet** for self-custodial browser signing;\n- **Albedo** for delegated web signing;\n- **Hana** for a multichain extension/mobile wallet;\n- **LOBSTR** for a broader consumer web/mobile wallet; and\n- **HOT** as an adjacent multichain choice.\n\nHardware wallets and WalletConnect are different classes. **StellarTerm is currently typed as a DEX, not a wallet alternative**, even if semantic search ranks it nearby. Treat semantic similarity as discovery, not a durable product-equivalence ranking. If an app needs several current providers, Stellar Wallets Kit or another maintained multi-wallet interface may be appropriate; choose based on current support, custody, platform, auth/signing capabilities, and product requirements.",
+    "keyFacts": [
+      "Surfaces functional peers such as xBull, Rabet, Albedo, Hana, LOBSTR, and HOT with comparison axes.",
+      "Treats semantic similarity as discovery and makes multi-wallet integration conditional."
+    ],
+    "avoid": [
+      "Do NOT call StellarTerm a wallet or treat semantic rank as product equivalence.",
+      "Do NOT invent market-share rankings or use reconstructed SCF totals as quality scores.",
+      "Do NOT present one wallet-kit/library as mandatory without current application requirements."
+    ],
+    "notes": "GROUNDED 2026-06-22 (re-verified 2026-06-29): Scout wallet records confirm the alternatives — Lobstr (SCF $232K), Hana (SCF $132K, multi-chain), xBull (SCF $56.2K, open-source) all type=Wallet, Live. This is the FIND-SIMILAR routing lane ('wallets like Freighter' → lumenloop_find_similar_projects_semantic) — DISTINCT from q-eco-wallets-overview (scout_projects; sponsor/model differentiation) and q-eco-stellar-wallets-list (flat enumeration). The Stellar Wallets Kit (multi-wallet SDK) is the practical integration answer.\nAlso good if the answer: Notes the practical answer is to integrate the Stellar Wallets Kit to support multiple wallets rather than picking one. | Briefly distinguishes them by model (SDF vs independent; Stellar-only vs multi-chain).\nGolden cites: A source for each suggested wallet.\nGT-20 CORRECTION 2026-07-10: grade functional similarity axes and dated provider support; remove StellarTerm and semantic-rank implications. Wallet similarity/support is quarterly-freshness even though inherited tags cannot yet be overridden."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "mixed",
+    "asOf": "2026-07-10",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Creit-Tech/xBull-Wallet",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/rabetofficial/rabet-extension",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar-expert/albedo",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://lobstr.co/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://hana.money/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "LOBSTR, Hana, and xBull are real Stellar wallet alternatives with the stated operator/project provenance",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Ultra Stellar and Hana operator sites",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: Creit-Tech/xBull-Wallet repository",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "There is no 'MetaMask-scale winner' among Stellar wallets",
+        "verdict": "unverifiable",
+        "evidence": [
+          {
+            "class": "D",
+            "ref": "D: no defined scale metric or comparative market-share source was cited or located in the refute batch",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Remove the superlative; it is unnecessary for the recommendation."
+      },
+      {
+        "claim": "Functional wallet similarity depends on custody, signing surface, platform, and chain scope; semantic rank can include non-wallets such as StellarTerm.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: wallet repos and current Stellar Wallets Kit support list",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Lumenloop semantic results and Scout type records",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: operator/product pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The previous correction removed an unsupported scale comparison but still treated three examples and a noisy semantic result as a durable peer set, omitted obvious functional peers Rabet/Albedo, incorrectly suggested StellarTerm, and overstated Wallets Kit as mandatory.",
+      "evidence": [
+        "Solo scratchpad 569 Batch D, 2026-07-09; sibling sweep with q-eco-wallets-overview.",
+        "Solo scratchpad 575 GT-20 primary 3256 and blind 3257; live similarity/type checks 2026-07-10."
+      ],
+      "rootCause": [
+        "Eval-side unmeasured market superlative plus corpus-only award-number embellishment.",
+        "solo://proj/49/todo/golden-corpus-health--901"
+      ]
+    },
+    "origin": "raven-next q-eco-wallets-similar"
+  }
+}

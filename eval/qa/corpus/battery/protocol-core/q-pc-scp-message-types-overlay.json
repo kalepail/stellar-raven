@@ -1,0 +1,70 @@
+{
+  "id": "q-pc-scp-message-types-overlay",
+  "question": "What are the actual SCP consensus message types and overlay or peer wire format, and where is the canonical XDR?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "`Stellar-SCP.x` defines `SCP_ST_PREPARE`, `SCP_ST_CONFIRM`, `SCP_ST_EXTERNALIZE`, and `SCP_ST_NOMINATE`; `SCPEnvelope` wraps a statement plus signature. Peer transport is separate in `Stellar-overlay.x`: `GET_SCP_QUORUMSET` requests by quorum-set hash, `SCP_QUORUMSET` carries the set, `SCP_MESSAGE` carries `SCPEnvelope`, and `GET_SCP_STATE` requests state by ledger sequence. Do not call all four envelope messages or invent JSON/RPC names. High-level nomination/ballot/quorum explanations complement but do not replace XDR wire definitions.",
+    "keyFacts": [
+      "Names all four SCP statement types.",
+      "Names all four SCP overlay variants and states only SCP_MESSAGE carries SCPEnvelope."
+    ],
+    "avoid": [
+      "Do NOT invent JSON/RPC wire names, omit exact variants, or say every SCP-related message carries an envelope."
+    ],
+    "notes": "GT-30/GT-33 CORRECTION 2026-07-10: overlay variants are GET_SCP_QUORUMSET, SCP_QUORUMSET, SCP_MESSAGE, GET_SCP_STATE; only SCP_MESSAGE carries SCPEnvelope. Statement types remain PREPARE/CONFIRM/EXTERNALIZE/NOMINATE.\nQueued GT-30 completeness conflict resolved by independent GT-33 source/XDR verification."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-xdr/blob/main/Stellar-SCP.x",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-xdr/blob/main/Stellar-overlay.x",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Stellar-SCP.x defines PREPARE/CONFIRM/EXTERNALIZE/NOMINATE; Stellar-overlay.x defines GET_SCP_QUORUMSET, SCP_QUORUMSET, SCP_MESSAGE, GET_SCP_STATE, with only SCP_MESSAGE carrying SCPEnvelope.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: canonical stellar-xdr definitions",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: CLI 27 generated-schema check",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The statement enum was correct, but vague 'SCP-carrying variants' did not answer the request for actual overlay wire types.",
+      "evidence": [
+        "Solo scratchpad 575 GT-30 blind 3279 and independent GT-33 blind 3285."
+      ],
+      "rootCause": [
+        "Eval-side wire-type completeness omission."
+      ]
+    },
+    "origin": "raven-next q-pc-scp-message-types-overlay"
+  }
+}

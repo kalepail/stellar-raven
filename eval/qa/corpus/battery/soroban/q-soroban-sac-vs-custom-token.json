@@ -1,0 +1,86 @@
+{
+  "id": "q-soroban-sac-vs-custom-token",
+  "question": "Should I launch a token as a Stellar Asset Contract or write a custom SEP-41 contract token? What are the tradeoffs?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Choose the SAC/classic-asset path when you need native Stellar issuance, trustlines, issuer controls, DEX/wallet interoperability, and a protocol-built SEP-41 interface for the same asset. Choose a bespoke SEP-41 **contract token** when custom programmable behavior genuinely requires contract code. The SAC is not a bridged second token or wrapper representation, and using it does not make the rest of the application automatically audited. A contract token adds custom-code and integration review burden; a library can reduce that burden only for the pinned release and code actually used.",
+    "keyFacts": [
+      "Frames SAC as the protocol-built API for the same classic asset and contract token as bespoke SEP-41 code.",
+      "Rejects wrapper/automatic-audit guarantees."
+    ],
+    "avoid": [
+      "Do NOT call SAC a second bridged representation or say either choice removes application audit needs.",
+      "Do NOT use legacy custom-token terminology as though it were the current official term without clarification."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). Comparison; trap is claiming incompatibility or always-custom. Verified: SAC is the built-in CAP-46-6/SEP-41 wrapper for classic assets; custom tokens also implement SEP-41; choose by whether you need programmable logic.\nAlso good if the answer: A SAC inherits classic-asset features (issuer auth flags, clawback, trustlines); a custom token re-implements whatever it needs. | Custom tokens carry their own audit burden; OpenZeppelin's SEP-41 base reduces it.\nGolden cites: The developers.stellar.org tokens / SAC vs contract-token comparison.\nGT-47 BLIND CORRECTION 2026-07-11: same-asset SAC versus bespoke contract token; no automatic audit guarantee."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/assets/anatomy-of-an-asset",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-06.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SAC is the protocol-built interface for the same classic asset, not a bridged wrapper; a SEP-41 contract token is appropriate for bespoke logic but carries custom-code review burden.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Anatomy of an Asset/SAC decision guidance",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0046-06 and SEP-0041",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: current OpenZeppelin release-scoped documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The decision axis was useful, but the inherited answer called the SAC a wrapper/audited contract and implied no audit was needed. Current docs call bespoke implementations contract tokens; neither choice automatically audits the application.",
+      "evidence": [
+        "Solo scratchpad 575 GT-47 blind 3334 rejected the wrapper/audit absolutes; primary 3327 independently confirmed current contract-token terminology."
+      ],
+      "rootCause": [
+        "Eval-side copy mixed legacy 'custom token' terminology with an unsupported audit guarantee."
+      ]
+    },
+    "origin": "raven-next q-soroban-sac-vs-custom-token"
+  }
+}

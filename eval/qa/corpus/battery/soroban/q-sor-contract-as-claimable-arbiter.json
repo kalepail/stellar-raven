@@ -1,0 +1,63 @@
+{
+  "id": "q-sor-contract-as-claimable-arbiter",
+  "question": "Can a Soroban contract be the claimant/arbiter that releases a claimable balance (or hold escrow) and release on condition, and can it call `approve` on a SAC on a user's behalf?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "A Soroban contract cannot directly act as the claimant/arbiter for a **classic claimable balance**.\nThe official smart-contract FAQ says contracts can interact with accounts/assets through the Stellar\nAsset Contract, but cannot interact with SDEX, claimable balances, or sponsorships\n(https://developers.stellar.org/docs/build/smart-contracts/overview).\n\nIf you want programmable escrow, build it as Soroban escrow: hold SAC/SEP-41 token balances under a\ncontract address/contract storage and release with contract logic. The SAC docs state that the Stellar\nAsset Contract is the way contracts interact with native XLM and issued Stellar assets, and that\ncontract-address balances are stored in contract storage rather than classic trustlines\n(https://developers.stellar.org/docs/tokens/stellar-asset-contract).\n\nFor `approve`: this is not a magic \"spend user funds\" escape hatch. SAC/SEP-41 approvals are contract\ncalls that must satisfy Soroban authorization. The transaction docs describe SorobanAuthorizationEntry\nand authorized invocation trees, and the authorization docs describe `require_auth` as the mechanism\nfor an address to authorize an invocation\n(https://developers.stellar.org/docs/learn/fundamentals/contract-development/contract-interactions/stellar-transaction,\nhttps://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization). A contract\ncan approve only for an address/balance it controls, or when the user/address has authorized that\nspecific invocation.",
+    "keyFacts": [
+      "States that a Soroban contract cannot directly be the claimant/arbiter of a classic claimable balance or call classic claim-claimable-balance logic; official docs say contracts cannot interact with claimable balances.",
+      "Provides the correct Soroban escrow design: hold SAC/SEP-41 token balances in contract storage or contract-owned balances and release with contract logic/authorization.",
+      "Explains SAC `approve`/allowance is a token-contract call governed by Soroban authorization; a contract cannot approve on a user's behalf unless the user/address authorizes the invocation or the contract already controls the relevant address/balance.",
+      "Distinguishes classic claimable-balance predicates from programmable Soroban escrow conditions."
+    ],
+    "avoid": [
+      "Do not claim a contract can claim a classic claimable balance directly.",
+      "Do not claim a contract can call `approve` for a user without the user's Soroban authorization.",
+      "Do not conflate claimable balances with SAC allowances."
+    ],
+    "notes": "Verified with official docs. Phase 3 may add a direct SEP-41 `approve` source if it wants to test exact allowance signatures.\nAlso good if the answer: Mentions source-account authorization / SorobanAuthorizationEntry as the mechanism behind user-approved contract calls. | Warns that a two-step classic claimable-balance plus Soroban flow is not atomically bundled in one smart-contract transaction.\nGolden cites: Must cite official smart-contract FAQ for claimable-balance limitation and official authorization/SAC docs for approval semantics."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/overview",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/contract-interactions/stellar-transaction",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-41-bindings-target-dex-confidentiality-claims-deploy-porting accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-sor-contract-as-claimable-arbiter"
+  }
+}

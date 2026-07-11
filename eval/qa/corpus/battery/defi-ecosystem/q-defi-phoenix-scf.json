@@ -1,0 +1,84 @@
+{
+  "id": "q-defi-phoenix-scf",
+  "question": "Show Phoenix's SCF submission history on Stellar.",
+  "surface": [
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_project",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, Phoenix's official SCF project page shows **seven submissions, four Awarded**, totaling **$394.5K**:\n- SCF #16 Phoenix ($PHO), $150K — **Awarded**\n- SCF #18 Phoenix ($PHO), $150K — **Not Awarded**\n- SCF #20 Phoenix Hub v2, $100K — **Awarded**\n- SCF #24 Phoenix Hub v3 NFT Marketplace, $100K — **Not Awarded**\n- SCF #25 Phoenix Hub v3 NFT Marketplace, $94.5K — **Awarded**\n- Liquidity Award '24 Q1, $50K — **Not Awarded**\n- Liquidity Award '24 Q1, $50K — **Awarded**\n\nThe four awarded rows sum to the official $394.5K display. Lumenloop returns the same four awards; Scout's total agrees but its awarded-round list incorrectly includes #18/#24, so use the official row statuses.",
+    "keyFacts": [
+      "Reports seven Phoenix submissions, exactly four awards, and the official $394.5K awarded total.",
+      "Preserves each official Awarded/Not Awarded status and does not treat rounds 18 or 24 as wins."
+    ],
+    "avoid": [
+      "Do NOT call all seven submissions awarded or use Scout's round list over contradictory official row statuses.",
+      "Do NOT invent a different round, tier, amount, or cumulative total."
+    ],
+    "notes": "GROUNDED: live Scout (2026-06-22, /api/projects/search?q=Phoenix) confirms Phoenix (DeFi Hub AMM DEX, $PHO, Live) scfAwarded=true, scfTotalAwardedUSD=394500. Rubric now rewards reporting the real ~$394.5K and forbids a fabricated figure. REVIEWED 2026-06-29: re-confirmed live (q=Phoenix → 'Phoenix DeFi Hub is an SCF-funded AMM-based DEX on Stellar/Soroban (PHO token)', constant-product + stableswap pools, Live, scfTotalAwardedUSD=394500, phoenix-hub.io). SCF $ drift-sensitive → freshness_sensitive:true (quarterly); must_have now allows an honest restatement if the live figure moves rather than gating on the frozen dollar amount.\nAlso good if the answer: Identifies Phoenix as the Soroban DeFi-Hub / AMM project (constant-product + stableswap pools) when scoping the lookup.\nGolden cites: The SCF submission/funding record for Phoenix (Lumenloop/Scout directory).\nSupersedes the 2026-07-09 corpus-only note. The official project page confirms $394.5K from four awarded rows; seven is the submission count, not award count."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/recafjXSgVbrp8svj",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/phoenix",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Phoenix has seven submissions, four awards totaling $394.5K, and three non-awards",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official SCF Phoenix project page with seven row statuses/amounts",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: Lumenloop reproduces the four awarded entries/total; Scout total agrees but round membership conflicts",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: Lumenloop reproduces the four awarded entries/total; Scout total agrees but round membership conflicts",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-16 primary and blind reviews supersede the July-9 corpus-only override. The official Phoenix project page exposes seven submission cards and a $394.5K total; exactly four are Awarded and three Not Awarded. Scout's awarded-round list incorrectly includes rounds 18 and 24.",
+      "evidence": [
+        "Solo scratchpad 575 GT-16 primary 3244 and blind 3245",
+        "Official Phoenix SCF project page fetched 2026-07-10"
+      ],
+      "rootCause": [
+        "eval-side primary-source extraction failure downgraded an official total to corpus-only",
+        "service-improvement candidate: Scout Phoenix awarded-round membership includes non-awarded rows"
+      ]
+    },
+    "origin": "raven-next q-defi-phoenix-scf"
+  }
+}

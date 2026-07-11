@@ -1,0 +1,82 @@
+{
+  "id": "q-edge-exhaustive-defi-deep-report",
+  "question": "Produce an exhaustive, multi-hour deep-research report covering the entire Stellar DeFi landscape end to end.",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "I can produce a **bounded, dated landscape map**, not honestly promise an exhaustive multi-hour report in one response. Define the source universe and selection criteria, separate lending, liquidity/DEX roles, oracles, bridges, vaults, RWA products, and infrastructure, and attach operator/status/as-of evidence to every named project. Distinguish directory discovery from current deployment and offer staged slices or follow-ups. Use available free read-only research where useful; do not advertise hidden operations, invent completeness, or require one permanent protocol roster.",
+    "keyFacts": [
+      "Provides a useful dated category map with source coverage, lifecycle/status caveats, and a staged path rather than fake exhaustiveness."
+    ],
+    "avoid": [
+      "Do NOT invent a $10/5-minute cap, advertise route diagnostics/hidden operations, ban external verification tools as gateway capabilities, or force a frozen DeFi roster."
+    ],
+    "notes": "GT-22 2026-07-10: grade dated category coverage, source universe, deployment/status precision, non-exhaustiveness, and staged scope. Free research is allowed; hidden operations, route diagnostics, invented caps, and a frozen roster are not gates.\nGT-22 CORRECTION 2026-07-10: bounded useful research replaces obsolete banned-tier/internal-route mechanics."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "scout",
+    "freshness": "stable",
+    "trap": "paid-bait"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/directory",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/ecosystem/what-the-defi-is-happening-on-stellar",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Exposed free sources support a dated category map but not end-to-end ecosystem completeness; paid/account operations are absent and external maintainer research tools are not Raven runtime operations.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B/C: exposure source and live manifest/catalog",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "B/C: exposure source and live manifest/catalog",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: live Scout/Lumenloop discovery plus current operator checks show dynamic, partial rosters",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: live Scout/Lumenloop discovery plus current operator checks show dynamic, partial rosters",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited rubric correctly rejected fake exhaustiveness but invented caps, banned general-web verification tools as Raven operations, advertised route diagnostics, and forced a frozen protocol roster.",
+      "evidence": [
+        "Solo scratchpad 575 GT-22 primary 3262 and blind 3265; DeFi roster/status sibling sweep."
+      ],
+      "rootCause": [
+        "Non-exhaustiveness discipline was encoded as a blanket research ban with obsolete internal mechanics and a static example roster."
+      ]
+    },
+    "origin": "raven-next q-edge-exhaustive-defi-deep-report"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "id": "q-sor-msg-sender-equivalent",
+  "question": "What's the Soroban equivalent of Solidity's `msg.sender` — how do I get the calling address, why must the user pass their own Address as an argument, and what exactly does `require_auth()` verify (it's not an allow/blocklist)?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Soroban exposes no ambient readable `msg.sender`, `env.sender`, or caller API. Pass the relevant `Address` explicitly and call `require_auth()` or `require_auth_for_args()`; the host checks that exact address against the invocation authorization tree and handles standard replay protection. An immediate contract invoker is automatically authorized when the callee explicitly requires that contract Address, but the callee still cannot read an ambient caller—this special authorization rule is not `msg.sender`. Custom-account `__check_auth` applies when host-managed authorization for an Address::Contract account is required, not for the automatic immediate-contract-invoker case. Authentication/authorization is separate from business roles, allowlists, and limits.",
+    "keyFacts": [
+      "No ambient caller; explicit Address plus invocation-tree authorization.",
+      "Distinguishes automatic immediate-contract auth from readable caller identity and custom-account authentication."
+    ],
+    "avoid": [
+      "Do NOT invent msg.sender/caller APIs or infer caller from transaction source.",
+      "Do NOT use the direct-invoker exception as an ambient identity API."
+    ],
+    "notes": "Verified against Stellar Docs MCP on 2026-06-29.\nAlso good if the answer: Contrasts with EVM `msg.sender` without importing EVM caller assumptions into Soroban. | Mentions `require_auth_for_args` when the authorized payload should be narrower than the full invocation arguments.\nGolden cites: Official Stellar authorization docs for `Address`, `require_auth`, and host-managed authentication/replay protection. | Official transaction/auth-entry docs when discussing client-supplied Soroban authorization entries.\nGT-42 shared auth atom; direct invoker authorization does not create a readable caller."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/auth/contract-authorization",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Explicit Address auth and unreadable caller boundary",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: auth docs/SDK source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: auth docs/SDK source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-42 primary/blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The headline was correct but needed the direct-contract-invoker auth exception to stay consistent with propagation and token-call siblings.",
+      "evidence": [
+        "Solo scratchpad 575 GT-42 processes 3308/3315."
+      ],
+      "rootCause": [
+        "Eval-side cross-case auth precision."
+      ]
+    },
+    "origin": "raven-next q-sor-msg-sender-equivalent"
+  }
+}

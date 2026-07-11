@@ -1,0 +1,84 @@
+{
+  "id": "q-soroban-vuln-classes",
+  "question": "What are the most common vulnerability classes auditors find in Soroban smart contracts?",
+  "surface": [
+    "skills.stellar-dev.smart-contracts"
+  ],
+  "golden": {
+    "answer": "Treat this as a non-exhaustive Soroban review checklist: missing/wrong authorization (including initialization and Wasm updates); unsafe storage/TTL/archival assumptions; unchecked external token/contract results or arbitrary counterparties; arithmetic/precision/input-validation errors; panic/unwrap and unbounded-work denial of service; and application-specific economic/state-transition mistakes. Under P23+ archived Persistent/Instance data can auto-restore with correct transaction metadata, so do not present generic 'restore front-running' or irreversible-brick slogans as universal current behavior. Over-limit writes fail atomically, though growth-dependent application paths can still become unavailable.",
+    "keyFacts": [
+      "Names the major current authorization, storage, external-call, arithmetic/input, DoS, and economic/state-transition families.",
+      "Scopes storage/TTL issues to current P23+ restoration and atomic failure semantics."
+    ],
+    "avoid": [
+      "Do NOT claim one checklist is exhaustive or import EVM-only vulnerabilities unchanged.",
+      "Do NOT repeat pre-P23 manual-only restoration or automatic permanent-brick claims."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). Routes to scout_research (audit corpus). Trap: pasting the EVM vuln list. Verified against Veridise Soroban checklist + Inferara Soroban Security Portal; reentrancy into the same contract is disallowed by the host.\nAlso good if the answer: Notes that classic Ethereum-style reentrancy is largely mitigated by Soroban's host model (no reentry into the same contract).\nGolden cites: A Soroban security checklist/portal (Veridise blog, Inferara portal) or SDF security docs.\nGT-48 CORRECTION 2026-07-11: keep vulnerability taxonomy non-exhaustive and current to P23+ restoration."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/security",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0066.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current recurring review targets include auth/upgrade/init errors, storage/TTL assumptions, unchecked external results/counterparties, arithmetic/input/panic/unbounded-work DoS, and application economic/state-transition bugs; P23 auto-restore changes older restore-front-running framing.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current security/storage docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0066 and SDK/host behavior",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent audit guidance",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited vulnerability list repeated obsolete/generalized TTL-front-running and permanent-brick language. Current P23+ auto-restore and atomic limit failure require narrower storage/availability guidance.",
+      "evidence": [
+        "Solo scratchpad 575 GT-46/48 primary and blind reviews; GT-48 independently confirmed the list but required TTL wording correction."
+      ],
+      "rootCause": [
+        "Plain protocol drift from pre-P23 restoration semantics and unsupported irreversible-brick shorthand."
+      ]
+    },
+    "origin": "raven-next q-soroban-vuln-classes"
+  }
+}

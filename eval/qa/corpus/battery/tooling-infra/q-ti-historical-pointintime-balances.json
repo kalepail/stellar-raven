@@ -1,0 +1,112 @@
+{
+  "id": "q-ti-historical-pointintime-balances",
+  "question": "How do I reconstruct an account's full asset balances as of a specific past date via Hubble/BigQuery and compute their USD value with historical price data?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "Current Horizon account reads and RPC `getLedgerEntries` do not provide an account-balance-at-ledger parameter. Resolve the requested timestamp to a **closed ledger**, then use Hubble account/trustline state-change history and select the latest row at or before that ledger for each natural key, honoring deleted/recreated accounts and trustlines plus the exact network/passphrase. Hubble state tables are change logs, not SCD2 snapshots; `batch_run_date` is a partition/load proxy, not exact state time, so rank by ledger/closed time.\n\nFor SAC/custom-token balances, reconstruct from contract-data history where token storage semantics are known, or replay complete ledger metadata/events and validate the token interface. History archives provide checkpoint state at 64-ledger boundaries; exact arbitrary-ledger state requires replaying changes from the preceding checkpoint. Report whether a result is exact or reconstructed and distinguish nominal balances from liabilities/reserves/spendable amounts. USD valuation is a separate timestamp-aligned join to an external historical price source with explicit asset/quote methodology.",
+    "keyFacts": [
+      "Uses Hubble/ingestion latest-at-or-before reconstruction, not current Horizon/RPC reads.",
+      "Handles deletion/recreation, network identity, closed-ledger mapping, and non-SCD2/batch-date semantics.",
+      "Covers SAC/custom contract state or complete replay and checkpoint-to-target reconstruction.",
+      "Separates exact/reconstructed and nominal/spendable provenance from external historical USD pricing."
+    ],
+    "avoid": [
+      "Do NOT pass a historical ledger to current account/getLedgerEntries APIs or call a ledger header an account snapshot.",
+      "Do NOT use batch_run_date as exact state time or ignore deletion/recreation/network resets.",
+      "Do NOT equate nominal XLM with spendable XLM or invent historical USD prices from ledger data."
+    ],
+    "notes": "No single SQL is hard-gated because Hubble schemas evolve; rubric gates source class and reconstruction method.\nAlso good if the answer: Mentions public Horizon history truncation and why it is not enough for arbitrary historical snapshots.\nGolden cites: Hubble/BigQuery docs and a source requirement for external historical prices.\nGT-52 CORRECTION 2026-07-11: grade reconstruction invariants/provenance, not one volatile SQL table name. Exact versus reconstructed and nominal versus spendable must be explicit."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/analytics/hubble/analyst-guide/history-vs-state-tables",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/analytics/hubble/analyst-guide/queries-for-horizon-like-data",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/analytics/hubble/data-catalog/data-dictionary/bronze/accounts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/analytics/hubble/data-catalog/data-dictionary/bronze/trustlines",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/indexers/build-your-own/ingest-sdk/developer_guide/ledgerreaders",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Horizon/RPC account/ledger-entry reads are current-state; point-in-time Classic balances require latest-at-or-before state-change reconstruction per natural key with deletion/recreation handling.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Hubble history/state, accounts/trustlines dictionaries, and Ingest ledger-reader docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: historical getLedgerEntries capability record/source boundary",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Hubble state tables are change logs rather than SCD2 snapshots, batch_run_date is not exact ledger time, and arbitrary-ledger archive state requires checkpoint-plus-replay.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Hubble analyst/data dictionary and history archive/ingestion documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: old-ledger header check distinguished header availability from account state",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited latest-row/Hubble method was correct but omitted deletion/recreation, non-SCD2/batch-date traps, C-address token state, checkpoint replay, and nominal-versus-spendable provenance needed for exact reconstruction.",
+      "evidence": [
+        "Solo scratchpad 575 GT-52 primary/blind matrices independently confirmed Hubble/latest-row/external-price separation; blind added exact reconstruction invariants.",
+        "Sibling sweep checked Hubble, Galexie/ETL, historical events, and indexer choice cases; no sibling treats a ledger header or batch partition as a snapshot."
+      ],
+      "rootCause": [
+        "Eval-side historical-reconstruction incompleteness; vetted exact-ledger balance SQL/provenance remains a research candidate."
+      ]
+    },
+    "origin": "raven-next q-ti-historical-pointintime-balances"
+  }
+}

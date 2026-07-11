@@ -1,0 +1,87 @@
+{
+  "id": "q-infra-galexie-what-is",
+  "question": "What is Galexie and how do I run it to archive Stellar ledger data?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Galexie is the upstream Stellar ledger-metadata exporter/data-lake tool. It writes pre-processed, compressed `LedgerCloseMeta` XDR batches for a fixed range or continuously appends new ledgers to GCS or S3/S3-compatible object storage. The canonical project is `stellar/stellar-galexie`. It is not SQL, BigQuery, Horizon, or RPC; downstream ETL/indexing makes the exported data queryable. Full-history completeness is controlled by the operator's chosen range and continuous operation, not automatically guaranteed.",
+    "keyFacts": [
+      "Identifies the bounded/continuous object-storage exporter role and canonical repo.",
+      "Names GCS/S3-compatible backends and operator-controlled completeness."
+    ],
+    "avoid": [
+      "Do NOT call Galexie a database/query API or guarantee complete history automatically.",
+      "Do NOT use the legacy repo/image as canonical."
+    ],
+    "notes": "Re-verified 2026-06-29: Docker image/repo is `stellar/stellar-galexie` (extracted from stellar/go into its own repo 2026-06-10; old services/galexie path now 404s). Both GCS and S3 are IMPLEMENTED DataStore backends (support/datastore gcs.go + s3.go; `S3DataStore implements DataStore for AWS S3`) — corrected the prior 'S3 pluggable/planned' wording. Reconciled with q-infra-galexie-vs-etl. Trap = conflating with Hubble's SQL layer.\nAlso good if the answer: It produces a raw ledger datastore for downstream pipelines/replay, distinct from Hubble's ready-to-query BigQuery dataset. | It exports to cloud blob storage via a `DataStore` interface — both Google Cloud Storage (GCS) and AWS S3 are implemented backends.\nGolden cites: developers.stellar.org data docs (Galexie) and/or the stellar/go Galexie source.\nGT-49 CORRECTION 2026-07-11: accept documented installed/local command forms when correctly contextualized."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/indexers/build-your-own/galexie",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/indexers/build-your-own/galexie/admin_guide/running",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-galexie",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Galexie exports pre-processed compressed LedgerCloseMeta XDR in bounded or continuous ranges to GCS and S3-compatible storage; it is not a query API and completeness depends on operator range/continuity.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Galexie docs/admin guide",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar-galexie source/releases and datastore implementation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent source sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited core description was sound but needed the canonical repository/image, implemented storage backends, operator-controlled completeness, and more precise pre-processed metadata wording.",
+      "evidence": [
+        "Solo scratchpad 575 GT-49 primary 3335 and blind 3341."
+      ],
+      "rootCause": [
+        "Canonical repo/image and completeness/storage-backend freshness."
+      ]
+    },
+    "origin": "raven-next q-infra-galexie-what-is"
+  }
+}

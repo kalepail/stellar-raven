@@ -1,0 +1,95 @@
+{
+  "id": "q-defi-soroswap-vs-stellarx",
+  "question": "What's the difference between Soroswap and StellarX — are they the same kind of thing?",
+  "surface": [
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "They are different product layers. **Soroswap** develops Soroban AMM and aggregation contracts plus API/SDK/frontend components; its API/service can quote across a wider venue set than the on-chain aggregator contract itself. **StellarX**, currently operated by Ultra Stellar, is a non-custodial trading interface for classic Stellar DEX order books and protocol-level classic liquidity pools. AMM access does not prove StellarX owns a proprietary Soroban AMM or aggregator. Date current availability rather than asserting a timeless shutdown/non-shutdown state.",
+    "keyFacts": [
+      "Distinguishes Soroswap's owned Soroban contracts/API from StellarX's non-custodial classic-liquidity UI role.",
+      "Keeps API routing, on-chain aggregation, and UI access as separate layers."
+    ],
+    "avoid": [
+      "Do NOT call the products the same type or infer a StellarX Soroban router/AMM from AMM access.",
+      "Do NOT make an unsupported permanent shutdown or availability claim."
+    ],
+    "notes": "Confusable-project trap encoded directly. Comparison across two project records. Grounded on Scout: Soroswap = first DEX + DEX AGGREGATOR on Soroban routing across AMMs + SDEX with a Route API (PaltaLabs). StellarX = a decentralized TRADING PLATFORM/UI on Stellar (with AMM access), built by Ultra Stellar (same team as LOBSTR/StellarTerm) — NOT an aggregator, NOT SDF.\nAlso good if the answer: Notes they are different categories: aggregation/routing vs a trading UI over Classic + AMM.\nGolden cites: Sources distinguishing Soroswap (aggregator) from StellarX (trading UI).\nGT-18 CORRECTION 2026-07-10: preserve product-layer boundaries and remove the inherited shutdown absolute."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://github.com/soroswap/docs",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.stellarx.com/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.stellarx.com/amm/liquidity",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://ultrastellar.com/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Soroswap owns Soroban AMM/aggregation components, while StellarX is a non-custodial interface over classic SDEX/order-book and classic liquidity-pool functionality.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Soroswap docs and StellarX product/terms pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/F: Soroswap deployment code and live adapter read",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "B/F: Soroswap deployment code and live adapter read",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent operator-history sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The core distinction was sound, but the inherited answer collapsed Soroswap API and on-chain routing, treated StellarX's AMM access imprecisely, and used an unsupported shutdown negative.",
+      "evidence": [
+        "Solo scratchpad 575 GT-18 primary 3249 and blind 3252",
+        "Sibling sweep: q-defi-soroswap-what-is and q-defi-stellarx-what-is"
+      ],
+      "rootCause": [
+        "Product-layer shorthand turned API capability and UI access into protocol ownership claims.",
+        "improvements/stellar-light-scout/sls-024-project-lifecycle-operator-conflicts.md"
+      ]
+    },
+    "origin": "raven-next q-defi-soroswap-vs-stellarx"
+  }
+}

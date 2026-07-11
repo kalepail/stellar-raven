@@ -1,0 +1,92 @@
+{
+  "id": "q-sor-decode-hosterror-codes",
+  "question": "How do I read a Soroban HostError diagnostic log — `Error(Contract, #N)`, `Error(WasmVm,…)`, `Error(Budget, ExceededLimit)`, `Bad union switch` from scValToNative — where's the standard contract-error reference, and how do I fix common test/runtime failures (`Error(Auth, InternalError)` despite mock_all_auths, 'no contract ID', empty `events().all()`, `set_timestamp` not found)?",
+  "surface": [
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Start with diagnostic events/meta. `Error(Contract, #N)` is contract-defined: inspect that contract's error enum/spec/source; there is no global #N table. `Error(Budget, ExceededLimit)` is resource exhaustion; simulate and inspect CPU/memory/read/write/resource fees. `Error(WasmVm, …)` is a Wasm execution/type/trap class. `Bad union switch` from `scValToNative` means the XDR union/expected return type is wrong, stale, or invalid—decode only a successful expected `ScVal`.\n\nKeep auth/context failures distinct. A nested non-root auth tree under `mock_all_auths` can produce `Error(Auth, InvalidAction)`; use `mock_all_auths_allowing_non_root_auth` only for that intended test shape. `Error(Context, InternalError)` with “no contract running” or “Current context has no contract ID” means code requiring contract context ran outside an invocation; call through the generated client or use `env.as_contract` in tests. Literal `Error(Auth, InternalError)` requires its diagnostics and must not be automatically assigned the non-root remedy. For events import `testutils::Events as _` and inspect `env.events().all().events()`; failed calls roll events back. For time import `testutils::Ledger as _` before `env.ledger().set_timestamp(...)`.",
+    "keyFacts": [
+      "Separates contract-defined, budget, WasmVM, XDR-union, auth, and missing-context errors.",
+      "Gives exact non-root auth, contract-context, events, and ledger-testutils remedies without treating one as universal."
+    ],
+    "avoid": [
+      "Do NOT use a universal Contract #N table or guess an SCVal union.",
+      "Do NOT claim mock_all_auths_allowing_non_root_auth explains every Auth/InternalError or that no contract ID always means an unregistered client."
+    ],
+    "notes": "Verified core guidance with official docs and local skill snippets. Some example-specific fixes (`set_timestamp` import path, custom auth internals) are SDK-version-sensitive; Phase 3 should compile a tiny test if it wants exact imports.\nAlso good if the answer: Cites official debugging-errors docs, error-enum convention docs, and testing docs/examples. | Recommends re-running with CLI/RPC simulation and verbose diagnostics before changing contract logic.\nGolden cites: Must cite Stellar debugging-errors docs and at least one official testing or contract-error convention source.\nGT-41 independently confirmed exact empirical distinctions on SDK 27. The current rendered diagnostic is Error(Budget, ExceededLimit); do not hard-gate older LimitExceeded wording."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/errors-and-debugging/debugging-errors",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/conventions/error-enum",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/testing/differential-tests",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/testing/integration-tests",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current HostError classes and empirical test-context distinctions",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: current debugging docs, SDK/core/XDR source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: current debugging docs, SDK/core/XDR source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-41 primary/blind compile and runtime probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The inherited troubleshooting answer conflated distinct auth/context errors, gave an overbroad no-contract-ID cause, and did not state the current testutils APIs precisely.",
+      "evidence": [
+        "Solo scratchpad 575 GT-41 primary 3302 and blind 3305; stellar/SDK 27 empirical probes on 2026-07-10."
+      ],
+      "rootCause": [
+        "Eval-side error-taxonomy overgeneralization.",
+        "improvements/skills/sk-006-error-keyed-troubleshooting-gap.md"
+      ]
+    },
+    "origin": "raven-next q-sor-decode-hosterror-codes"
+  }
+}

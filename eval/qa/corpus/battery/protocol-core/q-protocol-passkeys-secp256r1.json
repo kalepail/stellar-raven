@@ -1,0 +1,49 @@
+{
+  "id": "q-protocol-passkeys-secp256r1",
+  "question": "When did Stellar add native support for passkeys / secp256r1 signature verification at the protocol level?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "- secp256r1 signature verification (enabling passkeys / WebAuthn smart wallets) landed in **Protocol 21 via CAP-0051** [1][2].\n- Protocol 21 activated on Mainnet around **2024-06-18** [1].\n- This is what enables passkey-based smart wallets (e.g. PasskeyKit) on Soroban [1].\n- Protocol 21 also added TTL extension (CAP-0053) and Soroban cost-model refinements [1]. secp256r1 is **not** the same curve as BLS12-381.",
+    "keyFacts": [
+      "States secp256r1 verification (enabling passkeys / WebAuthn smart wallets) landed in Protocol 21 via CAP-0051."
+    ],
+    "avoid": [
+      "Do NOT attribute secp256r1/passkeys to the wrong CAP (e.g. CAP-0059, CAP-0046) or wrong protocol (P20, P22).",
+      "Do NOT claim secp256r1 is the same curve as BLS12-381 or that passkeys require BLS."
+    ],
+    "notes": "secp256r1/passkeys = CAP-0051 = Protocol 21. Trap is wrong CAP/version or curve confusion.\nAlso good if the answer: Notes Protocol 21 activated on Mainnet around 2024-06-18. | Notes this is what enables passkey-based smart wallets (e.g. PasskeyKit) on Soroban.\nGolden cites: The Protocol 21 upgrade guide on stellar.org and/or CAP-0051 in stellar/stellar-protocol."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/protocol-21-upgrade-guide",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0051.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-33-passphrases-operations-parallel-passkeys-consensus accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-passkeys-secp256r1"
+  }
+}

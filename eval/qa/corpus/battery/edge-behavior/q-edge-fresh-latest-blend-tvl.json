@@ -1,0 +1,103 @@
+{
+  "id": "q-edge-fresh-latest-blend-tvl",
+  "question": "What's Blend's TVL today and how has it trended this quarter?",
+  "surface": [
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "Answer both parts using **one named provider/series**, a retrieval timestamp, and a declared meaning of 'this quarter' (for example, calendar-quarter-to-date). At a **2026-07-10** DefiLlama probe, Blend's base Stellar series was about **$140.74M**, versus **$131.98M** on July 1—about **+6.64% Q3-to-date**—with a separate Q3 peak around **$144.86M**. Those values are illustrative, volatile, and non-gating. Re-query before answering. Do not average different refreshes or mix base TVL with borrowed, pool2/backstop, fees, volume, quarter peak, or all-time record.",
+    "keyFacts": [
+      "Provides a dated same-provider current point and start/end trend over a declared quarter window.",
+      "Separates current, trend, quarter peak, record, borrowed, pool/backstop, fees, and volume."
+    ],
+    "avoid": [
+      "Do NOT answer only with a dashboard pointer, give an undated scalar, fabricate a trend, average provider refreshes, or mix metric classes."
+    ],
+    "notes": "GT-23 2026-07-10: require a dated same-provider current point plus declared-window start/end trend; a dashboard pointer alone does not answer the question. Keep all examples non-gating and separate TVL, borrowed, pool/backstop, peaks, records, fees, and volume.\nGT-23 CORRECTION 2026-07-10: provider/window/methodology behavior is the gate, not the illustrative values."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://defillama.com/protocol/blend",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://api.llama.fi/protocol/blend",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/blend-pools-v2/index.js",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.blend.capital/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Blend current TVL, quarter start/end trend, quarter peak, and record are distinct same-series measures; borrowed and pool/backstop values are not silently additive to base TVL.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: Blend operator and DefiLlama adapter methodology",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Blend operator and DefiLlama adapter methodology",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/F: Scout point snapshot and direct complete DefiLlama series",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "C/F: Scout point snapshot and direct complete DefiLlama series",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: conflicting cached/rendered values demonstrate refresh timing",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-time-slice."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The generic freshness template allowed a dashboard pointer and made the requested quarter trend optional. Current and blind evidence supports a same-provider point plus declared-window trend while keeping all scalars non-gating.",
+      "evidence": [
+        "Solo scratchpad 575 GT-23 primary 3264 and blind 3267; direct DefiLlama probe 2026-07-10T19:23Z."
+      ],
+      "rootCause": [
+        "A generic freshness row lagged newer provider/window/methodology siblings and under-answered the explicit trend request.",
+        "improvements/stellar-light-scout/sls-031-tvl-methodology-provenance.md",
+        "improvements/stellar-light-scout/sls-039-project-tvl-history-capability.md"
+      ]
+    },
+    "origin": "raven-next q-edge-fresh-latest-blend-tvl"
+  }
+}

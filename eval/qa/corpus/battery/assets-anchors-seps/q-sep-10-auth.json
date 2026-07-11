@@ -1,0 +1,51 @@
+{
+  "id": "q-sep-10-auth",
+  "question": "How does SEP-10 authenticate a Stellar wallet to an anchor?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "**SEP-10** is **Stellar Web Authentication** (Status: Active) — the standard by which a wallet\nproves control of its Stellar account to a server (e.g. an anchor) and obtains a session JWT.\nFlow: (1) the wallet GETs a **challenge transaction** from the server's `WEB_AUTH_ENDPOINT`\n(signed by the server's `SIGNING_KEY`); (2) the wallet **signs the challenge** with its account\nkey(s) and POSTs it back; (3) the server validates the signature(s) and returns a **JWT**\nauthenticating the session. The challenge transaction is a **proof artifact — it is built with an\ninvalid sequence number and is never submitted to the ledger**, so no on-chain payment or fee is\ninvolved [1]. SEP-10 authenticates classic `G`/`M` accounts; **SEP-45** is the analogous web-auth\nstandard for Soroban **contract (`C…`) accounts** [2].\n\nSources: [1] stellar-protocol `ecosystem/sep-0010.md` (Stellar Authentication, Active);\n[2] `ecosystem/sep-0045.md` (Web Authentication for Contract Accounts, Draft).",
+    "keyFacts": [
+      "Names SEP-10 as Stellar Web Authentication.",
+      "The wallet signs a server-provided challenge transaction to prove control of its account; the server returns a JWT on success."
+    ],
+    "avoid": [
+      "Do NOT misnumber it (authentication is SEP-10, not SEP-12/SEP-24).",
+      "Do NOT claim the challenge transaction is submitted on-chain to authenticate."
+    ],
+    "notes": "Dossier §7.1, Q12. Verified: SEP-0010 'Stellar Authentication', Status Active (ecosystem README master table).\nAlso good if the answer: The challenge transaction is not submitted to the network (it is a signed proof, not a real payment).\nGolden cites: SEP-0010 on the stellar-protocol repo or developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0010.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0045.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-05-sep-identity-auth-quotes-token-wallet accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-sep-10-auth"
+  }
+}

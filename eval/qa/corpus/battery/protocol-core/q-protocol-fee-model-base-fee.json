@@ -1,0 +1,76 @@
+{
+  "id": "q-protocol-fee-model-base-fee",
+  "question": "How does the Stellar fee model work for classic transactions — what is the base fee and how are fees computed?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "For classic transactions, the inclusion-fee bid is expressed per operation and the transaction fee scales with operation count. **As of 2026-07-10**, the current minimum/effective base-fee floor is **100 stroops (0.00001 XLM) per operation**; validators can change the parameter, and surge can raise the clearing rate above it. One XLM is 10,000,000 stroops. Fee-bump lets another account raise/pay the bid. Smart-contract transactions additionally pay resource fees and compete against resource limits. Use live fee/configuration data for a current value.",
+    "keyFacts": [
+      "Explains classic per-operation inclusion-fee arithmetic and dates the current 100-stroop floor.",
+      "Separates surge bids and Soroban resource fees."
+    ],
+    "avoid": [
+      "Do NOT freeze 100 stroops forever, call it whole XLM/gwei, or omit operation count."
+    ],
+    "notes": "Base fee 100 stroops = 0.00001 XLM per op. Trap is misstating magnitude or gas/gwei framing.\nAlso good if the answer: Notes a stroop is the smallest XLM unit (1 XLM = 10,000,000 stroops). | Notes that under surge/congestion, fees are determined by a market (you bid a max fee; surge pricing applies), and fee-bump transactions let a third party pay/raise fees.\nGolden cites: The fees / transaction-fees docs on developers.stellar.org.\nGT-32 CORRECTION 2026-07-10: 100 stroops is the current dated floor, not an immutable constant."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/fees-resource-limits-metering",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://horizon.stellar.org/fee_stats",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "As of 2026-07-10 the ledger base-fee floor is 100 stroops; classic inclusion fee is operations times the effective base fee, with surge bids and separate Soroban resource fees.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: fees docs and CAP/network configuration semantics",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: fees docs and CAP/network configuration semantics",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Horizon/RPC fee reads",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The formula is correct, but 100 stroops was presented as timeless rather than a current validator-configured floor.",
+      "evidence": [
+        "Solo scratchpad 575 GT-32 primary 3281 and blind 3284."
+      ],
+      "rootCause": [
+        "Current network parameter fossilized as a protocol constant."
+      ]
+    },
+    "origin": "raven-next q-protocol-fee-model-base-fee"
+  }
+}

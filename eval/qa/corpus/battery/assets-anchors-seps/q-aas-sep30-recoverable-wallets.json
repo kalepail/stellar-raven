@@ -1,0 +1,61 @@
+{
+  "id": "q-aas-sep30-recoverable-wallets",
+  "question": "What is SEP-30, and how does its recovery-signer-server model let a Stellar wallet recover accounts without holding the user's key?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "SEP-30 is Stellar's account-recovery standard for wallets that want users to regain access after losing a private key without giving a third party custody of that key. The official Wallet SDK docs describe the flow as a wallet communicating with one or more recovery signer servers to register the wallet for later recovery.\n\nThe mechanism relies on Stellar account signers and thresholds. Before loss, the wallet/account must be configured so recovery signer server(s) can participate in replacing signers or helping the user regain high-threshold control according to the SEP-30 flow. The recovery server verifies authenticated requests, commonly with SEP-10 JWTs or an external identity provider depending on the endpoint, and coordinates recovery. It does not need to hold the user's master secret key.\n\nThis is not a magic reset for arbitrary accounts. If the account was never enrolled with the right signers/thresholds, SEP-30 cannot recover it after the secret key is gone. It is also distinct from newer smart-account/passkey recovery patterns; SEP-30 is a classic-account signer-server standard.",
+    "keyFacts": [
+      "Names SEP-30 as Stellar's account recovery standard using recovery signer servers.",
+      "Explains the recovery server is a signer or coordinates signer changes but does not need to hold the user's master secret key.",
+      "Mentions recovery depends on Stellar account signers/thresholds and a wallet-server flow, not magic key reset."
+    ],
+    "avoid": [
+      "Do NOT claim SEP-30 can recover any Stellar account after the secret key is lost with no prior signer setup.",
+      "Do NOT say the recovery server should custody the user's master secret."
+    ],
+    "notes": "SEP-30 spec status is Draft; official Wallet SDK docs still document the flow. Phase 3 can verify current Wallet SDK endpoint details if needed.\nAlso good if the answer: Notes multiple recovery methods or servers can be used depending on account setup and wallet support. | Distinguishes SEP-30 recovery from passkey smart-account recovery patterns.\nGolden cites: SEP-30 specification or official Stellar docs covering recoverable wallets."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/wallet/sep30",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/wallet",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0030.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/sep-30-recoverysigner-user-friendly-key-management",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-01-asset-lifecycle-safety-metadata accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-aas-sep30-recoverable-wallets"
+  }
+}

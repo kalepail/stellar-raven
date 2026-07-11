@@ -1,0 +1,89 @@
+{
+  "id": "q-sor-ttl-defaults-extend",
+  "question": "What are the default TTLs for a freshly deployed contract, will an actively-used contract still get archived if I never call `extend_ttl`, and how do I separately extend contract *code* TTL vs instance/persistent-entry TTL (there is no `bump()`)?",
+  "surface": [
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "TTL is ledger-based and network-configured; reads/popularity do not automatically extend every entry. Fresh code/contract-instance entries use the network's minimum Persistent TTL. Dated 2026-07-10 settings: Mainnet min persistent 2,073,600, min temporary 17,280, max 3,110,400 ledgers; Testnet 120,960, 720, and 3,110,400. Re-query rather than freezing them. Current APIs include `instance().extend_ttl(threshold, extend_to)`, `persistent().extend_ttl(&key, threshold, extend_to)` (temporary equivalent), and deployer `extend_ttl`, `extend_ttl_for_contract_instance`, or `extend_ttl_for_code` with contract/threshold/extend_to. Instance extension covers instance/current code but threshold checks can leave different resulting TTLs; per-key calls are separate. Temporary expires permanently; Persistent/Instance archive and may auto-restore under P23 when simulation supplies archived entries—restoration is not extension. ExtendFootprintTTLOp applies one relative offset to its read-only footprint and is unrelated to account sequence bumping.",
+    "keyFacts": [
+      "Gives dated network minimum/maximum settings and complete current extension method shapes.",
+      "Separates explicit extension, P23 restoration, Temporary deletion, and read-only-footprint behavior."
+    ],
+    "avoid": [
+      "Do NOT freeze settings, use one-argument pseudo-code as current API, claim activity auto-extends state, or conflate restoration with extension."
+    ],
+    "notes": "Also good if the answer: Says default/max TTLs are network settings and tests should set or read them rather than freezing a stale number.\nGolden cites: Official state archival docs. | Official TTL extension testing/client-side docs.\nGT-43 live settings are dated examples; behavior and explicit re-query are required."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-core",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current network TTL settings and SDK extension APIs",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: archival docs/SDK/Core",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: archival docs/SDK/Core",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/F: live network settings and GT-43 probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "C/F: live network settings and GT-43 probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The durable TTL core was correct but did not answer the requested current fresh-deployment settings or give complete current APIs.",
+      "evidence": [
+        "Solo scratchpad 575 GT-43 processes 3311/3320; live settings 2026-07-10."
+      ],
+      "rootCause": [
+        "Eval-side answer completeness; improvements/stellar-docs/sd-007-state-archival-auto-restore-ambiguity.md"
+      ]
+    },
+    "origin": "raven-next q-sor-ttl-defaults-extend"
+  }
+}

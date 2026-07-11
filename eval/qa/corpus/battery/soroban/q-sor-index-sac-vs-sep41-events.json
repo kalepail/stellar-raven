@@ -1,0 +1,88 @@
+{
+  "id": "q-sor-index-sac-vs-sep41-events",
+  "question": "When indexing Soroban token events, how do I distinguish SAC (classic-wrap) transfer/mint events from soroban-token-sdk SEP-41 events (3 vs 4 topics, recipient position), filter via getEvents, and dedup by id?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Custom SEP-41 events use topics `[transfer, from, to]` and `[mint, to]`. Current SAC/CAP-67 events append the SEP-11 asset string: `[transfer, from, to, asset]` and `[mint, to, asset]`; this applies to direct SAC and unified Classic events. Recipient positions remain transfer topic 2 and mint topic 1. Topic count is schema evidence, not proof that an arbitrary producer is a SAC: verify the emitting contract ID/spec/registry. Direct SAC and Classic-operation unified events share the SAC shape, so use transaction/operation metadata to distinguish their path. With current RPC, page by cursor, dedupe by per-event `id` rather than transaction hash, use `*` for one topic and final/sole `**` for multiple positions, and account for muxed destinations via event data.",
+    "keyFacts": [
+      "Correctly distinguishes custom SEP-41 and current asset-appended SAC/CAP-67 schemas.",
+      "Uses producer/spec validation and event-id/cursor dedupe."
+    ],
+    "avoid": [
+      "Do NOT claim direct SAC transfer is three topics, infer authenticity solely from topic count, or dedupe by transaction hash.",
+      "Do NOT treat pagingToken as the current RPC event identity."
+    ],
+    "notes": "Verified against Stellar Docs MCP and stellar-protocol on 2026-06-29. `getEvents` result field names may vary by SDK wrapper; Phase 3 can spot-check the exact JSON-RPC response shape.\nAlso good if the answer: Mentions Protocol 23/CAP-67 unified asset events for classic payments, DEX, claimable balances, clawbacks, and SAC events. | Mentions muxed destination data map (`amount`, `to_muxed_id`) as a P23/CAP-67 nuance.\nGolden cites: SEP-41 for contract-token event shapes. | CAP-67 or official payment/event docs for unified SAC/classic event shapes. | Official RPC/getEvents docs for filtering, cursors, and retention.\nGT-42 blind controls over the superseded primary addendum: current direct SAC events carry the asset topic."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-06-29",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0067.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/send-and-receive-payments#summary",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getEvents",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current custom SEP-41 versus SAC/CAP-67 event shapes",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: SEP-41, CAP-67, released/current host source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: passing direct-SAC event test and GT-42 blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The event schema needed current CAP-67/RPC provenance and a producer/spec guard; the GT-42 primary addendum's direct-SAC three-topic claim was disproved by current host source/test.",
+      "evidence": [
+        "Solo scratchpad 575 GT-42 processes 3308/3315; rs-soroban-env test_transfer_with_issuer passed."
+      ],
+      "rootCause": [
+        "Eval-side schema provenance gap.",
+        "improvements/stellar-docs/sd-018-sac-cap67-event-schema-gap.md"
+      ]
+    },
+    "origin": "raven-next q-sor-index-sac-vs-sep41-events"
+  }
+}

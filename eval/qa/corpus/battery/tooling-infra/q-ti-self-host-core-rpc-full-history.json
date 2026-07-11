@@ -1,0 +1,182 @@
+{
+  "id": "q-ti-self-host-core-rpc-full-history",
+  "question": "How do I self-host stellar-core + a separate stellar-rpc with full history (captive-core config, history archives, pointing RPC at an already-synced core) without Quickstart, and which providers offer full Soroban history?",
+  "surface": [
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Self-hosting does not automatically provide complete queryable history. Separate the components:\n\n- **Stellar Core** verifies/maintains current ledger state and BucketList state. A complete history archive plus `CATCHUP_COMPLETE=true` can replay all available history, but that may take weeks and does not create an indexed REST/JSON-RPC history API. Core's optional query server is disabled by default and, when enabled, keeps a small best-effort set of recent state snapshots rather than arbitrary history.\n- A newly initialized publishing **history archive** normally starts forward; old checkpoints require separate mirroring/repair. **Captive Core** streams historical/live ledgers to an ingester but is not durable storage.\n- **Stellar RPC** `getTransaction`, `getTransactions` and `getEvents` read retained local rows. Its direct external-datastore “Infinite Scroll” path is currently wired only to **`getLedgers`**. RPC v27.1.1 may validate/fetch an older datastore range while response `oldestLedger` still reflects the local database, so do not infer datastore depth from that field alone.\n- **Horizon** can serve full indexed classic history only after explicit historical ingestion plus sufficient retention, storage and filter coverage. Current account state or the latest ledger proves nothing about older row coverage.\n- **Galexie** exports raw `LedgerCloseMeta` to a data lake; it is storage/transport, not a query API. **Hubble** is read-only batch BigQuery analytics, not live transaction serving. Normal replayable close metadata begins at ledger 2 because ledger 1 is pregenerated genesis state.\n\nAs of **2026-07-11**, those boundaries were checked against Core 27.1.0, RPC 27.1.1, Horizon 27.0.0 and Galexie 27.0.0. Exact coverage of an unnamed deployment is unverifiable without its local database, archive/data-lake completeness, filters and active configuration. For a product, choose the method and latency model first, then inspect current provider capabilities or run the corresponding self-hosted ingestion path.",
+    "keyFacts": [
+      "Separates Core replay/current state and raw history archives from indexed query services.",
+      "States complete catchup can be slow and Core query snapshots are recent/current-state oriented, not arbitrary history.",
+      "Treats a new archive as forward-only unless old checkpoints are mirrored and Captive Core as transport, not storage.",
+      "Keeps RPC transaction/event methods local-retention-bound and direct datastore history getLedgers-only, including the local oldestLedger caveat.",
+      "Requires explicit retained Horizon ingestion and distinguishes Galexie raw export from Hubble batch read-only analytics.",
+      "States ordinary replayable LedgerCloseMeta starts at ledger 2 and keeps deployment/provider coverage dated and inspectable."
+    ],
+    "avoid": [
+      "Do NOT call Core, a history archive, Captive Core or Galexie an indexed history API.",
+      "Do NOT equate complete replay, raw archive completeness, local retention, indexed ingestion and analytics.",
+      "Do NOT claim pointing RPC at a synced Core backfills arbitrary old getEvents/getTransactions or that a datastore extends every method.",
+      "Do NOT infer datastore floor from v27.1.1 oldestLedger or Horizon coverage from current state/latest ledger.",
+      "Do NOT call Hubble real-time/free or Galexie a query API, and do not require a literal replayable ledger-1 record.",
+      "Do NOT publish an undated static provider list or exact deployment coverage without inspecting live configuration/data."
+    ],
+    "notes": "GT-54 CORRECTION 2026-07-11: grade the component/method matrix, not a generic Core+data-lake recipe. Public provider windows/checkmarks and binary defaults are different facts; exact deployment coverage remains unverifiable without inspecting DB, archive/data-lake, filters and config."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/validators/admin-guide/publishing-history-archives",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/validators/admin-guide/running-node#catching-up",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/indexers/build-your-own/ingest-sdk/developer_guide/ledgerbackends/captivecore",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/admin-guide/data-lake-integration",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc/blob/v27.1.1/cmd/stellar-rpc/internal/methods/get_ledgers.go",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc/blob/v27.1.1/cmd/stellar-rpc/internal/methods/get_transactions.go",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/admin-guide/ingestion",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/indexers/build-your-own/galexie",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/analytics/hubble",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-core/blob/v27.1.0/docs/software/commands.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Core complete catchup/history archives support replay and verification but are not indexed history APIs; Captive Core transports ledgers without becoming durable storage",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Core history/catchup and Captive Core documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: Core v27.1.0 commands/config and Ingest SDK implementation/release",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "RPC local getTransaction/getTransactions/getEvents retention is distinct from direct external-datastore fallback, which current v27.1.1 wires only to getLedgers",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official RPC data-lake and method documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar-rpc v27.1.1 getLedgers/getTransactions handlers",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: read-only current/old-range RPC probes recorded in GT-54",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Horizon needs explicit retained ingestion, Galexie exports raw LedgerCloseMeta, and Hubble is batch read-only analytics; normal replayable close metadata starts at ledger 2",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Horizon/Galexie/Hubble documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: Horizon/Galexie/stellar-etl releases and source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/F: read-only Horizon range comparison and bounded archive/analytics checks",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "C/F: read-only Horizon range comparison and bounded archive/analytics checks",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited getLedgers-only headline was directionally correct but collapsed Core replay/history archives, Captive Core transport, RPC local retention/data-lake fallback, Horizon indexed ingestion, Galexie storage and Hubble analytics into one setup recipe. GT-54 independently confirmed the exact component and method boundaries.",
+      "evidence": [
+        "Solo scratchpad 575, GT-54 primary 3383 and pre-read-locked blind 3386 independently agreed that self-hosting does not imply every kind of complete history; the blind lane supplied the component matrix and v27.1.1 oldestLedger caveat.",
+        "KV gt54/blind-lock/process-3386 records the sealed matrix before primary/current-corpus read and final action 'full method/component boundary'.",
+        "Sibling sweep checked RPC retention/events/archive providers, historical events/balances, Hubble, Galexie and indexer cases; all retain getLedgers-only direct archive depth and deployment-specific coverage."
+      ],
+      "rootCause": [
+        "improvements/skills/sk-003-getledgers-retention-conflict.md",
+        "improvements/stellar-docs/sd-023-rpc-event-retention-config-drift.md",
+        "improvements/stellar-docs/sd-029-rpc-backfill-documentation-gap.md",
+        "Eval-side architecture collapse: replay, raw checkpoint storage, durable ledger export, local retained APIs, indexed history and batch analytics were presented as interchangeable."
+      ]
+    },
+    "origin": "raven-next q-ti-self-host-core-rpc-full-history"
+  }
+}

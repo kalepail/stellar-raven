@@ -1,0 +1,125 @@
+{
+  "id": "q-comp-sep8-regulated-assets-approval-server",
+  "question": "How does SEP-8 let an issuer enforce compliance on a regulated asset, and what is the approval server's role in the transaction flow?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "- **SEP-8 is the Regulated Assets standard** for classic assets whose issuer requires per-transaction approval. The issuer sets both **Authorization Required and Authorization Revocable** and publishes regulated=true, approval_server, and approval_criteria in the asset's SEP-1 stellar.toml. **Clawback is separate and optional; it is not a SEP-8 prerequisite.**\n- The wallet builds and signs a transaction, detects the regulated asset, and POSTs its encoded transaction to the approval server. The server checks policy and returns success, revised, pending, action_required, or rejected. Success adds issuer approval to the compliant transaction. A revised transaction must preserve user intent, be inspected, and be re-signed by the wallet.\n- After all required signatures are present, **the wallet submits the transaction**. The approval server does not submit it. This is a classic-asset authorization flow and does not require Soroban.",
+    "keyFacts": [
+      "Names SEP-8 as the Regulated Assets standard.",
+      "Requires Authorization Required plus Authorization Revocable and the regulated, approval_server, and approval_criteria stellar.toml fields; clawback is optional.",
+      "The wallet posts a signed transaction, handles the five approval statuses, re-signs revisions, and submits the final transaction."
+    ],
+    "avoid": [
+      "Do NOT call SEP-8 KYC or authentication.",
+      "Do NOT substitute AUTH_CLAWBACK_ENABLED for SEP-8's AUTH_REVOCABLE requirement.",
+      "Do NOT say the approval server submits the transaction or omit wallet inspection/re-signing of revisions.",
+      "Do NOT claim Soroban is required."
+    ],
+    "notes": "Canonical on-chain mechanic. Verified vs SEP-0008: title 'Regulated Assets'; the Approval Server 'receives a signed transaction, checks for compliance, and signs it on success' (the wallet then submits). Trap is conflating SEP-8 (regulated assets) with SEP-12 (KYC)/SEP-10 (auth).\nAlso good if the answer: The regulated asset is configured so transfers require issuer approval (authorization gating), tied to the asset's authorization flags. | WisdomTree-style issuers used SEP-8 to create assets that require issuer approval to transact, without a smart contract.\nGolden cites: The SEP-8 spec (stellar-protocol GitHub) or developers.stellar.org regulated-assets docs.\nCORRECTION 2026-07-10: mandatory flags are Required + Revocable. Clawback is optional. The approval server signs/returns; the wallet inspects and re-signs revised transactions and submits the final transaction."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0008.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0001.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/control-asset-access",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SEP-8 requires AUTH_REQUIRED and AUTH_REVOCABLE, not AUTH_CLAWBACK_ENABLED",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: pinned SEP-0008 Authorization Flags section",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: official asset-control documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/F: last official Go regulated-assets reference configured Required plus Revocable",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "B/F: last official Go regulated-assets reference configured Required plus Revocable",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "The approval server submits the approved transaction",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: SEP-0008 success/revised flow returns a transaction to the wallet",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/F: official reference flow and tests cover wallet resubmission and all five statuses",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "B/F: official reference flow and tests cover wallet resubmission and all five statuses",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "Independent blind review: Solo process 3227",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The answer omitted SEP-8's normative Authorization Revocable prerequisite and described success as a generic dual-signature path without fully preserving wallet submission. SEP-8 requires Required plus Revocable; clawback is separate and optional. The approval server returns the transaction, and the wallet submits after inspecting/re-signing revisions.",
+      "evidence": [
+        "Solo scratchpad 575 GT-08 primary and blind matrices"
+      ],
+      "rootCause": [
+        "Partial paraphrase lost the normative flag pair and compressed success, revised, and submission responsibilities."
+      ]
+    },
+    "origin": "raven-next q-comp-sep8-regulated-assets-approval-server"
+  }
+}

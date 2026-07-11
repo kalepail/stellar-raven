@@ -1,0 +1,111 @@
+{
+  "id": "q-builder-rust-soroban-devs",
+  "question": "Who are some experienced Soroban / Rust smart-contract builders in the Stellar ecosystem I could reach out to?",
+  "surface": [
+    "scout.searchProjects"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, Scout's Rust/Soroban skill searches produced seven candidates with direct public contract-code evidence worth reviewing: **Vanessa Barros / vanbarros76** (`desafio30k-token`, last observed push 2024-11-18), **Bastian Koh / alexanderkoh** (`flashpool-protocol`, 2026-03-26), **Pau Koh / Klorenn** (`Phase`, 2026-04-16), **Miguel Nieto / miguelnietoa** (`tippa-contracts`, 2026-02-28), **Asman Malika / Malika7188** (`Chama-Trust-Wallet`, 2025-11-15), **Cristian Brown / CaBsCrypto** (`Trust-Leaf`, 2026-06-30), and **Gustavo Gonçalves / G0vermind** (`social-forests-protocol`, 2026-06-05). These are directory candidates with corroborating code, not a verified seniority or availability ranking. Three additional directory matches—Josias Batista, Samuel Ogera, and Pedro Pelicioni—had weaker or missing direct current code evidence in the bounded sweep and should not be silently elevated. Re-check live results and repositories before outreach.",
+    "keyFacts": [
+      "Returns a dated candidate roster grounded in the actual live Rust/Soroban result union.",
+      "Separates directory matching, direct code evidence, and subjective experience/availability."
+    ],
+    "avoid": [
+      "Do NOT claim every text match is experienced or currently available.",
+      "Do NOT claim Scout exposes populated skills/scfTier attributes or removed scfTier/featured filters."
+    ],
+    "notes": "GT-35 CORRECTION 2026-07-10: grade a dated live-union candidate roster with direct code evidence and explicit evidence tiers. A directory match does not prove experience, seniority, deployment, or availability.\nGT-35 independently confirmed by processes 3287/3289; re-check roster and activity at answer time."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/builders",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/vanbarros76/desafio30k-token",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/alexanderkoh/flashpool-protocol",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Klorenn/Phase",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/TryTippa/tippa-contracts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Malika7188/Chama-Trust-Wallet",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/CaBsCrypto/Trust-Leaf",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/G0vermind/social-forests-protocol",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Seven members of the dated Rust/Soroban directory union have direct public Soroban/Rust code footprints, while three other matches need weaker qualification",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Scout skill=Rust/Soroban union",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/D: direct candidate repositories and activity timestamps",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "B/D: direct candidate repositories and activity timestamps",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-bounds."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The answer exposed removed filters and nonexistent attributes, returned only a route recipe, and promoted directory text matches directly to experienced-builder claims without code evidence.",
+      "evidence": [
+        "Solo scratchpad 575 GT-35 primary 3287 and blind 3289; live union and direct repository sweep 2026-07-10."
+      ],
+      "rootCause": [
+        "Directory match was conflated with expertise/seniority and stale schema descriptions were copied into gospel.",
+        "improvements/stellar-light-scout/sls-041-builder-skill-match-provenance.md"
+      ]
+    },
+    "origin": "raven-next q-builder-rust-soroban-devs"
+  }
+}

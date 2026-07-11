@@ -1,0 +1,89 @@
+{
+  "id": "q-pc-fee-bump-channel-accounts-feepool",
+  "question": "How do fee-bump transactions and channel or fee-paying accounts work, does the fee account sign or use sequence, why can fees look doubled, and what is the fee pool?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "A fee-bump transaction wraps an already-signed inner transaction. The outer fee source signs and pays; the inner source, sequence, operations, and signatures remain authoritative. Paying the bump does not consume the fee source's sequence number. The outer fee field is the **total maximum fee bid** for the effective operation count (inner operations + one wrapper, plus applicable Soroban resource-fee handling), and must satisfy the inner-fee validity rule. The fee source is charged once; do **not** add the visible inner and outer fee fields as separate charges. Channel accounts are different: separate transaction-source accounts consume their own sequences to provide throughput lanes while operations may use another source. Stellar fees go to the protocol fee pool, not validator rewards.",
+    "keyFacts": [
+      "Explains outer fee-source authorization/payment and unchanged inner source/sequence/signatures.",
+      "Makes the outer charged fee and inner retained fee field non-additive, and distinguishes channel-account sequence lanes."
+    ],
+    "avoid": [
+      "Do NOT say fee bump replaces inner authorization or consumes the fee source sequence.",
+      "Do NOT add inner and outer fields as two separately assessed fees or conflate channel accounts with fee sponsorship."
+    ],
+    "notes": "Reviewed 2026-06-29: differentiated (D3) — dropped the surge-fee-choice clause from the q and downgraded the surge must_have to should_have so surge/fee-selection is owned by q-pc-practical-fee-setting; this question keeps the fee-bump-specific 'why fees look doubled' as a must_have. Fee-bump and channel-account mechanics verified against official docs and CAP-0015. Fee-pool wording follows prior-art protocol notes; verify current fee-pool XDR/core semantics directly before using as tokenomics ground truth.\nAlso good if the answer: Notes the max fee is a bid under surge pricing, deferring fee-selection strategy to fee-setting guidance (owned by q-pc-practical-fee-setting). | Mentions feeStats or network fee endpoints for estimating current inclusion fees.\nGolden cites: At least one primary Stellar source such as developers.stellar.org, stellar-core docs, or the stellar-protocol repository.\nGT-29 CORRECTION 2026-07-10: displayed inner/outer fee fields are not additive charges; the fee source incurs the outer charged fee."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/fee-bump-transactions",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0015.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/channel-accounts",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The fee source is charged once through the outer fee; the inner fee field remains for validity/comparison and is not added as a second charge.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: official fee-bump/channel docs and CAP-0015",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: official fee-bump/channel docs and CAP-0015",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/F: current FeeBumpTransactionFrame/XDR/SDK construction behavior",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "B/F: current FeeBumpTransactionFrame/XDR/SDK construction behavior",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The fee-bump/channel mechanics are correct, but 'outer bid ... on top of the inner fee field' invites a false two-charges interpretation.",
+      "evidence": [
+        "Solo scratchpad 575 GT-29 primary 3276 and blind 3278; both independently required no-double-charge wording."
+      ],
+      "rootCause": [
+        "Eval-side visible-field versus assessed-fee conflation."
+      ]
+    },
+    "origin": "raven-next q-pc-fee-bump-channel-accounts-feepool"
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "id": "q-eco-hana-wallet-scf",
+  "question": "What is the Hana wallet and did it receive SCF funding?",
+  "surface": [
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_document",
+    "lumenloop.get_project",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.list_documents",
+    "lumenloop.search_directory",
+    "lumenloop.search_documents"
+  ],
+  "golden": {
+    "answer": "**Hana** is a non-custodial multichain wallet with Stellar support. Yes: official SCF records show **$50,000 awarded in SCF #22 plus $82,000 in SCF #25, totaling $132,000**. Do not include the unsuccessful SCF #21 submission. Use the current **hana.money** operator surface for present product/network claims and keep old application promises separate from verified current functionality.",
+    "keyFacts": [
+      "Identifies Hana as non-custodial and multichain and derives $132,000 from the two official awarded rows."
+    ],
+    "avoid": [
+      "Do NOT count the non-awarded SCF #21 submission, call Hana Stellar-only, or infer current features from an old application/legacy domain."
+    ],
+    "notes": "lumenloop_get_scf_submissions. VERIFIED on Scout: Hana is scfAwarded with scfTotalAwardedUSD = $132,000 (dossier attributes this to rounds 22 & 25); a non-custodial MULTI-chain wallet (browser ext + mobile) with Stellar support. Gate on 'is SCF-awarded + cite the record + multi-chain'; treat the $132K as tool-sourced.\nAlso good if the answer: Reports Hana's SCF funding (approximately $132,000 across SCF rounds 22 and 25) from the source data, or honestly states what is in the corpus.\nGolden cites: The SCF submission record for Hana (or an explicit note of what's in the corpus).\nGT-19 UPDATE 2026-07-10: exact official arithmetic is SCF #22 $50K + #25 $82K = $132K; #21 was not awarded. Current operator domain is hana.money."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/hana-wallet-x9e",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recryJTSYRWHf1GqJ",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recQxCaMDVhJL85AO",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.hana.money/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Hana received $50,000 in SCF #22 and $82,000 in SCF #25, totaling $132,000; its SCF #21 submission was not awarded.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official SCF project/submission records",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: current Scout and hana.money operator surfaces",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: current Scout and hana.money operator surfaces",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The $132,000 total is independently recoverable from two official awarded rows, but the corpus used a legacy domain and mixed old application promises with current features.",
+      "evidence": [
+        "Solo scratchpad 575 GT-19 primary 3254 and blind 3258."
+      ],
+      "rootCause": [
+        "Aggregator total lacked row-level provenance and legacy/application surfaces were treated as current product evidence."
+      ]
+    },
+    "origin": "raven-next q-eco-hana-wallet-scf"
+  }
+}

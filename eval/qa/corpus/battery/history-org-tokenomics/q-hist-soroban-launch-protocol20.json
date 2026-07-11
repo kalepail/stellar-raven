@@ -1,0 +1,80 @@
+{
+  "id": "q-hist-soroban-launch-protocol20",
+  "question": "When did smart contracts (Soroban) launch on Stellar mainnet, and was there a funding program?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Soroban's Mainnet rollout was phased: **Protocol 20/Phase 0 activated February 20, 2024**, Phase 1 followed February 27, and **Phase 2/general availability arrived March 19**. SDF's roughly **$100M Soroban Adoption Fund** was announced earlier, with Futurenet on **October 12, 2022**; it was not itself a 2024 launch event. Soroban is a non-EVM, Wasm-based contract platform with a Rust-first toolchain, not a Solidity/EVM environment or a protocol restricted in principle to Rust.",
+    "keyFacts": [
+      "Separates Protocol activation, phased GA, and the 2022 fund announcement; describes Soroban as Wasm/Rust-first and non-EVM."
+    ],
+    "avoid": [
+      "Do NOT use one 2024 date for every rollout stage, date the fund to launch, claim a 2021/22 Mainnet launch, or call Soroban Solidity/EVM/Rust-only."
+    ],
+    "notes": "GT-27 2026-07-10: distinguish Feb 20 Phase 0, Feb 27 Phase 1, Mar 19 GA, and the Oct 12 2022 fund announcement. Soroban is Wasm/Rust-first and non-EVM, not Rust-exclusive.\nGT-27 CORRECTION 2026-07-10: preserve the phased rollout rather than one blended launch date."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/protocol-20-upgrade-guide",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/smart-contracts-launch-on-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/soroban-smart-contracts-platform-native-to-the-stellar-network-is-live-on-futurenet",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Protocol 20 Phase 0 activated Feb 20 2024, Phase 1 Feb 27, and Phase 2/general availability Mar 19; the $100M fund was announced with Futurenet Oct 12 2022.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Protocol-20 guide and March launch release",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/B: 2022 Futurenet/fund announcement and Wasm platform docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: 2022 Futurenet/fund announcement and Wasm platform docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The broad 2024 claim is right but collapses Protocol-20 activation, phased rollout/general availability, and the 2022 Adoption Fund announcement; it also makes Rust sound exclusive rather than Rust-first/Wasm.",
+      "evidence": [
+        "Solo scratchpad 575 GT-27 primary 3270 and blind 3272."
+      ],
+      "rootCause": [
+        "Distinct activation/GA/funding events were compressed and language support was over-narrowed."
+      ]
+    },
+    "origin": "raven-next q-hist-soroban-launch-protocol20"
+  }
+}

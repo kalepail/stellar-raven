@@ -1,0 +1,109 @@
+{
+  "id": "q-ti-compute-token-lp-market-data",
+  "question": "How do I compute 24h volume, fees, TVL, and price for a token or liquidity pool from chain data (Horizon/RPC/Hubble/BigQuery), matching what StellarX/Scopuly show?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "There is no canonical API value that must exactly match StellarX or Scopuly unless you reproduce that product's private filters and methodology. Define the asset/pool identity, quote asset, `[start,end)` window, fee rule, price method, rounding, and stale/spam/failed-activity policy first.\n\nFor Classic SDEX/liquidity pools, use current Horizon resources/trades/effects for bounded reads and Hubble/indexers for bulk history. For Soroban/custom AMMs, use the contract's events/state through an indexer/provider schema. Compute volume by summing successful trades/swaps in the chosen quote/window; fees from the specific protocol rule; TVL from current reserves times timestamp-aligned reference prices; and price as an explicitly named last/mid/VWAP/oracle/route method. RPC is not an unbounded historical index, Hubble is historical SQL rather than guaranteed real-time, and Classic pools are not contract AMMs. If discussing Horizon lifecycle, disclose the current official wording conflict and rely on the durable endpoint-by-endpoint boundary.",
+    "keyFacts": [
+      "Requires explicit identity, quote, window, methodology, source, and as-of time.",
+      "Separates Classic SDEX/pool data from Soroban AMM contract/indexer data.",
+      "Provides volume, fee, TVL, and price formulas without calling one product number canonical.",
+      "Uses Hubble/indexers for history and treats Horizon lifecycle as disputed rather than a hard polarity."
+    ],
+    "avoid": [
+      "Do NOT claim a canonical TVL/price or exact product match without methodology.",
+      "Do NOT use RPC alone for unbounded history or mix Classic pools with contract AMMs.",
+      "Do NOT inject the unrelated named COMPUTE asset or repeat one Horizon lifecycle label as undisputed."
+    ],
+    "notes": "Verified docs on 2026-06-29. Explorer-specific formulas for StellarX/Scopuly are not public-canonical and should remain a caveat.\nAlso good if the answer: Cites official Horizon resources, Hubble/data analytics docs, and Horizon-to-RPC migration/indexer docs. | Warns that matching StellarX/Scopuly requires matching their filters, quote asset, rounding, stale-pool handling, and spam/illiquid asset policy.\nGolden cites: Official Stellar docs for Horizon resources or liquidity pools. | Official Hubble/BigQuery or data/indexer docs. | Official Horizon-to-RPC migration or RPC history docs for API boundaries.\nGT-51 CORRECTION 2026-07-11: the question uses 'compute' as a verb. Gate methodology/data boundaries, not a similarly named asset or a categorical Horizon lifecycle claim."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/liquidity-on-stellar-sdex-liquidity-pools",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/analytics/hubble",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/indexers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/migrate-from-horizon-to-rpc",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Market metrics require an explicit quote/window/methodology and separate Classic pool/SDEX sources from Soroban AMM contract/indexer data.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: liquidity-pool, Hubble, indexer, and migration documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: read-only pool/trade data-shape probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Official Horizon lifecycle wording is disputed; durable answers should state endpoint/data-shape boundaries rather than one categorical label.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: conflicting official API/stack/migration surfaces",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-49 independent reconciliation reused by GT-51",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-source-conflict."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The formulas were sound, but the inherited answer marked product/schema/current-history choices non-fresh and repeated an uncontested Horizon lifecycle polarity despite the already-verified official-docs conflict.",
+      "evidence": [
+        "Solo scratchpad 575 GT-51 processes 3353/3360 independently retained the methodology and required freshness/source-boundary repair.",
+        "The blind lane resolved the ambiguous slug after reading the actual question: this is the verb 'compute'; the unrelated issuer-qualified COMPUTE asset is excluded from the golden."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-017-horizon-lifecycle-wording-conflict.md",
+        "Eval-side freshness omission for product-matching methodology and data cadence."
+      ]
+    },
+    "origin": "raven-next q-ti-compute-token-lp-market-data"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "id": "q-tool-indexer-repos-discovery",
+  "question": "Find me open-source GitHub repos for indexing Soroban contract events or building a Stellar indexer.",
+  "surface": [
+    "scout.searchRepos"
+  ],
+  "golden": {
+    "answer": "Treat this as **answer-time repository discovery**. Query `scout.searchRepos` with several role-specific and alias variations, inspect the raw rows, then open each returned repository before including it. Return a table with the exact GitHub URL, verified role, source of discovery, last activity/release, archive status, maturity/deployment caveats, and why it fits contract-event or ledger indexing.\n\nKeep roles separate: a turnkey/narrow indexer, a Galexie-style ledger-data exporter, the Go Ingest library, an ETL/export pipeline, a hosted-service client SDK, and community prior art are not interchangeable. The 2026-07-11 verification used current official examples such as `stellar-ledger-data-indexer`, `stellar-galexie`, `go-stellar-sdk/ingest`, and `stellar-etl` to establish those roles, but **no named roster is a permanent requirement**. Supplemental repositories found outside the current Scout result are allowed only when directly verified and labeled as external to that result.\n\nDo not infer correctness, security, maintenance quality, or product completeness from `repoScore`, stars, or semantic rank. Exact alias recall can fail (sls-025), and broad queries can return irrelevant Soroban contracts. For recent RPC `getEvents` polling, disclose the selected provider's retention and the need to persist events for durable history rather than calling RPC a full historical indexer.",
+    "keyFacts": [
+      "Returns a fresh, directly verified, role-labeled repository table with URLs, activity/maturity, and source provenance.",
+      "Keeps indexer, exporter/data lake, ingest library, ETL pipeline, hosted client, and community prior art roles distinct.",
+      "Uses repoScore/stars only as navigation metadata, never as quality/correctness proof, and permits no frozen required roster.",
+      "Labels direct external supplements separately when Scout exact-alias recall misses them."
+    ],
+    "avoid": [
+      "Do NOT fabricate repositories, return irrelevant semantic matches, or require SubQuery/OBSRVR/Mercury as a timeless roster.",
+      "Do NOT equate repoScore, stars, or rank with maintenance, correctness, security, or production readiness.",
+      "Do NOT call Galexie a query index, a hosted-service client a complete backend, or recent RPC events complete history.",
+      "Do NOT treat an exact Scout zero result as proof a public repository is absent."
+    ],
+    "notes": "Code-shaped discovery → scout_repos is the designed surface. Fabricated repos are the trap.\nAlso good if the answer: Distinguishes code/repo discovery from conceptual docs lookups.\nGolden cites: Scout repo results (stellarlight.xyz/api/repos) and/or the GitHub repos returned.\nGT-55 CORRECTION 2026-07-11: grade fresh verified role-labeled rows, not a frozen roster. repoScore/stars/rank are discovery metadata, not quality proof. Exact SubQuery owner/name recall failed while direct GitHub verification succeeded; sls-025 records the recurrence."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/repos/search",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/indexers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/events/ingest",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-ledger-data-indexer",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-galexie",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/go-stellar-sdk/tree/main/ingest",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-etl",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/subquery/stellar-subql-starter",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A useful answer must re-query Scout, verify each repository directly, and label distinct roles rather than returning a prose-only docs page or one frozen roster.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Scout repo searches and source timestamps",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: official Stellar Indexers overview and event-ingestion guidance",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: direct current repository READMEs/source for sampled candidates",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Exact owner/name recall can fail while the public repository exists, and repoScore/stars are navigation fields rather than proof of correctness, security, or maintenance.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: exact SubQuery query returned zero while broad query returned 359 noisy candidates",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: direct GitHub verification of subquery/stellar-subql-starter and role-specific repos",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-55 primary/blind reconciliation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-service-recurrence."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer froze a candidate roster, allowed repoScore/stars/activity to stand in for maintenance quality, and marked live repository discovery static. Current Scout results have alias false negatives and semantic noise, so rows require direct role verification.",
+      "evidence": [
+        "At 2026-07-11T07:17:33Z, Scout exact search for subquery/stellar-subql-starter returned zero, while the direct repository remained public and non-archived; recurrence recorded in sls-025.",
+        "A broad indexer/events query returned 359 candidates including irrelevant smart contracts, proving semantic rank alone is not a role check.",
+        "GT-55 primary 3392 removed the brittle roster; sealed blind 3393 sharpened role labels, current activity/maturity checks, RPC retention, and the no-repoScore-quality inference."
+      ],
+      "rootCause": [
+        "improvements/stellar-light-scout/sls-025-agent-standard-alias-recall.md",
+        "Eval-side discovery-result overreach: a live rank and illustrative candidates were promoted into a durable quality/roster claim."
+      ]
+    },
+    "origin": "raven-next q-tool-indexer-repos-discovery"
+  }
+}

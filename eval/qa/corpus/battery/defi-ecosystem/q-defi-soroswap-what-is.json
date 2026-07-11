@@ -1,0 +1,88 @@
+{
+  "id": "q-defi-soroswap-what-is",
+  "question": "What is Soroswap and what makes it different from other Stellar DEXes?",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_project",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "**Soroswap**, built by PaltaLabs, is an open-source Soroban AMM plus an aggregation stack with contracts, API/SDK, and frontend components. Attribute its 'first' or 'best' wording to Soroswap unless independent chronology is supplied. The on-chain aggregator routes through configured Soroban-AMM adapters; API/service quotes may additionally include classic SDEX liquidity, so do not merge those layers.\n\nAs a dated deployment example, on **2026-07-10** pubnet aggregator `CAYP3UWLJM7ZPTUKL6R6BFGTRWLZ46LRKOXTERI2K6BIJAWGYY62TXTO` returned unpaused adapters for Soroswap, Phoenix, and Aqua. Comet adapter code existed but was not active in that snapshot. Re-query before relying on the set.",
+    "keyFacts": [
+      "Identifies the PaltaLabs Soroban AMM/aggregation stack and separates contract, API, and UI layers.",
+      "Attributes marketing chronology and dates any current adapter set."
+    ],
+    "avoid": [
+      "Do NOT state first/best marketing as independently proven history.",
+      "Do NOT claim classic SDEX is directly executed by the on-chain Soroban aggregator or that code presence proves an active adapter."
+    ],
+    "notes": "GROUNDED 2026-06-22 (re-verified 2026-06-29): live Scout confirms Soroswap (Live, DEX, SCF $346,750, by Palta Labs, soroswap.finance): 'the first DEX and DEX aggregator on Stellar Soroban... routes trades across Soroban AMMs (Soroswap, Phoenix, Aquarius)... Route API returns quotes and optimal routing across Stellar DEXs including the Stellar classic DEX (SDEX).' This is the IDENTITY + differentiation lane → lumenloop_get_project — DISTINCT from q-defi-soroswap-resolve (lumenloop_search_directory; strict website+category field lookup). Confusable trap: Soroswap (aggregator) vs StellarX (UI).\nAlso good if the answer: Built by Palta Labs; product surface includes a swap App, a Soroswap REST API, and Soroswap Earn (yield via Defindex).\nGolden cites: A source identifying Soroswap as the Stellar DEX aggregator (Lumenloop record, soroswap.finance, or Stellar ecosystem source).\nGT-18 CORRECTION 2026-07-10: the inherited first/best and routing composite is non-gating; reward layer separation, attribution, and dated deployment evidence."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://github.com/soroswap/docs",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/soroswap/aggregator",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://soroswap.finance/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Soroswap is a PaltaLabs Soroban AMM/aggregator stack with a live pubnet aggregator whose current adapters were Soroswap, Phoenix, and Aqua.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Soroswap operator docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: aggregator/core repositories and deployment JSON",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: read-only pubnet get_adapters call on 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer promoted Soroswap's first/best marketing and merged API routing with the currently deployed on-chain adapter set. Independent code and live reads support a narrower, dated deployment description.",
+      "evidence": [
+        "Solo scratchpad 575 GT-18 primary 3249 and blind 3252",
+        "Sibling sweep: q-edge-factcheck-soroswap-first-amm and q-scf-history-soroswap"
+      ],
+      "rootCause": [
+        "Operator marketing and code-available adapters were promoted into independent chronology and current deployment truth.",
+        "improvements/stellar-light-scout/sls-015-searchprojects-description-editorial-capture.md"
+      ]
+    },
+    "origin": "raven-next q-defi-soroswap-what-is"
+  }
+}

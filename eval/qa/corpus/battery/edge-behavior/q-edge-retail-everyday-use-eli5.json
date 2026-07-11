@@ -1,0 +1,59 @@
+{
+  "id": "q-edge-retail-everyday-use-eli5",
+  "question": "In plain language, what can a regular non-developer person actually do with Stellar and XLM in everyday life, and why should they care?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "In everyday terms, Stellar is payment infrastructure: a person may use apps built on Stellar to send low-cost transfers, hold or receive stablecoins/assets, cash in or cash out through supported ramps, or use wallet-based services where available. XLM is the native network asset used for fees and minimum balances; it is not a promise of profit and should not be framed as investment advice.\n\nA good answer should stay practical and bounded: availability depends on the user's country, wallet/exchange/anchor support, compliance requirements, and the specific asset. It should avoid hype such as universal merchant acceptance, guaranteed earnings, mining, staking yield, or fee-free use everywhere.",
+    "keyFacts": [
+      "Gives concrete everyday use cases such as low-cost transfers, stablecoin payments/remittances, on/off ramps, and wallet-based asset holding.",
+      "Distinguishes using Stellar rails from speculative XLM investment advice.",
+      "Explains XLM role plainly as native network asset for fees/minimum balances while avoiding hype."
+    ],
+    "avoid": [
+      "Do NOT promise guaranteed profit, universal merchant acceptance, or fee-free use everywhere.",
+      "Do NOT turn the answer into developer-only protocol jargon."
+    ],
+    "notes": "Verified 2026-06-29 against official Stellar learning/use-case pages and lumen docs. Keep answer non-investment and region-aware.\nAlso good if the answer: Mentions availability depends on region, wallet, anchor, and compliance/on-ramp support.\nGolden cites: At least one relevant Stellar corpus or primary source for ecosystem/support claims."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/learn/the-power-of-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/use-cases/payments",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/use-cases/ramps",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/lumens",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-26-out-of-scope-retail-scf-free-xlm-investment accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-edge-retail-everyday-use-eli5"
+  }
+}

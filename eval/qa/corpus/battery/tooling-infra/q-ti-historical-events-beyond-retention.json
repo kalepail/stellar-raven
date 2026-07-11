@@ -1,0 +1,123 @@
+{
+  "id": "q-ti-historical-events-beyond-retention",
+  "question": "Soroban events live on-chain forever but standard RPC serves ~7 days — what's the reliable source of truth for old events (archive RPC, custom indexer, how the explorer does it), and do event topics follow a standard (CAP-67, topic[0]=name)?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Do not rely on a default RPC for old events. **`getEvents`** is limited to the selected endpoint's retained ledger range. Official method prose contains both a 24-hour default and a seven-day maximum, while current source/live providers expose a configurable ledger window; inspect `getHealth` and range errors rather than treating either day count as universal.\n\nRPC Archive/data-lake integration currently extends **`getLedgers` only**. In the 2026-07-11 verification, a Quasar archive endpoint returned ledger 2 through getLedgers but rejected getEvents at ledger 2. For older events, continuously ingest and deduplicate by event ID, persist cursor/coverage only after downstream success, use a historical event index/Hubble, or replay complete ledger metadata through Galexie/Ingest SDK. Respect scan/filter/page limits and report gaps. CAP-67 (Final, Protocol 23) standardizes unified **asset** events, not arbitrary custom-event topics, and retroactive protocol events exist only when archives were re-ingested with compatible event-generation behavior.",
+    "keyFacts": [
+      "Uses provider-configured getEvents retention and getHealth/range verification rather than a universal day count.",
+      "States that archive/data-lake historical depth is getLedgers-only, with direct live evidence.",
+      "Requires durable ingestion/indexing with event-ID dedupe, cursor/coverage persistence, and gap reporting.",
+      "Keeps CAP-67 scoped to unified asset events and avoids promising retroactive events/custom-topic universality."
+    ],
+    "avoid": [
+      "Do NOT pin every provider to 24 hours/seven days or call Archive RPC archival for getEvents.",
+      "Do NOT omit event-ID deduplication/coverage gaps or confuse current getLedgerEntries with history.",
+      "Do NOT imply CAP-67 events always exist retroactively or topic[0] is universal for custom events."
+    ],
+    "notes": "2026-06-29: CAP-67 verified via stellar/stellar-protocol core/cap-0067.md — title 'Unified Asset Events', Status Final, Protocol version 23; standardizes transfer/mint/burn/clawback/fee/set_authorized events across Classic + SAC, SEP-41-compatible (leading event-name symbol in topic[0]) — but it is an ASSET-event standard, not a universal contract-event schema (rubric keeps the must_avoid against overstating topic[0]). Retention normalized: getEvents page says ~24h default/7-day max, unified HISTORY_RETENTION_WINDOW config default ~7 days/120960 ledgers — durable point is bounded window + need for ingestion/indexing. This file owns the archive/data-lake/TTL/CAP-67 lane; q-infra-rpc-event-retention owns the simple FAQ.\nAlso good if the answer: Mentions event topics are arrays of ScVals; CAP-67 (Unified Asset Events, Final in protocol 23) standardizes asset events (transfer/mint/burn/clawback/fee/set_authorized) with a leading symbol name in topic[0] across Classic and the SAC (SEP-41-compatible), but this is an asset-event standard — consumers of arbitrary custom contract events should rely on the emitting contract/spec, not assume topic[0]=name universally.\nGolden cites: RPC event retention/data-lake docs and event ingestion docs.\nGT-52 CORRECTION 2026-07-11: this case owns the operational archive/ingestion/CAP-67 lane. q-infra-rpc-event-retention owns the concise provider-configured FAQ; both must agree."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getEvents",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/events/ingest",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/admin-guide/data-lake-integration",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0067.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc/blob/main/CHANGELOG.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "getEvents is bounded by the selected provider's retained range; current docs conflict on day counts, so getHealth/range behavior controls that endpoint.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: getEvents, ingestion, and RPC configuration docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current stellar-rpc retention source/changelog",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: SDF Testnet getHealth and old/recent getEvents probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-source-conflict."
+      },
+      {
+        "claim": "Archive/data-lake depth extends getLedgers only; a live archive endpoint can serve ledger 2 while rejecting getEvents there.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: data-lake integration guide",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: Quasar archive getLedgers/getEvents split",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited archive/CAP-67 core was sound but still normalized conflicting 24-hour/seven-day prose and omitted live proof that archive getLedgers does not imply old getEvents, plus cursor/coverage/dedup and retroactive-generation caveats.",
+      "evidence": [
+        "Solo scratchpad 575 GT-52 primary/blind matrices independently required the provider-qualified replacement; q-infra-rpc-event-retention was corrected once in the GT-50 bundle with both lanes cited.",
+        "Sibling sweep checked self-host retention/full-history, archive provider, event indexing, Hubble, CAP-67/SAC event-schema, and getTransactions pagination cases."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-023-rpc-event-retention-config-drift.md",
+        "improvements/stellar-docs/sd-018-sac-cap67-event-schema-gap.md",
+        "improvements/stellar-docs/sd-025-horizon-rpc-migration-cap67-drift.md",
+        "improvements/skills/sk-003-getledgers-retention-conflict.md"
+      ]
+    },
+    "origin": "raven-next q-ti-historical-events-beyond-retention"
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "id": "q-tool-cli-skills-discovery",
+  "question": "What install-ready Stellar developer tooling exists — MCP servers, CLIs, and agent skills I can plug in?",
+  "surface": [
+    "scout.getSkill",
+    "scout.listSkills",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Use the live Scout skills catalog and report **returned rows**, not its enums as a frozen roster. `scout.listSkills({})` advertises valid kind filters `skill-md`, `mcp-server`, `sdk`, `cli`, `agent-kit`, and `tool`, and valid source filters `sdf`, `stellarlight`, `lumenloop`, `external`, and `community`. Those values describe what the API accepts; they do **not** promise that every category has a current entry.\n\nFor each row actually returned, give its name/slug, kind, source/owner, install or configuration command, repository/docs URL, scope, and maturity/security caveat. Re-run filtered calls for the requested kinds and preserve an empty array honestly. At **2026-07-11T07:17:34Z**, `agent-kit` and `community` were valid filters but returned zero rows; that is an illustrative stamp, not a durable absence claim. Verify install commands against each current repository/package README and distinguish SDF-owned from community tooling.",
+    "keyFacts": [
+      "Uses Scout's broad live skills catalog and returns concrete current rows across requested tooling kinds.",
+      "Separates valid filter enums from populated rows and treats empty categories as valid current results.",
+      "Includes row-level install/configuration, ownership, scope, URLs, and maturity caveats rather than fabricating from enum names."
+    ],
+    "avoid": [
+      "Do NOT claim every valid kind/source enum currently has a row or turn one empty response into permanent absence.",
+      "Do NOT fabricate tools or install commands, call every listed tool SDF-official, or hide maturity/security caveats.",
+      "Do NOT freeze counts, membership, or empty categories without an answer-time generatedAt/as-of stamp."
+    ],
+    "notes": "2026-06-29 differentiation vs q-tool-mcp-servers-skills-discovery: this file owns the BROAD multi-kind catalog sweep (skill-md/mcp-server/sdk/cli/agent-kit/tool); mcp-discovery owns the NARROW kind=mcp-server filter. Scout /api/skills returns those kinds across sources [sdf, stellarlight, lumenloop, external, community]. Fabrication is the trap.\nAlso good if the answer: Spans the FULL multi-kind catalog (skill-md, mcp-server, sdk, cli, agent-kit, tool) rather than scoping to a single kind such as MCP servers only. | Distinguishes tooling-catalog discovery from a conceptual docs lookup.\nGolden cites: Scout skills catalog (stellarlight.xyz/api/skills) results.\nGT-55 CORRECTION 2026-07-11: grade the broad multi-kind live-catalog behavior, but never require one row per valid enum. Require current returned entries and honest empty categories with generatedAt/as-of context; narrow MCP-only discovery remains a sibling case."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/skills",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/skills",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-cli",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/mcp-stellar-xdr",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-dev-skill",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/Stellar-Light/scout-mcp",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/Stellar-Light/stellar-scout",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Scout advertises six valid kinds and five valid sources, but those are supported filters rather than guaranteed populated categories.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live scout.listSkills payloads with meta.validKinds, meta.validSources, counts, filters, and rows",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: direct repositories/package READMEs for sampled returned tools",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-at-live-stamp."
+      },
+      {
+        "claim": "At the 2026-07-11 author stamp, agent-kit and community were valid filter values with zero returned rows.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live filtered Scout calls",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-55 primary/blind independent reconciliation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-as-of-2026-07-11T07:17:34Z."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer treated Scout's valid kind/source enum values as if every category currently contained rows and marked a live inventory static. Empty filters are valid data, not evidence that the enum is unsupported.",
+      "evidence": [
+        "Live author probe returned 30 total rows, validKinds skill-md/mcp-server/sdk/cli/agent-kit/tool, validSources sdf/stellarlight/lumenloop/external/community, and zero rows for kind=agent-kit and source=community at the recorded stamp.",
+        "GT-55 primary 3392 and sealed blind 3393 agreed that enum support and current row membership must be separated.",
+        "Sibling sweep retained q-tool-mcp-servers-skills-discovery as the narrow mcp-server filter lane and q-tool-skill-detail as per-row detail."
+      ],
+      "rootCause": [
+        "Eval-side enum-versus-membership conflation plus a false static freshness tag; the live payload itself exposes the distinction."
+      ]
+    },
+    "origin": "raven-next q-tool-cli-skills-discovery"
+  }
+}

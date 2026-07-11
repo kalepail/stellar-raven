@@ -1,0 +1,62 @@
+{
+  "id": "q-aas-burn-clawback-redemption-mechanics",
+  "question": "For a classic Stellar asset, how do burning, clawback, and redemption differ mechanically, and do tokens return to the issuer?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "For a classic issued asset, the issuer account is the asset's authority, not a normal holder of its own credit. Stellar's asset docs state that an asset is created by an issuing account payment and that deleting or burning an issued asset is done by sending it back to the issuing account. The SAC docs make the same accounting explicit: transfers to the issuer account burn, while transfers from the issuer mint. That is the mechanical basis for voluntary redemption: a holder pays the issuer/distributor according to the issuer's redemption process, and the asset balance is removed from outstanding holder balances.\n\nClawback is different. Under CAP-35 and the Stellar control-access docs, an issuer can claw back only assets/trustlines that were clawback-enabled under the required flags. The issuer submits a clawback operation against the holder's balance; the SAC interface describes the clawed-back amount as burned in the clawback process. It is not a normal user payment, does not require the affected holder's signature, and does not create a spendable issuer balance.\n\nSo: redemption/payment back to the issuer is holder-initiated and usually part of off-chain cash settlement; burn is the supply/accounting effect of returning issued credit to the issuer; clawback is issuer-initiated removal under regulated-asset controls.",
+    "keyFacts": [
+      "Explains that a classic asset balance held by a non-issuer account represents issued supply; sending it back to the issuer is redemption/burn-like because the issuer does not hold its own asset as a normal balance.",
+      "Explains clawback removes a holder's balance under clawback-enabled issuer controls rather than transferring spendable tokens back to the issuer account.",
+      "Distinguishes voluntary redemption/payment back to issuer from issuer-initiated clawback."
+    ],
+    "avoid": [
+      "Do NOT say clawed-back classic-asset tokens become a spendable issuer balance.",
+      "Do NOT conflate user redemption with issuer clawback authorization.",
+      "Do NOT detour into per-transfer fee hooks, max-supply caps, or the full AUTH_* flag enumeration; the question is the burn/clawback/redemption distinction."
+    ],
+    "notes": "Verified against Stellar asset, SAC, control-access, and CAP-35 sources (live 2026-06-29). Differentiated from q-aas-issuer-fees-supply-cap-freeze: this file owns the burn/clawback/redemption 3-way mechanics; dropped auth-flag enumeration and added a must_avoid against straying into fee/cap/flag feasibility.\nAlso good if the answer: Notes clawback is only possible for clawback-enabled assets/trustlines, without re-enumerating every issuer auth flag. | Explains supply accounting in terms of outstanding balances outside the issuer.\nGolden cites: Stellar docs on issued assets, clawback, and/or SAC token functions."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/assets",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/control-asset-access",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0035.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-01-asset-lifecycle-safety-metadata accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-aas-burn-clawback-redemption-mechanics"
+  }
+}

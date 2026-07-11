@@ -1,0 +1,112 @@
+{
+  "id": "q-scf-funded-similar-payroll",
+  "question": "Have any crypto-payroll or stablecoin-payments apps been funded through the SCF before?",
+  "surface": [
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions"
+  ],
+  "golden": {
+    "answer": "Yes. Direct payroll examples include **PayZoll $100K awarded/paid**, **CodeLnPay $147,223 awarded / $139,543 paid**, **P’aid $50K awarded/paid**, and **WageLink $50K awarded/paid** (despite Scout currently marking it unfunded). Broader stablecoin/payments examples include **Stables $150K awarded / $100K paid**, **Alfred $335K awarded/paid**, and **BlindPay $40K awarded/paid**; BlindPay also has a separate prior $75K non-awarded row. Dolphinze shows $129,800 awarded / $86,533.333 paid. Label whether an example is payroll-specific or broader payments, and report awarded and paid amounts separately. A search miss is not proof that no prior work exists.",
+    "keyFacts": [
+      "Returns named direct-payroll and broader-payment examples with official status-bearing amounts.",
+      "Separates awarded from paid totals and project relevance scope."
+    ],
+    "avoid": [
+      "Do NOT call every payments app payroll-specific or every populated budget awarded/paid.",
+      "Do NOT claim no prior work from a search miss or ignore partial-payment status."
+    ],
+    "notes": "GT-37 CORRECTION 2026-07-10: distinguish direct payroll from broader payments and awarded from paid. Stables is $150K/$100K, CodeLnPay $147,223/$139,543, and WageLink is an official $50K award despite Scout false-negative status.\nGT-37 independently confirmed by processes 3296/3298."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/payzoll-v4g",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/codelnpay-fxz",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/paid-payrolling-0sk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/rechldOqfuvFHMRrL",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/stables-67j",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/alfred-xij",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/blindpay-6ao",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/dolphinze-yjr",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Official records confirm both direct-payroll and broader stablecoin-payment awards with explicit awarded/paid bases",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official SCF project/submission pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: Lumenloop/Scout topical discovery",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: current product footprints",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The prior-art answer was directionally correct but mixed direct payroll with broad payments and omitted awarded-versus-paid distinctions, including partial payments and a Scout false negative.",
+      "evidence": [
+        "Solo scratchpad 575 GT-37 primary 3296 and blind 3298."
+      ],
+      "rootCause": [
+        "Topical relevance and bare budgets were collapsed into unqualified funded totals.",
+        "improvements/lumenloop/ll-013-scf-submission-award-fields.md",
+        "improvements/stellar-light-scout/sls-026-scf-status-aggregate-conflict.md"
+      ]
+    },
+    "origin": "raven-next q-scf-funded-similar-payroll"
+  }
+}

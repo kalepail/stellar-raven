@@ -1,0 +1,79 @@
+{
+  "id": "q-asset-usdc-eurc-issuer",
+  "question": "Who issues USDC and EURC on Stellar, and when did EURC launch on the network?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs"
+  ],
+  "golden": {
+    "answer": "**Circle issues both USDC and EURC on Stellar.** USDC is dollar-backed and EURC is euro-backed under their applicable reserve and redemption terms. **EURC launched on Stellar on September 26, 2023.** Both are classic Stellar assets and therefore have reserved Stellar Asset Contract representations for Soroban use.\n\nIf legal-entity precision is needed, current Circle disclosures identify the licensed EURC issuer as **Circle Internet Financial Europe SAS**. Verify the current disclosure rather than relying on an older or informal 'Circle Mint Europe' label.",
+    "keyFacts": [
+      "Identifies Circle as the product issuer of both USDC and EURC on Stellar.",
+      "States that EURC launched on Stellar on September 26, 2023.",
+      "Uses Circle Internet Financial Europe SAS when naming EURC's current EU legal issuer."
+    ],
+    "avoid": [
+      "Do NOT call Circle Mint Europe the current legal issuer; use Circle Internet Financial Europe SAS or omit the legal entity if not needed.",
+      "Do NOT attribute USDC/EURC issuance to Tether, Paxos, or SDF."
+    ],
+    "notes": "Dossier §4. Verified: Circle issues both USDC and EURC on Stellar; EURC launched on Stellar 2023-09-26, fiat-backed redeemable 1:1 for euro (stellar.org press release).\nAlso good if the answer: USDC is USD-backed and EURC is euro-backed, each redeemable 1:1. | Both are issued as classic Stellar assets (and thus get a reserved SAC).\nGolden cites: A stellar.org Circle USDC/EURC page or the EURC launch press release.\nLEGAL-ENTITY CORRECTION 2026-07-09 (todo 901): replace inherited 'Circle Mint Europe' wording with Circle Internet Financial Europe SAS, per Circle's current EURC disclosure."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://www.circle.com/eurc",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/eurc-launches-on-the-stellar-network",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/products-and-tools/circle-usdc-eurc",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Circle issues EURC; its current EU legal issuer is Circle Internet Financial Europe SAS; EURC launched on Stellar on 2023-09-26.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Circle EURC legal disclosure identifies Circle Internet Financial Europe SAS as licensed issuer",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: SDF EURC launch release dates Stellar availability to 2023-09-26",
+            "observedAt": "2023-09-26",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Single-class limitation: Circle's own disclosure is the only source class in this matrix supporting the exact Circle Internet Financial Europe SAS legal-entity name; the SDF release independently corroborates the 2023-09-26 launch date only, not the entity attribution. Treat the exact legal entity as disclosure-bound and re-verify Circle's current page."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-09",
+      "by": "Golden-truth sweep import — The inherited answer used the inaccurate legal-entity label 'Circle Mint Europe'. Circle's current EURC legal disclosure names Circle Internet Financial Europe SAS. The product-level issuer remains Circle.",
+      "evidence": [
+        "Solo scratchpad 569 Batch F, 2026-07-09; sibling sweep covered the stablecoin/PYUSD issuer cluster."
+      ],
+      "rootCause": [
+        "Eval-side legal-entity naming drift in an otherwise correct Circle/EURC answer.",
+        "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch F"
+      ]
+    },
+    "origin": "raven-next q-asset-usdc-eurc-issuer"
+  }
+}

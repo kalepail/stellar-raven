@@ -1,0 +1,73 @@
+{
+  "id": "q-scf-build-award-cap",
+  "question": "What is the maximum award amount under the SCF Build Award, and in what currency is it paid?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, one SCF **Build Award** is capped at **$150,000 worth of XLM**. The budget is USD-referenced, but scheduled payments are disbursed in XLM using the published XLM/USD settlement valuation; it is not a fixed number of lumens and is not paid in USDC/USD by default. The current three-track v7 structure launched in January 2026, but Build awards existed before v7. Separate accumulated/follow-on policy can allow case-by-case funding above the ordinary $150K accumulated level subject to a $300K lifetime cap; that does not change the single-award answer.",
+    "keyFacts": [
+      "States the $150K single-award cap.",
+      "Explains USD-referenced value paid in XLM rather than a fixed XLM count or default stablecoin payment."
+    ],
+    "avoid": [
+      "Do NOT substitute another SDF program's $500K cap or call $300K the ordinary single Build award.",
+      "Do NOT claim Build began with v7 or that payment is fixed XLM/USDC/USD by default."
+    ],
+    "notes": "GT-36 CORRECTION 2026-07-10: grade $150K USD-equivalent paid in XLM. The current v7 three-track structure launched January 2026; Build itself predates v7. Do not require stale sibling-program examples.\nGT-36 independently confirmed by processes 3290/3291."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/awards",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A current Build Award is capped at $150K USD-equivalent and paid in XLM using the scheduled-payment valuation",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Build Award/awards pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: versioned XLM valuation disclaimer",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The $150K core was correct, but the answer carried historically overbroad v7 introduction wording and stale sibling amount/tranche claims irrelevant to the narrow cap question.",
+      "evidence": [
+        "Solo scratchpad 575 GT-36 primary 3290 and blind 3291."
+      ],
+      "rootCause": [
+        "Eval answer accreted stale sibling program details around a stable narrow fact."
+      ]
+    },
+    "origin": "raven-next q-scf-build-award-cap"
+  }
+}

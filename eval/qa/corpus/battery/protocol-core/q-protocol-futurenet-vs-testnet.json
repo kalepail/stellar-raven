@@ -1,0 +1,66 @@
+{
+  "id": "q-protocol-futurenet-vs-testnet",
+  "question": "In protocol terms, how do Testnet and Futurenet differ in which protocol version they run and in their network passphrases — i.e. why does Futurenet exist as a pre-release protocol proving ground separate from Testnet?",
+  "surface": [
+    "stellarDocs.search_meeting_notes",
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "**Testnet** is the stable general/pre-production testing network; **Futurenet** is the forward-looking network for upcoming protocol/features. Both use valueless test assets, reset independently, and have different passphrases. Do not assume either always matches Mainnet: during the 2026-07-10 probe Pubnet and Testnet were P27 while Futurenet was P28. Verify live protocol/software state for the date and network before testing migration behavior.",
+    "keyFacts": [
+      "Distinguishes Testnet and Futurenet roles and passphrases.",
+      "Treats protocol alignment as staged and live-verified, not permanent."
+    ],
+    "avoid": [
+      "Do NOT use test assets as valuable or assume Testnet/Futurenet/Mainnet always share a protocol version."
+    ],
+    "notes": "Refocused onto the protocol-version + network-passphrase angle (why Futurenet runs ahead of Testnet on pre-release protocol versions) to stay distinct from the tooling-infra q-infra-testnet-vs-futurenet 'when should I use each' dev-workflow comparison. Trap is treating Futurenet as production or claiming test networks have value.\nAlso good if the answer: Notes both are free and resettable (Testnet periodically; Futurenet whenever needed), so neither carries permanent or valuable state. | Explains why the split exists: validators/SDF need a place to run a newer protocol version than Testnet without disrupting normal app testing.\nGolden cites: The networks page on developers.stellar.org/docs/networks.\nGT-32 CORRECTION 2026-07-10: network alignment is stage-sensitive; live probe was Pubnet/Testnet P27 and Futurenet P28."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/networks",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Testnet is stable general/pre-production testing and Futurenet is forward-looking; their protocol versions may differ from Mainnet during an upgrade stage.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Networks documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: 2026-07-10 live Pubnet/Testnet P27 and Futurenet P28 probes",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The role/passphrase distinction is correct, but Testnet was described as invariantly aligned with Mainnet despite staged upgrades.",
+      "evidence": [
+        "Solo scratchpad 575 GT-32 primary 3281 and blind 3284."
+      ],
+      "rootCause": [
+        "Deployment-stage relationship treated as invariant."
+      ]
+    },
+    "origin": "raven-next q-protocol-futurenet-vs-testnet"
+  }
+}

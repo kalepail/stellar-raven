@@ -1,0 +1,84 @@
+{
+  "id": "q-defi-soroswap-similar",
+  "question": "What projects are similar to Soroswap on Stellar?",
+  "surface": [
+    "lumenloop.find_similar_projects_semantic"
+  ],
+  "golden": {
+    "answer": "Run the current semantic-similarity query, show its as-of/generated time, and return the ranked rows with provenance. Then validate each candidate's role independently: an AMM protocol, aggregator/router, classic-SDEX UI, infrastructure project, and semantic neighbor are not interchangeable. Aquarius, Phoenix, StellarBroker, StellarX, and Comet can be useful conceptual comparisons when current evidence supports them, but they are not a permanent required set. An empty response is retrieval evidence, not proof that Soroswap has no peers.",
+    "keyFacts": [
+      "Returns the current source-relative similarity result with timestamp/provenance.",
+      "Validates project role instead of treating semantic rank as a market taxonomy."
+    ],
+    "avoid": [
+      "Do NOT hard-code a permanent peer roster or infer absence from one empty semantic result.",
+      "Do NOT call unrelated lenders, oracles, or bridges direct DEX/aggregator peers without role evidence."
+    ],
+    "notes": "GROUNDED 2026-06-22: live Scout (q=Aquarius/Phoenix DEX lane) confirms the DEX/AMM peers — Aquarius (AMM), Phoenix (DeFi-Hub AMM), and also StellarBroker (a non-custodial swap router/aggregator that splits across Soroswap/Aquarius) as an aggregator peer. 'Projects like X' → find_similar_projects_semantic. Category-correctness trap.\nAlso good if the answer: Clarifies Soroswap is uniquely an aggregator (routing across Aquarius/Phoenix/its AMM/Classic DEX) so 'similar' peers are the underlying AMMs it routes to.\nGolden cites: Sources for the named peers.\nGT-18 CORRECTION 2026-07-10: grade live similarity behavior, provenance, and role validation; named peers are examples, not required evergreen results."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://soroswap.finance/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/directory",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Soroswap semantic-similarity results are volatile and not a canonical competitor ranking.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Lumenloop similarity calls changed from empty to a ranked result on 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/B: operator/repo checks distinguish AMMs, routers, UIs, and unrelated results",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: operator/repo checks distinguish AMMs, routers, UIs, and unrelated results",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer froze a semantic similarity snapshot and described underlying venues as a canonical peer set. Live similarity results changed across calls, so the durable target is retrieval plus source-relative validation.",
+      "evidence": [
+        "Solo scratchpad 575 GT-18 primary 3249 and blind 3252",
+        "Sibling sweep: Soroswap/StellarX/Comet/Aquarius/Phoenix cases"
+      ],
+      "rootCause": [
+        "A volatile semantic ranking was promoted to an evergreen peer taxonomy."
+      ]
+    },
+    "origin": "raven-next q-defi-soroswap-similar"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "id": "q-soroban-simulate-resource-fee",
+  "question": "How do I estimate the resource fee and required footprint for a Soroban contract invocation before submitting it?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Use RPC `simulateTransaction` (or the SDK prepare/assemble helper or `stellar tx simulate`) before signing. Apply the returned Soroban transaction data/footprint and resource fee, include required authorization, handle any `restorePreamble`, and add the transaction's inclusion bid separately from the minimum resource fee. Simulation is not submission or a final-success guarantee: state can change, so re-simulate stale transactions. Where supported, use `instructionLeeway` rather than inventing an arbitrary blanket margin.",
+    "keyFacts": [
+      "Copies simulation-produced transaction data/resources and accounts for resource fee plus inclusion fee.",
+      "Handles auth/restorePreamble, supported instruction leeway, and stale-state re-simulation."
+    ],
+    "avoid": [
+      "Do NOT hand-pick a footprint or claim simulation submits/guarantees success.",
+      "Do NOT prescribe an arbitrary universal margin instead of current API behavior."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections. eth_estimateGas is the EVM trap. Verified: RPC simulateTransaction / `stellar tx simulate` returns the resource fee + footprint (SorobanTransactionData) and the predicted return value.\nAlso good if the answer: Simulation also returns the function's predicted return value without committing state. | You should add some margin / re-simulate because resource usage can vary.\nGolden cites: The developers.stellar.org simulateTransaction / RPC documentation.\nGT-47 CORRECTION 2026-07-11: prefer current prepare/assemble, instructionLeeway, auth, and restorePreamble semantics."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/simulateTransaction",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/guide",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "simulateTransaction returns transaction data/resource fee, auth/return data and possibly restorePreamble; clients should assemble/prepare, account for inclusion fee, use supported instruction leeway, and re-simulate stale state.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current RPC simulate/prepare documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current OpenRPC/XDR and stellar-rpc source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: stellar CLI 27 tx simulate help",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The preflight workflow was right, but generic 'add a margin' advice and stale field naming obscured current instructionLeeway, restorePreamble, auth, inclusion-fee, and re-simulation behavior.",
+      "evidence": [
+        "Solo scratchpad 575 GT-47 primary 3327 and blind 3334; blind rejected unsupported generic-margin wording."
+      ],
+      "rootCause": [
+        "Plain RPC/XDR/CLI naming drift.",
+        "improvements/stellar-docs/sd-024-transaction-resource-xdr-drift.md"
+      ]
+    },
+    "origin": "raven-next q-soroban-simulate-resource-fee"
+  }
+}

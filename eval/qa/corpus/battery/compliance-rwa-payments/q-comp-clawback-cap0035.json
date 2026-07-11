@@ -1,0 +1,52 @@
+{
+  "id": "q-comp-clawback-cap0035",
+  "question": "How does clawback work on Stellar, which protocol version and CAP introduced it, and why does it exist?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_meeting_notes",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- Clawback lets an **asset issuer burn a specified amount of a clawback-enabled asset from any holder's\n  trustline (or claimable balance)** — without the holder's cooperation; the assets are **burned, not\n  returned** to the issuer [1].\n- Introduced by **CAP-0035 (\"Asset Clawback\") in Protocol 17** (activated ~2021-06-01) [1][2].\n- The issuer must have set **`AUTH_REVOCABLE` first, then `AUTH_CLAWBACK_ENABLED`** — only then are new\n  trustlines clawback-eligible [1].\n- It was **designed to help issuers meet securities/regulatory obligations** (revoke after fraud, error,\n  or regulatory action) [1].\n- Implemented via the **Clawback** and **Clawback Claimable Balance** operations (after enabling the flag\n  with Set Options) [1]. It needs **no Soroban contract**, and **no arbitrary account** can claw back\n  another's funds — only the issuer of that asset.\n\nSources: [1] developers.stellar.org clawbacks; [2] CAP-0035.",
+    "keyFacts": [
+      "Clawback lets an asset issuer burn a specified amount of the asset from any holding account without that holder's cooperation.",
+      "Clawback was introduced by CAP-0035 in Protocol 17.",
+      "The issuer must have AUTH_REVOCABLE set / AUTH_CLAWBACK_ENABLED on the asset for clawback to be possible."
+    ],
+    "avoid": [
+      "Do NOT attribute clawback to the wrong protocol/CAP (e.g. say it was Protocol 20/Soroban or a different CAP number).",
+      "Do NOT claim clawback requires a Soroban smart contract, or that any account can claw back another's funds."
+    ],
+    "notes": "Verified: clawbacks doc attributes the feature to CAP-0035 (Asset Clawback), introduced in Protocol 17 (activated ~2021-06-01). Requires AUTH_REVOCABLE + AUTH_CLAWBACK_ENABLED. Clawed-back assets are BURNED, not returned to issuer. Ops: Set Options (enable), Clawback, Clawback Claimable Balance. Trap: wrong protocol/CAP number.\nAlso good if the answer: It was designed to help issuers meet securities/regulatory obligations (revoke assets after fraud, error, or regulatory action). | Implemented via clawback operations (ClawbackOp / ClawbackClaimableBalanceOp).\nGolden cites: developers.stellar.org clawbacks guide and/or CAP-0035 in the stellar-protocol repo."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/clawbacks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0035.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-07-regulated-controls-anchor-security accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-comp-clawback-cap0035"
+  }
+}

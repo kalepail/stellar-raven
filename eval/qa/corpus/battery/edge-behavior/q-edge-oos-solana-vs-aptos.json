@@ -1,0 +1,69 @@
+{
+  "id": "q-edge-oos-solana-vs-aptos",
+  "question": "Should I build my new DeFi protocol on Solana or Aptos? Compare them for me.",
+  "surface": [],
+  "golden": {
+    "answer": "I can't give a reliable current Solana-versus-Aptos recommendation from this Stellar-focused service. Compare current primary evidence for execution model, finality, fees, tooling, liquidity, security record, validator structure, and your protocol requirements. I can answer a separate Stellar/Soroban question if useful, but I won't insert Stellar as the answer unless asked.",
+    "keyFacts": [
+      "Avoids an unsupported verdict, supplies a practical current-evidence comparison framework, and keeps any Stellar redirect separate."
+    ],
+    "avoid": [
+      "Do NOT give a confident Solana/Aptos verdict, inject Stellar as a third-option resolution, or provide only refusal boilerplate."
+    ],
+    "notes": "GT-26 2026-07-10: require honest source-coverage limits plus a useful current-primary-evidence comparison framework. No unsupported verdict and no forced Stellar third option.\nGT-26 OOS REWRITE 2026-07-10: scope honesty plus decision support replaces refusal-only grading."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "none",
+    "freshness": "stable",
+    "trap": "out-of-scope"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "eval/corpus/raven-next/research/golden/edge-governance/q-edge-oos-solana-vs-aptos.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current Solana/Aptos recommendations require external primary evidence outside Raven's authoritative corpus; a neutral decision framework can still be provided.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B/C: manifest/README/live source coverage",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "B/C: manifest/README/live source coverage",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent check confirming comparative volatility",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The coverage limit is correct, but a bare decline was sufficient and no useful comparison framework was required.",
+      "evidence": [
+        "Solo scratchpad 575 GT-26 primary 3269 and blind 3271."
+      ],
+      "rootCause": [
+        "Strict none-route scoring optimized tool non-use rather than end-answer usefulness."
+      ]
+    },
+    "origin": "raven-next q-edge-oos-solana-vs-aptos"
+  }
+}

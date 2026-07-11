@@ -1,0 +1,112 @@
+{
+  "id": "q-builder-by-region-latam",
+  "question": "Find Stellar builders based in Latin America who work on payments or DeFi.",
+  "surface": [
+    "scout.searchProjects"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, Scout's Latin America filter returned 19 builders; combining the 7 payments and 3 DeFi matches produced this 8-person union: **Joaquin Farfan** (Sozu Pay, Chile), **Juan Carlos / Micoh18** (DataVend-x402, Chile), **Brandon Fernandez / Bran18** (Mercato and KindFi, Costa Rica), **Bruno Miranda / wrever** (ArcusX, Chile), **Cleverson Silva** (Boleto Guardian, Brazil), **Miguel Nieto** (Tippa, Colombia), **Matheus Brasil Aguiar** (ChatPay Go Labs, Brazil), and **Robson Campos dos Anjos** (DeFarm, Brazil). These are dated directory candidates, not endorsements. Public repos/sites corroborate each footprint, but deployment, audit status, depth, and availability must be checked before outreach. The live filters are `q`, `location`, and `skill`; do not rely on removed `scfTier`/`featured` claims or freeze the directory total.",
+    "keyFacts": [
+      "Returns a dated bounded roster from the live Latin America payments/DeFi result union.",
+      "Attributes names to Scout while using independent project footprints only as corroboration."
+    ],
+    "avoid": [
+      "Do NOT treat the roster as permanent or infer mainnet/audit/seniority status from a directory row.",
+      "Do NOT replace live directory discovery with memory or web search; external sources may corroborate returned profiles."
+    ],
+    "notes": "GT-35 CORRECTION 2026-07-10: grade a dated, Scout-attributed roster with evidence boundaries. Live filters are q/location/skill; directory count and membership are volatile. Public footprints may corroborate results and Tippa/Stellar View are not corpus-only.\nGT-35 independently confirmed by processes 3287/3289. Treat freshness as required despite the inherited static tag."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/builders",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/blessedux/SozuCredit",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Micoh18/Datavend-x402-Stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/kindfi-org/kindfi",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.boletoguardian.xyz/index-en.html",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/TryTippa/tippa-contracts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://chatpaygo.com",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/defarm-tuy",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The live directory returned a bounded eight-person payments/DeFi union for Latin America, and each named row has an independent public footprint",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Scout 2026-07-10 — 19 Latin America rows, 7 payments rows, 3 DeFi rows, 8-name union",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/D: official SCF page plus public project sites and repositories for all eight names",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "B/D: official SCF page plus public project sites and repositories for all eight names",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The effective answer remained a routing recipe with removed filters, a stale static count, and a false corpus-only caveat instead of returning the dated builders the user requested.",
+      "evidence": [
+        "Solo scratchpad 575 GT-35 primary 3287 and blind 3289, independently executed 2026-07-10.",
+        "Live Scout directory had 114 profiles; location=Latin America returned 19, payments 7, DeFi 3."
+      ],
+      "rootCause": [
+        "Eval-side routing affordances and a historical count were promoted into the answer instead of returning dated results.",
+        "improvements/stellar-light-scout/sls-040-builder-scf-tier-contract-data-split.md",
+        "improvements/stellar-light-scout/sls-041-builder-skill-match-provenance.md"
+      ]
+    },
+    "origin": "raven-next q-builder-by-region-latam"
+  }
+}

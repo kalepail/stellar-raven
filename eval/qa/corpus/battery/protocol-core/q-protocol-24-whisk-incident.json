@@ -1,0 +1,102 @@
+{
+  "id": "q-protocol-24-whisk-incident",
+  "question": "Why did Stellar ship Protocol 24 so soon after Protocol 23, and what was the state-archival bug?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "**Protocol 24** was the focused corrective upgrade after Protocol 23/Whisk, activated on Mainnet on **2025-10-22**. P23's persistent-eviction retrofit reused an eviction scan that loaded the latest **TTL** but did not reload the latest **entry version**. A candidate encountered in an arbitrary older Bucket List layer could therefore be written to Hot Archive instead of the newest value; restoring it later made that old value observable as live state.\n\nThe exact scope was **478** corrupted entries. Before quarantine, **84** were restored and **77 of those were subsequently modified**; the remaining **394 were never restored**. **CAP-0076** amended only entries still in Hot Archive whose corruption had never been observed, restoring those 394 to their verifiable pre-archival values. It did not rewrite the 84 restored entries; affected protocols and issuers handled those separately. CAP-0076 also added **31,879,035 stroops** to the fee pool to account for two restored XLM contract balances that had burned 1,000,000 and 30,879,035 stroops. The incident did **not** cause a chain fork, but a blanket 'no loss of funds' claim is false.",
+    "keyFacts": [
+      "Explains the exact latest-TTL-versus-stale-entry-version eviction defect.",
+      "States 478 affected, 84 restored, 77 restored-and-modified, and 394 never restored/amended by CAP-0076.",
+      "States the 31,879,035-stroop fee-pool remediation for two actual XLM burns and preserves the no-fork qualifier."
+    ],
+    "avoid": [
+      "Do NOT say P24 restored or rewrote all 478 affected entries; CAP-0076 amended the 394 never-restored entries only.",
+      "Do NOT call this merely an incorrect restore routine: the corruption was written during eviction because the latest entry version was not loaded.",
+      "Do NOT claim there was a chain fork or broadly claim no funds were lost; two restored balances burned 31,879,035 stroops."
+    ],
+    "notes": "GT-31 CORRECTION 2026-07-11: require the exact eviction/version root cause and 478/84/77/394 qualifiers. CAP-0076 amended only never-restored entries and the fee pool; no fork occurred, but two restored XLM balances burned 31,879,035 stroops, so no broad no-loss trap survives."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/state-archival-issue-post-mortem",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/addressing-state-archival-inconsistencies-protocol-upgrade-vote-next-week",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0076.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/protocol-24-upgrade-guide",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The P23 eviction scan checked the latest TTL but failed to reload the latest persistent-entry version, so an arbitrary older Bucket List layer value could enter Hot Archive.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: SDF state-archival post-mortem with linked fix commit",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0076 motivation and specification",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "478 entries were affected: 84 were restored before quarantine, 77 of those were modified, and CAP-0076 amended the 394 never-restored entries plus the fee pool for 31,879,035 stroops burned by two restored XLM balances.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: SDF incident assessment and post-mortem",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0076 row counts, amendment eligibility, and fee-pool arithmetic",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited incident summary blurred the exact eviction/version defect, implied all affected entries were restored by P24, and carried a false broad no-loss trap despite two restored XLM balances burning 31,879,035 stroops.",
+      "evidence": [
+        "Solo scratchpad 575 GT-31 primary process 3280 and blind process 3282 independently required the exact root cause, affected/restored qualifiers, CAP-0076 scope, and removal of the no-loss trap.",
+        "2026-07-11 author re-check against CAP-0076 at stellar-protocol fbf05c9d and both SDF incident reports."
+      ],
+      "rootCause": [
+        "Eval-side incident compression treated corrupted archival, observed restoration, protocol amendment, and issuer/protocol mitigation as one generic restore path."
+      ]
+    },
+    "origin": "raven-next q-protocol-24-whisk-incident"
+  }
+}

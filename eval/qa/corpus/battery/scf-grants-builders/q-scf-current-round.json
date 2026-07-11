@@ -1,0 +1,87 @@
+{
+  "id": "q-scf-current-round",
+  "question": "What is the current open SCF round and when is its submission deadline?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-09**, the open build round is **SCF #45**, in the **Submission** phase, with a deadline of **August 16, 2026**. The standard Build Award cap remains up to **$150,000 worth of XLM**.\n\nThis is a volatile example, not permanent truth. SCF rounds rotate on a roughly six-week cadence, so report the round number, phase, and deadline only with an as-of date and verify them against the live communityfund.stellar.org awards page. Scout's live RFP metadata can corroborate the round/window but does not replace the official page.",
+    "keyFacts": [
+      "Identifies SCF #45 as the current Submission round with an August 16, 2026 deadline, explicitly as of 2026-07-09.",
+      "Flags round/deadline information as time-sensitive and points to the live official awards page.",
+      "Keeps the stable Build cap distinct from the changing round schedule."
+    ],
+    "avoid": [
+      "Do NOT present the expired July 26 deadline as current.",
+      "Do NOT assert any round/deadline as permanent or fabricate a date not grounded in a live source."
+    ],
+    "notes": "Dossier §4. Freshness item — rotates every ~6 weeks; reward staleness-flagging. scout_rfps surfaces activeQuarter signal.\nAlso good if the answer: States the SCF Build cadence is roughly every 6 weeks. | Notes the standard $150K XLM Build cap for the round.\nGolden cites: communityfund.stellar.org/awards (the live awards page) for the current round/deadline.\nFRESHNESS CORRECTION 2026-07-09 (todo 901): SCF #45 remains current, but its deadline is August 16, 2026, not July 26. Official awards and Scout live-round metadata agree. Continue gating on dated lookup behavior rather than one frozen round."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-09",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/awards",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/rfps?status=open",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "As of 2026-07-09, SCF #45 is in Submission and closes 2026-08-16; Build awards remain capped at up to $150K worth of XLM",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: https://communityfund.stellar.org/awards fetched 2026-07-09 — SCF #45 deadline August 16, 2026",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: https://stellarlight.xyz/api/rfps?status=open fetched 2026-07-09T23:48Z — currentRound 45, submissionWindow.closes 2026-08-16, asOf 2026-07-09",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: SCF Build Award handbook fetched 2026-07-09 — up to $150,000 worth of XLM",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-09",
+      "by": "Golden-truth sweep import — The freshness behavior was correct but the answer's point-in-time deadline expired: SCF #45 now closes August 16, 2026 rather than July 26. The live official awards page and Scout's live-round metadata independently agree, so the dated example is refreshed without turning it into permanent truth.",
+      "evidence": [
+        "Solo scratchpad 569 Batch B, 2026-07-09.",
+        "Sibling expansion found and corrected the same July 26 date in q-edge-scf-v7-centralization-myths."
+      ],
+      "rootCause": [
+        "Ordinary freshness drift in a roughly six-week round schedule; the old case correctly warned that its date would expire.",
+        "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch B"
+      ]
+    },
+    "origin": "raven-next q-scf-current-round"
+  }
+}

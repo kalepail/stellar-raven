@@ -1,0 +1,73 @@
+{
+  "id": "q-scf-exhaustive-funding-report",
+  "question": "Give me a quick answer: how much has the SCF distributed and to how many projects? (don't run a deep-research report)",
+  "surface": [
+    "scout.getClusters",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Use the live Scout funding analysis for a **dated, source-labeled reconstructed distribution total and project count**, then distinguish that basis from official SCF award-page counters, which count submissions and can differ across pages. Report the query/as-of time and methodology; do not present a remembered total as current or conflate SCF distribution with SDF treasury, XLM supply, or Enterprise Fund figures. A lightweight analytics lookup is proportionate for this totals question, but the grading contract is the visible source/basis/date—not hidden tool non-use.",
+    "keyFacts": [
+      "Reports dated Scout funding/project measures with methodology and separates them from official submission counters."
+    ],
+    "avoid": [
+      "Do NOT pin an undated total, merge incompatible count bases, expose hidden operation names, or require non-use of external maintainer tools in answer content."
+    ],
+    "notes": "GT-22 SIBLING 2026-07-10: grade dated source-named funding/project values, explicit reconstructed-versus-official counter basis, and proportional scope. Hidden-operation and external-tool bans are removed; visible provenance is the gate.\nGT-22 SIBLING CORRECTION 2026-07-10: preserve source/basis/proportionality while removing obsolete internal mechanics."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled",
+    "trap": "paid-bait"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/awards",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Scout funding analytics can provide a dated reconstructed total while official award counters use a different submission basis; neither supports an undated permanent scalar.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official SCF awards counters",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Scout funding-v2 basis and round breakdown",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The source/as-of/basis guidance is useful, but the inherited answer advertises hidden operations and bans external research tools. Its lightweight-lookup preference should be expressed as observable proportionality, not nonexistent runtime mechanics.",
+      "evidence": [
+        "Solo scratchpad 575 GT-22 blind 3265 sibling sweep; prior todo 829/901 funding verification."
+      ],
+      "rootCause": [
+        "A correct low-cost/source-basis rule retained pre-manifest hidden-tool vocabulary."
+      ]
+    },
+    "origin": "raven-next q-scf-exhaustive-funding-report"
+  }
+}

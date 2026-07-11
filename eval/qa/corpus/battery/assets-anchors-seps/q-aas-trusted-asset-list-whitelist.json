@@ -1,0 +1,62 @@
+{
+  "id": "q-aas-trusted-asset-list-whitelist",
+  "question": "Is there an official list of trusted Stellar assets or an SDK helper, and how should a wallet build a token whitelist to filter scam assets?",
+  "surface": [
+    "scout.searchProjects",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "There is no protocol-level official whitelist that makes a Stellar asset trusted across all wallets and apps. A Stellar asset can be valid on-chain while still being hidden, warned, unverified, or blocked by a particular wallet/explorer policy.\n\nThere is, however, a standards-based allowlist mechanism. SEP-42 defines Stellar Asset Lists: curated lists of Stellar asset metadata that applications can choose to trust. The community-managed `stellar-asset-lists/index` catalog and StellarExpert asset-list page let apps discover lists, and the `@stellar-asset-lists/sdk` package can fetch and parse them. The catalog explicitly says inclusion in a list should not be treated as endorsement or recommendation.\n\nA wallet whitelist should combine sources and policy: exact asset code + issuer, issuer account and `home_domain`, SEP-1 TOML metadata and organization docs, known project/issuer sources, liquidity/market behavior, user reports or denylist evidence, and dated reviews of asset-list providers. SDK helpers can read metadata or SAL lists; they cannot certify that an asset is safe by themselves.",
+    "keyFacts": [
+      "States there is no single protocol-level official whitelist that makes an asset trusted across all Stellar wallets and apps.",
+      "Explains wallets should evaluate issuer account, home domain, SEP-1 metadata, known issuer/project sources, liquidity, and user risk signals.",
+      "Distinguishes protocol validity of an asset from wallet/explorer trust, verification, or display policy."
+    ],
+    "avoid": [
+      "Do NOT claim Stellar or SDF maintains a universal official trusted-token whitelist for every wallet.",
+      "Do NOT label a specific asset safe or scam without cited, current evidence."
+    ],
+    "notes": "Verified there is a SEP-42/community asset-list mechanism and SDK, not a universal SDF/protocol whitelist. Freshness-sensitive for specific providers.\nAlso good if the answer: Mentions an SDK can read asset/account metadata but cannot by itself certify trust. | Encourages sourced allowlists/denylist policy and dated review for wallet teams.\nGolden cites: Stellar docs/SEP-1 plus dated wallet/explorer/listing-policy sources if making current verification claims."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0042.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar-asset-lists/index",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://stellar.expert/asset-lists",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0001.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-01-asset-lifecycle-safety-metadata accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-aas-trusted-asset-list-whitelist"
+  }
+}

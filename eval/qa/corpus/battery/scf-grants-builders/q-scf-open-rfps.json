@@ -1,0 +1,80 @@
+{
+  "id": "q-scf-open-rfps",
+  "question": "What SCF RFPs are open right now — what is the SCF asking builders to build this quarter?",
+  "surface": [
+    "scout.getRfps",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, the official RFP page and live Scout feed agree on five current Q2 briefs: **Trustline Onboarder; Passkey UI** (Scout alias: Passkey UI Kit); **Account Demolisher; Contract Source Verification Service; and OZ Accounts Policy Builder**. Use `scout.getRfps`, re-query for current status, and exclude the synthetic `scf-round-45` row: Scout metadata reports five open RFPs while the returned array contains six rows. The official page itself has a stale SCF #43 banner while current awards/Scout context is #45, so date the roster and disclose that conflict. RFPs use the Build RFP Track and ordinary Build cap; interest is open but full proposals are invited after eligibility review, decisions are panel-led, and no per-brief bounty should be invented.",
+    "keyFacts": [
+      "Lists the five dated official/live briefs and reconciles the Passkey title alias.",
+      "Uses scout.getRfps, excludes the synthetic round row, and discloses the stale official #43 banner versus current #45 context."
+    ],
+    "avoid": [
+      "Do NOT reference retired scout_rfps, count scf-round-45 as a sixth RFP, or repeat #43 as current without the conflict.",
+      "Do NOT present the roster as permanent, invent per-RFP bounties, or claim RFP projects use NQG voting."
+    ],
+    "notes": "Dossier §4.2. scout_rfps is the exact card for 'what is SCF asking to be built'. Freshness item — confidence stays medium because the open set rotates. Re-verified live 2026-06-29 (/api/rfps): activeQuarter q2-2026, 5 open / 9 closed, open briefs unchanged (Trustline Onboarder, Passkey UI Kit, Account Demolisher, Contract Source Verification Service, OZ Accounts Policy Builder). Rubric gates on the freshness caveat, not the exact list.\nAlso good if the answer: RFPs are reviewed via the SCF Build RFP Track (panel-only, no community vote). | RFP awards follow the standard SCF Build $150K XLM cap (per-RFP bounties are not separately published).\nGolden cites: The SCF RFP Track handbook page and/or the live RFPs feed.\nGT-39/40 independently corrected 2026-07-10. The earlier corpus-only note is superseded: the official RFP page now carries the five headings, but its #43 label is stale and Scout injects a synthetic #45 row (sls-045). Grade the dated reconciled roster and source conflict."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/ideas",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/rfp-track",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/awards",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Scout's dated RFP feed reported a particular active quarter and open roster.",
+        "verdict": "corpus-only",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: Stellar Light scout_rfps feed is the roster witness",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: SCF handbook confirms the Build RFP track and $150K Build cap but does not independently publish that live roster",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-09",
+      "by": "Golden-truth sweep import — The prior corpus-only correction became false once the current official RFP page published the same five briefs; it also referenced a retired operation and failed to exclude Scout's synthetic round row.",
+      "evidence": [
+        "Solo scratchpad 569 Batch F, 2026-07-09; siblings q-scf-current-round, q-scf-rfp-tooling, and q-scf-build-tracks reviewed."
+      ],
+      "rootCause": [
+        "A volatile directory feed was presented with enough exact detail to become a de facto world-truth gate.",
+        "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch F"
+      ]
+    },
+    "origin": "raven-next q-scf-open-rfps"
+  }
+}

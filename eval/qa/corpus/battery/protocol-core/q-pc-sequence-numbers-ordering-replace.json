@@ -1,0 +1,85 @@
+{
+  "id": "q-pc-sequence-numbers-ordering-replace",
+  "question": "How do Stellar sequence numbers behave compared with an EVM nonce, including ordering across unrelated accounts, duplicate or seq+2 submissions, and replacing a stuck pending transaction?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "Stellar sequence numbers are per **transaction source account**, not a global order across unrelated accounts. By default, a transaction must use current sequence + 1; submitting N+2 while the account is at N yields `tx_bad_seq`, and it can become valid after N+1 applies. There is an important CAP-0021 exception: with a non-null `minSeqNum`, validation permits `minSeqNum <= current sequence < transaction sequence`, so a transaction at N+2 can apply while current is N when that lower bound is satisfied, then advance the account directly to N+2. Only an applied transaction consumes the sequence; a duplicate with the same source/sequence cannot apply after another transaction has consumed it.\n\nUnrelated source accounts have independent sequence domains even though consensus orders accepted transactions. For a transaction still in a submission queue, replacement behavior depends on the Core/RPC path: official fee-bump guidance describes replacing the same source/sequence transaction when the fee-bump bid is at least 10x, and timebounds or ledger bounds should limit stale execution. Distinguish queued, rejected, expired, and successfully applied states before resubmitting.",
+    "keyFacts": [
+      "Explains per-source-account rather than global ordering.",
+      "States default +1 behavior and the CAP-0021 minSeqNum exception that can skip N+1.",
+      "Explains duplicates, consumption-on-application, and scoped fee-bump replacement semantics."
+    ],
+    "avoid": [
+      "Do NOT say N+2 can never apply before N+1; minSeqNum can authorize a sequence gap.",
+      "Do NOT say unrelated accounts share a deterministic nonce order or that rejected/unapplied transactions always consume sequence.",
+      "Do NOT promise queue replacement without checking submission path, fee-bump conditions, and bounds."
+    ],
+    "notes": "Replacement semantics verified from docs; exact queue behavior can depend on RPC/Core submission path and whether the original transaction is still queued.\nAlso good if the answer: Mentions pending vs failed/expired status affects whether the sequence number is consumed.\nGolden cites: At least one primary Stellar source such as developers.stellar.org, stellar-core docs, or the stellar-protocol repository.\nGT-31 OVERLAP CORRECTION 2026-07-11: default N+1 ordering remains useful, but CAP-0021 minSeqNum can permit a successful gap and direct sequence advance. Grade queue replacement separately from protocol preconditions."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0021.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/transaction-lifecycle",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/result-codes/transactions",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/fees-resource-limits-metering#fee-bumps-on-past-transactions",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Default sequence validation requires current=tx.seqNum-1, but a non-null minSeqNum permits minSeqNum <= current < tx.seqNum and successful application jumps to tx.seqNum.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: CAP-0021",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current Core precondition source and official transaction result-code documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The GT-30 sequence answer made N+2-after-N+1 unconditional, contradicting CAP-0021's minSeqNum gap semantics and the corrected account/signers case.",
+      "evidence": [
+        "Solo scratchpad 575 GT-31 primary process 3280 and blind process 3282 independently identified the GT-30 sibling contradiction.",
+        "2026-07-11 author re-check against CAP-0021's minSeqNum specification."
+      ],
+      "rootCause": [
+        "Eval-side default-rule absolutism after adding a detailed replacement/queue answer."
+      ]
+    },
+    "origin": "raven-next q-pc-sequence-numbers-ordering-replace"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "id": "q-defi-reflector-related-projects",
+  "question": "Which Stellar projects depend on or relate to Reflector?",
+  "surface": [
+    "lumenloop.find_content_by_entity"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, Stellar's official oracle page listed **Blend, OrbitCDP, DeFindex, Laina, EquitX, Slender, and SorobanDomains** as Reflector integrations; Reflector's own page additionally declared **Etherfuse, Normal, Stratum, and xBidAI**. These are dated, source-attributed relationship claims—not proof that every project currently depends on one public Reflector contract or uses it for collateral pricing. Current Scout simultaneously marked OrbitCDP Inactive.\n\nReturn relationships in evidence tiers: official/provider-listed integration, code-evidenced implementation, current project/deployment status, incident adjacency, or semantic/content similarity. The exposed `get_related_projects` operation follows content-to-mentioned-project links; it is not a project-to-reverse-dependency graph. Do not dump articles as dependencies or claim all related projects are consumers/competitors.",
+    "keyFacts": [
+      "Returns dated, sourced Reflector relationships and labels their evidence tier.",
+      "Distinguishes provider-listed integrations from current dependency proof and preserves the OrbitCDP status conflict.",
+      "Does not promise a reverse-dependency graph the exposed service lacks."
+    ],
+    "avoid": [
+      "Do NOT call every related name a current collateral-price consumer or dependency.",
+      "Do NOT fabricate reverse lookup provenance or use semantic similarity as dependency proof.",
+      "Do NOT assert an unsupported leading/most-integrated ranking."
+    ],
+    "notes": "CORRECTED 2026-07-10: the exposed related-project operation is content-to-mentioned-project, not a reverse-dependency graph. Grade evidence-tiered, dated relationships and current-status caveats; do not require all names to be consumers or all alternatives to be live.\nAlso good if the answer separates official listings, provider declarations, code evidence, current status, and semantic/content adjacency.\nGolden cites: The related-projects / reverse-lookup source.\nGT-17 CORRECTION 2026-07-10: no dominance reward and no invented reverse-dependency tool contract."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/oracles/oracle-providers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://reflector.network/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/reflector",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Reflector has provider-listed integrations, but the exposed related-project operation is content-to-mentioned-project rather than project-to-reverse-dependency.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Stellar and Reflector operator integration pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: exposed operation manifest and public integration code for sampled projects",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Scout status and Lumenloop operation behavior",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer promised a reverse-dependency operation the exposed service does not implement and promoted provider-listed integrations into exhaustive current collateral-price dependencies. The corrected golden separates official listing, provider declaration, code evidence, current status, incident adjacency, and semantic similarity.",
+      "evidence": [
+        "Solo scratchpad 575 GT-17 primary process 3247 and blind process 3248.",
+        "Sibling sweep: q-defi-reflector-content, q-defi-reflector-oracle, q-defi-named-newer-protocols, and q-eco-defi-market-map."
+      ],
+      "rootCause": [
+        "A nonexistent graph direction was inferred from an operation name, and provider marketing was promoted into live dependency truth.",
+        "improvements/lumenloop/ll-008-directory-record-coverage-field-quality.md",
+        "improvements/stellar-light-scout/sls-024-project-lifecycle-operator-conflicts.md"
+      ]
+    },
+    "origin": "raven-next q-defi-reflector-related-projects"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "id": "q-scf-total-distributed",
+  "question": "How much has the Stellar Community Fund distributed in total, and to roughly how many projects?",
+  "surface": [
+    "scout.getClusters",
+    "scout.searchProjects",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "There is no single safe public scalar for SCF 'distributed.' Report a dated basis matrix and say whether each value is reconstructed, awarded, or paid. As of **2026-07-10/11**, Scout funding-v2 reconstructed **$39,851,645.13 across 391 distinct awarded project records**; this is not an official payment ledger. The official embedded round ledger instead summed **868 awarded submission memberships, about $63.62M awarded and $53.91M paid**. A separate public project-record pass summed roughly **$50.85M awarded and $41.72M paid**, while public banners still showed incompatible 42M/656 and 504 figures with unclear cutoffs. These populations are not interchangeable: projects differ from submission memberships, awarded differs from paid/distributed, and USD-valued budgets differ from XLM quantities. Use current source, timestamp, currency, denominator, and amount semantics; round machine totals rather than pinning floating-point tails. SCF totals are also distinct from SDF treasury, XLM supply, and Enterprise Fund investment.",
+    "keyFacts": [
+      "Reports the cumulative SCF distribution as a dated, source-labeled live analytics figure (the funding dimension), never a remembered or fixed number.",
+      "Gives a count of funded projects/winners alongside the total amount, and is explicit about which count basis it uses (distinct funded projects vs awarded submissions)."
+    ],
+    "avoid": [
+      "Do NOT state a precise total as permanently fixed (it accrues every ~6-week round, and the live analytics figure itself drifts between indexings).",
+      "Do NOT conflate the distinct-funded-projects count with the awarded-submissions counters, or USD-denominated totals with XLM-denominated figures (the SCF site's '42M Awarded in XLM', older ~200M-XLM press figures) — always name the count basis and denomination.",
+      "Do NOT confuse SCF cumulative distribution with SDF treasury size, XLM total supply, or the SDF Enterprise Fund."
+    ],
+    "notes": "Dossier §11. scout_analyze funding dimension is the exact card ('how much has SCF distributed'). Re-verified live 2026-06-29: scout_analyze ?dimension=funding returned scfTotalDistributedUSD ~$19.97M, scfAwardedProjects 223, meanAwardUSD ~$89.5K (DOWN from the 2026-06-22 $21.36M/239 — the live metric recomputes and drifts in both directions). communityfund.stellar.org/awards counter showed 504 'Previously Awarded Submissions'. RECONCILED: two count bases (distinct funded projects ~223 vs awarded submissions ~504, since a project can win multiple rounds) and two denominations (USD analytics vs XLM-denominated press figures like ~200M XLM). Freshness-sensitive.\nAlso good if the answer: Flags that cumulative totals grow each round and should be confirmed against the live source, and notes the USD vs XLM denomination (budgets are set in USD, paid in XLM).\nGolden cites: Stellar Light analytics (scout_analyze funding) and/or the SCF history-of-SCF page.\nCorrected 2026-07-03 (todo 829 skeptic sweep): the prior golden pinned an unstable snapshot. Grading remains behavioral: accept dated, source-named figures and require count basis/denomination; punish fixed-truth and scope confusion. POST-FIX REOPEN 2026-07-09 (todo 901): sls-013 is fixed upstream. Live funding-v2 returned $40,160,145.13 across 398 distinct projects with computedAt, methodologyVersion, an explicit reconstruction/count basis, and populated byRound rows. This improves provenance but does not turn the reconstructed total into permanent or official truth."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/awards",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The scout funding metric is violently volatile and cannot be pinned",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live production execute 2026-07-03T18:34Z — scout.analyzeEcosystem funding: scfTotalDistributedUSD 40,736,895.13 / scfAwardedProjects 400 / meanAwardUSD 101,842; observed trajectory $21.36M (06-22) → $19.97M (06-29) → $40.74M (07-03)",
+            "observedAt": "2026-07-03",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: communityfund.stellar.org 2026-07-03 — homepage '42M Awarded in XLM' / '656 Awarded Submissions'; awards page '504 Previously Awarded Submissions'",
+            "observedAt": "2026-07-03",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: SDF SCF demo (Jan 2025): 'distributed over 32 million worth of XLM to over 540 projects' — already above the golden's pin at authoring",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-03",
+      "by": "Golden-truth sweep import — Skeptic sweep (todo 829, instrument 2, first run) BROKE this golden: it pinned the 06-29 corpus snapshot (~$19.97M / ~223 projects, 'report this as the live snapshot') — the live metric DOUBLED in four days ($40.74M / 400 projects on 07-03), and SDF's own cumulative statements exceeded the pin even in Jan 2025. De-pinned to behavior (dated, source-labeled reporting) per the golden-truth skill's disputed-never-pinned rule.",
+      "evidence": [
+        "Skeptic sweep 2026-07-03 (scratchpad 521): live execute probe + communityfund.stellar.org fetches + SDF demo transcript, all asOf 2026-07-03"
+      ],
+      "rootCause": [
+        "improvements/stellar-light-scout/sls-013 — fixed upstream: funding-v2 now exposes computedAt, methodologyVersion, countBasis, populated byRound data, and an explicit funnel scope; the golden remains behavior-gated because totals are volatile reconstructed snapshots",
+        "eval-side authoring: pinned a volatile corpus-only metric mid-recomputation and never ran the corpus-vs-world check against SDF's own cumulative statements",
+        "solo://proj/49/todo/corpus-health-instru--829"
+      ]
+    },
+    "origin": "raven-next q-scf-total-distributed"
+  }
+}

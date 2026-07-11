@@ -1,0 +1,72 @@
+{
+  "id": "q-eco-most-active-defi-projects",
+  "question": "What are the most active Stellar DeFi projects right now by development activity?",
+  "surface": [
+    "scout.getHackathon",
+    "scout.getHackathons",
+    "scout.getLeaderboard",
+    "scout.searchProjects",
+    "scout.searchRepos",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Define **activity** before ranking: Scout's `sort=activity&range=30d` snapshot, repository last-push recency, direct commit counts, stars, issues, TVL, and market usage are different measures. Report the exact query parameters, generated-at time, DeFi inclusion/filter rule, returned metric, and source timestamp, then list the resulting rows. Do not require Soroswap/Aquarius/Blend/Reflector/Phoenix—or any other names—to appear permanently. If using direct GitHub commits, say which repositories and window were sampled and do not present it as Scout's metric.",
+    "keyFacts": [
+      "Exposes metric, query/window, generatedAt, filter semantics, source timestamp, and resulting rows; distinguishes activity from stars/issues/TVL."
+    ],
+    "avoid": [
+      "Do NOT say Scout activity is repoScore or commit count unless the returned schema establishes that, and do NOT force a fixed roster.",
+      "Do NOT call a ranking 'DeFi' without a visible inclusion rule."
+    ],
+    "notes": "Most-active/top projects → scout_leaderboard. FRESHNESS-flagged ranking (weekly). Scout ranks repos by repoScore (freshness + traction + hackathon/SCF/builder authority); recent commit activity shows live DeFi repos (e.g. blend-sdk-js / blend-ui committed Jun 19 2026; reflector connectors May 2026). The ranking is a moving snapshot — reward flagging that + tool-sourced metrics over a fixed list. 2026-06-29 reviewed: confirmed scout_leaderboard card exists (CARDS.md) and all DeFi names cited (Soroswap, Aquarius, Blend, Reflector, Phoenix) resolve as Live on Scout directory. Confidence kept medium (ranking shifts).\nAlso good if the answer: Surfaces DeFi-relevant projects (e.g. Soroswap, Aquarius, Blend, Reflector, Phoenix) where they rank.\nGolden cites: The leaderboard/ranking source with a freshness caveat.\nGT-19 CORRECTION 2026-07-10: exact metric/query/filter/asOf are the gate. Scout activity, GitHub commits, stars, issues, TVL, and usage are not interchangeable."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/leaderboard?sort=activity&range=30d&limit=100",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Scout activity, stars, issues, and direct 30-day commit count are separate rankings; 'DeFi-relevant' also requires an explicit filter.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Scout leaderboard payload",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: sampled linked GitHub repositories",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited rubric falsely described Scout activity as repoScore/commit count and forced a stale roster. Live fields and sampled GitHub activity demonstrate distinct, non-interchangeable metrics.",
+      "evidence": [
+        "Solo scratchpad 575 GT-19 primary 3254 and blind 3258; reviewers obtained different rosters from different reasonable DeFi filters."
+      ],
+      "rootCause": [
+        "Metric conflation and an undefined category filter turned a live leaderboard into a fixed fact."
+      ]
+    },
+    "origin": "raven-next q-eco-most-active-defi-projects"
+  }
+}

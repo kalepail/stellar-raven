@@ -1,0 +1,80 @@
+{
+  "id": "q-scf-build-tranches",
+  "question": "How is an SCF Build Award disbursed across milestones under the current (v7.0) model?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "The current Build schedule has **four payments**: **10% on award acceptance** (Payment/Tranche #0, with no deliverable), then **20% at MVP**, **30% at Testnet or equivalent**, and **40% at Mainnet/equivalent plus UX readiness** across three deliverable/milestone tranches. Current Budget & Deliverables material says both “three tranches / four separate payments,” while the v7 launch article calls it a four-tranche model. The safe canonical wording is therefore **acceptance payment plus three deliverable tranches**; a source-faithful “four tranches” answer should still pass if it accurately explains that #0 has no deliverable. Current rules also generally require each completion form within 90 calendar days of the preceding payment unless an acknowledged delay applies.",
+    "keyFacts": [
+      "Gives the exact 10/20/30/40 four-payment schedule.",
+      "Distinguishes the acceptance payment from the three deliverable tranches and discloses official terminology conflict."
+    ],
+    "avoid": [
+      "Do NOT say every payment is tied to a deliverable or require a single terminology label over the correct mechanics.",
+      "Do NOT describe a lump sum or three equal payments as current."
+    ],
+    "notes": "GT-36 CORRECTION 2026-07-10: grade the 10/20/30/40 mechanics. Canonical wording is four payments: 10% acceptance with no deliverable plus three deliverable tranches. Official sources themselves also use four-tranche wording, so do not fail a correctly explained source-faithful label.\nGT-36 independently confirmed by processes 3290/3291."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/ecosystem/introducing-scf-v7",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/budget-and-deliverable-guidelines",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current Build disbursement is four payments: 10% acceptance plus three deliverable payments of 20/30/40",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: v7 launch article",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/B: current and versioned Budget & Deliverables page",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: current and versioned Budget & Deliverables page",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-official-terminology-conflict."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The 10/20/30/40 schedule is correct, but calling all four milestone tranches is unsafe: current official material simultaneously uses four-tranche language and three deliverable tranches/four payments, with the acceptance payment having no deliverable.",
+      "evidence": [
+        "Solo scratchpad 575 GT-36 primary 3290 and blind 3291."
+      ],
+      "rootCause": [
+        "Official documentation uses conflicting tranche terminology; eval promoted one label into a hard factual gate."
+      ]
+    },
+    "origin": "raven-next q-scf-build-tranches"
+  }
+}

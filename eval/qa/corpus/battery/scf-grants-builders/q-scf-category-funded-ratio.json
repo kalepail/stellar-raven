@@ -1,0 +1,80 @@
+{
+  "id": "q-scf-category-funded-ratio",
+  "question": "Which Stellar ecosystem category has the highest share of SCF-funded projects, not just the most funded projects in absolute count?",
+  "surface": [
+    "scout.getClusters",
+    "scout.getPartners",
+    "scout.matchPartners",
+    "scout.searchProjects",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Use Stellar Light's **`/api/analyze?dimension=categories`** snapshot and compute `SCF-funded projects / total projects` for each major category. Label the result per the Scout corpus, include `generatedAt`, numerator, denominator, and calculation, and distinguish highest share from largest funded count. As of **2026-07-10T23:25:10Z**, that endpoint had 841 active projects and **Protocol/Contract 68/129 = 52.71%**, ahead of User-Facing App 167/337 = 49.55%. This is a dated exemplar, not a permanent winner. Do not substitute `/api/clusters?dimension=category`: its current route truncates at 500 rows and can produce a different winner until pagination is repaired.",
+    "keyFacts": [
+      "Computes funded share by category rather than answering with absolute funded-project count.",
+      "Labels the numerator, denominator, ranking, and date as Scout-corpus analytics rather than independently official facts."
+    ],
+    "avoid": [
+      "Do NOT answer only with the largest absolute funded count when the question asks for a ratio.",
+      "Do NOT hard-gate Protocol/Contract, 47/78, or any exact percentage as permanent world truth."
+    ],
+    "notes": "Added from theboycoder/StellarLight data-layer intake. Verified 2026-06-25 via /api/analyze?dimension=categories: User-Facing App 110/202, Tooling 45/109, Infrastructure 37/106, Protocol/Contract 47/78, Asset 0/3, Partner Integration 0/1, Anchor 0/1. Re-verified 2026-06-29 (counts drift): Protocol/Contract 44/86≈51%, User-Facing App 103/204≈50%, Tooling 42/108≈39%, Infrastructure 34/97≈35% — Protocol/Contract REMAINS the highest funded ratio among major categories, so the load-bearing claim holds; only the exact percentages move. Freshness-sensitive analytics snapshot; gate ratio reasoning, not permanent exact counts.\nAlso good if the answer: Provides dated/tolerant category counts because Scout analytics are a live snapshot.\nGolden cites: Stellar Light analytics categories/funding snapshot.\nGT-36 2026-07-10: gate ratio reasoning, generatedAt, and Scout attribution. Use /api/analyze as the explicit basis; /api/clusters currently truncates at 500 and is not interchangeable. Protocol/Contract 68/129 is only the dated exemplar."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/analyze?dimension=categories",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/projects",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Scout snapshots can be used to calculate funded share by category, but their exact counts/ranking are not independently published official aggregates.",
+        "verdict": "corpus-only",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: Stellar Light categories analytics supplies numerator and denominator",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: official SCF awards surface does not publish a matching category aggregate",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The ratio method is valid, but exact counts are corpus-relative and two nominally similar Scout endpoints disagree because the category-cluster route silently truncates at 500 rows while analyze uses a larger limit.",
+      "evidence": [
+        "Solo scratchpad 569 Batch F, 2026-07-09; GT-36 primary 3290 and blind 3291 independently rechecked the ratio.",
+        "2026-07-10 near-simultaneous reads: /api/analyze categories used 841 active projects and made Protocol/Contract 68/129 the winner; /api/clusters category summed exactly 500 and made User-Facing App 104/207 the winner."
+      ],
+      "rootCause": [
+        "A sound ratio calculation was overfitted to one drifting, sole-source analytics snapshot and generic source URL.",
+        "improvements/stellar-light-scout/sls-042-category-clusters-pagination-truncation.md",
+        "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch F"
+      ]
+    },
+    "origin": "raven-next q-scf-category-funded-ratio"
+  }
+}

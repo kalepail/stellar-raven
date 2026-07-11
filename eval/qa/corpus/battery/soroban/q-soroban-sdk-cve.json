@@ -1,0 +1,84 @@
+{
+  "id": "q-soroban-sdk-cve",
+  "question": "Are there known security advisories in the soroban-sdk I should make sure I've patched?",
+  "surface": [
+    "scout.searchRepos"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-11**, check the live advisory feeds rather than treating this list as permanent. The current three published items are: CVE-2026-24889 / GHSA-96xm for `soroban-sdk` (fixed in 25.0.2, 23.5.1, 22.0.9); CVE-2026-26267 / GHSA-4chv for `soroban-sdk-macros` (fixed in 25.1.1, 23.5.2, 22.0.10); and CVE-2026-32322 / GHSA-x2hw for `soroban-sdk` (fixed in 25.3.0, 23.5.3, 22.0.11). Prefer the latest supported SDK major—v27 is current at this date—or a patched supported branch, then recompile/review affected deployed code. Impact conditions differ; do not describe every advisory as unconditional.",
+    "keyFacts": [
+      "Names all three dated CVE/GHSA/package mappings and patched branch releases.",
+      "Requires live re-checking and upgrade/recompile review."
+    ],
+    "avoid": [
+      "Do NOT claim there is only one advisory or freeze the list permanently.",
+      "Do NOT describe conditional impacts as universal."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). Freshness: advisory list grows — reward flagging that the mapping is time-sensitive. VERIFIED against rs-soroban-sdk GitHub Security Advisories (2026-06): GHSA-96xm-fv9w-pf3f (overflow in Bytes::slice/Vec::slice/gen_range, Jan 2026), GHSA-4chv-4c6w-w254 (#[contractimpl] calls inherent fn instead of trait fn on name collision, High, Feb 2026), GHSA-x2hw-px52-wp4m (Fr equality bypasses modular reduction, Mar 2026). Exact patched-version mapping is time-sensitive — do not pin it as permanently authoritative; check the advisories/releases live.\nAlso good if the answer: Answer should flag that the exact CVE ids / fixed versions are time-sensitive and should be checked against the current advisory database / GitHub releases.\nGolden cites: The rs-soroban-sdk releases/advisories or an NVD/CVE entry.\nGT-47 CORRECTION 2026-07-11: grade dated advisory/package/patch behavior, not a permanent count."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk/security/advisories",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk/releases",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://docs.rs/soroban-sdk/latest/soroban_sdk/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "As of 2026-07-11, the current published advisories are CVE-2026-24889/GHSA-96xm (soroban-sdk), CVE-2026-26267/GHSA-4chv (soroban-sdk-macros), and CVE-2026-32322/GHSA-x2hw (soroban-sdk), with patched 22/23/25 branch releases.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: GitHub Security Advisories and release API",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: NVD/OSV independent mappings",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: docs.rs current support policy",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited list found the three current advisories but lacked a dated CVE/GHSA-to-package/patch mapping and could be read as permanent.",
+      "evidence": [
+        "Solo scratchpad 575 GT-47 primary 3327 and blind 3334 independently matched the three advisories, packages, and patched branches."
+      ],
+      "rootCause": [
+        "Plain security-release freshness drift and an under-specified package/scope mapping."
+      ]
+    },
+    "origin": "raven-next q-soroban-sdk-cve"
+  }
+}

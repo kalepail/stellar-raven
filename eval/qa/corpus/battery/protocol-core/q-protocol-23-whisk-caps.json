@@ -1,0 +1,109 @@
+{
+  "id": "q-protocol-23-whisk-caps",
+  "question": "What did Stellar Protocol 23 ('Whisk') introduce, and which CAPs were in it?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "**Protocol 23 (Whisk)** activated on Mainnet on **2025-09-03 at 17:00 UTC** and contains exactly eight Final CAPs: **CAP-0062** Soroban Live State Prioritization, **CAP-0063** parallelism-friendly transaction scheduling, **CAP-0065** reusable module cache, **CAP-0066** Soroban in-memory read resource, **CAP-0067** unified asset events, **CAP-0068** the host function for getting an executable for an `Address`, **CAP-0069** String/Bytes conversion host functions, and **CAP-0070** configurable SCP timing parameters. CAP-0064 was rejected and is not part of P23.\n\nCAP-0063's protocol transition initialized `ledgerMaxDependentTxClusters` to **1**, so P23 activation did not itself enable multi-cluster application. A separate network-settings vote later raised the value to **2** at ledger **60993066** on **2026-01-29**; two independent Mainnet RPC reads on **2026-07-11** still decoded **2**. Treat one as the P23 initial value and two as dated, volatile network configuration. The canonical settings proposal is `limits/slp-0004.md`.",
+    "keyFacts": [
+      "Lists the complete eight-CAP P23 set: 0062, 0063, 0065, 0066, 0067, 0068, 0069, and 0070.",
+      "Distinguishes CAP-0063's initial value one from the later, freshness-sensitive Mainnet value two and uses limits/slp-0004.md."
+    ],
+    "avoid": [
+      "Do NOT omit CAP-0068 or CAP-0069, include rejected CAP-0064, or attribute Soroban itself to P23.",
+      "Do NOT say P23 immediately enabled multiple dependent clusters or present the current value two as a permanent protocol constant.",
+      "Do NOT cite the nonexistent core/slp-0004.md path; SLP-0004 is under limits/."
+    ],
+    "notes": "Whisk = Protocol 23. DATE VERIFIED 2025-09-03 (stellar.org 'Introducing Whisk' + Protocol 23 Upgrade Guide: Mainnet vote 2025-09-03 17:00 UTC). A reviewer's '2025-06-10' was the blog publish date, not activation — do NOT use it. Headline = parallel exec (CAP-0063) + live/archival separation (CAP-0062). Trap is wrong CAP numbers or attributing parallelism to the wrong protocol.\nAlso good if the answer: Mentions additional Whisk CAPs such as unified Classic+Soroban events (CAP-0067) and/or caching parsed WASM modules permanently (CAP-0065). | Notes Whisk activated on Mainnet around 2025-09-03.\nGolden cites: The Protocol 23 / Whisk upgrade material (stellar.org blog 'Introducing Whisk' or the CAP files in stellar/stellar-protocol).\nGT-31 CORRECTION 2026-07-11: require all eight P23 CAPs. CAP-0063 initialized one cluster; the setting-two state began later and was live when checked. Canonical SLP path is limits/slp-0004.md."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/README.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/introducing-whisk-stellar-protocol-23",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0063.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0004.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://horizon.stellar.org/ledgers/60993066",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The complete Protocol 23 set is CAP-0062, -0063, -0065, -0066, -0067, -0068, -0069, and -0070.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: current stellar-protocol CAP registry and all eight CAP preambles",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: SDF Whisk announcement and upgrade guide",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "CAP-0063 initialized ledgerMaxDependentTxClusters to one; a later settings upgrade raised it to two, which remained live on 2026-07-11.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: CAP-0063 and canonical limits/slp-0004.md",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: two independent Mainnet RPC reads plus Horizon ledger 60993066",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited Whisk summary omitted CAP-0068 and CAP-0069, used the retired core/slp-0004.md path, and compressed CAP-0063's initial one-cluster transition with the later live setting of two.",
+      "evidence": [
+        "Solo scratchpad 575 GT-31 primary process 3280 and blind process 3282 independently identified the incomplete CAP set, bad SLP path, and transition-versus-live-setting conflation.",
+        "2026-07-11 author re-check: stellar-protocol fbf05c9d registry lists exactly eight Final P23 CAPs; two independent Pubnet RPCs decoded CONFIG_SETTING_CONTRACT_PARALLEL_COMPUTE_V0 as two, last modified at ledger 60993066."
+      ],
+      "rootCause": [
+        "Eval-side CAP-family omission, stale source path, and protocol-transition-versus-network-configuration compression."
+      ]
+    },
+    "origin": "raven-next q-protocol-23-whisk-caps"
+  }
+}

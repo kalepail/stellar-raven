@@ -1,0 +1,126 @@
+{
+  "id": "q-soroban-oracle-defensive-consumption",
+  "question": "How should a Soroban lending protocol consume Reflector or other price oracles defensively so stale or thin-liquidity prices can't drain a pool?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "A lending protocol should treat oracle consumption as an economic risk system, not a single timestamp check:\n\n1. **Freshness and validity:** enforce the SEP-40 timestamp, reject future/old/missing data, and fail closed. YieldBlox's poisoned values were fresh, so freshness is necessary but not sufficient.\n2. **Independent value anchors:** require genuinely independent sources or a fundamental/NAV/redemption bound. Several feeds derived from one thin market are not independent.\n3. **Robust aggregation:** use medians or multi-window logic, minimum observations, longer clean baselines, and deviation checks against more than the immediately previous round. A TWAP/VWAP is one layer, not a guarantee.\n4. **Market-quality gates:** require minimum depth, volume, active traders/makers, healthy pairs, and bounded price impact before enabling collateral.\n5. **Exposure containment:** use conservative collateral factors, per-asset supply/borrow/value caps, isolation and rate limits so one bad price cannot drain total liquidity.\n6. **Response and recovery:** circuit breakers or pool ice, first-anomaly monitoring, clear governance/migration paths, and adversarial economic simulations. Oracle selection and recovery planning are deployment-critical when the pool's oracle address is immutable.\n\nThe YieldBlox incident used a five-minute VWAP and two fresh poisoned rounds that passed a local deviation check. Do not claim staleness caused it or that TWAP alone would have prevented it.",
+    "keyFacts": [
+      "Checks timestamp freshness but states that fresh poisoned data can still pass.",
+      "Requires genuinely independent value/NAV anchors, robust multi-window aggregation, and longer clean baselines.",
+      "Requires market-depth/volume/trader gates and deviation checks beyond the immediately previous round.",
+      "Limits exposure through caps, isolation, rate limits, circuit breakers, monitoring, and recovery planning."
+    ],
+    "avoid": [
+      "Do NOT claim oracles are trustless or freshness alone is sufficient.",
+      "Do NOT claim TWAP/VWAP alone would have prevented YieldBlox.",
+      "Do NOT call multiple feeds independent when they share the same market root.",
+      "Do NOT omit exposure caps, circuit breakers, monitoring, and fail-closed response."
+    ],
+    "notes": "2026-06-29: verified the incident is real and well-documented — Feb 2026 oracle-manipulation exploit against Blend V2 / YieldBlox DAO pool, USTRY (Etherfuse) collateral inflated ~100x via low-liquidity Reflector feeds, ~$10M+ drain (BlockSec post-mortem; corroborated by Blockaid/Binance/Medium). The four defensive measures (staleness/timestamp checks, deviation bounds, multi-source/TWAP, liquidity-aware pricing) are standard oracle-security guidance; rubric gates on the practices + naming the incident, not the exact $ figure (which varies $10M–$10.8M across reports).\nAlso good if the answer: References Reflector and the real YieldBlox/USTRY oracle-manipulation incident as motivation.\nGolden cites: A Reflector / oracle-security source and the real incident reference.\nCORRECTION 2026-07-10: require layered economic defenses. YieldBlox's prices were fresh and already VWAP-aggregated; staleness was not causal and TWAP alone is unsupported as a guaranteed prevention."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0040.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.blend.capital/pool-creators/selecting-an-oracle",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/yieldblox/oracle-aggregator",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://x.com/i/article/2029281732231344128",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Timestamp freshness remains necessary but was not the causal failure in YieldBlox",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: SEP-40 and verified adapter checks",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: operator postmortem",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent technical reviews",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Multiple sources or TWAP alone is sufficient defense",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: five-minute Reflector VWAP and adjacent-round deviation check still accepted the attack",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: Blend oracle-selection guidance and postmortem",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: security reports emphasize market depth, caps, and response controls",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited defense list was too shallow and implied staleness and TWAP were the relevant missed controls. YieldBlox used fresh five-minute VWAP rounds; robust defense needs source independence, market-quality gates, longer baselines, exposure limits, circuit breakers, monitoring, and recovery planning.",
+      "evidence": [
+        "Solo scratchpad 575 GT-09 primary/blind defensive-control matrices"
+      ],
+      "rootCause": [
+        "Generic oracle checklist omitted economic and operational containment.",
+        "Incident motivation was misread as a stale/single-spot failure."
+      ]
+    },
+    "origin": "raven-next q-soroban-oracle-defensive-consumption"
+  }
+}

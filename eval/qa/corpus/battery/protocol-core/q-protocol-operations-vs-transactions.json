@@ -1,0 +1,44 @@
+{
+  "id": "q-protocol-operations-vs-transactions",
+  "question": "What is the relationship between operations and transactions on Stellar?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "**Operations** are individual commands that modify the ledger (payment, create account, invoke\ncontract, manage offer) [1]. A **transaction** bundles one or more operations and is the **signed unit**\nsubmitted to the network [1]. The transaction carries a source account, sequence number, and fee, and\nits operations execute **atomically** (all-or-nothing) [1]. There is a per-transaction operation limit,\nand operations share the transaction's authorization, though each operation can optionally have its own\nsource account [1]. The containment is **operations ⊂ transaction** — operations are not independently\nsigned/submitted units [1].\n\n- [1] developers.stellar.org/docs/learn/fundamentals/transactions/operations-and-transactions",
+    "keyFacts": [
+      "States operations are individual commands that modify the ledger (e.g. payment, create account, invoke contract, manage offer).",
+      "States a transaction bundles one or more operations and is the signed unit submitted to the network."
+    ],
+    "avoid": [
+      "Do NOT invert the relationship (claim a transaction is a single operation type or that operations contain transactions).",
+      "Do NOT claim operations are independently signed/submitted units rather than being bundled in a transaction."
+    ],
+    "notes": "Foundational fundamentals fact. Trap is inverting the containment relationship.\nAlso good if the answer: Notes a transaction carries a source account, sequence number, and fee, and operations execute atomically (all-or-nothing). | Mentions the per-transaction operation limit / that operations share the transaction's authorization.\nGolden cites: The operations-and-transactions page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/operations-and-transactions",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-33-passphrases-operations-parallel-passkeys-consensus accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-operations-vs-transactions"
+  }
+}

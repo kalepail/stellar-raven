@@ -1,0 +1,83 @@
+{
+  "id": "q-org-mazieres-chief-scientist",
+  "question": "Who is David Mazières and what is his role at the Stellar Development Foundation?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "**David Mazières** is an SDF/Stellar **founder or co-founder** (SDF's current team page uses “Founder”) and **Chief Scientist**. He authored the 2015 single-author Stellar Consensus Protocol paper, which introduced Federated Byzantine Agreement, and he is a Stanford computer-science professor. He is not SDF's CEO; that current leadership role should be verified from SDF's team page. Early sources describe McCaleb, Joyce Kim, Mazières, network development, and foundation leadership with different scopes, so do not force an exclusive founder list.",
+    "keyFacts": [
+      "Identifies Mazières as SDF/Stellar founder/co-founder and Chief Scientist.",
+      "Credits him as author of the SCP paper and a Stanford CS professor."
+    ],
+    "avoid": [
+      "Do NOT deny Mazières founder/co-founder status or call him SDF's CEO.",
+      "Do NOT describe the single-author SCP paper as merely lead-authored or impose an exclusive founder list."
+    ],
+    "notes": "GT-28 CORRECTION 2026-07-10: current SDF and Stanford sources identify Mazières as founder/co-founder and Chief Scientist; the SCP paper is single-authored. Current-role wording is leadership-change sensitive.\nGT-28 independently confirmed by processes 3274/3275; existing ll-005 owns the empty-person-result recurrence."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/foundation/team",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.scs.stanford.edu/~dm/home/papers/stellar-consensus-sosp15.pdf",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://fdc.stanford.edu/people/david-mazieres",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "David Mazières is identified as SDF/Stellar founder or co-founder and Chief Scientist, authored the single-author SCP paper, and is a Stanford CS professor.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current SDF team/Meridian and SCP paper",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/D: Stanford profile/CV and independent historical sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A/D: Stanford profile/CV and independent historical sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer's denial of founder status contradicts current first-party SDF and Stanford records identifying David Mazières as founder/co-founder and Chief Scientist.",
+      "evidence": [
+        "Solo scratchpad 575 GT-28 primary 3274 and blind 3275; both independently rejected the exclusive McCaleb/Kim founder list."
+      ],
+      "rootCause": [
+        "Eval-side founder-list simplification contradicted first-party records.",
+        "improvements/lumenloop/ll-005-person-entity-empty-lane.md"
+      ]
+    },
+    "origin": "raven-next q-org-mazieres-chief-scientist"
+  }
+}

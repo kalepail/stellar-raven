@@ -1,0 +1,86 @@
+{
+  "id": "q-sor-stale-spec-after-upgrade",
+  "question": "After upgrading a contract, my correctly-formed BytesN argument gets re-interpreted (Bytes(5553) / UnreachableCodeReached) during simulation — how do I refresh the contract spec / bypass Contract.call() so the SDK/RPC stops using the stale spec?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "An in-place upgrade preserves the C-address/storage but can change active Wasm/spec. Regenerate static/generated bindings and recreate any retained spec-aware Client/Spec; current dynamic `Client.from(options)` fetches the current instance, active Wasm hash, and embedded spec when recreated. Raw JS `new Contract(id).call(method, ...exactScVals)` is already the low-level spec-free operation builder: it passes supplied ScVals to `Operation.invokeContractFunction`, and RPC simulation executes that XDR without re-encoding it from a cached spec. Use raw exact ScVals/XDR to bypass stale typed wrappers; manual InvokeHostFunction construction is unnecessary. A `Bytes(5553)` argument was encoded by the caller, not transformed by RPC. Compare actual argument/result XDR with the upgraded guest signature; `UnreachableCodeReached` is a generic guest trap, not proof of server-side stale ABI. Handle storage migration/versioning separately.",
+    "keyFacts": [
+      "Identifies generated/static/retained spec clients as stale surfaces and recreated Client.from as current-spec path.",
+      "States raw Contract.call is spec-free and simulation preserves supplied XDR."
+    ],
+    "avoid": [
+      "Do NOT claim raw Contract.call caches a spec, blame RPC for changing ScVals, or treat a generic guest trap as proof of stale server metadata."
+    ],
+    "notes": "Phase 3 should reproduce exact JS SDK bypass method names for the current SDK version; primary issue is verified as spec/ScVal mismatch class, but helper APIs drift.\nAlso good if the answer: Mentions verifying against CLI invocation/spec output and simulation diagnostic events.\nGolden cites: Official contract specs/client docs. | Official transaction/InvokeHostFunction docs for lower-level invocation. | Official or skill-backed upgrade pattern source.\nGT-43 independently confirmed byte-identical XDR from Contract.call and invokeContractFunction."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/js-stellar-sdk/blob/main/src/base/contract.ts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/js-stellar-sdk/blob/main/src/contract/client.ts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/types/fully-typed-contracts",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current raw versus spec-aware client behavior after upgrade",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: JS SDK source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: operation-XDR equality probe",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: upgrade/spec docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited diagnostic falsely claimed raw JS Contract.call caches/interprets contract specs; current source and XDR probes show it is the spec-free bypass.",
+      "evidence": [
+        "Solo scratchpad 575 GT-43 processes 3311/3320."
+      ],
+      "rootCause": [
+        "Eval-side SDK diagnostic inversion."
+      ]
+    },
+    "origin": "raven-next q-sor-stale-spec-after-upgrade"
+  }
+}

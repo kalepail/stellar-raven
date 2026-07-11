@@ -326,7 +326,13 @@ function migrateLiveFile(inputPath, outputName, contract) {
   const membership = cases.map((c) => c.id);
   const digest = sha256(JSON.stringify(cases));
   const output = {
-    $comment: input.$comment.replaceAll(input.contract, contract),
+    $comment: input.$comment
+      .replaceAll(input.contract, contract)
+      .replaceAll("eval/qa/live-cases.json", "eval/qa/corpus/live/live-cases.json")
+      .replaceAll(
+        "eval/qa/live-digest-supplement-cases.json",
+        "eval/qa/corpus/live/live-digest-supplement-cases.json"
+      ),
     contract,
     membership,
     contractProvenance: {

@@ -1,0 +1,84 @@
+{
+  "id": "q-soroban-no-std-constraints",
+  "question": "Why can't I use Rust's standard library, HashMap, or floating-point math inside a Soroban contract?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Soroban contracts use `#![no_std]`; `std` and `std::collections` are unavailable, and floating-point types are unsupported. Prefer host-backed `soroban_sdk::Vec`, `Map`, `Bytes`, `Symbol`, and related types. Guest allocation is off by default, but the SDK's `alloc` feature or a custom allocator can enable `alloc` types at CPU/code-size cost, so heap allocation is not impossible. Contracts can read consensus ledger time and use `Env::prng`; that PRNG is public/validator-influenceable and must not be treated as secret or unbiased randomness.",
+    "keyFacts": [
+      "Explains no_std/std/floating-point limits and the preferred host-backed SDK types.",
+      "States that allocation is optional and that ledger time/Env PRNG exist with security limitations."
+    ],
+    "avoid": [
+      "Do NOT claim `std` or floating point is supported.",
+      "Do NOT claim heap allocation, time, or RNG access is categorically impossible, or treat Env PRNG as secure secret randomness."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). Determinism + no_std are the real reasons; the trap is 'std/floats are fine'. Verified: contracts are #![no_std], no allocator, SDK host types replace std collections, no floating point for determinism.\nAlso good if the answer: Floating point is disallowed because execution must be deterministic across validators. | Determinism is required for consensus; non-deterministic ops would break agreement.\nGolden cites: A developers.stellar.org contract-development page covering types/no_std constraints.\nGT-46 CORRECTION 2026-07-11: no_std is not a no-allocation/no-time/no-PRNG absolute."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/rust-dialect",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk/blob/v27.0.0/soroban-sdk/src/alloc/mod.rs",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk/blob/v27.0.0/soroban-sdk/src/env.rs",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Soroban contracts are no_std and normally use host types; SDK alloc is optional, while Env exposes ledger time and a validator-influenceable PRNG unsuitable for secrets.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Rust dialect and built-in-types docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: rs-soroban-sdk v27 alloc module and Env APIs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-46 alloc/no-default-feature compile probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer correctly said no_std and no floating point, but falsely made heap allocation impossible and denied contract-accessible time/randomness. SDK allocation is optional; Env exposes ledger time and PRNG with security caveats.",
+      "evidence": [
+        "Solo scratchpad 575 GT-46 primary 3326 and independent blind 3329; both confirmed alloc support and blind preserved the time/PRNG nuance."
+      ],
+      "rootCause": [
+        "Stale documentation absolute ('no allocator') and deterministic-execution shorthand were copied into the golden as impossibility claims."
+      ]
+    },
+    "origin": "raven-next q-soroban-no-std-constraints"
+  }
+}

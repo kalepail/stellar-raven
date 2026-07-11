@@ -1,0 +1,91 @@
+{
+  "id": "q-sor-p23-auto-restore-extendto",
+  "question": "Under Protocol 23, does archived data auto-restore when a tx reads it (and can I still simulate-read it), what TTL does a restore grant, and how do I compute extendTo / the max-TTL gap for extendFootprintTtl?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "For an ordinary P23 invocation, simulate the intended InvokeHostFunction transaction. RPC discovers archived Persistent/Instance read-write entries and populates `archivedSorobanEntries`; assemble, sign, and submit that same invoke, which restores and executes atomically. Simulation itself does not mutate state. `restorePreamble` is normally nil in this path; a separate RestoreFootprintOp plus retry is a rare/manual size or fee-management fallback. Temporary entries cannot be restored. Restoration sets `liveUntilLedger = currentLedger + minPersistentTTL - 1` (current initial 4096 means current + 4095). `extendTo` is a relative offset: `newLiveUntilLedger = currentLedger + extendTo`, and Core requires `extendTo <= maxEntryTTL - 1` (current initial max 1,054,080 means max offset 1,054,079). Read live network config rather than freezing these numeric settings. Event/history retention is unrelated.",
+    "keyFacts": [
+      "Uses archivedSorobanEntries and one submitted invoke for normal P23 restoration/execution.",
+      "States exact restore and relative extendTo formulas with max-minus-one bound."
+    ],
+    "avoid": [
+      "Do NOT call extendTo an absolute ledger, require restorePreamble/separate retry for normal P23, restore Temporary data, or mix event retention into state TTL."
+    ],
+    "notes": "Phase 3 tightened auto-restore wording against current Stellar docs: archived entries are restored before host execution only when included in the transaction restore list, usually populated by RPC simulation.\nAlso good if the answer: Gives the three-step restore/extend flow: identify entries, build footprint operation, simulate/fill fees, submit and retry the original action. | Mentions SDK `extend_ttl(min_ttl, extend_to)` / persistent `extend_ttl(&key, min_ttl, extend_to)` for proactive extension.\nGolden cites: Official state archival docs for Protocol 23 auto-restore and restore/extend workflow. | Official Soroban storage docs or SDK docs for temporary vs persistent/instance TTL behavior.\nGT-42 blind corrected the primary addendum: current normal auto-restore uses archivedSorobanEntries with restorePreamble nil."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0066.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-core",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "P23 same-transaction auto-restore and TTL arithmetic",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: CAP-0066, Core/RPC source/tests, docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: CAP-0066, Core/RPC source/tests, docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-42 primary/blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer incorrectly required a normal separate restore/retry and treated extendTo as an absolute ledger; current P23/RPC behavior and exact formulas contradict both.",
+      "evidence": [
+        "Solo scratchpad 575 GT-42 processes 3308/3315."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-007-state-archival-auto-restore-ambiguity.md"
+      ]
+    },
+    "origin": "raven-next q-sor-p23-auto-restore-extendto"
+  }
+}

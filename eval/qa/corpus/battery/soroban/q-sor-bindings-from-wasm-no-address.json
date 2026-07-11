@@ -1,0 +1,114 @@
+{
+  "id": "q-sor-bindings-from-wasm-no-address",
+  "question": "How do I generate TypeScript bindings from a `.wasm` / a contract-id with no deployed address yet, discover the contract's functions and constructor params from them, and deploy passing constructor args via the JS SDK?",
+  "surface": [
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Generate bindings directly from the local artifact with `stellar contract bindings typescript --wasm <file> --output-dir <dir>`; no deployed C-address is required because the Wasm embeds the contract spec. `--wasm-hash` and `--contract-id` are separate routes for an already-installed blob or deployed instance. The generated package exposes typed methods and constructor arguments. For example, a constructor `(admin: Address, initial_value: u32)` produces a typed call shaped like `Client.deploy({ admin, initial_value }, options)`, returning an `AssembledTransaction`; sign/send it and read the resulting contract ID. That generated deploy route assumes the client's configured `wasmHash` has already been installed on-chain. If starting only from local Wasm, upload/install it first or use the CLI deploy flow.\n\nCLI sanity check:\n```sh\nstellar contract deploy --wasm target/wasm32v1-none/release/my_contract.wasm --source-account alice --network testnet -- --admin alice --initial_value 100\n```\nConstructor arguments follow `--`. In raw JS the flow is upload Wasm, create/deploy from wasmHash plus salt and constructor args, simulate/prepare, sign, submit, and then use the generated client. Inspect the generated typings for the installed CLI/SDK version rather than guessing EVM ABI shapes.",
+    "keyFacts": [
+      "States that `stellar contract bindings typescript` can generate a typed NPM package from `--wasm`, `--wasm-hash`, or `--contract-id`; no deployed address is required when using a local Wasm artifact.",
+      "Explains that the Wasm contains the contract specification/interface types, so generated bindings expose callable functions and constructor argument shapes.",
+      "Shows deploy constructor arguments belong after the CLI `--` as `--arg-name value`, and for JS SDK deployment the user must upload/build Wasm, create/deploy with hash/salt/constructor args, simulate/assemble, sign, and submit.",
+      "Distinguishes generated bindings / dynamic `contract.Client` from raw XDR construction and recommends generated bindings for normal frontend work."
+    ],
+    "avoid": [
+      "Do not say a deployed `C...` address is required to inspect a local contract's interface.",
+      "Do not recommend obsolete `soroban` CLI commands, the old `wasm32-unknown-unknown` target, or noncanonical `--source`-only examples for current new contracts. `--source` is acceptable only as an alias note for `--source-account`.",
+      "Do not answer with EVM ABI/ethers.js assumptions."
+    ],
+    "notes": "Verified against Stellar Docs MCP and local `stellar 25.2.0` help. Raw JS SDK deployment helper names are version-sensitive; Phase 3 should check current `@stellar/stellar-sdk` types if it wants to lock `createCustomContract` constructor-arg syntax exactly.\nAlso good if the answer: Mentions `stellar contract deploy --wasm ... --source ... --network ... -- --constructor_arg value` as the CLI sanity check before raw JS SDK deployment. | Calls out version drift around exact JS SDK helper names and advises checking the generated package README/types for the contract-specific constructor signature.\nGolden cites: Must cite official Stellar docs for TypeScript bindings or fully typed contracts. | Must cite official Stellar docs or CLI evidence for deploy constructor argument syntax.\nCorrected 2026-07-07 and GT-41 independently expanded 2026-07-10. Require the actual generated Client.deploy path and installed-wasmHash precondition when answering deployment from bindings. `--source` remains a valid alias; stale target/`--global`/EVM ABI assumptions remain failures."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/types/fully-typed-contracts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/getting-started/hello-world-frontend",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/getting-started/hello-world",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/invoke-contract-tx-sdk",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A local Wasm artifact contains the contract specification/interface and can be used for TypeScript bindings.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/E: existing golden sources and Stellar Raven docs hits for Hello World / fully typed contracts confirm the Wasm embeds the spec/interface and supports generated bindings",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "E",
+            "ref": "A/E: existing golden sources and Stellar Raven docs hits for Hello World / fully typed contracts confirm the Wasm embeds the spec/interface and supports generated bindings",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Deploy constructor arguments go after `--`, and the canonical source-account flag is `--source-account`.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "F",
+            "ref": "F: local `stellar contract deploy --help` from CLI 27.0.0 — usage uses `--source-account`; constructor args are `[-- <CONTRACT_CONSTRUCTOR_ARGS>...]` and described as `--arg-name value`",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/C: Stellar Raven scout repo explanation confirms `--source` is an alias for the `source_account` field, not the canonical long flag",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "B/C: Stellar Raven scout repo explanation confirms `--source` is an alias for the `source_account` field, not the canonical long flag",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-07",
+      "by": "Golden-truth sweep import — The earlier flag correction was sound, but the answer still did not show the generated binding's typed deploy route requested by the question or state that its wasmHash must already be installed on-chain.",
+      "evidence": [
+        "Local empirical execution 2026-07-07: `stellar contract deploy --help` from `stellar 27.0.0`.",
+        "Stellar Raven production MCP probes 2026-07-07: official docs searches/page reads plus `scout.explainRepo` for the alias behavior.",
+        "Sibling sweep 2026-07-07 identified this kept case as an answer-level `--source` alias example needing canonicalization."
+      ],
+      "rootCause": [
+        "Eval-side canonicalization drift: current CLI accepts the alias, but current happy-path examples should show the canonical flag.",
+        "improvements/skills/sk-001-wasm-target-stale.md — fixed upstream and refreshed locally at commit 3d75a157f6fe; current mirrored examples use wasm32v1-none and --source-account."
+      ]
+    },
+    "origin": "raven-next q-sor-bindings-from-wasm-no-address"
+  }
+}

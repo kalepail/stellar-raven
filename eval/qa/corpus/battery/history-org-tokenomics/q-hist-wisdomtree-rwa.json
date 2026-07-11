@@ -1,0 +1,88 @@
+{
+  "id": "q-hist-wisdomtree-rwa",
+  "question": "Does WisdomTree use Stellar, and for what?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "WisdomTree uses Stellar for tokenized/digital funds and related RWA products. Nine blockchain-enabled funds became effective in **2022**, and the WisdomTree Prime app launched **July 12, 2023**. Stellar was an initial and remains a supported chain, not the sole chain. The SDF case study's 13-fund-plus-gold roster is a dated snapshot; current issuer materials may list more products/chains. WisdomTree's transfer agent maintains the official ownership record, with blockchain records secondary under the product terms.",
+    "keyFacts": [
+      "Uses the 2022/2023 chronology, dates roster counts, preserves multichain status, and describes official record priority."
+    ],
+    "avoid": [
+      "Do NOT date Prime to ~2024, freeze 13 products, call Stellar exclusive, confuse WisdomTree with Franklin Templeton, or claim blockchain alone is the legal master record."
+    ],
+    "notes": "GT-27 2026-07-10: issuer sources establish 2022 fund effectiveness and July 12 2023 Prime launch. Treat 13 products as historical, Stellar as one supported chain, and transfer-agent records as authoritative.\nGT-27 CORRECTION 2026-07-10: issuer chronology/current roster replaces the static case-study snapshot."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://ir.wisdomtree.com/news-events/press-releases/detail/508/wisdomtree-announces-nine-new-blockchain-enabled-funds-are",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://ir.wisdomtree.com/news-events/press-releases/detail/641/wisdomtree-prime-goes-live-now-available-in-app-stores",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.wisdomtreeprime.com/faq",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/case-studies/wisdomtree",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "WisdomTree digital funds became effective in 2022 and Prime launched July 12 2023; the case-study 13-fund count is historical while the current issuer FAQ showed a larger multichain roster.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: WisdomTree 2022 fund and 2023 Prime releases/current FAQ",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/C: SDF case study plus live Raven discovery",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "A/C: SDF case study plus live Raven discovery",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-time-slice."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The case study's snapshot was promoted into a current roster and Prime's launch was dated around 2024 despite the July 2023 app-store launch; Stellar use and official record semantics need issuer evidence.",
+      "evidence": [
+        "Solo scratchpad 575 GT-27 primary 3270 and blind 3272; RWA sibling sweep."
+      ],
+      "rootCause": [
+        "Historic case-study roster and approximate launch date became timeless.",
+        "improvements/stellar-light-scout/sls-023-rwa-product-deployment-status.md",
+        "improvements/lumenloop/ll-012-rwa-live-planned-recall.md"
+      ]
+    },
+    "origin": "raven-next q-hist-wisdomtree-rwa"
+  }
+}

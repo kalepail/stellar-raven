@@ -1,0 +1,113 @@
+{
+  "id": "q-pay-moneygram-ramps",
+  "question": "What is MoneyGram Ramps on Stellar, which SEP and asset does it use, and what are its per-transaction limits?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "MoneyGram Ramps lets supported wallets/exchanges move **USDC on Stellar** between digital wallets and MoneyGram cash locations. The integration uses **SEP-10 authentication** and **SEP-24 interactive deposit/withdrawal**. It is distinct from SDP.\n\nAs of **2026-07-10**, Production Mainnet limits are direction-specific: **on-ramp 5–950 USDC per transaction** and **off-ramp 5–2,500 USDC per transaction**. Production Preview is a separate test tier at **10–20 USDC per transaction and 100 USDC aggregate**. Recheck these operator values before treating them as current.\n\nCoverage is disputed across MoneyGram's own surfaces. Integration prose says 174 off-ramp countries, while its linked live sheet currently yields 168 cash-out and 27 cash-in rows; consumer marketing says 170+ cash countries. Broader 180+ fiat-rail/presence and 200+ corporate-footprint figures are not Stellar cash-ramp coverage. Cite the exact surface/date/direction or omit a country total rather than choosing one magic number.",
+    "keyFacts": [
+      "Identifies Stellar USDC plus SEP-10/SEP-24.",
+      "States dated direction-specific production and preview limits.",
+      "Treats country coverage as source-, date-, and direction-specific and separates corporate/broader marketing scopes."
+    ],
+    "avoid": [
+      "Do NOT use the off-ramp maximum as the on-ramp maximum.",
+      "Do NOT pin 174, 180+, or 200+ as one current bidirectional Stellar cash-coverage count.",
+      "Do NOT conflate MoneyGram Ramps with SDP."
+    ],
+    "notes": "Verified: Ramps uses SEP-24 + USDC on Stellar; MainNet off-ramp limit 5 USDC min / 2,500 USDC max per tx; available in 174 countries (per MoneyGram dev docs, June 2026). Limits/country counts are freshness-sensitive. Trap: wrong SEP (it's SEP-24, not SEP-6/31).\nAlso good if the answer: Cites per-transaction off-ramp limits (e.g. ~$5 USDC min to ~$2,500 USDC max) and flags these can change. | Notes the global retail agent footprint (cash-out at hundreds of thousands of locations across 170+ countries).\nGolden cites: developers.stellar.org MoneyGram Ramps docs and/or MoneyGram developer docs.\nCORRECTION 2026-07-10: grade direction-specific limits and dated source scope. The 174 prose conflicts with the linked live sheet; accept honest dispute/omission, not a universal count."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://developer.moneygram.com/moneygram-developer/docs/integrate-moneygram-ramps",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.moneygram.com/us/en/ramps",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://stellar.moneygram.com/.well-known/stellar.toml",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current production limits are 5–950 USDC on-ramp and 5–2,500 USDC off-ramp per transaction",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current MoneyGram integration documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent dated operator-page verification",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "Independent reviews: Solo GT-11 processes 3231/3236",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "174 is one settled current bidirectional country count",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: integration prose says 174 off-ramp countries",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: linked live sheet yields 168 cash-out and 27 cash-in rows across 169 entries",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: current marketing says 170+ cash countries; 180+ broader fiat-rail presence; 200+ corporate footprint",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The answer froze off-ramp limits as the whole product and pinned one country count despite conflicting operator prose and the linked live sheet. MoneyGram production limits are direction-specific, and 170+/174/180+/200+ refer to different scopes.",
+      "evidence": [
+        "Solo scratchpad 575 GT-02 blind and GT-11 primary/blind MoneyGram matrices",
+        "improvements/lumenloop/ll-008-directory-record-coverage-field-quality.md"
+      ],
+      "rootCause": [
+        "Direction-specific operator data and multiple marketing scopes were compressed into one product figure."
+      ]
+    },
+    "origin": "raven-next q-pay-moneygram-ramps"
+  }
+}

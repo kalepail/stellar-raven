@@ -1,0 +1,78 @@
+{
+  "id": "q-soroban-auth-vs-authn",
+  "question": "In Soroban, what's the difference between authorization and authentication, and which does require_auth handle?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Authentication asks whether a signer/credential is genuine; authorization asks whether that Address permits this invocation. `address.require_auth()` is the authorization gate: the host enforces invocation matching and standard nonce/expiry/replay rules. For a classic G-account, the built-in account implementation verifies Stellar signatures and thresholds. For a C-account, the host invokes reserved `__check_auth`; that contract verifies its user-defined signature scheme and may apply policy using `auth_context`. Business roles and limits remain application policy.",
+    "keyFacts": [
+      "Separates authentication, authorization, and business policy.",
+      "Distinguishes built-in classic credential verification from host-dispatched contract-account verification."
+    ],
+    "avoid": [
+      "Do NOT swap authentication and authorization or say no authentication occurs behind require_auth.",
+      "Do NOT claim the host cryptographically implements every C-account custom signature scheme or that C-account standard replay needs a home-grown nonce."
+    ],
+    "notes": "Conceptual comparison straight from the auth docs; definitions and the __check_auth delegation verified verbatim against the authorization fundamentals page.\nAlso good if the answer: For classic accounts the host checks signatures against the account; for contract (custom) accounts it delegates the check to the contract's `__check_auth`.\nGolden cites: The developers.stellar.org authorization fundamentals page.\nGT-44 avoid-only precision encoded as a self-contained answer."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-11.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Authentication versus authorization responsibility split",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: authorization docs and CAP-0046-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: authorization docs and CAP-0046-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-44 primary/blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The body was correct, but an avoid sentence overclaimed that the host itself cryptographically verifies every custom-account signature scheme.",
+      "evidence": [
+        "Solo scratchpad 575 GT-44 processes 3316/3324."
+      ],
+      "rootCause": [
+        "Eval-side host-versus-contract wording."
+      ]
+    },
+    "origin": "raven-next q-soroban-auth-vs-authn"
+  }
+}

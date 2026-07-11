@@ -1,0 +1,90 @@
+{
+  "id": "q-infra-galexie-vs-etl",
+  "question": "What's the difference between Galexie, stellar-etl, and Hubble for getting Stellar ledger data into my own pipeline?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "Think of the current pipeline in layers. **Galexie** acquires, batches, and compresses `LedgerCloseMeta` XDR into a GCS/S3-compatible object-storage data lake. **stellar-etl** consumes ledger metadata—data-lake input by default, captive core optional—and transforms/exports it into OLAP-friendly records. **Hubble** is SDF's ready-to-query public BigQuery analytics dataset downstream of that ingestion pipeline. Galexie is not SQL/RPC, stellar-etl is not merely a Core-history-archive extractor, and Hubble is not a transaction-submission API.",
+    "keyFacts": [
+      "Separates export/data-lake, transform/export, and hosted analytics layers.",
+      "Uses canonical current stellar/stellar-galexie and stellar/stellar-etl identities."
+    ],
+    "avoid": [
+      "Do NOT interchange Galexie, stellar-etl, and Hubble.",
+      "Do NOT call Galexie a database/RPC or stellar-etl only a history-archive extractor."
+    ],
+    "notes": "Reconciled with q-infra-galexie-what-is 2026-06-29: Galexie image/repo is `stellar/stellar-galexie` (extracted from stellar/go into its own repo 2026-06-10), NOT `stellar/galexie`; datastore backends are GCS and S3 (both implemented in support/datastore: gcs.go + s3.go, `S3DataStore implements DataStore`). Three-tool comparison; trap is conflating roles. scout_repos acceptable for galexie/stellar-etl repos.\nAlso good if the answer: Pick based on need: Hubble for SQL analytics, stellar-etl for ETL into a private warehouse, Galexie for raw archive replay.\nGolden cites: developers.stellar.org Hubble docs + the stellar/stellar-etl and stellar/stellar-galexie sources.\nGT-49 BLIND CORRECTION 2026-07-11: require the current export→transform→hosted-analytics layer boundary."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/indexers/build-your-own/galexie",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/analytics/hubble/developer-guide/source-system-ingestion/overview",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-galexie",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-etl",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Galexie exports/bundles compressed LedgerCloseMeta XDR to object storage; stellar-etl consumes ledger metadata (data lake by default, captive core optional) and transforms it to analytics outputs; Hubble is the hosted public BigQuery layer.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Galexie and Hubble ingestion docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar-galexie and stellar-etl source/releases",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent tooling sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited comparison mislocated stellar-etl at Core history archives and missed the current Galexie→data lake→ETL→Hubble pipeline.",
+      "evidence": [
+        "Solo scratchpad 575 GT-49 blind 3341 found this material miss beyond primary 3335 and rejected a Perplexity Galexie false negative using official docs/source."
+      ],
+      "rootCause": [
+        "Stale ingestion architecture and repository terminology."
+      ]
+    },
+    "origin": "raven-next q-infra-galexie-vs-etl"
+  }
+}

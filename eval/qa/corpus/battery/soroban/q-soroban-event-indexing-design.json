@@ -1,0 +1,80 @@
+{
+  "id": "q-soroban-event-indexing-design",
+  "question": "How should I design event topics in a Soroban token contract so off-chain indexers can subscribe reliably?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Design the indexer around event identity and schema provenance. Persist the RPC event `id`/cursor and ledger/tx/op/event coordinates, dedupe by event ID rather than transaction hash, and process pages transactionally. Validate the emitting contract/spec and decode topics/data as XDR. Custom SEP-41 transfer/mint use `[transfer,from,to]` / `[mint,to]`; current direct SAC and Classic unified CAP-67 events append the SEP-11 asset topic. Because direct SAC and Classic-operation events share that schema, use transaction/operation metadata to distinguish paths. Track contract/spec/WASM version, handle failed/rolled-back calls, reorg/finality assumptions, retention gaps, muxed destination data, and backfill from durable history when RPC retention is insufficient.",
+    "keyFacts": [
+      "Uses stable event IDs/cursors and producer/spec/version provenance.",
+      "Correctly models custom SEP-41 versus current asset-appended SAC/CAP-67 schemas and path metadata."
+    ],
+    "avoid": [
+      "Do NOT dedupe by transaction hash, infer authenticity solely from topic count, call direct SAC three-topic, or assume RPC retains all history."
+    ],
+    "notes": "Design guidance; only leading topics are filterable; event schema is a stable public API; ties to CAP-0067 (P23) unified asset events. Specific indexed-topic count is implementation-detail — gate on 'leading topics filterable, not all fields'.\nAlso good if the answer: Encode `Address`/structured values via the SDK's conversions (`IntoVal`) for spec-compatible decoding. | Note Protocol 23 (CAP-0067) unified Soroban + classic asset events and changed SAC/mint event topics.\nGolden cites: A developers.stellar.org events ingest guide or token-event convention.\nGT-42 sibling atom landed before GT-45 review; later review should preserve the independently proven direct-SAC asset topic."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getEvents",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0067.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current event schema and indexing identity",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: SEP-41/CAP-67/current host source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-42 direct-SAC event test",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — GT-42 independently established the current CAP-67 event atom needed by this sibling: direct SAC and Classic unified events append the asset topic, while robust indexing still requires producer/path provenance.",
+      "evidence": [
+        "Solo scratchpad 575 GT-42 blind process 3315."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-018-sac-cap67-event-schema-gap.md"
+      ]
+    },
+    "origin": "raven-next q-soroban-event-indexing-design"
+  }
+}

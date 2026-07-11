@@ -1,0 +1,138 @@
+{
+  "id": "q-crp-oz-rwa-erc3643-trex",
+  "question": "Does Stellar have an ERC-3643 or T-REX-style regulated-token standard through OpenZeppelin Stellar RWA contracts, and how does identity-registry logic fit?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "**SEP-0057** is a **Draft v0.3.0** Stellar proposal for a T-REX/ERC-3643-style regulated-token architecture. Its normative core defines a minimal identity verifier and token/compliance hooks; it does not require one particular claim-registry implementation.\n\nThe SEP also contains an expressly **non-normative claim-based reference appendix** where functions such as add_identity appear. Separately, OpenZeppelin's current stellar-contracts RWA suite implements concrete identity registries/profiles, compliance modules, manager roles, pause/freeze/recovery, and examples. Those library helpers and authorization boundaries are implementation APIs, not automatically the SEP's stable core interface.\n\nPin both the SEP and library commit before copying signatures. Current hosted docs/examples still contain older can_transfer/can_create wording while v0.3 source uses Transferred/Created/Destroyed hooks. Treat source/spec at the selected commit as controlling. Stellar classic flags, clawback, SEP-8, and SAC remain separate mechanisms. None of these contracts creates securities-law, custody, disclosure, transfer-agent, or off-chain-rights compliance.",
+    "keyFacts": [
+      "Identifies SEP-0057 as Draft v0.3.0 and separates its normative core from the non-normative claim-based appendix.",
+      "Explains that add_identity exists in the reference appendix and concrete OpenZeppelin implementation, not as a guaranteed stable core-token API.",
+      "Identifies the current OpenZeppelin Stellar RWA suite as an implemented contract library with commit-sensitive APIs.",
+      "Explains that technical policy enforcement does not establish legal compliance or off-chain rights."
+    ],
+    "avoid": [
+      "Do NOT claim SEP-0057 is already a final, native protocol standard.",
+      "Do NOT label add_identity invented, or present an optional appendix/library helper as a required normative core API.",
+      "Do NOT copy stale hosted signatures without checking pinned source/spec.",
+      "Do NOT claim the contracts alone create legal compliance."
+    ],
+    "notes": "2026-06-29 VERIFIED against the SEP-0057 source: status Draft, title 'T-REX (Token for Regulated EXchanges)', authors OpenZeppelin + Boyan Barakov/Ozgun Ozerk/Dennis O'Connell, last updated 2026-06-11, explicitly based on ERC-3643. Real trait fns include mint/forced_transfer/set_address_frozen/set_compliance/set_identity_verifier/verify_identity/recovery_target -- so the must_avoid example 'add_identity' is correctly an INVENTED name (not in the spec). Draft + freshness keep confidence medium; re-check status/API names before treating function-level details as stable.\nAlso good if the answer: Mentions Stellar-native regulated asset tools may include authorization flags, SEP-8 approval-server patterns, SAC/Soroban token interfaces, or OZ contract libraries depending on design. | Flags freshness because contract libraries and APIs can change quickly.\nGolden cites: Current OpenZeppelin Stellar contracts docs/repository and any Stellar docs for regulated-asset patterns.\nRECONCILED 2026-07-10 (GT-10 processes 3230/3232): disregard the inherited claim that add_identity is invented. It exists in the non-normative appendix and concrete library. Grade normative-core versus appendix versus implementation boundaries and pinned-source behavior; hosted docs currently lag v0.3 hooks."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0057.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/README.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/OpenZeppelin/stellar-contracts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/control-asset-access",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SEP-0057 remains Draft v0.3.0; add_identity appears in its non-normative claim-based reference appendix rather than the minimal normative verifier core.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: stellar-protocol@fbf05c9d ecosystem/sep-0057.md preamble/core/appendix",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: stellar-protocol ecosystem registry lists SEP-0057 Draft",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "OpenZeppelin ships a concrete Stellar RWA/T-REX-style contract suite with identity/compliance modules, roles, and examples.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B/F: OpenZeppelin stellar-contracts source and 358 passing RWA tests at verified commit 1e513",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "B/F: OpenZeppelin stellar-contracts source and 358 passing RWA tests at verified commit 1e513",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: current OpenZeppelin/Stellar product documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "Independent reviews: Solo GT-10 processes 3230/3232",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "The current hosted docs/examples exactly match the v0.3 spec/source hooks.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: hosted examples retain pre-v0.3 can_transfer/can_create wording",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: pinned spec/source uses Transferred/Created/Destroyed hooks",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-09",
+      "by": "Golden-truth sweep import — The earlier correction established that add_identity exists, but still blurred three different surfaces: SEP-0057's minimal normative core, its expressly non-normative claim-based appendix, and OpenZeppelin's concrete Stellar RWA library. Current hosted docs/examples also lag the v0.3 source hooks. The golden must describe those boundaries and remove the contradictory inherited grader instruction.",
+      "evidence": [
+        "Solo scratchpad 569 Batch E, 2026-07-09; direct check of SEP-0057.",
+        "Solo scratchpad 575 GT-10 primary/blind processes 3230/3232; pinned OpenZeppelin source/tests and hosted-doc conflict."
+      ],
+      "rootCause": [
+        "Eval-side API freshness drift: absence from the minimal core trait was mistaken for nonexistence across appendix and implementation.",
+        "Normative spec, non-normative reference appendix, concrete library, and stale hosted docs were conflated.",
+        "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch E"
+      ]
+    },
+    "origin": "raven-next q-crp-oz-rwa-erc3643-trex"
+  }
+}

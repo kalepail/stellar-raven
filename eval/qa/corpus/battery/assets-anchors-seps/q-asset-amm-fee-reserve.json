@@ -1,0 +1,44 @@
+{
+  "id": "q-asset-amm-fee-reserve",
+  "question": "What fee does a Stellar AMM liquidity pool charge per swap, and how many base reserves does a pool-share trustline require?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "A Stellar AMM liquidity pool charges a **fixed 30 basis points (0.30%)** fee per swap, and a\n**pool-share trustline requires 2 base reserves** (vs. 1 for a regular asset trustline) [1]. Pools\nenforce the **constant-product invariant `Asset A * Asset B = k`** — the protocol never lets the\nproduct of the reserves decrease — and the 0.30% fee accrues into the pool, growing `k` so it is\ndistributed to liquidity providers proportional to their shares [1]. Pool shares are not\ntransferable between accounts; they change only via deposit/withdraw.\n\nSource: [1] developers.stellar.org \"Liquidity on the Stellar DEX / Liquidity Pools\" page.",
+    "keyFacts": [
+      "States the AMM swap fee is 30 basis points (0.30%).",
+      "States a pool-share trustline consumes two base reserves (1.0 XLM)."
+    ],
+    "avoid": [
+      "Do NOT state a wrong fee (0.03%, 0.25%, 1%) or a wrong reserve count (one base reserve)."
+    ],
+    "notes": "Precise-number factual. Dossier §3.3. Verified on developers.stellar.org liquidity-pools page: fee = 30 bps (0.30%); pool-share trustline = 2 base reserves; constant-product invariant A*B=k.\nAlso good if the answer: Notes the pool enforces a constant-product (x*y=k) invariant and fees accrue to LPs.\nGolden cites: The Stellar liquidity-pools page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/liquidity-on-stellar-sdex-liquidity-pools",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-03-classic-assets-clawback-trustlines-paths accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-amm-fee-reserve"
+  }
+}

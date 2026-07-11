@@ -1,0 +1,82 @@
+{
+  "id": "q-soroban-cross-contract-call",
+  "question": "How does one Soroban contract call a function on another deployed contract?",
+  "surface": [
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Call a deployed contract either through a generated typed client (from `contractimport!` or generated bindings) or through `Env::invoke_contract`. The whole call tree shares the transaction's resource budget. Authorization is an invocation tree: an external address's `require_auth` must be covered for the relevant nested invocation and arguments. Separately, the address of the contract making a direct cross-contract call is implicitly authorized for that direct call; do not describe every boundary as an unconditional authorization reset.",
+    "keyFacts": [
+      "Names generated typed clients and Env::invoke_contract as the two call mechanisms.",
+      "Explains both external-address invocation-tree coverage and direct-contract-invoker implicit authorization."
+    ],
+    "avoid": [
+      "Do NOT use Solidity interface/call/delegatecall semantics.",
+      "Do NOT claim nested external auth is automatically inherited, or deny the direct-invoker contract exception."
+    ],
+    "notes": "delegatecall is the EVM trap; scout_repos acceptable for code.\nAlso good if the answer: Cross-contract calls run within the same instruction/memory budget as the outer invocation. | Authorization (`require_auth`) is enforced at each contract boundary, not inherited implicitly.\nGolden cites: The developers.stellar.org cross-contract calls guide.\nGT-45 BLIND CORRECTION 2026-07-11: grade the two-part auth rule, not a blanket per-boundary-reset slogan."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/contract-interactions/cross-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-env/blob/v27.0.0/soroban-env-host/src/auth.rs",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "External-address authorization must cover the invocation tree, while a contract address directly invoking another contract is implicitly authorized for that direct call.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Stellar authorization and cross-contract documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: rs-soroban-env v27 auth implementation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-45 blind cross-contract example test",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer correctly described the two call mechanisms but made authorization a blanket per-boundary reset, omitting the host's direct-contract-invoker implicit-authorization rule.",
+      "evidence": [
+        "Solo scratchpad 575 GT-45 independent blind 3328; primary 3325 retained the overbroad sentence and was overturned on this atom."
+      ],
+      "rootCause": [
+        "Eval-side authorization model was compressed into an absolute that omitted the direct-invoker exception."
+      ]
+    },
+    "origin": "raven-next q-soroban-cross-contract-call"
+  }
+}

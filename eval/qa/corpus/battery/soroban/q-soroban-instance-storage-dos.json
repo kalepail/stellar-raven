@@ -1,0 +1,82 @@
+{
+  "id": "q-soroban-instance-storage-dos",
+  "question": "Why is storing a growing per-user map in Instance storage a denial-of-service risk in Soroban?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Instance storage is part of the contract-instance ledger entry and is loaded with the contract, so unbounded per-user data makes every invocation read and deserialize more bytes. Operations can eventually hit fee, resource, or ledger-entry-size limits; an over-limit write fails and the prior valid state remains, but application paths that require further growth can become unavailable—a real DoS risk, not an automatic permanent brick. Keep Instance storage small and fixed. Put per-user/unbounded data in separate Persistent keys and shard any growing collection.",
+    "keyFacts": [
+      "Unbounded Instance storage increases the cost of every invocation and can make growth-dependent paths fail.",
+      "Over-limit writes are rejected with prior valid state preserved; use separate Persistent keys/sharding."
+    ],
+    "avoid": [
+      "Do NOT call the first over-limit write an irreversible permanent brick.",
+      "Do NOT say Instance storage is lazily loaded like separate Persistent keys."
+    ],
+    "notes": "Routes to scout_research (security corpus). Instance = whole instance entry loaded per call; verified against the storage/state-archival semantics. Trap: thinking Instance loads lazily.\nAlso good if the answer: This is a recognized Soroban vulnerability class (Instance-storage DoS / unbounded storage growth) in audit checklists.\nGolden cites: A Soroban security checklist (e.g., Veridise) or developers.stellar.org storage guidance.\nGT-46 CORRECTION 2026-07-11: distinguish rejected writes and growth-path DoS from an unsupported permanent-brick claim."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/storage/choosing-the-right-storage",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-env/blob/v27.0.0/soroban-env-host/src/storage.rs",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Instance data is loaded with the contract; unbounded growth increases every invocation's cost, but an over-limit write is rejected and prior valid state remains.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Stellar storage-selection and archival docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: rs-soroban-env v27 storage implementation and atomic host execution",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent Soroban security guidance",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited golden correctly warned against unbounded Instance storage but falsely made hitting the entry limit an irreversible permanent brick. Over-limit writes fail atomically and preserve the prior valid state.",
+      "evidence": [
+        "Solo scratchpad 575 GT-46 primary 3326 and blind 3329 independently rejected the permanent-brick claim; blind narrowed the exact failure semantics."
+      ],
+      "rootCause": [
+        "Eval-side extrapolation turned a resource/availability risk into an unsupported irreversible-state claim."
+      ]
+    },
+    "origin": "raven-next q-soroban-instance-storage-dos"
+  }
+}

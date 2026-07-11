@@ -1,0 +1,108 @@
+{
+  "id": "q-protocol-accounts-signers-thresholds",
+  "question": "How do Stellar accounts handle signing — what are signers, weights, thresholds, and the sequence number for?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "A classic Stellar account has a master key and optional additional **signers**, each with a weight. Operations are assigned **low, medium, or high** thresholds, and the valid signatures' combined weight must meet the transaction's required threshold; this is Stellar's native multisig model. Classic `SignerKey` has exactly four forms: **ed25519**, **pre-authorized transaction hash**, **hashX**, and **ed25519 signed payload** (the last added by CAP-0040 in Protocol 19). **secp256r1 is not a classic SignerKey**: CAP-0051/P21 exposed secp256r1 verification for Soroban custom-account/passkey authorization.\n\nThe transaction source account's sequence number provides replay protection and source-local ordering. Under the default precondition, a transaction's sequence must be exactly current + 1. That rule is not unconditional: CAP-0021/P19 `minSeqNum` makes a transaction valid when `minSeqNum <= current account sequence < transaction sequence`; if it succeeds, the account advances directly to the transaction sequence. Failed or unapplied transactions do not automatically consume the sequence.",
+    "keyFacts": [
+      "Explains signer weights and low/medium/high thresholds for classic native multisig.",
+      "Lists all four classic SignerKey forms and keeps secp256r1 in Soroban/custom auth.",
+      "States the default +1 rule and CAP-0021 minSeqNum exception precisely."
+    ],
+    "avoid": [
+      "Do NOT omit ed25519 signed-payload signers or list secp256r1 as a classic SignerKey.",
+      "Do NOT say accounts are single-key-only or confuse signer weight with an operation threshold.",
+      "Do NOT make exact +1 unconditional; a non-null minSeqNum can permit a sequence gap under CAP-0021."
+    ],
+    "notes": "Accounts subtopic. Traps: 'no native multisig' and Ethereum-style arbitrary nonce.\nAlso good if the answer: Notes the master key is itself a signer (with a weight); adding signers + setting thresholds yields multisig. | Notes different operations require different threshold categories (e.g. set_options/account-merge are high-threshold).\nGolden cites: The accounts / multisig / signature docs on developers.stellar.org.\nGT-31 CORRECTION 2026-07-11: classic SignerKey has four arms including signed payload; secp256r1 belongs to Soroban custom auth. Exact +1 is the default, not an unconditional rule when CAP-0021 minSeqNum is present."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-xdr/blob/master/Stellar-types.x",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0040.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0021.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0051.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/signatures-multisig",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Classic SignerKey has four arms: ed25519, pre-auth transaction, hashX, and ed25519 signed payload; secp256r1 is a Soroban/custom-auth primitive, not a classic signer arm.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: current stellar-xdr Stellar-types.x and CAP-0040",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0051 and current Soroban host environment",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Without minSeqNum the current account sequence must be tx.seqNum-1; with minSeqNum, CAP-0021 permits minSeqNum <= current sequence < tx.seqNum and success advances directly to tx.seqNum.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: CAP-0021 specification",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current Core precondition implementation and official transaction documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited signer list omitted signed-payload signers, incorrectly placed secp256r1 in classic SignerKey, and made exact sequence +1 unconditional despite CAP-0021's minSeqNum precondition.",
+      "evidence": [
+        "Solo scratchpad 575 GT-31 primary process 3280 and blind process 3282 independently found the classic/Soroban signer-category error and the minSeqNum exception.",
+        "2026-07-11 author re-check against stellar-xdr 8521b97b, CAP-0021, CAP-0040, and CAP-0051."
+      ],
+      "rootCause": [
+        "Eval-side conflation of classic account SignerKey with Soroban custom-account authentication, plus pre-CAP-0021 sequence shorthand."
+      ]
+    },
+    "origin": "raven-next q-protocol-accounts-signers-thresholds"
+  }
+}

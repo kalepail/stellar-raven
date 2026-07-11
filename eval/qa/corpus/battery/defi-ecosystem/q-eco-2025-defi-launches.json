@@ -1,0 +1,114 @@
+{
+  "id": "q-eco-2025-defi-launches",
+  "question": "What were the notable DeFi and RWA launches on Stellar in 2025?",
+  "surface": [
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "A dated, illustrative 2025 launch set includes **WisdomTree CRDT** (2025-09-12), **Ondo USDY on Stellar** (announced/live 2025-09-17), **PayPal USD (PYUSD) on Stellar** (2025-09-18), and **Templar Protocol on Stellar** (2025-11-05). Cite a primary source for every row and label the row's state—announced, approved, technically integrated, listed, or publicly live—because those states are not interchangeable. Franklin Templeton announced a Singapore retail tokenized fund on Stellar in 2025, but the checked primary material did not establish one exact public go-live date. This is not an exhaustive census and the September grouping is not itself evidence of an 'inflection point.'",
+    "keyFacts": [
+      "Provides a dated, explicitly illustrative 2025 set with one primary source per named row and separates announcement/approval/integration/listing from public availability."
+    ],
+    "avoid": [
+      "Do NOT call the list exhaustive, promote a roadmap or approval into a live launch, invent an exact Franklin Singapore go-live date, or assert a September/Meridian inflection point as fact.",
+      "Do NOT misattribute issuer/product roles: USDY is an Ondo product, CRDT is WisdomTree's, and PYUSD is PayPal-branded and Paxos-issued."
+    ],
+    "notes": "VERIFIED dated facts against dossier primary sources: WisdomTree CRDT (Sep 12 2025, Stellar+Ethereum, GLACI index), Ondo USDY (Sep 17 2025, 5.3% APY), PayPal PYUSD (Sep 18 2025) — clustered around Meridian 2025 in Rio (Sep 17-18). Also FT first Singapore retail tokenized fund (2025). Freshness:quarterly — list is time-bounded. 'Notable launches in period X' → lumenloop_search_content_semantic.\nAlso good if the answer: Notes the September 2025 cluster (USDY + PYUSD + CRDT around Meridian 2025 in Rio) as an inflection point for Stellar DeFi/RWA growth. | Attributes each launch to a dated source and flags the list is time-bounded.\nGolden cites: A dated source for each named launch.\nGT-19 CORRECTION 2026-07-10: retain the confirmed CRDT/USDY/PYUSD dates, add Templar as another verified live launch, make the roster illustrative, remove the unsupported inflection-point claim, and require row-level status/provenance. Franklin's exact public go-live date remains unpinned."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://ir.wisdomtree.com/news-events/press-releases/detail/755/wisdomtree-brings-private-credit-onchain-with-the-launch-of",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/ondo-finance-launches-usdy-on-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://ondo.finance/blog/usdy-is-now-live-on-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/paypal-pyusd-is-now-available-on-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.templarfi.org/blog/stellar",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "PYUSD launched on Stellar on 2025-09-18 as PayPal USD and is issued by Paxos; the named Paxos entity differs between the historical launch release and current product page.",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: https://stellar.org/press/paypal-pyusd-is-now-available-on-stellar — 2025 launch date and Paxos Trust Company, LLC issuer attribution",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: https://www.paxos.com/pyusd/ — current page says issued by Paxos Trust Company, N.A., while separately identifying some PayPal/Venmo services with the LLC",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: disputed-time-slice."
+      },
+      {
+        "claim": "CRDT, USDY, PYUSD, and Templar have primary-source 2025 launch evidence, while the set is illustrative and distinct announcement/integration/listing states cannot be collapsed into live availability.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: issuer/operator launch releases from WisdomTree, Ondo, PayPal/SDF, and Templar",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: live Lumenloop/Scout discovery plus independent conflict search identified additional announced or later-live rows and showed the inherited trio was not exhaustive",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: live Lumenloop/Scout discovery plus independent conflict search identified additional announced or later-live rows and showed the inherited trio was not exhaustive",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The launch dates/products remain confirmed, but the inherited 'issuer' trap treated PYUSD=PayPal as legal issuance. PayPal is the product brand/sponsor and Paxos is the issuer. Entity-level naming is date-sensitive: SDF's 2025 launch release names Paxos Trust Company, LLC, while Paxos's current product page names Paxos Trust Company, N.A.",
+      "evidence": [
+        "Solo scratchpad 575 GT-19 primary 3254 and blind 3258; sibling sweep covered dated RWA/product launch cases."
+      ],
+      "rootCause": [
+        "A small dated launch sample was promoted into a notable/exhaustive narrative and distinct deployment states were collapsed.",
+        "Eval-side role conflation: product brand/sponsor was labeled as legal issuer.",
+        "solo://proj/49/todo/golden-corpus-health--901"
+      ]
+    },
+    "origin": "raven-next q-eco-2025-defi-launches"
+  }
+}

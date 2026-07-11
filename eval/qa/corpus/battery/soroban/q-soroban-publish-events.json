@@ -1,0 +1,92 @@
+{
+  "id": "q-soroban-publish-events",
+  "question": "How do I emit an event from a Soroban contract and how long can I read it back afterward?",
+  "surface": [
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Define a typed event with `#[contractevent]` and call its generated `publish(&env)` method. The older raw `env.events().publish` path is deprecated. Successful contract events are recorded in transaction meta and queried off-chain with Stellar RPC `getEvents`; this is a paginated query/cursor API, not a durable subscription. Failed invocations roll back contract events; diagnostic events have different success/failure behavior and should not be conflated. RPC query history is bounded and provider/configuration dependent—inspect the endpoint's current health/configuration and use an indexer for durable history rather than freezing a universal day count.",
+    "keyFacts": [
+      "Leads with #[contractevent] plus typed Event::publish and marks raw publish deprecated.",
+      "Distinguishes successful contract events, optional diagnostics, getEvents queries, and provider-configured retention."
+    ],
+    "avoid": [
+      "Do NOT teach raw events as the preferred current API or call getEvents a subscription.",
+      "Do NOT promise permanent history or freeze a universal retention window."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). Retention (~7 days) is the key fact; 'forever queryable' is the trap. Verified: events published via env.events().publish, read via RPC getEvents with a bounded retention window (~7 days).\nAlso good if the answer: RPC retains queryable events for a limited window (about 7 days); for older events you need an external indexer. | The leading topics are indexed and used to filter event subscriptions.\nGolden cites: The developers.stellar.org events / RPC getEvents documentation.\nGT-46 CORRECTION 2026-07-11: typed-event-first API and provider-configured retention replace deprecated/stale wording."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/example-contracts/events",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getEvents",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current contracts should define typed #[contractevent] events and call Event::publish; successful contract events are queried with getEvents, while diagnostics and retention require separate qualification.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Stellar event and RPC docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: rs-soroban-sdk v27 event APIs and stellar-rpc retention source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/F: live getHealth/getEvents probes in GT-46 blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "C/F: live getHealth/getEvents probes in GT-46 blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-docs-live-conflict."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer led with the deprecated raw publish API, called getEvents a subscription, and froze stale retention wording. Current SDK leads with typed contract events; RPC retention is provider/configuration dependent.",
+      "evidence": [
+        "Solo scratchpad 575 GT-46 primary 3326 and blind 3329 agreed on typed-event-first/current query semantics; blind identified a docs-versus-source/live retention conflict."
+      ],
+      "rootCause": [
+        "Plain SDK API drift plus hand-maintained RPC retention prose; improvements/stellar-docs/sd-023-rpc-event-retention-config-drift.md"
+      ]
+    },
+    "origin": "raven-next q-soroban-publish-events"
+  }
+}

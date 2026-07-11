@@ -1,0 +1,120 @@
+{
+  "id": "q-tool-mcp-servers-skills-discovery",
+  "question": "Are there any MCP servers for Stellar/Soroban I can install for my coding agent?",
+  "surface": [
+    "scout.getSkill",
+    "scout.listSkills"
+  ],
+  "golden": {
+    "answer": "Query the **live Scout skills catalog** with the exact **`kind=mcp-server`** filter and report only the rows returned by that call. For each row, include the response `generatedAt`/as-of time, name and slug, source/owner, repository or provider URL, install/configuration command, auth or cost boundary, read/write scope, maintenance state, and any maturity/security caveat. An empty or changed response is a valid current result; it is not a permanent ecosystem claim.\n\nKeep the discovery layers separate. MCP **`tools/list`** enumerates the tools of an **already-connected server** and follows that server's pagination; it is not a universal remote-server registry. **Agent Skills** are separate SKILL.md workflows installed or loaded by an agent host, and installing one does not connect an MCP server. The broad multi-kind Scout catalog belongs to the sibling tooling-discovery case; this case stays narrow to live `mcp-server` rows.",
+    "keyFacts": [
+      "Filters the live Scout catalog to kind=mcp-server and returns only actual current rows.",
+      "Includes generatedAt/as-of, source/owner, direct URL, install/configuration, scope, and maturity/security provenance per row.",
+      "Distinguishes MCP tools/list on a connected server from remote-server discovery.",
+      "Distinguishes MCP servers/tools from separately distributed Agent Skills."
+    ],
+    "avoid": [
+      "Do NOT freeze a point-in-time server count or membership, fabricate a server, or infer a permanent absence from an empty response.",
+      "Do NOT say tools/list discovers remote MCP servers or that MCP defines a universal server registry.",
+      "Do NOT imply every MCP server bundles Agent Skills or that installing a skill connects a server.",
+      "Do NOT call a community product official, audited, free, read-only, or safe without current product-specific evidence."
+    ],
+    "notes": "2026-06-29 differentiation vs q-tool-cli-skills-discovery: this file owns the NARROW kind=mcp-server filter lane (MCP servers specifically); cli-skills-discovery owns the BROAD multi-kind catalog sweep. Scout /api/skills returns a `mcp-server` kind among [skill-md, mcp-server, sdk, cli, agent-kit, tool]. Fabrication is the trap.\nAlso good if the answer: Treats this as a narrow tooling-catalog discovery question (kind=mcp-server) rather than a conceptual docs lookup or a broad multi-kind tooling sweep.\nGolden cites: Scout skills catalog (stellarlight.xyz/api/skills) results.\nGT-56 CORRECTION 2026-07-11: keep the narrow kind=mcp-server Scout lane, but grade only current returned rows with generatedAt, source/install/scope/safety provenance. tools/list is connected-server tool discovery; Agent Skills are separate; no observed roster is durable."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/skills",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/skills",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://modelcontextprotocol.io/specification/2025-06-18/server/tools",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/building-with-ai",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-dev-skill",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The Scout skills surface accepts kind=mcp-server and returns answer-time rows whose membership and install metadata can change.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Scout listSkills kind=mcp-server probe on 2026-07-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: direct source/install repositories for the returned products",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-at-answer-time."
+      },
+      {
+        "claim": "MCP tools/list enumerates tools exposed by one connected server; Agent Skills are a separate SKILL.md distribution surface.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: MCP 2025-06-18 server/tools specification",
+            "observedAt": "2025-06-18",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/B: current Stellar AI/skills documentation and stellar/stellar-dev-skill",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: current Stellar AI/skills documentation and stellar/stellar-dev-skill",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited narrow Scout route was correct, but it treated a volatile catalog as static and did not distinguish live server-directory rows from MCP tools/list on an already-connected server or from separately installed Agent Skills.",
+      "evidence": [
+        "Solo scratchpad 575 GT-56 primary process 3394 and sealed blind process 3398 independently retained the narrow kind=mcp-server route and required realtime row provenance.",
+        "The accepted blind seal contains 12 rows, predates both the primary-report and current-golden reads, and distinguishes connected-server tools/list from Agent Skills.",
+        "Sibling sweep: q-tool-cli-skills-discovery remains the broad multi-kind catalog case; this case remains MCP-server-only."
+      ],
+      "rootCause": [
+        "Eval-side freshness/provenance drift: a live catalog behavior was encoded without answer-time row, generatedAt, install, and safety requirements."
+      ]
+    },
+    "origin": "raven-next q-tool-mcp-servers-skills-discovery"
+  }
+}

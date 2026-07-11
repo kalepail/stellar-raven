@@ -1,0 +1,61 @@
+{
+  "id": "q-crp-custodial-vs-noncustodial-wallets",
+  "question": "What's the difference between custodial and non-custodial wallets on Stellar, and how should a remittance or SEP-31 app choose between them?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Custodial means the provider controls signing/key custody or maintains an internal ledger that lets it move user funds. Non-custodial means the user controls signing authority and the app cannot move funds without user authorization. On Stellar, the same remittance UX can be built either way, but the risk allocation changes: custodial designs improve recovery/support and simplify some payout operations while increasing custody, safeguarding, recordkeeping, licensing, and operational-liability burdens; non-custodial designs reduce custody risk but still do not remove KYC/AML, sanctions, travel-rule, fraud, or support obligations for regulated remittance flows.\n\nFor SEP-31/cross-border apps, choose the custody model around the anchor and payout flow: who authenticates through SEP-10, who submits KYC through SEP-12, who funds the Stellar payment, who handles memos/muxed-account bookkeeping, who can refund or remediate failed payouts, and who is responsible if the user loses keys. The MoneyGram Access guide shows this distinction explicitly by describing custodial and non-custodial authentication patterns for SEP-10/SEP-24 integration.\n\nExamples must be dated and sourced. Scout currently lists Decaf as a non-custodial wallet for cross-border money movement using Stellar/Solana and MoneyGram/partner ramps, while the official TypeScript Wallet SDK is a build tool, not a custody provider. Do not label a wallet or custody vendor by marketing category alone.",
+    "keyFacts": [
+      "Defines custodial wallets as provider-controlled/key-custody or ledger-account models where the provider can move funds, and non-custodial wallets as user-controlled signing/key models.",
+      "Explains custody choice affects user recovery, compliance/KYC, travel-rule/recordkeeping, operational risk, UX, liability, and regulatory obligations.",
+      "For remittance/SEP-31 apps, explains the model must align with anchor/user authentication, KYC, payout support, and who bears custody and support responsibilities."
+    ],
+    "avoid": [
+      "Do NOT label a wallet custodial or non-custodial without current evidence of its control model.",
+      "Do NOT say non-custodial design eliminates KYC/compliance obligations for regulated remittance flows."
+    ],
+    "notes": "Provider labels can change; Phase 3 should re-check any named wallet/provider examples if used in grading.\nAlso good if the answer: Mentions wallet/provider examples only with current sourced evidence and distinguishes consumer wallets from custody infrastructure providers. | Notes smart accounts/passkeys can improve UX without necessarily making a wallet custodial.\nGolden cites: Current wallet/provider docs for examples and Stellar SEP docs for remittance/auth flow claims."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/overview",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/moneygram-access-integration-guide",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/decaf",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-10-corridors-custody-licensing-sdp-rwa accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-crp-custodial-vs-noncustodial-wallets"
+  }
+}

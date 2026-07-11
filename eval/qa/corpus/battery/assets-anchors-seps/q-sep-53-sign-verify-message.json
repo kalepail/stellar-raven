@@ -1,0 +1,44 @@
+{
+  "id": "q-sep-53-sign-verify-message",
+  "question": "What is SEP-53 and what does it standardize?",
+  "surface": [
+    "stellarDocs.search_sdk_cli_tools_docs"
+  ],
+  "golden": {
+    "answer": "- **SEP-53 — \"Sign and Verify Messages\"** (Status: **Final**) standardizes signing and verifying **arbitrary off-chain messages** with Stellar ed25519 keypairs, preventing ecosystem fragmentation [1].\n- Mechanism: prefix the message with **`\"Stellar Signed Message:\\n\"`**, hash with single-round **SHA-256**, and sign/verify the hash with the ed25519 key [1].\n- Use cases: proving control of an address on social platforms, off-chain agreement/terms verification, cross-chain address proof [1].\n- It is **distinct from SEP-10** (web-auth challenge/JWT) — SEP-53 is general message signing, not an auth flow. The Stellar CLI `message` subcommand implements it.",
+    "keyFacts": [
+      "SEP-53 is titled 'Sign and Verify Messages'.",
+      "SEP-53 standardizes signing and verifying arbitrary messages with Stellar keypairs.",
+      "SEP-53 is in Final status."
+    ],
+    "avoid": [
+      "Do NOT misnumber SEP-53 or attribute a different title to it.",
+      "Do NOT conflate SEP-53 with SEP-10 (SEP-10 is the web-auth challenge/token, not general message signing)."
+    ],
+    "notes": "SEP-53 verified Final (ecosystem README + sep-0053.md preamble: Status Final, created 2025-02-01, updated 2026-06-18). Spec uses ed25519 + single-round SHA-256 over prefix 'Stellar Signed Message:\\\\n'. CLI `message` subcommand exists but is a should_have, not a hard gate.\nAlso good if the answer: The Stellar CLI `message` subcommand implements SEP-53.\nGolden cites: The SEP-53 spec in the stellar/stellar-protocol repo (or developers.stellar.org SEP listing)."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-05-sep-identity-auth-quotes-token-wallet accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-sep-53-sign-verify-message"
+  }
+}

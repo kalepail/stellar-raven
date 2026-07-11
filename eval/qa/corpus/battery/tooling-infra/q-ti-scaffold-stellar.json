@@ -1,0 +1,108 @@
+{
+  "id": "q-ti-scaffold-stellar",
+  "question": "What is Scaffold Stellar (`stellar scaffold`) — how do I init a project, plug in my own frontend+contracts, configure environments.toml, generate bindings, and deploy/run on a local network?",
+  "surface": [
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "For a full-stack Stellar smart-contract dApp, install the separate Scaffold Stellar plugin and initialize a project:\n\n`cargo install --locked stellar-scaffold-cli`\n`stellar scaffold init <project>`\n\n`cargo binstall stellar-scaffold-cli` is the project's faster documented alternative when available. The plugin generates/coordinates Rust contracts, TypeScript clients/bindings, frontend templates, environment configuration, and build/watch workflows. Inspect the generated package scripts rather than assuming `npm start` and `npm run dev` are interchangeable. Local-network workflows require their documented Docker/local prerequisites.\n\nFor only a Rust contract workspace/sample contract, use `stellar contract init <project-path> --name <contract-name>` instead; that is not the full-stack scaffold. The current official template source included React and Svelte choices as of **2026-07-11**, and `stellar-scaffold-cli` was **0.0.25** on crates.io on that date. Both the crate version, template roster, repository redirects, and exact subcommands/scripts are volatile. Community `owner/repo[#ref]` templates are third-party code and should be reviewed/pinned before execution. `stellar-registry-cli` is optional for registry publishing/deployment, not required merely to scaffold.",
+    "keyFacts": [
+      "Gives the separately installed stellar-scaffold-cli and stellar scaffold init command shape.",
+      "Defines Scaffold Stellar as full-stack contracts/clients/frontend/environment tooling and distinguishes stellar contract init as contract-only.",
+      "Dates the 0.0.25 registry and React/Svelte template examples to 2026-07-11 rather than making them permanent requirements.",
+      "Requires checking generated scripts/prerequisites and treats community templates as supply-chain inputs."
+    ],
+    "avoid": [
+      "Do NOT imply stellar scaffold is bundled automatically with every core Stellar CLI install.",
+      "Do NOT equate stellar scaffold init with stellar contract init.",
+      "Do NOT freeze a crate version, template roster, repository path, or npm start/dev script without an as-of/source check.",
+      "Do NOT execute an unreviewed floating community template or omit Docker/local-network prerequisites."
+    ],
+    "notes": "GT-53 CORRECTION 2026-07-11: do not grade against the old local core-CLI 25.2.0 command snapshot. Gate the separate plugin install, full-stack-versus-contract-init boundary, and dated current source/registry evidence. Template frameworks, repository paths, and generated scripts are freshness-sensitive."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/scaffold-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/cli/stellar-cli#stellar-contract-init",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar-scaffold/cli",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar-scaffold/ui",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "F",
+        "ref": "https://crates.io/crates/stellar-scaffold-cli",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Scaffold Stellar is a separately installed full-stack plugin distinct from stellar contract init",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Scaffold and Stellar CLI contract-init docs, accessed 2026-07-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar-scaffold/cli and stellar-scaffold/ui source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/F: crates.io metadata and read-only CLI help",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "C/F: crates.io metadata and read-only CLI help",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited full-stack distinction was sound, but it froze a local core-CLI version, blurred separate-plugin installation, and encoded an older React/layout/script view. GT-53 confirmed the current plugin, repositories, templates and contract-only boundary with dated registry evidence.",
+      "evidence": [
+        "Solo scratchpad 575, GT-53 primary 3372 and blind 3378. The blind parent and harvested child 3379 independently re-derived the scope that the primary's failed helper did not cover.",
+        "Registry/source checks dated 2026-07-11 found stellar-scaffold-cli 0.0.25 and React/Svelte official template sources; those values are not treated as timeless."
+      ],
+      "rootCause": [
+        "Eval-side CLI/plugin freshness drift; stale-link/layout improvement candidate documented in the GT-53 audit pending a second authoring lane."
+      ],
+      "note": "GT-53 final state imported from process 3153; near-term re-verification retained by design."
+    },
+    "origin": "raven-next q-ti-scaffold-stellar"
+  }
+}

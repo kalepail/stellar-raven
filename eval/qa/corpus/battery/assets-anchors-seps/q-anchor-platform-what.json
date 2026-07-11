@@ -1,0 +1,48 @@
+{
+  "id": "q-anchor-platform-what",
+  "question": "What is the Stellar Anchor Platform and which SEPs does it implement?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs"
+  ],
+  "golden": {
+    "answer": "- The **Anchor Platform** is **SDF's (Java) toolset/backend** for building and running a SEP-compliant anchor (on/off-ramp) service — the fastest way to go live without re-implementing the SEP endpoints [1][2].\n- It implements the anchor SEP set: **SEP-1, SEP-6, SEP-10, SEP-12, SEP-24, SEP-31, SEP-38** (and SEP-45 for contract-account auth) [1].\n- It is **anchor-operator backend infrastructure**, not a consumer app — distinct from the (TypeScript) **Wallet SDK**, which is the wallet-side client counterpart [1].",
+    "keyFacts": [
+      "The Anchor Platform is SDF's (Java) backend/toolset for deploying a SEP-compliant anchor (on/off-ramp) service.",
+      "It implements the anchor SEP set: SEP-1, SEP-6, SEP-10, SEP-12, SEP-24, SEP-31, and SEP-38 (plus SEP-45)."
+    ],
+    "avoid": [
+      "Do NOT misnumber the SEPs the Anchor Platform implements.",
+      "Do NOT claim the Anchor Platform is a wallet app or a consumer product rather than anchor backend infrastructure."
+    ],
+    "notes": "Dossier §5.4. Verified: SDF-maintained Java toolset; docs list SEP-1/6/10/12/24/31/38/45. scout_repos acceptable (graded repo).\nAlso good if the answer: It is the fastest way to go live as an anchor without re-implementing the SEP endpoints.\nGolden cites: The Anchor Platform page on developers.stellar.org or the stellar/anchor-platform repo."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/anchor-platform",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/anchor-platform",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-02-anchor-discovery-platform-disbursement accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-anchor-platform-what"
+  }
+}

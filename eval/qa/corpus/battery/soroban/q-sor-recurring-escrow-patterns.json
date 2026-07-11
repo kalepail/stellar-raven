@@ -1,0 +1,82 @@
+{
+  "id": "q-sor-recurring-escrow-patterns",
+  "question": "What's the recommended Soroban pattern for a recurring- subscription / time-locked-savings / escrow contract (token allowance + backend charger), and how does authorization work for the periodic pulls?",
+  "surface": [
+    "skills.stellar-dev.smart-contracts"
+  ],
+  "golden": {
+    "answer": "Store explicit payer, token, recipient, amount, interval, next-charge, pull cap/end, cancellation/refund, and idempotency state; Soroban has no cron, so an untrusted backend submits scheduled transactions but never holds the payer key. At creation, bind payer authorization to the complete schedule/order. The subscription contract is the SEP-41/SAC spender; its direct `transfer_from` call is automatically contract-invoker-authorized, while deeper helpers require exact `authorize_as_current_contract` entries. Bound every pull from stored state, update charge state atomically with transfer, and make duplicate submissions harmless. Zero/verify/set when replacing an allowance to reduce overwrite races. Keep three clocks separate: allowance `live_until_ledger`/`expiration_ledger` is an absolute token expiry; subscription/escrow storage needs proactive TTL extension; cancellation/business expiry belongs in contract logic. The subscription contract cannot extend another contract's allowance key. Use custody and explicit release/refund conditions for a true time lock.",
+    "keyFacts": [
+      "Defines an explicit, idempotent off-chain-triggered schedule with bounded payer intent.",
+      "Separates direct-invoker auth, allowance expiry, storage TTL, and business cancellation."
+    ],
+    "avoid": [
+      "Do NOT give the backend the payer key or let it choose unconstrained amount/recipient.",
+      "Do NOT use TTL as cancellation or assume a contract can extend SAC allowance storage independently."
+    ],
+    "notes": "Verified against Stellar Docs MCP and SEP-41 on 2026-06-29.\nAlso good if the answer: Mentions TTL extension for long-lived subscription/escrow state and allowances, plus restore/archival caveats. | Mentions cancellation/revocation by setting allowance to zero or contract cancellation state, with care for allowance overwrite race conditions. | Mentions testing deadline logic with Soroban ledger timestamp/sequence controls.\nGolden cites: Official authorization docs for `require_auth` semantics. | Official token/SAC or SEP-41 docs for allowance/transfer_from. | Official storage/state archival docs for long-lived state TTL.\nGT-42 independently confirmed; live_until_ledger and expiration_ledger are terminology aliases."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "skills",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Recurring pull and escrow security pattern",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: auth, SEP-41, storage source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: auth, SEP-41, storage source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-42 primary/blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The core pattern was correct but needed payer-intent binding, idempotency, direct-invoker auth, and separate allowance/business/storage expiry domains.",
+      "evidence": [
+        "Solo scratchpad 575 GT-42 processes 3308/3315."
+      ],
+      "rootCause": [
+        "Eval-side security completeness."
+      ]
+    },
+    "origin": "raven-next q-sor-recurring-escrow-patterns"
+  }
+}

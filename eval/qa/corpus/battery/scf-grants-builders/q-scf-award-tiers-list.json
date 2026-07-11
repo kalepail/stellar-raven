@@ -1,0 +1,104 @@
+{
+  "id": "q-scf-award-tiers-list",
+  "question": "List the SCF award tiers and supporting programs under SCF v7.0 and what each one funds.",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "- **SCF Build** — up to **$150K in XLM** for teams building apps/protocols on Stellar/Soroban (Open, Integration, and RFP tracks).\n- **Instawards** — up to **$15K in XLM per project**, recommended by local Ambassador chapters; under v7.0 these replaced Kickstart Awards.\n- **Audit Bank** — SDF-funded audit support covering up to 100% of eligible audit costs, with the program's small refundable co-pay rules.\n- **Growth Hack** — a mainnet-project GTM/PMF cohort with about **$20K base plus up to $200K performance-based support**.\n- **Public Goods Award** — up to about **$50K in XLM per proposal per quarter**, selected through NQG voting.\n- **Stellar Liquidity Award** — invitation-only for audited, mainnet-live financial protocols. As of **2026-07-09**, the official rules publish a **$50K-in-XLM Base Liquidity Award** and an optional **additional $50K-in-XLM Supplemental Liquidity Award**, for **up to $100K total**. Supplemental eligibility follows the initial award and includes the stated sustained-liquidity criterion.\n- These are SCF awards/supporting programs. SDF-direct Marketing Grant, Matching Fund, and Enterprise Fund instruments are separate and should not be listed as SCF tiers.",
+    "keyFacts": [
+      "SCF Build is the main award (cap $150K XLM) for teams building apps/protocols on Stellar/Soroban.",
+      "Instawards (up to $15K XLM per project) are recommended by local Ambassador chapters for early-stage builders.",
+      "Audit Bank covers up to 100% of audit costs for SCF-funded projects."
+    ],
+    "avoid": [
+      "Do NOT list the old Activation Award / Community Award (SCF 5.0) or Kickstart Award as current v7.0 tiers without noting they were superseded.",
+      "Do NOT invent award tiers or amounts not in the SCF handbook.",
+      "Do NOT list SDF-direct programs (Marketing Grant, Matching Fund, Enterprise Fund) as SCF award tiers — they are separate SDF instruments."
+    ],
+    "notes": "Dossier §2.2. Tier list churns across SCF versions — freshness-adjacent but the v7 structure is the current answer.\nAlso good if the answer: Growth Hack funds a cohort of teams ($20K base + up to $200K performance). | Public Goods Award is ~$50K XLM per proposal per quarter for ecosystem public goods. | Stellar Liquidity Award exists for audited, mainnet-live financial protocols (invitation-only).\nGolden cites: The SCF handbook awards/supporting-programs pages.\nCORRECTION 2026-07-09 (todo 901): the prior Liquidity Award nondisclosure sentence was false. Current official rules publish $50K in XLM base plus an optional additional $50K in XLM supplemental award, up to $100K total. These are dollar-denominated values paid in XLM, not a fixed token count; the supplemental award is conditional, and the program maximum must not be confused with Soroswap's individual $50K award."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/instawards",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/supporting-programs/audit-bank",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award/official-rules.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/ecosystem/introducing-scf-v7",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The current Stellar Liquidity Award offers $50K in XLM as a base award plus an optional additional $50K in XLM supplemental award, up to $100K total",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: SCF Liquidity Award Official Rules fetched 2026-07-09, https://stellar.gitbook.io/scf-handbook/supporting-programs/stellar-liquidity-award/official-rules.md — explicit structure and award-type table",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: 'Stellar programs for Developers' published 2026-05-25 independently describes the same $50K base plus $50K supplemental structure",
+            "observedAt": "2026-05-25",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A+D: official Soroswap submission record plus Soroswap's dated 2024-08-23 publication independently confirm one $50K Liquidity Award, consistent with but not proof of the program maximum",
+            "observedAt": "2024-08-23",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A+D: official Soroswap submission record plus Soroswap's dated 2024-08-23 publication independently confirm one $50K Liquidity Award, consistent with but not proof of the program maximum",
+            "observedAt": "2024-08-23",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-09",
+      "by": "Golden-truth sweep import — The tier list repeated the false claim that the current Stellar Liquidity Award amount is undisclosed. The linked official rules publish a $50K-in-XLM base award plus an optional additional $50K-in-XLM supplemental award, up to $100K total. This volatile numeric program term is corrected with an as-of date and a distinction between program maximum and individual awards.",
+      "evidence": [
+        "/tmp/scf-liquidity-award-official.json contains the official landing-page and Official Rules extracts fetched 2026-07-09.",
+        "Independent SCF re-derivation by Solo process 3157, including the external corroboration and Soroswap reconciliation, is recorded under scratchpad 569 Lane B (901).",
+        "Sibling sweep covered q-scf-liquidity-award-amount, q-scf-history-soroswap, q-defi-soroswap-scf, q-scf-build-award-cap, and q-scf-public-goods-award; only the two inherited nondisclosure claims conflicted."
+      ],
+      "rootCause": [
+        "Eval-side source-coverage/freshness failure: the inherited answer relied on the program landing page and did not follow its linked Official Rules before asserting nondisclosure.",
+        "The live GitBook pages expose no revision history, so this correction does not claim whether the rules were added after authoring.",
+        "solo://proj/49/todo/golden-corpus-health--901"
+      ]
+    },
+    "origin": "raven-next q-scf-award-tiers-list"
+  }
+}

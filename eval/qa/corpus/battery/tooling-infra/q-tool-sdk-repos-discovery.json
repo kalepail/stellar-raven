@@ -1,0 +1,112 @@
+{
+  "id": "q-tool-sdk-repos-discovery",
+  "question": "What are the top-rated Stellar/Soroban SDK and client-library repos on GitHub?",
+  "surface": [
+    "scout.searchRepos"
+  ],
+  "golden": {
+    "answer": "Run the **current Scout repository search** with SDK/client/XDR/contract vocabulary and return only the rows actually observed. Include the response `generatedAt`/as-of time and, for each row, its exact owner/name and direct URL, client-versus-contract role, language, maintainer tier, archive state, last push/release or other dated activity, and the source used to corroborate identity. If you supplement the Scout rows from official docs or a package registry, label that repository as an external corroborated supplement rather than pretending Scout returned it.\n\nDo not publish a static 'top' roster. `repoScore`, stars, semantic rank, and ordering are answer-time navigation signals, not proof of maintenance, security, correctness, SDF ownership, or production readiness. Verify canonical SDF repositories and community repositories against their current source and package records, and explain repository moves or aliases rather than silently using retired topology.",
+    "keyFacts": [
+      "Returns only current observed Scout rows and labels any direct external supplement separately.",
+      "Includes generatedAt/as-of, exact direct URL, role, language, maintainer tier, archive state, and dated activity per repository.",
+      "Corroborates repository identity and ownership through official docs, source, or package registries.",
+      "Rejects static rankings/star counts and quality or ownership inference from repoScore/rank."
+    ],
+    "avoid": [
+      "Do NOT freeze a top-rated roster, star count, ordering, repository topology, or score threshold.",
+      "Do NOT fabricate a repository or claim Scout returned an externally added repository.",
+      "Do NOT infer SDF ownership, security, correctness, maintenance quality, or production readiness from official-doc inclusion, repoScore, stars, or rank.",
+      "Do NOT return retired package/repository names without a current migration or alias explanation."
+    ],
+    "notes": "GT-56 DISCOVERY CORRECTION 2026-07-11: require current observed Scout rows with generatedAt, direct URLs, role, maintainer, archive/activity, and corroboration. No static top/star/order requirement; repoScore and rank are navigation, not quality, security, or ownership proof."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/repos/search",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/sdks/client-sdks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/sdks/contract-sdks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/StellarCN/py-stellar-base",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Scout SDK-repository results are answer-time rows with changing scores/activity and must not be converted into a static top list.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Scout repository search on 2026-07-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: direct current repository metadata for sampled returned rows",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-at-answer-time."
+      },
+      {
+        "claim": "Repository role and maintainer tier require direct official-doc/package/source corroboration; an official-doc link is not ownership evidence.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official client/contract SDK catalogs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current repository owners, archive state, releases, and package registries",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited discovery answer froze repository examples, star counts, ordering, and a repoScore quality interpretation. Live search rows and repository topology change, and official documentation does not transfer SDF ownership to community SDKs.",
+      "evidence": [
+        "Solo scratchpad 575 GT-56 primary process 3394 and sealed blind process 3398 independently removed static top/star claims and required returned-row, direct-URL, role, maintainer, and activity provenance.",
+        "Sibling sweep checked q-tool-indexer-repos-discovery plus the official-list and language-specific SDK cases; all treat repoScore/stars/rank as navigation rather than quality proof."
+      ],
+      "rootCause": [
+        "Eval-side live-discovery overreach: one Scout result and star snapshot became a timeless ranking and ownership claim."
+      ]
+    },
+    "origin": "raven-next q-tool-sdk-repos-discovery"
+  }
+}

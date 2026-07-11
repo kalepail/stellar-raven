@@ -1,0 +1,98 @@
+{
+  "id": "q-defi-nft-standards-projects",
+  "question": "How are NFTs represented on Stellar, how do they differ from classic assets or Ethereum NFTs, and which NFT projects exist beyond Litemint?",
+  "surface": [
+    "scout.getClusters",
+    "scout.searchProjects",
+    "scout.searchRepos"
+  ],
+  "golden": {
+    "answer": "Stellar has two broad NFT representation families. **Classic assets** can model a unique token through supply/issuer/trustline and metadata conventions, but one-asset-per-NFT is cumbersome and one-asset-per-collection makes members fungible. **Soroban contracts** can implement programmable NFT ownership, transfer, approval, and metadata behavior. **SEP-50 is a Draft (v0.1.0)** interface analogous to ERC-721 but adapted to Stellar; it is not an adopted guarantee that every Stellar NFT implements the same contract.\n\nCurrent operator/code-corroborated examples beyond Litemint include Stellar Quest, Stellar Passport, Wadzzo, Cyberbrawl, Token Tails, and Phoenix NFT Marketplace. Other directory rows may be discovery leads only. Label them as such unless their current operator/repository still substantiates the Stellar NFT product; several formerly linked domains are now dead or unrelated.",
+    "keyFacts": [
+      "Distinguishes Classic asset NFT conventions from Soroban contract NFTs and identifies SEP-50 as Draft.",
+      "Names only operator/code-corroborated current examples as verified, labeling remaining directory rows as discovery leads."
+    ],
+    "avoid": [
+      "Do NOT call SEP-50 adopted/final or assume Stellar NFTs are ERC-721/ERC-1155 tokens by default.",
+      "Do NOT promote a Scout/Lumenloop Live label or stale linked domain into current operator-verified NFT activity."
+    ],
+    "notes": "Re-verified 2026-06-29: live Scout confirms Cyberbrawl (Live, on-chain TCG by Litemint), Token Tails (Live, play-to-save NFT game), QuillTip (Live, decentralized publishing) as real rows; roster carries verified+unverified mix so individual project/activity claims still need per-site checks (caveat gated). This file OWNS the STANDARDS-distinction + project-roster lane (how NFTs are represented vs ERC-721; which projects beyond Litemint) — DISTINCT from q-eco-nft-marketplace-whitespace (the integrate-decision: 'is there a mature marketplace I could integrate').\nAlso good if the answer: Mentions the category may be thinner than EVM NFT ecosystems and requires current discovery. | Notes standards/status should be verified against current Stellar docs/SEPs or project repos.\nGolden cites: Stellar docs/standards for representation claims and dated Scout/project sources for named NFT projects.\nCorrected 2026-07-10. Project discovery is not equivalent to current operator verification; do not require one frozen roster."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0050.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/anatomy-of-an-asset",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://quest.stellar.org/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Phoenix-Protocol-Group/phoenix-nft-marketplace",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SEP-50 is Draft and Stellar NFT examples must distinguish operator-confirmed from directory-only rows",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: SEP-50/SEP-39 primary records and current operator/code sources",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: SEP-50/SEP-39 primary records and current operator/code sources",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: live Lumenloop/Scout discovery plus external-domain conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: live Lumenloop/Scout discovery plus external-domain conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — GT-16 primary and blind reviews confirmed the representation model but found SEP-50 status and project-roster provenance under-specified. Several directory-linked domains were dead or repurposed, so a Live label cannot stand in for current operator verification.",
+      "evidence": [
+        "Solo scratchpad 575 GT-16 processes 3244/3245; octoplace.io and thebluemarble.io were repurposed, SNNAC returned 503, and IRL operator content did not substantiate its directory description"
+      ],
+      "rootCause": [
+        "eval-side standard maturity and directory-status conflation",
+        "service-improvement candidate: stale/repurposed project links require lifecycle verification"
+      ]
+    },
+    "origin": "raven-next q-defi-nft-standards-projects"
+  }
+}

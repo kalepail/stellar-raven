@@ -1,0 +1,74 @@
+{
+  "id": "q-soroban-audit-bank",
+  "question": "Is there a program that funds security audits for Soroban projects, and how do I get an audit?",
+  "surface": [
+    "scout.searchProjects",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-11**, SDF's **Soroban Security Audit Bank** is an SCF supporting program that pays eligible third-party audit costs for SCF-funded projects. Review the current Official Rules and current invitation/contact path before relying on eligibility or copay terms; published contacts include `communityfund@stellar.org` and `sorobanaudits@stellar.org`. Current scope is not limited to pre-launch work: it includes testnet/nearly-mainnet projects and qualifying mainnet/follow-up audits. Coverage may reach 100% of audit cost, with conditional copays: an ordinary initial audit uses a refundable 5% payment if critical/high/medium findings are remediated within 20 business days; specified Growth/Scale cohorts may have 0%, and pre-traction follow-ups use higher copays. Run static analysis and fuzz/property tests before the professional audit, but do not treat them as substitutes. Recheck current rules before applying.",
+    "keyFacts": [
+      "Identifies the Audit Bank and its current official application path.",
+      "Explains current scope and conditional cost-sharing without freezing historical audit counts or turnaround promises."
+    ],
+    "avoid": [
+      "Do NOT call it a generic Build grant, Bug Bounty, or pre-mainnet-only program.",
+      "Do NOT promise a fixed two-week match, frozen program totals, or universal 5% copay without current evidence."
+    ],
+    "notes": "GT-36 SIBLING CORRECTION 2026-07-10: grade current official eligibility, coverage, and application mechanics. Historical 40+/$3M/~2-week claims are optional only when clearly dated; qualifying mainnet/follow-up paths and conditional copays must not be contradicted.\nIndependently reconciled by GT-36 and freshness-rechecked by GT-44 on 2026-07-11."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/grants-and-funding/soroban-audit-bank",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/supporting-programs/audit-bank/official-rules",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Soroban projects can seek an SDF-funded third-party audit through the current Audit Bank rules, including qualifying near-mainnet, mainnet, and follow-up paths",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current SDF Audit Bank page/Official Rules",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: versioned SCF handbook source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The existence/application core is correct, but the answer froze old scale/timing claims and pre-launch-only framing instead of current eligibility, coverage, and copay mechanics.",
+      "evidence": [
+        "Solo scratchpad 575 GT-36 primary 3290 and blind 3291 sibling reconciliation."
+      ],
+      "rootCause": [
+        "Eval-side historical program metrics/timing outlived current detailed rules."
+      ]
+    },
+    "origin": "raven-next q-soroban-audit-bank"
+  }
+}

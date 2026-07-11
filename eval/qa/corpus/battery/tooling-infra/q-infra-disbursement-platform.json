@@ -1,0 +1,84 @@
+{
+  "id": "q-infra-disbursement-platform",
+  "question": "What's the Stellar Disbursement Platform for, and how does it differ from the Anchor Platform?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs"
+  ],
+  "golden": {
+    "answer": "The Stellar Disbursement Platform is SDF's open-source bulk-payments product for sending batches to recipients; the official product page currently advertises batches up to 10,000 payments. It is distinct from Anchor Platform. Current SDP Core implements SEP-10/24 flows natively and does not require an external Anchor Platform. Its Transaction Submission Service submits/monitors payments, and its Dashboard is a separate frontend. Optional wallets, anchors, and off-ramps can participate in a deployment, but they are not a universal runtime dependency.",
+    "keyFacts": [
+      "Describes bulk disbursements and distinguishes SDP from Anchor Platform.",
+      "Explains current native SEP-10/24 Core, TSS, and Dashboard roles."
+    ],
+    "avoid": [
+      "Do NOT say SDP is an anchor, wallet, or RPC node.",
+      "Do NOT require external Anchor Platform/SEP-31 routing for every SDP payment."
+    ],
+    "notes": "SDP vs Anchor Platform is the load-bearing distinction. Pairs with q-infra-anchor-platform.\nAlso good if the answer: SDP routes payments through an anchor and registers/KYCs receivers; it can batch large numbers of payments.\nGolden cites: developers.stellar.org Disbursement Platform docs or the SDP backend repo.\nGT-49 CORRECTION 2026-07-11: external Anchor Platform is optional, not a required SDP dependency."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/products-and-tools/disbursement-platform",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/stellar-disbursement-platform",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-disbursement-platform-backend",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SDP is SDF's open-source bulk-disbursement platform; current Core implements native SEP-10/24 without requiring external Anchor Platform, while TSS and Dashboard are separate components.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current SDP product/docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current SDP backend README/source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent product-architecture sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer made an external Anchor Platform a mandatory SDP dependency. Current SDP Core implements its SEP-10/24 flow natively.",
+      "evidence": [
+        "Solo scratchpad 575 GT-49 primary 3335 and blind 3341 independently rejected the mandatory dependency."
+      ],
+      "rootCause": [
+        "Historical architecture shorthand persisted after native SEP flow implementation."
+      ]
+    },
+    "origin": "raven-next q-infra-disbursement-platform"
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "id": "q-defi-ondo-usdy",
+  "question": "What is Ondo's USDY on Stellar and who can hold it?",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.get_project",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "**USDY** is an accumulating tokenized note issued through Ondo's general-access product structure. It launched on Stellar on **2025-09-17** at about **5.3% APY at launch**; that rate is historical, not a current promise. Current Ondo disclosures say secured/backing assets can depend on issuance date and may include short-term U.S. Treasuries, short-Treasury ETF shares, or bank demand deposits.\n\nWho can acquire/hold it is a legal/KYC question, not something Stellar account flags decide. Current eligibility excludes U.S./U.S. persons and other prohibited persons/jurisdictions; other jurisdictions may require qualified/professional status and KYC. The safe summary is **qualifying non-U.S. persons subject to current Ondo terms**, not everyone and not institutions only. Stellar's asset/SAC records prove technical issuance, not legal eligibility.",
+    "keyFacts": [
+      "Identifies USDY as Ondo's accumulating tokenized note launched on Stellar in September 2025, with 5.3% explicitly launch-time.",
+      "Explains current backing is issuance-dependent and eligibility is limited to qualifying non-U.S. persons under current jurisdiction/KYC rules."
+    ],
+    "avoid": [
+      "Do NOT promise the 5.3% launch rate as current or reduce current backing to Treasuries alone.",
+      "Do NOT claim everyone, U.S. persons, or institutions only can hold USDY; consult current eligibility terms.",
+      "Do NOT infer legal eligibility from Stellar issuer authorization flags."
+    ],
+    "notes": "VERIFIED against the dossier's primary source (stellar.org Ondo USDY press release): Ondo Finance's institutional-grade yieldcoin backed by tokenized US Treasuries, launched on Stellar Sep 17 2025, ~5.3% APY at launch, available to non-US (global) individual + institutional investors only — 'not offered or sold to US persons.' Entity-grounded → find_content_by_entity. USDY=non-US yieldcoin; issuer/product precision trap (vs BENJI mutual-fund share, CRDT private credit).\nAlso good if the answer: Notes it carries a yield (around 5% APY at launch) backed by tokenized US Treasuries.\nGolden cites: A dated source on Ondo USDY's Stellar launch.\nCorrected 2026-07-10. Grade current issuer/product/eligibility scope separately from the dated launch and from on-chain flags."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/ondo-finance-launches-usdy-on-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.ondo.finance/general-access-products/usdy/basics",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.ondo.finance/general-access-products/usdy/eligibility",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://ondo.finance/.well-known/stellar.toml",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "USDY launched on Stellar in 2025, while current product composition and eligibility must follow Ondo's current disclosures",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Stellar launch release, current Ondo basics/eligibility, and stellar.toml",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F/D: Horizon asset/SAC snapshot and independent conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "F/D: Horizon asset/SAC snapshot and independent conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-16 lanes confirmed the 2025 launch but found that the inherited yieldcoin/Treasuries shorthand and who-can-hold answer freeze launch-time product and eligibility facts. Current Ondo documents define an accumulating tokenized note with issuance-dependent backing and broader prohibited-person/KYC rules.",
+      "evidence": [
+        "Solo scratchpad 575 GT-16 processes 3244/3245; live issuer/SAC/flag checks 2026-07-10"
+      ],
+      "rootCause": [
+        "eval-side launch-snapshot drift and technical-versus-legal eligibility conflation"
+      ]
+    },
+    "origin": "raven-next q-defi-ondo-usdy"
+  }
+}

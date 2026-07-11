@@ -1,0 +1,76 @@
+{
+  "id": "q-protocol-ledger-close-time",
+  "question": "How often does the Stellar network close a ledger?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "Stellar ledgers currently close in roughly **5–7 seconds**, not a fixed 3–5-second consensus constant. In a 199-ledger Pubnet sample on 2026-07-10, deltas were 5–7 seconds (mean 5.839, median 6). CAP-0070 made timing/configuration adjustable; a configured target is not a guarantee for every observed close. Ledger `closeTime` is consensus-agreed and monotonic but has bounded wall-clock skew semantics. Date cadence measurements and sample multiple ledgers.",
+    "keyFacts": [
+      "Uses the current 5–7-second observed range with a dated multi-ledger sample.",
+      "Explains configurable target versus observed cadence and closeTime semantics."
+    ],
+    "avoid": [
+      "Do NOT state 3–5 seconds or exactly five seconds as an immutable guarantee based on one adjacent-ledger delta."
+    ],
+    "notes": "~3-5s ledger close. Trap is importing Bitcoin (10 min) or Ethereum (12s) block times.\nAlso good if the answer: Notes the close time is set by the proposing validator and recorded in the ledger header, and that SCP determines the agreed close time.\nGolden cites: The validators / fundamentals docs on developers.stellar.org (or the network dashboard).\nGT-32 CORRECTION 2026-07-10: current multi-ledger sample and Docs support 5–7 seconds; one delta is insufficient."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-stack",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0070.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current official wording is about 5–7 seconds; a 199-ledger Pubnet sample had 5–7s deltas, mean 5.839s and median 6s, while CAP-0070 makes timing configurable.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: current stack docs and CAP-0070",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: current stack docs and CAP-0070",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: 199-ledger live sample and timing setting",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited 3–5 second cadence was stale and a single-delta primary check under-sampled current behavior.",
+      "evidence": [
+        "Solo scratchpad 575 GT-32 blind 3284, resolving primary under-sampling."
+      ],
+      "rootCause": [
+        "Old target/marketing range and insufficient empirical sampling."
+      ]
+    },
+    "origin": "raven-next q-protocol-ledger-close-time"
+  }
+}

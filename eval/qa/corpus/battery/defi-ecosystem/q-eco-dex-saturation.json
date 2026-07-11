@@ -1,0 +1,76 @@
+{
+  "id": "q-eco-dex-saturation",
+  "question": "How saturated is the Stellar DEX/AMM space — how many serious players are there?",
+  "surface": [
+    "scout.getClusters",
+    "scout.searchProjects"
+  ],
+  "golden": {
+    "answer": "There is no stable count of 'serious players' until the criterion is stated. A dated analysis should separate: **native Stellar SDEX/AMM liquidity**, **independent AMM venues**, **routers/aggregators**, and **wallet/UI/order-book clients**. As of 2026-07-10, a strict live venue-family review had to consider at least native Stellar liquidity, Aquarius, Sushi, Soroswap, and Phoenix; products such as StellarX, StellarTerm, Scopuly, StellarBroker, or AXIS require role and independent-liquidity verification before counting them as venues. Report mainnet status plus measurable TVL/volume/integration evidence instead of one timeless total.",
+    "keyFacts": [
+      "Defines the counting criterion and distinguishes native venues, AMMs, aggregators/routers, and UIs before discussing saturation."
+    ],
+    "avoid": [
+      "Do NOT hard-code three serious players, equate a DEX tag with independent liquidity, or claim routing absorbs competitors.",
+      "Do NOT exclude or include a product as a venue without a dated role/liquidity test."
+    ],
+    "notes": "Saturation → scout_clusters. Reinforces aggregator-capture + StellarX/Comet caveats. Grounded on Scout: serious AMM/DEX players = Soroswap (aggregator), Aquarius (AQUA AMM), Phoenix (AMM hub). Soroswap's aggregator routes across Soroswap/Phoenix/Aquarius + SDEX. StellarX (Ultra Stellar) = trading UI; Comet = Balancer-style reference impl; WOWMAX = an expanding multi-chain aggregator. Small field — converging on a few anchors.\nAlso good if the answer: Notes StellarX is a trading UI (not an aggregator) and Comet is a reference/research implementation, not a high-traffic DEX. | Notes new AMM entrants tend to be absorbed into Soroswap's aggregation routing.\nGolden cites: Sources for the DEX/AMM landscape composition.\nGT-19 CORRECTION 2026-07-10: grade the explicit venue/role/usage criterion, not 'roughly three.' Directory DEX counts mix venues, routers, and UIs."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/liquidity-on-stellar-sdex-liquidity-pools",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://soroswap.finance/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/clusters?dimension=types",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Native SDEX/AMM, Soroban AMMs, routers/aggregators, and trading UIs are distinct roles; Scout's DEX count is not an independent-liquidity count.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Stellar liquidity docs and Soroswap operator surface",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Scout clusters and DeFiLlama protocols",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — No defensible 'roughly three serious players' count exists without a venue/role/usage criterion; current sources show more liquidity venues and many non-venue DEX-tagged records.",
+      "evidence": [
+        "Solo scratchpad 575 GT-19 primary 3254 and blind 3258; the reviewers intentionally differed on venue membership because the inherited criterion is undefined."
+      ],
+      "rootCause": [
+        "Role-taxonomy collapse and an undefined qualitative threshold became an exact competitor count."
+      ]
+    },
+    "origin": "raven-next q-eco-dex-saturation"
+  }
+}

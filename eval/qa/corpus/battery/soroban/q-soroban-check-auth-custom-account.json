@@ -1,0 +1,83 @@
+{
+  "id": "q-soroban-check-auth-custom-account",
+  "question": "How do I build a custom account (smart wallet) contract in Soroban using __check_auth?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "Implement reserved `CustomAccountInterface::__check_auth(signature_payload: BytesN<32>, signature: Val, auth_contexts: Vec<Context>)`. When another invocation requires that C-address, the host—not a direct user call—dispatches this function. The contract decodes/verifies its chosen signatures (Ed25519, WebAuthn/secp256r1, multisig, etc.) and applies policy over `auth_contexts`, returning success only when valid. For standard Soroban address credentials the host validates/consumes the nonce before `__check_auth`, enforces expiry/replay/invocation exhaustion, and normally makes a second contract replay nonce unnecessary; a separate application protocol may define a separate replay domain. Never call `require_auth` on the account's own address inside `__check_auth`, which recurses.",
+    "keyFacts": [
+      "Gives the reserved ABI and host-only dispatch.",
+      "Assigns signature/policy checks to the contract and standard nonce/expiry/replay to the host."
+    ],
+    "avoid": [
+      "Do NOT model this as EIP-4337, direct user invocation, mandatory home-grown standard nonce, or recursive own-address require_auth."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections. ERC-4337 confusion is the EVM trap. scout_repos acceptable for code templates. Verified against the docs 'complex-account' multisig example + authorization docs.\nAlso good if the answer: It enables account abstraction: arbitrary signature schemes (e.g., Ed25519, secp256r1/passkeys, multisig) instead of a classic Stellar keypair. | The contract is responsible for its own replay protection (e.g., nonces) when relevant.\nGolden cites: The developers.stellar.org custom-account / authorization docs (complex-account example).\nGT-44 independently corrected the replay responsibility and generic signature: Val ABI."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-11.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/auth/check-auth-tutorials",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Custom-account host/contract responsibility split",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: authorization docs and CAP-0046-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: authorization docs and CAP-0046-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-44 primary/blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer wrongly assigned standard Soroban replay nonce management to the custom account contract and blurred the reserved ABI.",
+      "evidence": [
+        "Solo scratchpad 575 GT-44 processes 3316/3324."
+      ],
+      "rootCause": [
+        "Eval-side custom-account replay model error."
+      ]
+    },
+    "origin": "raven-next q-soroban-check-auth-custom-account"
+  }
+}

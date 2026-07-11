@@ -1,0 +1,46 @@
+{
+  "id": "q-protocol-quorum-slice-vs-quorum",
+  "question": "In Stellar's SCP, what is the difference between a quorum slice and a quorum, and what is a quorum set?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- **Quorum set**: the set of other nodes a given node chooses to trust — its configured trust list, with a **threshold** (the minimum number of those trusted nodes that must agree) [1].\n- **Quorum slice**: a threshold-sized **subset** of a node's quorum set that is sufficient to convince *that* node to agree [1].\n- **Quorum**: a set of nodes sufficient to reach **network-wide** agreement, where each node in the set has at least one of its quorum slices contained in the set [1].\n- Quorums form through nodes' **overlapping / intersecting slices**, which enables open membership — each node configures its own quorum set, with **no central authority** assigning it [1].\n- A **blocking set** is a subset of nodes that can prevent the network from reaching agreement [1].",
+    "keyFacts": [
+      "Defines a quorum set as the set of other nodes a given node chooses to trust (its configured trust list).",
+      "Defines a quorum slice as a threshold-sized subset of a node's quorum set sufficient to convince that node to agree.",
+      "Defines a quorum as a set of nodes sufficient to reach network agreement, where each node has a quorum slice in the set."
+    ],
+    "avoid": [
+      "Do NOT define a quorum slice as the global set of all validators or a fixed network-wide committee.",
+      "Do NOT conflate quorum/slice with staking weight or PoS-style voting power.",
+      "Do NOT claim quorum sets are assigned by a central authority (each node configures its own)."
+    ],
+    "notes": "Multi-term definitional question. Trap is swapping slice/quorum definitions or implying a central committee.\nAlso good if the answer: Mentions the threshold (minimum number of trusted nodes that must agree) as part of a quorum set's configuration. | Notes quorums are reached through nodes' overlapping/intersecting slices, enabling open membership.\nGolden cites: The SCP overview / quorum concepts page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-consensus-protocol",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-33-passphrases-operations-parallel-passkeys-consensus accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-quorum-slice-vs-quorum"
+  }
+}

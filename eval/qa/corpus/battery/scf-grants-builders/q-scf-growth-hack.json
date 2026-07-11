@@ -1,0 +1,80 @@
+{
+  "id": "q-scf-growth-hack",
+  "question": "What is the SCF Growth Hack program and what funding do cohort teams receive?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, Growth Hack is an **8-week GTM/PMF cohort program** for launched/mainnet Stellar companies, typically selecting **10–15 teams**. Each selected company receives **$20,000 in XLM value upfront**. Separately, the cohort's top five share **one dynamic performance pool** of **$50,000, $100,000, or $200,000**, selected according to cohort performance and allocated by the published formula/conditional payments. The $200K tier is not available to each team. It is a post-launch growth program, not an idea-stage Build grant.",
+    "keyFacts": [
+      "States the $20K per selected company base.",
+      "States that one $50K/$100K/$200K cohort-wide pool is shared among the top five."
+    ],
+    "avoid": [
+      "Do NOT multiply the performance pool by five or describe $200K as each team's cap.",
+      "Do NOT describe Growth Hack as idea-stage funding."
+    ],
+    "notes": "GT-36/GT-38 CORRECTION 2026-07-10: each selected company receives $20K; the top five share one dynamic $50K/$100K/$200K cohort pool. Never grade the $200K tier as a per-team amount.\nIndependently confirmed across four lanes: 3290/3291/3297/3299."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/supporting-programs/growth-hack/official-rules",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Each selected Growth Hack company receives $20K and the top five share one $50K/$100K/$200K performance pool",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: current detailed Growth Hack Official Rules",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: current detailed Growth Hack Official Rules",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: GT-36 and GT-38 independent service/source sweeps",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: GT-36 and GT-38 independent service/source sweeps",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The answer made the $200K performance amount read like a per-team ceiling, but current detailed rules define one dynamic cohort-wide pool shared among the top five.",
+      "evidence": [
+        "Solo scratchpad 575 GT-36 primary/blind 3290/3291 and GT-38 primary/blind 3297/3299."
+      ],
+      "rootCause": [
+        "Eval-side per-team versus cohort-wide amount-basis collapse."
+      ]
+    },
+    "origin": "raven-next q-scf-growth-hack"
+  }
+}

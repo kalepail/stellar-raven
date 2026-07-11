@@ -1,0 +1,193 @@
+{
+  "id": "q-comp-yieldblox-oracle-incident",
+  "question": "What happened in the YieldBlox/Reflector oracle-manipulation incident, roughly how much was lost/recovered, and what are the design lessons?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "On **February 22, 2026**, after setup beginning late February 21, an attacker manipulated the thin USTRY/USDC Stellar DEX market from roughly $1.06 to about $106. Reflector Pulse's five-minute volume-weighted market feed published the manipulated value in two fresh rounds, which passed the YieldBlox pool's adjacent-round max_dev=10 check. The community-managed YieldBlox Blend V2 pool then accepted the value as collateral. No compromise of Reflector contracts, Blend core, Etherfuse's issuer contract, Stellar consensus, or Stellar core was established; the failure chain was market quality, feed methodology, and pool/oracle-consumer configuration and exposure.\n\nThe ledger-confirmed gross borrows were **61,249,278.3064502 XLM** and **1,014,196.7040837 USDC** (14,000 USDC first, then 1,000,196.7040837). Do not turn those token quantities into a single settled dollar loss. Script3 later estimated about **$10.5M net loss**; Blockaid, BlockSec, Rekt, and other reports use different dated valuations and definitions. Preserve each label and source rather than averaging them.\n\nAbout **48M XLM** was quarantined through coordinated validator transaction filtering; Blockaid attributes 48,069,094 XLM. Quarantine means identified accounts could not originate accepted transactions—it is not repayment, a rollback, or recovered funds. Script3 completed direct supplier remediation on **February 27** and backstop remediation on **March 20**, with documented small-value/nonexistent-account handling and liquidated-user exclusions. The reviewed evidence does not prove attacker-held funds were returned.\n\nDesign lessons are layered: timestamp checks remain necessary but were not causal here because the poisoned values were fresh; require independent value/NAV bounds, market-depth and active-trader minimums, robust multi-window aggregation, longer clean baselines, per-asset supply/borrow/value caps, isolation and circuit breakers, pool-ice and migration paths, and first-anomaly monitoring. A TWAP/VWAP may be one layer, but the incident does not prove that TWAP alone would have prevented the drain.",
+    "keyFacts": [
+      "Dates the completed drain to 2026-02-22 and identifies the YieldBlox community Blend V2 pool, manipulated USTRY SDEX market, Reflector five-minute VWAP, and pool-consumer boundary.",
+      "States exact gross borrows: 61,249,278.3064502 XLM plus 1,014,196.7040837 USDC, while keeping dollar loss/default/valuation figures source-specific.",
+      "Distinguishes about 48M XLM validator quarantine from recovery and records February 27 supplier and March 20 backstop remediation with exclusions.",
+      "Explains that fresh poisoned values passed; staleness was not causal and TWAP alone is not a proven cure."
+    ],
+    "avoid": [
+      "Do NOT average gross borrow, dated valuation, net loss, defaults, quarantine, compensation, and recovery into one range.",
+      "Do NOT call quarantined funds recovered or assert attacker repayment without primary/on-chain proof.",
+      "Do NOT say the incident happened in May, was merely attempted, or was contained before significant loss.",
+      "Do NOT claim Reflector, Blend core, Etherfuse, or Stellar protocol was compromised.",
+      "Do NOT claim staleness caused this event or that TWAP/VWAP alone would have prevented it."
+    ],
+    "notes": "2026-06-29 reviewed; rubric correctly gates on the approximate-range/reconcile discipline, not one exact figure. Freshness:true; figures approximate. RECONCILED across dated sources (2026-02): loss ~$10.2M (range to ~$10.86M; some say $10.8M); ~48,069,094 XLM (~$7.2M–$7.5M) frozen by Tier-1 validators ~Feb 22; date Feb 21–22 (~00:25 UTC Feb 22). Vector: USTRY (Etherfuse US-Treasury Stablebond) pumped ~$1.06→~$106 on illiquid SDEX, poisoning Reflector's VWAP feed; attacker borrowed ~61.25M XLM + ~1M USDC. Pool-operator/oracle config failure, NOT a Blend V2 core or Stellar-protocol flaw; Script3 to compensate depositors. Don't gate on one exact $.\nAlso good if the answer: Ties USTRY (an Etherfuse US-Treasury Stablebond) priced on illiquid SDEX into the Reflector VWAP oracle as the manipulation vector; attacker borrowed ~61M XLM + ~1M USDC. | Frames it as a pool-operator/oracle-config failure, NOT a Blend V2 core-contract or Stellar-protocol flaw.\nGolden cites: A dated Scout / news source for the incident and the loss/recovery figures.\nCORRECTION 2026-07-10 (GT-09 processes 3226/3235): require separate labels for token borrow, dated gross valuation, operator net loss, defaults, validator quarantine, remediation, and recovery. About 48M quarantined is safe; the exact Blockaid number must stay attributed. Recovery remains unverified. Staleness was not causal; never promise TWAP alone."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://x.com/i/article/2029281732231344128",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/yieldblox/oracle-aggregator",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/script3/yieldblox-incident-remediation",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://protos.com/yieldblox-lending-pool-hit-by-10m-hack-on-stellar/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://reflector.network/docs/interface",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The completed drain occurred on 2026-02-22, not in May and not merely as an attempted/contained attack",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Script3/YieldBlox notices and full postmortem",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/F: representative Horizon transactions and verified adapter/remediation repositories",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "B/F: representative Horizon transactions and verified adapter/remediation repositories",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent Blockaid, BlockSec, Protos, and Rekt incident reporting",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Gross borrows were 61,249,278.3064502 XLM and 1,014,196.7040837 USDC",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "F",
+            "ref": "F: ledger-confirmed borrow transactions",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: operator postmortem",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent technical reports corroborate the rounded values",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "About 48M XLM quarantined by validator filtering was recovered attacker money",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Script3 describes validator-layer immobilization and separate remediation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: Blockaid attributes 48,069,094 XLM to coordinated transaction filtering",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: balances remain visible; no reviewed transfer proves attacker repayment",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Staleness caused the incident or TWAP alone would have prevented it",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: verified oracle adapter used a five-minute VWAP and fresh two-round deviation check",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: operator postmortem says poisoned fresh rounds passed max_dev=10",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent reviews point to thin market depth, single-root pricing, exposure, and monitoring failures",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: unsupported."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited incident answer collapsed a February completed drain into approximate May-era headlines, averaged unlike loss/valuation/default figures, treated validator quarantine as recovery, froze an early remediation promise, and implied staleness/TWAP lessons that the causal record does not support.",
+      "evidence": [
+        "Solo scratchpad 575 GT-09 primary process 3226 and blind process 3235",
+        "Both independent reconstructions agree on the February timeline, exact token quantities, quarantine/remediation distinction, and core-component boundary",
+        "improvements/stellar-light-scout/sls-022-yieldblox-incident-fact-model.md",
+        "improvements/lumenloop/ll-011-yieldblox-incident-unit-status-errors.md"
+      ],
+      "rootCause": [
+        "Secondary headlines collapsed asset quantities, dated valuations, operator net loss, defaults, quarantine, remediation, and recovery.",
+        "Publication date was mistaken for event date.",
+        "Generic oracle controls were promoted into false incident-specific causal claims."
+      ]
+    },
+    "origin": "raven-next q-comp-yieldblox-oracle-incident"
+  }
+}

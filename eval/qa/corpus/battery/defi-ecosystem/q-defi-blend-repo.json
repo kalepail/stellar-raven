@@ -1,0 +1,91 @@
+{
+  "id": "q-defi-blend-repo",
+  "question": "Where is Blend's smart-contract code and how well-rated is the repo?",
+  "surface": [
+    "scout.searchRepos",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Blend's public Soroban contracts are under the **`blend-capital`** GitHub organization. The current implementation is **`blend-capital/blend-contracts-v2`** (Rust/Soroban; v2.0.0 is published), while **`blend-capital/blend-contracts`** is the separate v1-era repository; official deployment/config records list both generations. **Script3** created/developed Blend, while `blend-capital` is the protocol brand/code organization; the SDF is not the builder. If the question asks how well rated the repo is, fetch the current Scout/GitHub score, stars, forks, and activity and attach an as-of date—or omit volatile figures. The SCF award belongs to the Blend project/submission, not to a repository object.",
+    "keyFacts": [
+      "Identifies blend-capital/blend-contracts-v2 as the current Rust/Soroban contracts repo and distinguishes the retained v1 blend-contracts repository.",
+      "Separates the blend-capital code organization from Script3 as the builder studio and dates any live repo metrics."
+    ],
+    "avoid": [
+      "Do NOT point to blend.com or a non-Stellar repository.",
+      "Do NOT invent or freeze repo scores, stars, forks, or activity without a live source and as-of date.",
+      "Do NOT describe the repository itself as the SCF award recipient or erase Script3's builder attribution."
+    ],
+    "notes": "Code-shaped query → scout_repos. Confusable blend.com trap. Grounded on Scout: the current contracts repo is blend-capital/blend-contracts-v2 (Rust, ~18 stars, repoScore 49 'medium', SCF-awarded); v1 blend-contracts also exists. Repo scores/stars are live and shift — surface from the tool, don't hard-code.\nAlso good if the answer: Surfaces a repo rating/score or traction signal where available (e.g. Scout repoScore, stars), rather than asserting an unsourced number.\nGolden cites: The repo record (Scout repos / GitHub).\nCorrected 2026-07-10 by independent GT-14 agreement. Live repo metrics are optional dated context; exact repository/version and code-org-versus-builder attribution are the durable gates."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://github.com/blend-capital/blend-contracts-v2",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/blend-capital/blend-contracts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.blend.capital/mainnet-deployments",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Blend v1 and v2 contract repositories are public under blend-capital, while Script3 is the builder studio",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: Blend deployment docs, app terms, GitHub org/API and v2 release records",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Blend deployment docs, app terms, GitHub org/API and v2 release records",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: Scout builtBy metadata, SDF/SCF material, and an independent builder interview",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: Scout builtBy metadata, SDF/SCF material, and an independent builder interview",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-14 primary and blind reviews confirmed the repositories but found that the inherited answer conflates the blend-capital code organization with the builder studio, attaches the project SCF award to the repo, and freezes live score/star metadata while marking the case non-fresh.",
+      "evidence": [
+        "GitHub API and Blend deployment/config re-walk 2026-07-10: blend-contracts plus blend-contracts-v2, v2.0.0 release, separate v1/v2 mainnet IDs",
+        "Solo scratchpad 575: GT-14 primary 3239 and blind 3242"
+      ],
+      "rootCause": [
+        "eval-side entity attribution and freshness error: code org, builder studio, project award, and volatile repo metrics were collapsed"
+      ]
+    },
+    "origin": "raven-next q-defi-blend-repo"
+  }
+}

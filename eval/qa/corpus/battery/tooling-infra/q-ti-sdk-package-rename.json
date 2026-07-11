@@ -1,0 +1,105 @@
+{
+  "id": "q-ti-sdk-package-rename",
+  "question": "Which Stellar SDK packages are current vs deprecated — `stellar-sdk` → `@stellar/stellar-sdk` on npm, `github.com/stellar/go` → `…/go-stellar-sdk` in Go — and what's the latest version?",
+  "surface": [
+    "stellarDocs.search_sdk_cli_tools_docs"
+  ],
+  "golden": {
+    "answer": "For JavaScript/TypeScript, install and import **`@stellar/stellar-sdk`**. The rename from unscoped `stellar-sdk` happened at **v11.0.0 on 2023-12-07**; the legacy npm package remains published but is deprecated, so remove it rather than installing both. The v11 rename/Soroban-client integration is not the same migration as v16's later consolidation of `@stellar/stellar-base`, **Node >=22** requirement, removal of the default import, and current `rpc.Server` namespace.\n\nFor Go, use **`github.com/stellar/go-stellar-sdk`**, not legacy `github.com/stellar/go` package paths. Registry/release values are volatile: as of **2026-07-11**, the scoped JS SDK was **16.0.1**, the deprecated unscoped package was **13.3.0**, deprecated `@stellar/stellar-base` was **15.0.0**, and the Go SDK release was **v0.6.0**. Re-run npm and GitHub/Go module checks before pinning. The similarly named Python `stellar-sdk` package is a different ecosystem and must not be used to justify the npm package choice.",
+    "keyFacts": [
+      "States the current JS package is @stellar/stellar-sdk and the unscoped npm package is deprecated/moved.",
+      "Anchors the npm rename to v11.0.0 on 2023-12-07 and separates it from v16 stellar-base, Node >=22, default-import, and namespace changes.",
+      "States the current Go module path is github.com/stellar/go-stellar-sdk.",
+      "Dates all current version values to 2026-07-11 and requires a registry/release recheck before pinning."
+    ],
+    "avoid": [
+      "Do NOT install both old and scoped npm packages or treat a legacy package's newer-looking version as preferred status.",
+      "Do NOT conflate the v11 rename with v16 stellar-base consolidation, default-import removal, or Node runtime changes.",
+      "Do NOT confuse the Python stellar-sdk name with the deprecated npm package.",
+      "Do NOT state latest versions without an as-of date."
+    ],
+    "notes": "GT-53 live registry/release checks refreshed 2026-07-11. Historical rename: v11.0.0 on 2023-12-07; current-version examples remain as-of only and must not be frozen.\nAlso good if the answer: Cites developers.stellar.org SDK docs for supported SDK landscape and Go package examples. | Advises checking npm/GitHub immediately before pinning because this is freshness-sensitive.\nGolden cites: Official docs plus npm/GitHub registry or release URLs for current version claims.\nGrade the v11 rename separately from the v16 base/import/runtime migration. Python package naming is a distinct ecosystem."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/protocol-20-upgrade-guide",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/js-stellar-sdk/blob/main/CHANGELOG.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/js-stellar-sdk/releases/tag/v16.0.1",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.npmjs.com/package/@stellar/stellar-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.npmjs.com/package/stellar-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/go-stellar-sdk/releases/tag/v0.6.0",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The npm rename occurred at v11 and is distinct from v16 consolidation/runtime changes",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Protocol 20 upgrade guide",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: JS SDK changelog/releases and Go SDK release",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: scoped/unscoped npm registry metadata, queried 2026-07-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2023-12-07",
+      "by": "Golden-truth sweep import — The inherited answer correctly named the current JS and Go packages but omitted the historical v11 rename and could conflate it with v16's later stellar-base/runtime migration. GT-53 independently confirmed both boundaries and refreshed every volatile registry claim to 2026-07-11.",
+      "evidence": [
+        "Solo scratchpad 575, GT-53 primary 3372 and blind 3378; both confirmed current package paths and dated versions.",
+        "The blind lane independently anchored the JS rename to v11.0.0 on 2023-12-07 and separated it from v16's base fold-in, Node requirement and default-import change."
+      ],
+      "rootCause": [
+        "Eval-side migration-history collapse and registry freshness drift; discoverability candidate documented in the GT-53 audit."
+      ],
+      "note": "GT-53 final state imported from process 3153; near-term re-verification retained by design."
+    },
+    "origin": "raven-next q-ti-sdk-package-rename"
+  }
+}

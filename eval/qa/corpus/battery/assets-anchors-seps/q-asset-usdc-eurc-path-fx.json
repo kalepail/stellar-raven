@@ -1,0 +1,46 @@
+{
+  "id": "q-asset-usdc-eurc-path-fx",
+  "question": "How can a Stellar wallet deliver EURC to a recipient when the sender only holds USDC, without the wallet touching the intermediate assets?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "- Use a **path payment** — `PathPaymentStrictReceiveOp` (or `PathPaymentStrictSendOp`) — with **source asset USDC** and **destination asset EURC** [1].\n- The network **finds a path** through SDEX offers and/or AMM pools (e.g. USDC→XLM→EURC) and delivers EURC **atomically in one transaction**; the wallet never has to hold XLM or the intermediate hop asset [1].\n- The **recipient must hold a trustline to the asset they receive (EURC)** for the payment to land; trustlines are required for non-native assets [1].\n- Strict-receive bounds the EURC delivered while capping USDC spent via **`sendMax`** (strict-send instead fixes the USDC sent and sets a `destMin`). Settles in seconds for a low network fee [1].",
+    "keyFacts": [
+      "Uses a path payment (PathPaymentStrictReceive/StrictSend) with source asset USDC and destination asset EURC.",
+      "The network finds a path through SDEX offers and/or AMM pools and delivers EURC atomically in one transaction."
+    ],
+    "avoid": [
+      "Do NOT recommend an off-chain FX bridge or centralized swap as the canonical Stellar mechanism.",
+      "Do NOT claim the wallet must first manually swap on an external DEX then send."
+    ],
+    "notes": "Applied how-to combining path payments + stablecoins. Dossier §3.5, §4.5.\nAlso good if the answer: The sender/recipient must each hold a trustline to the asset they receive (recipient needs EURC trustline). | Settles in seconds at low fee; the wallet never has to hold XLM or the intermediate hop asset.\nGolden cites: A path-payments / SDEX page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/liquidity-on-stellar-sdex-liquidity-pools",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-04-sac-stablecoins-issuance-fx accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-usdc-eurc-path-fx"
+  }
+}

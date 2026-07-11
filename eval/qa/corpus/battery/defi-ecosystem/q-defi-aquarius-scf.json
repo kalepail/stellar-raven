@@ -1,0 +1,81 @@
+{
+  "id": "q-defi-aquarius-scf",
+  "question": "Did Aquarius get SCF grants, and what does its Stellar Community Fund history look like?",
+  "surface": [
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions"
+  ],
+  "golden": {
+    "answer": "**Aquarius is SCF-funded**, but the current records conflict and the answer must show that conflict. As of **2026-07-10**, the official project page lists three **Awarded** submissions: SCF #17 Legacy v4.0, **$147K**; SCF #23 Legacy v5.0 Community Award, **$94K**; and SCF #27 Legacy v5.0 Community Award, **$50K**. These rows—and `totalPaid`—sum to **$291K**. The same page nevertheless displays `totalAwarded = $391K`, apparently adding a separate **$100K Liquidity Award '24 Q1 row marked Pending**; SCF #30 Build, $70K, is marked **Ineligible**. Lumenloop reports the $291K/three-awarded-round view, while Scout repeats $391K and incompatible round membership.\n\nDo not collapse those views into an unqualified total. Cite the date, row statuses, and source disagreement.",
+    "keyFacts": [
+      "Confirms Aquarius received SCF awards and reports the three awarded rows totaling/paid $291K as of 2026-07-10.",
+      "Explicitly discloses the official page's conflicting $391K totalAwarded display, the pending $100K liquidity row, and ineligible SCF #30 row."
+    ],
+    "avoid": [
+      "Do NOT state that Aquarius has four awarded rounds or that $391K was paid without disclosing the current row-status conflict.",
+      "Do NOT invent or silently reclassify the Pending liquidity award or Ineligible SCF #30 record."
+    ],
+    "notes": "lumenloop_get_scf_submissions. Anti-fabrication. Grounded on Scout: Aquarius is scfAwarded=true, scfTotalAwardedUSD ≈ $391,000. The exact dollar total is tool-sourced and may shift; gate on 'is SCF-awarded + cite the record,' reward the correct ballpark.\nAlso good if the answer: Identifies Aquarius as the Stellar AMM / liquidity-rewards project when scoping the lookup.\nGolden cites: The SCF submission record for Aquarius (Scout/Lumenloop), with the tool-sourced amount.\nCorrected 2026-07-10. The durable gate is funded status plus faithful row/status/conflict reporting—not choosing $291K or $391K as an uncontested cumulative truth."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-10",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/dashboard/submissions/recRUJxeF1PdlM6aV",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/aquarius",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Aquarius is SCF-funded, but the official aggregate conflicts with its row statuses and paid total",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official hydrated Aquarius SCF project page fetched 2026-07-10 — awarded rows #17 $147K, #23 $94K, #27 $50K; $100K Liquidity Award pending; #30 $70K ineligible; totalPaid=291000 and totalAwarded=391000",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: Lumenloop $291K/[17,23,27], Scout $391K/[17,23,27,30], and independent Parallel conflict extraction",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: Lumenloop $291K/[17,23,27], Scout $391K/[17,23,27,30], and independent Parallel conflict extraction",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-13 primary and blind reviews independently found a live contradiction inside the official SCF Aquarius page. Three row-level Awarded submissions total $291K and totalPaid is $291K, while the same page displays totalAwarded/$391K by apparently including a separate $100K row marked Pending. Scout repeats $391K and misstates round membership; Lumenloop reports $291K and the three awarded rounds. A single total cannot honestly be selected.",
+      "evidence": [
+        "Solo scratchpad 575: GT-13 process 3238 and blind process 3240",
+        "Official Aquarius SCF dashboard payload fetched 2026-07-10T17:02Z"
+      ],
+      "rootCause": [
+        "improvements/stellar-light-scout/sls-011 — aggregate/count-basis and round-membership provenance",
+        "official SCF display appears to include a Pending row in totalAwarded while row status and totalPaid say otherwise"
+      ]
+    },
+    "origin": "raven-next q-defi-aquarius-scf"
+  }
+}

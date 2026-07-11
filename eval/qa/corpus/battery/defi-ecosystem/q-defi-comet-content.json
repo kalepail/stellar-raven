@@ -1,0 +1,91 @@
+{
+  "id": "q-defi-comet-content",
+  "question": "What's been said about weighted AMM pools or Balancer-style AMMs on Stellar/Soroban?",
+  "surface": [
+    "lumenloop.find_av_passages",
+    "lumenloop.find_content_by_entity",
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.search_content_semantic"
+  ],
+  "golden": {
+    "answer": "Coverage about **Comet** must preserve its dual history. It began as a Soroban/Futurenet **Balancer-style weighted-AMM** public-good project and received two official SCF awards: **$150K in SCF #13** and **$141K in SCF #18** ($291K reconstructed sum). Its standalone repo/frontend are stale and this audit found no evidence that it is a major standalone live DEX.\n\nThe weighted-pool implementation is nevertheless materially live on mainnet as **Blend's 80/20 BLND:USDC backstop**. Current Blend docs and a mainnet contract/interface read verified join/exit and exact-in/exact-out weighted-pool behavior. Return dated content across the historical project, SCF records, source code, and Blend deployment; do not collapse them into either 'dead prototype' or 'major standalone exchange.'",
+    "keyFacts": [
+      "Describes Comet's weighted-AMM origin, two official SCF awards totaling $291K, stale standalone surface, and current Blend-backstop deployment.",
+      "Returns sourced/detailed content without inferring standalone traffic or adoption from the embedded pool."
+    ],
+    "avoid": [
+      "Do NOT call Comet unfunded, dead with no mainnet deployment, or a major high-traffic standalone DEX.",
+      "Do NOT attribute Comet's $291K project awards to Blend."
+    ],
+    "notes": "RECONCILED 2026-06-29: prior 'Futurenet' framing was stale — live Scout lists Comet status='Live' (Protocol/Contract, type DEX, github cometdex), consistent with q-defi-comet-what-is. Updated to 'Soroban mainnet weighted AMM (Balancer-style)'. Topic-coverage lane → lumenloop_search_content_semantic (DISTINCT from q-defi-comet-what-is, which is per-project identity → lumenloop_get_project). Comet originated from the SCF 'Financial Innovation Powered by Soroban' recap + Meridian 2023 demo; it is a reference/primitive impl, not a high-traffic dominant DEX (Aquarius/Soroswap/Phoenix carry the DEX flow).\nAlso good if the answer: Notes Comet is a reference/research implementation rather than a high-traffic live DEX.\nGolden cites: Each surfaced item carries its source.\nCorrected 2026-07-10. Both historical and embedded-deployment identities are required; neither proves current standalone adoption."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recG7Kj7ouwAFP2XY",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recIRbsKDA1ayFXCF",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/CometDEX/comet-contracts-v1",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.blend.capital/mainnet-deployments",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Comet received two SCF awards totaling $291K and its weighted pool is deployed as Blend backstop infrastructure",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official SCF #13 $150K and #18 $141K Awarded pages plus Blend deployment docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/F: Comet/Blend code and mainnet contract/interface/hash reads",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "B/F: Comet/Blend code and mainnet contract/interface/hash reads",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-15 primary and blind reviews independently found that Comet's historical Soroban/Futurenet project, two official SCF awards, stale standalone surface, and current Blend-backstop deployment were flattened into one incomplete DEX story.",
+      "evidence": [
+        "Solo scratchpad 575 GT-15 processes 3243/3246; Blend backstop contract CAS3FL6TLZKDGGSISDBWGGPXT3NRR4DYTZD7YOD3HMYO6LTJUVGRVEAM verified 2026-07-10"
+      ],
+      "rootCause": [
+        "eval-side historical project, funding, standalone lifecycle, and embedded deployment conflation"
+      ]
+    },
+    "origin": "raven-next q-defi-comet-content"
+  }
+}

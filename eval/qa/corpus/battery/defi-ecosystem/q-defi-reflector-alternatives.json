@@ -1,0 +1,107 @@
+{
+  "id": "q-defi-reflector-alternatives",
+  "question": "What oracle options do I have on Stellar besides Reflector?",
+  "surface": [
+    "lumenloop.get_project",
+    "lumenloop.search_content_semantic",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "Stellar Light is useful for discovering oracle candidates, but its directory labels are not deployment proof. As of **2026-07-10**, stronger provider/on-chain checks found:\n\n- **Band Protocol:** its published Stellar mainnet contract existed and was actively relaying; its published testnet mapping was absent.\n- **RedStone:** its public mainnet adapter/feed mappings existed and returned same-day timestamps for multiple feeds.\n- **Chainlink Data Streams:** the provider tutorial verifies a Stellar testnet verifier; do not conflate Data Streams with Data Feeds, CCIP, or an unverified mainnet mapping.\n- **DIA:** the published testnet mapping was absent and no provider-primary mainnet mapping was verified in this audit.\n- **Lightecho:** a mainnet contract existed, but its observed price timestamp was about four months stale.\n- **Orally/Pyth:** treat directory/registry discovery as candidates unless a current provider-published Stellar deployment is verified.\n\nFor a recommendation, compare network, feed coverage, update freshness, security/update model, source independence, consumer controls, and support terms. There is no verified universal adoption ranking.",
+    "keyFacts": [
+      "Separates directory discovery from provider-published deployment and empirical feed-freshness evidence.",
+      "Reports Band and RedStone mainnet evidence with an as-of date while preserving uncertainty for absent or stale mappings.",
+      "Avoids unsupported cross-provider adoption rankings and product/network conflation."
+    ],
+    "avoid": [
+      "Do NOT claim Reflector is the only oracle candidate in the Stellar directory.",
+      "Do NOT treat a directory Live label, an SCF award, or an operator announcement as proof of a current updating feed.",
+      "Do NOT claim DIA mainnet, Chainlink Data Feeds, or a universal provider ranking without product-and-network-specific primary evidence."
+    ],
+    "notes": "FRESHNESS-GATED 2026-07-10: grade a product/network/evidence-tier comparison, not a directory roster. Band and RedStone had active mainnet evidence; published Band/DIA testnet mappings were absent; Lightecho was deployed but observed stale. Re-verify before grading current status.\nAlso good if the answer compares feed coverage, network, update freshness, trust model, consumer controls, and support terms without inventing a universal ranking.\nGolden cites: The directory/Scout entries for the named alternative oracles.\nGT-17 CORRECTION 2026-07-10: current provider/on-chain evidence supersedes the all-live directory composite. The answer must preserve absent/stale mappings as source-relative findings and must not infer nonexistence from them."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/oracles/oracle-providers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.bandchain.org/products/stellar/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/redstone-finance/redstone-public-contracts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/reflector",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Scout lists multiple oracle candidates, while provider-primary and on-chain evidence distinguish their current networks and freshness.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: Stellar Light oracle search provides the dated candidate roster and conflicting Live/Inactive labels",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/B/F: official Band and RedStone mappings plus read-only mainnet contract/feed probes confirm current deployments; published Band and DIA testnet mappings returned Contract not found",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B/F: official Band and RedStone mappings plus read-only mainnet contract/feed probes confirm current deployments; published Band and DIA testnet mappings returned Contract not found",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "A/B/F: official Band and RedStone mappings plus read-only mainnet contract/feed probes confirm current deployments; published Band and DIA testnet mappings returned Contract not found",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent Parallel and Perplexity conflict sweeps found no reproducible cross-provider dominance metric",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The inherited alternative roster and 'dominant/most-integrated' ranking were derived from Scout plus Reflector's own site, not independent provider evidence. GT-17's independent live reads now support a dated provider/network matrix, including active Band and RedStone mainnet contracts and stale or absent published mappings that directory status alone obscures.",
+      "evidence": [
+        "Solo scratchpad 575 GT-17 primary process 3247 and blind process 3248; live provider/network probes asOf 2026-07-10.",
+        "Sibling sweep: q-defi-oracles-chainlink-band, q-eco-defi-market-map, and q-scf-funded-similar-oracle."
+      ],
+      "rootCause": [
+        "Directory discovery results and provider marketing were promoted into an unqualified live roster and market ranking.",
+        "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch F"
+      ]
+    },
+    "origin": "raven-next q-defi-reflector-alternatives"
+  }
+}

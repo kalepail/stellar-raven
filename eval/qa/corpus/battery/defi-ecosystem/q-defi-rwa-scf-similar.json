@@ -1,0 +1,126 @@
+{
+  "id": "q-defi-rwa-scf-similar",
+  "question": "Has anything like tokenized real-world assets or on-chain funds been funded through the SCF?",
+  "surface": [
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_project",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "**Yes.** Search the current official SCF submissions and report the submission's explicit status and URL—not only a semantic match, directory flag, `award_type`, or reconstructed aggregate. As of **2026-07-10**, official pages marked these representative RWA/tokenization submissions **Awarded**:\n\n- 0xAuth — SCF #27, $45,000\n- Metafyed RWA marketplace — SCF #27, $50,000\n- Verseprop real-estate tokenization — SCF #33 Build, $112,020\n- KYC Token & UI for RWA — SCF #22, $45,000\n- Spydra RWA Tokenization — SCF #31 Build, $132,000\n- Bando Tokenized CETES — SCF #42 Build, $75,000\n- Constellation Protocol — SCF #23, $100,000\n- Excellar — SCF #17, $88,750\n\nBy contrast, Talwex was at **Test Transaction**, Lend tokenized real estate at **Ready for Payment**, and TERWA Wine Asset Vault at **Information Collection** even though their rows carried a Build award type/amount. Do not call those Awarded. No exact BENJI/FOBXX, CRDT, or USDY match appeared on the official funded-projects page in this read; phrase that as a dated source-relative result, not proof that no SCF relationship ever existed.",
+    "keyFacts": [
+      "Uses official submission status and URL to identify representative Awarded RWA/tokenization work.",
+      "Separates official status from award_type, directory status, semantic similarity, and reconstructed totals.",
+      "Phrases flagship-issuer nonmatches as dated source-relative results rather than universal negatives."
+    ],
+    "avoid": [
+      "Do NOT treat award_type=Build, a proposed amount, or a semantic match as proof the submission is Awarded.",
+      "Do NOT call OrbitCDP or another historical award recipient currently live solely from SCF history.",
+      "Do NOT assert BENJI, CRDT, or USDY never had any SCF relationship without a matching exhaustive official record."
+    ],
+    "notes": "GROUNDED 2026-07-10: semantic/directory results are discovery only. Grade explicit official submission status and URL, distinguish Awarded from Test Transaction/Ready for Payment/Information Collection, and do not infer current project status from an award.\nAlso good if the answer says issuer primaries describe BENJI/CRDT/USDY as issuer-led and no exact official funded-page match was found asOf, without turning that into a timeless no-SCF claim.\nGolden cites: SCF archive matches (or an explicit 'none found' note).\nGT-17 CORRECTION 2026-07-10: current official status wins over semantic award fields; all amounts/statuses are dated and submission-specific."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "mixed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/rec2UJLCx1DBLgdm4",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/rec0OaOoRwjfSdS58",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recXjdDQL2sk7HNKx",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/rec6A8ExCfeeCSeIy",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/awards",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SCF has officially Awarded RWA/tokenization submissions, while award_type alone does not establish Awarded status.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official communityfund.stellar.org submission pages for eight Awarded examples and three non-Awarded workflow counterexamples",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Scout/Lumenloop semantic discovery and reconstructed totals, used only for candidate discovery",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent conflict sweep confirmed that current workflow statuses cannot be normalized to Awarded",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "BENJI/FOBXX, CRDT, and USDY definitively never had any SCF relationship.",
+        "verdict": "unverifiable",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: no exact match appeared on the official funded-projects page asOf 2026-07-10; issuer primaries describe issuer-led launches",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: archive/search sweeps found no exact match but cannot prove a global timeless negative",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: archive/search sweeps found no exact match but cannot prove a global timeless negative",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The inherited answer treated semantic directory matches, reconstructed totals, and award_type as official Awarded status, called OrbitCDP live despite current Inactive status, and asserted an unbounded no-SCF negative for flagship issuers. Independent official submission checks show both Awarded examples and newer workflow rows whose award_type is Build but status is not Awarded.",
+      "evidence": [
+        "Solo scratchpad 575 GT-17 primary process 3247 and blind process 3248, including exact official submission IDs/statuses asOf 2026-07-10.",
+        "Sibling sweep: q-scf-funded-similar-oracle, q-scf-history-orbit-cdp, q-defi-orbit-cdp, and BENJI/CRDT/USDY product cases."
+      ],
+      "rootCause": [
+        "Semantic similarity, directory status, reconstructed totals, and award_type were collapsed into official award/current-product truth.",
+        "improvements/lumenloop/ll-013-scf-submission-award-fields.md",
+        "improvements/stellar-light-scout/sls-026-scf-status-aggregate-conflict.md"
+      ]
+    },
+    "origin": "raven-next q-defi-rwa-scf-similar"
+  }
+}

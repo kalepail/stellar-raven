@@ -1,0 +1,94 @@
+{
+  "id": "q-defi-blend-what-is",
+  "question": "What is Blend on Stellar and who builds it?",
+  "surface": [
+    "lumenloop.find_av_passages",
+    "lumenloop.find_content_by_entity",
+    "lumenloop.get_project",
+    "lumenloop.list_research",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "**Blend** is a Soroban lending/borrowing protocol that lets users deploy permissionless, isolated pools, supply assets, and take over-collateralized loans. It was **created/developed by Script3**; the public protocol brand and code organization are **`blend-capital`**, and the SDF is not the builder. Official docs describe the immutable base protocol as having **no DAO or central operator**, but that does not make every pool governance-free: pool creators choose assets, owner/management strategy, oracle, backstop take, and risk parameters, and a pool can be owned/mutable or governed through a separate contract. Describe Blend as an important lending primitive without requiring an unsupported timeless dominance or Aave-equivalent ranking.",
+    "keyFacts": [
+      "Blend is a Soroban lending protocol for permissionless isolated pools and over-collateralized borrowing.",
+      "Script3 developed Blend; blend-capital is the public code/brand organization, and protocol-level no-DAO design is distinct from pool-specific administration and risk."
+    ],
+    "avoid": [
+      "Do NOT conflate Stellar Blend with blend.com, describe it as a DEX/oracle, or attribute it to the SDF.",
+      "Do NOT erase Script3's builder role or imply that no Blend pool can have an owner, management contract, or governance choices.",
+      "Do NOT make an unsupported dominant/canonical/Aave-equivalent ranking a correctness gate."
+    ],
+    "notes": "Per-project IDENTITY (who-builds-it) → lumenloop_get_project — DISTINCT lane from q-defi-blend-content (lumenloop_find_content_about_project; corpus of news/research/talks). Confusable trap: blend.com vs Stellar Blend. Grounded on Scout (re-verified 2026-06-29): Blend = lending/borrowing money market on Soroban by blend-capital, Live, site blend.capital, GitHub github.com/blend-capital.\nAlso good if the answer: Lending pools let users deposit assets to earn interest or post collateral to borrow. | It is the canonical / dominant Soroban lending primitive (the 'Aave-equivalent' substrate on Stellar).\nGolden cites: At least one source identifying Blend as the Soroban lending protocol (Lumenloop project record, blend-capital GitHub, or Stellar ecosystem source).\nCorrected 2026-07-10 by GT-14 independent agreement. Grade protocol mechanics, Script3/code-org attribution, and the protocol-versus-pool governance distinction; market rank is volatile context."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://docs.blend.capital/users/general-faq",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.blend.capital/pool-creators/general",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/blend-capital",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Blend is a Soroban lending protocol developed by Script3 with protocol-level no-DAO design and pool-specific administration/risk",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: Blend FAQ, pool-creator/oracle/risk docs, app terms, deployment docs, and public repositories",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Blend FAQ, pool-creator/oracle/risk docs, app terms, deployment docs, and public repositories",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: Scout/Lumenloop builder metadata, SDF case study, independent builder interview, and incident analysis",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: Scout/Lumenloop builder metadata, SDF case study, independent builder interview, and incident analysis",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-14 primary and blind reviews confirmed Blend's mechanics but independently rejected the inherited builder and governance shorthand: Script3 is the builder studio, blend-capital is the code/brand org, and protocol-level no-DAO language does not mean every pool lacks an owner, management strategy, or separate governance contract.",
+      "evidence": [
+        "Solo scratchpad 575: GT-14 process 3239 and blind process 3242",
+        "Direct Blend documentation and repository review 2026-07-10"
+      ],
+      "rootCause": [
+        "eval-side entity/governance compression: builder, brand org, protocol control, and individual-pool governance were collapsed"
+      ]
+    },
+    "origin": "raven-next q-defi-blend-what-is"
+  }
+}

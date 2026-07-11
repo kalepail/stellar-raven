@@ -1,0 +1,153 @@
+{
+  "id": "q-comp-finclusive-caas",
+  "question": "How do Stellar anchors handle Travel Rule and BSA/AML obligations, and what is FinClusive's 'Compliance as a Service' role?",
+  "surface": [
+    "scout.getPartners",
+    "scout.matchPartners",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "FinClusive currently markets Compliance as a Service, KYC/KYB and financial-crime-compliance orchestration, reusable FinCID/CDD credentials, and gateway connectivity that includes Stellar. Treat those as current operator product claims, not proof that the service guarantees legal compliance. FinClusive's operating provisions describe a third-party service-provider/payment-partner structure and say FinClusive is not itself a bank or licensed MSB; that is the company's current self-description, not an independent regulator determination.\n\nA 2020 SDF article described a shared-verification model across multiple anchors and documented Biccos as a use case. That is dated historical context, not proof of current network-wide adoption. The audit did not verify MoneyGram, Bitso, Kado, or Nium as FinClusive CaaS partners, so they should not be listed as such.\n\nTravel Rule, BSA/AML, licensing, custody, and sanctions duties depend on the covered actor, activity, transaction, route, threshold, and jurisdiction. Stellar is technical infrastructure, but it is also overbroad to say one entity called the anchor always carries every obligation. CaaS can support compliance workflows; it does not transfer or conclusively satisfy legal duties. This is not legal advice.",
+    "keyFacts": [
+      "Describes current FinClusive CaaS/KYC/KYB and reusable-verification tooling as operator product claims.",
+      "Separates dated 2020 Biccos/shared-utility history from current adoption.",
+      "Scopes legal obligations to actual actors, activities, transactions, and jurisdictions; CaaS does not guarantee compliance."
+    ],
+    "avoid": [
+      "Do NOT say Stellar performs Travel Rule screening or holds licenses.",
+      "Do NOT claim CaaS guarantees compliance or that the anchor is always the only obligated entity.",
+      "Do NOT infer a FinClusive license from registry absence/presence or company marketing.",
+      "Do NOT name MoneyGram, Bitso, Kado, or Nium as FinClusive partners without current primary evidence."
+    ],
+    "notes": "2026-06-29 reviewed. SDF policy blog documents FinClusive CaaS for anchors (KYB/KYC, Travel Rule, BSA/USA PATRIOT Act) as a shared verification utility. Partner names (MoneyGram, Bitso, Biccos, Kado, Nium) per SDF/anchor materials. Specific licenses/approvals not asserted. Trap: putting the AML duty on the protocol.\nAlso good if the answer: FinClusive operates as a shared/reusable verification utility so a customer verified once can be reused across anchors (subject to consent).\nGolden cites: SDF policy blog (inclusion-through-compliance) and/or FinClusive materials.\nCORRECTION 2026-07-10: separate current operator claims, FinClusive's TPSP self-description, dated 2020 Biccos history, and role/jurisdiction-specific legal duties. Do not gate on unverified partner or licensing claims."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "mixed",
+    "asOf": "2026-07-10",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://finclusive.com/products/compliance-as-a-service",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://finclusive.com/products/caas-gateway",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://finclusive.com/company/operating-provisions",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://help.finclusive.com/en_US/stellar-transactions/is-finclusive-an-anchor-on-the-stellar-network",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/policy/drive-inclusion-through-compliance",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.fincen.gov/resources/statutes-regulations/guidance/funds-travel-regulations-questions-answers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.ecfr.gov/current/title-31/part-1010/section-1010.410",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "FinClusive currently markets CaaS/KYC/KYB, reusable FinCID/CDD credentials, and Stellar-capable gateway tooling",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current FinClusive CaaS, Gateway, home, and help pages fetched 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent current product/footprint sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "FinClusive CaaS universally satisfies every Stellar anchor's Travel Rule, BSA, and licensing obligations",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: FinCEN/eCFR rules allocate duties by covered actor, role, activity, and threshold",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: FATF Recommendation 16 is implemented through jurisdiction-specific regimes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: FinClusive operating provisions describe a TPSP/payment-partner structure, not a universal transfer of legal responsibility",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "MoneyGram, Bitso, Kado, and Nium are documented FinClusive CaaS partners",
+        "verdict": "unverifiable",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/D: broad exact partner sweep found dated primary FinClusive attribution only for Biccos",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A/D: broad exact partner sweep found dated primary FinClusive attribution only for Biccos",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: ecosystem-directory co-occurrence is not partner corroboration",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — A dated 2020 SDF partnership story was frozen into current product and legal truth. It promoted a hypothetical reusable-verification model into established network-wide adoption, attached unrelated Stellar ecosystem companies as FinClusive partners, and treated CaaS tooling as satisfying universal Travel Rule/BSA obligations.",
+      "evidence": [
+        "Solo scratchpad 575 GT-07 primary and blind matrices",
+        "Current FinCEN registry exact-name probe was inconclusive and is not used to infer licensing"
+      ],
+      "rootCause": [
+        "Historical partnership content became timeless product/legal authority.",
+        "Unrelated ecosystem relationships were conflated with FinClusive partnerships.",
+        "Technical anchor and legal regulated-person roles were collapsed."
+      ]
+    },
+    "origin": "raven-next q-comp-finclusive-caas"
+  }
+}

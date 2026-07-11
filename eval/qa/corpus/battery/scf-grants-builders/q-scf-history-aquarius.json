@@ -1,0 +1,89 @@
+{
+  "id": "q-scf-history-aquarius",
+  "question": "Pull the SCF award history for the Aquarius (AQUA) project — rounds, award types, and amounts where available.",
+  "surface": [
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions"
+  ],
+  "golden": {
+    "answer": "Aquarius' current official SCF history is **disputed at the aggregate level**. As of **2026-07-10**, three rows are marked Awarded: **SCF #17 Legacy v4.0, $147K; SCF #23 Legacy v5.0 Community Award, $94K; SCF #27 Legacy v5.0 Community Award, $50K**. Those rows and `totalPaid` equal **$291K**. A **$100K Liquidity Award '24 Q1** row is marked **Pending**, and **SCF #30 Build, $70K**, is **Ineligible**. The same official page nevertheless displays `totalAwarded = $391K`, apparently including the pending liquidity row. Lumenloop follows the $291K/three-awarded-row view; Scout follows $391K with incompatible round membership.\n\nReport the rows and conflict; do not rewrite Pending/Ineligible as awarded or claim four paid rounds.",
+    "keyFacts": [
+      "Reports the three awarded Aquarius rows and amounts totaling/paid $291K, plus the pending $100K liquidity row and ineligible #30 row.",
+      "Discloses the official $391K aggregate conflict and keeps SCF funding separate from AQUA market activity/emissions."
+    ],
+    "avoid": [
+      "Do NOT claim four awarded rounds, $391K paid, or that SCF #30 is an awarded round.",
+      "Do NOT conflate AQUA liquidity incentives or token emissions with SCF grant funding."
+    ],
+    "notes": "3rd per-project-history case. Trap: AQUA token emissions ≠ SCF grants. Verified 2026-06-29 via /api/projects: Aquarius scf.awarded=true, totalAwarded=$391,000, category Protocol/Contract, awardedRounds [17,23,27,30] (4 rounds now broken out in the record). Funding total is live → freshness-sensitive.\nAlso good if the answer: Reports amounts only where the record provides them, and says so explicitly when absent.\nGolden cites: Aquarius's SCF submissions record (Lumenloop) / communityfund project page.\nCorrected and independently re-confirmed through GT-38 on 2026-07-10. Grade faithful row/status/aggregate conflict reporting. No single cumulative figure is uncontested in the current sources; the canonical official project page is primary."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/recEXC1v5Mc2dLL4a",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/dashboard/submissions/recRUJxeF1PdlM6aV",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/aquarius",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Aquarius' official row-level SCF history conflicts with its displayed aggregate",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Aquarius SCF dashboard/project payload fetched 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: Lumenloop, Scout, and independent conflict extraction",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: Lumenloop, Scout, and independent conflict extraction",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — GT-13 primary and blind reviews independently disproved the inherited four-awarded-round/$391K history. The official page shows three awarded rows totaling/paid $291K, a separate $100K Pending liquidity row, an Ineligible $70K SCF #30 row, and a conflicting $391K aggregate display.",
+      "evidence": [
+        "Solo scratchpad 575 GT-13 primary 3238 and blind 3240",
+        "Official page: #17 $147K Awarded; #23 $94K Awarded; #27 $50K Awarded; Liquidity '24 Q1 $100K Pending; #30 $70K Ineligible; totalPaid $291K versus displayed totalAwarded $391K",
+        "GT-38 primary 3297 and blind 3299 independently reproduced the row/aggregate conflict and operation-specific Lumenloop/Scout behavior."
+      ],
+      "rootCause": [
+        "improvements/stellar-light-scout/sls-011 — aggregate/round/status provenance",
+        "improvements/stellar-light-scout/sls-026-scf-status-aggregate-conflict.md",
+        "eval-side history authoring treated an aggregate and round list as authoritative despite contradictory official row statuses"
+      ]
+    },
+    "origin": "raven-next q-scf-history-aquarius"
+  }
+}

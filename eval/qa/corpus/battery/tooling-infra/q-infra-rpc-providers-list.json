@@ -1,0 +1,102 @@
+{
+  "id": "q-infra-rpc-providers-list",
+  "question": "I don't want to run my own RPC node — which providers offer hosted Stellar RPC, and is there a free public endpoint?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "The official [Stellar RPC Providers page](https://developers.stellar.org/docs/data/apis/rpc/providers) is the canonical, freshness-sensitive roster. As of **2026-07-09**, its hosted-provider table contains **15** entries: Blockdaemon, Validation Cloud, QuickNode, NowNodes, Gateway, Ankr, InfStones, Obsrvr, Nodies, OnFinality, Lightsail/Quasar, Uniblock, Exaion, Alchemy, and GetBlock. Network coverage and the RPC Archive/getLedgers tier vary by provider, so verify the current row before choosing one.\n\nThe page separately lists publicly accessible endpoints for prototyping, including **Liquify** and other public URLs. Liquify is not a sixteenth hosted-table provider. Public endpoints can be convenient for testing but are best-effort unless their operator publishes a production SLA; do not silently promote them to hosted-provider status.\n\nChoose by required network, archival method coverage, rate limits/SLA, geography, and operational support, then confirm against the current page rather than memorizing the roster.",
+    "keyFacts": [
+      "Names representative hosted Stellar RPC providers and points to the official Providers page as the current roster.",
+      "Separates the 15-row hosted-provider table from publicly accessible endpoints such as Liquify.",
+      "Flags provider/network/archive coverage as freshness-sensitive."
+    ],
+    "avoid": [
+      "Do NOT count Liquify as a hosted-provider-table row; it appears under Publicly Accessible APIs.",
+      "Do NOT invent provider names/URLs or present a public endpoint as a production-grade SLA."
+    ],
+    "notes": "Re-verified 2026-06-29: Providers page lists ~15 hosted providers (Blockdaemon, Validation Cloud, QuickNode, NowNodes, Gateway, Ankr, InfStones, Obsrvr, Nodies, OnFinality, Lightsail/Quasar, Uniblock, Exaion, Alchemy, GetBlock, Liquify) with a getLedgers archive tier on a subset. Freshness-sensitive: roster/tiers shift; reward pointing to the canonical Providers page + flagging staleness, not memorizing the list.\nAlso good if the answer: The official developers.stellar.org Providers page is freshness-sensitive (the roster and tiers change over time).\nGolden cites: developers.stellar.org RPC Providers page.\nREFUTE CORRECTION 2026-07-09 (todo 901), independently reverified by GT-50 on 2026-07-11: the official page has 15 hosted rows. Liquify remains a valid public endpoint but belongs only to the separate Publicly Accessible APIs section. Accept roster drift when dated; reject the hosted/public category conflation or any inference that a listed public endpoint has a production SLA."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/providers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-docs/blob/main/docs/data/apis/rpc/providers.mdx",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The current official page lists 15 hosted providers, with Liquify only in the public-endpoint section",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: https://developers.stellar.org/docs/data/apis/rpc/providers fetched 2026-07-09 — hosted table ends with GetBlock; Liquify is under Publicly Accessible APIs",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: https://raw.githubusercontent.com/stellar/stellar-docs/main/docs/data/apis/rpc/providers.mdx fetched 2026-07-09 — source section/table structure matches the rendered page",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "The 15-row hosted roster and seven-row archive-marked subset remained current on 2026-07-11; public endpoint availability is not an SLA",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: rendered Providers page and providers.mdx source rechecked independently by GT-50 primary and blind lanes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: rendered Providers page and providers.mdx source rechecked independently by GT-50 primary and blind lanes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: anonymous read-only provider health probes confirmed that directory presence and current endpoint health are separate facts",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The roster answer conflated two tables on the official page: it counted Liquify as a hosted provider even though Liquify appears only under Publicly Accessible APIs. The current source has 15 hosted-provider rows; the public endpoint remains useful but must be labeled separately.",
+      "evidence": [
+        "Solo scratchpad 569 Batch B, 2026-07-09: exact rendered-page and source-file section checks.",
+        "Sibling sweep checked q-infra-rpc-provider-archive-tier and q-infra-testnet-vs-futurenet; neither requires a change.",
+        "Solo scratchpad 575 GT-50 primary process 3349 and blind process 3361 independently reverified the roster/category split on 2026-07-11; blind matrix sealed before the primary read."
+      ],
+      "rootCause": [
+        "Eval-side table/category conflation: a public RPC endpoint was appended to the hosted-provider roster during manual enumeration.",
+        "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch B"
+      ]
+    },
+    "origin": "raven-next q-infra-rpc-providers-list"
+  }
+}

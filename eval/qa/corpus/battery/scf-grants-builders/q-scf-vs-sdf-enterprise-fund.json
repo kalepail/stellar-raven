@@ -1,0 +1,91 @@
+{
+  "id": "q-scf-vs-sdf-enterprise-fund",
+  "question": "What is the difference between the Stellar Community Fund and the SDF Enterprise Fund — which should a startup apply to?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Use **SCF Build** for an up-to-$150K XLM-valued development grant: the interest form is open, but eligibility/referral review precedes an invited full proposal, and only the Open Track uses project-level community voting. **SDF Marketing Grants** are a separate direct application path, up to $500K for growth/user acquisition. **Enterprise Fund** is venture-style strategic investment rather than an SCF grant. Current dedicated Enterprise pages now say Apply Now/Submit your application, although older official funding-index/mandate copy still says SDF finds companies and has no application; disclose that source conflict and follow the live form for current routing. **Matching Fund**, within Enterprise, is an explicit application track for pre-seed through Series B companies with a lead term sheet, 1:1 matching, and a $200K–$500K SDF check.",
+    "keyFacts": [
+      "Separates SCF Build, Marketing, general Enterprise, and Matching mechanisms.",
+      "Explains SCF interest-to-invitation and Open-only voting.",
+      "Discloses the current Enterprise application versus older no-application conflict."
+    ],
+    "avoid": [
+      "Do NOT say all SCF proposals are openly submitted/public-voted.",
+      "Do NOT tell founders never to apply to Enterprise while the current application form is live, or hide the official source conflict.",
+      "Do NOT present Enterprise investment as an SCF grant or invent a general per-company cap."
+    ],
+    "notes": "Dossier §1/§5/§10. THE category-defining trap: confusing SCF (open, community-voted) with the SDF Enterprise Fund (outreach-only). Higher threshold.\nAlso good if the answer: The SCF Build cap is $150K XLM; SDF-direct lines (Matching/Marketing) reach ~$500K with different mechanisms.\nGolden cites: stellar.org/grants-and-funding (SDF programs) and the SCF handbook.\nGT-40 blind reversed the primary/outreach-only conclusion after verifying the live general Enterprise application. Qualified answers may mention the older official conflict but must not prohibit the current form."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/enterprise-fund",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/enterprise-fund/apply",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/grants-and-funding/matching-fund",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/grants-and-funding/marketing-grants",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current funding-route distinctions and Enterprise intake conflict",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current SCF, Enterprise/apply, Matching, and Marketing pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-37/40 independent review",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-official-conflict."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The inherited answer said all SCF proposals are open/public-voted and that founders must never apply to the general Enterprise Fund; both are contradicted by current operational pages.",
+      "evidence": [
+        "Solo scratchpad 575 GT-40 processes 3301/3304; current pages fetched 2026-07-10."
+      ],
+      "rootCause": [
+        "Official current Enterprise application contradicts older outreach-only copy; eval preserved the older statement."
+      ]
+    },
+    "origin": "raven-next q-scf-vs-sdf-enterprise-fund"
+  }
+}

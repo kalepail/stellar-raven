@@ -1,0 +1,90 @@
+{
+  "id": "q-infra-hubble-vs-rpc-layer",
+  "question": "Should I read account balances and history from Stellar RPC or from Hubble/BigQuery? When does each make sense?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "Use Stellar RPC for low-latency current/recent state, transaction/event queries, simulation, and submission. Use Hubble for bulk historical SQL analytics, and use an indexer/Portfolio API when you need curated, filterable, application-specific history. RPC retention is method/provider/configuration dependent: the current self-hosted default is `HISTORY_RETENTION_WINDOW=120960` ledgers (roughly seven days), not a universal 24-hour default or fixed maximum. Data-lake integration can extend `getLedgers`; it does not grant genesis history to every RPC method. Rate limits are provider quotas, not universal protocol constants.",
+    "keyFacts": [
+      "Separates current/recent RPC, historical SQL Hubble, and curated indexer workloads.",
+      "Qualifies retention, getLedgers-only archive integration, and provider quotas."
+    ],
+    "avoid": [
+      "Do NOT use RPC for unbounded bulk scans or Hubble for live submission.",
+      "Do NOT freeze 24h/seven-day absolutes or claim data-lake history applies to every method."
+    ],
+    "notes": "Three-layer (RPC / indexer / Hubble) decision; the trap is using the wrong layer for the workload. RPC event window is 24h default / ~7 days max (not a flat 7d).\nAlso good if the answer: An indexer covers the in-between window (filtered historical queries beyond RPC's limited event window — 24h default, ~7 days max). | Choosing the wrong layer inflates cost — RPC for historical scans is rate-limited; BigQuery for low-latency reads is wasteful.\nGolden cites: developers.stellar.org RPC, Hubble, and/or indexers docs.\nGT-49 CORRECTION 2026-07-11: state provider/as-of retention and method-specific archive behavior."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/admin-guide/configuring",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/admin-guide/data-lake-integration",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/analytics/hubble",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "RPC serves low-latency current/recent query/simulation/submission; Hubble serves bulk historical SQL; indexers serve curated history. Default RPC retention is configurable 120960 ledgers and data-lake history extends getLedgers only.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current RPC admin/data-lake and Hubble docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current stellar-rpc config/source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live getHealth/getEvents probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited layer comparison used stale 24-hour/seven-day retention absolutes and generalized provider quotas/data-lake history across all RPC methods.",
+      "evidence": [
+        "Solo scratchpad 575 GT-49 primary 3335 and blind 3341; deduped to sd-023."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-023-rpc-event-retention-config-drift.md"
+      ]
+    },
+    "origin": "raven-next q-infra-hubble-vs-rpc-layer"
+  }
+}

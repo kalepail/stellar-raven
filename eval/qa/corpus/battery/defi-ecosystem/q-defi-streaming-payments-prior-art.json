@@ -1,0 +1,108 @@
+{
+  "id": "q-defi-streaming-payments-prior-art",
+  "question": "I want to build a streaming/recurring-payments contract on Soroban — what existing Stellar projects, repos, or SCF submissions should I study?",
+  "surface": [
+    "scout.searchProjects",
+    "scout.searchRepos",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Study prior art as a **dated maturity matrix**, not a bare repo list:\n\n- **SStream** — Rust create/claim/cancel stream code and SCF #16 $36K Awarded; linked UI was 404 and no public contract was verified.\n- **Tide Stream Payment / Zentra** — Rust contract/tests/frontend and SCF #23 $18.2K Awarded; frontend responded, but no mainnet contract was verified.\n- **Fluxity** — Soroban streaming contract/tests and an official SCF #21 $68K Awarded row; do not turn its internally inconsistent project aggregate into a second award; deployment remained inconclusive.\n- **Paystreme** — SCF #11 $50K Awarded proposal prior art; current public contract/source trail was not verified.\n- **ApiCharge** — substantial subscription/payment code, SCF #40 $79K Awarded, and a real pubnet contract; its custom time-subscription/x402-compatible scheme and runtime maturity must not be mislabeled canonical x402 exact.\n- **RouteDock/MPP session examples** — substantial testnet/reference channel and agent-vault work, not verified mainnet production.\n\nFor every result, show repo, official submission, UI status, contract/network, audit/source-verification status, and as-of date. Discovery does not prove production readiness.",
+    "keyFacts": [
+      "Returns real streaming/recurring-payment prior art with code and official provenance.",
+      "Separates funding, UI, contract/network, and production maturity for each item."
+    ],
+    "avoid": [
+      "Do NOT invent repos or treat repository/SCF presence as current production deployment.",
+      "Do NOT collapse x402, MPP sessions/channels, and custom recurring-payment contracts into one standard."
+    ],
+    "notes": "GROUNDED + CORRECTED: live Scout repo search (2026-06-22, /api/repos/search) does NOT surface the Phase-1 illustrative names (FlowFi, Quipay, stellar-drips). Real streaming/recurring-payment prior art: luanlabs/fluxity-interface (token streaming), tosinshada/tide-streaming, Handilusa/Ferrule (MPP session channels), and x402/MPP payment-execution repos (winsznx/routedock, davidmaronio/StellarPay402). Do NOT hard-gate on a single exact name set — the gate is 'real Scout-grounded repos with provenance', and must_avoid forbids invented repos. 2026-06-29 RE-VERIFIED on live Scout + GitHub: CORRECTED handle luanlabs/fluxity -> luanlabs/fluxity-interface (bare 'luanlabs/fluxity' 404s; the luanlabs/fluxity-* family is fluxity-interface (Scout 28, desc 'token streaming solution'), fluxity-v1-core (Soroban contract V1), fluxity-api, fluxity.finance). Confirmed Scout-graded: tosinshada/tide-streaming (in corpus), Handilusa/Ferrule (repoScore 53, desc 'Pay-per-token AI agents...MPP session channels'), winsznx/routedock (repoScore 69, 'unified payment execution layer for x402/MPP'), davidmaronio/StellarPay402 (repoScore 85). Source github.com/luanlabs/fluxity-interface resolves 200.\nAlso good if the answer: References relevant SCF submissions or an SDF/MPP recurring-payments writeup as study material.\nGolden cites: Scout repo / SCF submission provenance for each surfaced item.\nGT-18 CORRECTION 2026-07-10: grade a code/SCF/UI/network/source-verification matrix. The inherited repo-only roster and deployment implications are superseded."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://github.com/rahimklaber/SStream",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/tosinshada/tide-streaming",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/luanlabs/fluxity-v1-core",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/StreamCharge/ApiCharge",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/winsznx/routedock",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SStream, Tide/Zentra, Fluxity, Paystreme, and ApiCharge are real Stellar streaming/recurring-payment prior art with distinct code/funding/deployment states.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official SCF submission pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: public Rust/frontend/client repositories",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live HTTP and testnet/pubnet contract reads",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: live discovery plus independent conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: live discovery plus independent conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited prior-art list mixed interface repos, MPP/x402 references, and streaming contracts without separating code, official funding, UI reachability, network deployment, or source verification. Independent review found omitted projects and materially stronger testnet/pubnet evidence for several entries.",
+      "evidence": [
+        "Solo scratchpad 575 GT-18 primary 3249 and blind 3252",
+        "Sibling sweep: q-defi-agentic-payment-standards-compare, q-defi-x402-projects-discovery, and agentic-payment implementation cases"
+      ],
+      "rootCause": [
+        "Repository discovery was treated as deployment proof and a static handle list replaced a maturity comparison.",
+        "improvements/stellar-light-scout/sls-025-agent-standard-alias-recall.md"
+      ]
+    },
+    "origin": "raven-next q-defi-streaming-payments-prior-art"
+  }
+}

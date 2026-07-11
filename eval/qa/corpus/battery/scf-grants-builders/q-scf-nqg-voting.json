@@ -1,0 +1,85 @@
+{
+  "id": "q-scf-nqg-voting",
+  "question": "How does SCF community voting work — what is Neural Quorum Governance and who can vote?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "NQG is Stellar Community Fund's reputation/delegation governance system, combining Neural Governance with Quorum Delegation; it is not XLM/token voting and not Stellar Consensus Protocol. The current four-tier permissions matter: **Verified** has identity/account verification and view/discussion access; **Pathfinder** may participate by delegating weight; **Navigator** and **Pilot** may vote actively on Build Open projects; **Pilot** may also serve as a delegate and act on governance proposals. Build project-level community voting applies to the **Open Track only**. Integration and RFP awards are panel-led. Public Goods and quarterly resource-governance votes also use NQG-related signals but are distinct vote objects with different eligibility/processes.",
+    "keyFacts": [
+      "Gives the Verified/Pathfinder/Navigator/Pilot permission matrix.",
+      "Separates Build Open voting from Integration/RFP decisions and from Public Goods/quarterly governance.",
+      "Explains NQG as reputation/delegation governance, not token voting or SCP."
+    ],
+    "avoid": [
+      "Do NOT say every basic Verified member actively votes or can be a delegate.",
+      "Do NOT generalize Build Open voting to Integration/RFP or treat Public Goods as the same vote."
+    ],
+    "notes": "Dossier §3. Key trap: NQG (SCF grant governance) vs SCP quorum sets (protocol consensus) — different things despite both saying 'quorum'.\nAlso good if the answer: NQG was adopted by SCF in October 2023 and was co-developed with BlockScience. | The community vote applies to the Build Open Track (and the Public Goods Award).\nGolden cites: The SCF handbook Neural Quorum Governance / Verified Members pages.\nGT-39/40 atom independently confirmed 2026-07-10. Grade the role matrix and vote-object boundary, not the shorthand 'Verified members vote'."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/governance/neural-quorum-governance",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/governance/verified-members",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/open-track",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current NQG tier permissions and vote scope",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: current NQG, Verified Members, and track rules",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: current NQG, Verified Members, and track rules",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-39 primary/blind and GT-40 Verified sibling review",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The inherited answer collapsed the four Verified tiers and distinct vote objects into a generic claim that Verified Members vote.",
+      "evidence": [
+        "Solo scratchpad 575 GT-39 processes 3300/3303 and GT-40 process 3304, 2026-07-10."
+      ],
+      "rootCause": [
+        "Eval-side governance-role and vote-object collapse."
+      ]
+    },
+    "origin": "raven-next q-scf-nqg-voting"
+  }
+}

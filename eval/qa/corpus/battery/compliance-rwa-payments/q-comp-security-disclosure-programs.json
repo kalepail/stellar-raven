@@ -1,0 +1,170 @@
+{
+  "id": "q-comp-security-disclosure-programs",
+  "question": "What security audit, bug-bounty, and vulnerability-disclosure programs does Stellar run?",
+  "surface": [
+    "scout.searchProjects",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, the current program map is:\n\n1. **One consolidated SDF HackerOne bug-bounty and vulnerability-disclosure policy**, effective May 7, 2026. The policy directs new ordinary reports to HackerOne, but the live profile says Stellar.org is taking a break and not accepting submissions, so intake availability is currently paused/conflicted and must be rechecked before reporting. The former general Stellar Immunefi program is deprecated.\n2. **A separate OpenZeppelin-on-Stellar Immunefi bounty** for OpenZeppelin's Stellar Contracts/library work. It remains distinct from SDF's general HackerOne program and was live/updated in April 2026.\n3. **The Soroban Security Audit Bank/Program**, which funds structured audits for eligible SCF-funded projects under its current rules; it is an audit-support program, not another vulnerability bounty.\n\nThe older SDF bug-bounty landing page still shows stale multi-program wording and should not control over the newer transition policy. Do not infer a clean protocol incident history from a program roster: official stellar-core release notes record historical exploited economic bugs. Keep those protocol/core events distinct from application incidents such as YieldBlox/Blend, and date any incident claim.",
+    "keyFacts": [
+      "Identifies the single consolidated SDF HackerOne bounty/disclosure policy effective 2026-05-07 and flags the current intake pause/conflict.",
+      "Separates the active OpenZeppelin-on-Stellar Immunefi bounty from SDF's general HackerOne program.",
+      "Identifies the Soroban Security Audit Bank/Program as audit support for eligible SCF-funded projects.",
+      "Avoids claiming a clean protocol incident history from security-program pages."
+    ],
+    "avoid": [
+      "Do NOT double-count HackerOne disclosure and bounty as separate SDF programs or route users to the deprecated general Immunefi program.",
+      "Do NOT claim a reporting route is accepting submissions without a live recheck.",
+      "Do NOT merge OpenZeppelin's separate program into SDF core/protocol scope.",
+      "Do NOT invent CVEs or infer absence of protocol incidents from a program roster; distinguish dated protocol/core events from app incidents."
+    ],
+    "notes": "Three SDF programs: HackerOne vulnerability disclosure, Stellar Bug Bounty, Soroban Security Audit Bank (for SCF-funded projects). Trap: inventing CVEs (e.g. CVE-2020-3961 is a VMware product, unrelated) or an unproven protocol funds-loss hack. NOTE: a YieldBlox/Blend POOL exploit (~$10M, Feb 2026) did occur, but that is an app/pool-config issue, not a Stellar-protocol-level funds-loss.\nAlso good if the answer: Notes these form the principal on-chain/protocol disclosure regime.\nGolden cites: stellar.org bug-bounty / audit-bank pages and/or the HackerOne program.\nCORRECTION 2026-07-10 (GT-07 processes 3223/3228): grade the dated three-part program map and source conflict. Ordinary SDF intake identity is HackerOne but visible acceptance is paused/conflicted. Remove the old clean-history negative; official release notes record historical exploited core bugs. Do not require exact loss/proceeds figures."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-10",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://hackerone.com/stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://hackerone.com/stellar/policy_versions",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://immunefi.com/bug-bounty/openzeppelin-stellar/information/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/sdf-partners-with-openzeppelin-to-enhance-stellar-smart-contract-development",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/grants-and-funding/soroban-audit-bank",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://stellarcommunityfund.gitbook.io/scf-handbook/supporting-programs/audit-bank/official-rules",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-core/blob/d6f2546791774d0b2cd925b8a4026adf967a92a3/docs/software/security-protocol-release-notes.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://messari.io/report/messari-research-stellar-suffered-and-quietly-patched-a-2-2-billion-xlm-inflation-bug-in-2017",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SDF consolidated its ordinary bug-bounty and disclosure intake into one HackerOne program effective 2026-05-07",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: live HackerOne policy and policy-version history",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: former general Stellar Immunefi program URL is no longer available",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "Independent reviews: Solo processes 3223 and 3228",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "The ordinary HackerOne intake is currently accepting submissions",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current policy says new reports go to HackerOne",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live HackerOne profile on 2026-07-10 says Stellar.org is taking a break and not accepting new submissions",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "A separate OpenZeppelin-on-Stellar Immunefi bounty remains active",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: live Immunefi OpenZeppelin-Stellar program page, updated 2026-04-21",
+            "observedAt": "2026-04-21",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: SDF/OpenZeppelin partnership record and HackerOne carve-out",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "There is no public protocol-level economic exploit history",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: pinned stellar-core security protocol release notes record exploited XLM-creation/double-spend bugs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent Messari research documents the 2017 inflation exploit",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The roster double-counted one HackerOne channel, omitted the separate OpenZeppelin bounty, relied on a stale SDF landing page after a May 2026 consolidation, and added an unnecessary clean-history negative contradicted by official historical stellar-core release notes.",
+      "evidence": [
+        "Solo scratchpad 575 GT-07 primary/blind reviews",
+        "improvements/stellar-light-scout/sls-020-security-program-migration-retrieval.md"
+      ],
+      "rootCause": [
+        "Pre-May-2026 security-program map was frozen after the intake migration.",
+        "Stale SDF landing content was treated as controlling over a newer policy.",
+        "An absence claim was inferred from program pages rather than incident history."
+      ]
+    },
+    "origin": "raven-next q-comp-security-disclosure-programs"
+  }
+}

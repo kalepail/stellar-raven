@@ -1,0 +1,86 @@
+{
+  "id": "q-scf-v7-changes",
+  "question": "What changed when the SCF moved to v7.0, and when did that happen?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "SCF v7 launched in **January 2026** around SCF #41. It introduced three Build tracks—Open, Integration, and RFP—plus a unified interest/referral entry, Instawards as the successor/evolution of Kickstart, and stronger mainnet/UX-readiness expectations. For payments, the launch blog's 'four-tranche' shorthand should be reconciled with current detailed mechanics: **four payments**, consisting of 10% acceptance plus **three deliverable tranches** at 20%, 30%, and 40%. v7 also described multiple post-launch growth pathways; it did **not** create one unified 'Growth track.' Current Instaward, Growth Hack, Liquidity, Marketing, and other program rules must be checked separately rather than inferred from the launch blog.",
+    "keyFacts": [
+      "Dates v7 to January 2026/#41 and names the three tracks and entry/referral changes.",
+      "States four payments/three deliverable tranches and rejects a unified Growth track."
+    ],
+    "avoid": [
+      "Do NOT call acceptance a fourth deliverable milestone.",
+      "Do NOT merge distinct post-launch/supporting programs into one Growth track or freeze launch shorthand as current terms."
+    ],
+    "notes": "Dossier §8/§9. Version-transition fact set; trap is attributing v6 features to v7.\nAlso good if the answer: Supporting programs were consolidated into a unified Growth track; a Referral Program was added. | UX audits / user testing were added to the Build evaluation.\nGolden cites: The 'Introducing SCF v7' blog post / SCF handbook history page.\nGT-36/39/40 independently reconciled 2026-07-10. Accept 'four tranches' only when the candidate accurately distinguishes the acceptance payment from three deliverables."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/ecosystem/introducing-scf-v7",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/budget-and-deliverable-guidelines",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "v7 launch history and current payment terminology",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: January 2026 v7 announcement",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/B: current detailed rules",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: current detailed rules",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-36/39/40 reconciliation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-terminology-tension."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The inherited historical summary called four payments four milestone tranches and invented one unified Growth track.",
+      "evidence": [
+        "Solo scratchpad 575 GT-36/39/40, 2026-07-10."
+      ],
+      "rootCause": [
+        "Eval-side historical shorthand promoted into current mechanics."
+      ]
+    },
+    "origin": "raven-next q-scf-v7-changes"
+  }
+}

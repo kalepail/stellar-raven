@@ -1,0 +1,90 @@
+{
+  "id": "q-scf-sdf-bug-bounty",
+  "question": "What does the SDF Bug Bounty pay for a Stellar protocol vulnerability versus a Soroban smart-contract exploit?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "For new general SDF reports, use the **Stellar HackerOne policy**. Consolidation took effect **2026-05-07**; the old general Stellar Immunefi program is deprecated for new submissions. Under the HackerOne matrix, standard Critical/High/Medium/Low/Note maxima are **25K/15K/10K/2K/500 points**; one point is currently $1 and rewards are paid in XLM. A special core/protocol carveout can calculate a critical reward as 10% of directly affected funds, capped at **250K points**. That carveout covers `stellar-core`, `stellar-protocol`, and Soroban runtime/host code—not arbitrary third-party Soroban apps, which are outside SDF's program. The separate OpenZeppelin Stellar Contracts Immunefi bounty remains distinct, with a $25K maximum single critical payout and $250K total contest maximum. Audit Bank funds audits; it is not the vulnerability-report bounty.",
+    "keyFacts": [
+      "Routes new SDF reports to current HackerOne and gives the current standard scale plus qualified core carveout.",
+      "Separates deprecated general Immunefi, the independent OpenZeppelin bounty, third-party apps, and Audit Bank."
+    ],
+    "avoid": [
+      "Do NOT repeat a timeless $250K protocol/$50K Soroban-app split.",
+      "Do NOT send new general SDF reports to deprecated Immunefi or merge OpenZeppelin's policy into SDF's."
+    ],
+    "notes": "Dossier §5.4. Trap: swapping the $250K-XLM / $50K-USD tiers, or confusing with Audit Bank.\nAlso good if the answer: The Bug Bounty is an SDF-direct program (stellar.org/grants-and-funding), separate from the SCF.\nGolden cites: stellar.org/grants-and-funding bug-bounty section.\nGT-40 blind reversed the primary top-line after following the cited controlling policy. Policy and intake are volatile; accept dated, scope-aware figures only."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://hackerone.com/stellar?view_policy=true",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://immunefi.com/bug-bounty/stellar/information/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://immunefi.com/bug-bounty/openzeppelin-stellar/information/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current controlling bounty matrix",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: HackerOne policy updated 2026-06-29",
+            "observedAt": "2026-06-29",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/D: deprecated general and separate OZ Immunefi policies",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A/D: deprecated general and separate OZ Immunefi policies",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-40 blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The inherited $250K protocol versus $50K Soroban two-tier rule is obsolete after SDF's May 2026 HackerOne consolidation and confuses runtime defects with arbitrary third-party contracts.",
+      "evidence": [
+        "Solo scratchpad 575 GT-40 blind process 3304; controlling policies fetched 2026-07-10."
+      ],
+      "rootCause": [
+        "improvements/stellar-light-scout/sls-020-security-program-migration-supersession.md"
+      ]
+    },
+    "origin": "raven-next q-scf-sdf-bug-bounty"
+  }
+}

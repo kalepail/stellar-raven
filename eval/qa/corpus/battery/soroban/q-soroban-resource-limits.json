@@ -1,0 +1,86 @@
+{
+  "id": "q-soroban-resource-limits",
+  "question": "What resource limits can cause a Soroban transaction to fail, like CPU instructions, memory, and ledger entries?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Soroban limits several independent dimensions: transaction/envelope size, footprint entry counts and bytes, disk/ledger reads and writes, CPU instructions, memory, ledger-entry size, event bytes, and return-value size. The network settings are validator-controlled and can change. Enforcement is not uniformly 'during execution': declared transaction/footprint/size maxima can fail validation or preflight, while actual instruction, memory, I/O, event, and return usage can fail when the invocation is applied. Many resources also have ledger-wide budgets, but not every transaction resource has a one-for-one ledger analogue—for example, current configuration has a transaction memory cap without a separate ledger memory cap. Simulate and inspect the target network rather than freezing values.",
+    "keyFacts": [
+      "Names the multidimensional limits including event, return, entry-size, footprint, I/O, CPU, memory, and transaction size.",
+      "Distinguishes validation/preflight from apply-time enforcement and says many, not all, resources have ledger aggregates."
+    ],
+    "avoid": [
+      "Do NOT reduce limits to one gas scalar or freeze network numbers.",
+      "Do NOT say every limit fails only during execution or every resource has a ledger-wide analogue."
+    ],
+    "notes": "Freshness: limit constants are validator-voted config and retuned across protocols; reward flagging config-tunability rather than quoting a fixed number. Categories verified against the fees/resource-limits page.\nAlso good if the answer: The Wasm memory limit is a hard ceiling with no fee (you cannot pay to exceed it). | Hitting a resource limit produces a failed transaction at execution, not a soft warning.\nGolden cites: The developers.stellar.org fees/resource-limits/metering page (config settings).\nGT-47 BLIND CORRECTION 2026-07-11: phase enforcement and avoid the every-resource ledger-cap absolute."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/fees-resource-limits-metering",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-07.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-core",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Soroban resource enforcement is phased: declared size/footprint constraints can fail validation/preflight, actual execution resources fail at apply, and many but not all transaction limits have ledger aggregates.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current fees/resource limits documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0046-07 and current stellar-core transaction/host-frame source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: CLI 27 network-settings and live read-only configuration probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer correctly described multidimensional/configurable limits but falsely said all failures occur during execution and implied every resource has both transaction and ledger caps. It also omitted event, return-value, and ledger-entry-size boundaries.",
+      "evidence": [
+        "Solo scratchpad 575 GT-47 primary 3327 and valid blind 3334; blind independently rejected the execution-only/every-resource-ledger-cap absolutes."
+      ],
+      "rootCause": [
+        "Eval-side resource taxonomy flattened validation, pre-execution, and apply-time enforcement into one phase.",
+        "improvements/stellar-docs/sd-024-transaction-resource-xdr-drift.md"
+      ]
+    },
+    "origin": "raven-next q-soroban-resource-limits"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "id": "q-soroban-fuzz-testing",
+  "question": "What options exist for fuzz or property-based testing of Soroban contracts?",
+  "surface": [
+    "skills.stellar-dev.smart-contracts"
+  ],
+  "golden": {
+    "answer": "Test Soroban contracts against the SDK's in-process `Env` with Rust property/fuzz tooling: `proptest` for invariants and randomized sequences, and `cargo-fuzz`/libFuzzer with `arbitrary` or SDK `SorobanArbitrary` support for structured inputs. Useful targets include boundary values, authorization sequences, storage/TTL behavior, arithmetic, and growing collections. These are testing targets, not claims that a named vendor always uses a particular tool or that a defect class is universally prevalent. Echidna/Foundry invariant tooling is EVM-focused and is not the native Soroban Rust/Wasm path.",
+    "keyFacts": [
+      "Names proptest and cargo-fuzz/libFuzzer with arbitrary/SorobanArbitrary against the in-process Env.",
+      "Frames candidate invariants and edge cases as recommendations rather than unsupported prevalence claims."
+    ],
+    "avoid": [
+      "Do NOT prescribe EVM-only tooling as the native Soroban workflow.",
+      "Do NOT claim a vendor's practice or finding prevalence without a source that establishes it."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). Targets scout_repos for code discovery. Echidna/Foundry is the EVM trap. Verified: Soroban fuzzing uses Rust tooling (proptest, arbitrary, cargo-fuzz/libfuzzer) against the in-process Env test host; audit roadmaps (Certora) reference fuzzers/static analyzers.\nAlso good if the answer: Property tests assert invariants (e.g., conservation of balances) across randomized call sequences. | Auditors (Certora et al.) reference fuzzers/static analyzers in the Soroban audit roadmap.\nGolden cites: A Soroban testing guide, audit-roadmap, or a graded repo demonstrating fuzz/property tests.\nGT-46 CORRECTION 2026-07-11: retain the Rust tooling; remove unsupported vendor/prevalence generalizations."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "skills",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/example-contracts/fuzzing",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk/blob/v27.0.0/soroban-sdk/src/testutils/arbitrary.rs",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Soroban contracts can use proptest and cargo-fuzz/libFuzzer with arbitrary/SorobanArbitrary against the in-process Env host.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Stellar fuzzing example documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: rs-soroban-sdk v27 testutils/arbitrary.rs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent Rust tooling documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer's core Rust fuzzing guidance was sound, but it presented auditor/vendor and prevalence claims as established by sources that only support the tooling and example workflow.",
+      "evidence": [
+        "Solo scratchpad 575 GT-46 primary 3326 and blind 3329; blind narrowed unsupported auditor/prevalence wording while retaining the tooling."
+      ],
+      "rootCause": [
+        "Eval-side source overreach from a testing recommendation to vendor practice and finding-frequency claims."
+      ]
+    },
+    "origin": "raven-next q-soroban-fuzz-testing"
+  }
+}

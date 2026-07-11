@@ -1,0 +1,80 @@
+{
+  "id": "q-defi-provide-liquidity-impermanent-loss",
+  "question": "As a retail user, how do I provide liquidity to Stellar AMM or DeFi pools, compare yields across protocols, and understand impermanent-loss and withdrawal risk?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Start by identifying the exact venue and asset contracts/issuers. For a **classic Stellar constant-product pool**, establish the asset trustlines and pool-share trustline, submit `LiquidityPoolDeposit` with price bounds/minimums, retain the non-transferable pool shares, and later use `LiquidityPoolWithdraw` for a pro-rata redemption; classic pools charge the protocol-defined swap fee. For a **Soroban venue or vault**, review/approve the exact contract flow and verify admin/upgrades, reward contracts, oracle/keeper dependencies, lock or withdrawal queues, and current UI-contract provenance—mechanics are not interchangeable.\n\nCompare returns in separate dated components: swap-fee APR, reward-token emissions, lending/vault yield, and costs/slippage. **Impermanent loss** is LP underperformance versus simply holding the two reserve assets after their relative price changes; withdrawing realizes that relative outcome, and fees/incentives may or may not offset it. Check pool depth, volume, asset/issuer risk, contract/admin risk, oracle/keeper risk, reward-token price, lock/queue terms, and whether exits currently work. Use small test amounts. Never treat APY/TVL or withdrawals as guaranteed.",
+    "keyFacts": [
+      "Gives a venue-specific deposit/withdraw checklist and distinguishes classic pool-share operations from Soroban contract/vault flows.",
+      "Explains impermanent loss relative to holding and separates fee APR, emissions, and vault/lending yield with dated sources.",
+      "Covers liquidity, issuer, contract/admin, oracle/keeper, reward-token, lock/queue, and withdrawal risks."
+    ],
+    "avoid": [
+      "Do NOT promise returns, freeze APY/TVL, or assume all Stellar LP venues share the same deposit/withdraw mechanics.",
+      "Do NOT describe impermanent loss as a guaranteed permanent loss before comparing the LP position with holding and accounting for fees/incentives."
+    ],
+    "notes": "Do not preserve any APY/TVL number without a date. Phase 3 should re-check protocol UIs/DeFiLlama if a numeric yield/TVL claim appears. REVIEWED 2026-06-29: re-verified named LP/swap venues live on Scout — Soroswap (first Soroban DEX/aggregator, Live), Aquarius (AMM/AQUA, Live), Phoenix (DeFi Hub AMM, PHO, Live); Soroswap aggregates Soroswap/Phoenix/Aquarius liquidity. No static APY/TVL numbers asserted in the gospel (risk-framed, source-gated) — kept that way. Stellar-docs SDEX/liquidity-pools source URL returns 200.\nAlso good if the answer: Explains withdrawal may depend on pool liquidity, protocol health, wallet support, lockups/incentive terms, and contract state. | Mentions comparing net returns after fees, slippage, incentives, and asset price exposure.\nGolden cites: Current protocol/project sources or Scout records for any named yield/liquidity claim.\nExpanded 2026-07-10. The answer must be operational and risk-specific, not merely a warning against yield promotion."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/liquidity-on-stellar-sdex-liquidity-pools",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Phoenix-Protocol-Group/phoenix-contracts",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Retail LP workflow and risks differ between classic Stellar pools and Soroban protocols",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official classic liquidity-pool deposit/withdraw/pool-share docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/D: Soroswap/Phoenix/DeFindex operator and contract documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "B/D: Soroswap/Phoenix/DeFindex operator and contract documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — GT-16 primary confirmed the existing risk guardrails; the blind review found the answer materially incomplete for the retail workflow and impermanent-loss explanation. The correction separates classic pool operations from venue-specific Soroban contracts and fee APR from incentives/vault yield.",
+      "evidence": [
+        "Solo scratchpad 575 GT-16 primary 3244 and blind 3245"
+      ],
+      "rootCause": [
+        "eval-side answer completeness: correct warnings did not answer deposit/withdraw, yield comparison, or impermanent-loss mechanics"
+      ]
+    },
+    "origin": "raven-next q-defi-provide-liquidity-impermanent-loss"
+  }
+}

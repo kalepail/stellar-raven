@@ -1,0 +1,83 @@
+{
+  "id": "q-edge-noinfo-exact-tvl-figure",
+  "question": "What is the exact total value locked in Stellar DeFi right now, to the dollar, as of this moment?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "There is no protocol-defined, universally exact Stellar DeFi TVL **as of this moment**. A provider snapshot may be quoted, but it must carry the provider and endpoint/dashboard, retrieval time, provider data-as-of time if supplied, tracked-protocol inclusion rule, and pricing methodology. On 2026-07-10, DefiLlama's API, page, and completed daily series exposed different values in the same broad observation window; the API's many decimal places represented its current calculation, not objective to-the-dollar truth. Re-query before answering, label the result as provider-scoped, and do not silently sum overlapping protocol, RWA, and asset rows. An approximate range is optional, not mandatory, when a properly scoped live snapshot is available.",
+    "keyFacts": [
+      "Rejects a provider snapshot as universally exact while allowing a precise, dated, provider-scoped live value.",
+      "Requires provider, endpoint, retrieval/as-of time, inclusion basis, and pricing methodology."
+    ],
+    "avoid": [
+      "Do NOT present any provider value as an exact objective chain fact.",
+      "Do NOT claim Raven cannot access a live scalar, assert that TVL necessarily moves block-by-block, or silently combine incompatible scopes."
+    ],
+    "notes": "GT-25 CORRECTION 2026-07-10: precise live provider scalars are accessible, but they are provider-defined snapshots rather than universal truth. Grade provider/endpoint/as-of/method scope and no false exactness; do not require an approximate range or claim block-by-block movement.\nGT-25 independently confirmed by processes 3268/3273; reuse sls-031/sls-038 rather than duplicate findings."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "scout",
+    "freshness": "scheduled",
+    "trap": "fabrication-bait"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://defillama.com/data-definitions",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://defillama.com/chain/Stellar",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A highly precise TVL value is observable but only as a provider-defined, asynchronously updated snapshot, not a protocol-defined universal fact.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: two independent DefiLlama API/page observations",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/D: DefiLlama definitions and cross-surface daily/page/API comparison",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A/D: DefiLlama definitions and cross-surface daily/page/API comparison",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The no-fabrication behavior is right, but live providers do return precise scalars; the inherited answer incorrectly made Raven access synonymous with world unknowability and asserted an unverified block-by-block mechanism.",
+      "evidence": [
+        "Solo scratchpad 575 GT-25 primary 3268 and blind 3273; both independently observed DefiLlama /v2/chains value 229093918.7739924 at separate times.",
+        "Existing improvements/stellar-light-scout/sls-031 and sls-038 cover provenance and ecosystem-rollup contract gaps."
+      ],
+      "rootCause": [
+        "improvements/stellar-light-scout/sls-031-tvl-methodology-provenance.md",
+        "improvements/stellar-light-scout/sls-038-analyze-tvl-contract-mismatch.md",
+        "Eval-side aggregation/cadence explanation was overclaimed."
+      ]
+    },
+    "origin": "raven-next q-edge-noinfo-exact-tvl-figure"
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "id": "q-comp-anchor-platform",
+  "question": "What is the Stellar Anchor Platform and how does it help a fintech meet compliance requirements?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "The Stellar Anchor Platform is SDF-maintained open-source backend/tooling for operating SEP-compatible on/off-ramp services. As of 2026-07-10, its documented controller set covers **SEP-1, SEP-6, SEP-10, SEP-12, SEP-24, SEP-31 receive-only, SEP-38, and SEP-45**. SEP-10 authenticates G/M accounts and SEP-45 handles C accounts.\n\nAn operator connects its own business server, KYC/compliance decisions, banking/liquidity, and other product logic behind the standardized callbacks and APIs. The platform removes protocol plumbing; it does not supply a license, banking relationship, or legal compliance, and the applicable obligations remain actor-, activity-, and jurisdiction-specific.\n\nIt is distinct from the Stellar Disbursement Platform, a stablecoin issuer, and a DeFi protocol. The repository includes reference components, but the platform itself is not merely a toy reference server.",
+    "keyFacts": [
+      "Identifies Anchor Platform as SDF-maintained open-source backend/tooling for SEP-compatible anchor services.",
+      "Lists the current documented set: SEP-1/6/10/12/24/31 receive-only/38/45.",
+      "Explains that operators plug in business and compliance logic and retain their own legal and operational responsibilities."
+    ],
+    "avoid": [
+      "Do NOT confuse Anchor Platform with SDP, a stablecoin issuer, or DeFi.",
+      "Do NOT claim generic send-and-receive SEP-31 support; the documented Platform scope is receive-only.",
+      "Do NOT say the platform supplies licenses or makes an operator legally compliant.",
+      "Do NOT equate one bundled reference server with the identity of the whole platform."
+    ],
+    "notes": "First-party product/how-to → stellar_docs. Trap: confusing with SDP or implying it carries the license.\nAlso good if the answer: It lets a fintech/wallet/custodian plug their own compliance/KYC/business logic behind a standardized SEP interface. | It does not itself hold the anchor's regulatory license — the operator remains the regulated entity.\nGolden cites: developers.stellar.org / stellar.org Anchor Platform docs.\nCORRECTION 2026-07-10 (golden-truth; GT-07 processes 3223/3228): require the full current eight-SEP set and SEP-31 receive-only scope. Treat product support as freshness-sensitive. Platform plumbing does not transfer legal responsibility."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/anchor-platform",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/anchor-platform/sep-guide/sep31/getting-started",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/anchor-platform",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/anchors",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Anchor Platform currently implements SEP-1, 6, 10, 12, 24, 31, 38, and 45",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/E: current Anchor Platform supported-SEPs page and live Docs index",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "E",
+            "ref": "A/E: current Anchor Platform supported-SEPs page and live Docs index",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current stellar/anchor-platform controller/source surface",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "Independent reviews: Solo processes 3223 and 3228",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Anchor Platform's SEP-31 support is receive-only",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Anchor Platform overview and SEP-31 getting-started guide",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current receiving-anchor controller/API surface",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited product description omitted SEP-1, SEP-38, and SEP-45 and failed to qualify SEP-31 as receive-only. It also reduced the whole production platform to a reference implementation. Current docs and source describe an SDF-maintained backend/tooling platform with operator-supplied business logic; the platform does not confer licenses or compliance.",
+      "evidence": [
+        "Solo scratchpad 575 GT-07 primary and blind sections",
+        "Sibling sweep covered q-anchor-platform-what and q-anchor-sdp-vs-anchor-platform"
+      ],
+      "rootCause": [
+        "Stale/incomplete SEP enumeration and lost SEP-31 directionality.",
+        "Reference-server shorthand was generalized into the identity of the whole platform."
+      ]
+    },
+    "origin": "raven-next q-comp-anchor-platform"
+  }
+}

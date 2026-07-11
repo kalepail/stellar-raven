@@ -1,0 +1,48 @@
+{
+  "id": "q-anchor-sdp-what",
+  "question": "What is the Stellar Disbursement Platform and how many payments can it send per batch?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs"
+  ],
+  "golden": {
+    "answer": "The **Stellar Disbursement Platform (SDP)** is **SDF's open-source tool for organizations to make\nbulk payments** to many recipients over Stellar — an easier/faster/cheaper way to send cross-border\npayouts at scale [1]. Its headline capability: **send up to 10,000 payments in a single batch** by\nuploading a receiver list, rather than scripting raw transactions [1]. Listed use cases include\n**global payroll, cash/humanitarian assistance, gig-worker payouts, vendor payouts, and government\npayouts** [1][2]. Recipients complete **KYC via SEP-12** and payments ride **SEP-31 cross-border /\nSEP-24 anchor rails**; SDP coordinates the anchor(s), so the org never assembles raw transactions\nitself [2]. It is **not** the Anchor Platform (anchor backend) and it is **not** a wallet — it is the\ndisbursement orchestration layer.\n\nSources: [1] stellar.org Stellar Disbursement Platform product page; [2] developers.stellar.org SDP\nintroduction.",
+    "keyFacts": [
+      "SDP is SDF's open-source tool for organizations to make bulk payments to many recipients over Stellar.",
+      "It can send up to 10,000 payments in a single batch (upload a receiver list)."
+    ],
+    "avoid": [
+      "Do NOT state a wrong batch ceiling (e.g. 1,000 or 100,000) as the canonical SDP limit.",
+      "Do NOT confuse SDP with the Anchor Platform or describe it as a wallet."
+    ],
+    "notes": "Dossier §6. Verified on stellar.org SDP product page: 'up to 10,000 payments' per batch by uploading a receiver list; open-source SDF tool for bulk cross-border payouts.\nAlso good if the answer: Use cases include payroll, aid/humanitarian disbursements, and government payouts. | Recipient KYC is collected via SEP-12 and payments use SEP-31/SEP-24 anchor rails.\nGolden cites: The SDP page on stellar.org or developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/products-and-tools/disbursement-platform",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/stellar-disbursement-platform",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-02-anchor-discovery-platform-disbursement accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-anchor-sdp-what"
+  }
+}

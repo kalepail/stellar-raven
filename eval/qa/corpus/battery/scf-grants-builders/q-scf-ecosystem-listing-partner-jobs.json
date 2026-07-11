@@ -1,0 +1,98 @@
+{
+  "id": "q-scf-ecosystem-listing-partner-jobs",
+  "question": "How do I get my project listed on the Stellar ecosystem directory, become a partner/service provider or hackathon sponsor, find Stellar/Soroban jobs, and what is the Matching Fund?",
+  "surface": [
+    "scout.getHackathon",
+    "scout.getHackathons",
+    "scout.getPartners",
+    "scout.matchPartners",
+    "scout.searchProjects",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "These are separate workflows as of **2026-07-10**. Submit an ecosystem project through the embedded **Submit Your Project** form on Stellar's ecosystem page; inquire about service-provider participation through the current service-provider page/form, without assuming acceptance. Hackathon sponsorship is event/organizer-specific unless a named official intake exists, so use the relevant event page or Stellar connect/community channel. SDF jobs are on the Foundation careers/Ashby pages; ecosystem-company jobs belong on each company's own careers page. The **Matching Fund** is a separate Enterprise Fund co-investment path for pre-seed through Series B companies: current terms require a lead investor and term sheet, a **$200K minimum check**, **1:1 matching**, up to **$500K**, meaningful Stellar integration, and diligence. It is not SCF Build, an automatic directory listing, or a sponsorship promise.",
+    "keyFacts": [
+      "Separates listing, provider, sponsorship, SDF jobs, ecosystem jobs, and Matching Fund paths.",
+      "States the current 1:1 Matching Fund structure and $200K-$500K check range."
+    ],
+    "avoid": [
+      "Do NOT promise listing/partner/sponsor acceptance or invent a universal sponsor intake.",
+      "Do NOT conflate the Matching Fund with SCF Build or general Enterprise Fund outreach."
+    ],
+    "notes": "GT-37 CORRECTION 2026-07-10: current ecosystem/provider pages expose embedded forms and SDF jobs use Ashby. Matching Fund is a specific 1:1 lead-investor path with $200K minimum and $500K maximum, separate from general Enterprise outreach and SCF.\nGT-37 independently confirmed by processes 3296/3298."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/ecosystem",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/ecosystem/service-providers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/foundation/careers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://jobs.ashbyhq.com/stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/grants-and-funding/matching-fund",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/grants-and-funding/matching-fund-eligibility-guidelines",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current official ecosystem/service-provider/careers pages expose concrete intake routes and the Matching Fund is a separate 1:1 co-investment path",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Stellar ecosystem, provider, careers, and Matching Fund pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: current organizer/company pages for event and ecosystem roles",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The operational paths and Matching Fund distinction were sound, but the answer still treated currently visible forms as hypothetical and omitted material current Matching Fund eligibility terms.",
+      "evidence": [
+        "Solo scratchpad 575 GT-37 primary 3296 and blind 3298."
+      ],
+      "rootCause": [
+        "Normal operational-page drift plus an incomplete current Matching Fund summary."
+      ]
+    },
+    "origin": "raven-next q-scf-ecosystem-listing-partner-jobs"
+  }
+}

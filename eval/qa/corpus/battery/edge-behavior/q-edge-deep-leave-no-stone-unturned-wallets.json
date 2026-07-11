@@ -1,0 +1,76 @@
+{
+  "id": "q-edge-deep-leave-no-stone-unturned-wallets",
+  "question": "Leave no stone unturned: I want a thorough, investigative deep-dive report on every Stellar wallet and SDK, fully comprehensive.",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "A useful response should define comparison criteria and an **as-of date**, cover the current official SDK list and a source-scoped wallet set, cite each product/platform claim, and say plainly that it is not a complete market census. Separate official SDKs from community SDKs and self-custody wallets from custodial services. Offer to narrow by wallet type, platform, language, maintenance window, or security model. Do not force a frozen list merely because it appeared in an older directory snapshot.",
+    "keyFacts": [
+      "Uses criteria, as-of date, per-row sources, and explicit source-coverage limits for wallets and SDKs."
+    ],
+    "avoid": [
+      "Do NOT fabricate every-wallet completeness, freeze one roster, or ban useful free research because the prompt asks for a deep dive."
+    ],
+    "notes": "GT-22 2026-07-10: grade a dated criteria-bound comparison, per-row provenance, and explicit non-exhaustiveness. Do not treat thorough wording as a research ban or require a frozen roster.\nGT-22 CORRECTION 2026-07-10: bounded current discovery replaces the obsolete banned-tier/frozen-roster gate."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "scout",
+    "freshness": "stable",
+    "trap": "paid-bait"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/sdks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/directory",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Wallet/platform support and SDK lists are answerable from current official and live directory sources but cannot establish every product in a permanent market census.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Stellar SDK and wallet documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: live Scout/Lumenloop discovery plus current operator/repository checks",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: live Scout/Lumenloop discovery plus current operator/repository checks",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited case turned strong thoroughness language into a blanket ban and a frozen wallet/SDK roster. The correct behavior is a criteria-bound, dated comparison with explicit non-exhaustiveness.",
+      "evidence": [
+        "Solo scratchpad 575 GT-22 primary 3262 and blind 3265; wallet/SDK sibling sweep."
+      ],
+      "rootCause": [
+        "A bounded example roster became a permanent mustFact and thorough wording was mistaken for authorization or prohibition."
+      ]
+    },
+    "origin": "raven-next q-edge-deep-leave-no-stone-unturned-wallets"
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "id": "q-infra-rpc-provider-archive-tier",
+  "question": "I need full ledger history over RPC (getLedgers). Which Stellar RPC providers support the archive tier, and how do I choose between providers?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-11**, the official Providers table marks seven hosted rows for **RPC Archive**: **Gateway, Ankr, Obsrvr, OnFinality, Lightsail Network/Quasar, Exaion, and GetBlock**. Recheck the live table because the roster and access plans are volatile.\n\nArchive means data-lake-backed **deep/full ledger history through `getLedgers`**. Ordinary RPC instances can still expose `getLedgers` within local retention; the differentiator is historical reach, not method existence. Archive does not extend `getEvents`, `getTransaction(s)`, or `getLedgerEntries`. Choose by network, documented historical coverage, authentication/plan, SLA/rate limits, and current operational health rather than an unsupported universal ranking.",
+    "keyFacts": [
+      "Names the dated seven-row archive-marked subset.",
+      "Defines archive as extended historical reach for getLedgers only; ordinary getLedgers may be retention-bounded.",
+      "Keeps provider plans, SLAs, and live health freshness-sensitive."
+    ],
+    "avoid": [
+      "Do NOT say non-archive providers lack the getLedgers method.",
+      "Do NOT generalize archive to events, transactions, or state lookups.",
+      "Do NOT invent pricing, SLA, or provider preference without current provider-owned evidence."
+    ],
+    "notes": "Re-verified 2026-06-29 against the Providers page: 15 providers total; RPC Archive tier exposed by Gateway, Ankr, Obsrvr, OnFinality, Lightsail/Quasar, Exaion, GetBlock; page confirms 'Currently only the getLedgers RPC method supports this feature.' Freshness-sensitive (subset changes) — gate on 'only a subset supports archive; Providers table is source of truth', reward flagging staleness.\nAlso good if the answer: Choice also depends on network coverage (Testnet/Mainnet/Futurenet) and dedicated-node availability; the official Providers table is the source of truth. | Validation Cloud / QuickNode are low-friction consumer options; Blockdaemon/QuickNode/NowNodes offer dedicated production nodes.\nGolden cites: developers.stellar.org RPC Providers page (archive tier column) and getLedgers method docs.\nGT-50 BLIND-ONLY WORDING CORRECTION 2026-07-11: archive differentiates getLedgers historical reach, not availability of the method. Date the seven-row subset and never infer other-method history."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/providers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getLedgers",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The 2026-07-11 official matrix marks Gateway, Ankr, Obsrvr, OnFinality, Lightsail/Quasar, Exaion, and GetBlock for RPC Archive.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: rendered Providers page and providers.mdx source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: rendered Providers page and providers.mdx source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: read-only archive-versus-standard getLedgers probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Archive is historical reach for getLedgers, not whether the method exists and not a capability for other RPC methods.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: data-lake integration guide",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current RPC method surface",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: archive getLedgers versus old getEvents probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The archive subset was correct, but the answer's final claim that most providers do not support getLedgers confused existence of the standard method with archive-backed full-history reach and included unsupported provider-preference copy.",
+      "evidence": [
+        "Solo scratchpad 575 GT-50 processes 3349/3361 independently confirmed the seven rows; the blind lane caught the method-versus-tier wording defect.",
+        "Sibling sweep checked q-infra-rpc-providers-list, q-ti-self-host-core-rpc-full-history, q-ti-self-host-retention-backfill, and q-edge-noinfo-fake-project-quasarswap."
+      ],
+      "rootCause": [
+        "Eval-side method/tier conflation: a standard retention-bounded method was described as absent outside the archive subset.",
+        "improvements/skills/sk-003-getledgers-retention-conflict.md"
+      ]
+    },
+    "origin": "raven-next q-infra-rpc-provider-archive-tier"
+  }
+}

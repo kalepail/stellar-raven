@@ -1,0 +1,105 @@
+{
+  "id": "q-ti-classic-submission-errors",
+  "question": "Why do classic txs fail with tx_bad_seq or op_underfunded even when balance/sequence look right (selling liabilities + base reserve + subentry reserves), and how do I interpret/fix the broader result-code taxonomy (op_no_destination, op_bad_signer, PAYMENT_SRC_NO_TRUST, TRY_AGAIN_LATER)?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Start with HTTP status and Horizon `extras.result_codes.transaction` plus `operations`. `tx_bad_seq` is a source-sequence mismatch; `tx_failed` means an operation failed and the transaction stayed atomic, so inspect the operation array. Underfunded means **spendable** balance after minimum reserve, subentries, offers, and selling liabilities—not merely the displayed nominal balance.\n\nUse the exact operation family and namespace. Payment mappings include `PAYMENT_NO_DESTINATION` and `PAYMENT_SRC_NO_TRUST`; SetOptions documents `op_bad_signer` paired with `SET_OPTIONS_BAD_SIGNER`; generic operation authorization is `op_bad_auth`. These labels are not interchangeable. Treat deterministic 400/result-code failures differently from 429/5xx/timeouts: back off for transport/admission uncertainty and query the known hash before rebuilding, preserving idempotency and bounds.",
+    "keyFacts": [
+      "Reads transaction and operation result codes and preserves transaction atomicity.",
+      "Explains spendable-balance effects from reserves, subentries, offers, liabilities, and trustlines.",
+      "Correctly scopes PAYMENT_NO_DESTINATION/PAYMENT_SRC_NO_TRUST, SetOptions op_bad_signer/SET_OPTIONS_BAD_SIGNER, and generic op_bad_auth.",
+      "Uses hash-first/idempotent handling for 429/5xx/timeouts instead of retrying every 400."
+    ],
+    "avoid": [
+      "Do NOT retry every HTTP 400 or call a timeout/polling miss definitive failure.",
+      "Do NOT ignore operation-level codes or mix generic, Payment, and SetOptions namespaces.",
+      "Do NOT diagnose all underfunding as a faucet/provider issue or advise bypassing reserves/trustlines."
+    ],
+    "notes": "Verified official docs on 2026-06-29.\nAlso good if the answer: Cites official Horizon error handling and operation-specific result-code docs. | Mentions that Horizon 400 transaction_failed often means the submitted transaction will never succeed, with a `tx_bad_seq` high-sequence caveat.\nGolden cites: Official transaction result-code docs. | Official payment and/or offer result-code docs for underfunded/liability behavior.\nGT-51 CORRECTION 2026-07-11: `op_bad_signer` is valid only as the documented SetOptions-specific label; do not genericize or delete it."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/error-handling",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/result-codes/transactions",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/result-codes/operation-specific/payment",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/result-codes/operation-specific/set-options",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Payment and SetOptions result labels must be interpreted in their operation-specific namespaces; generic authorization uses op_bad_auth.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Horizon transaction, operation, Payment, and SetOptions result-code docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: safe invalid Testnet submission returned a structured 400 result envelope",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Underfunding is spendable-balance/reserve/liability dependent, and timeout/429/5xx uncertainty requires hash-first handling rather than blind rebuilds.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: error handling and offer/payment docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: Classic transaction atomicity/result semantics",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited taxonomy mixed generic and operation-specific result-code namespaces, omitted named Payment/SetOptions mappings, and did not make transport uncertainty versus deterministic rejection sufficiently explicit.",
+      "evidence": [
+        "Solo scratchpad 575 GT-51 primary/blind matrices independently required the taxonomy repair; blind corrected the primary's overbroad treatment of `op_bad_signer`.",
+        "Sibling sweep checked q-ti-tx-too-late-resubmit and channel-account/fee-bump cases."
+      ],
+      "rootCause": [
+        "Eval-side namespace conflation: generic operation, Payment, and SetOptions labels were authored as interchangeable."
+      ]
+    },
+    "origin": "raven-next q-ti-classic-submission-errors"
+  }
+}

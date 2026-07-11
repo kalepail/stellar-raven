@@ -1,0 +1,82 @@
+{
+  "id": "q-defi-soroswap-resolve",
+  "question": "Look up the Soroswap project entry — what's its website and category?",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_project",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "The live Lumenloop directory record, checked **2026-07-10**, resolves to **Soroswap** with website **https://soroswap.finance/** and category **Financial Protocols**. PaltaLabs may be returned as a source-scoped parent/operator field. Keep this lookup to the requested identity, website, and Lumenloop category; Scout uses a different taxonomy, and status/funding belong to separate current records.",
+    "keyFacts": [
+      "Resolves the correct Soroswap entity, website, and Lumenloop category Financial Protocols."
+    ],
+    "avoid": [
+      "Do NOT substitute Scout's Protocol/Contract taxonomy for the Lumenloop field.",
+      "Do NOT expand this directory lookup into a capabilities, routing, or funding essay."
+    ],
+    "notes": "GROUNDED 2026-06-22 (re-verified 2026-06-29): Scout directory record — Soroswap, category Protocol/Contract (type DEX), status Live, website https://soroswap.finance/, github https://github.com/soroswap, twitter @soroswapfinance, SCF $346,750. This is the STRICT directory field-lookup lane → lumenloop_search_directory — DISTINCT from q-defi-soroswap-what-is (lumenloop_get_project; identity + what-makes-it-different routing essay). Added must_avoid against turning the resolve into a capabilities explainer.\nAlso good if the answer: Correctly resolves the name 'Soroswap' to the right project (not a confusable like StellarX).\nGolden cites: The directory entry source.\nGT-18 CORRECTION 2026-07-10: for this Lumenloop-targeted lane, Financial Protocols is the source field. Do not require Scout status/type/funding fields."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://soroswap.finance/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/soroswap",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Lumenloop resolves Soroswap to soroswap.finance under Financial Protocols.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Lumenloop project/directory response on 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/B: Soroswap operator site and GitHub organization confirm entity and URL",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Soroswap operator site and GitHub organization confirm entity and URL",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — This is a Lumenloop directory lookup, but the inherited answer substituted Scout's Protocol/Contract/type DEX taxonomy and added volatile status/funding fields. Live Lumenloop resolves Soroswap under Financial Protocols.",
+      "evidence": [
+        "Solo scratchpad 575 GT-18 primary 3249 and blind 3252",
+        "Sibling sweep: q-defi-soroswap-content and q-defi-soroswap-what-is"
+      ],
+      "rootCause": [
+        "Fields from two service taxonomies were merged into one purported directory record.",
+        "improvements/lumenloop/ll-008-directory-record-coverage-field-quality.md"
+      ]
+    },
+    "origin": "raven-next q-defi-soroswap-resolve"
+  }
+}

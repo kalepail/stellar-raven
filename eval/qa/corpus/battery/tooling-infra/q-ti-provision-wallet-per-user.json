@@ -1,0 +1,104 @@
+{
+  "id": "q-ti-provision-wallet-per-user",
+  "question": "What's the recommended way to provision a Stellar account per user from my app backend (Python/Flask, encrypted key storage), then activate it and add the trustlines they need?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "Choose custody first. In a noncustodial design, the user's wallet creates or imports the key and the backend never receives the seed. In custody, choose between a separate on-ledger account per user and an omnibus account with an internal double-entry ledger plus muxed addresses; neither architecture is universally superior.\n\nGenerating a keypair does **not** create an on-ledger account. A funded `CreateAccount` operation, or a valid sponsored-reserve flow, does. For classic issued assets, add the required `ChangeTrust` trustline before receipt; SAC/SEP-41 contract-token balances are a different model. Testnet Friendbot is not Pubnet funding.\n\nA muxed M-address is the same underlying G-account plus a uint64 identifier. It has no independent secret, signer set, sequence number, trustlines, or on-ledger balance; the base account authorizes and the application must maintain the per-user internal ledger. Numeric reserves are network settings: as of **2026-07-11**, the 0.5 XLM base reserve made two base reserves 1 XLM for an otherwise-empty ordinary account, while 2 XLM was operational headroom rather than a protocol requirement. Recheck current settings and sponsorship rules before pinning amounts. Custodial signing belongs behind a non-exportable or isolated signer with authorization, audit, rotation, recovery, and no plaintext seed exposure.",
+    "keyFacts": [
+      "Starts with the custodial/noncustodial and per-user-versus-omnibus architecture decision.",
+      "Explains that keypair generation is not ledger account creation and covers Pubnet/Testnet activation plus classic ChangeTrust versus SAC flows.",
+      "Defines a muxed address as base G-account plus uint64 routing ID, not an independent account/key/balance, and requires an internal ledger.",
+      "Keeps reserve amounts dated and distinguishes protocol reserve from optional operational headroom."
+    ],
+    "avoid": [
+      "Do NOT say a keypair/public key alone creates an active account or trustline.",
+      "Do NOT describe a muxed address as an independent wallet with its own secret, signers, sequence, trustlines, or balance.",
+      "Do NOT present one-account-per-user as universally superior or 2 XLM as an undated protocol minimum.",
+      "Do NOT store custodial seeds in plaintext or apply Friendbot guidance to Pubnet."
+    ],
+    "notes": "2026-06-29 differentiation: this file owns the account-LIFECYCLE lane (custody-model choice → generate keypair → activate/fund (Friendbot Testnet vs real XLM/sponsorship Pubnet) → Change Trust trustlines → SAC vs classic). Deep key-storage architecture (KMS/Vault/HSM internals) is owned by q-ti-secret-key-custody-backend — demoted the KMS must_have here to should_have to keep the pair's must_haves distinct.\nAlso good if the answer: Notes that custodial signing material should live behind server-side custody (KMS/Vault/HSM or envelope encryption) with no plaintext secrets in logs/db/frontend, but treats the deep storage-architecture design as a separate concern. | Mentions Python can use py-stellar-base for Horizon/RPC/account/transaction flows, while official examples may be JS/Go. | Mentions sponsored reserves or pooled/muxed accounts as alternatives to one funded account per user.\nGolden cites: Primary Stellar account-creation/trustline/custody-model docs.\nGT-53 verified 2026-07-11. Gate the muxed non-account/internal-ledger boundary and dated reserve-versus-headroom distinction while preserving this case's account-lifecycle scope; deep signer architecture remains in q-ti-secret-key-custody-backend."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/application-design-considerations",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/create-account",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/list-of-operations#change-trust",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0027.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0023.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Key generation, ledger-account creation, muxed routing, custody and reserve responsibility are distinct",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Stellar custody and Create Account documentation, accessed 2026-07-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0027 and SEP-0023 muxed-address specifications",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: local keypair/muxed encode-decode and read-only network reserve checks recorded by the blind lane",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The custody-first and account-lifecycle core was correct, but the inherited case left muxed-address semantics and reserve guidance as vague optional material. GT-53 confirmed that a muxed address is not an independent account and that operational headroom must not be presented as a protocol minimum.",
+      "evidence": [
+        "Solo scratchpad 575, GT-53 primary 3372 and blind 3378; both retained the custody/lifecycle core and independently bounded pooled/muxed and sponsorship advice.",
+        "Sibling sweep confirmed q-ti-custodial-account-generation-c-address and q-crp-custodial-vs-noncustodial-wallets remain consistent."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-013-account-creation-merge-sponsorship-semantics.md",
+        "Eval-side completeness gap: the golden mentioned muxed accounts without defining their non-account semantics or internal-ledger requirement."
+      ]
+    },
+    "origin": "raven-next q-ti-provision-wallet-per-user"
+  }
+}

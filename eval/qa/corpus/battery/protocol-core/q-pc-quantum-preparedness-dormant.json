@@ -1,0 +1,56 @@
+{
+  "id": "q-pc-quantum-preparedness-dormant",
+  "question": "Is Stellar quantum-resistant, and what is the Quantum Preparedness Plan; how is a dormant account defined and how do I know if mine qualifies?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "No, a normal Stellar account should not be described as \"quantum-resistant today\" without caveat. SDF's Quantum Preparedness Plan says sufficiently powerful quantum computers would break elliptic-curve cryptography, including Stellar's Ed25519, and identifies two threat classes: validator/SCP signature integrity and account takeover. Source: https://stellar.org/blog/foundation-news/introducing-the-quantum-preparedness-plan\n\nThe QPP is a staged migration plan. Stage 1 targets post-quantum signature verification in Soroban contract accounts in 2026; Stage 2 targets first-class quantum-safe signers for classic accounts in 2027; Stage 3 would deprecate Ed25519 only when quantum threat progress and ecosystem readiness justify activation. The important Stellar-specific advantage is that account identity and signing keys are separable: an account can add/weight/remove signers without changing its G-address. Sources: https://stellar.org/blog/foundation-news/introducing-the-quantum-preparedness-plan and https://developers.stellar.org/docs/learn/fundamentals/transactions/operations-and-transactions#signer\n\nFor dormant accounts, the QPP does not publish a final mechanical \"qualifies if X\" rule. It says a forced cutoff would disrupt a large population of dormant accounts whose holders are unreachable and would require a design choice between freezing accounts with a recovery mechanism or permanently locking them. A good answer should therefore say: check current primary QPP/CAP materials for any finalized on-chain criteria; do not invent dates, balance thresholds, or \"has never sent a transaction\" rules unless a later CAP or implementation defines them.",
+    "keyFacts": [
+      "States current Stellar account authentication is not simply quantum-proof by default and quantum preparedness is a protocol/planning topic.",
+      "Explains the Quantum Preparedness Plan and dormant-account definition only as documented in primary Stellar/CAP sources.",
+      "Tells users to determine qualification from on-chain account/signing/activity criteria specified by the plan, not guesswork."
+    ],
+    "avoid": [
+      "Do NOT claim Stellar is fully quantum-resistant today without caveat.",
+      "Do NOT invent dormant-account thresholds or deadlines."
+    ],
+    "notes": "QPP is a dated SDF plan, not yet a final CAP with dormant-account thresholds. The blog describes dormant accounts qualitatively as holders unreachable for migration; it does not publish a deterministic eligibility test.\nAlso good if the answer: Notes the distinction between future migration planning and current user action requirements.\nGolden cites: Primary Stellar/CAP source required for the Quantum Preparedness Plan and dormant-account criteria."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/introducing-the-quantum-preparedness-plan",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/operations-and-transactions#signer",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-30-upgrade-quantum-scp-sequence-reserve-finality-p19 accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-pc-quantum-preparedness-dormant"
+  }
+}

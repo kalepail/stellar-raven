@@ -1,0 +1,86 @@
+{
+  "id": "q-soroban-storage-types-list",
+  "question": "List the Soroban contract storage types and what each is for — enumerate the storage durabilities a contract can use.",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "There are three **SDK storage accessors/types**: `env.storage().instance()` for small contract-instance config, `persistent()` for long-lived per-key state, and `temporary()` for short-lived/recreatable state. There are only two XDR `ContractDataDurability` values—Persistent and Temporary. Instance data is stored in the persistent contract-instance ledger entry and shares its TTL. Persistent and Instance can be archived and, under P23+, auto-restored only with the invocation read-write footprint plus `archivedSorobanEntries` metadata; Temporary is deleted at expiry. Persistent storage is not 'unlimited': entries and transactions remain subject to network/resource/size limits.",
+    "keyFacts": [
+      "Names all three SDK accessors and the two XDR durability variants.",
+      "Explains Instance representation, TTL, restoration metadata, and capacity limits."
+    ],
+    "avoid": [
+      "Do NOT invent ContractDataDurability::Instance or call three SDK accessors three XDR durabilities.",
+      "Do NOT call Persistent storage unlimited or auto-restore unconditional."
+    ],
+    "notes": "Axis-C list rebalance. Three durabilities + Temporary-not-restorable verified against the state-archival page. Trap = inventing a fourth type or claiming Temporary is restorable.\nAlso good if the answer: Notes each entry has a TTL and Persistent/Instance entries can be bumped/restored while Temporary cannot.\nGolden cites: A Soroban storage / state-archival page on developers.stellar.org.\nGT-47 BLIND CORRECTION 2026-07-11: accept three SDK accessors and require the two-XDR-durability distinction."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-12.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-xdr",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "env.storage exposes Instance, Persistent, and Temporary, while XDR ContractDataDurability has only Persistent and Temporary; Instance lives in the persistent contract-instance entry.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current storage docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0046-12, stellar-xdr, and SDK storage source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-47 CLI/source inspection",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited list correctly named three SDK storage accessors but falsely called them exactly three storage durabilities, omitted the two XDR variants distinction, and underqualified P23 auto-restore and capacity.",
+      "evidence": [
+        "Solo scratchpad 575 GT-47 primary 3327 and blind 3334; blind independently rejected 'three durabilities'."
+      ],
+      "rootCause": [
+        "Eval-side SDK/XDR layer conflation and unqualified auto-restore wording."
+      ]
+    },
+    "origin": "raven-next q-soroban-storage-types-list"
+  }
+}

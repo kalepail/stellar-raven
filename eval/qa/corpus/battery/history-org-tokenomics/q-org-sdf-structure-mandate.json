@@ -1,0 +1,79 @@
+{
+  "id": "q-org-sdf-structure-mandate",
+  "question": "What is the Stellar Development Foundation, what is its legal structure, and what is its mandate?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "The **Stellar Development Foundation (SDF)** is a Delaware **non-stock nonprofit corporation** that supports the public Stellar network. Its mission is to create equitable access to the global financial system. It has no shareholders or owners in the for-profit sense, is self-funded in part through XLM entrusted at inception, and pays applicable U.S. taxes. SDF is not Ripple and does not unilaterally operate or own Stellar; independent validators participate in the network. SDF discloses mandate XLM holdings through dated dashboards, mandate pages, and quarterly reports. Do not embed a durable reserve number in this organizational answer: totals are point-in-time and source/method scoped.",
+    "keyFacts": [
+      "Identifies SDF's nonprofit legal form, mission, and self-funding/no-shareholder structure.",
+      "Separates SDF from Ripple and from unilateral control of the public network, and keeps reserve totals dated."
+    ],
+    "avoid": [
+      "Do NOT call SDF for-profit, Ripple, or the unilateral owner/operator of Stellar.",
+      "Do NOT repeat ~30B as a current reserve or treat named accounts/report rows as exhaustive without date and scope."
+    ],
+    "notes": "GT-28 CORRECTION 2026-07-10: organizational/legal core confirmed. Remove the stale ~30B reserve; any holdings figure requires a dated dashboard/mandate/report and explicit scope.\nGT-28 independently confirmed by processes 3274/3275."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-10",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/foundation",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/foundation/mandate",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/quarterly-reports",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SDF is a Delaware non-stock nonprofit with no shareholders and an equitable-access mission; any XLM mandate holding is point-in-time, not a stable ~30B fact.",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: SDF foundation/mandate/legal statement and Q1 2026 report",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: official dashboard and named-account Horizon reads",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-core-contradicted-scalar."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The organizational/legal core is correct, but the undated ~30B SDF reserve is materially stale versus current official disclosures around 15.6B and does not belong in a durable structure answer.",
+      "evidence": [
+        "Solo scratchpad 575 GT-28 primary 3274 and blind 3275; live dashboard about 15.588B, April report about 16.4B with scope caveats."
+      ],
+      "rootCause": [
+        "Eval-side historical reserve rounding became an undated present-tense fact.",
+        "improvements/stellar-docs/sd-012-mandate-wallet-label-drift.md"
+      ]
+    },
+    "origin": "raven-next q-org-sdf-structure-mandate"
+  }
+}

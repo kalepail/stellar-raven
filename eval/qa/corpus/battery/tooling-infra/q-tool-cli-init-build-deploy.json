@@ -1,0 +1,127 @@
+{
+  "id": "q-tool-cli-init-build-deploy",
+  "question": "What's the Stellar CLI command sequence to go from a new contract project to a deployed contract?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-11 / Stellar CLI 27.0.0**, an explicit, portable Testnet flow is:\n\n```sh\nstellar contract init <project>\ncd <project>\nstellar contract build\nstellar keys generate alice --network testnet --fund\nstellar contract deploy \\\n  --wasm target/wasm32v1-none/release/<contract>.wasm \\\n  --source-account alice \\\n  --network testnet\n```\n\n`contract init` creates the Cargo workspace, `contract build` emits the current `wasm32v1-none` release Wasm, and deploy returns a `C...` contract ID. `--alias <name>` is optional. Invoke it with `stellar contract invoke --id <C...> --source-account alice --network testnet -- <function> ...`. CLI 27 can auto-build in some workspace deploy flows when `--wasm` is omitted, but the explicit sequence above keeps the artifact and package unambiguous.\n\nIf a Docker-backed Quickstart node is wanted, the current command is **`stellar container start testnet`** (or `local` for a standalone local network). **`stellar network container start ...` is not a current command.**",
+    "keyFacts": [
+      "Uses current `stellar contract init` → `stellar contract build` → funded source → `stellar contract deploy` with a wasm32v1-none artifact and explicit network.",
+      "States deploy returns a C-address and keeps aliases optional.",
+      "Uses `stellar container start <network>` and rejects the removed `stellar network container start` nesting."
+    ],
+    "avoid": [
+      "Do NOT use `stellar network container start`; current CLI 27 uses `stellar container start`.",
+      "Do NOT present the retired `soroban` binary or obsolete wasm32-unknown-unknown target as current.",
+      "Do NOT imply deployment can sign without a funded source or that `--alias` is required."
+    ],
+    "notes": "Verified against the deploy-to-testnet guide + CLI manual: stellar contract init → build → deploy --wasm <path> --source-account <id> --network testnet (returns a C... id) → invoke --id <C...>. Identity via `stellar keys generate <name> --network testnet --fund`. Trap = old `soroban` commands / invented flags.\nAlso good if the answer: Deploy requires a configured network and a funded source identity (`stellar keys`). | Deploy returns a contract ID (C... address).\nGolden cites: developers.stellar.org Stellar CLI manual / getting-started pages.\nGT-55 CORRECTION 2026-07-11: current CLI nesting is `stellar container start`, not `stellar network container start`. Grade the explicit init/build/funded-source/deploy flow; package filename and v27 auto-build behavior may vary by workspace and release. The official-doc recurrence is tracked in sd-031."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/install-deploy-contract-with-code",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/getting-started/deploy-to-testnet",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/quickstart/getting-started",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-cli/releases/tag/v27.0.0",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-cli",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The explicit current project flow is contract init, build to wasm32v1-none, funded source creation, deploy, then optional invoke.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current official Stellar CLI contract/deploy documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar/stellar-cli v27.0.0 release and source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: local Stellar CLI 27.0.0 help",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-as-of-2026-07-11."
+      },
+      {
+        "claim": "The current container command is stellar container start; stellar network container start is invalid.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Quickstart getting-started page uses stellar container start local while current Lab/Quickstart page retains the invalid form",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current stellar/stellar-docs and stellar-cli source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: local help accepted container start and rejected network container",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-docs-contradiction."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited flow was mostly current but taught the removed `stellar network container start testnet` form. Stellar CLI 27 rejects that subcommand and exposes `stellar container start <network>`; the stale form also remains in current official Docs.",
+      "evidence": [
+        "Solo scratchpad 575 GT-55 primary process 3392 and pre-read-sealed blind process 3393 independently confirmed the current CLI command family.",
+        "Blind lock gt55/blind-lock/process-3393 was written 2026-07-11T06:37:21.363Z and the 12-row seal was written 2026-07-11T06:53:52.436Z with primaryReportRead=false and currentGoldenRead=false.",
+        "Author process 3397 re-ran local Stellar CLI 27 help and live Docs/source checks on 2026-07-11 without starting a container."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-031-cli-container-command-drift.md",
+        "Eval-side command drift copied the same retired nesting into the golden."
+      ]
+    },
+    "origin": "raven-next q-tool-cli-init-build-deploy"
+  }
+}

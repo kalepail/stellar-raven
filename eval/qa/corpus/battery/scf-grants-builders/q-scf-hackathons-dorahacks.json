@@ -1,0 +1,79 @@
+{
+  "id": "q-scf-hackathons-dorahacks",
+  "question": "Where does the Stellar Development Foundation run its hackathons, and what was the most recent one?",
+  "surface": [
+    "scout.getHackathon",
+    "scout.getHackathons"
+  ],
+  "golden": {
+    "answer": "The primary observed venue for SDF-sponsored Stellar hackathons is **DoraHacks**, under organization **3096**. As of **2026-07-10**, the most recent completed catalog event was **Stellar Hacks: Real-World ZK**, held **2026-06-15 through 2026-07-03** after an extension, with a displayed $10,000 prize pool. “Most recent” is volatile, so verify it against the live organizer and Scout catalog. Do not substitute an unverified regional event example or claim DoraHacks is the only venue SDF could ever use.",
+    "keyFacts": [
+      "Identifies DoraHacks organization 3096 as the primary observed venue.",
+      "Names and dates the latest completed event as a freshness-sensitive result."
+    ],
+    "avoid": [
+      "Do NOT fabricate a latest event, date, prize, or regional example.",
+      "Do NOT turn the observed primary venue into an exclusive timeless claim."
+    ],
+    "notes": "GT-38 CORRECTION 2026-07-10: DoraHacks org 3096 is the primary observed venue; Real-World ZK is the latest completed event through July 10. Grade dated current evidence and remove unsupported regional examples.\nGT-38 independently confirmed by processes 3297/3299."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://dorahacks.io/org/3096",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://dorahacks.io/hackathon/stellar-hacks-zk/detail",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/hackathons",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "DoraHacks organization 3096 remains the primary observed SDF venue and Real-World ZK was the latest completed catalog event through 2026-07-10",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official DoraHacks organizer/event pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Scout ordered event catalog",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The venue claim remains sound, but the latest-event answer froze a formerly active event and retained an unsupported India competition example.",
+      "evidence": [
+        "Solo scratchpad 575 GT-38 primary 3297 and blind 3299."
+      ],
+      "rootCause": [
+        "Weekly event-status drift and an unverified regional example in eval authoring."
+      ]
+    },
+    "origin": "raven-next q-scf-hackathons-dorahacks"
+  }
+}

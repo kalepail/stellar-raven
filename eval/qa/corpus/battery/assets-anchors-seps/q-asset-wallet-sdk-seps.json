@@ -1,0 +1,50 @@
+{
+  "id": "q-asset-wallet-sdk-seps",
+  "question": "What is the Stellar Wallet SDK and which anchor SEP flows does it wrap?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "The **Stellar Wallet SDK** is SDF's **TypeScript library for building wallet apps** that consume\nanchor flows, so a wallet integrates the anchor SEPs once rather than per-anchor [1]. It wraps the\n**client-side** anchor flows: **SEP-10** (auth), **SEP-12** (KYC), **SEP-24** (hosted\ndeposit/withdraw), **SEP-31** (cross-border), and **SEP-38** (quotes) — plus **SEP-1** discovery of\nthe anchor [1][2]. It is the **wallet-side counterpart to the (Java) Anchor Platform**, which is the\n**anchor backend**; the Wallet SDK is **not** anchor infrastructure itself. A wallet built on it can\ninteroperate with any compliant anchor without bespoke per-anchor integration.\n\nSources: [1] stellar.org Wallet SDK page; [2] github.com/stellar/typescript-wallet-sdk.",
+    "keyFacts": [
+      "The Wallet SDK is SDF's (TypeScript) library for building Stellar wallet apps that consume anchor flows.",
+      "It wraps client-side SEP-10 (auth), SEP-12 (KYC), SEP-24 (hosted deposit/withdraw), SEP-31 (cross-border), and SEP-38 (quotes)."
+    ],
+    "avoid": [
+      "Do NOT misnumber the SEPs it wraps.",
+      "Do NOT describe the Wallet SDK as anchor backend infrastructure (that is the Anchor Platform)."
+    ],
+    "notes": "Dossier §6.3. Wallet SDK = SDF TypeScript library (stellar/typescript-wallet-sdk) wrapping anchor SEP flows; wallet-side counterpart to the Java Anchor Platform. SEP numbers verified against the anchor stack.\nAlso good if the answer: It is the wallet-side counterpart to the (Java) Anchor Platform.\nGolden cites: The Wallet SDK page on stellar.org or the stellar/typescript-wallet-sdk repo."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/products-and-tools/wallet-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/typescript-wallet-sdk",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-04-sac-stablecoins-issuance-fx accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-wallet-sdk-seps"
+  }
+}

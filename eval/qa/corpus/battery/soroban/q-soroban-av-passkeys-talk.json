@@ -1,0 +1,75 @@
+{
+  "id": "q-soroban-av-passkeys-talk",
+  "question": "Find the conference talk or podcast where Stellar passkeys / smart-wallet signing was discussed — I want the actual recorded passage, not a docs page.",
+  "surface": [
+    "lumenloop.find_av_passages",
+    "lumenloop.list_research"
+  ],
+  "golden": {
+    "answer": "Use the exact exposed operation `lumenloop.find_av_passages` with a query for Stellar passkeys, secp256r1, WebAuthn, or smart-wallet signing. Return each AI-generated `summary`/`long_summary` with the parent recording title, URL, and available channel/date metadata. The exposed response does **not** contain transcript text, so do not quote it as spoken words or attribute a summary to a named speaker. Treat `start_offset` as an opaque chunk/order key, not seconds or playback timestamp. If no relevant row appears, report a corpus-bounded miss and do not substitute a docs page as an A/V passage.",
+    "keyFacts": [
+      "Uses the exposed dot-qualified operation and returns summary-plus-source provenance.",
+      "States transcript text is absent and start_offset is opaque."
+    ],
+    "avoid": [
+      "Do NOT emit retired lumenloop_find_av_passages, fabricate quotes/speakers/timestamps, or turn summary text into verbatim evidence.",
+      "Do NOT silently substitute docs when the requested A/V corpus misses."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). Routing/behavior case — the 'answer' is the correct tool + honest corpus-bounded behavior, not a factual essay. lumenloop_find_av_passages is the transcript/AV-passage lane; semantic content search is acceptable but the explicit 'recorded passage, not docs' intent favors the av_passages card. No fixed source URL: graded on returning real transcript passages (with their talk/podcast provenance) or honestly reporting none in corpus. Fabrication is the trap.\nAlso good if the answer: Frames the topic as passkeys / secp256r1 smart-wallet signing on Stellar when surfacing passages.\nGolden cites: Each surfaced passage carries its talk/podcast source (lumenloop_find_av_passages).\nGT-44 live service contract 2026-07-11. Grade routing/output honesty; source URLs come from returned rows and are volatile."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "eval/corpus/raven-next/research/golden/soroban/q-soroban-av-passkeys-talk.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current exposed A/V operation and output semantics",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: current manifest/inventory contract",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live execute payload",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-44 primary/blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer named a non-exposed underscore operation and required transcript quotes/timestamps absent from the live payload.",
+      "evidence": [
+        "Solo scratchpad 575 GT-44 processes 3316/3324; live Lumenloop probe 2026-07-11."
+      ],
+      "rootCause": [
+        "improvements/skills/sk-004-av-passages-verbatim-claim.md"
+      ]
+    },
+    "origin": "raven-next q-soroban-av-passkeys-talk"
+  }
+}

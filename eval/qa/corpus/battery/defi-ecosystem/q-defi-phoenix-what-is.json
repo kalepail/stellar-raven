@@ -1,0 +1,92 @@
+{
+  "id": "q-defi-phoenix-what-is",
+  "question": "What is Phoenix on Stellar and what is the $PHO token?",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_project",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "**Phoenix DeFi Hub** is a Soroban AMM/DEX suite with constant-product and stable pools, a factory, routing/multihop swaps, LP share tokens, staking/rewards, and add/remove-liquidity flows. **PHO** is the protocol's classic Stellar asset with a SAC representation; the operator TOML identifies issuer `GAX5…SXJO`. Phoenix's **2024 initial whitepaper** describes PHO as a utility/incentive token for DEX/NFT rewards and proposed supply, buyback, and distribution mechanics. Attribute those claims to that dated initial design rather than promising they remain current; do not call PHO a governance token without current evidence.\n\nPhoenix's official SCF page reports four awarded submissions totaling $394.5K. It is a DEX/AMM, not a lender, oracle, or bridge, and no TVL number is required.",
+    "keyFacts": [
+      "Identifies Phoenix as a Soroban AMM/DEX suite and explains its core pool/routing/liquidity functions.",
+      "Identifies PHO as the protocol's classic asset/SAC utility-incentive token and attributes tokenomics to the dated 2024 initial whitepaper."
+    ],
+    "avoid": [
+      "Do NOT call PHO a governance token or present initial-whitepaper supply/emission/buyback plans as timeless guarantees.",
+      "Do NOT describe Phoenix as a lender/oracle/bridge or invent current TVL."
+    ],
+    "notes": "Per-project identity → lumenloop_get_project. Phoenix TVL not in corpus — anti-fabrication. Grounded on Scout: Phoenix DeFi Hub = SCF-funded AMM-based DEX on Soroban (PHO token); constant-product + stableswap pools, a Factory for pool creation, multi-hop routing; one of the AMM liquidity sources aggregated by Soroswap. Built by Phoenix-Protocol-Group; scfTotalAwardedUSD ≈ $394,500.\nAlso good if the answer: $PHO is Phoenix's token; the AMM DEX is described as the first of several planned products. | Built by the Phoenix Protocol Group (phoenix-hub.io).\nGolden cites: A source identifying Phoenix as the Soroban DeFi-Hub / AMM DEX.\nCorrected 2026-07-10. Token identity and dated/source-attributed utility are required; speculative current tokenomics are not."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://github.com/Phoenix-Protocol-Group/phoenix-contracts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://app.phoenix-hub.io/.well-known/stellar.toml",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/recafjXSgVbrp8svj",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Phoenix is a Soroban AMM/DEX suite and PHO is its classic asset/SAC utility-incentive token",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: Phoenix architecture/source, operator TOML, and 2024 initial whitepaper",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Phoenix architecture/source, operator TOML, and 2024 initial whitepaper",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F/C: Horizon asset/SAC snapshot and official SCF project record",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "F/C: Horizon asset/SAC snapshot and official SCF project record",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-16 lanes confirmed Phoenix mechanics but found the answer to 'what is PHO' incomplete and its SCF provenance stale. Current operator TOML/Horizon establish the classic PHO asset and SAC; tokenomics claims belong to the attributed 2024 initial whitepaper rather than timeless guarantees.",
+      "evidence": [
+        "Solo scratchpad 575 GT-16 processes 3244/3245; PHO issuer/SAC verified 2026-07-10"
+      ],
+      "rootCause": [
+        "eval-side answer completeness and time-scoped tokenomics/provenance error"
+      ]
+    },
+    "origin": "raven-next q-defi-phoenix-what-is"
+  }
+}

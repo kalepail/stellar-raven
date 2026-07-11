@@ -1,0 +1,63 @@
+{
+  "id": "q-aas-list-token-on-exchanges-aggregators",
+  "question": "After issuing a Stellar asset, how do I make it tradable and visible on exchanges, wallets, explorers, and aggregators?",
+  "surface": [
+    "scout.searchProjects",
+    "scout.searchRepos",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Issuing a Stellar asset makes it technically valid, not automatically visible, trusted, liquid, or listed. The durable prerequisites are: issue the asset from the correct issuer account, make trustlines possible for holders, set the issuer account's `home_domain`, and publish a valid SEP-1 `https://DOMAIN/.well-known/stellar.toml` with `[[CURRENCIES]]` metadata for the exact code and issuer. SEP-1 says clients and exchanges can use that information to decide whether a token should be listed.\n\nTradability requires markets. On Stellar that can mean SDEX offers, liquidity pools, or integrations/listings in wallets, explorers, exchanges, and aggregators. Visibility and pricing usually require enough real liquidity, supply/issuer metadata, and a venue-specific policy review. SEP-42/Stellar Asset Lists define a community asset-list format and catalog that apps may use, but the catalog itself warns that inclusion in a list is not an endorsement or recommendation.\n\nThe practical answer is therefore a checklist, not a guarantee: publish correct SEP-1 metadata; keep issuer/domain/logo/contact/reserve information consistent; create real markets; apply to each target venue using its current listing process; and keep dated evidence for any verification, market-cap, or safety claim.",
+    "keyFacts": [
+      "Explains technical prerequisites: issued asset, trustlines, home domain, valid SEP-1 stellar.toml metadata, and accessible logo/issuer information.",
+      "Explains tradability requires market infrastructure such as SDEX offers, AMM pools, or listings/integrations with wallets/exchanges/aggregators.",
+      "States each exchange, wallet, explorer, and aggregator applies its own listing/verification/liquidity policies."
+    ],
+    "avoid": [
+      "Do NOT guarantee listing, verification, price, or market-cap display just because a Stellar asset exists.",
+      "Do NOT present an official universal Stellar whitelist for every exchange/aggregator."
+    ],
+    "notes": "Freshness-sensitive. Verified durable prerequisites with SEP-1 and SEP-42; do not require any specific exchange/aggregator policy beyond dated current-source citation. Re-verified 2026-06-29: SEP-0042 confirmed as 'Stellar Asset List (SAL)', SEP-0001 + the build/apps SEP-1 tutorial resolve; stellar.expert/asset-lists is a client-rendered SPA so its catalog couldn't be content-fetched but the route is valid (load-bearing SEP claims verified via the protocol repo).\nAlso good if the answer: Mentions liquidity and price/market-cap visibility generally require real markets and supply metadata rather than mere asset issuance. | Advises checking the current listing docs/forms for the specific venue or aggregator.\nGolden cites: SEP-1 or Stellar asset docs, plus dated venue/listing sources for freshness-specific claims."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-06-29",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0001.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/example-application-tutorial/anchor-integration/sep1",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0042.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://stellar.expert/asset-lists",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-01-asset-lifecycle-safety-metadata accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-aas-list-token-on-exchanges-aggregators"
+  }
+}

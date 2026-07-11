@@ -1,0 +1,53 @@
+{
+  "id": "q-soroban-constructor-lifecycle",
+  "question": "Does Soroban support a contract constructor that runs once at deploy time, and how do I define one?",
+  "surface": [
+    "stellarDocs.search_meeting_notes",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Yes — Soroban supports a **constructor** since **Protocol 22 (CAP-0058, status Final;** mainnet vote\nDec 5, 2024**)**. [cap0058][p22]\n\n- **Define it** as a reserved function named **`__constructor`** inside the `#[contractimpl]` block. A\n  Wasm that exports `__constructor` is treated as having a constructor. [cap0058]\n- **Runs exactly once, atomically, at contract creation** — the host calls it immediately after\n  creating the instance entry; if it traps or returns a non-`Void` value, contract creation **fails\n  and rolls back**. It cannot be re-invoked afterward (and is NOT re-run on a Wasm code upgrade).\n  [cap0058]\n- **Arguments** are passed at create/deploy time via the `HOST_FUNCTION_TYPE_CREATE_CONTRACT_V2`\n  host function (CLI `stellar contract deploy ... -- <args>` / SDK deployer). It may take 0..N args.\n  [cap0058]\n- **Before P22** the standard pattern was a separately-called `initialize`/`init` function guarded\n  against re-initialization; constructors remove that round-trip and reduce front-running risk on\n  init. [p22]\n\nTraps: claiming Soroban has no constructor at all (stale, pre-P22); or describing a Solidity\n`constructor` keyword / `selfdestruct` semantics.",
+    "keyFacts": [
+      "Soroban supports a constructor: a `__constructor` function in the `#[contractimpl]` that the host runs exactly once at instantiation/deploy time.",
+      "Constructor support was added at the protocol level via CAP-0058 (Protocol 22)."
+    ],
+    "avoid": [
+      "Do NOT claim Soroban has no constructor mechanism at all (it does, since P22/CAP-0058).",
+      "Do NOT describe a Solidity `constructor` keyword or `selfdestruct` semantics."
+    ],
+    "notes": "CAP-0058 (Final), Protocol 22 — Testnet 2024-11-12, Mainnet vote 2024-12-05. __constructor must return Val::Void; runs atomically once at create-contract time via HOST_FUNCTION_TYPE_CREATE_CONTRACT_V2.\nAlso good if the answer: Constructor arguments are passed at deploy/create-contract time (e.g., via the CLI deploy `--` args or SDK deployer). | Before constructors existed, the common pattern was a separately-called `initialize`/`init` function guarded against re-init.\nGolden cites: A developers.stellar.org page or CAP-0058 reference for the constructor lifecycle."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2024-12-05",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0058.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/announcing-protocol-22",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-45-constructor-verification-ids-events-cross-contract-versions accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-soroban-constructor-lifecycle"
+  }
+}

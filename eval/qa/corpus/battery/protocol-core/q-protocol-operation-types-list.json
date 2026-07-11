@@ -1,0 +1,47 @@
+{
+  "id": "q-protocol-operation-types-list",
+  "question": "List the core Stellar operation types available in a classic transaction — enumerate the main operations and what each does.",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Operations are the unit of action inside a transaction (a tx bundles 1+ operations) [1]. The classic\noperation types are [1]:\n\n- **Payment / asset:** CreateAccount, Payment, PathPaymentStrictSend, PathPaymentStrictReceive\n- **DEX / trustline:** ManageBuyOffer, ManageSellOffer, CreatePassiveSellOffer, ChangeTrust,\n  SetTrustLineFlags (and legacy AllowTrust)\n- **Account / admin:** SetOptions, AccountMerge, ManageData, BumpSequence\n- **Claimable balances:** CreateClaimableBalance, ClaimClaimableBalance\n- **Liquidity pools:** LiquidityPoolDeposit, LiquidityPoolWithdraw\n- **Clawback:** Clawback, ClawbackClaimableBalance\n- **Sponsorship:** BeginSponsoringFutureReserves, EndSponsoringFutureReserves, RevokeSponsorship\n- **Soroban:** InvokeHostFunction, ExtendFootprintTTL, RestoreFootprint\n\nThere are **no** ERC-style `Transfer`/`Mint`/`Burn` classic operations [1].\n\n- [1] developers.stellar.org/docs/learn/fundamentals/transactions/list-of-operations",
+    "keyFacts": [
+      "Enumerates core payment/asset operations: Payment, CreateAccount, PathPaymentStrictSend/Receive.",
+      "Enumerates DEX/trustline operations: ManageBuyOffer/ManageSellOffer, ChangeTrust, SetTrustLineFlags.",
+      "Enumerates account/admin operations: SetOptions, AccountMerge, ManageData, BumpSequence."
+    ],
+    "avoid": [
+      "Do NOT invent non-existent operation names (e.g. 'Transfer', 'Mint', 'Burn' as classic operations).",
+      "Do NOT conflate operations with transactions (operations are bundled inside a transaction)."
+    ],
+    "notes": "Axis-C list rebalance. Enumeration of classic operation types → stellar_docs_mcp. Distinct from q-protocol-operations-vs-transactions (factual concept). Trap = inventing ERC-style 'Mint'/'Burn' ops or conflating ops with txs.\nAlso good if the answer: Names claimable-balance and liquidity-pool operations (CreateClaimableBalance/ClaimClaimableBalance, LiquidityPoolDeposit/Withdraw). | Names Clawback / ClawbackClaimableBalance and the InvokeHostFunction operation (Soroban contract invocation).\nGolden cites: A list-of-operations page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/list-of-operations",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-33-passphrases-operations-parallel-passkeys-consensus accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-operation-types-list"
+  }
+}

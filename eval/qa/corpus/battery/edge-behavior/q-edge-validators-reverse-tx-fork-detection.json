@@ -1,0 +1,86 @@
+{
+  "id": "q-edge-validators-reverse-tx-fork-detection",
+  "question": "Can Stellar validators erase or reverse a confirmed transaction, could a chain be secretly hard-forked, and how would I detect a fork?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "Once a node externalizes a ledger, it does not later change that slot; this finality depends on the trusted quorum retaining SCP safety/quorum intersection. An individual validator has no normal operation to erase a confirmed native-XLM payment. Issuer clawback of an eligible issued asset and custodian bookkeeping are different visible operations.\n\nTo detect split risk, compare the same ledger sequence/hash and transaction result across independently operated Core/RPC/Horizon sources; inspect Core `/info` and quorum diagnostics such as disagreement and transitive intersection/potential split; and compare independently operated history archives plus integrity scans. One endpoint or archive cannot prove absence of a fork.",
+    "keyFacts": [
+      "Explains finality relative to quorum-intersection assumptions and distinguishes native-XLM finality from issuer/custodian controls.",
+      "Provides actionable source-diverse ledger, Core quorum, and archive-integrity checks."
+    ],
+    "avoid": [
+      "Do NOT claim casual reversal or metaphysical fork impossibility, and do not treat one provider/archive as proof of no split."
+    ],
+    "notes": "GT-26 PRECISION UPDATE 2026-07-10: core verdict remains correct. Require quorum-relative finality and actionable source-diverse ledger/Core-quorum/archive checks; one endpoint cannot prove absence of a split.\nGT-26 PRECISION UPDATE 2026-07-10: strengthen operational detection without recasting the core as false."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/papers/stellar-consensus-protocol.pdf",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/transaction-lifecycle",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/validators/admin-guide/monitoring",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/validators/admin-guide/publishing-history-archives",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Externalized slots do not later change on a node under SCP safety assumptions; fork/split risk is detected with source-diverse ledgers, Core quorum diagnostics, and archive integrity checks.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: SCP paper, transaction lifecycle, Core monitoring/archive docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: SCP paper, transaction lifecycle, Core monitoring/archive docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Docs recovery of quorum-intersection limitations and fields",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The core finality/quorum answer is correct; the evidence and operational fork-detection guidance were too generic and did not name the strongest Core quorum diagnostics.",
+      "evidence": [
+        "Solo scratchpad 575 GT-26 primary 3269 and blind 3271; consensus/clawback sibling sweep."
+      ],
+      "rootCause": [
+        "No core truth error; generic archive citations displaced actionable validator-monitoring evidence."
+      ]
+    },
+    "origin": "raven-next q-edge-validators-reverse-tx-fork-detection"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "id": "q-hot-sdf-xlm-holdings-sales",
+  "question": "How does SDF manage and sell its XLM holdings, does it aim to support the XLM price, and is another supply burn like 2019 planned?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "SDF uses XLM entrusted under its published mandate and describes selling existing XLM through **Kraken, Coinbase, Bitstamp, and direct sales** to fund operating expenses and broader mandate work. Those sales do not mint new XLM. Current disclosures discuss liquidity and price discovery, but they do not promise an XLM price peg, floor, or guarantee. SDF's **November 2019** burn announcement also said it would not burn additional lumens. As of **2026-07-10**, no newer primary SDF announcement of another burn was found in the current mandate/reporting surfaces. Treat both the 2019 statement and current absence as dated evidence—not a perpetual guarantee or forecast. Use the live mandate/dashboard or latest quarterly report for any balance, and do not sum mixed-timestamp bucket rows as a synchronized exhaustive holding.",
+    "keyFacts": [
+      "Explains current exchange/direct-sale purpose without implying minting or price guarantees.",
+      "Represents the 2019 no-additional-burn statement and 2026-07-10 recheck as dated, source-bounded evidence."
+    ],
+    "avoid": [
+      "Do NOT claim SDF pegs or guarantees XLM's price.",
+      "Do NOT predict a burn, turn the 2019 statement into a protocol impossibility, or treat named mixed-timestamp accounts as exhaustive current holdings."
+    ],
+    "notes": "Snapshot 2026-06-29. No current primary source found announcing another burn (the November 2019 burn remains a one-time historical event). Reserve/sales details are report-sensitive; verify the latest SDF report if exact figures are needed. DIFFERENTIATED from q-hot-sdf-transparency-wallets-reports (which owns address/report discovery); this file owns the price-support-myth plus future-burn-myth debunk.\nAlso good if the answer: References SDF mandate, transparency, or quarterly reporting as the proper source for current reserve/use disclosures. | Contrasts the 2019 supply burn as a one-time historical event rather than a recurring tokenomics mechanism.\nGolden cites: A current SDF mandate/transparency/reporting source, plus a dated source for any stated future-burn claim.\nGT-28 CORRECTION 2026-07-10: sales fund operations/mandate work; no price guarantee is disclosed. The 2019 no-additional-burn statement and the current no-new-plan sweep are dated evidence, not eternal promises."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/foundation/mandate",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/sdfs-next-steps",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/quarterly-reports",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SDF sells existing XLM through named exchanges/direct sales for operations and mandate work, discloses no price guarantee, and its 2019 no-additional-burn statement has not been superseded by a newer primary plan found through 2026-07-10.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current SDF mandate, 2019 Next Steps, and Q1 2026 report",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: official dashboard and mandate-linked Horizon reads",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The mandate/price-support distinction is sound, but the future-burn negative needed the dated 2019 statement and a current source-bounded recheck rather than generic speculation language.",
+      "evidence": [
+        "Solo scratchpad 575 GT-28 primary 3274 and blind 3275; seven-case substantive agreement."
+      ],
+      "rootCause": [
+        "Eval-side negative-claim provenance collapsed a dated policy statement and current search absence.",
+        "improvements/stellar-docs/sd-012-mandate-wallet-label-drift.md"
+      ]
+    },
+    "origin": "raven-next q-hot-sdf-xlm-holdings-sales"
+  }
+}

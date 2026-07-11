@@ -1,0 +1,104 @@
+{
+  "id": "q-ti-block-explorer-basics",
+  "question": "Which block explorer do I use to look up a Stellar tx/account/contract by hash/address (stellar.expert), and what can it show me?",
+  "surface": [
+    "scout.searchProjects"
+  ],
+  "golden": {
+    "answer": "Choose the **network first**, then search with the strongest identifier: transaction hash; `G...`, `M...`, or `C...` address; ledger; liquidity-pool ID; or classic asset **code plus issuer**. StellarExpert is a useful first stop on its supported public networks, but the official explorer page marks it unavailable for Futurenet. StellarChain and Stellar Explorer advertise different network coverage; verify the current page rather than assuming every UI supports every network.\n\nExplorers are indexed/interpreted views: inspect transaction status/result, ledger/time, source, operations, fees/signatures, events/metadata, balances/trustlines/offers/trades, or contract/Wasm details where the selected explorer exposes them. A missing result on the wrong network is not nonexistence, and UI labels/market statistics can lag. Stellar Lab is an official developer inspection complement, not a permanent public index or custody authority.",
+    "keyFacts": [
+      "Requires exact network selection and canonical identifiers, including asset code plus issuer.",
+      "States that StellarExpert is not currently listed for Futurenet and explorer coverage differs.",
+      "Treats explorer output as indexed/interpreted and freshness-sensitive; a miss is not proof of nonexistence.",
+      "Uses Lab as a developer complement, not a permanent archive."
+    ],
+    "avoid": [
+      "Do NOT claim every explorer supports Mainnet/Testnet/Futurenet equally or identify an asset by ticker alone.",
+      "Do NOT treat a missing/wrong-network result as proof the object never existed.",
+      "Do NOT claim an explorer proves custody, reverses transactions, recovers funds, or supplies timeless UI/market facts."
+    ],
+    "notes": "Verified explorer home URLs and official Stellar Lab docs on 2026-06-29. Specific explorer UI fields can change; Phase 3 may screenshot current UI if it wants stricter UI-field claims.\nAlso good if the answer: Mentions StellarChain as an alternate explorer with contract support, with source caveat if only site-level verification was available. | Cites a live explorer URL and an official Stellar Lab/explorer-related docs page.\nGolden cites: A live explorer URL. | An official Stellar Lab or developer docs page describing transaction/contract inspection.\nGT-51 CORRECTION 2026-07-11: grade network/identifier discipline and dated explorer capability, not a memorized UI field list or a universal retention scalar."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/developer-tools/block-explorers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/lab/transaction-dashboard",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/lab/smart-contracts/contract-explorer",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://stellar.expert/explorer/public",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://stellarchain.io",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://steexp.com",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Explorer lookup must start with the exact network and canonical identifier; StellarExpert is not listed for Futurenet while other explorers advertise different coverage.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current official block-explorer and Lab documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current explorer-owned interfaces/pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: read-only explorer/API checks",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited explorer overview treated network/UI coverage as timeless and did not clearly teach code-plus-issuer asset identity, wrong-network misses, or the official absence of StellarExpert Futurenet coverage.",
+      "evidence": [
+        "Solo scratchpad 575 GT-51 primary/blind matrices independently agreed on the product/network/freshness correction.",
+        "Sibling sweep checked q-ti-stellar-lab-usage-and-new-ui and the RPC-retention cluster; the answer does not promote Lab's stale seven-day scalar."
+      ],
+      "rootCause": [
+        "Eval-side product/network freshness drift.",
+        "improvements/stellar-docs/sd-023-rpc-event-retention-config-drift.md"
+      ]
+    },
+    "origin": "raven-next q-ti-block-explorer-basics"
+  }
+}

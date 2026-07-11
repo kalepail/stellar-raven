@@ -1,0 +1,89 @@
+{
+  "id": "q-soroban-zk-bn254-poseidon",
+  "question": "Can I verify BN254-based proofs and use Poseidon hashing natively on Soroban yet?",
+  "surface": [
+    "skills.stellar-dev.zk-proofs"
+  ],
+  "golden": {
+    "answer": "Yes on current networks. **CAP-0074** and **CAP-0075** are Final and shipped in Protocol 25: BN254 G1 add/mul and multi-pairing checks, plus configurable Poseidon/Poseidon2 permutation host functions over supported scalar fields. **CAP-0080 / Protocol 26** added efficient BN254 MSM, scalar arithmetic, and curve checks. Mainnet/Testnet now report Protocol 27, and soroban-sdk 27 exposes BN254 plus Poseidon/Poseidon2 APIs. These are cryptographic primitives, not turnkey UltraHonk/Groth16 verifiers, fixed application hashes, or end-to-end private-payment systems; match the proof curve, encoding, parameters, and application policy.",
+    "keyFacts": [
+      "Names CAP-74/75 as Final/P25 and CAP-80 as the P26 extension.",
+      "Distinguishes primitives/permutations from full proof systems and applications."
+    ],
+    "avoid": [
+      "Do NOT call BN254/Poseidon merely proposed or swap CAP-74/75 roles.",
+      "Do NOT attribute all P26 operations to P25 or call the host functions a turnkey verifier."
+    ],
+    "notes": "Re-verified CAP-0074/CAP-0075 headers via gh api on 2026-06-29 (both Final, Protocol version 25). Distinct from BLS12-381 (P22/CAP-0059). Differentiation: this file is the pure availability/status probe (is it usable yet — protocol + SDK status, symmetric with q-soroban-zk-bls12-381); the exact host-fn signatures, byte layout/endianness, and EIP-196/197 parity are owned by q-sor-x-ray-bn254-sdk-gap and are intentionally NOT scored here.\nAlso good if the answer: Answer should flag the activation timing (X-Ray mainnet ~January 22, 2026) and that the contract needs an SDK/CLI version exposing these host functions. | These are distinct from the earlier BLS12-381 functions (Protocol 22 / CAP-0059).\nGolden cites: The Protocol 25 / X-Ray announcement or CAP-0074 / CAP-0075, or developers.stellar.org ZK page.\nGT-48 CORRECTION 2026-07-11: require exact P25 base/P26 extension and primitive-vs-proof-system distinctions."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0074.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0075.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0080.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/zk",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "CAP-0074 and CAP-0075 are Final/P25 for BN254 base operations and configurable Poseidon/Poseidon2 permutations; CAP-0080/P26 adds BN254 MSM/scalar arithmetic/curve checks, and current P27 networks/SDK expose them.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: CAP-0074/75/80 and SDK crypto source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: current Stellar ZK docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live P27 networks and SDK 27 inspection",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer blurred CAP-74/75/P25 base primitives with P26 extensions and proof systems, and some prior material still described the shipped features as proposed.",
+      "evidence": [
+        "Solo scratchpad 575 GT-48 primary 3333 and blind 3342; independent agreement with blind exact P25/P26 boundary; sd-021 owns source-link drift."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-021-p25-bn254-poseidon-source-links.md"
+      ]
+    },
+    "origin": "raven-next q-soroban-zk-bn254-poseidon"
+  }
+}

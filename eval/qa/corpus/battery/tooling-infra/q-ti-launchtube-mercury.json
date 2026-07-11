@@ -1,0 +1,118 @@
+{
+  "id": "q-ti-launchtube-mercury",
+  "question": "What are LaunchTube and Mercury — when do I need each (fee sponsorship / tx submission vs Soroban indexing), do they require API keys, and can a passkey smart wallet run fully client-side without them?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "LaunchTube and Mercury/Zephyr have different roles. LaunchTube was a transaction-submission and sponsorship service: it simulated, fee-bumped or sponsored, managed a source account and sequence, submitted, and retried transactions. Mercury/Zephyr is an indexing/query layer used to discover on-chain smart-wallet state, including passkey-to-wallet mappings. OpenZeppelin replaces the submission role, not the indexing role.\n\nCurrent official guidance is conflicted as of **2026-07-11**: Stellar's OpenZeppelin Relayer page calls LaunchTube discontinued and points new work to OpenZeppelin, while the still-published Guestbook prerequisites page continues to instruct users to obtain a LaunchTube JWT. Treat LaunchTube examples as legacy/path-specific and verify the maintained submitter for a new deployment; do not claim every official tutorial has already been cleaned up.\n\nClient-side passkey authorization does not make either service a protocol requirement. An app can sign client-side and submit through its own maintained path, but fee sponsorship, reliable submission, and reverse lookup/indexing are optional infrastructure concerns it must solve if needed. Keep any relayer or indexer credentials server-side; never expose JWTs, API keys, or signing secrets in public client code.",
+    "keyFacts": [
+      "Distinguishes LaunchTube's submission/sponsorship/sequence role from Mercury/Zephyr's indexing/query role.",
+      "Discloses the dated official-source conflict: the current Relayer page calls LaunchTube discontinued/replaced, while a published Guestbook page still instructs its use.",
+      "Explains that passkey signing can be client-side but relaying, sponsorship, and indexing are optional application infrastructure rather than protocol-mandated backends.",
+      "States that OpenZeppelin replaces LaunchTube's submission role, not Mercury's indexing role."
+    ],
+    "avoid": [
+      "Do NOT present LaunchTube as an unqualified current greenfield recommendation or claim every official tutorial has removed it.",
+      "Do NOT conflate Mercury with Mercuryo, a relayer, or a fee sponsor.",
+      "Do NOT claim OpenZeppelin replaces Mercury/Zephyr indexing.",
+      "Do NOT claim Stellar protocol requires a particular relayer/indexer or expose service credentials in frontend code."
+    ],
+    "notes": "GT-53 CORRECTION 2026-07-11: gate the durable submission-versus-indexing split and the explicit official-doc conflict. Do not require a claim that LaunchTube is currently available or universally unavailable; a DNS/API-root probe is not proof of global service state. Greenfield advice may prefer a maintained submitter while legacy tutorials are labeled as such."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "disputed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/openzeppelin-relayer",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/guestbook/passkeys-prerequisites",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/kalepail/launchtube",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/xycloo/zephyr-vm",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.mercurydata.app/zephyr-full-customization/introduction",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "LaunchTube handled transaction simulation/submission, fee sponsorship, source-account sequencing and retries, while Mercury/Zephyr is an indexing/query layer",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Stellar Guestbook and OpenZeppelin migration pages, accessed 2026-07-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: archived LaunchTube source and current Zephyr source, accessed 2026-07-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: Mercury/Zephyr documentation and dated Scout project evidence",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Official Stellar guidance consistently treats LaunchTube as current",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: the OpenZeppelin Relayer page says LaunchTube is discontinued/replaced",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: the still-published Guestbook prerequisites page continues to instruct users to obtain a LaunchTube JWT",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer got the submission-versus-indexing split mostly right but presented LaunchTube as current without disclosing a live conflict between official Stellar pages. GT-53 independently confirmed the durable role split, the current migration signal, and the fact that neither service is a protocol requirement.",
+      "evidence": [
+        "Solo scratchpad 575, GT-53 primary process 3372 and blind process 3378, independently reviewed 2026-07-11.",
+        "Blind KV gt53/blind-lock/process-3378 sealed the ten-case matrix at 2026-07-11T04:50:20.546Z before reading the primary/current corpus; the report records the official-page conflict and sibling sweep."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-027-launchtube-passkey-migration-drift.md",
+        "Eval-side freshness drift: the snapshot promoted one legacy tutorial path into an undated current architecture."
+      ]
+    },
+    "origin": "raven-next q-ti-launchtube-mercury"
+  }
+}

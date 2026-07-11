@@ -1,0 +1,164 @@
+{
+  "id": "q-ti-self-host-retention-backfill",
+  "question": "When self-hosting Horizon/RPC, how do HISTORY_RETENTION_COUNT / HISTORY_RETENTION_WINDOW affect DB size (~1.3 TB for 30d), and why doesn't increasing the window backfill older history?",
+  "surface": [
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Horizon and Stellar RPC have different retention and recovery mechanisms. As of **2026-07-11**, RPC **v27.1.1** defaults `HISTORY_RETENTION_WINDOW=120960`, `SERVE_LEDGERS_FROM_DATASTORE=false`, and `BACKFILL=false`. RPC retention is a positive ledger count; zero is invalid, and current source does not impose a seven-day maximum. An ordinary empty RPC database starts at the current History Archive State tip and accumulates forward. Increasing retention preserves more future local ledgers, transactions, and events; it does not recreate rows already pruned or never ingested.\n\nCurrent RPC does have an explicit backfill path. Since v25.1, `BACKFILL=true` can synchronously materialize approximately the configured trailing window from a compatible datastore before normal serving/live ingestion. It requires `SERVE_LEDGERS_FROM_DATASTORE=true`, available datastore coverage, and compatible/gapless local state; checkpoint alignment makes exact one-ledger coverage unsafe to promise. Without materialization, direct datastore fallback remains limited to `getLedgers`—`getTransaction`, `getTransactions`, and `getEvents` read retained local data.\n\nHorizon **v27.0.0** has a different executable default: `HISTORY_RETENTION_COUNT=0` means unlimited/no automatic history reaping. Official prose conflicts: `518400` is an approximate one-month recommendation, not the binary default. Missing Horizon history requires explicit `stellar-horizon db reingest range`; a nonzero active retention window can purge reingested rows outside that trailing window, and a requested ledger 1 normalizes to 2. Do not turn dated estimates such as 40 GB/day, 1.3 TB/month, or the v25.1 one-week backfill benchmark into universal sizing requirements—measure the chosen release, filters, schema, datastore, and workload.",
+    "keyFacts": [
+      "States the three RPC v27.1.1 defaults and that RPC retention is positive-only with no source-enforced seven-day maximum.",
+      "Explains fresh-database tip start, future retention, and why raising a window alone does not restore missing rows.",
+      "Explains synchronous datastore-backed BACKFILL, its serve flag/coverage/state prerequisites, and approximate checkpoint-aligned scope.",
+      "Keeps direct datastore fallback getLedgers-only; local transaction/event methods require retained or materialized rows.",
+      "States Horizon v27.0.0 default 0/unlimited and preserves the official 0-versus-518400 wording conflict without pinning the recommendation as default.",
+      "Requires explicit Horizon range reingestion, notes nonzero reaping and ledger-1 normalization, and rejects universal storage/backfill benchmarks."
+    ],
+    "avoid": [
+      "Do NOT describe retention as downloading/backfilling history or promise that a larger window restores deleted or never-ingested rows.",
+      "Do NOT use zero for unlimited RPC retention, claim seven days is a hard maximum, or use the retired transaction-retention-window setting.",
+      "Do NOT enable/describe BACKFILL without the compatible datastore, serve flag, local-state, coverage and checkpoint qualifications.",
+      "Do NOT claim a datastore extends every RPC method or infer datastore depth from a local oldestLedger field.",
+      "Do NOT call 518400 the Horizon executable default or expect reingested rows outside a nonzero trailing window to remain.",
+      "Do NOT conflate RPC BACKFILL, Horizon reingestion, Core catchup, schema migration/state rebuild, Galexie export or provider policy, and do not gate on a fixed GB/day figure."
+    ],
+    "notes": "GT-54 CORRECTION 2026-07-11: this case owns executable retention, RPC BACKFILL and Horizon reingestion mechanics. The full-history sibling owns component/query boundaries; neither may collapse retention-only behavior into a universal no-backfill claim. GT-54 CORRECTION 2026-07-11: current Horizon source defaults HISTORY_RETENTION_COUNT to 0/unlimited; 518400 is conflicting official recommendation/default prose, not the executable default. RPC v27.1.1 ships 120960 as a dated binary default, not a hard maximum or universal provider policy. The user's ~1.3 TB/30d figure was not made a required exact claim; exact DB size depends on version, filters, and workload.\nAlso good if the answer: Mentions changing Horizon ingestion filters also does not retroactively backfill matching historical data; a historical range ingestion is needed. | Caveats storage estimates like 1.3TB/30d as workload/version-dependent rather than a universal constant.\nGolden cites: Horizon ingestion storage/retention docs. | RPC retention/data-lake docs. | Horizon filtering docs if discussing retroactive filtering/backfill.\nGrade the version-dated executable semantics and product/method boundaries, not an exact database size, provider window, checkpoint floor, or backfill duration. The v25.1 150 GB/<3h/<3 GB figures are release notes, not requirements."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/admin-guide/data-lake-integration",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc/blob/v27.1.1/cmd/stellar-rpc/internal/config/options.go",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc/blob/v27.1.1/cmd/stellar-rpc/internal/ingest/service.go",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc/blob/v27.1.1/cmd/stellar-rpc/internal/ingest/backfill.go",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc/blob/v27.1.1/cmd/stellar-rpc/internal/methods/get_ledgers.go",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/admin-guide/configuring",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/admin-guide/ingestion",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-horizon/blob/v27.0.0/internal/flags.go",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-horizon/blob/v27.0.0/internal/ingest/reap.go",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-horizon/blob/v27.0.0/cmd/db.go",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "RPC v27.1.1 defaults HISTORY_RETENTION_WINDOW=120960, SERVE_LEDGERS_FROM_DATASTORE=false and BACKFILL=false; BACKFILL synchronously materializes an approximate trailing window from a compatible datastore before live ingestion",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official RPC data-lake/configuration documentation, including stale/conflicting prose, inspected 2026-07-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar-rpc v27.1.1 options.go, service.go, backfill.go, database and method handlers",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/F: read-only getHealth plus narrow config/ingest source tests recorded in the sealed GT-54 blind matrix",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "C/F: read-only getHealth plus narrow config/ingest source tests recorded in the sealed GT-54 blind matrix",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Horizon v27.0.0 executable default HISTORY_RETENTION_COUNT is 0/unlimited; 518400 is a one-month recommendation despite conflicting official wording, and missing rows require explicit db reingest range",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Horizon configuring/ingestion pages disagree on default wording",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar-horizon v27.0.0 flags.go, reaper and db reingest source resolve the executable behavior",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: narrow reaper/reingest source tests recorded by the blind review",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-source-conflict."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — GT-53 corrected one Horizon grader-note atom, but the inherited answer still denied current RPC backfill, treated retention as a universal no-backfill slider, and retained stale/default/storage implications. GT-54 independently confirmed the executable RPC v27.1.1 BACKFILL path and the distinct Horizon reingestion model.",
+      "evidence": [
+        "Solo scratchpad 575, GT-54 primary process 3383 and pre-read-locked blind process 3386, independently reviewed 2026-07-11; the blind matrix was sealed before primary read and replaced the primary's cautious no-backfill treatment with v27.1.1 source/test evidence.",
+        "Blind KV gt54/blind-lock/process-3386 records the ten-case seal at 2026-07-11T06:06:25.716Z, primaryReadAt 2026-07-11T06:13:03.599Z, and the retention amendment as an exact final action.",
+        "Sibling sweep checked q-ti-run-tune-own-horizon, q-ti-self-host-core-rpc-full-history, q-infra-rpc-event-retention, q-ti-historical-events-beyond-retention, and historical-balance cases; the shared rule is method-specific retention and getLedgers-only direct datastore fallback."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-023-rpc-event-retention-config-drift.md",
+        "improvements/stellar-docs/sd-028-horizon-retention-default-wording-conflict.md",
+        "improvements/stellar-docs/sd-029-rpc-backfill-documentation-gap.md",
+        "Eval-side Horizon/RPC role collapse: retention, RPC BACKFILL, Horizon reingestion, Core catchup, migration/state rebuild and Galexie export were treated as one mechanism."
+      ]
+    },
+    "origin": "raven-next q-ti-self-host-retention-backfill"
+  }
+}

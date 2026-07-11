@@ -1,0 +1,93 @@
+{
+  "id": "q-defi-defindex-honest",
+  "question": "What is Defindex's TVL and exact product lineup?",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_project",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "**DeFindex** is noncustodial multi-token vault/yield infrastructure on Soroban, with vault and strategy contracts, a factory/GUI, REST API, TypeScript and Flutter SDKs, dfToken vault shares, partner fees, sponsored transactions, and integration/zapper support. Its operator strategy endpoint exposed seven BlendStrategy adapters on 2026-07-10; those are adapters, not seven distinct end-user products.\n\nCurrent TVL is available but source-relative: operator site **$16.57M**, DeFiLlama about **$16.49M**, Scout **$16.386M as of 2026-07-09**, and Dune's week-of-2026-07-06 series about **$16.255M**. Describe this as an approximate dated $16.26M-$16.57M range unless methodologies are reconciled. Do not select one as timeless truth or repeat the operator's older undated $1.1M headline.",
+    "keyFacts": [
+      "Describes DeFindex's current noncustodial vault/API/SDK/dfToken surface from operator sources.",
+      "Reports dated TVL sources and methodology disagreement rather than claiming no figure exists or freezing one number."
+    ],
+    "avoid": [
+      "Do NOT say current TVL is unavailable, repeat an undated $1.1M value, or turn one snapshot into permanent truth.",
+      "Do NOT inflate strategy adapters into separate products or claim guaranteed yield."
+    ],
+    "notes": "HONEST-NO-INFO case for TVL. Updated grounding: Scout NOW carries DeFindex (by PaltaLabs, scfAwarded ~$150K, types=[Lending]) as non-custodial tokenized yield vaults routing across Blend etc. So identity is well-grounded; the honesty test is specifically about exact current TVL (not surfaced) — reward 'cite the role + flag TVL unknown' over a fabricated number.\nAlso good if the answer: Notes DeFindex's role as a Blend-aware yield router/aggregator (deposits flow into underlying lenders like Blend).\nGolden cites: A source for DeFindex's role (Scout project record), plus an explicit note that exact current TVL is not in the corpus.\nCorrected 2026-07-10. Grade product identity plus dated/method-aware TVL reporting; no exact scalar is required."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-10",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://www.defindex.io/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.defindex.io/api/strategies",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.defindex.io/llms.txt",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://defillama.com/protocol/defindex",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "DeFindex has current product/API evidence and contemporaneous TVL observations near $16.3M-$16.6M",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: DeFindex site/docs/strategy API",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: Scout, DeFiLlama, Dune, and independent conflict sweep asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: Scout, DeFiLlama, Dune, and independent conflict sweep asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-09",
+      "by": "Golden-truth sweep import — GT-15 lanes found the inherited 'current TVL is not surfaced' answer stale. Multiple current sources and an operator strategy API now exist, with a modest source/methodology range that must be disclosed rather than denied or collapsed.",
+      "evidence": [
+        "Operator $16.57M; DeFiLlama ~$16.49M; Scout $16.386M asOf 2026-07-09; Dune weekly $16.255M",
+        "Solo scratchpad 575 GT-15 processes 3243/3246"
+      ],
+      "rootCause": [
+        "eval-side no-information snapshot outlived new live API/TVL evidence"
+      ]
+    },
+    "origin": "raven-next q-defi-defindex-honest"
+  }
+}

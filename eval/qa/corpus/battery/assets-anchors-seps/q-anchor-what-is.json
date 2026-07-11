@@ -1,0 +1,43 @@
+{
+  "id": "q-anchor-what-is",
+  "question": "What is an anchor on Stellar?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "- An **anchor** is the Stellar term for an **on/off-ramp** that connects the Stellar network to traditional financial rails (fiat) [1].\n- Anchors **accept fiat deposits and issue equivalent tokens** on Stellar, and **redeem** those tokens back to real-world value (fiat) [1].\n- They are typically **financial institutions or fintech companies**, and they implement standard **SEPs** (SEP-6/10/12/24/31/38) so any compliant wallet can interoperate with them [1].\n- Example: **MoneyGram Ramps** is an anchor providing cash in/out [1].",
+    "keyFacts": [
+      "An anchor is an on/off-ramp bridging the Stellar network to traditional financial rails (fiat).",
+      "Anchors accept fiat deposits and issue equivalent Stellar tokens, and redeem tokens back to real-world value."
+    ],
+    "avoid": [
+      "Do NOT define an anchor as a validator, a smart contract, or a consensus node."
+    ],
+    "notes": "Dossier §5.1. Definition verified against the Learn About Anchors page.\nAlso good if the answer: Anchors are typically financial institutions or fintech companies. | They implement standard SEPs so any compliant wallet can interoperate with them.\nGolden cites: The Learn About Anchors page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/anchors",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-02-anchor-discovery-platform-disbursement accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-anchor-what-is"
+  }
+}

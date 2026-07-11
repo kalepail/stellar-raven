@@ -1,0 +1,83 @@
+{
+  "id": "q-pc-tx-finality-failure-semantics",
+  "question": "If a Stellar transaction fails or expires, is it recorded on-ledger and does it consume the sequence number, and how do I tell expired, dropped, and pruned transactions apart?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "Submission is not finality. If a transaction is rejected before ledger inclusion, it consumes neither sequence nor fee. If included with `tx_failed`, the failure is ledger history, the fee and source sequence are consumed, and operation effects are rolled back according to protocol semantics. Expired or dropped pre-inclusion submissions are different. Stellar RPC **`getTransaction` returns only `SUCCESS`, `FAILED`, or `NOT_FOUND`**. `PENDING` is a `sendTransaction` admission/polling status, not a getTransaction result, and send acceptance is not ledger finality. Poll getTransaction or a sufficient-retention history source. `NOT_FOUND` alone cannot prove nonexistence because it may mean not yet recorded, absent, or outside that provider's retention. Check submission response, result XDR/code, ledger inclusion, timebounds, and retained history.",
+    "keyFacts": [
+      "Distinguishes rejected/dropped pre-inclusion transactions from included success/failure and their fee/sequence effects.",
+      "Separates sendTransaction PENDING from getTransaction SUCCESS/FAILED/NOT_FOUND and explains retention ambiguity."
+    ],
+    "avoid": [
+      "Do NOT say every submission is on-ledger or that included failure leaves fee/sequence untouched.",
+      "Do NOT assign PENDING to getTransaction, treat send acceptance as finality, or use one NOT_FOUND as proof of nonexistence."
+    ],
+    "notes": "GT-30 CORRECTION 2026-07-10: getTransaction statuses are SUCCESS/FAILED/NOT_FOUND. PENDING is a sendTransaction admission/polling state. Included failures consume fee/sequence; pre-inclusion rejection/drop does not. NOT_FOUND remains retention/processing ambiguous.\nGT-30 independently confirmed by processes 3277/3279; sd-003 owns method-reference discoverability."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/transaction-lifecycle",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getTransaction",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/sendTransaction",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "getTransaction returns SUCCESS, FAILED, or NOT_FOUND; PENDING belongs to sendTransaction admission/polling state, and NOT_FOUND remains retention/processing ambiguous.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official getTransaction/sendTransaction method and lifecycle docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/F: live FAILED transaction RPC/Horizon lookup and provider-retention probe",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "C/F: live FAILED transaction RPC/Horizon lookup and provider-retention probe",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inclusion/failure core is correct, but the inherited lookup paragraph incorrectly assigns PENDING to getTransaction by conflating sendTransaction admission statuses with ledger-result lookup statuses.",
+      "evidence": [
+        "Solo scratchpad 575 GT-30 primary 3277 and blind lock/report 3279; exact truth agreement on the status-surface correction."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-003-rpc-method-reference-pages-unindexed.md",
+        "Eval-side sendTransaction/getTransaction status conflation."
+      ]
+    },
+    "origin": "raven-next q-pc-tx-finality-failure-semantics"
+  }
+}

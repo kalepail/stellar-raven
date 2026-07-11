@@ -1,0 +1,84 @@
+{
+  "id": "q-edge-noinfo-stellar-native-privacy-default",
+  "question": "How do I turn on Stellar's built-in fully-private, shielded-by-default transaction mode for all my payments?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "Stellar has no network-wide switch, CLI flag, or account setting that makes all payments shielded by default. Ordinary Stellar transactions and standard asset/token activity are public by default. Privacy requires an explicit application or token protocol: current official material describes privacy pools and a **Testnet Confidential Tokens developer preview**; Confidential Tokens hide balances and transfer amounts but leave sender/receiver addresses public, while Stellar Private Payments is an unaudited research prototype with different visibility boundaries. BLS12-381 (CAP-0059/P22) and BN254/Poseidon (CAP-0074/0075/P25) are cryptographic primitives, not a global privacy mode. State each product's network, audit, and field-visibility status; do not fabricate enablement steps.",
+    "keyFacts": [
+      "Rejects a global shielded-by-default toggle and scopes transparency to ordinary/default activity.",
+      "Distinguishes current application-layer privacy status and field visibility from P22/P25 cryptographic primitives."
+    ],
+    "avoid": [
+      "Do NOT invent an enablement command or claim Stellar is shielded by default.",
+      "Do NOT say all application-layer balances/amounts must remain visible or imply Testnet/research prototypes are audited Mainnet products."
+    ],
+    "notes": "GT-25 CORRECTION 2026-07-10: no global privacy toggle exists, but current optional applications can hide defined fields. Grade ordinary/default transparency plus explicit product network, audit, and visibility status; BN254/Poseidon are live P25 primitives, not a turnkey mode.\nGT-25 independently confirmed by processes 3268/3273."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "stellarDocs",
+    "freshness": "scheduled",
+    "trap": "fabrication-bait"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/privacy",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/zk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0074.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0075.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Ordinary Stellar activity is public by default; optional application protocols have narrower privacy guarantees, and Confidential Tokens is a Testnet developer preview rather than a global mode.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Privacy on Stellar, ZK, and 2026-06-29 Confidential Tokens pages",
+            "observedAt": "2026-06-29",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0059, CAP-0074, CAP-0075 and protocol assignments",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The no-global-toggle correction remains valid, but the inherited answer overgeneralized ordinary ledger visibility to optional privacy applications and described now-live Protocol 25 primitives as merely later.",
+      "evidence": [
+        "Solo scratchpad 575 GT-25 primary 3268 and blind 3273; both independently confirmed product/network/audit/field-visibility boundaries."
+      ],
+      "rootCause": [
+        "Eval-side freshness and layer-boundary drift; official docs are current and discoverable."
+      ]
+    },
+    "origin": "raven-next q-edge-noinfo-stellar-native-privacy-default"
+  }
+}

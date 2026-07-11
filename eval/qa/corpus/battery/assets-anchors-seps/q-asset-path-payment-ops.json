@@ -1,0 +1,49 @@
+{
+  "id": "q-asset-path-payment-ops",
+  "question": "How do path payments work on Stellar and which two operations implement them?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "A **path payment** converts one asset into another in a **single atomic transaction**, routing\nacross the **Stellar DEX orderbook and/or AMM liquidity pools** to find a path — so the sender pays\nin one asset and the recipient receives a different one, and neither party has to hold the\nintermediate asset (this is what enables on-chain FX, e.g. USDC → EURC) [1]. Two operations\nimplement it [1]:\n\n- **`PathPaymentStrictSend`** — the sender fixes the **exact source amount**; the recipient receives\n  **at least `destMin`** of the destination asset.\n- **`PathPaymentStrictReceive`** — the recipient is guaranteed an **exact destination amount**; the\n  sender pays **at most `sendMax`**.\n\nIt settles in roughly one ledger close (~5 s) at the normal low network fee — no off-chain bridge or\nthird-party DEX router is involved.\n\nSource: [1] developers.stellar.org path-payments / liquidity-on-the-Stellar-DEX docs.",
+    "keyFacts": [
+      "Names PathPaymentStrictSend and PathPaymentStrictReceive as the two path-payment operations.",
+      "Explains a path payment converts one asset to another by routing across the DEX orderbook and/or AMM pools in a single atomic transaction."
+    ],
+    "avoid": [
+      "Do NOT invent operation names (e.g. 'PathSwapOp', 'CrossAssetPaymentOp') as the canonical ops.",
+      "Do NOT claim path payments require an off-chain bridge or a third-party DEX router."
+    ],
+    "notes": "Dossier §3.2. Two ops: PathPaymentStrictSend / PathPaymentStrictReceive. Verified against developers.stellar.org path-payments / liquidity docs.\nAlso good if the answer: Strict-send fixes the source amount (receiver gets at least dest_min); strict-receive fixes the destination amount (sender pays at most send_max). | Settles in a few seconds (≈ one ledger close, ~5s) at low fee.\nGolden cites: A path-payments page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/encyclopedia/transactions-specialized/path-payments",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/liquidity-on-stellar-sdex-liquidity-pools",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-03-classic-assets-clawback-trustlines-paths accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-path-payment-ops"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "id": "q-defi-bridges-content",
+  "question": "What cross-chain bridging options exist for moving assets in and out of Stellar?",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.search_content_semantic"
+  ],
+  "golden": {
+    "answer": "Return a **dated bridge inventory** and classify every item by layer and token representation. As of 2026-07-10, useful verified categories included:\n- **Circle CCTP:** native USDC burn/mint, observed through an Allbridge Next route.\n- **Allbridge Core:** native stablecoin liquidity pools plus Allbridge messaging; a tested route delivered canonical Stellar USDC without CCTP.\n- **Squid:** router/aggregator; its tested canonical-USDC path used Intents/RFQ, while an explicit Axelar path delivered USDC.axl.\n- **Axelar:** generalized Stellar interoperability/bridge infrastructure; the destination representation depends on the selected route.\n\nTreat SDF's **Starbridge** as historical research/prior art, not a current production recommendation. Treat **Rozo Intent Pay** as adjacent payment/settlement infrastructure rather than a substitute for identifying the bridge route and destination asset. Historical Allbridge Classic routes belong in a dated history section only. Re-query provider APIs/UIs before use.",
+    "keyFacts": [
+      "Separates routers, messengers, transfer mechanisms, and destination token representations in a dated current inventory.",
+      "Labels Starbridge and deprecated/classic routes as historical and Rozo as adjacent payment infrastructure."
+    ],
+    "avoid": [
+      "Do NOT use Allbridge, Axelar, or Squid brand names alone as proof of mechanism, route support, or native asset representation.",
+      "Do NOT present Starbridge as a current production route or freeze one route list."
+    ],
+    "notes": "GROUNDED: Allbridge confirmed as the multi-chain workhorse bridge for Stellar (dossier primary source: stellar.org Allbridge launch press, July 2023). General Message Passing (GMP) documented on developers.stellar.org cross-chain page; Starbridge was an SDF research project (trust-minimized Stellar-Ethereum). Topic-coverage → lumenloop_search_content_semantic. Don't fabricate bridges. REVIEWED 2026-06-29: re-confirmed Allbridge live on Scout (Allbridge Core, native USDC/stablecoin cross-chain to Ethereum/Solana/Polygon/Base/Arbitrum/OP). Both sources: URLs 200. Verified AXELAR is real on Stellar (OtterSec audit of axelarnetwork/axelar-amplifier-stellar) — folded in as the concrete GMP provider, replacing the unverified Celo/XRPL-specific chain claim with the live-confirmed Allbridge Core chain set. Corrected Rozo: it is its own intent-based cross-chain stablecoin payments network (rozo.ai), NOT a layer 'inside Soroswap' — softened to avoid that misattribution.\nAlso good if the answer: Mentions related cross-chain mechanisms (e.g. Axelar / General Message Passing (GMP), Starbridge research, or an intent-based cross-chain payments network like Rozo) where relevant.\nGolden cites: Each named bridge/mechanism carries a source.\nCorrected 2026-07-10. This is a live inventory/output-classification case; historical research and adjacent payment layers are not current bridge routes."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://developers.circle.com/cctp/references/stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs-core.allbridge.io/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.axelar.dev/dev/send-tokens/stellar/intro",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar-deprecated/starbridge",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current bridge discovery must separate UI/router, messenger/protocol, mechanism, and destination asset",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: Circle, Allbridge, Axelar, Squid, Starbridge, and Rozo primary/code records",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Circle, Allbridge, Axelar, Squid, Starbridge, and Rozo primary/code records",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: live route discovery and independent conflict sweeps asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: live route discovery and independent conflict sweeps asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — GT-15 independent lanes found the inherited bridge inventory stale and category-conflated: it mixed routers, protocols, historical research, and payment products and omitted the current CCTP/Squid representation split.",
+      "evidence": [
+        "Solo scratchpad 575 GT-15 processes 3243/3246"
+      ],
+      "rootCause": [
+        "eval-side historical/current and product-layer conflation in a freshness-sensitive discovery answer"
+      ]
+    },
+    "origin": "raven-next q-defi-bridges-content"
+  }
+}

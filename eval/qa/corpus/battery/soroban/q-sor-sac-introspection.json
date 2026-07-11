@@ -1,0 +1,90 @@
+{
+  "id": "q-sor-sac-introspection",
+  "question": "How do I detect whether a contract address is a SAC, deterministically derive a SAC's contract id from its classic asset, and read the underlying asset code/issuer back out of a SAC?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "A classic asset has a deterministic, network-specific reserved SAC address derived from `ENVELOPE_TYPE_CONTRACT_ID` plus network ID and nested `CONTRACT_ID_PREIMAGE_FROM_ASSET`; use `Asset.contractId(networkPassphrase)` or `stellar contract id asset`, never an ad-hoc `code:issuer` hash. The built-in instance is created on demand, not automatically for every reserved address. To identify a deployed SAC, read its `SCContractInstance.executable` and require current `CONTRACT_EXECUTABLE_STELLAR_ASSET`; SEP-41 methods alone prove only token compatibility. After SAC identity is established, public `name()` returns `native` or SEP-11 `CODE:G...`, and `symbol()` returns native/code, providing practical asset identity. There is no generic SEP-41 `asset()`/`issuer()` method. Do not infer issuer from `admin()`: issuer is initial admin, but `set_admin` makes current administration mutable. Deployment XDR, known-asset derivation, indexers, or implementation-level AssetInfo remain provenance alternatives; a C-address hash is not reversible.",
+    "keyFacts": [
+      "Uses current network-bound derivation and executableStellarAsset inspection.",
+      "Distinguishes public SAC name identity, absent generic issuer method, and mutable admin from original issuer."
+    ],
+    "avoid": [
+      "Do NOT use obsolete CONTRACT_EXECUTABLE_TOKEN/old preimage names, infer SAC from SEP-41 methods alone, claim every reserved SAC is deployed, or treat admin as immutable issuer identity."
+    ],
+    "notes": "Also good if the answer: Mentions native XLM's SAC has no issuer/admin.\nGolden cites: Official SAC docs. | Official contract transaction/XDR docs for `CONTRACT_ID_PREIMAGE_FROM_ASSET`. | SEP-41 or token guide for token-interface distinction.\nGT-43 blind controls current XDR/executable and mutable-admin precision."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-06.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-xdr",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/js-stellar-sdk",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current SAC identity, derivation, executable and admin semantics",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: current docs/XDR/SDK/host source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: current docs/XDR/SDK/host source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-43 live SAC simulations and primary/blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer used obsolete SAC executable/XDR names, missed executable-based detection and public name() identity, and treated issuer/admin as immutable.",
+      "evidence": [
+        "Solo scratchpad 575 GT-43 primary 3311 and blind 3320."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-020-sac-xdr-introspection-admin-drift.md"
+      ]
+    },
+    "origin": "raven-next q-sor-sac-introspection"
+  }
+}

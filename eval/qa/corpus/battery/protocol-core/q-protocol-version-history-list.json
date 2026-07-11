@@ -1,0 +1,79 @@
+{
+  "id": "q-protocol-version-history-list",
+  "question": "Walk me through Stellar's protocol upgrade history from Protocol 19 through the latest version, with the headline feature of each.",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "Stellar protocol history from P19 through live **Protocol 27**: P19 (2022-06-08) generalized transaction preconditions and signed-payload signers; P20/Soroban (2024-02-20) introduced Wasm smart contracts; P21 (2024-06-18) added secp256r1/passkeys and TTL extension; P22 (2024-12-05) added BLS12-381 and constructors; P23/Whisk (2025-09-03) introduced CAP-0063 parallel-scheduling support, CAP-0062 live/archival separation, and unified events—but initialized the dependent-cluster setting at one, with multi-cluster activation handled later through network settings; P24 (2025-10-22) corrected Whisk archival stability; P25/X-Ray (2026-01-22) added BN254 and Poseidon/Poseidon2; P26/Yardstick (2026-05-06) added configuration, arithmetic, TTL-v2, BN254, SAC, and strkey host changes; P27/Zipper (2026-07-08) activated CAP-0071 authentication delegation/address-bound credentials at ledger 63386819. The feature mappings are durable, but re-check the live network for the latest tail and current configuration.",
+    "keyFacts": [
+      "Correctly maps P19-P27 headline features and dates.",
+      "Describes P23 as capability introduction with initial one-cluster configuration, not immediate multi-cluster activation.",
+      "Keeps P27/Zipper active from 2026-07-08 and flags the tail/current settings as freshness-sensitive."
+    ],
+    "avoid": [
+      "Do NOT mis-pair features and protocol versions.",
+      "Do NOT call P27 pending or P26 latest after 2026-07-08, or imply P23 immediately enabled multiple dependent clusters."
+    ],
+    "notes": "GT-34 RECONCILIATION 2026-07-10: P27/Zipper is live from ledger 63386819 on 2026-07-08. P23 introduced CAP-0063 support with the dependent-cluster setting initially one; later network settings enabled multiple clusters. Grade feature/version mapping and dated live-tail verification. The P20 row says CAP-0046 series and does not imply a contiguous numbered range.\nGT-25/GT-34 independently reconciled: P27 live tail and P23 initial-one-cluster nuance are both effective; duplicate override composition was removed."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/tree/master/core",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://horizon.stellar.org/ledgers/63386819",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "P23 introduced CAP-0063 support with the setting initially one; the latest P27 tail remains unchanged.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: CAP/protocol source history",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live network protocol and settings probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The history list needed both the post-vote P27 tail and the P23 initial-one-cluster nuance. Two duplicate override keys silently discarded the earlier post-vote provenance, while inherited grader notes still called P27 future despite the effective answer saying it is live.",
+      "evidence": [
+        "Solo scratchpad 567 post-P27 re-verification; Solo scratchpad 575 GT-25 blind 3273 and GT-34 primary 3286/blind 3288 sibling reconciliation."
+      ],
+      "rootCause": [
+        "Eval-side compressed P23 headline plus duplicate JSON keys that silently replaced provenance without replacing stale grader notes."
+      ]
+    },
+    "origin": "raven-next q-protocol-version-history-list"
+  }
+}

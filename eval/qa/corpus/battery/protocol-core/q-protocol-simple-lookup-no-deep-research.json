@@ -1,0 +1,71 @@
+{
+  "id": "q-protocol-simple-lookup-no-deep-research",
+  "question": "Quick question: what's the Stellar Testnet network passphrase? Just need the string.",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "Testnet's network passphrase is **`Test SDF Network ; September 2015`**. This is a stable constant directly documented on Stellar's networks page, so a short answer and primary citation are sufficient. Mainnet and Futurenet use different passphrases; do not substitute them.",
+    "keyFacts": [
+      "Returns the exact Testnet passphrase and a primary source in a concise answer."
+    ],
+    "avoid": [
+      "Do NOT return the Mainnet/Futurenet passphrase or advertise hidden operations and route diagnostics."
+    ],
+    "notes": "GT-22 SIBLING 2026-07-10: grade exact passphrase, primary citation, and concise proportionality. Do not require hidden-operation or external-tool non-use in answer content.\nGT-22 SIBLING CORRECTION 2026-07-10: observable concise behavior replaces hidden-tool gates."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable",
+    "trap": "paid-bait"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/networks",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The Testnet passphrase is a stable documented constant answerable from one official lookup; paid/account operations are absent from the gateway surface.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Stellar networks documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/C: exposure source and live catalog",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "B/C: exposure source and live catalog",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The passphrase and proportionality rule are correct, but the answer/rubric advertised hidden operations and banned external golden-verification tools as if they were gateway capabilities.",
+      "evidence": [
+        "Solo scratchpad 575 GT-22 blind 3265 sibling sweep."
+      ],
+      "rootCause": [
+        "Routing restraint was expressed through stale internal/external tool names rather than observable concise behavior."
+      ]
+    },
+    "origin": "raven-next q-protocol-simple-lookup-no-deep-research"
+  }
+}

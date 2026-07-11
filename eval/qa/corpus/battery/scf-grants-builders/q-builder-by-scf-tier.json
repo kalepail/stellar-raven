@@ -1,0 +1,86 @@
+{
+  "id": "q-builder-by-scf-tier",
+  "question": "Which Stellar builders have a high SCF tier / track record of SCF awards that I could recruit as advisors?",
+  "surface": [
+    "scout.getBuilders",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, the live builder directory cannot answer this reliably: `scfTier` is not a callable filter and all 114 returned profiles have a blank value. If you mean SCF governance standing, the official roles are **Verified, Pathfinder, Navigator, and Pilot**. If you mean award track record, start from dated official project award/submission records and independently verify current team membership; project funding does not automatically establish a person's advisor standing. Do not invent a named roster from the blank profile field.",
+    "keyFacts": [
+      "States the current Scout limitation rather than inventing SCF tiers.",
+      "Separates governance roles, project award records, and person-level attribution."
+    ],
+    "avoid": [
+      "Do NOT infer a person's tier, advisor quality, or award history from blank scfTier data.",
+      "Do NOT conflate Verified-Member governance roles with project awards."
+    ],
+    "notes": "GT-35 CORRECTION 2026-07-10: scfTier is not callable and is blank on all 114 live rows. Grade an honest limitation plus the governance-role/project-award/person-attribution distinction; no named advisor roster is required.\nTreat this capability as freshness-sensitive until Scout restores a populated provenance-bearing field or removes the advertised contract."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/builders",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/governance/verified-members",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/awards",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The live builder directory cannot produce a person-level SCF-tier or award-track roster",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C/F: live API, OpenAPI, and wrapper implementation; 114/114 scfTier values blank",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "C/F: live API, OpenAPI, and wrapper implementation; 114/114 scfTier values blank",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: official SCF governance roles and project award records are separate concepts",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The answer depended on a non-callable, entirely blank scfTier field and conflated builder profiles, project award history, and SCF governance roles.",
+      "evidence": [
+        "Solo scratchpad 575 GT-35 primary 3287 and blind 3289; live 2026-07-10 probes."
+      ],
+      "rootCause": [
+        "Desired/routed schema was promoted into factual gospel despite implementation and data disagreement.",
+        "improvements/stellar-light-scout/sls-040-builder-scf-tier-contract-data-split.md"
+      ]
+    },
+    "origin": "raven-next q-builder-by-scf-tier"
+  }
+}

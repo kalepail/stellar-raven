@@ -1,0 +1,85 @@
+{
+  "id": "q-sor-scval-conversion",
+  "question": "How do I convert between native JS/Rust values and Soroban ScVal — i128/u64, BytesN<32>, contract-ID hex vs StrKey C-addresses, enum/union UDTs, stroops vs display amounts — in the current SDK?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Prefer generated clients or `contract.Spec` conversion; Rust uses `IntoVal`/`FromVal`. Preserve wide integers as `bigint` or decimal strings—an unsafe JS Number cannot be repaired after rounding. In current JS SDK 16, `new Contract(C...).contractId()` returns the C StrKey; use `StrKey.decodeContract`/`encodeContract` for the 32 raw bytes. A `BytesN<32>` is 32 raw bytes, not ASCII C-address/hex text. Generic `nativeToScVal(Buffer)` creates `scvBytes` but cannot enforce the contract's declared BytesN length; spec-driven conversion/generated bindings do. UDT enum/union objects must match the embedded spec's tag/arm shape, not EVM ABI tuples. Token amounts are integer smallest/base units and `decimals()` controls display; “stroop” is specifically the conventional XLM/classic 10^-7 unit.",
+    "keyFacts": [
+      "Uses spec-driven conversion and exact integer/StrKey/raw-byte boundaries.",
+      "Distinguishes generic scvBytes from BytesN validation, UDT shape, and base-unit display scaling."
+    ],
+    "avoid": [
+      "Do NOT pass unsafe JS numbers, ASCII/hex in place of raw bytes, guess union shapes, or call every token base unit a stroop."
+    ],
+    "notes": "Phase 3 should verify exact current JS helper names against the installed/current @stellar/stellar-sdk version because this repo does not vendor node_modules.\nAlso good if the answer: Mentions `scValToNative`/humanizing helpers for decoding results and diagnostic/event ScVals.\nGolden cites: Official Stellar XDR/SCVal or transaction docs. | Official contract specs/client docs or JS SDK docs/source for helper behavior.\nGT-43 current SDK snapshot is 16.0.1; exact helper names are release-sensitive."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/types/fully-typed-contracts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/js-stellar-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current JS/Rust ScVal conversion behavior",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: typed-contract docs and SDK source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: typed-contract docs and SDK source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: SDK16 round-trip probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The core conversion advice was correct but current SDK behavior, BytesN enforcement, union shapes, and generic-token unit terminology needed precision.",
+      "evidence": [
+        "Solo scratchpad 575 GT-43 processes 3311/3320."
+      ],
+      "rootCause": [
+        "Eval-side current-SDK and unit terminology drift."
+      ]
+    },
+    "origin": "raven-next q-sor-scval-conversion"
+  }
+}

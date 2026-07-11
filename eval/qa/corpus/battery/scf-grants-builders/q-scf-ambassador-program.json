@@ -1,0 +1,48 @@
+{
+  "id": "q-scf-ambassador-program",
+  "question": "What is the Stellar Ambassador Program and how does it connect to funding for early-stage builders?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "- The **Stellar Ambassador Program** supports builders and educators forming **regional chapters** (events, meetups, documentation, local growth). (https://stellar.gitbook.io/ambassador-program)\n- Under **SCF v7.0**, ambassadors can **recommend Instawards — up to $15,000 in XLM per project** — for early-stage builders. (https://stellar.gitbook.io/scf-handbook/scf-awards/instawards)\n- **Instawards have no open application**: they come via **ambassador / local-chapter recommendation**, which makes reaching a local chapter a recommended first rung of the funding ladder. (https://stellar.gitbook.io/scf-handbook/scf-awards/instawards)\n- Ambassadors do **not** award the **$150K SCF Build grant** — their funding lever is the **Instawards (≤$15K)**, and the Ambassador Program is distinct from SCF Verified Member / NQG governance roles. (https://stellar.gitbook.io/ambassador-program)",
+    "keyFacts": [
+      "The Stellar Ambassador Program supports builders/educators forming regional chapters (events, meetups, docs).",
+      "Under SCF v7.0, ambassadors can recommend Instawards (up to $15K XLM per project) for early-stage builders."
+    ],
+    "avoid": [
+      "Do NOT claim ambassadors directly award the $150K SCF Build grant — their funding power is Instawards (≤$15K), not Build.",
+      "Do NOT confuse the Ambassador Program with SCF Verified Members / NQG governance roles."
+    ],
+    "notes": "Dossier §7.2. Trap: ambassador → Instawards (≤$15K), not Build ($150K).\nAlso good if the answer: Instawards have no open application — they come via ambassador/chapter recommendation.\nGolden cites: stellar.gitbook.io/ambassador-program and the SCF Instawards handbook page."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/ambassador-program",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.gitbook.io/scf-handbook/scf-awards/instawards",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-36-scf-programs-tiers-tracks-ratios accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-scf-ambassador-program"
+  }
+}

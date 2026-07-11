@@ -1,0 +1,46 @@
+{
+  "id": "q-asset-establish-trustline-howto",
+  "question": "How do I establish a trustline to an asset on Stellar so my account can hold it?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "To hold a **non-native** asset, your account must **create a trustline to it with the `ChangeTrust`\noperation**, specifying the asset's **code and issuer** (and optionally a `limit`) [1]. Steps:\n\n1. **Submit a `ChangeTrust` operation** for the asset (`<code:issuer>`) from your account — via an\n   SDK (e.g. JS/Python `stellar-sdk`), the **Stellar CLI**, or the Stellar **Laboratory** [1].\n2. **Keep enough XLM in reserve:** each trustline raises your account's **minimum balance by one\n   base reserve (0.5 XLM)**, so the account must hold that extra XLM [1].\n3. Some assets set **`AUTH_REQUIRED`**, meaning the **issuer must authorize** your trustline before\n   you can receive the asset; until then the line exists but can't hold a balance [1].\n\n**XLM (native) needs no trustline.** A non-native asset payment to an account **with no trustline\nwill fail** — the trustline is the opt-in that lets you receive it. (A trustline is *not* created\nby a `Payment` or `CreateAccount` operation — it is `ChangeTrust`.)\n\nSource: [1] developers.stellar.org accounts / trustlines docs.",
+    "keyFacts": [
+      "Explains that holding a non-native asset requires a ChangeTrust operation to create a trustline to the asset (code + issuer).",
+      "States the account must keep enough XLM for the extra base reserve each trustline requires."
+    ],
+    "avoid": [
+      "Do NOT claim a trustline is created with a 'Payment' or 'CreateAccount' operation — it is ChangeTrust.",
+      "Do NOT claim assets can be received with no trustline (other than native XLM)."
+    ],
+    "notes": "Axis-C how-to. Procedure → stellar_docs_mcp. Trap = wrong operation (must be ChangeTrust) or claiming no trustline needed. Verified: trustlines created via ChangeTrust; each consumes a base reserve (0.5 XLM).\nAlso good if the answer: Notes the trustline can carry a limit, and that some assets require issuer authorization (AUTH_REQUIRED) before the holder can receive them. | Shows the path via SDK or Stellar CLI/Laboratory to submit the ChangeTrust operation.\nGolden cites: A trustlines / change-trust page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/accounts#trustlines",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-03-classic-assets-clawback-trustlines-paths accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-establish-trustline-howto"
+  }
+}

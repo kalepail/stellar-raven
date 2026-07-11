@@ -1,0 +1,62 @@
+{
+  "id": "q-aas-issuer-fees-supply-cap-freeze",
+  "question": "As a Stellar asset issuer, can I charge transfer fees, cap supply, or freeze a holder, and what is actually possible at the protocol level?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Classic Stellar assets do not have a protocol-level per-transfer issuer-fee hook like a custom token tax. They are identified by asset code plus issuer account, held on trustlines, and moved with Stellar payment/path-payment/offer operations. If an issuer needs custom transfer logic, that is a separate Soroban/custom-token design question, not a classic asset flag.\n\nSupply caps are operational for classic assets. The issuer can stop minting, lock or disable issuer signing authority, and document supply commitments, but there is no immutable max-supply field attached to an arbitrary issued asset. (Supply is tracked as outstanding balances held outside the issuer; the burn/redemption accounting itself is covered separately in q-aas-burn-clawback-redemption-mechanics.)\n\nFreeze and clawback are protocol controls, but only when configured correctly. `AUTH_REQUIRED_FLAG` requires authorization before holding/transacting; `AUTH_REVOCABLE_FLAG` lets the issuer deauthorize trustlines; `AUTH_CLAWBACK_ENABLED_FLAG` allows clawback for subsequent clawback-enabled trustlines and requires revocable authorization. Freezing/deauthorization blocks use; clawback removes/burns a specified amount under CAP-35. These controls are holder-risk and decentralization tradeoffs, not hidden transfer fees.",
+    "keyFacts": [
+      "Explains classic Stellar assets do not have a built-in per-transfer issuer fee hook like a custom smart-contract tax.",
+      "Explains supply cap is operational/governance-based for classic assets: the issuer can stop minting or lock/disable issuer control, but the protocol does not encode an immutable max supply field for arbitrary issued assets.",
+      "Explains authorization flags can authorize/deauthorize trustlines and clawback-enabled assets can claw back balances under the required flags."
+    ],
+    "avoid": [
+      "Do NOT claim classic Stellar assets can arbitrarily tax every transfer at the protocol level.",
+      "Do NOT claim clawback/freeze is available unless the relevant flags and trustline authorization model are in place.",
+      "Do NOT re-derive the full burn/redemption accounting (transfers-to-issuer-burn); reference clawback as an issuer control and stay on the fee/cap/freeze feasibility question."
+    ],
+    "notes": "Verified flags and issuer-control boundaries against control-asset-access and CAP-35 (live 2026-06-29). Transfer-fee absence is inferred from the classic asset operation model and SAC docs rather than a single explicit negative statement. Differentiated from q-aas-burn-clawback-redemption-mechanics: this file owns the fee/cap/freeze feasibility debunk and AUTH_* enumeration and now references rather than re-derives burn accounting.\nAlso good if the answer: Distinguishes freezing/deauthorization from clawback and from burning/redeeming supply. | Mentions Soroban custom tokens could encode different token logic, but that is separate from classic asset issuer flags/SAC behavior.\nGolden cites: Stellar docs on asset authorization flags/clawback and classic asset issuance."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/assets",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/control-asset-access",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0035.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-01-asset-lifecycle-safety-metadata accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-aas-issuer-fees-supply-cap-freeze"
+  }
+}

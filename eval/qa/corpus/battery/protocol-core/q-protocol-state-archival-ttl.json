@@ -1,0 +1,44 @@
+{
+  "id": "q-protocol-state-archival-ttl",
+  "question": "How does Stellar's state archival and TTL model work for Soroban contract data, and why does it exist?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- Soroban contract storage entries have a **TTL (time-to-live, in ledgers)**; when the TTL expires the entry is **archived** rather than kept live and must be **restored before use** [1].\n- Purpose: state archival bounds the size of live state so validators don't pay forever to host unused data (sustainable state growth / rent model) [1].\n- Durability tiers behave differently: **Temporary** entries are **deleted** on expiry; **Persistent** and **Instance** entries can be **restored** [1].\n- TTL can be extended (bumped) via host functions / extend-TTL operations (CAP-0053) [1].\n- Protocol 23 (Whisk) introduced live-vs-archival state separation (CAP-0062) to support this at scale [1].",
+    "keyFacts": [
+      "Explains Soroban contract storage entries have a TTL (time-to-live, in ledgers); when TTL expires the entry is archived rather than kept live, and must be restored before use.",
+      "Explains the purpose: state archival bounds the size of live state so validators don't pay forever to host unused data (sustainable state growth / rent model)."
+    ],
+    "avoid": [
+      "Do NOT claim Soroban contract data lives forever for free with no TTL/rent.",
+      "Do NOT claim expired persistent entries are permanently destroyed and unrecoverable (they are archived and restorable; only Temporary entries are deleted)."
+    ],
+    "notes": "State archival/TTL subtopic. Traps: 'storage is free forever' and 'expired persistent data is destroyed' (it's archived/restorable).\nAlso good if the answer: Notes the storage durability tiers (Temporary vs Persistent vs Instance) behave differently — temporary entries are deleted on expiry, persistent/instance can be restored. | Notes TTL can be extended (bumped) via host functions / extend-TTL operations (CAP-0053).\nGolden cites: The Soroban state archival / TTL docs on developers.stellar.org."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-34-soroban-launch-archival-core-tier1-validators-history accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-state-archival-ttl"
+  }
+}

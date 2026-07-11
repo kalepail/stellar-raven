@@ -1,0 +1,63 @@
+{
+  "id": "q-sor-classic-dex-from-contract",
+  "question": "Can a Soroban contract place orders on the classic SDEX or read classic AMM/LP state, and can I combine a classic op and a contract invocation in one transaction (the one-host-function-op-per-tx limit)?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "No, a Soroban contract cannot directly place classic SDEX orders or read/control classic liquidity-pool\nstate from inside contract execution. The official smart-contract FAQ says Soroban can interact with\naccounts/assets through the built-in Stellar Asset Contract, but otherwise cannot interact with SDEX,\nclaimable balances, or sponsorships (https://developers.stellar.org/docs/build/smart-contracts/overview).\nThe SDEX itself is the classic operation surface: Manage Buy Offer / Manage Sell Offer operations\nplace orders on the distributed exchange\n(https://developers.stellar.org/docs/learn/fundamentals/liquidity-on-stellar-sdex-liquidity-pools).\n\nYou also cannot combine a classic op and a contract invocation in the same transaction. Stellar's\ntransaction docs state that smart-contract transactions containing InvokeHostFunctionOp,\nExtendFootprintTTLOp, or RestoreFootprintOp can only have one operation per transaction\n(https://developers.stellar.org/docs/learn/fundamentals/transactions/operations-and-transactions).\nThe Soroban transaction docs also state there is only one InvokeHostFunctionOp allowed per transaction\nand that contracts should be used for multiple atomic contract-side actions\n(https://developers.stellar.org/docs/learn/fundamentals/contract-development/contract-interactions/stellar-transaction).\n\nPractical answer: for on-chain contract composition, use SAC/SEP-41 token transfers and Soroban-native\nDEX/AMM contracts. If you must use classic SDEX or AMM operations, orchestrate that as a separate\nclassic transaction from an off-chain service or user wallet, and treat the boundary as non-atomic\nunless your application explicitly handles the two-step state machine.",
+    "keyFacts": [
+      "States that Soroban contracts cannot directly interact with the classic SDEX, claimable balances, sponsorships, or classic AMM/LP ledger operations except via the supported account/asset surface.",
+      "Explains SDEX order placement is done by classic operations such as Manage Buy Offer / Manage Sell Offer, not by a Soroban host function callable from contract code.",
+      "States that smart-contract transactions containing InvokeHostFunctionOp / ExtendFootprintTTLOp / RestoreFootprintOp can only have one operation per transaction, so a classic op cannot be bundled with a contract invocation in the same tx.",
+      "Gives the practical design alternative: use SAC/SEP-41 token transfers and Soroban-native DEX/AMM contracts, or orchestrate classic and Soroban actions in separate transactions off-chain."
+    ],
+    "avoid": [
+      "Do not claim a contract can call classic ManageOffer, PathPayment, or LiquidityPool operations directly.",
+      "Do not claim a transaction can contain both a classic operation and an InvokeHostFunctionOp.",
+      "Do not import EVM router/DEX assumptions."
+    ],
+    "notes": "Verified with Stellar Docs MCP and Scout research; Scout returned the same official smart-contract FAQ as a high-confidence dev-docs result.\nAlso good if the answer: Mentions that Soroban is additive to Stellar, not a replacement for the classic operation set. | Warns that reading classic AMM state from inside contract execution is not the same as off-chain indexing through Horizon/RPC/ingest.\nGolden cites: Must cite official Stellar smart-contract FAQ or transaction docs for the no-SDEX/no-claimable-balances and one-operation constraints."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/overview",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/contract-interactions/stellar-transaction",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/operations-and-transactions",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/liquidity-on-stellar-sdex-liquidity-pools",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-41-bindings-target-dex-confidentiality-claims-deploy-porting accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-sor-classic-dex-from-contract"
+  }
+}

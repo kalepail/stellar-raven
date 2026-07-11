@@ -1,0 +1,84 @@
+{
+  "id": "q-asset-sac-cap-sep",
+  "question": "Which CAP and which SEP does the Stellar Asset Contract implement?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "The Stellar Asset Contract is the built-in standardized-asset contract specified by **CAP-0046-06** and implements the shared **Draft SEP-41** token interface. SEP-41 is a subset/compatible interface so SAC and custom tokens can share balance/allowance/approve/transfer/transfer_from/burn/metadata calls. Current direct transfer accepts a MuxedAddress destination; transfer_from remains Address-based. SAC layers admin functions such as mint, clawback, set_admin, and set_authorized on top. The issuer is initial admin, while the current mutable administrator controls privileged calls. Every classic asset has a network-specific reserved SAC address whose instance is created on demand.",
+    "keyFacts": [
+      "Names CAP-0046-06 and SEP-41 and their spec/interface relationship.",
+      "Separates shared Draft interface from SAC admin extensions and mutable administration."
+    ],
+    "avoid": [
+      "Do NOT misnumber SEP-41, call it ERC-20/OZ-defined, treat Draft signatures as timeless, or call privileged methods permanently issuer-only."
+    ],
+    "notes": "SEP-numbering trap. Dossier §2.1, §7.1. Verified: SAC implements CAP-46-6 (Smart Contract Standardized Asset) and the SEP-41 Soroban Token Interface (developers.stellar.org SAC page; SEP-0041 spec is 'a subset of the Stellar Asset contract... compatible with CAP-46-6').\nAlso good if the answer: Notes the SAC exposes token functions like transfer, allowance, burn, mint, clawback, set_admin, set_authorized.\nGolden cites: The Stellar Asset Contract page on developers.stellar.org or SEP-0041 on the stellar-protocol repo.\nGT-43 current protocol/interface sibling alignment."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-06.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "CAP-46-6/SEP-41 mapping and current SAC extensions",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: CAP/SEP/SAC source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: CAP/SEP/SAC source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-43",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The CAP/SEP mapping was correct but admin wording and current direct-transfer signature needed alignment.",
+      "evidence": [
+        "Solo scratchpad 575 GT-43 blind 3320."
+      ],
+      "rootCause": [
+        "Eval-side draft/interface precision."
+      ]
+    },
+    "origin": "raven-next q-asset-sac-cap-sep"
+  }
+}

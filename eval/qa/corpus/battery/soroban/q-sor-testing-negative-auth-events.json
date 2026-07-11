@@ -1,0 +1,80 @@
+{
+  "id": "q-sor-testing-negative-auth-events",
+  "question": "In Soroban unit tests, how do I test that an *unauthorized* caller is rejected (mock_auths/set_auths vs mock_all_auths) and assert that a specific event with given topics was emitted?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Do not use `mock_all_auths()` to prove rejection—it makes every auth succeed. Omit auth or use deliberately mismatched `mock_auths`, invoke through generated `try_*`, and assert the exact failure. Use `set_auths` with valid signed entries or `try_invoke_contract_check_auth` for real/custom-account paths. Current `env.events().all()` returns testutils `ContractEvents`; inspect `.events()`, `filter_by_contract`, or compare typed `#[contractevent]` XDR with exact contract ID/topics/data. Failed invocations roll back events even if publish occurred before the auth failure. `mock_all_auths` is appropriate for the happy path and lets you inspect `env.auths()`. CLI auth recording discovers required trees; it does not itself enforce rejection—use enforcement or a signed path.",
+    "keyFacts": [
+      "Uses true negative auth paths and exact failure assertions.",
+      "Uses current ContractEvents inspection and states failed-call event rollback/recording versus enforcement."
+    ],
+    "avoid": [
+      "Do NOT prove rejection with mock_all_auths, count rolled-back events, or treat recorded auth requirements as enforcement."
+    ],
+    "notes": "Also good if the answer: Mentions that simulation recording mode does not emulate authorization failures; use enforcement/custom auth paths when validating signatures.\nGolden cites: Official contract authorization testing docs. | Official transaction simulation/auth-mode docs where recording-vs-enforcement is discussed. | Soroban SDK testing docs/source for events if used.\nGT-43 SDK27 empirical negative-auth/event reconciliation."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/testing/integration-tests",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current SDK negative auth/event semantics",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: SDK docs/source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: SDK docs/source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-43 local failure/success probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The negative-test core was right but needed current ContractEvents APIs, failed-call rollback evidence, and recording-versus-enforcement distinction.",
+      "evidence": [
+        "Solo scratchpad 575 GT-43 processes 3311/3320."
+      ],
+      "rootCause": [
+        "Eval-side current testutils precision."
+      ]
+    },
+    "origin": "raven-next q-sor-testing-negative-auth-events"
+  }
+}

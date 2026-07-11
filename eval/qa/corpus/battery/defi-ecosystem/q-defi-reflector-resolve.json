@@ -1,0 +1,87 @@
+{
+  "id": "q-defi-reflector-resolve",
+  "question": "Resolve the Reflector project — give me its directory record and links.",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_project",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, Scout's directory resolved **Reflector** as a Live Infrastructure project for a Stellar/Soroban price-oracle and data-feed network. It returned:\n- Website: https://reflector.network/\n- GitHub: https://github.com/reflector-network\n- SCF rounds: 15, 20, 26, and 29\n- Scout-reconstructed SCF total: **$444,840**\n\nLabel the status and funding fields as Scout-corpus values. The total is a reconstruction, not an independently official universal aggregate; omit it or preserve that provenance if the user only needs the directory record.",
+    "keyFacts": [
+      "Resolves the correct Reflector entity and returns current source-attributed links.",
+      "Dates and labels directory status, SCF rounds, and reconstructed total as Scout-corpus fields."
+    ],
+    "avoid": [
+      "Do NOT resolve to a confusable entity or invent directory fields.",
+      "Do NOT present Scout's reconstructed SCF total as an independently official aggregate."
+    ],
+    "notes": "GROUNDED 2026-06-22: Scout directory record — Reflector, category Infrastructure (oracle/data), status Live, website https://reflector.network/, github reflector-network, SCF $444,840. Name→directory resolution → lumenloop_search_directory.\nAlso good if the answer: Correctly resolves 'Reflector' to the oracle project (its category is oracle/data, not DEX).\nGolden cites: The directory entry source.\nGT-17 PRECISION REFRESH 2026-07-10: grade correct identity/links and source labels; the reconstructed dollar total is optional and must retain Scout provenance."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/reflector",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://reflector.network/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/reflector-network",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Scout currently resolves Reflector's identity, status, links, rounds, and reconstructed SCF aggregate.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Scout directory record asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/B: Reflector operator site and GitHub organization confirm identity and links",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Reflector operator site and GitHub organization confirm identity and links",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited resolve answer froze a dynamic directory record and presented Scout's reconstructed SCF aggregate as a universal award fact. Current Scout identity and links remain useful when explicitly source-labeled and dated.",
+      "evidence": [
+        "Solo scratchpad 575 GT-17 primary process 3247 and blind process 3248."
+      ],
+      "rootCause": [
+        "A dynamic directory row and reconstructed funding total were authored as timeless real-world facts.",
+        "improvements/stellar-light-scout/sls-011-scf-totals-cross-source-disagreement.md"
+      ]
+    },
+    "origin": "raven-next q-defi-reflector-resolve"
+  }
+}

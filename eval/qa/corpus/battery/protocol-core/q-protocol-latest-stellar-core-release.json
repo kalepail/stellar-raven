@@ -1,0 +1,103 @@
+{
+  "id": "q-protocol-latest-stellar-core-release",
+  "question": "What is the latest stellar-core release and which protocol version does it target?",
+  "surface": [
+    "stellarDocs.search_meeting_notes",
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-09**, the latest stable stellar-core release is **v27.1.0** (published 2026-06-25), a v27-series release supporting **Protocol 27 / CAP-0071**. Treat the exact patch tag as volatile and confirm it against GitHub releases. Software release and network activation are distinct milestones: v27.1.0 shipped before Mainnet activated P27, and live Horizon shows the activation at ledger **63386819** on **2026-07-08 17:00:10 UTC**. The durable lesson is not that P27 remains pending; it is that a release tag alone never proves current network state. Check both the release feed and the live network.",
+    "keyFacts": [
+      "Identifies the latest stellar-core release as a v27-series release targeting Protocol 27 (CAP-0071) — any dated, sourced v27.x tag is acceptable (v27.1.0, published 2026-06-25, as of 2026-07-03); never require one frozen tag.",
+      "Flags the tag and network status as separate freshness-sensitive facts, using GitHub releases for the tag and live Horizon/RPC for Mainnet activation."
+    ],
+    "avoid": [
+      "Do NOT assert an old stellar-core release as the latest without checking the live release feed.",
+      "Do NOT claim Protocol 27 is still pending on Mainnet; it activated on 2026-07-08.",
+      "Do NOT infer network activation from a software release alone or present the exact patch tag as permanent."
+    ],
+    "notes": "Freshness item (extra). RE-VERIFIED 2026-06-29: stellar-core v27.0.0 (targets Protocol 27 / CAP-0071) is the latest release — developers.stellar.org Software Versions lists Stellar Core 27.0.0 under 'Protocol 27 (Testnet, June 18, 2026)'. P26 (Stellar Core 26.1.0) is the live Mainnet version; P27 Mainnet vote scheduled 2026-07-08 (still future). Confidence medium = freshness-sensitive. Trap is conflating 'released' with 'activated on Mainnet'.\nAlso good if the answer: Notes that the release targeting Protocol 27 is ahead of Mainnet activation (P26 was the live Mainnet version at the snapshot; the P27 vote was pending).\nGolden cites: The stellar-core GitHub releases page (github.com/stellar/stellar-core/releases).\nCorrected 2026-07-03 for the v27.1.0 tag, then re-verified post-vote 2026-07-09 (todo 831): P27 is now live. Preserve only the durable distinction that release and activation require different sources; never grade 'P27 is live' as wrong."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-09",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-core/releases/tag/v27.1.0",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://horizon.stellar.org/ledgers/63386819",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Latest stellar-core release is v27.1.0 (published 2026-06-25), not v27.0.0",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: GitHub releases API 2026-07-03 — v27.1.0 prerelease:false published_at 2026-06-25T19:16:20Z; get_latest_release → v27.1.0",
+            "observedAt": "2026-07-03",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: developers.stellar.org Software Versions tracks protocol SUPPORT (legitimately pins 27.0.0 under 'Protocol 27 (Testnet, June 18, 2026)') — the artifact's source, not a contradiction",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Protocol 27 activated on Mainnet after the v27.1.0 release",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: Horizon boundary ledgers show first P27 ledger 63386819 at 2026-07-08T17:00:10Z",
+            "observedAt": "2026-07-08",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: SDF Zipper guide scheduled the vote for July 8; B: GitHub release v27.1.0 published 2026-06-25",
+            "observedAt": "2026-06-25",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-09",
+      "by": "Golden-truth sweep import — The 2026-07-03 skeptic sweep corrected the latest tag to v27.1.0. A second date-contingent correction is now required: the answer and avoid clause still implied P27 was pending after Mainnet activated it on 2026-07-08.",
+      "evidence": [
+        "Skeptic sweep 2026-07-03 (scratchpad 521): GitHub releases API quotes, Horizon live probe, docs fetches — all asOf 2026-07-03",
+        "Post-vote re-verification 2026-07-09 in Solo scratchpad 567: Horizon first-P27 boundary + CAP/core source + SDF guide",
+        "Sibling sweep covered every compiled case mentioning Protocol 27, Zipper, or 2026-07-08"
+      ],
+      "rootCause": [
+        "eval-side authoring: single-source-class 're-verification' — the 06-29 check read the docs Software Versions page (a protocol-support table) instead of the GitHub releases feed the golden itself names as its live source, missing the 06-25 patch release; exactly the class-independence failure the golden-truth skill forbids",
+        "solo://proj/49/todo/corpus-health-instru--829 (skeptic-sweep instrument, first run)",
+        "solo://proj/49/todo/date-contingent-trap--831",
+        "improvements/stellar-docs/sd-008-protocol-27-mainnet-status-lag.md"
+      ]
+    },
+    "origin": "raven-next q-protocol-latest-stellar-core-release"
+  }
+}

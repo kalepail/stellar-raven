@@ -1,0 +1,70 @@
+{
+  "id": "q-protocol-ledger-header-fields",
+  "question": "What fields are in a Stellar ledger header?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "Protocol 27 `LedgerHeader` directly contains `ledgerVersion`, `previousLedgerHash`, `scpValue`, `txSetResultHash`, `bucketListHash`, `ledgerSeq`, `totalCoins`, `feePool`, `inflationSeq`, `idPool`, `baseFee`, `baseReserve`, `maxTxSetSize`, `skipList[4]`, and `ext`. Inside `scpValue`/`StellarValue` are `txSetHash`, `closeTime`, `upgrades`, and its extension. Keep direct and nested fields separate: `txSetHash` is not the same field as `txSetResultHash`, and BucketList state commitment is distinct from transaction-set/result commitments.",
+    "keyFacts": [
+      "Lists all direct P27 LedgerHeader fields.",
+      "Correctly nests txSetHash/closeTime/upgrades in scpValue and distinguishes result/state hashes."
+    ],
+    "avoid": [
+      "Do NOT omit extension/configuration/accounting fields or flatten nested StellarValue members into direct header fields."
+    ],
+    "notes": "List of header fields. Trap is importing EVM/PoW header fields (gas, difficulty, nonce, coinbase).\nAlso good if the answer: Notes the Upgrades field carries network-wide parameter/protocol-version changes voted via SCP. | Notes the bucket-list hash summarizes all ledger state objects.\nGolden cites: The ledgers / data-structures page on developers.stellar.org.\nGT-32 CORRECTION 2026-07-10: exhaustive direct-vs-nested structure is source-derived from P27 XDR."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-xdr/blob/v27.0/Stellar-ledger.x",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/ledgers",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "P27 LedgerHeader has the complete direct field set, while txSetHash, closeTime, and upgrades are nested inside scpValue/StellarValue.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: stellar-xdr v27 Stellar-ledger.x",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: current ledger documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited list was incomplete and flattened fields nested in scpValue into direct LedgerHeader fields.",
+      "evidence": [
+        "Solo scratchpad 575 GT-32 primary 3281 and blind 3284; full agreement."
+      ],
+      "rootCause": [
+        "Conceptual Docs headings flattened instead of reading XDR structure."
+      ]
+    },
+    "origin": "raven-next q-protocol-ledger-header-fields"
+  }
+}

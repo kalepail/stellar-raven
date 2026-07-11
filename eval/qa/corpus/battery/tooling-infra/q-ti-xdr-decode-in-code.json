@@ -1,0 +1,156 @@
+{
+  "id": "q-ti-xdr-decode-in-code",
+  "question": "How do I decode/encode Stellar XDR in code — transaction result XDR & resultCodes, TransactionMetaV4/operation meta, building ledger keys, computing a tx hash from an envelope (V0→V1), and decoding ScVal return values?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs"
+  ],
+  "golden": {
+    "answer": "Base64 is only transport; Stellar XDR is not self-describing. Choose the exact outer type and decode with current generated bindings, for example `xdr.TransactionEnvelope.fromXDR(value, \"base64\")`, `xdr.TransactionResult.fromXDR(value, \"base64\")`, or `xdr.TransactionMeta.fromXDR(value, \"base64\")`. Horizon exposes `envelope_xdr`, `result_xdr`, `result_meta_xdr` and `fee_meta_xdr`; RPC uses method-specific camelCase `*Xdr` fields in base64 mode and corresponding `*Json` names under `xdrFormat=json`. A client may already parse returned values, so inspect its types before decoding again.\n\nOrdinary `result_meta_xdr` is the outer `TransactionMeta` union, not a bare `TransactionMetaV4`. Inspect the discriminant and call `meta.v4()` only for arm 4. Current V4 carries transaction changes before and after operations, `OperationMetaV2[]`, optional `SorobanTransactionMetaV2`, transaction events, and diagnostic events. For RPC `getLedgers`, `headerXdr` is `LedgerHeaderHistoryEntry` and `metadataXdr` is `LedgerCloseMeta`; `getLatestLedger.header` is a different `LedgerHeader` wrapper.\n\nRaw typed decoding is network-independent. `TransactionBuilder.fromXDR`, transaction hashing and signature verification additionally require the correct network passphrase because the network hash is part of the signature base; the passphrase is not embedded in the XDR. Use `scValToNative`/`nativeToScVal` and typed `LedgerKey` helpers rather than ad hoc object parsing. `stellar xdr decode --type <Type>` is the generic CLI decoder; `stellar tx decode` is envelope-specific, and type guessing is only a shortlist.\n\nFor canonical reversible JSON, use `@stellar/stellar-xdr-json` `decode`/`encode` with the explicit XDR type. Generic `JSON.stringify` of SDK objects is not canonical XDR-JSON; preserve 64-bit integers losslessly and retain the original XDR because JSON schemas may change across protocol releases. Plain Node runtimes may require `initSync` with the package's WASM bytes when automatic initialization cannot load a `file:` URL. Prefer `@stellar/stellar-sdk` over the deprecated standalone `@stellar/stellar-base` and pin schema-compatible releases.",
+    "keyFacts": [
+      "Requires an explicit outer type and gives distinct TransactionEnvelope, TransactionResult, and TransactionMeta fromXDR(base64) paths.",
+      "States ordinary metadata is the TransactionMeta union and describes arm-4 TransactionMetaV4 changes, OperationMetaV2, optional Soroban V2 metadata, transaction events, and diagnostic events.",
+      "Retains exact getLedgers LedgerHeaderHistoryEntry/LedgerCloseMeta wrappers and RPC base64 *Xdr versus JSON-mode *Json naming.",
+      "Separates network-independent structural parsing from network-passphrase-dependent transaction hash/signature verification.",
+      "Defines canonical XDR-JSON as explicit-type @stellar/stellar-xdr-json decode/encode with lossless integers and original-XDR preservation.",
+      "Distinguishes generic stellar xdr decode from envelope-specific stellar tx decode and warns about deprecated stellar-base/client double-decode."
+    ],
+    "avoid": [
+      "Do NOT decode every blob as TransactionEnvelope or ordinary result metadata directly as bare TransactionMetaV4.",
+      "Do NOT treat XDR as self-describing, trust a guessed type as authoritative, or double-decode a client-parsed value.",
+      "Do NOT claim the network ID is embedded in XDR or that a wrong passphrase prevents raw structural parsing; do not hash/sign/verify with a guessed passphrase.",
+      "Do NOT decode getLedgers headerXdr as LedgerHeader or expect *Xdr names in RPC JSON mode.",
+      "Do NOT call JSON.stringify canonical XDR-JSON, coerce 64-bit values through lossy JS numbers, or persist JSON as the sole canonical record.",
+      "Do NOT recommend deprecated standalone stellar-base or claim stellar tx decode is the generic arbitrary-type decoder."
+    ],
+    "notes": "Verified with Stellar Docs MCP, Scout repos search, and GitHub repo URL for js-stellar-sdk. Phase 3 may add exact code snippets if desired, but this golden's rubric focuses on correct boundaries.\nAlso good if the answer: Mentions Ingest SDK for historical ledger meta and OperationMeta parsing. | Mentions current TransactionMetaV4/CAP-era metadata can change with protocol upgrades, so pin SDK versions.\nGolden cites: Official XDR/data format docs. | Horizon/RPC XDR field docs or error response docs. | Official SDK docs/repositories for typed XDR conversion.\nGT-54 material amendment 2026-07-11: require the outer TransactionMeta union before V4, exact current V4/OperationMetaV2 contents, canonical explicit-type XDR-JSON with lossless integers/original-XDR retention, and raw-parse versus network-bound hash separation. Protocol/package versions are dated evidence, not gates."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/data-format/xdr",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/data-format/xdr-json",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/structure/xdr",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getLedgers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/structure/data-format",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-xdr/blob/8521b97ba0e8e71d746bf3bd73def92110e6a21f/Stellar-ledger.x#L522",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/js-stellar-sdk/blob/becb237a4ffc563941f0fc989e89e601e3cba303/src/base/transaction_builder.ts#L1211",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/js-stellar-xdr-json/tree/a74711abd4c68811722b45cddb0421beb755e22c",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-stellar-xdr/tree/d8ff181b0039722a0c6c801886cc84f4e7368cb7",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Base64 XDR is not self-describing; envelope, result and ordinary metadata require distinct outer types, and ordinary result_meta_xdr is TransactionMeta whose arm 4 contains TransactionMetaV4 with OperationMetaV2 and current Soroban/event fields",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official XDR/Horizon/RPC data-format documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: pinned stellar-xdr schema and JS SDK transaction builder/hash source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/F: published fixture and local typed-decode/schema probes recorded by GT-54",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "C/F: published fixture and local typed-decode/schema probes recorded by GT-54",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Canonical reversible JSON requires @stellar/stellar-xdr-json decode/encode with an explicit type and lossless integers; JSON.stringify of generated SDK objects is not canonical and original XDR should remain the durable record",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official XDR-JSON documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: official js-stellar-xdr-json and rs-stellar-xdr implementations/releases",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: canonical JSON round-trip and plain-Node WASM initialization probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — GT-53 correctly repaired RPC getLedgers wrappers and JSON-mode renaming, but the answer still omitted the required outer-type selection, TransactionMetaV4 union/OperationMetaV2 structure, canonical XDR-JSON round trip, lossless integer/storage rules, and raw-parse versus network-bound hash distinction.",
+      "evidence": [
+        "Solo scratchpad 575, GT-54 primary process 3383 and pre-read-locked blind process 3386 independently required the MetaV4/XDR-JSON amendment on 2026-07-11.",
+        "Blind helper 3389's complete XDR row was harvested before seal; KV gt54/blind-lock/process-3386 sealed all ten rows with primaryReportRead=false before the primary/current override was read.",
+        "Sibling sweep retained GT-53's exact getLedgers/RPC JSON-mode atoms while checking raw-ledger, getTransactions, ScVal, event, HostError, signature and fee-bump cases for outer-type/passphrase conflicts."
+      ],
+      "rootCause": [
+        "Eval-side protocol-release precision drift: a generic typed-XDR answer omitted the exact outer union and canonical JSON/storage contract. sd-024 and sd-003 are adjacent but not duplicates, so no new improvement finding was manufactured from golden incompleteness alone."
+      ]
+    },
+    "origin": "raven-next q-ti-xdr-decode-in-code"
+  }
+}

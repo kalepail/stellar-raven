@@ -1,0 +1,97 @@
+{
+  "id": "q-defi-blend-alternatives",
+  "question": "Are there alternatives to Blend for lending on Stellar — what other lending protocols exist?",
+  "surface": [
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, Blend is a major Stellar lending primitive, but there is no source basis for grading it as the timeless \"dominant\" or \"near-single\" lender. Compare alternatives by category and label status by source:\n- **Direct lending designs:** Slender, Laina, K2 Lend, and Peridot are relevant candidates, but their deployment labels are not uniform. Scout marks Slender Inactive and Laina/K2 Live, while operator surfaces describe Slender as still accessible, Laina as early/testnet, and K2 as coming soon. Report the conflict and date rather than declaring all three Live.\n- **Built on or routing into Blend:** YieldBlox is a Blend money-market/pool; DeFindex is vault/yield-routing infrastructure. They are not independent base-protocol substitutes.\n- **Adjacent credit:** OrbitCDP, EquitX, and Templar are CDP, synthetic-asset, or cross-chain/cypher-lending systems rather than like-for-like isolated Soroban money markets. OrbitCDP's Scout and operator lifecycle labels also conflict.\n\nA useful answer names real projects, distinguishes these categories, and rechecks current operator plus directory evidence before asserting availability.",
+    "keyFacts": [
+      "Names real Stellar lending/credit candidates but distinguishes direct lenders from Blend-built pools, yield routers, CDPs, and synthetic or cross-chain systems.",
+      "Treats lifecycle and market-rank claims as dated and source-relative where Scout and operator surfaces conflict."
+    ],
+    "avoid": [
+      "Do NOT call Slender, Laina, K2 Lend, OrbitCDP, or any other candidate unqualifiedly Live/Inactive when current directory and operator surfaces conflict.",
+      "Do NOT call YieldBlox or DeFindex an independent base lending protocol, and do not list a DEX/AMM as a lending substitute.",
+      "Do NOT require an unsupported timeless claim that Blend is dominant, canonical, or the near-single lending backbone."
+    ],
+    "notes": "DIFFERENTIATED 2026-06-29: this file OWNS the 'are there DIRECT money-market substitutes for Blend' lane (find_similar_projects_semantic; answer = Blend is the near-single backbone, alternatives are Blend-derived/Blend-routing). DISTINCT from q-defi-lending-scf-flagships (scout_projects; 'who built lending + which have SCF backing' landscape roster). Added must_avoid against drifting into the SCF-roster lane. Grounded on Scout: Blend is the canonical Soroban money-market; closest 'alternatives' are Blend-derived (YieldBlox built ON Blend) or Blend-routing (DeFindex vaults), plus CDP-style adjacents (Orbit CDP) — not independent head-to-head lenders. NB live Scout (2026-06-29) confirms Slender is itself a noncustodial money-market by eq-lab (a real adjacent lender), so 'no competitor at all' should be softened to 'few independent head-to-head competitors'.\nAlso good if the answer: Notes that 'earn'/yield flows on Stellar largely route through Blend (or Blend-aware routers like Defindex), making it the near-single backbone for lending even where smaller independent lenders exist.\nGolden cites: Sources for Blend's dominance and any named adjacent protocols.\nCorrected 2026-07-10 by GT-14 primary + blind golden-truth review. Grade category accuracy and dated/source-labeled status discipline, not a frozen roster or dominance claim. Current Scout/operator conflicts are evidence to disclose, not permission to silently select one surface."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://docs.blend.capital/users/general-faq",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/blend",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/slender",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/defindex",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The named alternatives require category and source-relative status qualifiers",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: Blend and project operator sites plus current public repositories distinguish direct lenders from Blend-based pools, routers, CDPs, and synthetic systems",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Blend and project operator sites plus current public repositories distinguish direct lenders from Blend-based pools, routers, CDPs, and synthetic systems",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: Scout/Lumenloop and independent Parallel/Perplexity sweeps asOf 2026-07-10; Scout and operator status wording conflicts for Slender, Laina, K2 Lend, and OrbitCDP",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: Scout/Lumenloop and independent Parallel/Perplexity sweeps asOf 2026-07-10; Scout and operator status wording conflicts for Slender, Laina, K2 Lend, and OrbitCDP",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-14 primary and blind golden-truth reviews (Solo 3239/3242, 2026-07-10) independently found that the inherited answer freezes unsupported market dominance and mixes direct lenders with Blend pools, routers, CDPs, and synthetic-asset systems. Current Scout lifecycle labels also conflict with several operators' own deployment language, so the correction preserves the conflict instead of choosing a winner.",
+      "evidence": [
+        "Solo scratchpad 575: GT-14 process 3239 matrix and independent blind process 3242 report",
+        "Direct operator/repository re-walk 2026-07-10 for Blend, Slender, Laina, K2 Lend, YieldBlox, DeFindex, OrbitCDP, EquitX, Peridot, and Templar"
+      ],
+      "rootCause": [
+        "eval-side freshness/authoring: volatile directory lifecycle labels and an unsupported dominance judgment were promoted to durable grading facts",
+        "service-improvement candidate recorded by the 2026-07-10 golden audit: project lifecycle labels need operator-conflict provenance"
+      ]
+    },
+    "origin": "raven-next q-defi-blend-alternatives"
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "id": "q-ti-testnet-mainnet-migration",
+  "question": "How do I move from testnet to mainnet — does the same keypair/ address work on both, must I re-issue assets and re-create trustlines, and how do I bulk-create/fund many mainnet accounts?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Testnet and Mainnet are independent ledgers with different network passphrases/network IDs, endpoints, histories and state. Nothing is promoted on-chain. Recreate/fund accounts and XLM, reissue and distribute assets, recreate trustlines/offers/authorization, redeploy and initialize contracts/storage, and replace every network-specific contract ID, SAC C-address, endpoint, passphrase, allowlist and indexer/explorer record. Initialize Core/Horizon/RPC databases for the selected network; do not switch or copy a Testnet database into Mainnet. Deliberately seed only the off-chain application data production actually needs.\n\nThe same Ed25519 keypair can produce the same `G...` text on both networks, but the accounts and balances remain separate. Reusing a test seed on Mainnet is a security/operational choice, not state migration. Fresh production keys are prudent—and explicitly required for some privileged distribution/treasury roles such as documented SDP setups—but are not a Stellar protocol law for every address.\n\nFor many user accounts, submit ordinary funded `CreateAccount` operations under current reserve, operation, fee, sequence and retry constraints. Channel accounts are optional transaction-source sequence lanes for throughput; they are not an account-creation primitive or migration requirement. SDP is a managed disbursement platform, not a faucet. Mainnet has no Friendbot, and Testnet can reset. Never reuse Testnet transaction XDR/signatures, contract IDs/SACs, issuer configuration or persisted chain history as if it were production state.",
+    "keyFacts": [
+      "States distinct passphrases/network IDs/endpoints and no automatic state transfer.",
+      "Enumerates account/XLM, asset/trustline/offer/authorization, contract/storage/ID/SAC, history/database and off-chain recreation boundaries.",
+      "Explains same G-text can exist on both networks while account state remains independent.",
+      "Qualifies fresh production keys as prudent/role-specific guidance, not universal protocol law.",
+      "Uses CreateAccount for bulk activation and treats channel accounts as optional throughput architecture; SDP is not a faucet.",
+      "Forbids Mainnet Friendbot and Testnet XDR/signature/database reuse."
+    ],
+    "avoid": [
+      "Do NOT say accounts, balances, assets, trustlines, offers, contracts, storage or history migrate automatically.",
+      "Do NOT require new keys for every address as protocol law or casually reuse a test secret for privileged Mainnet authority.",
+      "Do NOT call channel accounts an account-creation primitive/requirement or SDP a faucet.",
+      "Do NOT reuse Testnet XDR/signatures/endpoints/passphrase/contract IDs/SACs or switch a Testnet database to Mainnet.",
+      "Do NOT assume issuer/distribution/authorization or off-chain/indexer state appears automatically on Mainnet."
+    ],
+    "notes": "GT-54 CORRECTION 2026-07-11: SDP key guidance is role-specific, not a protocol-wide fresh-key mandate. Gate separate state/configuration, same-address/different-account semantics, full asset/contract/database recreation, ordinary CreateAccount bulk activation, and optional—not required—channel accounts."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/networks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/assets",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/create-account",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/channel-accounts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/stellar-disbursement-platform",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/js-stellar-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://horizon.stellar.org/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://horizon-testnet.stellar.org/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Testnet and Mainnet have distinct passphrases/network IDs and independent account, asset, trustline, offer, contract, storage and history state",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Networks, asset issuance/trustline and contract documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: SDK network/signature and address/contract-ID source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: read-only public/test network roots",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "The same Ed25519 keypair yields the same G-text on both networks, but fresh production keys are risk/role guidance rather than a protocol-wide migration law",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: role-specific SDP production guidance and general security docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/F: SDK public-key derivation and unsigned network-passphrase comparison",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "B/F: SDK public-key derivation and unsigned network-passphrase comparison",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-scope-qualification."
+      },
+      {
+        "claim": "Bulk activation uses ordinary funded CreateAccount operations; channel accounts are optional throughput architecture and SDP is not a faucet",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official account creation/channel account/SDP documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: transaction/sequence implementation semantics",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited separate-network core was correct, but it promoted fresh-key and channel-account advice into universal migration requirements and omitted deterministic-but-network-specific contract/SAC/database/off-chain boundaries. GT-54 independently confirmed the narrower role-specific guidance.",
+      "evidence": [
+        "Solo scratchpad 575, GT-54 primary 3383 and blind 3386 independently retained the separate-ledger core and rejected universal key/channel wording.",
+        "Blind helper 3388's complete migration row was harvested before seal; the post-seal reconciliation incorporated the primary's role-scoped SDP and optional-channel precision.",
+        "Sibling sweep checked network passphrase, Testnet/Futurenet, issuance/trustlines, provisioning, SDP, Friendbot and contract/SAC cases."
+      ],
+      "rootCause": [
+        "Eval-side scope expansion: prudent or role-specific production-key and throughput advice was stated as protocol law, while network-specific deterministic identifiers and database state were under-specified."
+      ]
+    },
+    "origin": "raven-next q-ti-testnet-mainnet-migration"
+  }
+}

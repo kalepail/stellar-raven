@@ -1,0 +1,52 @@
+{
+  "id": "q-asset-issue-asset-howto",
+  "question": "Walk me through issuing a new custom token on Stellar from scratch.",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "There is **no 'create asset' operation** — a classic asset is defined by its **`(asset_code, issuer account)`** pair and simply comes into existence the first time the issuer pays it out [1][2]. The flow:\n\n1. Create/fund the **issuing account** and a separate **distribution account** (two-account best practice) [1].\n2. Optionally set issuer **authorization flags** first (e.g. AUTH_REQUIRED/REVOCABLE, or clawback) — these only apply to trustlines created afterward [1].\n3. The **distribution account opens a trustline** to the asset via **`ChangeTrust`** [2].\n4. The **issuer sends** (a `Payment`) the desired supply to the distribution account — this is the issuance/mint [2].\n5. Publish a **`stellar.toml` (SEP-1)** so wallets can discover and identify the asset [1].\n6. Optionally cap supply by locking the issuer (set master weight to 0 / AUTH_IMMUTABLE) [1].",
+    "keyFacts": [
+      "An asset is defined by its code + issuing account; there is no separate 'create asset' transaction — the asset exists once the issuer sends it.",
+      "The distribution account must establish a trustline (ChangeTrust) to the issuer, then the issuer sends (payment) the supply to it."
+    ],
+    "avoid": [
+      "Do NOT describe issuing a Stellar asset as deploying a Solidity/ERC-20 contract.",
+      "Do NOT claim there is a dedicated 'createAsset' operation on the protocol."
+    ],
+    "notes": "End-to-end issuance how-to. Dossier §1.\nAlso good if the answer: Recommends the two-account (issuing + distribution) pattern and setting any needed auth flags first. | Recommends publishing a stellar.toml (SEP-1) so wallets can discover/identify the asset.\nGolden cites: An asset-issuance page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/control-asset-access",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/how-to-issue-an-asset",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-03-classic-assets-clawback-trustlines-paths accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-issue-asset-howto"
+  }
+}

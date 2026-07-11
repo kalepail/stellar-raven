@@ -1,0 +1,63 @@
+{
+  "id": "q-sor-build-target-wasm32v1",
+  "question": "Which Wasm target does the current Stellar CLI build to (wasm32v1- none vs wasm32-unknown-unknown), what's the difference between `cargo build` and `stellar contract build`, and how do I fix 'can't find crate for core' / 'target not supported' build errors?",
+  "surface": [
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "The target is **`wasm32v1-none`**. The typo `wasm32v1- none` is just a typo, and\n`wasm32-unknown-unknown` is not the current target for new Soroban contracts. Stellar's Rust dialect\ndocs say new contracts should use Rust 1.84.0+ and `wasm32v1-none`; they also explain that\n`wasm32-unknown-unknown` is unsupported for Soroban builds on Rust 1.82+ because it enables Wasm\nfeatures the Soroban runtime does not support\n(https://developers.stellar.org/docs/learn/fundamentals/contract-development/rust-dialect).\n\nUse:\n\n```sh\nrustup target add wasm32v1-none\nstellar contract build\n```\n\nThe Hello World docs state that `stellar contract build` is a small wrapper around Cargo that sets the\ntarget to `wasm32v1-none` and the profile to release, and emits Wasm under\n`target/wasm32v1-none/release/` (https://developers.stellar.org/docs/build/smart-contracts/getting-started/hello-world).\nOpenZeppelin's Stellar setup guidance matches this: build with `stellar contract build`, which is a\nshortcut for `cargo build --target wasm32v1-none --release`\n(https://github.com/OpenZeppelin/stellar-contracts).\n\nFor `can't find crate for 'core'`, install the target for the active Rust toolchain. The setup docs\nexplicitly note the target is installed per toolchain, so after a Rust upgrade you may need to run\n`rustup target add wasm32v1-none` again\n(https://developers.stellar.org/docs/build/smart-contracts/getting-started/setup). If someone insists\non raw Cargo, make it equivalent to the CLI target/release settings; otherwise prefer\n`stellar contract build` and use `--print-commands-only` to inspect what it will run.",
+    "keyFacts": [
+      "Corrects the spelling to `wasm32v1-none` and states current new Soroban contracts should build with Rust 1.84+ and that target.",
+      "Explains `stellar contract build` is a wrapper around Cargo that selects `wasm32v1-none`, release profile, and Stellar contract build settings automatically.",
+      "Explains why `wasm32-unknown-unknown` is wrong for Rust 1.82+ Soroban builds: it enables Wasm features unsupported by the Soroban runtime.",
+      "Fixes `can't find crate for core` by installing/reinstalling the target with `rustup target add wasm32v1-none` for the active Rust toolchain."
+    ],
+    "avoid": [
+      "Do not use the misspelled target `wasm32v1- none` or old `wasm32-unknown-unknown` guidance as the final answer.",
+      "Do not tell users to hand-edit generated Wasm or bypass the CLI without explaining the target and release profile."
+    ],
+    "notes": "Verified with Stellar Docs MCP and local `stellar contract build --help` from CLI 25.2.0. The dossier mentions newer protocol/SDK releases, but the target guidance is stable in current docs.\nAlso good if the answer: Mentions output path `target/wasm32v1-none/release/<contract>.wasm`. | Notes target installation is per toolchain, so after Rust upgrades the target may need reinstalling.\nGolden cites: Must cite current Stellar setup/Hello World or Rust dialect docs for `wasm32v1-none`. | Freshness-sensitive answer should cite a dated/current official docs source or local CLI evidence."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/getting-started/hello-world",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/rust-dialect",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/getting-started/setup",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/OpenZeppelin/stellar-contracts",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-41-bindings-target-dex-confidentiality-claims-deploy-porting accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-sor-build-target-wasm32v1"
+  }
+}

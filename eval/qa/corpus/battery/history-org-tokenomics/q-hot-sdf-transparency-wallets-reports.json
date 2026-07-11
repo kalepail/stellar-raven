@@ -1,0 +1,84 @@
+{
+  "id": "q-hot-sdf-transparency-wallets-reports",
+  "question": "Where can I see SDF's on-chain XLM wallet addresses and holdings, and where are its current mandate disclosures and quarterly reports?",
+  "surface": [
+    "scout.searchProjects",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Start with SDF's official **Mandate** page for current bucket definitions, displayed timestamps, and named StellarExpert account links, and use the **Quarterly Reports** landing page for the report series. Date every balance or bucket total. Treat official mandate attribution—not account size alone—as the ownership evidence, then verify point-in-time state on Horizon/explorer. Sample linked addresses are not an exhaustive wallet list, and mechanical sums across buckets with different timestamps are not a universal current SDF total.",
+    "keyFacts": [
+      "Uses official mandate/account attribution and the reports landing page, dates balances, and separates named examples from exhaustive holdings."
+    ],
+    "avoid": [
+      "Do NOT fabricate addresses/totals, infer ownership from size, sum mismatched timestamps, or treat sample accounts/a single report as exhaustive/current."
+    ],
+    "notes": "GT-27 2026-07-10: use mandate-linked attribution and the quarterly-reports series, date every balance, and keep sample accounts/mismatched bucket timestamps non-exhaustive. Explorer size alone is not ownership evidence.\nGT-27 PRECISION 2026-07-10: current report-series and mandate mapping replace sample-list ambiguity."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/foundation/mandate",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/quarterly-reports",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://cdn.sanity.io/files/e2r40yh6/production-i18n/b2b9d0848840e8c08b05cb925dce05944d9f4b5d.pdf",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The official mandate page maps named accounts/buckets and the quarterly-reports landing page exposes the current report series; balances and mappings are dated state.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: SDF mandate, quarterly reports, and Q1 2026 report",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live Horizon/explorer checks of mandate-linked accounts",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: Raven discovery",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The core discovery method is correct, but a single Q1 blog and sample accounts should not stand in for the current reports series or an exhaustive holdings list.",
+      "evidence": [
+        "Solo scratchpad 575 GT-27 primary 3270 and blind 3272; transparency/holdings sibling sweep."
+      ],
+      "rootCause": [
+        "A single report pointer and two examples could be read as a complete current wallet/accounting set.",
+        "improvements/stellar-docs/sd-012-mandate-wallet-label-drift.md"
+      ]
+    },
+    "origin": "raven-next q-hot-sdf-transparency-wallets-reports"
+  }
+}

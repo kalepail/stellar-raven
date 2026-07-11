@@ -1,0 +1,122 @@
+{
+  "id": "q-defi-x402-on-stellar-what",
+  "question": "What is x402 on Stellar and how does it let APIs or AI agents charge per request?",
+  "surface": [
+    "skills.stellar-dev.agentic-payments"
+  ],
+  "golden": {
+    "answer": "x402 is a general HTTP 402 payment protocol created by Coinbase Developer Platform and contributed to the Linux Foundation. On Stellar, the canonical scheme is **x402 v2 exact** on `stellar:testnet`/`stellar:pubnet`. The client builds a SEP-41 token `transfer(from,to,amount)` invocation, simulates it, and signs Soroban authorization entries; a classic asset participates through its SAC contract interface. USDC is the default, not the only token.\n\nThe resource server sets price and payee. A facilitator verifies structure, recipient, amount, authorization, expiration, and safety; settlement must reverify, rebuild with the facilitator source, sponsor fees, sign, and submit. The facilitator is not the seller and does not set the price. Current exact-v2 Stellar settlement is fee-sponsored. Coinbase-hosted Stellar support is documented testnet-only; OpenZeppelin documents testnet and mainnet hosted endpoints.\n\nx402 can remove a buyer's traditional API subscription/account prerequisite, but hosted facilitator setup can still require service credentials: unauthenticated OpenZeppelin `/supported` probes returned 401 on **2026-07-10**, and official docs describe key issuance. x402 is distinct from MPP Charge/Session. As of 2026-07-10 the x402 Foundation listed membership tiers and SDF as Premier, while the Linux Foundation page still said the Governing Board was not seated; call organizations members, not seated governors.",
+    "keyFacts": [
+      "Explains HTTP 402, Stellar v2 exact, SEP-41/SAC authorization-entry payments, and facilitator-sponsored settlement roles.",
+      "Qualifies protocol UX versus hosted facilitator API keys and distinguishes x402 from MPP.",
+      "Dates current Foundation membership/formation without inventing a seated board."
+    ],
+    "avoid": [
+      "Do NOT say x402 is Stellar-invented, supports v1 on Stellar, or directly pays classic assets without the SAC.",
+      "Do NOT claim x402 or hosted facilitator setup categorically never needs API keys.",
+      "Do NOT conflate the seller/payee, facilitator, price setter, x402, and MPP roles."
+    ],
+    "notes": "VERIFIED 2026-06-22 against developers.stellar.org/docs/build/agentic-payments/x402: Coinbase Developer Platform origin, HTTP 402 revival, Soroban authorization entries, any SEP-41 token with USDC default (distinct Testnet/Mainnet contract addresses), facilitator model with two options — Coinbase x402 facilitator (Testnet, sponsored fees) and OpenZeppelin Relayer plugin (Testnet+Mainnet, /verify //settle //supported endpoints). NOTE: the Phase-1 '~5 second settlement' figure is NOT stated in the docs — REMOVED from the gate; the facilitator claim now keys on the verify/settle model. MPP is documented on the SAME agentic-payments index page as a distinct sibling protocol (so the 'don't conflate x402 with MPP' trap stands). Freshness:true. 2026-06-29 RE-VERIFIED: both sources (developers.stellar.org/docs/build/agentic-payments/x402, stellar.org/x402) resolve 200; x402 Coinbase/HTTP-402 origin corroborated by independent writeups. No fabricated names. Confidence stays medium (fast-moving).\nAlso good if the answer: Enables APIs and AI agents to charge micro-payments per HTTP request without prior account setup.\nGolden cites: At least one primary developers.stellar.org agentic-payments / x402 docs page (or stellar.org/x402).\nGT-18 CORRECTION 2026-07-10 supersedes the inherited no-API-key trap. Grade role-qualified protocol mechanics, v2/SEP-41/SAC scope, fee sponsorship, hosted-service credentials, and dated governance status."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://github.com/x402-foundation/x402/blob/main/specs/schemes/exact/scheme_exact_stellar.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://channels.openzeppelin.com/x402",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.linuxfoundation.org/x402foundation",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://x402.org/members",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Stellar implements x402 v2 exact for SEP-41 token contracts with signed Soroban authorization entries and facilitator-sponsored settlement.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: canonical x402 Stellar exact-v2 spec and official Stellar/OpenZeppelin docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: canonical x402 Stellar exact-v2 spec and official Stellar/OpenZeppelin docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: hosted facilitator endpoint probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent protocol/governance conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "x402 never requires API keys.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Stellar docs describe OZ key issuance",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: unauthenticated OZ /supported calls returned HTTP 401 on testnet and mainnet on 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited mechanics were broadly correct but falsely prohibited API-key requirements categorically, omitted v2/SEP-41/SAC and fee-sponsorship constraints, blurred facilitator versus seller roles, and lacked current Foundation formation/membership context.",
+      "evidence": [
+        "Solo scratchpad 575 GT-18 primary 3249 and blind 3252",
+        "Sibling sweep: q-soroban-x402-auth-entry-signing, q-ti-openzeppelin-relayer, q-defi-agentic-payment-standards-compare"
+      ],
+      "rootCause": [
+        "Protocol-level no-subscription UX was conflated with hosted facilitator service authentication.",
+        "improvements/stellar-docs/sd-005-agentic-payments-no-landscape-positioning.md"
+      ]
+    },
+    "origin": "raven-next q-defi-x402-on-stellar-what"
+  }
+}

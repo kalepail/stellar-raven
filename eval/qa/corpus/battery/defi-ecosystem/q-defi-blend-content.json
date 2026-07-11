@@ -1,0 +1,76 @@
+{
+  "id": "q-defi-blend-content",
+  "question": "What has been written or said about Blend Capital across Stellar news, research, and talks?",
+  "surface": [
+    "lumenloop.find_av_passages",
+    "lumenloop.find_content_by_entity",
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.search_content_semantic"
+  ],
+  "golden": {
+    "answer": "Resolve **Blend Capital on Stellar** (not blend.com), then return a compact set of actual **dated, source-linked** news, research, talks/AV, proposals, or SCF coverage from the live content results. Give only enough identity context to disambiguate it as the Soroban lending protocol. Each item should retain its own title or topic, date where available, source, and URL; the set may change as the corpus changes. Do not make current project status, a fixed SCF amount, or a remembered partnership a requirement of this content-discovery answer.",
+    "keyFacts": [
+      "Returns genuinely retrieved, dated, source-linked coverage about the Stellar Blend lending protocol across the available content types."
+    ],
+    "avoid": [
+      "Do NOT return coverage about blend.com as if it were the Stellar protocol.",
+      "Do NOT fabricate articles, quotes, partnerships, or require volatile identity/funding facts that were not returned by the cited content records."
+    ],
+    "notes": "GROUNDED 2026-06-22 (re-verified 2026-06-29): Blend confirmed as the Stellar Soroban lending/money-market protocol (Scout: Lending, Live) — 'a lending and borrowing protocol (money market) on Stellar Soroban... permissionless, isolated lending pools.' This is the CONTENT-DISCOVERY lane (resolve→call, multiple sourced news/research/talks/SCF items) → lumenloop_find_content_about_project — DISTINCT from q-defi-blend-what-is (lumenloop_get_project; single identity record). KEY trap is entity resolution: blend.com (US bank-lending company) is NOT this Blend.\nAlso good if the answer: Frames Blend as the Stellar lending money-market primitive when surfacing coverage.\nGolden cites: Each surfaced item carries its source (Lumenloop content record).\nCorrected 2026-07-10: this lane grades live content discovery and entity resolution. Status and SCF funding belong to their own cases and must not become hidden gates here."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/blend",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The live content operation returns dated, sourced Blend coverage across multiple content types",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Lumenloop find_content_about_project('blend') asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/D: linked SDF/operator items and independent web conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A/D: linked SDF/operator items and independent web conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-14 primary and blind reviews agreed that the inherited content-discovery answer leaks volatile status and SCF facts into an unrelated retrieval rubric. That makes a correct content result fail when project metadata drifts independently.",
+      "evidence": [
+        "Solo scratchpad 575: GT-14 process 3239 and blind process 3242",
+        "Live Lumenloop content retrieval 2026-07-10 returned dated articles, AV, research, proposals, and SCF material"
+      ],
+      "rootCause": [
+        "eval-side rubric coupling: identity/status/funding requirements were embedded in a content-discovery question"
+      ]
+    },
+    "origin": "raven-next q-defi-blend-content"
+  }
+}

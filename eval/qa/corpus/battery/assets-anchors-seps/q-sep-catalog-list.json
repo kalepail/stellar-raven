@@ -1,0 +1,150 @@
+{
+  "id": "q-sep-catalog-list",
+  "question": "List the most commonly used Stellar Ecosystem Proposals (SEPs) for wallets and anchors with their numbers and purposes.",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "The commonly used wallet/anchor SEPs, with current numbers, titles, and purposes, are:\n\n| SEP | Title / purpose |\n|---|---|\n| **SEP-1** | Stellar Info File (`stellar.toml`) — discovery of an organization's endpoints and assets |\n| **SEP-6** | Deposit and Withdrawal API — programmatic, non-interactive on/off-ramp flows |\n| **SEP-7** | URI Scheme to Facilitate Delegated Signing (`web+stellar:`) |\n| **SEP-8** | Regulated Assets — per-transaction issuer approval-server workflow |\n| **SEP-9** | Standard KYC Fields — the field dictionary used by SEP-12 |\n| **SEP-10** | Stellar Web Authentication — challenge signing followed by a JWT |\n| **SEP-12** | KYC API — customer-information exchange with an anchor |\n| **SEP-24** | Hosted Deposit and Withdrawal — anchor-hosted interactive wallet flow |\n| **SEP-31** | Cross-Border Payments API — sending-anchor to receiving-anchor payments |\n| **SEP-38** | Anchor RFQ API — indicative prices and firm quotes |\n| **SEP-41** | Soroban Token Interface — the common contract-token interface implemented as a subset of the SAC surface |\n\nThe roles split into discovery (SEP-1), authentication (SEP-10), KYC (SEP-9 fields and SEP-12 API), deposit/withdrawal (SEP-6 programmatic and SEP-24 interactive), cross-border payments (SEP-31), quotes (SEP-38), delegated-signing URIs (SEP-7), regulated-asset approvals (SEP-8), and contract tokens (SEP-41). SEP-43 is the Standard Web Wallet API Interface, while SEP-45 covers web authentication for contract accounts.\n\nLifecycle status is deliberately omitted here because it is not part of the question and the current official sources disagree for at least SEP-7 and SEP-8. If status is discussed, cite the exact source and as-of date rather than claiming the surfaces uniformly agree.",
+    "keyFacts": [
+      "SEP-1 = stellar.toml info/discovery file.",
+      "SEP-10 = Stellar Web Authentication.",
+      "SEP-12 = KYC API; SEP-24 = hosted/interactive deposit & withdrawal; SEP-6 = programmatic deposit & withdrawal.",
+      "SEP-31 = cross-border payments API; SEP-38 = Anchor RFQ/quotes API."
+    ],
+    "avoid": [
+      "Do NOT misnumber any SEP (e.g. SEP-24 as KYC, SEP-12 as deposit, SEP-31 as interactive deposit).",
+      "Do NOT invent SEP numbers/titles that do not exist in the stellar-protocol ecosystem registry."
+    ],
+    "notes": "REQUIRED list question. Dossier §7, §7.1. All numbers/titles verified against the stellar-protocol/ecosystem master README on 2026-06-22.\nAlso good if the answer: Includes SEP-7 (web+stellar URI scheme) and SEP-8 (regulated assets). | Includes SEP-41 (Soroban token interface).\nGolden cites: The SEPs index on developers.stellar.org or the stellar-protocol/ecosystem README.\nCORRECTION 2026-07-10 (golden-truth; Solo scratchpad 575, GT-06 processes 3222/3224): do not gate lifecycle status in this purpose-list question. At stellar-protocol fbf05c9d, SEP-7 and SEP-8 each say Active in their own preamble while ecosystem/README.md lists each as Final; git history confirms both were deliberately reopened without matching registry updates, and no official precedence rule was found. Omission of status is preferred and neutral. If a candidate mentions status, accept source-attributed, dated wording that exposes both surfaces; reject only claims that the official sources uniformly agree or that reverse the actual fields."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-10",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-ecosystem-proposals",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/README.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0007.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0008.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SEP-7 has one unambiguous current lifecycle status",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: stellar-protocol@fbf05c9d SEP-7 preamble says Active v2.1.0, while ecosystem/README.md lists SEP-7 as Final",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: commit 600c326b210d71ee031d7f3a40ca88191b4cdf9c deliberately changed SEP-7 from Final to Active without updating the registry row",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/E: current Stellar Docs presents SEP-7 in a list of current proposals but does not establish a lifecycle-status precedence rule",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "E",
+            "ref": "A/E: current Stellar Docs presents SEP-7 in a list of current proposals but does not establish a lifecycle-status precedence rule",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-8 has one unambiguous current lifecycle status",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: stellar-protocol@fbf05c9d SEP-8 preamble says Active v1.7.4, while ecosystem/README.md lists SEP-8 as Final",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: commit 936a617e04677f136e48a74eabc1a97d1300b5e0 explicitly changed SEP-8 from Final to Active because ongoing development made finalization premature, without updating the registry row",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent Parallel and Perplexity conflict sweeps found the same split and no official authority hierarchy",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "The catalog's SEP numbers, titles, and purpose mappings are current",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: pinned stellar-protocol SEP files and ecosystem registry at fbf05c9d3220b711e181577e7dca19844c765c3c",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/E: current official Stellar Ecosystem Proposals documentation and live Docs index, checked 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "E",
+            "ref": "A/E: current official Stellar Ecosystem Proposals documentation and live Docs index, checked 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The answer claimed its lifecycle statuses were verified against the stellar-protocol registry, but it mixed SEP-7's file-preamble value (Active) with SEP-8's registry value (Final). Current primary sources are internally inconsistent for both SEPs, and no official precedence rule was found. Because the question asks for numbers and purposes rather than lifecycle status, the honest correction removes the status column and records the conflict as dated, non-gating grader context.",
+      "evidence": [
+        "Solo scratchpad 575: GT-06 primary process 3222 and blind status process 3224",
+        "Independent blind reconciliation agreed on the source conflict and catalog defect, and rejected selecting the registry as an unsupported winner",
+        "Sibling sweep: q-sep-7-uri and q-sep-8-regulated-assets preserve durable mechanics and treat status as disputed/non-gating"
+      ],
+      "rootCause": [
+        "Upstream source drift: individual SEP preambles and the ecosystem registry disagree for SEP-7 and SEP-8.",
+        "Eval authoring mixed values from different surfaces while claiming registry-only verification."
+      ]
+    },
+    "origin": "raven-next q-sep-catalog-list"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "id": "q-soroban-zk-bls12-381",
+  "question": "Does Soroban have native host functions for BLS12-381, and which protocol version added them?",
+  "surface": [
+    "skills.stellar-dev.zk-proofs"
+  ],
+  "golden": {
+    "answer": "**Yes.** Soroban has **native BLS12-381 host functions** callable from contracts, added by **CAP-0059\n(\"Host functions for BLS12-381\", Status: Final) in Protocol 22**. The set includes G1/G2 point\n**add / mul / multi-scalar-mul (msm)**, **`bls12_381_multi_pairing_check`**, **hash-to-curve**\n(`hash_to_g1`/`hash_to_g2`), field-to-curve maps, and **Fr scalar arithmetic** (add/sub/mul/pow/inv).\n\nThis means **pairing-friendly curve operations run natively** — you can do on-chain pairing checks\n(e.g. **Groth16-style** verification, BLS signatures) **without** reimplementing BLS in pure Wasm or an\nEVM-style precompile bridge.\n\nNote these are **distinct** from **BN254 + Poseidon**, which were added **later** in **Protocol 25\n(\"X-Ray\")** via **CAP-0074 / CAP-0075** — don't conflate the two curves or their protocol versions.",
+    "keyFacts": [
+      "Yes: Soroban has native BLS12-381 host functions (G1/G2 add/mul, pairing check, hash-to-curve, etc.) usable from contracts.",
+      "They were added by CAP-0059 in Protocol 22."
+    ],
+    "avoid": [
+      "Do NOT claim Soroban lacks native pairing-friendly curve support / requires reimplementing BLS in pure Wasm.",
+      "Do NOT attribute BLS12-381 to the wrong protocol (e.g., P25/P20) or conflate it with BN254."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections; re-verified CAP-0059 header (Final, Protocol 22) and CAP-0074/0075 (Final, Protocol 25) via gh api. Trap: conflating BLS12-381 (P22) with BN254 (P25). Adds bls12_381_g1/g2 add/mul/msm, multi_pairing_check, hash_to_g1/g2, map_fp(2)_to_g(1/2), fr arithmetic.\nAlso good if the answer: These enable on-chain verification (e.g., Groth16-style pairing checks) without an EVM-style precompile bridge.\nGolden cites: The Protocol 22 announcement or CAP-0059, or the developers.stellar.org ZK page."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-06-29",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0059.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/announcing-protocol-22",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-48-token-ttl-tests-upgrades-vulns-wasm-x402-zk accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-soroban-zk-bls12-381"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "q-protocol-tier1-requirements",
+  "question": "What does it take to become a Tier 1 organization on Stellar — how many validators, what uptime, and how do you actually get in?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- A Tier 1 org must run **three (3) geographically dispersed Full Validators**, each publishing a **separate history archive** [1].\n- Tier 1 status is **earned** by other Tier 1 orgs including you in their **quorum sets** (trust / invitation) — **not** granted by application to SDF, and **not** by staking XLM or paying a fee [1].\n- Targets **~99.9%+ uptime** with 24/7 monitoring [1], and requires **SEP-1** (`stellar.toml`) and **SEP-20** self-verification [1].\n- **Why three**: if one node is down for maintenance/failure, **2-of-3** of your nodes can still vote on your behalf [1].\n- The process takes **months, not weeks**; starting with a single validator builds experience first [1].",
+    "keyFacts": [
+      "States a Tier 1 organization must run three (3) geographically dispersed Full Validators, each publishing a separate history archive.",
+      "States Tier 1 status is earned by other Tier 1 orgs including you in their quorum sets (trust/invitation), not granted by application."
+    ],
+    "avoid": [
+      "Do NOT claim Tier 1 requires staking a minimum amount of XLM or paying a fee.",
+      "Do NOT claim Tier 1 status is assigned by the Stellar Development Foundation by application/approval.",
+      "Do NOT state the wrong validator count (e.g. one, two, or five validators)."
+    ],
+    "notes": "Three full validators + quorum-set trust are defining. Trap is staking/application framing or wrong count.\nAlso good if the answer: Mentions the ~99.9%+ uptime target with 24/7 monitoring. | Mentions SEP-1 (stellar.toml) and SEP-20 self-verification as requirements. | Explains the 'why three': 2-of-3 of your nodes can still vote on your behalf during maintenance/failure.\nGolden cites: The Tier 1 Organizations page on developers.stellar.org/docs/validators/tier-1-orgs."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/validators/tier-1-orgs",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-34-soroban-launch-archival-core-tier1-validators-history accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-tier1-requirements"
+  }
+}

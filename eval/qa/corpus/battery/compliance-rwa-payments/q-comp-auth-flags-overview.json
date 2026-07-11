@@ -1,0 +1,52 @@
+{
+  "id": "q-comp-auth-flags-overview",
+  "question": "What asset authorization flags can a Stellar issuer set on a regulated token, and what does each one do?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- **`AUTH_REQUIRED`** — the issuer must **approve a trustline** before an account can hold/receive the\n  asset [1].\n- **`AUTH_REVOCABLE`** — the issuer can **revoke/freeze** an existing trustline's authorization (downgrade\n  to limited or remove it) [1].\n- **`AUTH_CLAWBACK_ENABLED`** — every subsequent trustline is clawback-enabled, letting the issuer **claw\n  back / burn** the asset from any holder; the docs state this flag **requires `AUTH_REVOCABLE` to also be\n  set** [1][2].\n- **`AUTH_IMMUTABLE`** — **locks** the authorization flags (and blocks account merge) once set; finalizes\n  the asset's governance posture [1].\n- Flags are managed via the **`set_options`** operation (account-level) and **`set_trust_line_flags`**\n  (per-trustline) [1].\n\nSources: [1] developers.stellar.org control-asset-access; [2] clawbacks guide.",
+    "keyFacts": [
+      "Lists AUTH_REQUIRED (issuer must approve a trustline before a holder can receive/hold the asset).",
+      "Lists AUTH_REVOCABLE (issuer can revoke/freeze an existing trustline's authorization).",
+      "Lists AUTH_CLAWBACK_ENABLED (issuer can claw back / burn the asset from any holder's balance).",
+      "Lists AUTH_IMMUTABLE (locks the authorization flags / prevents further changes once set)."
+    ],
+    "avoid": [
+      "Do NOT invent flags that don't exist (e.g. 'AUTH_FROZEN', 'AUTH_KYC_REQUIRED').",
+      "Do NOT claim AUTH_IMMUTABLE lets the issuer still change flags afterward, or that clawback works without AUTH_REVOCABLE."
+    ],
+    "notes": "Canonical, verified vs control-asset-access docs. Four flags: AUTH_REQUIRED(0x1), AUTH_REVOCABLE(0x2), AUTH_IMMUTABLE(0x4), AUTH_CLAWBACK_ENABLED(0x8). Docs confirm clawback flag 'requires that revocable is also set'. Trap: hallucinated flag names; missing the AUTH_REVOCABLE precondition.\nAlso good if the answer: AUTH_REVOCABLE must be enabled before AUTH_CLAWBACK_ENABLED can be set. | Flags are managed via Set Options / Set Trustline Flags operations.\nGolden cites: developers.stellar.org control-asset-access / clawbacks docs."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/control-asset-access",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/clawbacks",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-07-regulated-controls-anchor-security accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-comp-auth-flags-overview"
+  }
+}

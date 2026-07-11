@@ -1,0 +1,84 @@
+{
+  "id": "q-soroban-x402-auth-entry-signing",
+  "question": "Which Stellar wallets support the Soroban auth-entry signing x402 needs, and what's the payment flow?",
+  "surface": [
+    "skills.stellar-dev.agentic-payments"
+  ],
+  "golden": {
+    "answer": "In Stellar x402, the payer wallet signs the required **Soroban authorization entries**, not the facilitator's entire settlement transaction. The facilitator reconstructs the transaction with its source account, sponsors fees, verifies/simulates the authorization, signs, submits, and the client retries the paid request. As of **2026-07-11**, official docs list Freighter Browser Extension, Albedo, Hana, HOT, Klever, and OneKey; Freighter Mobile is unsupported. The hosted provider is **Build on Stellar Relayer with the OpenZeppelin x402 Plugin**, backed by OpenZeppelin Channels; that hosted setup requires a bearer API key. Do not imply that x402 itself, the payer wallet, or every facilitator intrinsically requires an API key. Coinbase remains Testnet-only in the official roster; use any compatible SEP-41 token, with USDC the default example.",
+    "keyFacts": [
+      "Separates payer auth-entry signing from facilitator transaction sponsorship/submission.",
+      "Dates wallet/provider/network coverage and narrows API-key requirements to the hosted setup."
+    ],
+    "avoid": [
+      "Do NOT say the payer signs the facilitator's full settlement transaction.",
+      "Do NOT generalize one hosted API-key requirement or provider network coverage to the x402 protocol."
+    ],
+    "notes": "Freshness:true — wallet/facilitator support is moving. Re-verified 2026-06-22 against developers.stellar.org/docs/build/agentic-payments/x402: wallets = Freighter (browser ext), Albedo, Hana, HOT, Klever, OneKey; Freighter Mobile NOT supported; facilitators = Coinbase (testnet) + OpenZeppelin Relayer (testnet+mainnet). List may change — keep medium confidence.\nAlso good if the answer: Flow: server returns HTTP 402 with payment requirements → wallet signs the Soroban auth entry → facilitator verifies and settles → request is retried/completed.\nGolden cites: At least one primary developers.stellar.org agentic-payments / x402 docs page.\nGT-48 CORRECTION 2026-07-11: current provider label is Build on Stellar Relayer with OZ plugin/Channels; API-key scope is hosted-provider-specific."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer-plugins",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/coinbase/x402",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current official x402 flow has payer wallets sign Soroban auth entries while the facilitator rebuilds/sponsors/verifies/signs/submits; the Build on Stellar hosted relayer uses an OpenZeppelin x402 plugin backed by Channels and requires its bearer API key, while API keys are not intrinsic to x402 or every facilitator.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Stellar x402 docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current OpenZeppelin/Build on Stellar plugin/source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent current-wallet/provider sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The core auth-entry flow was right but facilitator naming, hosted API-key scope, and current wallet/network roster were freshness-sensitive and partially stale.",
+      "evidence": [
+        "Solo scratchpad 575 GT-48 primary 3333 and blind 3342; independent agreement with blind provider/API-key narrowing."
+      ],
+      "rootCause": [
+        "Plain hosted-provider/wallet/network freshness drift."
+      ]
+    },
+    "origin": "raven-next q-soroban-x402-auth-entry-signing"
+  }
+}

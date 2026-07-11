@@ -1,0 +1,50 @@
+{
+  "id": "q-sep-wallet-seps-list",
+  "question": "List the common SEPs a Stellar wallet typically needs to implement to support anchors and interoperability.",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "A Stellar wallet supporting anchors/interoperability typically implements [1][2]:\n\n- **SEP-1** — Stellar Info File (`stellar.toml`): discover an anchor's endpoints, currencies, keys.\n- **SEP-10** — Stellar (Web) Authentication: sign a challenge tx to get a JWT and authenticate with the anchor.\n- **SEP-24** — Hosted (interactive) Deposit & Withdrawal, and/or **SEP-6** — programmatic Deposit & Withdrawal.\n- **SEP-12** — KYC API: submit customer info to the anchor.\n- **SEP-38** — Anchor RFQ/quotes: price an exchange before deposit/withdraw/send.\n- **SEP-7** — URI scheme (`web+stellar:`) for deep-link/payment-signing requests (optional).\n- **SEP-31** — Cross-Border Payments API (relevant to remittance-style wallets).\n\nSDF's TypeScript **Wallet SDK** wraps SEP-10/12/24/31/38 client-side.",
+    "keyFacts": [
+      "Names SEP-1 (stellar.toml — anchor/asset discovery metadata).",
+      "Names SEP-10 (web authentication — challenge/response to authenticate an account with an anchor).",
+      "Names SEP-24 (interactive/hosted deposit & withdrawal) and/or SEP-6 (programmatic deposit & withdrawal)."
+    ],
+    "avoid": [
+      "Do NOT misnumber the SEPs (e.g. call web auth SEP-12 or KYC SEP-10).",
+      "Do NOT invent a non-existent SEP number as a canonical wallet requirement."
+    ],
+    "notes": "Axis-C list rebalance. Enumeration of the wallet-relevant SEPs → stellar_docs_mcp. Trap = misnumbering SEP-10/12/24. All numbers verified against the ecosystem README.\nAlso good if the answer: Names SEP-12 (KYC/customer info) and SEP-38 (anchor quotes) as commonly paired with deposit/withdraw flows. | May name SEP-7 (URI request scheme) for deep-link/payment requests.\nGolden cites: A SEP overview / wallet-guide page on developers.stellar.org or the stellar-protocol SEP repo."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-ecosystem-proposals",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/README.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-06-sep-deposit-regulation-catalog-clawback accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-sep-wallet-seps-list"
+  }
+}

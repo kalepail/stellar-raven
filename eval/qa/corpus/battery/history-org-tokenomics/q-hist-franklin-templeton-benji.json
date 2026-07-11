@@ -1,0 +1,83 @@
+{
+  "id": "q-hist-franklin-templeton-benji",
+  "question": "What is Franklin Templeton's BENJI / on-chain money fund on Stellar?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Franklin Templeton's **BENJI** token represents a share of the regulated **Franklin OnChain U.S. Government Money Fund (FOBXX)**. The fund launched on **Stellar in 2021**, using a public blockchain as its official share-ownership record, and supports peer-to-peer share transfer and intraday yield. Stellar is the original launch/system-of-record network, but BENJI is now available across multiple public blockchains; do not describe it as Stellar-exclusive. Any value figure must name its scope, source, and date: Stellar-chain value, BENJI-suite AUM, and FOBXX total net assets are different metrics. No fixed AUM number is required for correctness.",
+    "keyFacts": [
+      "BENJI represents shares of Franklin Templeton's regulated FOBXX government money-market fund and launched on Stellar in 2021.",
+      "Treats current value figures as dated and scoped, and does not falsely claim BENJI remains Stellar-exclusive."
+    ],
+    "avoid": [
+      "Do NOT describe BENJI as a memecoin, stablecoin, or Stellar's native token.",
+      "Do NOT require the stale $580M figure, merge chain value with suite/fund AUM, or claim any non-Stellar BENJI deployment is false."
+    ],
+    "notes": "FOBXX/BENJI launched on Stellar 2021; 'first US-registered mutual fund to use a public blockchain as its official system of record' (stellar.org case study + Franklin Templeton). $580M+ / 'second-largest RWA on Stellar' figure (Apr 30 2026 anniversary) is fresher vendor-press. Verified 2026-06-22.\nAlso good if the answer: It is a major tokenized real-world asset (RWA) on Stellar (hundreds of millions in value). | The fund launched on Stellar around 2021.\nGolden cites: stellar.org case study or Franklin Templeton materials on the on-chain fund / BENJI.\nCorrected 2026-07-10. Grade product identity and Stellar launch history; value figures are optional only when scope/date are explicit. BENJI's later multi-chain deployment does not contradict its Stellar origin."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://www.franklintempleton.com/investments/options/money-market-funds/products/29386/SINGLCLASS/franklin-on-chain-u-s-government-money-fund/FOBXX",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.franklintempleton.com/press-releases/news-room/2026/franklin-templeton-stellar-development-foundation-mark-five-years-of-benji-the-first-u.s.-registered-tokenized-money-market-fund",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://digitalassets.franklintempleton.com/benji/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "BENJI represents FOBXX, launched on Stellar in 2021, and now supports multiple public blockchains",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Franklin Templeton FOBXX product page, BENJI network timeline, and April-2026 five-year release",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: Stellar/SDF record plus independent Morningstar/web conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: Stellar/SDF record plus independent Morningstar/web conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-14 primary and blind reviews independently found two inherited traps: the $580M figure is not the April-2026 anniversary scope, and BENJI is now multi-chain even though Stellar was its 2021 launch/system-of-record network. The correction removes a stale amount gate and the false non-Stellar-chain prohibition.",
+      "evidence": [
+        "Solo scratchpad 575: GT-14 primary process 3239 and blind process 3242",
+        "Franklin issuer records rechecked 2026-07-10: different dates/scopes report >$650M on Stellar, $1.98B BENJI suite, and $753.24M FOBXX total net assets"
+      ],
+      "rootCause": [
+        "eval-side freshness/scope conflation: chain value, BENJI-suite AUM, and fund net assets were merged; launch network became a false exclusivity rule"
+      ]
+    },
+    "origin": "raven-next q-hist-franklin-templeton-benji"
+  }
+}

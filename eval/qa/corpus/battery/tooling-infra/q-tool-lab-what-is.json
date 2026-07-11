@@ -1,0 +1,114 @@
+{
+  "id": "q-tool-lab-what-is",
+  "question": "Is there an official web tool to build, sign, and submit Stellar transactions without writing code?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Yes. **Stellar Lab** at **`https://lab.stellar.org`** is the official web toolkit for building, signing, simulating, and submitting Stellar transactions without writing application code. It also exposes account/keypair workflows, Horizon and Stellar RPC explorers, XDR↔JSON tools, and contract deploy/invoke/simulate flows. The current open-source implementation is `stellar/laboratory`.\n\nLab can be used for account-creation workflows on **Mainnet, Testnet, and Futurenet**. **Friendbot funding is only for Testnet and Futurenet—never Mainnet.** A Mainnet account needs a real funded transaction and production signing safeguards. This is the current Stellar Lab, successor to the older Stellar Laboratory branding; detailed button locations and storage/signing safety belong to the dedicated workflow guidance and can change with the UI.",
+    "keyFacts": [
+      "Identifies official Stellar Lab and its build/sign/simulate/submit plus contract/API/XDR scope.",
+      "Separates account creation on Mainnet/Testnet/Futurenet from Friendbot funding on Testnet/Futurenet only.",
+      "Keeps this existence/capabilities answer distinct from a brittle step-by-step UI walkthrough."
+    ],
+    "avoid": [
+      "Do NOT imply Friendbot funds Mainnet, that an unsigned transaction can be submitted, or that Mainnet account creation is free.",
+      "Do NOT refer only to the legacy Laboratory name/URL or claim no current Lab exists.",
+      "Do NOT turn this at-a-glance question into a frozen button-by-button workflow or encourage production-secret handling in a browser."
+    ],
+    "notes": "2026-06-29 differentiation: this file owns the EXISTENCE/capabilities-at-a-glance lane ('is there an official no-code web tool? yes, Stellar Lab'); the step-by-step new-UI workflow (fetch sequence, Add Operation button locations, SAC, offline) is owned by q-ti-stellar-lab-usage-and-new-ui. lab.stellar.org is the official tool across Mainnet/Testnet/Futurenet; 'all-new Lab' relaunch (late 2024) supersedes the legacy Laboratory.\nAlso good if the answer: It includes a transaction builder, keypair generator, and Friendbot-backed testnet funding, plus contract invoke/simulate/submit.\nGolden cites: lab.stellar.org and/or the developers.stellar.org Lab docs / introducing-the-all-new-stellar-lab post.\nGT-55 CORRECTION 2026-07-11: account creation spans Mainnet/Testnet/Futurenet; Friendbot funding is Testnet/Futurenet only. Grade current official capabilities at a glance, not brittle UI steps; detailed Lab workflow/storage safety stays with q-ti-stellar-lab-usage-and-new-ui."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/lab",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://lab.stellar.org/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/laboratory",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/introducing-the-all-new-stellar-lab",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Stellar Lab is the official no-code web toolkit for building, signing, simulating, and submitting transactions and working with contracts, APIs, accounts, and XDR.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current official Lab documentation and live lab.stellar.org",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current stellar/laboratory source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Lab supports account creation workflows on Mainnet, Testnet, and Futurenet, but Friendbot funds only Testnet and Futurenet.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Lab features/account documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: Laboratory network/faucet implementation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-55 primary/blind sibling reconciliation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited capabilities were broadly correct but grouped Mainnet with Friendbot funding. Current official Lab docs support account creation across Mainnet/Testnet/Futurenet while explicitly limiting Friendbot funding to Testnet/Futurenet.",
+      "evidence": [
+        "GT-55 primary 3392 and sealed blind 3393 independently agreed on the Mainnet/account versus Testnet-Futurenet/Friendbot boundary.",
+        "Current Lab page and live product establish build/sign/simulate/submit, Horizon/RPC, contract, account, and XDR capabilities.",
+        "Sibling q-ti-stellar-lab-usage-and-new-ui already carries the detailed UI, localStorage, signing, and self-hosted/offline boundary; this case remains capabilities-at-a-glance."
+      ],
+      "rootCause": [
+        "Eval-side network/faucet wording ambiguity; current upstream Lab documentation already states the correct boundary."
+      ]
+    },
+    "origin": "raven-next q-tool-lab-what-is"
+  }
+}

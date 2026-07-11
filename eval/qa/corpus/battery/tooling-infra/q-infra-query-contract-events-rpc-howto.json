@@ -1,0 +1,117 @@
+{
+  "id": "q-infra-query-contract-events-rpc-howto",
+  "question": "How do I query the events emitted by a Soroban contract via Stellar RPC?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Call Stellar RPC **`getEvents`** (or its SDK wrapper). Supply optional `startLedger` (inclusive), `endLedger` (exclusive), and up to five filters. External `type`, when present, is **`system` or `contract`**; current RPC rejects `diagnostic`. Filter objects are alternatives, populated constraints within a filter are conjunctive, contract IDs are capped per filter, and topic matchers are 1–4 base64-encoded `ScVal` segments with wildcard semantics defined by the method schema.\n\nPage with the returned cursor; when resuming from a cursor, omit explicit ledger bounds. Persist a cursor only after downstream success and deduplicate by event ID. Stock response sizing is 100 events by default and 10,000 maximum but operator-configurable; the current handler also limits one request's ledger scan span to 10,000 ledgers. Neither number is retention. Retention is the endpoint's configured recent ledger window, so inspect `getHealth`/provider docs and continuously ingest or use an indexer/Hubble for older history. Horizon does not serve contract events, and there is no `getContractEvents` method.",
+    "keyFacts": [
+      "Uses Stellar RPC getEvents; current stream types are system and contract, not diagnostic.",
+      "Uses inclusive/exclusive bounds or a returned cursor, persists progress after successful processing, and deduplicates by event ID.",
+      "Keeps response-event page size, request ledger scan span, and provider-configured retention separate.",
+      "Routes durable history to continuous ingestion, an indexer, or Hubble rather than Horizon or an invented RPC method."
+    ],
+    "avoid": [
+      "Do NOT request `diagnostic` through getEvents; diagnostic output belongs to transaction/simulation diagnostics.",
+      "Do NOT combine a resume cursor with explicit start/end ledger bounds.",
+      "Do NOT present topic segments as plain text without the ScVal/XDR qualification.",
+      "Do NOT normalize retention to a universal 24-hour default or seven-day maximum, or conflate it with page size/scan span.",
+      "Do NOT use Horizon or invent `getContractEvents`."
+    ],
+    "notes": "Axis-C how-to. Procedure → stellar_docs_mcp. Verified getEvents params (startLedger/endLedger, up-to-5 filters w/ type+contract ids+topics, pagination cursor+limit). Retention: default 24h, max 7-day window. Distinct from q-infra-rpc-event-retention and q-soroban-event-indexing-design. Trap = Horizon or inventing getContractEvents.\nAlso good if the answer: Notes events are only retained for a bounded recent window on RPC (default ~24h, max ~7-day query window), so older events need an indexer/archive. | Mentions pagination via the returned cursor (and a limit) for large result sets.\nGolden cites: The Stellar RPC getEvents method page on developers.stellar.org.\nGT-50 CORRECTION 2026-07-11: require current system/contract event types, cursor/idempotence, and the three-limit distinction. The official retention prose conflict is tracked in sd-023; provider/configuration-aware answers control."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getEvents",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/events/ingest",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc/releases/tag/v27.1.1",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc/blob/main/cmd/stellar-rpc/internal/methods/get_events.go",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current getEvents accepts optional system/contract filters, cursor pagination, XDR topic matchers, and bounded provider-configured history; diagnostic is rejected.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current getEvents and event-ingestion documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current stellar-docs OpenRPC plus stellar-rpc v27.1.1 source/release",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: read-only SDF getEvents/getHealth and diagnostic-type rejection probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Page size, per-request ledger scan span, and retained ledger history are three separate limits.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: stellar-rpc get_events.go and config/options.go",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: OpenRPC pagination schema and RPC configuration guide",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited how-to admitted the removed diagnostic event type, flattened filter/topic semantics, and pinned stale 24-hour/seven-day retention wording while conflating event page size, ledger scan span, and retained history.",
+      "evidence": [
+        "Solo scratchpad 575 GT-50 primary process 3349 and blind process 3361 independently derived the correction; blind matrix sealed at 2026-07-11T03:53:28.522Z before the primary read.",
+        "Sibling sweep checked q-soroban-publish-events, q-soroban-event-indexing-design, q-ti-rpc-gettransactions-pagination-xdr, and q-ti-historical-events-beyond-retention; the latter is corrected in the same GT-52 bundle."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-023-rpc-event-retention-config-drift.md",
+        "improvements/stellar-docs/sd-004-rpc-limits-described-as-hardcoded.md",
+        "Eval-side API-schema drift: the archived answer preserved a removed event type and incomplete cursor/filter semantics."
+      ]
+    },
+    "origin": "raven-next q-infra-query-contract-events-rpc-howto"
+  }
+}

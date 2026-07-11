@@ -1,0 +1,108 @@
+{
+  "id": "q-scf-funded-similar-oracle",
+  "question": "Has the SCF already funded any price-oracle projects? I want to avoid duplicating something that exists.",
+  "surface": [
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions"
+  ],
+  "golden": {
+    "answer": "Yes. Official SCF records confirm substantial prior oracle work as of **2026-07-10**: **Reflector $444,840 awarded/paid** across four awarded submissions; **Band Protocol $60,000 awarded/paid in SCF #16**; **Lightecho $93,110 awarded/paid**; **Orally $48,000 awarded/paid** (a later $102K row is not awarded); and **DIA Oracles $38,000 awarded/paid**. Additional examples include **Chainlink Oracles Relayer $38,400 awarded/paid** and **Stellar Oracle Shield $120,000 awarded / $12,000 paid**. Scout has a conflicting Band alias row showing $100K/#41; the official Band project record controls, so do not present that as an equally supported amount. Use this history to explain differentiation, not to declare a new proposal automatically disqualified.",
+    "keyFacts": [
+      "Returns named prior oracle awards from status-bearing official records.",
+      "Uses Band's official $60K/#16 result and discloses the service alias conflict."
+    ],
+    "avoid": [
+      "Do NOT call Band a $100K awarded project or infer awarded/paid status from a bare budget field.",
+      "Do NOT treat overlapping prior work as automatic disqualification."
+    ],
+    "notes": "GT-37 CORRECTION 2026-07-10: official Band is $60K awarded/paid in #16; the Scout $100K/#41 alias is contradicted service evidence. Require official status/paid provenance for amounts and preserve differentiation framing.\nGT-37 independently confirmed by processes 3296/3298."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/reflector-5w2",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/band-protocol-2ob",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/lightecho-stellar-oracle-c4k",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recCLcdUOLt2AvNHe",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/dia-oracles-fqo",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recHahmCLtNhZaCUg",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/stellar-oracle-shield-by-sun-zu-lab-vh0",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Official status-bearing records confirm funded oracle prior art and establish Band at $60K, not the conflicting Scout $100K alias",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official SCF project/submission pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: Lumenloop/Scout discovery including the Band alias collision",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: project/operator footprints",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-service-conflict."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The topical yes was correct, but the golden pinned Scout's contradicted Band $100K alias and treated bare archive budgets as funded/paid proof without official status-bearing sources.",
+      "evidence": [
+        "Solo scratchpad 575 GT-37 primary 3296 and blind 3298."
+      ],
+      "rootCause": [
+        "Service alias and budget fields were promoted over authoritative award/status records.",
+        "improvements/stellar-light-scout/sls-026-scf-status-aggregate-conflict.md",
+        "improvements/lumenloop/ll-013-scf-submission-award-fields.md"
+      ]
+    },
+    "origin": "raven-next q-scf-funded-similar-oracle"
+  }
+}

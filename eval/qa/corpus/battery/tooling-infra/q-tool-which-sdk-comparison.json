@@ -1,0 +1,126 @@
+{
+  "id": "q-tool-which-sdk-comparison",
+  "question": "Which Stellar SDKs are officially maintained by SDF versus community-maintained, and how should that affect which one I pick for a production app?",
+  "surface": [
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Choose by **execution role first**, then language and operational fit.\n\n1. **On-chain contract:** use SDF-maintained Rust **`soroban-sdk`** as the canonical/default path. Consider the documented community Solang/Solidity or AssemblyScript paths only with their current maturity, compatibility, and security limits.\n2. **Off-chain client:** choose the SDK that actually covers your transactions, XDR, Horizon/RPC methods, contract bindings, ingestion, mobile runtime, wallet/SEP flows, or hardware integration. Current examples include SDF-maintained `@stellar/stellar-sdk`, `go-stellar-sdk`, and focused Rust client crates, plus officially documented community Python, Java, iOS/macOS, Flutter, Kotlin Multiplatform, PHP, .NET, and other client components.\n3. **Validate the exact choice:** required feature parity, target-network/protocol compatibility, package/runtime support, release cadence, maintainer and issue response, upgrade history, dependency/security posture, tests, deployment constraints, and application-specific review.\n\nSDF maintenance can be a reasonable default when its actual support and upgrade path fit the workload, but the catalog does not establish a universal SLA or make every community SDK consumer-only, best-effort, unsafe, or unsuitable for production. Community SDKs can be valid production choices after exact capability and risk review. Date versions and recheck before pinning.",
+    "keyFacts": [
+      "Uses an execution-role-first split between on-chain contract SDKs and off-chain client/XDR/network SDKs.",
+      "Describes Rust soroban-sdk as the SDF canonical/default contract path while acknowledging documented community alternatives with maturity caveats.",
+      "Compares exact language/runtime, capability parity, release/maintainer, network compatibility, dependencies, tests, and security review.",
+      "Treats maintainer tier as evidence, not a blanket SLA, audience, quality, production, institutional, or safety ranking."
+    ],
+    "avoid": [
+      "Do NOT conflate client SDKs with contract SDKs or assume every language has identical Horizon/RPC/contract/SEP coverage.",
+      "Do NOT claim SDF-maintained automatically means production/institutional/safe or that community-maintained automatically means best-effort/consumer/unsafe.",
+      "Do NOT infer a support SLA from official documentation or maintainer labels.",
+      "Do NOT omit documented community contract alternatives, use deprecated package names, or pin versions without date and compatibility checks."
+    ],
+    "notes": "GT-56 DECISION-FRAMEWORK CORRECTION 2026-07-11: choose execution role first, then exact capability/runtime/release/compatibility/risk. Maintainer tier matters but supplies no blanket SLA, safety, audience, institutional, or production ranking. Include documented community contract alternatives with maturity caveats."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/sdks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/sdks/client-sdks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/sdks/contract-sdks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/js-stellar-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/go-stellar-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/StellarCN/py-stellar-base",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Soneso/kmp-stellar-sdk",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SDK selection must first separate on-chain contract authoring from off-chain client/XDR/Horizon/RPC/ingestion/mobile/wallet work, then compare exact capability and compatibility.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official client and contract SDK catalogs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current JS, Go, Rust, Python, Java, Flutter, and mobile SDK sources",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Maintainer identity is relevant operational evidence but official docs do not promise a blanket SLA, institutional suitability, inherent safety, or complete feature parity by tier.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current catalog maintainer labels and capability descriptions",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current community and SDF repository release/support surfaces",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited maintainer table was useful but turned SDF ownership into unsupported blanket production, institutional, SLA, quality, and safety rankings. It also omitted the official community contract alternatives and did not choose by execution role first.",
+      "evidence": [
+        "Solo scratchpad 575 GT-56 primary process 3394 and sealed blind process 3398 independently removed blanket SDF/community rankings and required an execution-role-first decision framework.",
+        "Sibling sweep checked q-tool-official-sdks-list, q-tool-python-sdk, q-tool-rust-soroban-sdk, q-tool-js-sdk-package, q-tool-go-sdk-ingest, q-tool-java-sdk, q-tool-flutter-mobile-sdk, and q-ti-sdk-package-rename; no sibling supplies a generic maintainer-tier SLA."
+      ],
+      "rootCause": [
+        "Eval-side unsupported decision guidance: maintainer attribution was promoted into a universal support SLA, safety, audience, and fitness ranking."
+      ]
+    },
+    "origin": "raven-next q-tool-which-sdk-comparison"
+  }
+}

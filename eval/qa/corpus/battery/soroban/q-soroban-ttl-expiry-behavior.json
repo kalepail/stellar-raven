@@ -1,0 +1,50 @@
+{
+  "id": "q-soroban-ttl-expiry-behavior",
+  "question": "What happens to Persistent vs Temporary storage entries when their TTL runs out?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "The behavior **differs by tier**:\n\n- **Persistent (and Instance):** when TTL expires the entry is **archived, not deleted**, and can be\n  **restored** later (named in a restore footprint / `RestoreFootprintOp`; **auto-restored** by\n  `InvokeHostFunction` since **CAP-0066 / Protocol 23**).\n- **Temporary:** when TTL expires the entry is **permanently deleted** and **cannot be restored**.\n\n**TTL** is the number of **ledgers** remaining until the entry's **`liveUntilLedger`** (it's a ledger\ncount, **not** a wall-clock timer); the entry becomes inaccessible once `current_ledger >\nliveUntilLedger`. Extend it with **`extend_ttl()`**, and proactively extend critical entries to avoid\neviction.\n\nDon't swap the semantics: Temporary is **not** restorable; Persistent is **not** permanently lost.",
+    "keyFacts": [
+      "When a Persistent (or Instance) entry's TTL expires it is archived, NOT deleted, and can be restored later.",
+      "When a Temporary entry's TTL expires it is permanently deleted and cannot be restored."
+    ],
+    "avoid": [
+      "Do NOT claim Temporary data can be restored after expiry.",
+      "Do NOT claim Persistent data is permanently deleted (lost) when TTL hits zero.",
+      "Do NOT describe TTL as a wall-clock timer rather than a ledger count."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). The defining TTL-behavior trap: restorable vs permanently-deleted by tier. VERIFIED against state-archival docs: Temporary is permanently deleted/non-restorable on expiry; Persistent & Instance are archived & restorable; auto-restore since P23/CAP-0066. TTL is in ledgers (liveUntilLedger).\nAlso good if the answer: TTL is the number of ledgers until `liveUntilLedger`; you extend it with `extend_ttl()`. | Archived Persistent/Instance entries are restored via a restore footprint / RestoreFootprintOp (auto-restore available since CAP-0066 / Protocol 23).\nGolden cites: The developers.stellar.org state-archival documentation."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/storage/choosing-the-right-storage",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-48-token-ttl-tests-upgrades-vulns-wasm-x402-zk accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-soroban-ttl-expiry-behavior"
+  }
+}

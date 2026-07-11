@@ -1,0 +1,55 @@
+{
+  "id": "q-pc-address-types-strkey",
+  "question": "What are Stellar address types G, C, M, and S, how does StrKey encoding work, and how do I encode/decode between a raw Ed25519 key and a G-address?",
+  "surface": [
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "`G...` is an Ed25519 public account key, `S...` is the corresponding secret seed/private key material, `M...` is a muxed account address, and `C...` is a contract address [1]. StrKey is not base58 or raw hex: SEP-0023 defines it as a version byte whose top 5 bits pick the type, followed by the binary payload, a CRC16 checksum, and RFC4648 base32 without padding [1]. For normal Ed25519 public keys and contract hashes the payload is 32 bytes; muxed accounts append an 8-byte ID to the underlying Ed25519 key before checksum/base32 encoding [1][2]. Decoding a G-address yields the raw 32-byte Ed25519 public key. Decoding an S-seed yields private signing material and should never be requested from or shared by a user. C-addresses are Stellar contract addresses, not EVM `0x` addresses [3].",
+    "keyFacts": [
+      "Identifies G as public account, S as secret seed, M as muxed account, and C as contract address.",
+      "Explains StrKey is version-byte plus payload plus checksum encoded in base32 rather than raw base58/hex.",
+      "Mentions checksum protection and the relevant payload sizes at a high level.",
+      "Explains decoding a G-address yields the raw Ed25519 public key bytes, while S is secret material and must not be shared."
+    ],
+    "avoid": [
+      "Do NOT treat G/C/M/S addresses as interchangeable.",
+      "Do NOT ask users to paste secret seeds for decoding."
+    ],
+    "notes": "SEP-0023 is the canonical StrKey source. It also documents other prefixes (T/X/P/L/B), but this golden focuses on G/C/M/S.\nAlso good if the answer: Mentions other StrKey prefixes only if relevant and avoids overloading C with EVM contracts.\nGolden cites: At least one primary Stellar source such as developers.stellar.org, stellar-core docs, or the stellar-protocol repository."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0023.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/pooled-accounts-muxed-accounts-memos",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/cli/cookbook/contract-invoke-arguments#address",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-29-accounts-addresses-fees-memos-multisig-channels accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-pc-address-types-strkey"
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "id": "q-infra-rpc-methods-list",
+  "question": "What are the main Stellar RPC methods, and which one do I use to dry-run a contract call before submitting?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Current Stellar RPC exposes 12 application methods: **`getHealth`, `getNetwork`, `getVersionInfo`, `getLatestLedger`, `getLedgers`, `getLedgerEntries`, `getTransaction`, `getTransactions`, `getEvents`, `getFeeStats`, `sendTransaction`, and `simulateTransaction`**. Use **`simulateTransaction`** to dry-run and prepare a contract invocation before signing/submitting.\n\n`getLedgers` exists on ordinary RPC instances within their retained range; deep/full ledger history requires an archive/data-lake-backed provider. `getEvents` is likewise bounded by provider-configured retention. SDK helpers such as `getAccount`, Horizon REST paths, removed singular `getLedgerEntry`, and disabled `rpc.*` discovery methods are not additional application methods.",
+    "keyFacts": [
+      "Names the exact 12 current methods, including distinct getTransaction/getTransactions and plural getLedgerEntries.",
+      "Uses simulateTransaction for the dry run.",
+      "Separates ordinary getLedgers availability from archive-backed historical reach and keeps event retention provider-configured."
+    ],
+    "avoid": [
+      "Do NOT add Horizon paths, SDK helpers, removed aliases, or `rpc.discover`/`getMethods` to the application-method list.",
+      "Do NOT imply every getLedgers endpoint reaches genesis or repeat a universal event-retention day count."
+    ],
+    "notes": "2026-06-29: simulateTransaction is the load-bearing answer; inventing method names is the trap. 12-method enum is this file's lane (vs q-infra-simulate-transaction-howto, the procedure). Retention normalized: getEvents reference cites ~24h default with a ~7-day max queryable window; the unified HISTORY_RETENTION_WINDOW config default is 120960 ledgers (~7 days). Rubric gates on the durable 'limited window' fact, not the exact default.\nAlso good if the answer: `getLedgers` is the archive-tier method for full ledger-history retrieval. | `getEvents` retrieves contract events but has a limited retention window (24h default, ~7 days max).\nGolden cites: developers.stellar.org RPC API-reference methods page.\nGT-50 CORRECTION 2026-07-11: exact inventory is release-sensitive. Gate the 12 names and simulateTransaction, while preserving ordinary-versus-archive getLedgers and provider-configured event retention."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-docs/tree/main/openrpc/src/stellar-rpc/methods",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-rpc/blob/main/cmd/stellar-rpc/internal/jsonrpc.go",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/admin-guide/data-lake-integration",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current Stellar RPC exposes exactly 12 application methods and simulateTransaction is the dry-run method.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: current stellar-docs OpenRPC method files and stellar-rpc registration",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live method-presence/method-not-found probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Ordinary getLedgers is retention-bounded; archive-backed providers extend only that method to deep history.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: getLedgers/data-lake documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: ordinary-versus-archive ledger-2 probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The core 12-method inventory was correct, but the inherited answer falsely made full-history getLedgers universal and repeated the stale retention scalar; the exact surface is also release-sensitive.",
+      "evidence": [
+        "Solo scratchpad 575 GT-50 primary/blind matrices independently agreed on the exact inventory and ancillary correction; blind also confirmed disabled `rpc.*` discovery behavior.",
+        "Sibling sweep checked q-infra-simulate-transaction-howto and q-infra-rpc-provider-archive-tier."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-003-rpc-method-reference-pages-unindexed.md",
+        "Eval-side method-capability conflation: standard getLedgers availability was confused with archive-backed historical reach."
+      ]
+    },
+    "origin": "raven-next q-infra-rpc-methods-list"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "id": "q-sor-freeze-account-allowance",
+  "question": "Can I lock an account (master-key weight 0) while still letting a Soroban contract move its funds via a pre-set SAC allowance, and how do I freeze a balance until a deadline?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Setting a classic account's master weight to zero disables that key and can irreversibly strand the account unless another signer can meet thresholds. It does not erase a previously approved SAC/SEP-41 allowance: the SAC stores the allowance as Temporary contract data through the absolute `live_until_ledger` (also called `expiration_ledger` in current docs), and `transfer_from` authenticates the spender and consumes the remaining amount. If the spender contract directly calls SAC, its own contract-invoker authorization is automatic; `authorize_as_current_contract` is for deeper calls. A locked owner cannot revoke, zero, or renew the allowance without another valid signer. Use escrow/custom token policy for a real deadline freeze; signer weight, allowance expiry, storage TTL, and business time locks are separate controls.",
+    "keyFacts": [
+      "Explains master-weight lockout and survival of a bounded, absolute-ledger allowance.",
+      "Distinguishes direct contract-invoker authorization and timed escrow policy."
+    ],
+    "avoid": [
+      "Do NOT call account lock a time lock for one balance or say it cancels existing allowances.",
+      "Do NOT say a locked owner can revoke/renew without another signer or require authorize_as_current_contract for a direct spender-to-SAC call."
+    ],
+    "notes": "Verified against Stellar Docs MCP and SEP-41 on 2026-06-29.\nAlso good if the answer: Mentions issuer-level freeze/revoke/clawback/admin controls are separate asset controls, not a personal timed escrow primitive. | Warns that allowance race conditions exist when overwriting allowances; zero then set/verify is safer.\nGolden cites: Official signatures/multisig or Set Options docs for master-key weight 0. | Official SAC/SEP-41 token interface docs for approve/allowance/transfer_from.\nGT-42 independently confirmed. live_until_ledger and expiration_ledger are aliases for one absolute expiry mechanism."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/token-interface",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Signer lock and surviving allowance semantics",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: SEP-41/SAC/auth source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: SEP-41/SAC/auth source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-42 primary/blind and host tests",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The core answer was right but omitted allowance storage/absolute-expiry and direct-contract-invoker authorization, which matter after the owner is locked.",
+      "evidence": [
+        "Solo scratchpad 575 GT-42 processes 3308/3315."
+      ],
+      "rootCause": [
+        "Eval-side authorization/storage precision."
+      ]
+    },
+    "origin": "raven-next q-sor-freeze-account-allowance"
+  }
+}

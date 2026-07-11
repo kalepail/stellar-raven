@@ -1,0 +1,113 @@
+{
+  "id": "q-tool-official-sdks-list",
+  "question": "List the official Stellar SDKs by language — which languages have a maintained Stellar/Soroban SDK?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Separate two catalogs and label the maintainer for every entry.\n\n**Client/XDR SDKs** are for transactions, signing, XDR, Horizon/RPC, ingestion, or app integration. The current SDF-maintained entries are **JavaScript/TypeScript `@stellar/stellar-sdk`**, **Go `go-stellar-sdk`**, and focused Rust components **`stellar-xdr`**, **`stellar-strkey`**, and **`rs-stellar-rpc-client`**. The official catalog also lists community-maintained Python (`stellar-sdk` / StellarCN), Java (Lightsail), iOS/macOS, Flutter/Dart, Kotlin Multiplatform and PHP (Soneso), C#/.NET (Beans-BV), and a community off-chain Rust `soroban-client`; verify each current link and capability.\n\n**Contract SDKs** author on-chain Wasm. SDF's canonical/default path is Rust **`soroban-sdk`**. The official contract catalog also documents community/third-party **Solang for Solidity** and **AssemblyScript** paths. Solang's Stellar target is pre-alpha/experimental, and the AssemblyScript path remains community tooling whose current maturity and compatibility must be checked; neither has the same SDF-maintained status as Rust.",
+    "keyFacts": [
+      "Separates client/XDR SDKs from on-chain contract-authoring SDKs.",
+      "Labels SDF-maintained and community-maintained entries exactly rather than treating official listing as ownership.",
+      "Includes the cataloged community C#/.NET client SDK.",
+      "Describes Rust soroban-sdk as canonical/default, not exclusive, and includes Solang/Solidity and AssemblyScript with maturity caveats."
+    ],
+    "avoid": [
+      "Do NOT call every SDK in official docs SDF-maintained or merge client and contract SDKs into one undifferentiated list.",
+      "Do NOT deny the cataloged C#/.NET client SDK or invent an unsupported SDF ownership claim.",
+      "Do NOT call JavaScript the contract SDK or say Rust is the only contract language/tooling that exists.",
+      "Do NOT present experimental/community contract tooling as maturity-equivalent to the SDF Rust path or pin versions without a date."
+    ],
+    "notes": "Axis-C list rebalance. Enumeration of official SDKs by language → stellar_docs_mcp. Trap = inventing an SDK or conflating contract SDK (Rust) with client SDKs.\nAlso good if the answer: Distinguishes the Soroban contract SDK (Rust, soroban-sdk) from the client/transaction SDKs in other languages.\nGolden cites: An SDK/tools listing page on developers.stellar.org.\nGT-56 CORRECTION 2026-07-11: grade exact maintainer tiers and client-versus-contract roles. Rust soroban-sdk is the SDF canonical/default contract path, not an existence claim excluding documented community Solang/Solidity and AssemblyScript tooling; C#/.NET is a cataloged community client SDK."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/sdks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/sdks/client-sdks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/sdks/contract-sdks",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/stellar",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The official client/XDR catalog lists SDF-maintained JavaScript, Go, stellar-xdr, stellar-strkey, and rs-stellar-rpc-client alongside explicitly community-maintained language SDKs.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Client & XDR SDKs catalog updated 2026-06-16",
+            "observedAt": "2026-06-16",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current canonical and community repositories/package registries",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "The contract catalog makes Rust soroban-sdk the SDF-maintained first-class path while also documenting community Solang/Solidity and AssemblyScript alternatives with lower or project-specific maturity.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Contract SDKs catalog",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar/rs-soroban-sdk plus the linked community compiler/SDK sources",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer correctly separated contract and client SDKs but implied Rust was the only contract path and used an avoid clause that could punish the officially cataloged community C#/.NET SDK. It also needed exact maintainer tiers and current contract-tool maturity.",
+      "evidence": [
+        "Solo scratchpad 575 GT-56 primary process 3394 and sealed blind process 3398 independently found the client-versus-contract split correct but the Rust-only/C# trap contradicted by the current official catalogs.",
+        "Sibling sweep checked q-tool-js-sdk-package, q-tool-go-sdk-ingest, q-tool-python-sdk, q-tool-java-sdk, q-tool-flutter-mobile-sdk, q-tool-rust-soroban-sdk, and q-tool-which-sdk-comparison; maintainer and role labels are aligned."
+      ],
+      "rootCause": [
+        "Eval-side catalog collapse: officially listed, SDF-maintained, client SDK, and contract SDK were treated as interchangeable labels."
+      ]
+    },
+    "origin": "raven-next q-tool-official-sdks-list"
+  }
+}

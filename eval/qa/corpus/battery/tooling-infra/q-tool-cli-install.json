@@ -1,0 +1,124 @@
+{
+  "id": "q-tool-cli-install",
+  "question": "How do I install the Stellar CLI?",
+  "surface": [
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "The current binary is **`stellar`**. Recheck the install page for the active release, then choose a documented channel:\n\n- macOS/Linux script: `curl -fsSL https://github.com/stellar/stellar-cli/raw/main/install.sh | sh`\n- Homebrew: `brew install stellar-cli`\n- Cargo: `cargo install --locked stellar-cli`\n- Windows: the current release installer or `winget install --id Stellar.StellarCLI`\n- CI: a versioned `stellar/stellar-cli@vX` GitHub Action\n- Container execution: `docker run --rm -it -v \"$(pwd)\":/source stellar/stellar-cli version` (this runs the CLI image; it is not a host package install)\n\nVerify with `stellar --version`. Current official Docs also link **SVM (`svm-cli`) as a third-party version manager**; do not present it as an SDF-maintained canonical installer. The reviewed current sources did not support apt or AUR as official documented channels. The old `soroban`/`soroban-cli` binary is not the current command.",
+    "keyFacts": [
+      "Names the current `stellar` binary and the documented script, Homebrew, Cargo, Windows/winget, GitHub Action, and Docker-execution paths.",
+      "Distinguishes running the official Docker image from installing a host package.",
+      "Labels SVM as third-party and does not promote apt/AUR into current official channels."
+    ],
+    "avoid": [
+      "Do NOT present apt or AUR as current official documented install channels without a current primary source.",
+      "Do NOT call Docker execution a host package install or call third-party SVM SDF-maintained.",
+      "Do NOT use the retired `soroban` binary as the current canonical CLI or pin one release as timeless."
+    ],
+    "notes": "The soroban→stellar CLI rename is the trap; install channels are the must_have. Verified install methods: install script, Homebrew (stellar-cli), winget, cargo (--locked stellar-cli), GitHub Actions.\nAlso good if the answer: It is the command-line multi-tool for running and deploying Stellar/Soroban contracts. | Notes the soroban-cli was renamed/merged into the `stellar` CLI.\nGolden cites: developers.stellar.org install-cli page or the stellar/stellar-cli repo.\nGT-55 CORRECTION 2026-07-11: remove apt/AUR overreach. Docker is documented container execution, and the current install page explicitly labels SVM third-party. Do not revive the blind lane's pre-evidence SVM-absence hypothesis; it was retracted in the sealed review's reconciliation."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/cli/install-cli",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/getting-started/setup",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-cli",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-cli/releases/tag/v27.0.0",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-cli-docker",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The current official install/run channels and commands are script, Homebrew, Cargo, Windows installer/winget, GitHub Action, and Docker execution.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current official install/setup documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current stellar/stellar-cli README and v27 release assets",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: local stellar --version",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-as-of-2026-07-11."
+      },
+      {
+        "claim": "SVM exists but is a third-party Stellar Version Manager; the reviewed primary's initial absence premise was retracted after current evidence.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current official install page explicitly labels SVM third-party",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: linked svm-cli package surface",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-55 blind post-seal reconciliation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer overclaimed apt and AUR as documented channels and grouped Docker as a host install. Current official surfaces document the script, Homebrew, Cargo, Windows installer/winget, GitHub Action, and Docker execution; current Docs label SVM third-party.",
+      "evidence": [
+        "GT-55 primary 3392 identified apt/AUR overreach but did not preserve Docker/SVM nuance; blind 3393 independently re-derived the channels and corrected that nuance after its valid seal.",
+        "Current stellar/stellar-cli README documents `docker run --rm -it -v \"$(pwd)\":/source stellar/stellar-cli version`; current Docs identify SVM as third-party.",
+        "No apt repository or AUR channel was supported by the current primary surfaces reviewed; a release `.deb` asset is not an apt repository."
+      ],
+      "rootCause": [
+        "Eval-side source overreach: package/release artifacts, community distribution, container execution, and first-party installation were collapsed into one documented-channel list."
+      ]
+    },
+    "origin": "raven-next q-tool-cli-install"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "id": "q-pc-multisig-setup-lifecycle",
+  "question": "How do I set up and manage classic Stellar multisig, including SetOptions 2-of-3, master-key weight, thresholds, signer rotation, and lockout risk?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Classic Stellar multisig uses account-level signer weights plus low/medium/high thresholds. `SetOptions` adds/removes signers and changes master weight/thresholds; signer, threshold, and master-weight changes require the current high-threshold authorization. For an unambiguous **2-of-3**, define exactly three effective authorities: either master + two added signers at weight 1, or three added signers at weight 1 with master weight 0 only after they are proven usable; set the relevant medium/high threshold to 2. Master weight 0 disables the account key and can permanently lock the account if alternatives cannot satisfy thresholds. Rotate by adding the replacement, verifying the new quorum/signing path, then removing the old signer while the current quorum still authorizes the transaction.",
+    "keyFacts": [
+      "Uses SetOptions/current high threshold for signer/threshold/master-weight changes.",
+      "Defines exactly three effective authorities for 2-of-3 and adds/tests replacement before removal."
+    ],
+    "avoid": [
+      "Do NOT set master weight 0 before alternates are proven or accidentally configure four authorities while calling it 2-of-3.",
+      "Do NOT confuse classic multisig with Soroban custom-account authentication."
+    ],
+    "notes": "Reviewed 2026-06-29: differentiated (D1) from q-protocol-accounts-signers-thresholds — this question owns the operational lifecycle verbs (SetOptions add/remove/rotate, master-weight-0 lockout, safe rotation); the conceptual weight/threshold model is demoted to assumed background (owned by the sibling). Verified against official signatures/multisig, SetOptions, and CLI docs. Covers classic account multisig, not Soroban custom-account authentication.\nAlso good if the answer: Assumes the weight/threshold model (signers have weights; low/medium/high thresholds) as background; deep threshold theory is owned by q-protocol-accounts-signers-thresholds. | Mentions sequence/fee and that the SetOptions transaction itself must be authorized under current thresholds.\nGolden cites: At least one primary Stellar source such as developers.stellar.org, stellar-core docs, or the stellar-protocol repository.\nGT-29 PRECISION 2026-07-10: a 2-of-3 example must name exactly three effective authorities; master is one if its weight is nonzero."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/signatures-multisig",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/list-of-operations#set-options",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A safe 2-of-3 example must define exactly three effective authorities and verify replacements before master/old-signer removal.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official multisig/SetOptions docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current SetOptions threshold source/XDR",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — Core multisig lifecycle guidance is correct, but the illustrative 'three signer keys' plus a separately weighted master can accidentally describe four effective authorities rather than 2-of-3.",
+      "evidence": [
+        "Solo scratchpad 575 GT-29 primary 3276 confirmed lifecycle mechanics; blind 3278 isolated the example-count ambiguity."
+      ],
+      "rootCause": [
+        "Eval-side illustrative authority-count ambiguity."
+      ]
+    },
+    "origin": "raven-next q-pc-multisig-setup-lifecycle"
+  }
+}

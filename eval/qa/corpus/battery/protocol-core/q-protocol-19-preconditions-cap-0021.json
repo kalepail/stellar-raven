@@ -1,0 +1,48 @@
+{
+  "id": "q-protocol-19-preconditions-cap-0021",
+  "question": "What did Stellar Protocol 19 add, and how do generalized transaction preconditions / timebounds work?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- **Protocol 19** (activated ~2022-06-08) introduced **generalized transaction preconditions via CAP-0021** — time bounds, ledger bounds, min sequence number / age / gap, and extra signers [1][2].\n- These enable patterns like **payment channels** and **time-locked / sequence-conditioned** transactions [2].\n- Protocol 19 also included **CAP-0040** (ed25519 signed-payload signer / shared signing for contracts) [1].\n- Preconditions extended the older simple timebounds concept into a richer set [2]. Protocol 19 did **not** introduce Soroban (that was Protocol 20).",
+    "keyFacts": [
+      "States Protocol 19 (activated ~2022-06-08) introduced generalized transaction preconditions via CAP-0021 (time bounds, ledger bounds, min sequence number / age / gap, extra signers)."
+    ],
+    "avoid": [
+      "Do NOT attribute generalized preconditions to the wrong protocol (e.g. P18 or P20) or wrong CAP (e.g. CAP-0046).",
+      "Do NOT claim Protocol 19 introduced Soroban smart contracts (that was Protocol 20)."
+    ],
+    "notes": "P19 = CAP-0021 preconditions. Trap is wrong version/CAP or confusing with Soroban (P20).\nAlso good if the answer: Notes these preconditions enable patterns like payment channels and time-locked / sequence-conditioned transactions. | Notes Protocol 19 also included CAP-0040 (shared/signed payloads for contracts/ed25519 signed payload signer).\nGolden cites: The 'Announcing Protocol 19' material and/or CAP-0021 in stellar/stellar-protocol."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/announcing-protocol-19",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0021.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-30-upgrade-quantum-scp-sequence-reserve-finality-p19 accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-19-preconditions-cap-0021"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "id": "q-protocol-horizon-vs-rpc",
+  "question": "At the protocol-data layer, what does Horizon expose versus what Stellar RPC exposes — i.e. historical/classic ledger data (accounts, transactions, ledgers, the classic DEX) versus live Soroban contract state, events, and simulation — and why does that split exist?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "**Stellar RPC** is the forward JSON-RPC interface for live/current ledger state, simulation, contract events/transactions, and recent ledger/transaction access. It is not merely a Soroban side API, but it is also not a drop-in replacement for **Horizon**, whose REST/HAL resources remain useful for parsed accounts, payments, effects, trades, and other curated/history-oriented queries. RPC retention is method/provider bounded and many Horizon endpoints have no direct RPC equivalent. Official Docs currently conflict on whether Horizon is already 'deprecated' or is legacy/no-new-features and nearing EOL but not yet deprecated. Report that disagreement rather than choosing a categorical label; use the current migration map and endpoint requirements.",
+    "keyFacts": [
+      "Explains current RPC and Horizon roles without claiming exclusive or one-for-one replacement.",
+      "Discloses the official Horizon lifecycle wording conflict and retention/endpoint gaps."
+    ],
+    "avoid": [
+      "Do NOT call RPC Soroban-only, promise full historical parity, or assert a categorical Horizon lifecycle status while official pages disagree."
+    ],
+    "notes": "Refocused onto the protocol-data-layer angle (what ledger data each surface exposes + the history-window split) to stay distinct from the tooling-infra q-infra-horizon-vs-rpc 'which should I use for a new app' comparison. Trap is swapping the transports or claiming RPC serves full history.\nAlso good if the answer: Explains the data split: Horizon aggregates and serves historical/classic ledger data, while RPC exposes near-head ledger state, contract events, and footprint/fee simulation — RPC keeps only a short window of recent ledgers, so deep history requires Horizon or an indexer. | Notes some rich historical queries (e.g. full account/payment history) are a Horizon strength and need an indexer when building on RPC alone.\nGolden cites: The 'Migrate from Horizon to RPC' docs on developers.stellar.org.\nGT-32 CORRECTION 2026-07-10: encode the official Horizon lifecycle dispute; sd-017 tracks the source inconsistency."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/migrate-to-rpc",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "RPC is the forward JSON-RPC live/current-state and contract interface but not a Horizon drop-in; Horizon remains operational for parsed/curated resources and official lifecycle wording is disputed.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: APIs/Stack/Horizon/RPC/migration pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/F: live Horizon and RPC endpoint probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "C/F: live Horizon and RPC endpoint probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-official-dispute."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The older Soroban-RPC mental model under-scoped current Stellar RPC, while official Horizon lifecycle pages now conflict on deprecated versus not-yet-deprecated wording.",
+      "evidence": [
+        "Solo scratchpad 575 GT-32 primary 3281 and blind 3284."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-017-horizon-lifecycle-wording-conflict.md"
+      ]
+    },
+    "origin": "raven-next q-protocol-horizon-vs-rpc"
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "id": "q-scf-history-soroswap",
+  "question": "Has Soroswap been funded by the SCF, and across how many rounds?",
+  "surface": [
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions"
+  ],
+  "golden": {
+    "answer": "- Resolve the named project **Soroswap** (the Stellar/Soroban DEX/AMM, live on mainnet) and pull its SCF history via `lumenloop_get_scf_submissions`. [Lumenloop / stellarlight.xyz/project/soroswap]\n- **Yes, Soroswap is SCF-funded.** Total SCF-related funding is **$346,750 USD** (as of 2026-07-06; awards are XLM-denominated — USD is the payment-day valuation, and the official site displays rounded figures like $346.8K). [communityfund.stellar.org/project/soroswapfinance-yax]\n- **Structure (4 awarded submissions):** three numbered SCF rounds — **SCF #15 ($57,600, Legacy v4.0 Award)**, **SCF #17 ($139,150, Legacy v4.0 Award)**, **SCF #21 ($100,000, Legacy v5.0 Community Award, the Aggregator submission)** — plus a **Liquidity Award ('24 Q1, $50,000)**. The four figures sum exactly to the $346,750 total. The submissions record carries the same rows (per-submission `award_type` and `budget` fields).\n- Per-submission figures should be sourced (submissions record or communityfund.stellar.org); the numbered-round count is 3 and the awarded-submission count is 4 — both statements are correct with their respective framings.\n- Don't confuse Soroswap (the DEX) with Soroban (the smart-contract platform) or with another DEX.",
+    "keyFacts": [
+      "Resolves Soroswap (the Stellar/Soroban DEX/AMM) and returns its SCF submission history.",
+      "Answers whether it was SCF-funded and the shape of the history — 3 numbered rounds (15, 17, 21) and/or 4 awarded submissions including the '24 Q1 Liquidity Award — grounded in the submissions record."
+    ],
+    "avoid": [
+      "Do NOT state per-round dollar figures without sourcing them to the submissions record or communityfund.stellar.org (unsourced figures that contradict the record's 57,600 / 139,150 / 100,000 / 50,000 are wrong).",
+      "Do NOT confuse Soroswap with Soroban (the smart-contract platform) or with another DEX."
+    ],
+    "notes": "Per-project SCF history. 'Has X been funded' phrasing borders on find_similar_scf_submissions, but a named project → get_scf_submissions. Verified 2026-06-29 via /api/projects: Soroswap scf.awarded=true, totalAwarded=$346,750, category Protocol/Contract, awardedRounds [15,17,21] (3 rounds). Funding total is live → freshness-sensitive.\nAlso good if the answer: Reports the award type(s) (e.g. Build) where the record shows them.\nGolden cites: Soroswap's SCF submissions record (Lumenloop) / its communityfund project page.\nThe live submissions record and canonical official project page carry SCF #15 $57,600 + SCF #17 $139,150 + SCF #21 $100,000 + Liquidity Award '24 Q1 $50,000 = $346,750 exactly. GT-38 independently re-confirmed the structure on 2026-07-10. Record-consistent per-submission detail is not fabrication: '3 numbered rounds' and '4 awarded submissions' are both correct framings."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/soroswapfinance-yax",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/soroswap",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Soroswap SCF structure: 4 awarded submissions — rounds 15/17/21 (Legacy v4.0, v4.0, v5.0 Community Award) + Liquidity Award '24 Q1",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: communityfund.stellar.org/project/soroswapfinance-yax (2026-07-06) — 'Awarded Submissions 4'; per-row: SCF #15 $57.6K Legacy v4.0 Award / SCF #17 $139.2K Legacy v4.0 Award / SCF #21 $100.0K Legacy v5.0 Community Award / Liquidity Award - '24 Q1 $50.0K",
+            "observedAt": "2026-07-06",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: lumenloop get_scf_submissions slug=soroswap (live 2026-07-07) — same four rows, budgets 57600/139150/100000/50000, identical award_type labels",
+            "observedAt": "2026-07-07",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C-independent: scout searchProjects soroswap (live 2026-07-07) — scfAwarded true, scfTotalAwardedUSD 346750 scfAmountStatus 'disclosed', scfAwardedRounds [15,17,21]",
+            "observedAt": "2026-07-07",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: SCF #21 recap medium.com/stellar-community/scf-21-recap-294449beac1d ('Soroswap.Finance Aggregator: $100,000 worth of XLM'); Reddit Aug-2024 coverage of the $50,000 Liquidity Award",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Cumulative $346,750 = 57,600 + 139,150 + 100,000 + 50,000 (exact-dollar figures behind the site's $0.1K roundings)",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: site total 'Total awarded $346.8K*' + 4-submission count; asterisk = USD valued at payment-day XLM settlement price",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C+C-independent: both aggregators carry exactly 346750; the four lumenloop budget fields sum to it exactly",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-07",
+      "by": "Golden-truth sweep import — Golden authored when get_scf_submissions exposed rounds only; the record has since grown per-submission award_type + budget fields plus the Liquidity Award row, and the official SCF site carries the identical structure. The old answer text ('do NOT invent a per-round dollar split or specific award types') plus a transcript-blind judge turned VERBATIM record data into a 'fabrication' wrong verdict (2026-07-07T02-28-31 battery). Figures now pinned with asOf + XLM-valuation caveat; avoid clause re-armed as an answer-visible sourcing guard.",
+      "evidence": [
+        "Live production execute 2026-07-07: lumenloop.get_scf_submissions({slug:'soroswap'}) -> 4 submissions with award_type + budget exactly as quoted; scout soroswap record scfTotalAwardedUSD 346750 'disclosed', rounds [15,17,21]",
+        "Class-A verification 2026-07-06: communityfund.stellar.org/project/soroswapfinance-yax (canonical page; /projects/soroswap 404s) — full corroboration matrix in Solo todo 853 close + the verification agent transcript",
+        "Judge artifact demonstrated: eval/qa/results/2026-07-07T02-28-31-variantA.json scored WRONG for 'fabricated' labels/amounts/4th submission, every one verbatim in the live record",
+        "Sibling-consistency sweep 2026-07-07: q-defi-soroswap-scf ('roughly $346,750' source-relative) and q-defi-soroswap-resolve ('~$346,750') both consistent; no golden contradicts the 4-submission structure"
+      ],
+      "rootCause": [
+        "solo://proj/49/todo/golden-gap-q-scf-his--853",
+        "Eval-side authoring lag, not an upstream defect: the corpus GREW richer (per-submission award_type/budget) after the golden was authored — no improvements/ finding warranted; the upstream change is an improvement",
+        "Transcript-blind judge class (third occurrence this week) — rubric-note decision deferred to a measured rubric round, recorded in todo 853 close"
+      ]
+    },
+    "origin": "raven-next q-scf-history-soroswap"
+  }
+}

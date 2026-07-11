@@ -1,0 +1,116 @@
+{
+  "id": "q-defi-x402-projects-discovery",
+  "question": "Which Stellar projects or repos implement x402 / agentic per-call payments?",
+  "surface": [
+    "scout.getHackathon",
+    "scout.getHackathons",
+    "scout.searchRepos",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Re-query current sources and return a **dated code/deployment maturity matrix**. As of **2026-07-10**, useful evidence tiers included:\n- canonical: `x402-foundation/x402`, `stellar/x402-stellar`, and OpenZeppelin's facilitator plugin;\n- active testnet/reference: RouteDock, StellarPay402, AgentCard, and Bear Protocol, each with code plus testnet deployment/endpoint evidence but no verified mainnet production claim;\n- code-backed PoC: REAPP;\n- custom pubnet implementation: ApiCharge, with code, SCF #40 funding, and a real pubnet contract, but a custom time-subscription/x402-compatible scheme and incomplete runtime/source verification.\n\nThe exact Scout repo query for `x402` returned zero while broader queries surfaced relevant projects. Report that as retrieval/index behavior, not 'no implementations.' For every row cite repo, scheme, network, contract/endpoint evidence, audit/source-verification status, and as-of date. Do not freeze package versions or promote testnet/code claims to production.",
+    "keyFacts": [
+      "Returns canonical and ecosystem implementations with dated provenance.",
+      "Separates code, testnet, pubnet, runtime, custom-scheme, and production maturity.",
+      "Treats empty exact Scout results as retrieval behavior rather than nonexistence."
+    ],
+    "avoid": [
+      "Do NOT invent projects, freeze a permanent roster, or present unsourced names as confirmed implementers.",
+      "Do NOT call testnet deployments, PoCs, or a custom x402-compatible scheme canonical mainnet production x402."
+    ],
+    "notes": "Freshness:true discovery. Phase-2 RE-VERIFIED against live Scout (2026-06-22): project ApiCharge (Soroban pay-per-call API monetization, SCF ~$79K) is real; the Phase-1 repo seeds 'Agent-Paywall-Router' and 'XLMx402earn' did NOT surface — replaced with verified Agentic-Hackathon repos: davidmaronio/StellarPay402 (repoScore 85, judgeScore 1.0), 402md/agentcard (x402 prepaid cards, repoScore 85), emperorsixpacks/-bear-protocol (agent payments + x402 + agent identity). Names are still a live snapshot — re-query; do not hard-code as the ONLY acceptable hits. 2026-06-29 RE-VERIFIED on live Scout + GitHub: ApiCharge still Live, SCF $79K (Scout project search, github streamcharge/apicharge); 402md/agentcard repoScore 85 judge 1.0; emperorsixpacks/-bear-protocol repoScore 69 (GitHub-confirmed, leading-dash handle); davidmaronio/StellarPay402 repoScore 85. All five sources resolve 200. Confidence raised medium->high: every surfaced item is Scout/GitHub-grounded with provenance.\nAlso good if the answer: References the Agentic Payments skill as a discovery surface. | Each surfaced project/repo carries provenance (a Scout link / id), not bare names.\nGolden cites: Scout (stellarlight.xyz) project/repo provenance for each surfaced item.\nGT-18 CORRECTION 2026-07-10: grade dated discovery plus deployment maturity, not the inherited June name set or Scout repoScore. Exact-search empty is not absence evidence."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://github.com/x402-foundation/x402",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/x402-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/OpenZeppelin/relayer-plugin-x402-facilitator",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/winsznx/routedock",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/davidmaronio/StellarPay402",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/402md/agentcard",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/StreamCharge/ApiCharge",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current Stellar x402 implementations span canonical infrastructure, live testnet references, PoCs, and a custom pubnet contract; Scout exact q=x402 can miss them.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: canonical x402/Stellar/OpenZeppelin and project repositories",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: testnet/pubnet contract and live endpoint probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: exact Scout repo search zero versus broader project/repo results",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited list froze a June Scout snapshot and implied production maturity. Live exact repo search returned zero while direct code and network checks found canonical infrastructure, multiple testnet deployments, a PoC, and a custom pubnet implementation; the empty result is an index/recall defect, not absence.",
+      "evidence": [
+        "Solo scratchpad 575 GT-18 primary 3249 and blind 3252",
+        "Sibling sweep: streaming prior art, x402 mechanics, agentic-payment standards, and Scout leaderboard/repo-search cases"
+      ],
+      "rootCause": [
+        "A volatile discovery snapshot was promoted into a closed implementation roster and repo presence into production truth.",
+        "improvements/stellar-light-scout/sls-025-agent-standard-alias-recall.md"
+      ]
+    },
+    "origin": "raven-next q-defi-x402-projects-discovery"
+  }
+}

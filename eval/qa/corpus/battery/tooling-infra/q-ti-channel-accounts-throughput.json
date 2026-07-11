@@ -1,0 +1,108 @@
+{
+  "id": "q-ti-channel-accounts-throughput",
+  "question": "How do I submit many Stellar transactions at high throughput - channel accounts to avoid tx_bad_seq / `invalid u32` sequence overflow, which submission errors are retriable (TRY_AGAIN_LATER), and can I push the same signed tx to multiple RPC providers?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "High-throughput classic submission is mostly sequence-lane management. A Stellar transaction is bound to its source account sequence; if multiple workers build from the same stale account snapshot, all but the first can hit `tx_bad_seq`. The official error-handling page says invalid sequence errors commonly come from concurrent submissions or outdated account views, and warns that blindly rebuilding with a new sequence can duplicate payments if the original user intent was only one payment (https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/error-handling).\n\nUse channel accounts when you need parallelism: pre-create/fund N accounts, assign each worker or queue partition to one channel account as transaction source, and serialize sequence consumption within each lane. For user-funded operations, keep the user or business account as the operation source/signer where needed, but use the channel account as the transaction source that pays fees and advances sequence.\n\nRetry policy should be conservative. `TRY_AGAIN_LATER` is explicitly a temporary submission status: wait before resubmitting, because Core may already have another transaction from the same source in memory or the fee was too low and retried too soon (https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/error-handling). Terminal transaction result codes such as `tx_bad_seq`, `tx_insufficient_balance`, and `tx_insufficient_fee` are documented separately and should be handled by inspecting the result code, not by generic retry loops (https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/result-codes/transactions). Fee-bump replacement exists for the \"same sequence, higher fee\" case and has its own replacement rule (https://developers.stellar.org/docs/build/guides/transactions/fee-bump-transactions).\n\nSubmitting the same signed envelope to more than one provider is generally safe as a broadcast tactic because the transaction hash/envelope is identical; one provider may report pending, duplicate, not found yet, or accepted before another catches up. The unsafe move is changing the sequence or contents and treating that as the same intent. If a library throws `invalid u32` around sequence handling, debug the client/library typing path: Stellar sequence numbers are not a u32 throughput counter.",
+    "keyFacts": [
+      "Explains that a Stellar transaction consumes exactly one source-account sequence number and concurrent submissions from one source account cause `tx_bad_seq`; channel accounts are separate funded source accounts used to parallelize sequence lanes.",
+      "Warns not to blindly rebuild and resubmit payments after `tx_bad_seq`, because changing the sequence can make duplicate user intents succeed.",
+      "Classifies `TRY_AGAIN_LATER` as retryable with delay/same envelope or queue management, while terminal result codes require fixing/rebuilding the transaction.",
+      "States that pushing the same signed transaction envelope to multiple Horizon/RPC providers is idempotent at ledger level by hash, but clients must handle duplicate/pending/not-found/provider-lag responses and must not mutate the sequence/fee unless intentionally fee-bumping or rebuilding.",
+      "Mentions sequence values are 64-bit ledger/account sequence numbers; `invalid u32` usually points to a client parsing/typing bug, not a Stellar protocol sequence limit."
+    ],
+    "avoid": [
+      "Do NOT omit operation-source signatures or submit uncoordinated transactions in one source-account sequence lane.",
+      "Do NOT rebuild every uncertain transaction with a new sequence or treat a mutated envelope as the same transaction.",
+      "Do NOT promise fixed/linear TPS, bypass network/provider limits, or confuse channel accounts with payment channels/contract accounts."
+    ],
+    "notes": "Primary docs verify sequence and retry semantics. The multi-provider RPC submission guidance is an inference from signed-envelope/hash idempotence plus documented duplicate/pending behavior; no live two-provider submission was run in Phase 3.\nAlso good if the answer: Mentions fee-bump replacement rules where relevant instead of using sequence changes as a replacement strategy. | Cites Horizon error handling/result-code docs and Soroban/Core retry guidance.\nGolden cites: Official Stellar error-handling docs for `tx_bad_seq` and `TRY_AGAIN_LATER`. | Official result-code docs for transaction-level failures.\nGT-51 PRECISION CORRECTION 2026-07-11: require transaction-source/operation-source/signature mapping, immutable-envelope hash handling, and no throughput guarantee."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/error-handling",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/result-codes/transactions",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/errors-and-debugging/debugging-errors",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/fee-bump-transactions",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Channel accounts provide independent transaction-source sequence/fee lanes while explicit operation sources retain their own balance/authorization and signatures.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official channel-account, transaction, and result-code documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: offline SDK transaction with channel source, explicit operation source, and both signatures",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Rebroadcasting the identical signed envelope preserves its transaction hash; provider status can differ, but mutating the envelope is a different transaction.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Horizon/RPC submission and error semantics",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: envelope/hash protocol behavior",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited core was sound, but it under-specified transaction-source versus operation-source signatures, treated multi-provider broadcast as an unsupported inference in notes, and lacked a hard no-fixed-TPS boundary.",
+      "evidence": [
+        "Solo scratchpad 575 GT-51 processes 3353/3360 independently retained the channel core and added the source/signature, retry, and non-guarantee precision.",
+        "Sibling sweep checked q-pc-fee-bump-channel-accounts-feepool and q-ti-tx-too-late-resubmit."
+      ],
+      "rootCause": [
+        "Eval-side architecture/rubric incompleteness: source/signature mapping and performance non-guarantees were not explicit."
+      ]
+    },
+    "origin": "raven-next q-ti-channel-accounts-throughput"
+  }
+}

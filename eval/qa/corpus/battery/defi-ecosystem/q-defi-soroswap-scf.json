@@ -1,0 +1,90 @@
+{
+  "id": "q-defi-soroswap-scf",
+  "question": "Pull Soroswap's SCF funding history — which rounds and award types?",
+  "surface": [
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, Soroswap's official SCF history has **four Awarded submissions**:\n- SCF #15 — Legacy v4.0 Award — **$57,600**\n- SCF #17 — Legacy v4.0 Award — **$139,150**\n- SCF #21 — Legacy v5.0 Community Award — **$100,000**\n- Liquidity Award '24 Q1 — Liquidity Award — **$50,000**\n\nThat is **$346,750** across three numbered SCF rounds and four awards. The Liquidity Award is a separate supporting-program award, not a numbered Build round. Preserve the official site's XLM/payment-day valuation semantics when describing dollar amounts.",
+    "keyFacts": [
+      "Reports the four official Awarded rows and exact total.",
+      "Distinguishes three numbered SCF rounds from four awards and the separate Liquidity Award type."
+    ],
+    "avoid": [
+      "Do NOT omit available official rows or invent a round/tier.",
+      "Do NOT call the Liquidity Award a numbered Build award."
+    ],
+    "notes": "lumenloop_get_scf_submissions (resolve→call). Anti-fabrication on SCF figures. Grounded on Scout: Soroswap is scfAwarded=true, scfTotalAwardedUSD ≈ $346,750 (built by PaltaLabs). Gate on 'is SCF-awarded + cite the record'; the exact total is tool-sourced and may shift.\nAlso good if the answer: Identifies Soroswap as the Stellar DEX/aggregator (built by PaltaLabs) when scoping the SCF lookup.\nGolden cites: The SCF submission record for Soroswap (Scout/Lumenloop), with the tool-sourced amount.\nGT-18 CORRECTION 2026-07-10: official rows are available and are the grading authority; the inherited 'rounds may not be in corpus' fallback is obsolete."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recQcIB562ZHDFqdJ",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recDy2knwdmwAPWBd",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recfVynUAvAjZO4Nj",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recWFIADW1gqmyvl7",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Soroswap has four official Awarded submissions totaling $346,750: SCF 15, 17, 21, and a Q1-2024 Liquidity Award.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: four official communityfund.stellar.org submission pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Lumenloop SCF rows",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent conflict sweep and arithmetic check",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer said per-round details might be unavailable even though current official records expose four Awarded submissions. It also blurred three numbered SCF rounds with a separate Liquidity Award.",
+      "evidence": [
+        "Solo scratchpad 575 GT-18 primary 3249 and blind 3252",
+        "Sibling sweep: q-scf-history-soroswap and q-scf-liquidity-award-amount"
+      ],
+      "rootCause": [
+        "A reconstructed project total was authored instead of the available official per-submission record.",
+        "improvements/lumenloop/ll-013-scf-submission-award-fields.md"
+      ]
+    },
+    "origin": "raven-next q-defi-soroswap-scf"
+  }
+}

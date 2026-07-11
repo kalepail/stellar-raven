@@ -1,0 +1,47 @@
+{
+  "id": "q-asset-auth-flags-list",
+  "question": "List the account-level authorization flags an asset issuer can set on Stellar and what each one does.",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "The four account-level authorization flags an issuer can set (via SetOptions) [1]:\n\n- **`AUTH_REQUIRED_FLAG`** — holders must be explicitly authorized by the issuer before they can hold/receive the asset (issuer gates the trustline).\n- **`AUTH_REVOCABLE_FLAG`** — the issuer can revoke/deauthorize an existing trustline (freeze), removing the holder's ability to transact.\n- **`AUTH_CLAWBACK_ENABLED_FLAG`** — the issuer can claw back (burn) balances from holders; only sticks if **`AUTH_REVOCABLE`** is also set.\n- **`AUTH_IMMUTABLE_FLAG`** — locks the auth configuration so the flags can no longer be changed/weakened.\n\nFlags are set on the issuer account with **SetOptions**; per-trustline state is managed with **SetTrustLineFlags** [1].",
+    "keyFacts": [
+      "Names AUTH_REQUIRED (holders must be explicitly authorized before holding/receiving the asset).",
+      "Names AUTH_REVOCABLE (issuer can revoke/deauthorize a trustline).",
+      "Names AUTH_CLAWBACK_ENABLED (issuer can claw back / burn balances).",
+      "Names AUTH_IMMUTABLE (locks the flags so they cannot be weakened)."
+    ],
+    "avoid": [
+      "Do NOT invent non-existent flags (e.g. AUTH_FREEZE, AUTH_BURN) as the canonical set.",
+      "Do NOT omit AUTH_CLAWBACK_ENABLED or conflate clawback with revocation as the same flag."
+    ],
+    "notes": "List question. Dossier §1.3. Four canonical account-level flags verified.\nAlso good if the answer: Notes AUTH_CLAWBACK_ENABLED requires AUTH_REVOCABLE to also be set.\nGolden cites: A control-asset-access / authorization page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/control-asset-access",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-03-classic-assets-clawback-trustlines-paths accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-auth-flags-list"
+  }
+}

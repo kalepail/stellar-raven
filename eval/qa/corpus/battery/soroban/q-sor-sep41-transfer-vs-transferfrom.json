@@ -1,0 +1,80 @@
+{
+  "id": "q-sor-sep41-transfer-vs-transferfrom",
+  "question": "Can I treat classic assets, the SAC, and custom SEP-41 tokens uniformly at the contract level — when do I use `transfer` vs `transfer_from`/`approve`, and what's the `expiration_ledger` on approve?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Current SEP-41 direct `transfer(from: Address, to: MuxedAddress, amount: i128)` requires `from` authorization. `approve(from, spender, amount, live_until_ledger)`—called `expiration_ledger` in some current SDK/SAC docs—requires owner/from authorization and records an allowance through that absolute ledger sequence. `transfer_from(spender, from, to: Address, amount)` requires spender authorization, consumes the allowance, and needs no second owner signature in that call. The allowance is valid through the boundary and treated as zero when the boundary is below current ledger; a nonzero approval cannot use a past boundary. Amounts are integer base units. `live_until_ledger`/`expiration_ledger` are one mechanism, not storage TTL or seconds. SEP-41 remains Draft, so version-qualify signatures.",
+    "keyFacts": [
+      "Distinguishes direct transfer MuxedAddress/from auth from transfer_from Address/spender allowance.",
+      "Explains one absolute-ledger allowance expiry under both parameter names."
+    ],
+    "avoid": [
+      "Do NOT type both destinations identically, require owner auth again during transfer_from, or treat expiry as duration/storage TTL."
+    ],
+    "notes": "Also good if the answer: Mentions using the SDK token client for the SEP-41 surface and SAC-specific client only for extra SAC/admin functions.\nGolden cites: SEP-41 token interface. | Official SAC docs/token guide.\nGT-43 current Protocol-27/SEP-41 v0.4.1 signature correction."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0041.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/token-interface",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current SEP-41 v0.4.1 signatures/auth/expiry",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: SEP-41 and SDK27 source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-43 primary/blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer missed the current Protocol-27 direct-transfer MuxedAddress signature and needed exact allowance boundary terminology.",
+      "evidence": [
+        "Solo scratchpad 575 GT-43 processes 3311/3320."
+      ],
+      "rootCause": [
+        "Eval-side draft-interface signature drift."
+      ]
+    },
+    "origin": "raven-next q-sor-sep41-transfer-vs-transferfrom"
+  }
+}

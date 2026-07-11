@@ -1,0 +1,44 @@
+{
+  "id": "q-asset-claimable-balance",
+  "question": "What is a claimable balance on Stellar and when would you use one instead of a direct payment?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "A **claimable balance** is a native ledger entry that **sets aside an amount of an asset for one or\nmore designated claimants to claim later**, rather than sending it directly to an account. It is\ncreated with the **`CreateClaimableBalance`** operation and redeemed with **`ClaimClaimableBalance`**\n[1]. Each claimant can carry a **claim predicate** — e.g. time bounds (claimable after/before a\ndate), or unconditional — letting you express conditional/deferred transfers and simple escrow-like\npayouts **without any smart contract / Soroban** [1].\n\nUse it instead of a direct payment when **the recipient can't accept the payment yet** — most\ncommonly when they **have not established a trustline** to a non-native asset, or for\n**predicate-gated / time-locked payouts** and airdrops where the sender wants to commit funds now\nand let the recipient claim on their own terms [1]. The entry **holds a base reserve** (sponsored\nby the creator) until claimed. Note: it is a **native protocol feature, not a Soroban escrow\ncontract**, and for a **non-native** asset the claimant must still have (or establish) a trustline\nto that asset to claim it.\n\nSource: [1] developers.stellar.org Claimable Balances docs.",
+    "keyFacts": [
+      "A claimable balance is a ledger entry that holds an amount until a designated claimant claims it (conditional/deferred transfer).",
+      "Useful when the recipient has no trustline yet or for escrow/predicate-gated payouts."
+    ],
+    "avoid": [
+      "Do NOT describe a claimable balance as a smart contract escrow that requires Soroban.",
+      "Do NOT claim it bypasses the recipient's need to eventually establish a trustline before claiming a non-native asset."
+    ],
+    "notes": "Classic asset primitive from §8.1 table. Verified: native ledger entry created via CreateClaimableBalance, claimed via ClaimClaimableBalance, with claim predicates; entry holds a base reserve. Source URL normalized from the stale learn/encyclopedia path (now a 301 redirect) to build/guides/transactions/claimable-balances, confirmed live 2026-06-29.\nAlso good if the answer: Created via CreateClaimableBalance and claimed via ClaimClaimableBalance, with optional claim predicates (e.g. time bounds).\nGolden cites: A claimable-balances page on developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/claimable-balances",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-03-classic-assets-clawback-trustlines-paths accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-claimable-balance"
+  }
+}

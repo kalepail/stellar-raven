@@ -1,0 +1,121 @@
+{
+  "id": "q-ti-custodial-account-generation-c-address",
+  "question": "For a custodial app, how should I generate/prefund accounts offchain (and make vanity addresses), and how do I fund/check a contract (C...) smart-wallet address given exchanges like Binance won't send to C-addresses?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "For a conventional custodial account, generate an Ed25519 keypair only in the backend/HSM/KMS, expose the `G...` public address, and keep the `S...` secret out of clients/logs. `Keypair.random()` creates key material, not an on-ledger account; create/fund the account with `CreateAccount` or a documented sponsored-reserve flow. Vanity G addresses require brute-force key generation, so outsourcing exposes the winning secret.\n\nA `C...` address is a contract ID, not a keypair and not creatable with `CreateAccount`. A C account has no corresponding Stellar seed and authorizes Soroban auth entries through its contract-defined `__check_auth`; a separate G account submits and pays/sponsors fees. G-to-C asset funding is a simulated/assembled SAC/token `transfer`, and C balances are relevant token/SAC contract state. If an exchange does not currently support C withdrawals, withdraw to a controlled G account and transfer to C. For C-to-custodian deposits requiring a memo ID, use the custodian's supplied `M...` address or construct the muxed destination from G plus the u64 ID; keep provider support dated.",
+    "keyFacts": [
+      "Separates generated G/S key material from creation/funding of an on-ledger account and requires backend custody.",
+      "States that C is a contract ID with contract-defined auth, no seed, and a separate fee-paying/submitting G account.",
+      "Uses SAC/token transfer and contract-state balance semantics for G↔C.",
+      "Uses muxed M/G+u64 handling for memo-based custodial deposits and dates exchange support."
+    ],
+    "avoid": [
+      "Do NOT generate/log custodial secrets in clients or accept third-party vanity seeds.",
+      "Do NOT call a C address a keypair/classic account, use CreateAccount/Classic Payment to C, or equate ID prediction with deployment.",
+      "Do NOT claim an exchange supports C addresses without a current provider source or omit muxed memo handling."
+    ],
+    "notes": "Verified docs 2026-06-29. Exchange-specific withdrawal support was intentionally not asserted.\nAlso good if the answer: Cites official G-to-C/C-to-G contract-account payment docs and SAC docs. | Mentions memo/muxed-address handling when contract accounts send to services requiring memos.\nGolden cites: Official Stellar docs for sending to/receiving from contract accounts. | Official Stellar docs for SAC balances or asset-contract behavior.\nGT-51 CORRECTION 2026-07-11: require keypair-versus-ledger-account and G-versus-C authorization distinctions; treat exchange/wallet support as dated."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/create-account",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/send-and-receive-c-accounts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/signing-soroban-invocations#c-account-smart-wallet-authorization",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A custodial G account is an Ed25519 keypair plus an on-ledger account; a C address is a contract ID with contract-defined authorization and no corresponding Stellar seed.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: account creation, contract-account, SAC, and C-account transfer docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current JS SDK Keypair/StrKey source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: key/address validation and contract-ID derivation without secret output/deployment",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "C-to-custodian memo flows use a supplied M address or G plus u64 muxed ID; provider/exchange C-address support remains dated.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current C-account transfer/muxed-address guidance",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-67/current event fields",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited G/C split was correct but omitted keypair-versus-ledger-account creation, sponsored creation, contract-defined C authorization/fee sponsorship, and the concrete muxed-address route for custodial memo deposits.",
+      "evidence": [
+        "Solo scratchpad 575 GT-51 primary/blind matrices independently agreed on memo/muxed and freshness repair; blind added keypair/live-account and C authorization boundaries.",
+        "Sibling sweep checked q-sor-contract-trustlines-c-address, q-sep-45-contract-auth, and account-creation siblings; sd-013 already owns sponsored-creation docs semantics."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-013-account-creation-merge-sponsorship-semantics.md",
+        "Eval-side custody/contract-account completeness gap."
+      ]
+    },
+    "origin": "raven-next q-ti-custodial-account-generation-c-address"
+  }
+}

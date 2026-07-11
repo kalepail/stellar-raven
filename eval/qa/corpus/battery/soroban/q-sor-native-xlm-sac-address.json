@@ -1,0 +1,81 @@
+{
+  "id": "q-sor-native-xlm-sac-address",
+  "question": "What is the SAC contract address for native XLM (and USDC) per network, why does native XLM not have an ERC-20-style address, how do I derive it (`stellar contract id asset --asset native`) / get it inside a contract, and how does it differ testnet vs mainnet?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "A SAC address is deterministic for the serialized Stellar Asset and network ID/passphrase; an issuer G-address is never the token C-address. Prefer derivation over memorized literals: `stellar contract id asset --asset native --network <network>` for XLM, or the SDK asset-contract-ID helper for an issued asset. Inside a contract, use `env.deployer().with_stellar_asset(serialized_asset_xdr_bytes).deployed_address()`; accepting an already-derived `Address` is often the simpler API. Current derived native IDs are testnet `CDLZFC...GCYSC` and mainnet `CAS3J7...XOWMA`; treat abbreviated examples as non-copyable and verify full output. The ID for a fixed asset/network does not drift, but which issuer represents canonical USDC and CLI/SDK syntax are freshness-sensitive.",
+    "keyFacts": [
+      "Derives the network-specific reserved SAC address rather than hashing code:issuer ad hoc.",
+      "Gives the exact in-contract derivation API and separates deterministic ID from issuer selection."
+    ],
+    "avoid": [
+      "Do NOT use an issuer G-address as a contract address, reuse IDs across networks, or copy abbreviated literals."
+    ],
+    "notes": "Empirical check on 2026-06-29 with local `stellar 25.2.0`: native testnet CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC; native mainnet CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA; testnet USDC issuer from docs produced CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA; mainnet Circle USDC issuer from Stellar docs produced CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75.\nAlso good if the answer: Cites official SAC docs stating SAC implements SEP-41 and the asset parameter is the deployed contract address, not the issuer address. | Mentions `Asset.contractId(networkPassphrase)` / generated bindings as an app-side alternative.\nGolden cites: Official SAC docs or token guide for SAC/SEP-41 semantics and derivation command. | A dated empirical CLI check or current official docs for any frozen address values.\nGT-42 independently re-derived all four full literals; grade derivation and explicit network/issuer, not memorization."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-06-29",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk/blob/main/soroban-sdk/src/deploy.rs",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Network-specific SAC derivation and current native/USDC IDs",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: SAC/SDK source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: SAC/SDK source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: stellar CLI 27 re-derived all literals",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The deterministic values were correct, but the explicit in-contract derivation branch was missing and freshness needed asset-selection scope.",
+      "evidence": [
+        "Solo scratchpad 575 GT-42 processes 3308/3315."
+      ],
+      "rootCause": [
+        "Eval-side answer completeness."
+      ]
+    },
+    "origin": "raven-next q-sor-native-xlm-sac-address"
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "id": "q-ti-freighter-localhost-not-detected",
+  "question": "Freighter works on live dApps but `window.freighterApi` is undefined on localhost — what causes this (SSL/CORS) and how do I get it to connect in local dev?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "Use **`@stellar/freighter-api`** in a browser/client context after mount and inspect the structured `isConnected()` result/error. Separate installation detection from authorization: `isConnected` checks the extension, `isAllowed` checks allowed state, and `requestAccess` is the permission/public-address flow. Verify the same browser profile/window, extension enabled/unlocked, reload after install/update, network, site permission, and a top-level page rather than an iframe before investigating RPC/Horizon CORS.\n\nCurrent Freighter 5.43 source/manifest matches `<all_urls>` at `document_start`, omits `all_frames`, and falls back after no content-script response; plain top-level HTTP localhost is therefore not categorically blocked by a Freighter origin allowlist. Official Stellar frontend docs nevertheless say HTTPS is required. Use HTTPS as the supported setup/workaround when needed, but do not grade it as the only possible detection fix or claim localhost universally works. Never bypass the wallet by exporting a secret into local code.",
+    "keyFacts": [
+      "Uses supported client-side Freighter APIs and distinguishes installed, allowed/authorized, unlocked, and connected.",
+      "Troubleshoots profile/extension/reload/top-level frame/errors before chain CORS.",
+      "Preserves the official HTTPS versus current source/manifest disagreement instead of pinning a universal rule.",
+      "Keeps signing in the wallet and secrets out of local code."
+    ],
+    "avoid": [
+      "Do NOT call isConnected during SSR or treat its structured result as a boolean/authorization state.",
+      "Do NOT claim localhost needs a Freighter allowlist entry, that HTTP always works, or that HTTPS always fixes detection.",
+      "Do NOT lead with CSP/RPC CORS without evidence or export a secret as a workaround."
+    ],
+    "notes": "Verified current `@stellar/freighter-api` package metadata on 2026-06-29. Exact localhost/secure-context behavior can still depend on browser-extension release and browser-origin policy, so the rubric keeps this as fallback guidance rather than a hard browser-behavior guarantee.\nAlso good if the answer: Mentions that the Freighter API signs transactions and auth entries but should not expose secret keys to the dApp.\nGolden cites: Freighter/API docs or Stellar dApp docs showing @stellar/freighter-api usage.\nGT-52 DISPUTE CORRECTION 2026-07-11: accept HTTPS as supported guidance and current top-level localhost source behavior only when the answer discloses their different layers; do not hard-gate either categorical claim."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://docs.freighter.app/extension-freighter-api/connecting",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/dapps/frontend-guide#setup-https-on-localhost",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/freighter/releases/tag/5.43.0",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/freighter/blob/0f08d9ee973f6f79582d8c6003a8cc75f8a473a2/extension/public/static/manifest/v3.json",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/freighter/blob/0f08d9ee973f6f79582d8c6003a8cc75f8a473a2/%40stellar/freighter-api/src/isConnected.ts",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "isConnected must run client-side and differs from isAllowed/requestAccess; extension/profile/top-level-frame/no-response diagnostics precede chain CORS.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Freighter connecting docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current Freighter API/browser guard and messaging source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Official HTTPS guidance and current manifest/injection behavior disagree on a universal localhost rule.",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Stellar frontend guide says HTTPS is required",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: Freighter 5.43 manifest matches <all_urls> at document_start but omits all_frames; messaging times out after no content-script response",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited fallback implied that localhost/127.0.0.1, HTTPS, or a tunnel would categorically fix detection. Current Freighter source permits top-level localhost injection while official frontend docs say HTTPS is required, so the dispute must be preserved.",
+      "evidence": [
+        "Solo scratchpad 575 GT-52 primary/blind matrices independently required a full provider-qualified rewrite; blind sealed the source/docs disagreement before reading the primary.",
+        "Sibling sweep checked q-ti-connect-wallet-button-code, q-ti-bindings-to-nextjs-integration, q-tool-freighter-wallet, and secret-handling cases."
+      ],
+      "rootCause": [
+        "Eval-side browser/product overgeneralization; the Freighter HTTPS/detection mismatch is recorded as a research candidate because no existing deduped finding owns it."
+      ]
+    },
+    "origin": "raven-next q-ti-freighter-localhost-not-detected"
+  }
+}

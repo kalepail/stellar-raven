@@ -1,0 +1,101 @@
+{
+  "id": "q-eco-xbull-wallet",
+  "question": "What is xBull and who builds it?",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.get_document",
+    "lumenloop.get_project",
+    "lumenloop.list_documents",
+    "lumenloop.search_directory",
+    "lumenloop.search_documents"
+  ],
+  "golden": {
+    "answer": "**xBull** is an open-source, non-custodial Stellar wallet built by **Creit-Tech**. As of **2026-07-10**, current evidence supported the Chrome/Firefox extension, web/PWA, and iOS surfaces, with the public repo/release still on the v1.x line. The project's own page described the passkey-based hybrid **V2 as coming**, not already introduced. The Google Play URL returned 404, so do not claim current Android store availability without a fresh listing.\n\nRe-check platform availability, maintained release, signing/Soroban features, and integrations before recommending it. Stars and broad 'widely integrated' claims are volatile and not part of identity. xBull is not an SDF or Ultra Stellar product.",
+    "keyFacts": [
+      "Identifies xBull as Creit-Tech's open-source non-custodial Stellar wallet.",
+      "Dates verified platforms and correctly treats passkey/hybrid V2 as forthcoming and Android availability as unverified/absent at the checked store URL."
+    ],
+    "avoid": [
+      "Do NOT say V2/passkeys were already introduced or claim Android availability from code/directory metadata alone.",
+      "Do NOT freeze star counts, broad integration/features, or current maintenance without dated evidence.",
+      "Do NOT attribute xBull to SDF or Ultra Stellar."
+    ],
+    "notes": "Per-project identity → lumenloop_get_project. Verified on Scout: xBull = open-source non-custodial Stellar wallet (browser ext + web + iOS/Android) by Creit-Tech; repo Creit-Tech/xBull-Wallet (TypeScript, ~32 stars, repoScore 61). Creit-Tech (CreitTech) also runs a Reflector oracle node — but xBull is the wallet. V2 = passkey-based hybrid.\nAlso good if the answer: Notes its V2 introduced a passkey-based hybrid wallet experience.\nGolden cites: A source identifying xBull / Creit-Tech.\nGT-20 CORRECTION 2026-07-10: completed-V2 and current-Android claims are contradicted. Platform/support/maintainer facts are quarterly-freshness even though inherited tags cannot yet be overridden."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://xbull.app/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Creit-Tech/xBull-Wallet",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://chromewebstore.google.com/detail/xbull-wallet/omajpeaffjgmlpmhbfdjepdejoemifpe",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://apps.apple.com/us/app/xbull-wallet/id6705122563",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "xBull is Creit-Tech's open-source non-custodial Stellar wallet; passkey/hybrid V2 remained forthcoming and the Google Play listing was unavailable on 2026-07-10.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: xbull.app roadmap wording and browser/iOS product pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: Creit-Tech/xBull-Wallet repo and v1.40.0 release",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: current browser/PWA/iOS/Google Play HTTP/store checks",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Scout record demonstrates stale Android metadata",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The narrow xBull identity is correct, but the inherited answer changed a forthcoming passkey/hybrid V2 roadmap into completed tense, claimed current Android availability despite a 404 Play listing, and froze stars/integration/features without freshness evidence.",
+      "evidence": [
+        "Solo scratchpad 575 GT-20 primary 3256 and blind 3257",
+        "Sibling sweep: wallet overview/list/similar and Wallets Kit integration cases"
+      ],
+      "rootCause": [
+        "A roadmap was rewritten as shipped behavior, and code/directory presence was promoted into current app-store availability.",
+        "improvements/stellar-light-scout/sls-024-project-lifecycle-operator-conflicts.md"
+      ]
+    },
+    "origin": "raven-next q-eco-xbull-wallet"
+  }
+}

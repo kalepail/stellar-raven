@@ -1,0 +1,80 @@
+{
+  "id": "q-protocol-soroban-launch-version",
+  "question": "Which protocol version brought Soroban smart contracts to Stellar Mainnet, and how were they specified in the CAP process?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Soroban smart contracts went live on Stellar Mainnet with **Protocol 20**, activated by validator vote on **2024-02-20 at 17:00 UTC**. Soroban was specified as the multi-part **CAP-0046 family**, not one CAP: the CAP-0046 umbrella plus current numbered sub-CAPs **01-03 and 05-12**. **CAP-0046-04 is deprecated**, so do not describe the family as a contiguous 01-through-12 range. The family covers Wasm smart contracts and host functions, asset interop, fees and resource metering, smart-contract events, network configuration, authorization, and state archival. Soroban contracts are Wasm-based, not EVM/Solidity. The later **2024-03-19** milestone raised capacity for general deployment; it was not the Mainnet activation date.",
+    "keyFacts": [
+      "States Soroban activated on Mainnet with Protocol 20 on 2024-02-20.",
+      "Describes the non-contiguous CAP-0046 family accurately: umbrella plus 01-03 and 05-12, with 04 deprecated.",
+      "Distinguishes Wasm-based Soroban from EVM/Solidity and the March capacity milestone from activation."
+    ],
+    "avoid": [
+      "Do NOT attribute Soroban's launch to another protocol or call 2024-03-19 the activation date.",
+      "Do NOT call CAP-0046 a single CAP implementation or claim its numbered sub-CAPs form a contiguous 01-through-12 set.",
+      "Do NOT describe Soroban contracts as EVM/Solidity-based."
+    ],
+    "notes": "VERIFIED: P20 Mainnet vote 2024-02-20 17:00 UTC (stellar.org 'Protocol 20 and smart contracts are live on mainnet' + P21 upgrade guide). 2024-03-19 is a SEPARATE event — Soroban 'opened for business' (capacity raised for general deployment per SDF Q1-2024 report), NOT the activation. The dossier table's '2024-03-19 network vote' is wrong; use 2024-02-20. Trap is wrong version or single-CAP / EVM claim.\nAlso good if the answer: Notes the series spanned Wasm smart contracts, host functions, asset interop, fee/resource metering, the authorization framework, and the state-archival interface.\nGolden cites: The Protocol 20 upgrade material and/or the CAP-0046 series in stellar/stellar-protocol.\nGT-34 CORRECTION 2026-07-10: CAP-0046 is non-contiguous; 0046-04 is deprecated. CAP-0046-08 is Smart Contract Events. Grade the P20/date/Wasm/family distinctions, never a false 01-through-12 range."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/protocol-20-and-smart-contracts-are-live-on-mainnet",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/tree/master/core",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Protocol 20 activated Soroban on Mainnet on 2024-02-20 through the CAP-0046 family; the current family is the umbrella plus numbered sub-CAPs 01-03 and 05-12, with 04 deprecated",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: SDF Protocol 20 activation announcement",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0046 umbrella and current stellar-protocol core tree",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The P20 activation date and Wasm architecture are correct, but numeric-range shorthand falsely made the non-contiguous CAP-0046 family look like sub-CAPs 01 through 12. CAP-0046-04 is deprecated and absent from the current tree; CAP-0046-08 specifies smart-contract events, not generic contract metadata.",
+      "evidence": [
+        "Solo scratchpad 575 GT-34 primary 3286 and blind 3288; independently confirmed on 2026-07-10."
+      ],
+      "rootCause": [
+        "Eval-side numeric-range compression promoted a non-contiguous CAP family into a false contiguous list."
+      ]
+    },
+    "origin": "raven-next q-protocol-soroban-launch-version"
+  }
+}

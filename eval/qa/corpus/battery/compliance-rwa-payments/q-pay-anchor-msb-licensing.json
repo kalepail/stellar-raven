@@ -1,0 +1,93 @@
+{
+  "id": "q-pay-anchor-msb-licensing",
+  "question": "Who holds the money-transmitter / MSB license when a wallet uses a Stellar anchor to on/off-ramp fiat — the wallet, the anchor, or Stellar?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "Do not decide licensing from the word anchor. Identify each participating legal entity and ask who accepts, transmits, exchanges, issues, redeems, or custodies fiat/crypto for another person; who controls hosted-wallet value; which customer/transaction jurisdictions apply; and whether an exemption, agent, bank, payment partner, or other structure changes the perimeter.\n\nAn on/off-ramp operator doing fiat/crypto exchange or transmission is commonly regulated, but the exact US analysis separates **FinCEN MSB registration** from **state money-transmitter licensing** and remains facts-and-circumstances. A custodial wallet or program operator can also be in scope; noncustodial signing software alone generally is not. Each route participant assesses its own duties.\n\nStellar/SDF is not automatically the licensee merely because the network settles a transfer, but that statement is bounded by the actual network/SDF activity and custody posture. This is a classification framework, not legal advice; use current primary law and counsel for each jurisdiction.",
+    "keyFacts": [
+      "Allocates obligations by legal entity, activity, custody/control, route, and jurisdiction—not the anchor label.",
+      "Separates federal MSB registration from state money-transmitter licensing.",
+      "Explains that wallets/operators may be covered based on custody/activity while infrastructure alone is not automatically the licensee."
+    ],
+    "avoid": [
+      "Do NOT say every anchor holds one universal MSB/money-transmitter license.",
+      "Do NOT call FinCEN registration a license or ignore state/jurisdictional rules.",
+      "Do NOT give definitive legal advice from an Anchor Directory label."
+    ],
+    "notes": "Anchor responsibility model is first-party (anchors are regulated financial institutions; the protocol/SDF is not a licensee). Confidence raised draft->high on the durable framing; specific jurisdictional requirements are not asserted. Trap: licensing on the protocol.\nAlso good if the answer: The wallet/app may also have its own MSB/money-transmitter obligations depending on custody and jurisdiction. | Anchors must map licenses to every jurisdiction in which they onboard customers.\nGolden cites: developers.stellar.org anchor docs; reputable regulatory reference where relevant.\nCORRECTION 2026-07-10: reject noun-based legal allocation. Require entity/activity/custody/route/jurisdiction analysis and distinguish registration from licensing."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://www.ecfr.gov/current/title-31/subtitle-B/chapter-X/part-1010/section-1010.100",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.ecfr.gov/current/title-31/subtitle-B/chapter-X/part-1022/section-1022.380",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.fincen.gov/resources/statutes-regulations/guidance/application-fincens-regulations-persons-administering",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "The anchor always holds the MSB/money-transmitter license for the fiat leg",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: eCFR/FinCEN acceptance/transmission and hosted/unhosted guidance",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: network/software exclusions and federal registration rules",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent legal corroboration",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "Independent reviews: Solo GT-11 processes 3231/3236",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The case categorically assigned an MSB/money-transmitter license to the anchor. Duties attach to actual legal entities and regulated activities; federal MSB registration and state money-transmitter licensing are distinct, and custodial wallets or other route participants may also be in scope.",
+      "evidence": [
+        "Solo scratchpad 575 GT-11 primary/blind legal matrices"
+      ],
+      "rootCause": [
+        "Stellar product-role terminology was promoted into a legal classification.",
+        "Registration, licensing, custody, and multi-entity routes were collapsed."
+      ]
+    },
+    "origin": "raven-next q-pay-anchor-msb-licensing"
+  }
+}

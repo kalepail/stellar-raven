@@ -1,0 +1,56 @@
+{
+  "id": "q-protocol-tier1-org-list",
+  "question": "Which organizations are currently in Stellar's Tier 1 quorum, and is SDF a single point of control?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- Stellar's docs do **not** publish a single static canonical list of Tier 1 organizations — Tier 1\n  membership is fluid and changes over time, so any enumerated list is point-in-time and may be stale\n  [tier-1-orgs docs; decentralization-double-time]. The Tier 1 docs page explains the *concept* (the\n  most reliable, highly-available orgs that most quorum sets depend on), not a live roster.\n- **SDF is one organization inside a multi-org quorum set, not a sole authority.** Per SDF's own\n  \"Decentralization, Double Time,\" SDF includes roughly **7 organizations (including itself)** in its\n  quorum set [decentralization-double-time]. SDF alone **cannot** control consensus or unilaterally\n  finalize ledgers — validators run by independent orgs must agree under SCP.\n- The Tier 1 set SDF's own quorum config cohered around (per \"Decentralization, Double Time,\" 2025-07,\n  threshold 5 of 7) is **SDF, Blockdaemon, SatoshiPay, Franklin Templeton, LOBSTR, Creit Technologies,\n  and Public Node** [decentralization-double-time] — with a stated plan to grow toward 13 orgs. Treat any\n  such roster as point-in-time/sourced, not a live canonical list.\n- To find who is *currently* Tier 1 / a validator, point to live sources rather than guessing: the SDF\n  decentralization blog [decentralization-double-time], **dashboard.stellar.org** [dashboard], and a\n  quorum explorer such as StellarBeat / Obsrvr Radar. Flag freshness on any named members.",
+    "keyFacts": [
+      "Explains that Stellar docs do not publish a single static canonical list of Tier 1 organizations (membership is fluid).",
+      "States SDF is one organization inside a multi-org quorum set (e.g. SDF includes ~7 organizations including itself), not a sole authority."
+    ],
+    "avoid": [
+      "Do NOT assert a confident hardcoded full Tier-1 list without flagging it as point-in-time / sourced.",
+      "Do NOT claim SDF alone controls consensus or can unilaterally finalize ledgers."
+    ],
+    "notes": "Freshness item #1. Reviewed 2026-06-29: verified against SDF 'Decentralization, Double Time' (2025-07) — SDF's quorum set then comprised 7 orgs (threshold 5): SDF, Blockdaemon, SatoshiPay, Franklin Templeton, LOBSTR, Creit Technologies, Public Node, with a stated plan to grow toward 13. The Tier 1 docs page (2026-06-17) explains the concept and qualification but does NOT publish a live roster. Honest answer flags no static list is canonical and rewards sourcing/staleness-flagging over confident enumeration; SDF-as-single-authority is the misconception trap. Confidence medium = roster is point-in-time/freshness-sensitive.\nAlso good if the answer: Points to live/canonical sources for who is currently a validator/Tier 1 (e.g. the SDF decentralization blog, dashboard.stellar.org, or a quorum explorer like Obsrvr/StellarBeat). | Flags that any named list is point-in-time and may be stale (freshness caveat).\nGolden cites: A live quorum/validator source (dashboard.stellar.org, SDF decentralization blog, or a quorum explorer) plus the Tier 1 docs page."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-06-29",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/validators/tier-1-orgs",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/decentralization-double-time",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://dashboard.stellar.org/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-34-soroban-launch-archival-core-tier1-validators-history accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-tier1-org-list"
+  }
+}

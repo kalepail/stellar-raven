@@ -1,0 +1,42 @@
+{
+  "id": "q-sep-38-quotes",
+  "question": "Which SEP provides a quote/RFQ API for exchanging between assets at an anchor?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_asset_token_docs"
+  ],
+  "golden": {
+    "answer": "- **SEP-38 — \"Anchor RFQ API\"** is the quote/RFQ standard for pricing an exchange between two assets at an anchor (e.g. fiat↔stablecoin or asset↔asset) [1].\n- It exposes `GET /info`, `GET /prices`, `GET /price` (indicative quotes) and `POST /quote` (a **firm/committed** quote with an `id` and `expires_at`) [1].\n- Quotes are fetched **before** a SEP-6 / SEP-24 / SEP-31 deposit, withdrawal, or send to present and lock a price [1]. Status: **Draft** (still widely adopted via the Anchor Platform).",
+    "keyFacts": [
+      "Names SEP-38 as the Anchor RFQ / quote API for pricing between assets."
+    ],
+    "avoid": [
+      "Do NOT misnumber the quote/RFQ standard (it is SEP-38, not SEP-31 or SEP-24)."
+    ],
+    "notes": "Dossier §7.1, Q17. SEP-38 'Anchor RFQ API', Status Draft (ecosystem README).\nAlso good if the answer: Quotes are fetched before a SEP-6/SEP-24/SEP-31 deposit, withdrawal, or send to present a price.\nGolden cites: SEP-0038 on the stellar-protocol repo or developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-05-sep-identity-auth-quotes-token-wallet accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-sep-38-quotes"
+  }
+}

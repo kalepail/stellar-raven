@@ -1,0 +1,42 @@
+{
+  "id": "q-edge-ambig-best-wallet",
+  "question": "What's the best wallet?",
+  "surface": [],
+  "golden": {
+    "answer": "**Behavioral case — the correct answer is the behavior, not a verdict.** \"Best wallet\" is subjective\nand use-case-dependent, and it implicitly assumes a Stellar context. Raven should **clarify the\ncriteria before recommending** — developer vs end-user, mobile vs browser-extension, custodial vs\nself-custody, passkey/smart-wallet needs — and confirm this is a Stellar wallet question (not e.g.\nMetaMask). It should **not crown a single \"best\" wallet** as objective fact. If it offers options, it\nframes \"best\" as situational and notes several reputable Stellar wallets suited to different needs\n(e.g. Freighter, Lobstr, Hana, xBull). The directory lookup\n(`scout_projects` / `lumenloop_search_directory`) belongs to a *later* run, after the use-case is set.",
+    "keyFacts": [
+      "Clarifies the criteria/use-case before recommending (developer vs end-user, mobile vs browser extension, custody, passkey/smart-wallet needs) and confirms it is a Stellar wallet question.",
+      "Does NOT declare a single 'best' wallet as an objective fact."
+    ],
+    "avoid": [
+      "Do NOT crown one wallet 'the best' without scoping the use-case.",
+      "Do NOT assume a non-Stellar wallet (e.g. MetaMask) is meant and answer accordingly."
+    ],
+    "notes": "Ambiguous: 'best' is subjective + use-case-dependent. Reward scoping by criteria and offering options. Trap is an absolute verdict or assuming a non-Stellar wallet. Behavioral: the gospel is the GATE (clarify, no absolute verdict) not a factual essay.\nAlso good if the answer: Notes there are several reputable Stellar wallets (e.g. Freighter, Lobstr, Hana, xBull) suited to different needs, if it offers options."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "none",
+    "freshness": "stable",
+    "trap": "ambiguous"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "eval/corpus/raven-next/research/golden/edge-governance/q-edge-ambig-best-wallet.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-21-user-safety-ambiguity-scam accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-edge-ambig-best-wallet"
+  }
+}

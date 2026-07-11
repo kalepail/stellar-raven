@@ -1,0 +1,90 @@
+{
+  "id": "q-defi-stellarx-what-is",
+  "question": "What is StellarX and is it built by the Stellar Development Foundation?",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.get_project",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "**StellarX** is a non-custodial trading interface on Stellar that exposes classic SDEX order books and protocol-level classic liquidity pools. Current product/operator evidence points to **Ultra Stellar**, which acquired StellarX in 2020; it is not an SDF-built product. Earlier Lightyear/Interstellar/Coinsquare history is historical, and SDF's network/trademark role is not product authorship. Date any current-availability statement and do not infer a proprietary Soroban AMM or aggregator from the UI's AMM access.",
+    "keyFacts": [
+      "Identifies StellarX as an Ultra Stellar non-custodial classic-liquidity trading UI, not an SDF-built product."
+    ],
+    "avoid": [
+      "Do NOT call StellarX an SDF-built product, Soroban aggregator, lender, or oracle.",
+      "Do NOT assert a timeless shutdown/non-shutdown state without a dated current source."
+    ],
+    "notes": "Per-project identity → lumenloop_get_project. Sponsor now grounded: StellarX is built by Ultra Stellar (NOT the SDF), the same team behind LOBSTR and StellarTerm. It is a decentralized trading platform/UI with AMM access — not an aggregator. No source confirms a shutdown.\nAlso good if the answer: It is a trading UI / wrapper, not a DEX aggregator (contrast with Soroswap).\nGolden cites: A source identifying StellarX as a Stellar trading platform/UI by Ultra Stellar.\nGT-18 CORRECTION 2026-07-10: current Ultra Stellar/operator evidence and classic-liquidity scope supersede historical/stale identity shorthand."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://www.stellarx.com/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.stellarx.com/amm/liquidity",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.stellarx.com/legal/terms",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://ultrastellar.com/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "StellarX is currently an Ultra Stellar non-custodial trading interface over classic Stellar liquidity, not an SDF-built product.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current StellarX product/terms and Ultra Stellar pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: 2020 Ultra Stellar acquisition record and independent history sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live directory identity",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited identity is broadly correct but needs current operator provenance, classic-liquidity scope, and removal of an unsupported shutdown negative.",
+      "evidence": [
+        "Solo scratchpad 575 GT-18 primary 3249 and blind 3252",
+        "Sibling sweep: Ultra Stellar/LOBSTR/StellarTerm family cases"
+      ],
+      "rootCause": [
+        "Historical ownership and a current directory record were compressed into a timeless identity/availability claim.",
+        "improvements/stellar-light-scout/sls-024-project-lifecycle-operator-conflicts.md"
+      ]
+    },
+    "origin": "raven-next q-defi-stellarx-what-is"
+  }
+}

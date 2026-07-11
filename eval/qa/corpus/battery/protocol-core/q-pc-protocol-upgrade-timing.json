@@ -1,0 +1,102 @@
+{
+  "id": "q-pc-protocol-upgrade-timing",
+  "question": "When is the next protocol upgrade, how do validators vote it in, and what SDK-upgrade deadlines must developers meet?",
+  "surface": [
+    "stellarDocs.search_meeting_notes",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs"
+  ],
+  "golden": {
+    "answer": "Protocol-upgrade timing must come from a dated primary source. The previously published **Protocol 27 (Zipper)** schedule is now historical: the SDF guide scheduled the Mainnet vote for **2026-07-08**, and live Horizon shows the network changed from Protocol 26 at ledger **63386818** (17:00:05 UTC) to **Protocol 27** at ledger **63386819** (17:00:10 UTC). Do not keep presenting July 8 as the next vote. For whatever upgrade follows P27, report a date/version only if a current SDF upgrade guide, validator notice, or equivalent primary source actually announces one; otherwise say that the checked sources do not establish a later date. Validator operators adopt an upgrade through network-upgrade voting, not through CAP acceptance or software release alone.",
+    "keyFacts": [
+      "Requires a dated current primary source for any claimed next protocol-upgrade date/version, and recognizes that the July 8, 2026 Protocol 27 vote is completed rather than upcoming.",
+      "Explains that Mainnet activated Protocol 27 at ledger 63386819 on 2026-07-08 and that CAP approval, software release, Testnet activation, and Mainnet validator voting are distinct milestones."
+    ],
+    "avoid": [
+      "Do NOT present the completed July 8, 2026 Protocol 27 vote as a future or next upgrade.",
+      "Do NOT invent a later protocol vote date without a dated primary source.",
+      "Do NOT confuse protocol upgrade voting with SEP/CAP approval or a software release alone."
+    ],
+    "notes": "GT-31 OVERLAP RECONCILIATION 2026-07-11: P27's July 8 vote is completed and ledger 63386819 is live. Require a current dated primary source for any later announced upgrade or SDK deadline; no later date should be invented. CAP status, software release, and SCP/FBA network activation are separate."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://horizon.stellar.org/ledgers/63386819",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/stellar-zipper-protocol-27-upgrade-guide",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/validators/admin-guide/network-upgrades",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Protocol 27 activated on Mainnet on 2026-07-08 at ledger 63386819",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: Horizon ledgers 63386818/63386819 — P26 at 2026-07-08T17:00:05Z, then P27 at 17:00:10Z",
+            "observedAt": "2026-07-08",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: SDF Zipper upgrade guide — July 8, 2026 Mainnet upgrade vote",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "A later Mainnet upgrade date must not be guessed from the completed P27 schedule",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: the checked SDF upgrade guide establishes only the completed P27 schedule",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Pubnet reports protocol 27; it does not announce a future vote",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-09",
+      "by": "Golden-truth sweep import — The dated reference answer called the July 8 Protocol 27 vote the next Mainnet upgrade after that vote had completed. The behavioral gate was already freshness-aware, but the stale narrative could still steer a judge toward a past date. This override records the completed P27 activation and refuses to invent a later unannounced vote.",
+      "evidence": [
+        "2026-07-09 independent re-verification in Solo scratchpad 567: Horizon boundary ledgers + SDF upgrade guide",
+        "Sibling sweep covered all compiled cases mentioning Protocol 27, Zipper, or 2026-07-08"
+      ],
+      "rootCause": [
+        "eval-side freshness drift: a forward-looking schedule aged past its vote date",
+        "solo://proj/49/todo/date-contingent-trap--831",
+        "improvements/stellar-docs/sd-008-protocol-27-mainnet-status-lag.md"
+      ]
+    },
+    "origin": "raven-next q-pc-protocol-upgrade-timing"
+  }
+}

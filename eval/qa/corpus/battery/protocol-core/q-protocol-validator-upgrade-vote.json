@@ -1,0 +1,49 @@
+{
+  "id": "q-protocol-validator-upgrade-vote",
+  "question": "How do Stellar validators actually activate a new protocol version once a CAP is accepted?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs"
+  ],
+  "golden": {
+    "answer": "Each validator operator **\"arms\"** the upgrade ahead of time, scheduling a protocol-version bump for a\nfixed UTC timestamp via an `upgrades?mode=set&upgradetime=...&protocolversion=N` command [1][2]. The\nupgrade is recorded **in-band** via the ledger header's `Upgrades` field; SCP/validator agreement flips\nthe protocol version at the scheduled time [1][2]. Mainnet upgrade votes happen at a fixed scheduled\ntime (commonly **17:00 UTC** on the announced date), and a **testnet vote precedes the mainnet\nvote** [1]. Operators must run the matching stellar-core release before arming [1]. This is **not** a\ntoken-holder vote, **not** a hard-fork download, and **not** an off-chain SDF switch — the software is\ninstalled beforehand, and the version bump itself is an in-band SCP vote [1][2].\n\n- [1] stellar.org/blog/foundation-news/stellar-yardstick-protocol-26-upgrade-guide\n- [2] developers.stellar.org/docs/validators/admin-guide",
+    "keyFacts": [
+      "States each validator operator 'arms' the upgrade ahead of time, scheduling a protocol-version bump for a fixed UTC timestamp (e.g. an upgrades?mode=set&upgradetime=...&protocolversion=N command).",
+      "States the upgrade is recorded in-band via the ledger header's Upgrades field, and SCP/validator agreement flips the protocol version at the scheduled time."
+    ],
+    "avoid": [
+      "Do NOT claim activation is via a token-holder vote, a hard fork download, or an off-chain SDF switch.",
+      "Do NOT claim protocol upgrades require coordinated node-software downloads at the exact activation moment (the version bump is an in-band SCP vote, software is installed beforehand)."
+    ],
+    "notes": "Mechanics of activation (validator arming + Upgrades header). Trap is token vote / off-chain switch.\nAlso good if the answer: Notes mainnet upgrade votes happen at a fixed scheduled time (commonly 17:00 UTC on the announced date). | Notes the pattern of testnet vote before the mainnet vote.\nGolden cites: A protocol upgrade guide (e.g. stellar.org Protocol 25/26 upgrade guide) and/or the validator admin docs."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/stellar-yardstick-protocol-26-upgrade-guide",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/validators/admin-guide",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-34-soroban-launch-archival-core-tier1-validators-history accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-validator-upgrade-vote"
+  }
+}

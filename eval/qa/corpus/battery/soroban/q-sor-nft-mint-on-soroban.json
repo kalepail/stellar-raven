@@ -1,0 +1,92 @@
+{
+  "id": "q-sor-nft-mint-on-soroban",
+  "question": "How do I build/mint an NFT on Stellar — Soroban contract (OpenZeppelin non-fungible) vs classic single-unit asset + stellar.toml + SEP-39 Manage Data — including a buy-with-USDC flow (recipient ≠ payer), royalties, metadata, and listing the NFTs an account holds?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Choose the path by compatibility. A programmable Soroban NFT can follow **Draft SEP-50** and current OpenZeppelin Stellar NFT modules (Base/Enumerable/Consecutive/Royalties/Votes); wrap low-level mint helpers in explicit owner/role authorization. A classic single-unit asset can follow Draft/informational SEP-39: issue one stroop (`0.0000001`) and, if irreversible uniqueness is intended, lock the issuer after distribution. For a USDC sale, payer and NFT recipient may differ. Bind payer authorization/order intent to token, amount, recipient, and NFT parameters; an allowance alone only authorizes the spender within its scope. Validate the sale, collect payment, and mint/transfer atomically so failure rolls back. Royalties are contract/marketplace enforced, not universal. Use enumeration plus durable event indexing for contract holdings and trustline/indexer data for classic assets.",
+    "keyFacts": [
+      "Distinguishes Draft SEP-50 programmable NFTs from Draft SEP-39 classic single-unit assets.",
+      "Requires mint access control, payer-intent binding, atomic payment/minting, and scoped royalty/indexing claims."
+    ],
+    "avoid": [
+      "Do NOT call either draft final, expose an ungated Base mint wrapper, or assume allowance alone authorizes recipient/order intent.",
+      "Do NOT promise universal royalties or marketplace compatibility."
+    ],
+    "notes": "Phase 3 verified the classic branch against SEP-39. SEP-39 is Draft/informational best-practice guidance, not a mandatory NFT standard; keep answers framed as compatibility guidance.\nAlso good if the answer: Notes royalties are contract/application-enforced on Soroban or marketplace-enforced off-chain for classic assets; they are not automatic on every Stellar transfer unless encoded/enforced by the relevant system. | Mentions trustlines/reserves for classic single-unit assets and contract storage/events for Soroban NFTs.\nGolden cites: Official Stellar NFT/OpenZeppelin docs or OpenZeppelin stellar-contracts repo. | Official payment/SAC docs for USDC/token transfer flow.\nGT-42 independently reconciled current Draft standards and OZ v0.7.1."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0039.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0050.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/example-contracts/non-fungible-token",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/OpenZeppelin/stellar-contracts",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current classic/Soroban NFT standards and OZ security mechanics",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: SEP-39/50, official examples, OZ v0.7.1 source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: SEP-39/50, official examples, OZ v0.7.1 source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-42 tests",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The two viable NFT paths were sound but omitted Draft SEP-50, classic uniqueness finalization, mint access control, and payer-intent binding.",
+      "evidence": [
+        "Solo scratchpad 575 GT-42 processes 3308/3315; OZ sequential-mint tests passed."
+      ],
+      "rootCause": [
+        "Eval-side standards/security completeness."
+      ]
+    },
+    "origin": "raven-next q-sor-nft-mint-on-soroban"
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "id": "q-pc-practical-fee-setting",
+  "question": "What fee should I set in TransactionBuilder, does 100 stroops always work, what happens under surge pricing if my max fee is too low, and is there an API to estimate fees?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs"
+  ],
+  "golden": {
+    "answer": "`TransactionBuilder`'s fee is a maximum inclusion-fee bid per operation, not guaranteed spend. **As of 2026-07-10**, the effective base-fee floor is 100 stroops per operation, but 100 does not guarantee inclusion under surge; a low bid can be delayed or discarded. Smart-contract transactions also pay resource fees and compete against resource limits. For live estimates, use Stellar RPC **`getFeeStats`** (also exposed by current `stellar fees stats`) for classic/Soroban inclusion-fee percentiles. Horizon `GET /fee_stats` remains available and some Horizon endpoints lack direct RPC equivalents; official Docs currently conflict between calling Horizon deprecated and calling it legacy/no-new-features, nearing EOL but not yet deprecated. Hubble is historical analytics rather than the primary real-time submission estimator. Estimate immediately before submission, cap risk, add bounds, and treat values/status as dated.",
+    "keyFacts": [
+      "Explains maximum per-op bid, dated 100-stroop floor, and surge delay/exclusion.",
+      "Prioritizes live RPC getFeeStats/CLI or Horizon fee_stats and distinguishes Hubble historical analytics."
+    ],
+    "avoid": [
+      "Do NOT say 100 always wins, freeze current percentiles, or use Ethereum gas/gwei framing.",
+      "Do NOT present Hubble as the primary real-time submission estimator or overbid without an application risk cap."
+    ],
+    "notes": "GT-29/GT-32 CORRECTION 2026-07-10: lead with RPC getFeeStats/current CLI; Horizon /fee_stats remains available and Horizon is legacy/no-new-features, not formally deprecated. Hubble is historical analytics. Date the 100-stroop floor and provider observations.\nGT-29 endpoint/discoverability recurrence attaches to sd-003. GT-32 blind found an official deprecated/not-yet-deprecated wording conflict tracked by sd-017; grade durable endpoint behavior rather than a categorical label."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/fees-resource-limits-metering",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getFeeStats",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://horizon.stellar.org/fee_stats",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/fee-bump-transactions",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "100 stroops is the current base-fee floor; RPC getFeeStats/stellar fees stats and Horizon /fee_stats provide current fee data, while Hubble is historical analytics.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: official fee docs, CLI/source, and API contracts",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: official fee docs, CLI/source, and API contracts",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live RPC/CLI and Horizon fee-stat reads",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The bid/surge mechanics are correct, but current numeric parameters were undated and Hubble historical analytics was promoted over the direct live RPC/Horizon fee-stat endpoints.",
+      "evidence": [
+        "Solo scratchpad 575 GT-29 primary 3276 and blind 3278; mechanics agreed, reviewer independently corrected endpoint priority."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-003-rpc-method-reference-pages-unindexed.md",
+        "Eval-side current-versus-historical endpoint routing error."
+      ]
+    },
+    "origin": "raven-next q-pc-practical-fee-setting"
+  }
+}

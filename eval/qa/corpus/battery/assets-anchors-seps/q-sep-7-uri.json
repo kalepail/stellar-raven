@@ -1,0 +1,44 @@
+{
+  "id": "q-sep-7-uri",
+  "question": "Which Stellar SEP defines a URI scheme for requesting that a wallet sign a transaction or payment, and what does the URI look like?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "It is **SEP-7, \"URI Scheme to facilitate delegated signing.\"** It defines the **`web+stellar:`**\nURI scheme (no forward slashes) so a non-wallet app can hand a user's wallet a request to sign,\nwithout ever seeing the secret key. Syntax: `web+stellar:<operation>?<param>=<value>&…`, with two\noperations [1]:\n\n- **`tx`** — sign a specific transaction: `web+stellar:tx?xdr=<base64+URL-encoded TransactionEnvelope>&…`\n  (optional `callback`, `pubkey`, `msg`, `origin_domain`, `signature`, etc.).\n- **`pay`** — request a payment: `web+stellar:pay?destination=G…&amount=…&asset_code=…&asset_issuer=…&memo=…`.\n\nApps may sign the URI (`origin_domain` + `signature`, validated against `URI_REQUEST_SIGNING_KEY`\nin the domain's `stellar.toml`) so wallets can show a verified origin. SEP-7 is the **signing-URI**\nstandard and is distinct from **SEP-10** (web *authentication* / JWT) [1].\n\nSource: [1] stellar-protocol `ecosystem/sep-0007.md` (URI Scheme to facilitate delegated signing).",
+    "keyFacts": [
+      "Names SEP-7 as the URI scheme for delegated/wallet signing requests.",
+      "The scheme is web+stellar: (e.g. web+stellar:tx?... or web+stellar:pay?...)."
+    ],
+    "avoid": [
+      "Do NOT misnumber it (the URI scheme is SEP-7, not SEP-10 or SEP-24).",
+      "Do NOT confuse SEP-7 (signing URI) with SEP-10 (web authentication)."
+    ],
+    "notes": "Dossier §7.1, Q19. Verified: SEP-0007 'URI Scheme to facilitate delegated signing'. Status note: the spec preamble declares Active (v2.1.0); the ecosystem README master table lists it under Final. Status is not gated — the number + scheme + tx/pay ops are the defining facts.\nAlso good if the answer: Lets a website/app hand a wallet a transaction or pay operation to sign.\nGolden cites: SEP-0007 on the stellar-protocol repo or developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0007.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-06-sep-deposit-regulation-catalog-clawback accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-sep-7-uri"
+  }
+}

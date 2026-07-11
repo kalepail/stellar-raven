@@ -1,0 +1,85 @@
+{
+  "id": "q-edge-exchange-memo-lost-funds",
+  "question": "I sent XLM or USDC to an exchange and forgot or used the wrong memo, so it never credited. Where did the funds go and can I recover them?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "First verify the transaction hash and result. If it **failed**, the assets did not settle. If it **succeeded**, they reached the recorded on-chain destination, but a missing/wrong memo or muxed ID may have prevented the custodian's internal credit. Confirm the exact network, classic asset code+issuer or contract identity, destination, amount, time, and memo/M-address details. Then contact the receiving exchange through an independently reached official support channel. It may manually credit or return funds, possibly using a separate correction transaction, but recovery is discretionary and Stellar consensus, SDF, and Raven cannot reverse or force it. Do not post personal deposit data publicly or share a seed phrase/private key, exchange password, 2FA code, recovery phrase, or support-session signature.",
+    "keyFacts": [
+      "Checks success/failure first; distinguishes on-chain settlement from the custodian's internal attribution; supports memo and muxed-address deposit models.",
+      "Directs the user to official custodian support with non-secret transaction details and makes recovery discretionary."
+    ],
+    "avoid": [
+      "Do NOT promise recovery, automatic loss/refund, consensus reversal, or universal G-account-plus-memo behavior.",
+      "Do NOT request secrets, passwords, 2FA codes, signatures, or public disclosure of personal deposit data; do not misdiagnose wrong network/issuer as only a memo problem."
+    ],
+    "notes": "GT-22 2026-07-10: require status-first diagnosis, exact network/asset/destination/memo-or-M-ID details, official custodian support, discretionary recovery, and explicit credential/privacy safety. Do not universalize one exchange deposit model.\nGT-22 SAFETY HARDENING 2026-07-10: successful settlement and off-chain credit are distinct; recovery remains custodian-specific."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/pooled-accounts-muxed-accounts-memos",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/muxed-accounts-faq",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/operations-and-transactions",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A successful payment is final at the on-chain destination, while only the receiving custodian can reconcile an internal memo/muxed-ID credit; recovery is discretionary.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Stellar pooled/muxed account and transaction guidance",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/F: transaction semantics and read-only hash/result inspection",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "B/F: transaction semantics and read-only hash/result inspection",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The custody-dependent recovery core was correct, but the answer assumed one G-account-plus-memo model and omitted transaction-status, muxed-address, correction-transaction, wrong-network/issuer, and credential-safety branches.",
+      "evidence": [
+        "Solo scratchpad 575 GT-22 primary 3262 and blind 3265; memo/muxed/custody sibling sweep."
+      ],
+      "rootCause": [
+        "One common exchange deposit implementation was generalized and status-first/security/category-error recovery branches were omitted."
+      ]
+    },
+    "origin": "raven-next q-edge-exchange-memo-lost-funds"
+  }
+}

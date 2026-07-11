@@ -1,0 +1,93 @@
+{
+  "id": "q-defi-oracles-chainlink-band",
+  "question": "How do price oracles work on Stellar, are Chainlink Data Feeds or Band usable here, and what RWA-capable oracle options exist?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Oracle support on Stellar is **provider/product/network-specific**. Current evidence as of **2026-07-10**:\n- **Reflector:** official Stellar docs list mainnet/testnet SEP-40 contracts and integrations.\n- **Band:** the same official page lists a mainnet contract (`CCQXW…FBGG5M`) plus testnet—stronger than a directory label.\n- **DIA:** listed as a provider, but the visible official address is testnet; mainnet was not verified from that page.\n- **Chainlink:** official documentation verifies **Data Streams** on Stellar, including a mainnet verifier and on-chain verification tutorial. That does not prove **Chainlink Data Feeds** are deployed; the audited Data Feeds address surface was inconclusive. CCIP is another distinct product.\n- **RedStone:** its June-2026 operator post says its SEP-40 integration is in production and names live assets, but this audit did not independently verify a contract address; label it provider-confirmed, not address-confirmed.\n- Lightecho/Orally and other directory results remain candidates until provider-primary evidence establishes product/network state.\n\nFor RWA use, specify whether the consumer needs price, FX, NAV, rates, reserves, or issuer attestations, and validate freshness, bounds, aggregation, fallback, and publisher security.",
+    "keyFacts": [
+      "Explains oracle correctness and consumer validation rather than assuming on-chain means correct.",
+      "Distinguishes Band mainnet, DIA visible testnet, Chainlink Data Streams, unverified Chainlink Data Feeds, and provider-confirmed RedStone production."
+    ],
+    "avoid": [
+      "Do NOT conflate Chainlink Data Streams, Data Feeds, and CCIP or turn an inconclusive feed search into absence proof.",
+      "Do NOT treat a directory Live label, operator announcement, and address-confirmed mainnet deployment as equivalent evidence.",
+      "Do NOT claim every named provider is mainnet-live or rank one as dominant without a dated metric."
+    ],
+    "notes": "Official Stellar oracle-provider docs verified Reflector and DIA; Scout verified Band, RedStone, Lightecho, Orally and others. Phase 3 should primary-check Chainlink Data Feeds absence/status before asserting unsupported.\nAlso good if the answer: Mentions RWA oracles may need proof of reserves, NAV, rates, identity/compliance data, or off-chain attestation beyond crypto price feeds. | Encourages multiple-source or fallback design for high-value protocols.\nGolden cites: Dated oracle/project docs or Scout/LumenLoop records for each oracle availability claim.\nCorrected 2026-07-10 after blind evidence superseded the primary matrix. Product/network/evidence-tier precision is the gate."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/oracles/oracle-providers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.chain.link/data-streams/tutorials/stellar-onchain-report-verification",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://blog.redstone.finance/2026/06/04/reliability-at-scale-redstone-and-the-data-standard-for-stellars-rwa-moment/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Oracle availability must be classified by provider product, network, and evidence tier",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: official Stellar oracle-provider page, Chainlink Data Streams config/tutorial, and RedStone operator post",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: official Stellar oracle-provider page, Chainlink Data Streams config/tutorial, and RedStone operator post",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: live directory discovery plus independent provider conflict sweep asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: live directory discovery plus independent provider conflict sweep asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-16 blind review materially corrected the primary's oracle matrix. Official sources verify Band mainnet and Chainlink Data Streams on Stellar, while Chainlink Data Feeds specifically remain unverified. RedStone has provider-confirmed production claims without independently verified contract addresses; DIA's visible official address is testnet.",
+      "evidence": [
+        "Solo scratchpad 575 GT-16 primary 3244 and blind 3245",
+        "Official Band mainnet contract and Chainlink Stellar mainnet Data Streams verifier rechecked 2026-07-10"
+      ],
+      "rootCause": [
+        "service/eval discovery collapsed provider brand, product family, testnet/mainnet, operator announcement, and address-confirmed deployment",
+        "service-improvement candidate: structured oracle product/network/evidence model"
+      ]
+    },
+    "origin": "raven-next q-defi-oracles-chainlink-band"
+  }
+}

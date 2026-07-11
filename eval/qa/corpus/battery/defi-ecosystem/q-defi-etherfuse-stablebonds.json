@@ -1,0 +1,134 @@
+{
+  "id": "q-defi-etherfuse-stablebonds",
+  "question": "What are Etherfuse Stablebonds on Stellar (e.g. USTRY/CETES) and how would a DeFi app integrate or reason about them?",
+  "surface": [
+    "scout.searchProjects",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Etherfuse describes **Stablebonds** as tokenized sovereign-debt products backed through regulated custody and redeemable according to the product terms. **USTRY** represents a U.S. Treasury-note product; **CETES** represents Mexican short-term federal treasury certificates. Attribute collateralization, custody, and redemption statements to current Etherfuse materials and check eligibility restrictions; the current legal page says services are unavailable in the United States.\n\nOn Stellar, verify the exact asset by **code plus issuer**, not ticker alone. As of **2026-07-10**, Etherfuse's stellar.toml and Horizon identified both under issuer `GCRYUGD5NVARGXT56XEZI5CIFCQETYHAPQQTHO2O3IQZTHDH4LATMYWC`; deterministic SACs were USTRY `CBLV4ATSIWU67CFSQU2NVRKINQIKUZ2ODSZBUJTJ43VJVRSBTZYOPNUR` and CETES `CAL6ER2TI6CTRAY6BFXWNWA7WTYXUXTQCHUBCIBU5O6KM3HJFG6Z6VXV`. Re-verify before integration. G-account holders use classic trustlines; contracts use the SAC/SEP-41 interface and C-address contract storage. Confirm decimals, authorization/clawback state, redemption terms, and current attestations.\n\nFor DeFi use, evaluate custody/issuer/redemption/NAV and maturity/currency risks plus secondary-market depth, active traders, oracle-source independence, price bounds, exposure caps, and admin/operational controls. Date any APY, liquidity, venue, or collateral-use example. The February YieldBlox incident was a thin-market/oracle-consumer failure involving USTRY collateral; it was not shown to be an Etherfuse issuer-contract exploit.",
+    "keyFacts": [
+      "Identifies Etherfuse Stablebonds as operator-described tokenized sovereign-debt products and distinguishes USTRY from CETES.",
+      "Requires exact Stellar code+issuer/SAC verification, records the dated current USTRY/CETES identities, and explains G-account versus C-address holding paths.",
+      "Covers legal/redemption/custody, maturity/currency, liquidity, oracle, exposure, and operational risks.",
+      "Separates the YieldBlox consumer/pool incident from an Etherfuse issuer exploit."
+    ],
+    "avoid": [
+      "Do NOT confuse Etherfuse with other RWA issuers.",
+      "Do NOT invent current yields, prices, liquidity, maturity, venues, or incident amounts.",
+      "Do NOT treat a ticker or directory record as exact asset identity/current integration proof.",
+      "Do NOT say the YieldBlox incident compromised Etherfuse's issuer contract."
+    ],
+    "notes": "GROUNDED 2026-06-22: live Scout confirms OrbitCDP (Live, Lending, SCF $280K) describes its collateral as 'XLM and Etherfuse tokenized bonds like the USTRY US Treasury token and CETES Mexican T-bills' — directly grounding Etherfuse=Stablebonds issuer, USTRY≈US Treasury token, CETES≈Mexican T-bills, used as RWA collateral. YieldBlox/USTRY incident tie-in VERIFIED 2026-06-29: the USTRY-collateralized YieldBlox/Blend V2 pool was drained ~$10.2M on Feb 22 2026 via thin-liquidity oracle manipulation (multi-sourced: Halborn, QuillAudits, Olympix, Protos). Specific incident $ figures still NOT gated (the question is about the asset, not the hack) — kept as should_have (weight 2) and must_avoid still bans inventing incident loss amounts. Do not invent yields. Freshness:true (weekly).\nAlso good if the answer: Stablebonds like USTRY have been involved in a Stellar oracle/RWA-pricing incident (commonly cited as the YieldBlox/Reflector episode) — illustrating thin-liquidity RWA pricing risk.\nGolden cites: Scout / Lumenloop provenance for Etherfuse + a source tying USTRY/CETES to Etherfuse (e.g. the OrbitCDP directory record).\nCORRECTION 2026-07-10: grade exact asset verification and the full product/legal/liquidity/oracle boundary, not one OrbitCDP roster sentence. Blind GT-15 added the current shared issuer, deterministic SACs, primary stellar.toml, and Blockaid responder source. The incident was downstream pool/oracle consumption, not an issuer exploit."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://etherfuse.com/products/stablebonds",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://app.etherfuse.com/legal/stablebonds-overview",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://app.etherfuse.com/bonds/USTRY",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://app.etherfuse.com/bonds/cetes",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://etherfuse.com/.well-known/stellar.toml",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Etherfuse Stablebonds are operator-described tokenized sovereign-debt products including USTRY and CETES on Stellar",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Etherfuse product and legal pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live Stellar asset/SAC identity checks",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent product and issuer corroboration",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "The YieldBlox drain demonstrated an Etherfuse issuer-contract exploit",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Script3 postmortem",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: incident adapter/source and Etherfuse asset identities",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent incident analyses",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer relied on a potentially stale OrbitCDP directory sentence and under-specified the exact asset/SAC, legal/redemption, liquidity, and oracle-consumer boundaries. The YieldBlox event was not an Etherfuse issuer exploit.",
+      "evidence": [
+        "Solo scratchpad 575 GT-09 primary/blind Etherfuse matrices"
+      ],
+      "rootCause": [
+        "A discovery record was promoted into current product/integration truth.",
+        "Issuer/product risk was conflated with a downstream pool's oracle-consumption failure."
+      ]
+    },
+    "origin": "raven-next q-defi-etherfuse-stablebonds"
+  }
+}

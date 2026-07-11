@@ -1,0 +1,86 @@
+{
+  "id": "q-soroban-sac-balance-storage",
+  "question": "Where do SAC token balances live for a classic G-account versus a contract holder, and what integer types are used?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "The SAC exposes one token interface over two storage models. For a classic G address, native XLM balance is the AccountEntry balance and an issued asset balance is an i64 TrustLineEntry. For a C contract address, the SAC stores an i128 balance and authorization state in persistent ContractData. Under CAP-73, a contract can request trust for a G address only with that address's authorization and the required base reserve; for a C address the trust operation is a no-op because contract balances do not use classic trustlines.",
+    "keyFacts": [
+      "Distinguishes native-XLM AccountEntry and issued-asset TrustLineEntry balances for G addresses from persistent i128 C-address balances.",
+      "Qualifies CAP-73 trust authorization/reserve and the C-address no-op."
+    ],
+    "avoid": [
+      "Do NOT claim native XLM uses a trustline or C-address SAC balances live in classic trustlines.",
+      "Do NOT imply a contract can create a G-address trustline without that address's authorization/reserve."
+    ],
+    "notes": "i64-trustline vs i128-contract-storage verified verbatim against the SAC docs (64-bit vs 128-bit signed). Swapping is the trap. CAP-73 SAC `trust` re-verified as Protocol 26 / Implemented (gh api) on 2026-06-29. Differentiation: this file owns the focused storage-internals lane (where balances live + integer widths); the operational 'does a C-address need a trustline / how to send USDC' how-to is q-sor-contract-trustlines-c-address.\nAlso good if the answer: This means a G-account must have a trustline (or use the native asset) to hold the SAC balance, while contract holders do not use trustlines.\nGolden cites: The developers.stellar.org SAC documentation (balance storage section).\nGT-47 CORRECTION 2026-07-11: add native-XLM and CAP-73 trust prerequisites."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/assets/anatomy-of-an-asset",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-06.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0073.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "For G addresses, native XLM uses AccountEntry and issued assets use i64 trustlines; C-address SAC balances use persistent ContractData i128. SAC trust for a G address requires that address's authorization and reserve, while C-address trust is a no-op.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current SAC and asset anatomy docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0046-06, CAP-0073 and current host SAC source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-47 read-only SAC/CLI probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The core G-versus-C balance model was right, but the golden treated all G-address balances as trustlines and underqualified CAP-73 trust authorization. Native XLM is held in AccountEntry, while issued assets use TrustLineEntry.",
+      "evidence": [
+        "Solo scratchpad 575 GT-47 primary 3327 and independent blind 3334."
+      ],
+      "rootCause": [
+        "Eval-side simplification omitted the native-XLM AccountEntry exception and CAP-73 trust prerequisites."
+      ]
+    },
+    "origin": "raven-next q-soroban-sac-balance-storage"
+  }
+}

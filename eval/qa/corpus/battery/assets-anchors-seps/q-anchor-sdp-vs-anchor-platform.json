@@ -1,0 +1,56 @@
+{
+  "id": "q-anchor-sdp-vs-anchor-platform",
+  "question": "What's the difference between the Stellar Disbursement Platform, the Anchor Platform, and the Wallet SDK?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "All three are **SDF-maintained**, each for a different role [1][2][3]:\n\n- **Anchor Platform** — the **anchor operator's** backend (Java) that implements the anchor SEP endpoints (**SEP-1/6/10/12/24/31/38**). Run it to *be* an anchor [1].\n- **Stellar Disbursement Platform (SDP)** — a tool for a **disbursement organization** to send **bulk payments (up to 10,000 per batch)** to many recipients (payroll, aid, payouts) [2]. It *relies on* anchor SEP rails (SEP-12 KYC, SEP-31 cross-border) rather than replacing them.\n- **Wallet SDK** — a **wallet developer's** (TypeScript) client library wrapping the client-side SEP flows (**SEP-10/12/24/31/38**) [3].\n\nSo: Anchor Platform = anchor backend; SDP = bulk-payout app; Wallet SDK = wallet client library.",
+    "keyFacts": [
+      "Anchor Platform = anchor-operator backend (Java) implementing the anchor SEP endpoints (SEP-6/10/12/24/31/38).",
+      "SDP = disbursement-org tool for sending bulk payments (up to 10,000/batch) to many recipients.",
+      "Wallet SDK = wallet-developer (TypeScript) library wrapping client-side SEP flows (SEP-10/12/24/31/38)."
+    ],
+    "avoid": [
+      "Do NOT claim SDP and the Anchor Platform are the same product, or swap their roles.",
+      "Do NOT misnumber the SEPs each component covers."
+    ],
+    "notes": "Three-way comparison. Dossier §6.4 table. All three SDF-maintained; roles verified.\nAlso good if the answer: All three are SDF-maintained; each targets a different role (anchor / disbursement org / wallet).\nGolden cites: developers.stellar.org pages for the Anchor Platform, SDP, and Wallet SDK."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/anchor-platform",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/stellar-disbursement-platform",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/products-and-tools/wallet-sdk",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-02-anchor-discovery-platform-disbursement accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-anchor-sdp-vs-anchor-platform"
+  }
+}

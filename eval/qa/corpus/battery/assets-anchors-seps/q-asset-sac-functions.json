@@ -1,0 +1,77 @@
+{
+  "id": "q-asset-sac-functions",
+  "question": "What functions does the Stellar Asset Contract expose, and which are restricted to the asset issuer/admin?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "The SAC implements CAP-46-6 and SEP-41. Holder/authorized operations include balance, allowance/approve, direct `transfer` to current `MuxedAddress`, `transfer_from`, burn/burn_from, metadata, and current trustline support. Admin-only operations include mint, clawback, set_admin/admin, and set_authorized/authorized. The classic asset issuer is the **initial** SAC admin, but `set_admin` makes current administration mutable; therefore privileged calls belong to the current administrator, not permanently/only the original issuer. Each operation still enforces its address authorization and classic asset flags/trustline rules.",
+    "keyFacts": [
+      "Lists current token and admin surfaces.",
+      "States issuer is initial admin while current mutable administrator controls privileged methods."
+    ],
+    "avoid": [
+      "Do NOT say any caller can mint/clawback or that only the original issuer can forever administer the SAC."
+    ],
+    "notes": "Dossier §2.2. Function surface verified against the SAC page: SEP-41 unprivileged set + SAC-specific admin set.\nAlso good if the answer: Notes the issuer is automatically granted admin over the asset's SAC.\nGolden cites: The Stellar Asset Contract page on developers.stellar.org or SEP-0041.\nGT-43 mutable-admin sibling correction."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-06.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current SAC public/admin surface and mutable admin",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: SAC docs/host source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: SAC docs/host source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-43 live admin simulation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The function list was mostly correct but issuer-only wording ignored mutable SAC administration.",
+      "evidence": [
+        "Solo scratchpad 575 GT-43 blind 3320."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-020-sac-xdr-introspection-admin-drift.md"
+      ]
+    },
+    "origin": "raven-next q-asset-sac-functions"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "id": "q-sor-require-auth-propagation",
+  "question": "In a cross-contract chain (user → A → B), whose auth does `require_auth()` check in B, and how do I make A authorize a sub-call as itself (authorize_as_current_contract)?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "`require_auth` checks the exact Address passed. In user → A → B, B's `user.require_auth()` is satisfied only by the user's signed invocation tree; requiring user auth at A's entry prevents an inner authorization from being replayed through an unintended wrapper. If B instead calls `a_address.require_auth()` for immediate invoker A, the host automatically authorizes that direct A → B relationship. A must **not** put direct B in `authorize_as_current_contract` entries. Explicit current-contract authorization is for deeper calls, e.g. A → B → C where C requires A: before calling B, A authorizes the exact C invocation and nested sub-invocations. This is invocation-tree authorization, not ambient msg.sender; `__check_auth` is not used for the automatic direct-contract-invoker case.",
+    "keyFacts": [
+      "Explains user auth propagation and wrapper/front-running boundary.",
+      "States direct A→B contract auth is automatic and authorize_as_current_contract describes C/deeper calls."
+    ],
+    "avoid": [
+      "Do NOT include the direct next-contract call in auth_entries, infer msg.sender, or call __check_auth for the automatic direct-invoker case."
+    ],
+    "notes": "Also good if the answer: Mentions custom account `__check_auth` only when B requires auth for an `Address::Contract` account.\nGolden cites: Official Stellar authorization docs. | Official cross-contract authorization starter guide for entry-point auth and sub-call behavior.\nGT-42 independently classified the inherited direct-call instruction as materially wrong."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/auth/contract-authorization",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-sdk",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Direct versus deeper contract authorization",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: auth docs, SDK/host source/tests",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: auth docs, SDK/host source/tests",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-42 primary/blind",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer taught authorize_as_current_contract for the direct A→B relation, while current SDK/host rules authorize the immediate contract invoker automatically; explicit authorization begins at deeper calls.",
+      "evidence": [
+        "Solo scratchpad 575 GT-42 processes 3308/3315."
+      ],
+      "rootCause": [
+        "Eval-side call-depth auth inversion."
+      ]
+    },
+    "origin": "raven-next q-sor-require-auth-propagation"
+  }
+}

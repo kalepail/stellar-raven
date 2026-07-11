@@ -1,0 +1,50 @@
+{
+  "id": "q-asset-deploy-sac-cli",
+  "question": "How do I deploy the Stellar Asset Contract for an existing classic asset so I can use it from Soroban?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- You **deploy the asset's reserved built-in SAC** — you do **not** write a new token contract. Current Stellar CLI command [1]:\n  `stellar contract asset deploy --source-account <ACCT> --network <NET> --asset USDC:GCYE...` (use `--asset native` for XLM, which already exists on testnet/mainnet).\n- The SAC's contract ID is **deterministically derived from the asset** (`CONTRACT_ID_FROM_ASSET`); it represents the *same* classic asset, not a copy. Fetch it without deploying via `stellar contract id asset --asset CODE:ISSUER` [1][2].\n- Anyone can deploy it (no authorization required); after deployment the **asset's issuer is automatically the admin** (controls `mint`/`clawback`/`set_authorized`) [2].\n- Mechanically this is an **`InvokeHostFunction`** with the `CREATE_CONTRACT` host function [2].",
+    "keyFacts": [
+      "You deploy the asset's SAC via the Stellar CLI (e.g. stellar contract asset deploy) or SDK, not by writing a new token contract.",
+      "The SAC contract ID is deterministically derived from the asset (CONTRACT_ID_FROM_ASSET); it represents the same classic asset."
+    ],
+    "avoid": [
+      "Do NOT instruct the user to write/deploy a brand-new ERC-20-style token contract instead of deploying the asset's SAC.",
+      "Do NOT use a defunct command name (e.g. 'soroban token wrap' presented as the current canonical command without noting the current CLI)."
+    ],
+    "notes": "How-to. Dossier §2.3. Verified current CLI command: `stellar contract asset deploy --asset CODE:ISSUER`; id via `stellar contract id asset`. (Legacy `soroban lab token wrap` is superseded by the `stellar` CLI.)\nAlso good if the answer: After deployment the issuer is automatically the admin (controls mint/clawback/set_authorized). | Mechanically it is an InvokeHostFunction with CREATE_CONTRACT host function.\nGolden cites: The SAC page or the 'deploy-stellar-asset-contract' CLI guide on developers.stellar.org."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/cli/deploy-stellar-asset-contract",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-03-classic-assets-clawback-trustlines-paths accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-deploy-sac-cli"
+  }
+}

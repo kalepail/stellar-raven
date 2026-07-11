@@ -1,0 +1,56 @@
+{
+  "id": "q-aas-publish-asset-metadata-toml",
+  "question": "After issuing a Stellar asset, how do I publish SEP-1 metadata in stellar.toml so wallets and explorers show its name, logo, and issuer information?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "For asset metadata, the on-chain pointer is the issuer account's `home_domain`; the metadata itself is off-chain SEP-1 TOML. Set the issuing account's home domain to the domain you control, then host the file at `https://DOMAIN/.well-known/stellar.toml`. SEP-1 requires public accessibility at that path, CORS via `Access-Control-Allow-Origin: *`, recommends `content-type: text/plain`, and limits the file to 100KB.\n\nIn the TOML, include the organization/contact documentation you can support and a `[[CURRENCIES]]` entry matching the exact asset `code` and `issuer`. Relevant fields include `display_decimals`, `name`, `desc`, `image`, `conditions`, `is_asset_anchored`, `anchor_asset_type`, and reserve/collateral fields when applicable. General fields such as `SIGNING_KEY`, `ACCOUNTS`, and anchor endpoints are used when the issuer also offers SEP services.\n\nIf wallets or explorers do not show the asset, debug the chain in order: issuing account `home_domain` points to the expected domain; `/.well-known/stellar.toml` is reachable over HTTPS; CORS/content type are acceptable; TOML parses; `[[CURRENCIES]]` code and issuer match the asset; image/logo URLs are reachable; and the venue has refreshed cache or accepted the asset under its own display policy.",
+    "keyFacts": [
+      "Explains that the issuing account sets `home_domain` and the domain hosts `/.well-known/stellar.toml` under SEP-1.",
+      "Mentions correct HTTPS hosting details for wallet/explorer discovery, including CORS/content-type or public accessibility concerns.",
+      "Names relevant SEP-1 fields such as `SIGNING_KEY`, `DOCUMENTATION`, and `[[CURRENCIES]]` entries with code, issuer, display decimals, name, description, and image/logo metadata."
+    ],
+    "avoid": [
+      "Do NOT claim issuing an asset alone makes it verified or visible in every wallet/explorer.",
+      "Do NOT put the TOML fields on-chain except for the account `home_domain` pointer."
+    ],
+    "notes": "Verified against SEP-1 and official Stellar docs. Wallet/explorer cache timing remains venue-specific.\nAlso good if the answer: Notes that explorers or wallets may cache metadata and may apply their own verification/listing policies. | Explains common disappearance causes: changed home domain, invalid TOML, unreachable file, missing issuer/code match, or bad image URL.\nGolden cites: SEP-1 or the Stellar docs page covering stellar.toml asset metadata."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0001.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/example-application-tutorial/anchor-integration/sep1",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/assets",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-01-asset-lifecycle-safety-metadata accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-aas-publish-asset-metadata-toml"
+  }
+}

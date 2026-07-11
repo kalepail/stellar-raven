@@ -1,0 +1,50 @@
+{
+  "id": "q-protocol-clawback-cap-0035",
+  "question": "Does the Stellar protocol let an asset issuer claw back tokens, and which protocol change added that?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- Yes — Stellar **has** asset clawback (an issuer can claw back a held asset for regulatory compliance), added in **Protocol 17 via CAP-0035** [1].\n- Clawback must be enabled via an account/asset flag (**clawback-enabled trustlines**); it is **opt-in**, not retroactive on arbitrary assets — an issuer cannot unilaterally claw back any asset regardless of trustline flags [1][2].\n- Protocol 17 activated around **2021-06-01** [1].\n- Clawback is a building block for regulated/RWA stablecoins (alongside SEP-8 approval flows) [2].",
+    "keyFacts": [
+      "States asset clawback (issuer can claw back a held asset for regulatory compliance) was added in Protocol 17 via CAP-0035."
+    ],
+    "avoid": [
+      "Do NOT claim Stellar has no clawback capability at all.",
+      "Do NOT attribute clawback to the wrong CAP/protocol (e.g. CAP-0038/P18 or CAP-0046/P20).",
+      "Do NOT claim any issuer can unilaterally claw back any asset regardless of trustline flags."
+    ],
+    "notes": "Clawback = CAP-0035 = Protocol 17, opt-in via flag. Traps: 'no clawback', wrong CAP, or 'unconditional clawback'.\nAlso good if the answer: Notes clawback must be enabled via an account/asset flag (clawback-enabled trustlines); it is opt-in, not retroactive on arbitrary assets. | Notes Protocol 17 activated around 2021-06-01.\nGolden cites: The CAP-0035 file and/or the clawback docs on developers.stellar.org."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0035.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/assets",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-32-cap-sep-current-fees-networks-rpc-ledgers-limits accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-clawback-cap-0035"
+  }
+}

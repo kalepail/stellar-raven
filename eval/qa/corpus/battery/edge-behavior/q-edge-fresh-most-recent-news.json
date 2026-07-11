@@ -1,0 +1,90 @@
+{
+  "id": "q-edge-fresh-most-recent-news",
+  "question": "What's the most recent big news in the Stellar ecosystem this week?",
+  "surface": [
+    "lumenloop.search_content_semantic"
+  ],
+  "golden": {
+    "answer": "Define **this week's window** and an as-of timestamp, retrieve candidate items from dated Stellar/Lumenloop content and an independent recency-aware check, then validate an eligible **publication or event date** for every row and state which date is being used. Exclude undated rows from 'this week' and post-sort chronologically rather than treating semantic rank as newest. Choose 'big' items with a short significance rationale, label the digest non-exhaustive and moment-bounded, and keep specific headlines illustrative rather than permanent grading facts.",
+    "keyFacts": [
+      "Uses an explicit window/asOf, validates and labels the date field, chronologically post-sorts candidates, and excludes undated rows.",
+      "Separates recency from editorial significance and states the digest is non-exhaustive."
+    ],
+    "avoid": [
+      "Do NOT treat the top semantic hit, ingestion/scrape time, or an undated row as the newest publication/event; do not fabricate news or expose retired/non-manifest operation names."
+    ],
+    "notes": "GT-23 2026-07-10: require explicit window/asOf, eligible date-field validation, chronological post-sort, exclusion of undated rows, significance rationale, and non-exhaustive scope. Semantic relevance is not chronology; publication, event, ingestion, and scrape dates are distinct.\nGT-23 CORRECTION 2026-07-10: current exposed-surface wording and chronology checks replace legacy operation names and top-hit=newest assumptions."
+  },
+  "tags": {
+    "category": "edge-behavior",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/undp-and-stellar-development-foundation-extend-partnership-to-scale-proven-digital-payment-solutions",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://innovation.eurasia.undp.org/undp-stellar-digital-payment-solutions/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A bounded Lumenloop query can return non-chronological and undated rows; 'most recent this week' requires an eligible date field, explicit window, and chronological post-sort.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live bounded Lumenloop semantic/list results",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/F: primary SDF/UNDP pages and Horizon activation time",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "A/F: primary SDF/UNDP pages and Horizon activation time",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent searches showing cached date conflation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-time-slice."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The freshness core is right, but the answer leaked retired/non-exposed operation names and did not require chronological date validation after semantic retrieval. Relevance, publication, event, ingestion, and scrape dates are distinct.",
+      "evidence": [
+        "Solo scratchpad 575 GT-23 primary 3264 and blind 3267; ll-006 recurrence. July 6 UNDP/SDF and July 8 P27 are illustrative, not gating."
+      ],
+      "rootCause": [
+        "Prior-art routing metadata leaked into gospel and a generic freshness template treated relevance rank as sufficiently recent."
+      ]
+    },
+    "origin": "raven-next q-edge-fresh-most-recent-news"
+  }
+}

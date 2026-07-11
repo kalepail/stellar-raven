@@ -1,0 +1,152 @@
+{
+  "id": "q-infra-which-indexer",
+  "question": "Which third-party indexers support Stellar, and which should I pick if I need historical cross-account filtering?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "You need an **indexer** rather than RPC alone for historical cross-account filtering: RPC event history is bounded and Horizon does not provide arbitrary cross-account filtered indexes ([Indexers Overview](https://developers.stellar.org/docs/data/indexers)).\n\nEstablished Stellar choices include **SubQuery**, **OBSRVR**, **Goldsky Mirrors/Pipelines**, **OnFinality**, **Mercury**, and **The Graph via Substreams only** (not Stellar Subgraphs or Token API). For deep historical SQL, **Hubble/BigQuery** is another fit.\n\n**Alchemy status requires a dated source note.** As of **2026-07-09**, Alchemy says its indexed Stellar Data API is live on Mainnet and Testnet, with transfer history, account/token balances, and NFT holdings across native, Classic, and Soroban assets; the indexed-API announcement is dated **2026-07-08**. The live Stellar Indexers Overview still says Alchemy was targeted for H1 2026, so that page is stale on this provider; corrective stellar/stellar-docs PR #2573 was still open and unmerged when checked. Treat this as a docs-surface disagreement, not evidence that Alchemy is unavailable.\n\nSelection: use **OBSRVR** for a Stellar-native stream-to-warehouse workflow, **SubQuery** for its multi-chain indexing stack, **Goldsky** if it matches an existing EVM data platform, **Alchemy** if its address-centric indexed APIs cover the needed query, or **Hubble/BigQuery** for SQL-oriented deep history. Verify retention, data model, and current network coverage before committing.",
+    "keyFacts": [
+      "Identifies current Stellar indexer/data-platform choices and explains that RPC alone is not a historical cross-account index.",
+      "States with an as-of date that Alchemy's indexed Stellar Data API is live, while explicitly flagging that the official Stellar Indexers Overview still carries stale planned-launch wording.",
+      "Preserves The Graph's actual boundary: Stellar support is via Substreams, not full Stellar Subgraph or Token API support."
+    ],
+    "avoid": [
+      "Do NOT state that Alchemy's Stellar indexed Data API is still merely targeted for H1 2026 without flagging the stale official-docs surface; Alchemy announced the live APIs on 2026-07-08.",
+      "Do NOT hide the source disagreement: the provider docs say live while developers.stellar.org still carries the expired roadmap sentence as of 2026-07-09.",
+      "Do NOT claim The Graph offers full Subgraph/Token API support for Stellar, or recommend RPC alone for arbitrary historical cross-account filtering."
+    ],
+    "notes": "Re-verified 2026-06-29 against the Indexers Overview: SubQuery, Goldsky (Mirrors), OnFinality, OBSRVR, Mercury support Stellar; The Graph quote confirmed exactly: 'offers Stellar support for Substreams, with no current plans to expand Subgraph or Token API support to Stellar.' Added Space and Time (Q4 2025); Allium (Q1 2026); Alchemy (H1 2026) — freshness-sensitive, retention phrasing matches normalized ~24h default/~7d max. Reward flagging staleness.\nAlso good if the answer: SubQuery is a safe default (multi-chain, dedicated Stellar starter); OBSRVR is the most Stellar-native; Goldsky Mirrors fit teams already on Goldsky for EVM. | Some providers (e.g. Alchemy, Allium) are launching/expanding Stellar support around 2026 (freshness-sensitive).\nGolden cites: developers.stellar.org Indexers Overview page.\nCORRECTION 2026-07-09 (todo 901), independently reverified by GT-50 on 2026-07-11: real-world/provider status and docs discoverability disagree. Alchemy's indexed Stellar Data API is confirmed live by its dated announcement and product docs, but the live Stellar Indexers Overview still says targeted H1 2026; PR #2573 remained open/unmerged. Grade the durable behavior: cite a dated provider-status source, keep Alchemy's scope address-centric, and flag the stale docs surface. Do not accept the expired roadmap wording as uncontested current status."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://www.alchemy.com/blog/alchemy-expands-stellar-data-apis-tier-1-validation",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.alchemy.com/docs/reference/stellar-data-api-overview",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/indexers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-docs/pull/2573",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Alchemy's indexed Stellar Data API is live on Mainnet and Testnet as of 2026-07-09, with transfer-history, account-balance/token-balance, and NFT-holdings APIs",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Alchemy announcement 2026-07-08, https://www.alchemy.com/blog/alchemy-expands-stellar-data-apis-tier-1-validation — three indexed address-centric Data APIs on mainnet and testnet",
+            "observedAt": "2026-07-08",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: Alchemy product documentation fetched 2026-07-09, https://www.alchemy.com/docs/reference/stellar-data-api-overview — indexed native, Classic, and Soroban asset data",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar/stellar-docs PR #2573 patch fetched read-only 2026-07-09 — replaces the roadmap sentence with the live Data API description",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "The live official Stellar Indexers Overview accurately describes Alchemy's current status",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/E: https://developers.stellar.org/docs/data/indexers fetched 2026-07-09 still says Alchemy was 'targeted' for launch in H1 2026",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "E",
+            "ref": "A/E: https://developers.stellar.org/docs/data/indexers fetched 2026-07-09 still says Alchemy was 'targeted' for launch in H1 2026",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: Alchemy's own dated announcement and live API documentation say the indexed Data APIs are available",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar/stellar-docs PR #2573 is open and unmerged as of 2026-07-09, explicitly proposing the stale-surface correction",
+            "observedAt": "2026-07-09",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "The provider's real-world status is confirmed live; the dispute is whether the current official Stellar docs surface reflects that status. Graders must accept and reward an answer that names the conflict."
+      },
+      {
+        "claim": "The provider-versus-docs disagreement and address-centric Alchemy scope remained current on 2026-07-11",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Alchemy provider announcement and Data API documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar/stellar-docs PR #2573 remained open/unmerged at the recheck",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-50 primary and blind capability/status reconciliation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The freshness-sensitive answer froze Alchemy as a provider merely 'targeted H1 2026'. Alchemy's indexed Stellar Data API is now live, while the official Stellar Indexers Overview still carries the expired roadmap sentence. The correction must expose that truth-versus-docs-surface disagreement instead of treating either surface as undisputed current truth.",
+      "evidence": [
+        "Independent re-derivation by Solo process 3158 recorded under scratchpad 569 Lane B (901): exact Alchemy announcement/docs excerpts, live Stellar docs excerpt, and read-only PR #2573 state/patch.",
+        "Sibling sweep 2026-07-09: q-infra-rpc-providers-list names Alchemy as hosted RPC only and remains compatible; routing cases carry no status fact; the vendored corpus repeats the stale roadmap wording and remains read-only.",
+        "Solo scratchpad 575 GT-50 primary process 3349 and blind process 3361 independently rechecked the live provider claim, stale Indexers page, and open PR #2573 on 2026-07-11."
+      ],
+      "rootCause": [
+        "Plain freshness drift plus single-surface authoring: the 2026-06-29 review copied a roadmap date from the official Indexers Overview and pinned it instead of gating on a dated provider-status check.",
+        "The live developers.stellar.org Indexers Overview is stale for Alchemy; corrective stellar/stellar-docs PR #2573 remained open and unmerged when rechecked 2026-07-09.",
+        "solo://proj/49/todo/golden-corpus-health--901"
+      ]
+    },
+    "origin": "raven-next q-infra-which-indexer"
+  }
+}

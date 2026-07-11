@@ -1,0 +1,117 @@
+{
+  "id": "q-ti-bindings-to-nextjs-integration",
+  "question": "I generated TypeScript contract bindings - how do I add them to my Next.js app (pnpm file:./packages), call a method, and sign+submit the resulting AssembledTransaction with Freighter (is its `fee` the inclusion fee or also the resource fee)?",
+  "surface": [
+    "skills.stellar-dev.dapp"
+  ],
+  "golden": {
+    "answer": "Generate TypeScript bindings with the current **`stellar contract bindings typescript`** command, then consume the generated output as a workspace/local, packed, or published npm package. Inspect the generated package itself: current v27 output exports a typed **`Client`** and network metadata, while generated README snippets can lag. Regenerate rather than hand-edit generated files when the contract spec changes.\n\nIn a Next.js App Router app, keep Freighter in a **`\"use client\"`** component. Obtain the public address/permission, verify the expected network passphrase, create the generated client with its contract/network/RPC/signing options, call the typed method, let simulation/assembly provide Soroban data/auth/resources, sign the assembled XDR with Freighter, submit through RPC, and poll. Never put a secret key in the browser.\n\nFor a contract transaction, `Tx.fee` is the maximum total: the inclusion-fee bid plus `sorobanData.resourceFee`. The resource budget includes non-refundable charges and potentially refundable budget; do not call the whole resource fee automatically refundable or the total fee inclusion-only.",
+    "keyFacts": [
+      "Uses the current stellar contract bindings typescript command and generated Client/types rather than stale README names.",
+      "Uses a workspace/installed package and a Next.js client boundary for Freighter, with explicit network validation and no browser secret.",
+      "Preserves build/simulate/assemble/sign/submit/poll ordering.",
+      "Defines Tx.fee as inclusion plus resource fee and distinguishes refundable from non-refundable resource components."
+    ],
+    "avoid": [
+      "Do NOT use retired `soroban contract bindings ts`, assume a generated `Contract` export, or hand-edit generated output.",
+      "Do NOT call Freighter during SSR/server rendering or hard-code a mismatched network/passphrase.",
+      "Do NOT skip simulation/assembly or put a secret in browser code.",
+      "Do NOT describe Tx.fee as inclusion-only or every resource charge as refundable."
+    ],
+    "notes": "Verified docs and GitHub release URLs on 2026-06-29. The exact generated client method names can drift with CLI/bindings output, so keep code-level assertions tied to a freshly generated package/version.\nAlso good if the answer: Mentions current JS SDK/package drift and tells the user to verify generated binding README/types against the installed `@stellar/stellar-sdk` and binding output. | Cites the generated bindings/frontend guide and the Stellar fee/resource-fee documentation.\nGolden cites: Primary Stellar docs for TypeScript bindings/frontend integration. | Primary Stellar docs for Soroban resource fee and inclusion fee semantics. | Freighter docs or repo for browser signing behavior.\nGT-51 CORRECTION 2026-07-11: compile against freshly generated types; generated README prose is not authority over generated source. Exact package/API versions remain dated."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/guestbook/bindings",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/fees-resource-limits-metering",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.freighter.app/extension-freighter-api/connecting",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-cli/releases/tag/v27.0.0",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/js-stellar-sdk/releases/tag/v16.0.1",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current CLI-generated TypeScript bindings export a Client/package flow usable from a Next.js client boundary, while the generated README still contains stale command/export examples.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current bindings/frontend and Freighter docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar-cli v27 template/generated source and JS SDK/Freighter releases",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: generated-package build and Next.js TypeScript compile",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Tx.fee includes the inclusion bid plus sorobanData.resourceFee, whose budget includes refundable and non-refundable components.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Stellar fee/resource documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current SDK transaction/assembly types",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer had the right package/fee core but let stale generated README names stand, omitted the current generated `Client` shape and network/signing boundary, and described resource fees too coarsely.",
+      "evidence": [
+        "Solo scratchpad 575 GT-51 primary process 3353 and blind process 3360 independently agreed on the fee, client-only wallet, generated-type, and current-command corrections; blind matrix sealed before primary read.",
+        "Sibling sweep checked q-sor-bindings-from-wasm-no-address, q-sor-deploy-invoke-from-js-sdk, and q-soroban-fee-structure; they are consistent models."
+      ],
+      "rootCause": [
+        "Eval-side generated-artifact/API drift; the upstream stale generated README is recorded as a research candidate because only the blind lane directly verified the template defect."
+      ]
+    },
+    "origin": "raven-next q-ti-bindings-to-nextjs-integration"
+  }
+}

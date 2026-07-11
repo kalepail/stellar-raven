@@ -1,0 +1,84 @@
+{
+  "id": "q-soroban-cli-bindings",
+  "question": "How do I generate a typed TypeScript or Rust client for a deployed contract or a local Wasm artifact with the Stellar CLI?",
+  "surface": [
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Use the language-specific subcommand. In Stellar CLI 27.0.0, TypeScript is implemented as `stellar contract bindings typescript --output-dir <dir> (--wasm <file> | --wasm-hash <hash> | --contract-id <C…>)`. Rust binding generation is implemented only from local `--wasm` and emits Rust source; for an on-chain Rust target, first fetch/export the exact Wasm and generate from that file. Python, Java, Flutter, Swift, and PHP appear as subcommands but currently exit as not implemented and direct users to external tooling—do not present them as built-in generators. Bindings snapshot the selected embedded spec and must be regenerated after interface changes. `contractimport!` is the separate in-contract Rust typed-client pattern; EVM ABI JSON/ethers is irrelevant.",
+    "keyFacts": [
+      "Gives the exact CLI-27 TypeScript versus Rust input matrix and placeholder-language boundary.",
+      "Explains spec snapshot/regeneration and contractimport! distinction."
+    ],
+    "avoid": [
+      "Do NOT generalize TypeScript's three inputs to Rust/placeholder languages, claim automatic synchronization, or use stellar contract abi/EVM ABI flows."
+    ],
+    "notes": "Command + targets (--wasm / --wasm-hash / --contract-id) and language list verified against the Stellar CLI manual. 2026-06-29 differentiation: this file is the simple CLI bindings how-to (deployed contract OR local Wasm); the no-address→discover-functions/constructor→deploy-with-constructor-args JS-SDK flow is owned by q-sor-bindings-from-wasm-no-address. Fixed q to name the local-Wasm target.\nAlso good if the answer: You can target a deployed contract id or a local .wasm to produce the bindings. | In Rust, the `contractimport!` macro is the in-code equivalent for typed cross-contract clients.\nGolden cites: The developers.stellar.org Stellar CLI bindings documentation.\nGT-44 empirical capability matrix from stellar 27.0.0; version-qualify future changes."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-06-29",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/cli/stellar-cli",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-cli/blob/main/cmd/soroban-cli/src/commands/contract/bindings.rs",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/types/fully-typed-contracts",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Stellar CLI 27 binding generator capability matrix",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: CLI manual/source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: CLI manual/source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: successful TS/Rust and five not-implemented probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer presented placeholder language subcommands and TypeScript input options as universally implemented CLI generators.",
+      "evidence": [
+        "Solo scratchpad 575 GT-44 processes 3316/3324; stellar 27.0.0 empirical run."
+      ],
+      "rootCause": [
+        "CLI capability drift/local golden overgeneralization."
+      ]
+    },
+    "origin": "raven-next q-soroban-cli-bindings"
+  }
+}

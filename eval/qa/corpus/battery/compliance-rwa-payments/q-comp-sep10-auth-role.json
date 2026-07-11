@@ -1,0 +1,110 @@
+{
+  "id": "q-comp-sep10-auth-role",
+  "question": "What is SEP-10 and why does an anchor need it before it will accept a KYC submission or process a deposit?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "- **SEP-10 is Stellar Web Authentication for classic G and muxed M accounts.** The server supplies a sequence-zero challenge transaction; the wallet signs it to prove account control; after verification the service returns a JWT. The challenge is not submitted to the ledger, and no password or private key is shared.\n- **SEP-45 is the corresponding authentication path for C contract accounts** and does not replace SEP-10.\n- Every SEP-12 request uses the applicable SEP-10 or SEP-45 JWT. SEP-24 requires it on protected user-data endpoints, while /info is public. SEP-6 uses authentication only where its /info metadata says authentication_required. Therefore authentication gates KYC, but a deposit is not universally SEP-10-first.",
+    "keyFacts": [
+      "SEP-10 proves control of a G/M account through a signed challenge and returns a JWT; the challenge is not submitted.",
+      "SEP-45 covers C accounts, while SEP-10 remains the G/M path.",
+      "SEP-12 always authenticates through the applicable path; SEP-24 protects user-data endpoints; SEP-6 authentication is conditional."
+    ],
+    "avoid": [
+      "Do NOT describe SEP-10 as KYC or regulated-asset approval.",
+      "Do NOT claim every SEP-6/12/24 flow universally starts with SEP-10 or use SEP-10 for C accounts.",
+      "Do NOT claim a password or private key is shared."
+    ],
+    "notes": "Canonical. Verified vs SEP-0010 ('Stellar Web Authentication', a mutual challenge-response using Stellar txs; server returns a JWT). SEP-12 requires SEP-10 (or SEP-45) on all its endpoints. Trap: SEP-10 vs SEP-12 vs SEP-8 confusion.\nAlso good if the answer: SEP-10 establishes account identity/authentication, which gates compliance steps like KYC and regulated transfers.\nGolden cites: The SEP-10 spec / developers.stellar.org SEP-10 authentication docs.\nCORRECTION 2026-07-10: SEP-10 is G/M authentication, not a universal deposit prerequisite. Require account- and endpoint-scoped wording; SEP-45 covers C accounts and SEP-6 auth is conditional."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0010.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0045.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0006.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/anchor-platform/sep-guide/sep45",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SEP-10 challenge signing proves G/M account control and returns a JWT",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: pinned SEP-0010",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: current Wallet/Anchor SEP-10 docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-10 universally gates every SEP-6/12/24 flow",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: pinned SEP-0006/0012/0024/0045",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current Anchor Platform config independently enables SEP-10 and SEP-45",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "Independent blind review: Solo process 3227",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The case correctly explains SEP-10 but incorrectly makes it the gate before any KYC submission or deposit. SEP-10 covers G/M accounts; SEP-45 covers C accounts. SEP-12 always authenticates through one of them, SEP-24 protects user-data endpoints, and SEP-6 authentication is conditional.",
+      "evidence": [
+        "Solo scratchpad 575 GT-08 primary process 3225 and blind process 3227"
+      ],
+      "rootCause": [
+        "Correct classic-account auth behavior was generalized across account types and optional service capabilities."
+      ]
+    },
+    "origin": "raven-next q-comp-sep10-auth-role"
+  }
+}

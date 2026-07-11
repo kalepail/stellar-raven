@@ -1,0 +1,84 @@
+{
+  "id": "q-soroban-cli-init-build",
+  "question": "What's the Stellar CLI workflow to scaffold a new contract project and build it to Wasm?",
+  "surface": [
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Use the unified `stellar` CLI. Scaffold with `stellar contract init <project-path> [--name <contract-name>]`, producing a Cargo workspace/sample contract without overwriting unless requested. Build from the workspace with `stellar contract build`; current builds select `wasm32v1-none` and release profile and write `target/wasm32v1-none/release/*.wasm`. In CLI 27, optimization defaults to true: `--optimize` is accepted but redundant, and `--optimize=false` disables it (optimization may be skipped with a warning if the CLI lacks the additional-libs feature). Use `--print-commands-only` to inspect the build. Install Rust 1.84+ and `rustup target add wasm32v1-none` when missing. The old `soroban` binary/commands and `wasm32-unknown-unknown` guidance are legacy.",
+    "keyFacts": [
+      "Gives current init/workspace, wasm32v1-none release build, output path, and default optimization behavior.",
+      "Uses unified stellar CLI and exact target-install remedy."
+    ],
+    "avoid": [
+      "Do NOT present legacy soroban commands/old target as current or say optimization requires opt-in."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections. Foundry/Hardhat is the EVM-tooling trap; soroban→stellar rename is the deprecation trap. Verified: build target is wasm32v1-none; binary is `stellar` (formerly soroban-cli).\nAlso good if the answer: `stellar contract build` compiles for the `wasm32v1-none` target in release mode; `--optimize` runs wasm-opt.\nGolden cites: The developers.stellar.org Stellar CLI manual / getting-started.\nGT-44 empirical CLI 27.0.0 correction; optimization is default-on."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-06-29",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/conventions/workspace",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/cli/stellar-cli",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-cli/blob/main/cmd/soroban-cli/src/commands/contract/build.rs",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current init/build target, output, and optimization defaults",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: docs/CLI source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: docs/CLI source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: stellar 27 scaffold/build",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer implied optimization is enabled by adding --optimize, but CLI 27 enables optimization by default.",
+      "evidence": [
+        "Solo scratchpad 575 GT-44 processes 3316/3324; optimized 626-byte probe output."
+      ],
+      "rootCause": [
+        "Eval-side CLI flag drift."
+      ]
+    },
+    "origin": "raven-next q-soroban-cli-init-build"
+  }
+}

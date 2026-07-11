@@ -1,0 +1,88 @@
+{
+  "id": "q-soroban-restore-archived-entry",
+  "question": "My contract's Persistent storage entry got archived. How do I restore it so I can use the contract again?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "For Protocol 23+ the normal path is to simulate the invocation and assemble the returned transaction data. An archived Persistent entry or contract-instance entry can then auto-restore before the host function runs only when its key is in the invocation's read-write footprint and marked in `archivedSorobanEntries`. If simulation returns a restore preamble, or the automatic restoration exceeds limits, submit the indicated `RestoreFootprintOp` restoration transaction and then re-simulate/retry the invocation. Restoration charges rent/fees and the caller should extend TTL afterward. Expired Temporary entries cannot be restored.",
+    "keyFacts": [
+      "Makes simulation plus P23 auto-restore the normal path.",
+      "Requires read-write footprint and archivedSorobanEntries metadata; keeps RestoreFootprintOp as fallback."
+    ],
+    "avoid": [
+      "Do NOT say RestoreFootprintOp is always required or that auto-restore needs no metadata.",
+      "Do NOT claim Temporary data is restorable."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). Freshness: auto-restore is CAP-0066/P23-gated. VERIFIED against state-archival docs (2026-06): archived Persistent/Instance entries are restorable; since Protocol 23 InvokeHostFunction auto-restores entries in the restore footprint (populated by RPC simulation), so RestoreFootprintOp is 'for the most part no longer needed'; Temporary is NOT restorable.\nAlso good if the answer: Since CAP-0066 (Protocol 23), `InvokeHostFunction` can auto-restore archived entries listed in its restore footprint within the same transaction. | After restoring, you should extend the entry's TTL (`extend_ttl()`) to keep it live.\nGolden cites: The developers.stellar.org state-archival / restore guide (and CLI restore reference).\nGT-47 CORRECTION 2026-07-11: use read-write footprint + archivedSorobanEntries for IHF auto-restore; restoration footprint names the manual op path."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0066.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-core/blob/master/src/transactions/InvokeHostFunctionOpFrame.cpp",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "P23 auto-restore requires the archived key in the invocation read-write footprint and archivedSorobanEntries metadata; RestoreFootprintOp is the fallback when automatic restoration cannot fit or is separated.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current state-archival documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0066 and current InvokeHostFunctionOpFrame source/tests",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: CLI 27 restore/simulation help",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited restoration explanation used ambiguous 'restore footprint' language and led with the manual operation even though P23 automatic restore is the normal simulated invocation path.",
+      "evidence": [
+        "Solo scratchpad 575 GT-47 primary 3327 and blind 3334; both required the same metadata precision, with blind distinguishing the two footprints."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-007-state-archival-auto-restore-ambiguity.md",
+        "Eval-side terminology conflated invocation restore metadata with RestoreFootprintOp's restoration footprint."
+      ]
+    },
+    "origin": "raven-next q-soroban-restore-archived-entry"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "id": "q-tool-wallets-comparison",
+  "question": "Which Stellar wallets are out there and which support hardware wallets or WalletConnect?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "Compare by **role** before comparing names.\n\n- An **end-user wallet product** controls or connects signing keys and has product-specific custody, platforms, recovery, network/asset, and signing support. Freighter is an SDF-provided noncustodial product; independent products must be verified with their own current sources.\n- A **wallet-building SDK** is code used to build wallet experiences—for example SDF's TypeScript Wallet SDK for classic-account/anchor flows or community language-specific wallet SDKs such as Soneso's Flutter wallet layer. It is not an installed wallet.\n- **Creit-Tech Stellar Wallets Kit** is a community multi-wallet dapp adapter over configured external wallet modules; it neither custodies keys nor becomes those wallets.\n- **Smart Account Kit/OpenZeppelin account tooling** builds programmable passkey/C-account wallets with separate authorization, fee-submission, and recovery design.\n- **Ledger and Trezor are hardware wallet products**. **WalletConnect is a connectivity protocol/module**, not an end-user wallet application.\n\nFor every current option, verify custody/key control, browser/mobile/hardware environment, transaction and Soroban auth-entry support, network/asset scope, connection requirements, recovery process, maintenance, and the exact module/version. A directory or kit module list is not a certified, exhaustive, or timeless wallet roster.",
+    "keyFacts": [
+      "Separates end-user wallet products, wallet-building SDKs, Stellar Wallets Kit, and smart-account tooling.",
+      "Correctly classifies Ledger/Trezor as hardware wallet products and WalletConnect as a connectivity protocol/module.",
+      "Compares custody, platform, signing/Soroban, network/asset, recovery, configuration, and maintenance per exact product/module.",
+      "Treats wallet/module rosters as current and non-exhaustive rather than certified or frozen."
+    ],
+    "avoid": [
+      "Do NOT classify Ledger or Trezor as mere connectors, or WalletConnect as a wallet app.",
+      "Do NOT conflate Wallet SDK with Stellar Wallets Kit, a wallet product, or smart-account tooling.",
+      "Do NOT infer custody, recovery, platform availability, or every signing capability from directory inclusion or a module export.",
+      "Do NOT present a representative list as exhaustive or call every wallet official/SDF-maintained."
+    ],
+    "notes": "GT-56 TAXONOMY CORRECTION 2026-07-11: compare roles and exact products, not one roster. Ledger/Trezor are hardware wallet products; WalletConnect is a connectivity protocol/module. Separate wallet products, wallet-building SDKs, community Wallets Kit, and smart-account tooling, with product-specific custody/recovery/capability evidence."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/apps/wallet/overview",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/developer-tools/wallets",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/typescript-wallet-sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Soneso/stellar_wallet_flutter_sdk",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/smart-wallets",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Ledger and Trezor are hardware wallet products, while WalletConnect is a connectivity protocol/module; current Wallets Kit exposes corresponding modules with different configuration requirements.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current official wallet tooling documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current Creit-Tech module source and documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A-product: Ledger/Trezor/WalletConnect product documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "An end-user wallet, a wallet-building SDK, Wallets Kit, and smart-account tooling have different custody, signing, submission, and recovery roles.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Wallet SDK, wallet tooling, and smart-wallet guides",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: Freighter, Soneso wallet SDK, Wallets Kit, and Smart Account Kit sources",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited comparison collapsed hardware wallet products and WalletConnect into one non-wallet connector category, blurred wallet products with Wallet SDKs and Wallets Kit, and lacked product-specific custody/recovery provenance.",
+      "evidence": [
+        "Solo scratchpad 575 GT-56 primary process 3394 and sealed blind process 3398 independently rejected the shared Ledger/Trezor/WalletConnect taxonomy and required role- and product-specific comparison.",
+        "Sibling sweep checked q-tool-freighter-wallet, q-asset-wallet-sdk-seps, q-anchor-sdp-vs-anchor-platform, q-tool-wallets-kit, q-ti-connect-wallet-button-code, q-eco-wallets-overview, and q-eco-stellar-wallets-list.",
+        "The live-enumeration/type recurrence is appended to improvements/stellar-light-scout/sls-033-wallet-type-enumeration-availability.md."
+      ],
+      "rootCause": [
+        "improvements/stellar-light-scout/sls-033-wallet-type-enumeration-availability.md",
+        "Eval-side product taxonomy collapse: wallet product, hardware wallet, connectivity protocol, SDK, integration kit, and smart-account framework were treated as one roster."
+      ]
+    },
+    "origin": "raven-next q-tool-wallets-comparison"
+  }
+}

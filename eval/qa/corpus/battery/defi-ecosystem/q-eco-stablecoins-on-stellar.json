@@ -1,0 +1,132 @@
+{
+  "id": "q-eco-stablecoins-on-stellar",
+  "question": "Which stablecoins are issued or live on Stellar?",
+  "surface": [
+    "lumenloop.get_project",
+    "lumenloop.search_content_semantic",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-10**, a dated, non-exhaustive conventional/payment-stablecoin set on Stellar includes:\n- **USDC** and **EURC** — Circle-issued native Stellar assets;\n- **PYUSD** — PayPal-branded, Paxos-issued; live since 2025-09-18;\n- **EURAU** — AllUnity's fully reserved euro stablecoin, live on Stellar since 2026-04-13;\n- **MGUSD** — MoneyGram-branded, Bridge-issued, natively launched on Stellar on 2026-06-02.\n\nSDF materials also document regional/legacy fiat assets such as GYEN, ZUSD, and AUDD, and a March-2026 report tracked 17 stablecoins across 9+ fiat currencies. Treat this as a changing taxonomy, not a complete registry. Classify **YLDS** separately as Figure's regulated yield-bearing face-amount-certificate product rather than silently merging it with ordinary payment stablecoins. Likewise keep fund shares/RWAs such as BENJI, USDY, and unresolved hybrid products in their correct legal/product class. No complete source supports a blanket 'no algorithmic stablecoin' claim.",
+    "keyFacts": [
+      "Names dated, issuer-sourced examples including USDC, EURC, PYUSD, EURAU, and MGUSD.",
+      "Keeps the roster non-exhaustive and separates payment stablecoins from yield-bearing certificates, fund shares, and other RWAs."
+    ],
+    "avoid": [
+      "Do NOT claim PayPal is PYUSD's legal issuer, or present one Paxos legal entity as timeless while dated primary sources differ.",
+      "Do NOT invent a stablecoin/issuer or assert a complete absence/presence category without a defined dated universe.",
+      "Do NOT conflate native issuance, supply, app availability, conventional stablecoins, yield-bearing certificates, and fund/RWA tokens."
+    ],
+    "notes": "VERIFIED issuers against dossier primary sources: Circle USDC + EURC; PayPal PYUSD (launched on Stellar Sep 18 2025); regional anchors like ClickPesa TZS; BENJI as quasi-stable RWA share. Algorithmic stablecoins are absent on Stellar. Freshness:quarterly — new issuers can appear, so flag the list is time-bounded. Stablecoin coverage → lumenloop_search_content_semantic.\nAlso good if the answer: Characterizes the stablecoin set as issuer-led dollars (USDC/EURC/PYUSD), with regional anchors (e.g. ClickPesa's TZS) and BENJI as a quasi-stable RWA.\nGolden cites: A dated source for each named stablecoin.\nGT-20 CORRECTION 2026-07-10 supersedes the inherited 'major set' and algorithmic-absence framing. Grade a dated non-exhaustive taxonomy, issuer roles, and product-class separation; the live Scout stablecoin directory is demonstrably incomplete and mixed-type."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/paypal-pyusd-is-now-available-on-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.paxos.com/pyusd/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.circle.com/eurc",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.circle.com/multi-chain-usdc/stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/eurau-launches-on-the-stellar-network",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.prnewswire.com/news-releases/moneygram-launches-mgusd-a-stablecoin-to-power-its-own-global-network-302787799.html",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/resources/institutional-infrastructure-report",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/figure-announces-launch-of-ylds-on-stellar-network",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A dated non-exhaustive Stellar stablecoin taxonomy includes Circle USDC/EURC, Paxos-issued PYUSD, AllUnity EURAU, and Bridge-issued MGUSD; YLDS is a distinct regulated yield-bearing certificate/product.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Circle EURC and Stellar USDC product pages identify Circle issuance/availability on Stellar",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: SDF PYUSD launch release dated 2025-09-18 explicitly identifies Paxos Trust Company, LLC as issuer",
+            "observedAt": "2025-09-18",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: current Paxos PYUSD page describes the PayPal stablecoin as issued by Paxos Trust Company, N.A.",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: SDF/AllUnity EURAU launch pages and MoneyGram/independent MGUSD launch reporting",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/D: SDF March-2026 Allium report tracks 17 stablecoins across 9+ fiat currencies and separates USDY from stablecoin supply",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A/D: SDF March-2026 Allium report tracks 17 stablecoins across 9+ fiat currencies and separates USDY from stablecoin supply",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — The earlier issuer-role correction remains valid, but the three-token 'major set' is materially stale in 2026 and the algorithmic-absence characterization lacks a defined universe. GT-20 independently confirmed EURAU and MGUSD launches, a broader SDF stablecoin set, and the need to classify YLDS separately.",
+      "evidence": [
+        "Solo scratchpad 569 Batches D and G, 2026-07-09; sibling sweep covered q-eco-pyusd-stellar-freshness, q-eco-2025-defi-launches, and q-asset-usdc-eurc-issuer.",
+        "Solo scratchpad 575 GT-20 primary 3256 and blind 3257; issuer/operator/report checks asOf 2026-07-10."
+      ],
+      "rootCause": [
+        "A dated three-token roster and an unbounded negative were promoted into a current market taxonomy.",
+        "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch D"
+      ]
+    },
+    "origin": "raven-next q-eco-stablecoins-on-stellar"
+  }
+}

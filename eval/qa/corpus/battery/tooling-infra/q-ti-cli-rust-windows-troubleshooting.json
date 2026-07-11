@@ -1,0 +1,113 @@
+{
+  "id": "q-ti-cli-rust-windows-troubleshooting",
+  "question": "My Stellar CLI / Rust build is failing - wasm file 'No such file or directory', missing wasm32v1-none target, 'alias already exists', rustup/link.exe not recognized (Windows/MSVC/WSL), 'Unable to fund account', no `stellar account` subcommand to check balance, 'Invalid URL - Bring Your Own' on mainnet. How do I diagnose and fix these?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Triage the toolchain first. Current Stellar smart-contract setup requires Rust 1.84.0 or higher because the supported target is `wasm32v1-none`; the setup guide says to install that target and reinstall it after Rust toolchain updates (https://developers.stellar.org/docs/build/smart-contracts/getting-started/setup). If the build says the wasm file does not exist, confirm that `stellar contract build` succeeded, that you are in the correct workspace/package, and that your deploy/bindings command points at the actual generated `target/.../*.wasm` path.\n\nOn Windows, `rustup` not recognized means Rust is missing from PATH; `link.exe` not recognized usually means the MSVC linker/build tools are missing or the shell is not a Visual Studio developer shell. Either fix the native MSVC toolchain or use WSL consistently. Do not mix WSL paths with Windows shells unless you know exactly which Rust toolchain is building.\n\nFor CLI identity/config errors, treat aliases as named local configuration. `alias already exists` means you already have that key/network alias; list/reuse/remove it instead of creating another with the same name. For funding, distinguish networks: testnet/futurenet/local can use Friendbot or Lab funding, while mainnet cannot. Stellar Lab documents account creation/funding for testnet/futurenet and custom RPC provider support (https://developers.stellar.org/docs/tools/lab). The CLI docs are the source of current command names; use `stellar --help` and the CLI docs before assuming a deprecated `stellar account` command exists (https://developers.stellar.org/docs/tools/cli). For checking balances without a CLI shortcut, use Horizon/RPC/Lab or token/SAC helper flows such as the CLI payments-and-assets cookbook (https://developers.stellar.org/docs/tools/cli/cookbook/payments-and-assets).",
+    "keyFacts": [
+      "Uses the current Stellar smart-contract Rust target: Rust 1.84+ and `wasm32v1-none`, not only older `wasm32-unknown-unknown` advice.",
+      "Explains `wasm file No such file or directory` as usually a build/output-path problem: run the contract build from the right workspace and point deploy/bindings commands at the actual generated wasm path.",
+      "Handles Windows separately: install Rust/rustup and MSVC Build Tools or use WSL; `rustup`/`link.exe` not recognized is a PATH/toolchain problem before it is a Stellar problem.",
+      "Explains alias/key issues: `alias already exists` means the CLI identity/network alias is already configured; inspect/remove/reuse rather than creating duplicates.",
+      "Explains funding/mainnet: Friendbot/test funding is for testnet/futurenet/local flows; mainnet requires real funds and, in Lab/RPC flows, a valid selected or BYO RPC provider URL.",
+      "Corrects obsolete command assumptions such as expecting a generic `stellar account` balance subcommand when current docs point users to CLI tx/payment/contract helpers, Horizon/RPC, or Lab for balances."
+    ],
+    "avoid": [
+      "Do NOT tell users to install only `wasm32-unknown-unknown` as the current target for Stellar contracts.",
+      "Do NOT suggest using mainnet Friendbot or fake funding.",
+      "Do NOT hide Windows/MSVC prerequisites behind generic npm troubleshooting."
+    ],
+    "notes": "Official docs verify Rust/target and Lab/CLI direction. Several quoted error strings are environment-specific and should be empirically reproduced by Phase 3 on Windows/WSL if exact remediation commands are required.\nAlso good if the answer: Cites official setup, CLI, Lab, and RPC/provider docs; uses dated source for current versions where possible.\nGolden cites: Official Stellar setup docs for Rust/target requirements. | Official Stellar CLI/Lab docs for current command and network/provider behavior.\nGT-51 PRECISION CORRECTION 2026-07-11: prefer prebuilt/Winget, require wasm32v1-none and explicit MSVC prerequisites, and keep environment-specific errors source-qualified."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/cli/install-cli",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/getting-started/setup",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/cli",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/lab",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://rust-lang.github.io/rustup/installation/windows-msvc.html",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://learn.microsoft.com/en-us/windows/dev-environment/rust/setup",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-cli/releases/tag/v27.0.0",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current Windows guidance prefers Winget/prebuilt Stellar CLI; contract builds require Rust 1.84+ and wasm32v1-none, while source builds require MSVC C++ tools/SDK.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current CLI install and smart-contract setup docs plus Rust/Microsoft prerequisites",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar-cli v27.0.0 release assets",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: current CLI help and fresh contract build/target probe (non-Windows host explicitly qualified)",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited diagnostic core was correct but omitted the current prebuilt/Winget-first Windows path, exact MSVC prerequisites, current release/target evidence, and a strong boundary between environment-specific UI errors and protocol commands.",
+      "evidence": [
+        "Solo scratchpad 575 GT-51 primary/blind matrices independently confirmed the current target and source-boundary correction.",
+        "Sibling sweep checked q-tool-cli-install, q-tool-cli-init-build-deploy, and q-sor-build-target-wasm32v1; sk-006 already owns the missing error-keyed upstream coverage."
+      ],
+      "rootCause": [
+        "improvements/skills/sk-006-error-keyed-troubleshooting-gap.md"
+      ]
+    },
+    "origin": "raven-next q-ti-cli-rust-windows-troubleshooting"
+  }
+}

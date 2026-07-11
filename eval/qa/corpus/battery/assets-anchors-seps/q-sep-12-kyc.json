@@ -1,0 +1,113 @@
+{
+  "id": "q-sep-12-kyc",
+  "question": "Which SEP defines how a wallet submits KYC data to an anchor, and which SEP provides the standard field names?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "- **SEP-12 — KYC API** is the API for authenticated customer-data exchange with an anchor. **PUT /customer** idempotently creates or updates customer fields; **GET /customer** returns required fields and customer/KYC status; **DELETE /customer/[account]** removes a customer. Optional binary files may be uploaded separately with **POST /customer/files** and referenced from a later PUT.\n- **SEP-9 — Standard KYC Fields** is the data dictionary of field names such as first_name, email_address, and id_type. It is vocabulary used by SEP-12 and related flows, not an API.\n- Every SEP-12 request uses a bearer JWT from **SEP-10 for G/M accounts** or **SEP-45 for C accounts**. SEP-12 is then used where the chosen SEP-6, SEP-24, or SEP-31 flow needs customer information.",
+    "keyFacts": [
+      "Names SEP-12 as the KYC API: PUT /customer creates or updates customer data, while GET /customer discovers required fields and checks status; optional binary files use POST /customer/files.",
+      "Names SEP-9 as the Standard KYC Fields data dictionary that SEP-12 uses.",
+      "States that SEP-12 requests use SEP-10 authentication for G/M accounts or SEP-45 for C accounts."
+    ],
+    "avoid": [
+      "Do NOT misnumber KYC: SEP-12 is the API and SEP-9 is its field dictionary.",
+      "Do NOT call POST /customer the customer-record upload or say GET /customer uploads fields.",
+      "Do NOT claim SEP-12 excludes SEP-45/C-account authentication."
+    ],
+    "notes": "Dossier §7.1, Q15. SEP-9 vs SEP-12 distinction. Both Active (ecosystem README): SEP-12 'KYC API', SEP-9 'Standard KYC Fields'.\nAlso good if the answer: The anchor verifies the data and returns a status; SEP-12 is used by SEP-6/24/31 flows.\nGolden cites: SEP-0012 (and SEP-0009) on the stellar-protocol repo or developers.stellar.org.\nCORRECTION 2026-07-10 (golden-truth; Solo scratchpad 575, processes 3220/3221/3225): require the PUT-upload / GET-requirements-status distinction. POST applies to the optional /customer/files helper or to callback delivery at a wallet-provided URL, not the main /customer upload. Account auth is SEP-10 for G/M or SEP-45 for C."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0012.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0009.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/anchor-platform/sep-guide/sep45",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Customer data is created or updated with PUT /customer, not POST /customer",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: pinned SEP-0012 at stellar-protocol@fbf05c9d endpoint list and Customer PUT section",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/F: official BasicPay and TypeScript Wallet SDK source use authenticated PUT for customer upload",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "A/F: official BasicPay and TypeScript Wallet SDK source use authenticated PUT for customer upload",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent Parallel and Perplexity conflict sweeps found no credible POST /customer upload flow",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Every SEP-12 endpoint uses account-appropriate SEP-10 or SEP-45 bearer authentication",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: SEP-0012 v1.15.0 prerequisites, account fields, and changelog",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: current Anchor Platform SEP-45 guide distinguishes SEP-10 G/M accounts from SEP-45 C accounts",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The compiled key fact contradicts its own answer and SEP-12 by calling POST /customer the customer-record upload. Current SEP-12 uses PUT /customer for idempotent create/update, GET /customer for requirements/status, and POST only for the optional /customer/files helper. The inherited answer also retained SEP-10-only wording after SEP-45 added contract-account authentication.",
+      "evidence": [
+        "Solo scratchpad 575: GT-05 primary process 3220, blind process 3221, and independent GT-08 process 3225",
+        "stellar-protocol git history shows PUT /customer from SEP-12's initial version; POST /customer/files was added later as a separate helper"
+      ],
+      "rootCause": [
+        "Inherited frontmatter typo conflated the main upload with SEP-10 POST, callback delivery, or POST /customer/files.",
+        "SEP-45 account support was not propagated into older SEP-10-only prose."
+      ]
+    },
+    "origin": "raven-next q-sep-12-kyc"
+  }
+}

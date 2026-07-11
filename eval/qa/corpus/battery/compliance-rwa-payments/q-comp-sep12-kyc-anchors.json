@@ -1,0 +1,94 @@
+{
+  "id": "q-comp-sep12-kyc-anchors",
+  "question": "Which Stellar SEP standardizes how a wallet uploads KYC/customer information to an anchor, and what kind of data does it carry?",
+  "surface": [
+    "stellarDocs.search_anchor_sep_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_sdk_cli_tools_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "- **SEP-12 (KYC API)** standardizes customer-information exchange between clients and anchors. **PUT /customer** idempotently uploads or updates identity and KYC fields; **GET /customer** returns required fields and current status. Optional binary files can use **POST /customer/files**; DELETE removes a customer record.\n- Field names come from SEP-9. Every SEP-12 endpoint uses bearer authentication from **SEP-10 for G/M accounts** or **SEP-45 for C accounts**.\n- Anchors store and evaluate this information off-chain; KYC data is not written to the Stellar ledger.",
+    "keyFacts": [
+      "Names SEP-12 as the KYC/customer-information standard between Stellar clients and anchors.",
+      "Distinguishes PUT /customer for authenticated upload/update from GET /customer for requirements and status; optional binary files use POST /customer/files.",
+      "States that KYC data is handled off-chain and authenticated via SEP-10 for G/M or SEP-45 for C."
+    ],
+    "avoid": [
+      "Do NOT name SEP-8 or SEP-10 as the KYC standard.",
+      "Do NOT say GET /customer uploads customer fields or call POST /customer the main upload.",
+      "Do NOT claim KYC data is written to the Stellar ledger."
+    ],
+    "notes": "Canonical. Verified vs SEP-0012 ('KYC API'): 'a standard way for stellar clients to upload KYC (or other) information to anchors and other services' via GET/PUT /customer (+ DELETE, /customer/files). Requires SEP-10 (or SEP-45) auth on all endpoints. Trap: confusing SEP-12 with SEP-8/SEP-10.\nAlso good if the answer: SEP-12 is used alongside SEP-6/SEP-24 deposit/withdrawal and SEP-10 authentication.\nGolden cites: The SEP-12 spec (stellar-protocol GitHub) or developers.stellar.org KYC/SEP-12 docs.\nCORRECTION 2026-07-10: PUT /customer is upload/update; GET /customer is requirements/status; POST is limited to optional /customer/files or callback delivery. Accept account-appropriate SEP-10 or SEP-45 authentication."
+  },
+  "tags": {
+    "category": "compliance-rwa-payments",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0012.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/anchor-platform/sep-guide/sep31/integration",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/platforms/anchor-platform/sep-guide/sep45",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "PUT uploads/updates and GET queries requirements/status",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: pinned SEP-0012 at fbf05c9d",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/F: official Anchor Platform integration docs and BasicPay source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "A/F: official Anchor Platform integration docs and BasicPay source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "Independent re-derivation: Solo processes 3221 and 3225",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The answer compressed PUT and GET into two upload endpoints, which can reward the wrong method. SEP-12 assigns upload/update to PUT and requirements/status lookup to GET; its current auth prerequisite is SEP-10 for G/M or SEP-45 for C.",
+      "evidence": [
+        "Solo scratchpad 575 GT-05 blind and GT-08 primary matrices"
+      ],
+      "rootCause": [
+        "Semantic compression blurred distinct HTTP endpoint roles."
+      ]
+    },
+    "origin": "raven-next q-comp-sep12-kyc-anchors"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "id": "q-defi-perps-whitespace",
+  "question": "Are there perpetuals or derivatives DEXes on Stellar yet?",
+  "surface": [
+    "scout.getClusters",
+    "scout.searchProjects",
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "Perpetuals on Stellar are **emerging, not empty**. As of **2026-07-10**, Noether's current repo and official demo describe a testnet perp DEX with mainnet planned after audit; Zenex's FAQ also says its current deployment is testnet. Stellars Finance may be cited as a dated directory/SCF entrant, not as independently verified mainnet trading.\n\nNo production/mainnet perp DEX was confirmed in the audited operator docs, official meeting, current repos, Raven directories, and conflict sweeps. That is a source-relative snapshot, not proof that none can exist or launch later. Re-check before answering. Do not mix leveraged spot/lending-loop products into the perp roster without explaining the different primitive.",
+    "keyFacts": [
+      "Names real testnet/pre-release entrants and states the category is emerging rather than whitespace.",
+      "Bounds the no-mainnet conclusion to the audited sources and 2026-07-10 as-of date."
+    ],
+    "avoid": [
+      "Do NOT call a named entrant mainnet-live without current deployment evidence.",
+      "Do NOT state a permanent/global absence or claim nobody is building perps on Stellar.",
+      "Do NOT conflate leveraged spot/lending loops with perpetual futures."
+    ],
+    "notes": "EMERGING category, nuanced honesty (corrected vs Phase-1 'whitespace'). As of 2026-06 several SCF-funded teams ARE building perp/derivatives DEXes — Noether (testnet; demoed 2026-04-16 SDF mtg as 'first perpetual DEX on Stellar', mainnet pending audit), Stellars Finance (SCF perps grant, mainnet targeted), Zenex/Hermes (pre-release/testnet) — but there is NO independently-confirmed mainnet perp DEX yet. Turbolong is one-click leveraged SPOT (Blend recursive lending loops, no funding rates), NOT a perp. Best framing: 'emerging, multiple testnet entrants, no confirmed mainnet perp DEX yet.' Trap: claiming perps are fully live/mature on mainnet OR that the space is pure whitespace (both wrong); inventing a protocol; importing dYdX/GMX/Hyperliquid as Stellar-native. Freshness-soft: re-query the live directory. 2026-06-29 reviewed: re-verified all three entrants on Scout — Noether (perpetual futures, 'currently live on testnet', SCF $86.2K), Stellars Finance (Soroban perpetual futures for synthetic assets, SCF ~$119.3K), Zenex/formerly-Hermes (perp leveraged exchange, status 'Pre-Release', mainnet pending, SCF $150K); Turbolong confirmed as one-click leveraged SPOT on Blend pools, explicitly 'no perpetual futures, no funding rates' (Scout). Note Scout lists Noether/Stellars-Finance directory status as 'Live' but their own descriptions say testnet — kept the file's testnet/pre-mainnet framing (no independently-confirmed mainnet perp trading). Confidence kept medium (mainnet status moves).\nAlso good if the answer: Distinguishes true perp DEXes from leveraged-spot products — e.g. Turbolong is one-click leveraged SPOT via Blend lending loops (no funding rates), NOT a perpetual-futures DEX.\nGolden cites: Cite the source data (Scout directory / SDF developer-meeting demo) for the named emerging entrants and their testnet/pre-mainnet status.\nCorrected 2026-07-10. Grade dated source-universe honesty, not a permanent no-mainnet assertion or one fixed entrant roster."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://github.com/NoetherDEX/noether",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.zenex.trade/faq",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Perps are an emerging testnet category; no mainnet deployment was confirmed in the audited sources asOf 2026-07-10",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: Noether repo/official developer meeting and Zenex FAQ",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Noether repo/official developer meeting and Zenex FAQ",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: Scout/Lumenloop plus broad operator/repo conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: Scout/Lumenloop plus broad operator/repo conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — GT-16 lanes confirmed testnet entrants and found no verified production/mainnet perp DEX in the audited universe, but the inherited absolute negative lacks an as-of date and source boundary and freezes secondary Turbolong details.",
+      "evidence": [
+        "Solo scratchpad 575 GT-16 processes 3244/3245"
+      ],
+      "rootCause": [
+        "eval-side bounded negative was phrased as permanent global absence"
+      ]
+    },
+    "origin": "raven-next q-defi-perps-whitespace"
+  }
+}

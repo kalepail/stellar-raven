@@ -1,0 +1,83 @@
+{
+  "id": "q-soroban-require-auth",
+  "question": "How do I require that a caller authorized an action in a Soroban contract?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Call `address.require_auth()` or `address.require_auth_for_args(args)` for the Address whose authority is required. `require_auth_for_args` binds the authorization entry to the explicit deterministic argument vector you provide; it is not limited to a predefined subset of function arguments. For classic-account credentials the host validates the credential/signature path. For a contract/custom-account address, the host invokes that account contract's `__check_auth`. Soroban address authorization entries use their own nonce and ledger expiration; do not conflate that with the transaction source account's sequence number. A directly invoking contract address is implicitly authorized for its direct call. Tests may mock auth, but production checks must not.",
+    "keyFacts": [
+      "Explains explicit-argument binding and the classic-host versus custom-account __check_auth paths.",
+      "Distinguishes Soroban auth nonce/expiration, source-account sequence, and direct-invoker implicit authorization."
+    ],
+    "avoid": [
+      "Do NOT use msg.sender/tx.origin or reduce auth to the transaction source account.",
+      "Do NOT call require_auth_for_args a fixed subset mechanism or say all addresses use identical signature verification."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections. This file owns the require_auth API how-to lane; the EVM msg.sender comparison/why and 'not an allowlist' nuance belong to q-sor-msg-sender-equivalent. Verified: address.require_auth()/require_auth_for_args; host verifies SorobanCredentials; replay via host-managed nonce + ledger expiration.\nAlso good if the answer: `require_auth_for_args` lets you bind the authorization to a specific subset of arguments. | Replay is prevented via a host-managed nonce + ledger expiration in the auth payload.\nGolden cites: The developers.stellar.org authorization documentation.\nGT-46 CORRECTION 2026-07-11: distinguish explicit args, credential paths, replay counters, and direct-invoker auth."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/example-contracts/auth",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-env/blob/v27.0.0/soroban-env-host/src/auth.rs",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "require_auth_for_args binds arbitrary explicit deterministic arguments; classic credentials are host-verified, custom accounts execute __check_auth, and Soroban address auth nonce/expiration differs from source-account sequence.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Stellar authorization docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: rs-soroban-sdk and rs-soroban-env v27 auth source/tests",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-46 blind auth probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer blurred classic-account host credential verification with custom-account check_auth, described require_auth_for_args as a subset operation, and conflated Soroban address nonce/expiration with source-account sequence.",
+      "evidence": [
+        "Solo scratchpad 575 GT-46 primary 3326 and blind 3329 agreed on the classic/custom distinction; blind supplied exact args, nonce, and direct-invoker precision."
+      ],
+      "rootCause": [
+        "Eval-side auth summary compressed multiple credential paths and replay counters into one signature-check story."
+      ]
+    },
+    "origin": "raven-next q-soroban-require-auth"
+  }
+}

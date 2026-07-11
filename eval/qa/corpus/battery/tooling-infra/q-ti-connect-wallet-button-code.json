@@ -1,0 +1,116 @@
+{
+  "id": "q-ti-connect-wallet-button-code",
+  "question": "Show me the recommended 'Connect Wallet' button in React using Freighter (`@stellar/freighter-api`: requestAccess/getAddress/sign) or Stellar Wallets Kit, with a reusable hook - and how do I customize/strip the Wallets Kit modal UI? (incl. common errors like a missing `getAddress` export across versions)",
+  "surface": [
+    "skills.stellar-dev.dapp"
+  ],
+  "golden": {
+    "answer": "Put the control in a **`\"use client\"`** component/hook and track installed, pending, address, network, and error state. On a user click, call `isConnected()` and inspect its `.isConnected` result only to detect the extension; then call **`requestAccess()`** for the current one-call permission/public-address flow and inspect its returned address/error. `getAddress()` is useful for a silent already-authorized read. Validate `getNetwork()`/`getNetworkDetails()` against the expected passphrase before enabling signing, disable duplicate clicks, surface install/reject/switch-network states, and never auto-prompt on mount or handle a seed.\n\n`setAllowed` remains a valid authorization API but is not the only or best one-call connect example. Compile against the installed package types; a missing export means version skew, not permission to invent an API. For multi-wallet UX, use Stellar Wallets Kit through documented public modules/configuration or build a custom picker over its public API—do not couple to private modal DOM/CSS.",
+    "keyFacts": [
+      "Treats isConnected's structured result as installation detection, not authorization.",
+      "Uses requestAccess for explicit user-click permission/address and getAddress only for silent authorized reads.",
+      "Validates network/passphrase, handles pending/rejection/errors, and keeps secrets out of React.",
+      "Uses public Wallets Kit customization APIs or a custom picker, not DOM hacks."
+    ],
+    "avoid": [
+      "Do NOT write `if (await isConnected())` as though the result were boolean or conflate installed/authorized/unlocked.",
+      "Do NOT present setAllowed as the only current connect flow, prompt on mount, ignore network/rejection, or handle a secret.",
+      "Do NOT invent missing exports or depend on private Wallets Kit modal structure."
+    ],
+    "notes": "Freighter and Wallets Kit releases were verified on 2026-06-29. Exact Wallets Kit modal customization APIs require current project docs/source inspection in Phase 3 because official Stellar docs only list/support the kit at a high level.\nAlso good if the answer: Cites official Freighter/Stellar frontend docs and the Wallets Kit docs/repo/release. | Mentions version skew: missing `getAddress` export means docs/example and package version are mismatched or an older API is installed.\nGolden cites: Official Stellar/Freighter docs for browser signing. | Wallets Kit docs/repo or official developer-tooling listing for multi-wallet support.\nGT-51 CORRECTION 2026-07-11: requestAccess is the current recommended one-call permission/address flow; setAllowed remains valid but should not mask structured results or network/error UX."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://docs.freighter.app/extension-freighter-api/connecting",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.freighter.app/extension-freighter-api/reading-data",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/dapps/frontend-guide",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/freighter/releases/tag/5.43.0",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit/releases/tag/v2.5.0",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current Freighter APIs return structured results: isConnected detects installation, requestAccess requests authorization/address, and network must be checked before signing.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Freighter connection/reading docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: @stellar/freighter-api 6 types and Freighter 5.43 release",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: Next.js/TypeScript compile against current package",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Wallets Kit customization must use public modules/config or a custom picker, not private modal DOM.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: current Wallets Kit documentation/release and official wallet-tool listing",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: current Wallets Kit documentation/release and official wallet-tool listing",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited button flow copied stale structured-result semantics and led with setAllowed, while current Freighter docs distinguish installation from authorization and recommend requestAccess for the one-call permission/address flow.",
+      "evidence": [
+        "Solo scratchpad 575 GT-51 primary/blind matrices independently required the current-API repair; both preserve setAllowed as valid but not the sole recommended flow.",
+        "Sibling sweep checked q-ti-freighter-localhost-not-detected, q-tool-freighter-wallet, and q-tool-wallets-kit."
+      ],
+      "rootCause": [
+        "Eval-side wallet API drift; the possible upstream frontend-guide mismatch is recorded as a research candidate rather than filed from one direct defect lane."
+      ]
+    },
+    "origin": "raven-next q-ti-connect-wallet-button-code"
+  }
+}

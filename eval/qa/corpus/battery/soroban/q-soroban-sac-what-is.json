@@ -1,0 +1,79 @@
+{
+  "id": "q-soroban-sac-what-is",
+  "question": "What is the Stellar Asset Contract (SAC) and how does it relate to a classic Stellar asset?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "A Stellar Asset Contract is the protocol-built contract API for a classic Stellar asset, including native XLM. Every asset has a deterministic reserved contract address. Deploying/enabling the SAC instance exposes SEP-41-style contract calls for that same asset; it does not wrap or bridge it, mint a second representation, or migrate balances. G-address operations continue to reflect AccountEntry/trustline state, while C-address balances use contract data under the SAC's built-in rules.",
+    "keyFacts": [
+      "SAC is the deterministic protocol-built interface for the same classic asset.",
+      "Deployment does not create a wrapped second token or migrate balances."
+    ],
+    "avoid": [
+      "Do NOT call SAC a bridge/wrapper or handwritten ERC-20 equivalent.",
+      "Do NOT claim enabling it reissues the asset."
+    ],
+    "notes": "ERC-20 conflation is the trap; SEP-41/CAP-46-6 is the standard, verified against the SAC docs page.\nAlso good if the answer: A SAC is deployed/enabled per classic asset (e.g., via `stellar contract asset deploy --asset CODE:ISSUER`); it is not custom Rust you write. | Native XLM also has a SAC.\nGolden cites: The developers.stellar.org Stellar Asset Contract documentation.\nGT-47 CORRECTION 2026-07-11: replace wrapper shorthand with same-asset protocol API."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-data-structures/assets/anatomy-of-an-asset",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0046-06.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Each classic asset has a deterministic reserved SAC address; deploying/enabling that instance exposes the same asset to contracts without wrapping, bridging, minting a second representation, or migrating balances.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current SAC/anatomy docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0046-06 and host implementation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: CLI 27 contract asset address/deploy help",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer correctly described SAC mechanics but called it a wrapper. Current official semantics say the classic asset and its SAC are the same asset with a protocol-built contract interface.",
+      "evidence": [
+        "Solo scratchpad 575 GT-47 blind 3334; primary 3327 confirmed deterministic built-in semantics."
+      ],
+      "rootCause": [
+        "Legacy wrapper shorthand obscured same-asset identity."
+      ]
+    },
+    "origin": "raven-next q-soroban-sac-what-is"
+  }
+}

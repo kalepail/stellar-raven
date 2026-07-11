@@ -1,0 +1,80 @@
+{
+  "id": "q-hist-unhcr-stellar-aid-assist",
+  "question": "How has Stellar been used for humanitarian aid disbursements, e.g. with UNHCR in Ukraine?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "UNHCR and UNICC launched Stellar Aid Assist in Ukraine in **December 2022**. It used USDC on Stellar, recipient wallets, and cash redemption such as MoneyGram; later implementations used the Stellar Disbursement Platform. **SDF reported** that by December 2023 the program had disbursed over **$1.1M to more than 1,500 individuals**. Later reports cite roughly $4.6M and about 2,500 Ukraine households or broader mostly-Ukraine/Argentina coverage; keep those later sources, units, countries, and periods separate rather than summing them.",
+    "keyFacts": [
+      "Correctly identifies UNHCR/Ukraine/USDC flow and attributes every amount/unit/window to its dated source."
+    ],
+    "avoid": [
+      "Do NOT call the aid speculative XLM/Ripple, or merge individuals with households, Ukraine with multi-country scope, or first-year with later totals."
+    ],
+    "notes": "GT-27 2026-07-10: preserve the Dec-2022 UNHCR launch and USDC flow; attribute the Dec-2023 >$1.1M/>1,500-individual milestone to SDF and keep later household/country/amount windows distinct.\nGT-27 PRECISION 2026-07-10: source attribution and metric units are load-bearing."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://www.unhcr.org/ua/en/news/unhcr-launches-pilot-cash-based-intervention-using-blockchain-technology-humanitarian-payments",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/one-year-of-stellar-aid-assist",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/stellar-aid-assist-2-year-anniversary",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.unhcr.org/news/stories/life-saving-efficient-and-secure-humanitarian-aid-gives-refugees-choices",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "UNHCR launched the Ukraine USDC/wallet/MoneyGram flow in Dec 2022; SDF reported >$1.1M to >1,500 individuals by Dec 2023, while later $4.6M/~2,500 figures use different household/country windows.",
+        "verdict": "corpus-only",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: UNHCR launch and 2025 program sources",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A-independent: dated SDF one/two-year reports",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-source-relative."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The core program is right, but issuer-reported milestone units and windows can be silently merged with later household/country totals.",
+      "evidence": [
+        "Solo scratchpad 575 GT-27 primary 3270 and blind 3272."
+      ],
+      "rootCause": [
+        "Issuer-reported individuals, households, countries, and amount windows were treated as interchangeable."
+      ]
+    },
+    "origin": "raven-next q-hist-unhcr-stellar-aid-assist"
+  }
+}

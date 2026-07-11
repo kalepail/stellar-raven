@@ -1,0 +1,50 @@
+{
+  "id": "q-defi-benji-franklin-templeton",
+  "question": "What is Franklin Templeton's BENJI token on Stellar and what fund does it represent?",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.get_project",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "**BENJI** is the **share token of Franklin Templeton's Franklin OnChain U.S. Government Money Fund\n(FOBXX)** on Stellar [1]. FOBXX was the **first US-registered mutual fund to use a public blockchain\n(Stellar) as its official system of record** for recording share ownership and processing\ntransactions; it has been **live on Stellar since 2021** [1]. The fund holds **at least ~99.5% of\nassets in US government securities** (cash and repos fully collateralized by US gov securities) [2], and\nBENJI is notable for **intraday yield and peer-to-peer (P2P) transferability of shares** [1]. Franklin\nalso marked the **5-year BENJI milestone (Apr 30, 2026)** and shipped the first Luxembourg UCITS (2024)\nand first Singapore retail tokenized fund (2025) on Stellar [1].\n\nSources: [1] stellar.org BENJI 5-year press release; [2] Franklin Templeton FOBXX product page.",
+    "keyFacts": [
+      "BENJI is the share token of Franklin Templeton's Franklin OnChain U.S. Government Money Fund (FOBXX) on Stellar.",
+      "FOBXX was the first US-registered mutual fund to use a public blockchain (Stellar) as its official system of record; live on Stellar since 2021."
+    ],
+    "avoid": [
+      "Do NOT describe BENJI as an algorithmic stablecoin or as a yieldcoin like USDY — it is a tokenized US government money-market mutual fund share.",
+      "Do NOT misattribute BENJI to WisdomTree or Ondo, or invent a different fund name."
+    ],
+    "notes": "VERIFIED against the dossier's primary sources (stellar.org BENJI 5-year press release + Franklin Templeton FOBXX product page). BENJI = share token of Franklin OnChain U.S. Government Money Fund (FOBXX); first US-registered mutual fund using a public blockchain (Stellar) as official system of record, live since 2021; intraday yield + P2P transferability; ≥99.5% assets in US gov securities. Entity-grounded content → find_content_by_entity. Issuer↔product trap (BENJI vs USDY/CRDT, mutual-fund-share vs stablecoin).\nAlso good if the answer: The fund holds at least ~99.5% of assets in US government securities; BENJI offers intraday yield and peer-to-peer transferability of shares.\nGolden cites: A source on BENJI / FOBXX (Franklin Templeton, Stellar, or Lumenloop record)."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/press/franklin-templeton-stellar-development-foundation-mark-five-years-of-benji-the-first-u-s-registered-tokenized-money-market-fund",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.franklintempleton.com/investments/options/money-market-funds/products/29386/SINGLCLASS/franklin-on-chain-u-s-government-money-fund/FOBXX",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-14-benji-blend-content-funding accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-defi-benji-franklin-templeton"
+  }
+}

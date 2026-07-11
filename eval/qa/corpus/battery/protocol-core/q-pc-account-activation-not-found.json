@@ -1,0 +1,83 @@
+{
+  "id": "q-pc-account-activation-not-found",
+  "question": "Why does a Stellar account not exist until funded, what minimum activates it, and why do payments to a brand-new address fail as not found or not activated?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "A Stellar keypair is only cryptographic identity until a successful **CreateAccount** operation creates its ledger entry. A normal Payment to a nonexistent G-address fails with `PAYMENT_NO_DESTINATION`; Payment is not account creation. For the ordinary **unsponsored** path, an empty account needs two base reserves—**1 XLM as of 2026-07-10** with a 0.5 XLM base reserve. CAP-0033 also permits **sponsored account creation with `startingBalance=0`**, shifting those reserves to the sponsor when the sponsorship sandwich and authorizations are correct. On Testnet, Friendbot can create/fund test accounts; on Mainnet use CreateAccount directly or through a real sponsoring/funding service. Re-read current reserve configuration before quoting the numeric minimum.",
+    "keyFacts": [
+      "Explains that CreateAccount—not key generation or ordinary Payment—creates the ledger account.",
+      "Distinguishes the dated unsponsored minimum from CAP-0033 sponsored zero-balance creation."
+    ],
+    "avoid": [
+      "Do NOT say every generated G-address exists or that Payment creates a nonexistent destination.",
+      "Do NOT claim every new account must itself receive 1 XLM when sponsored creation is available, or freeze the reserve amount without a date."
+    ],
+    "notes": "GT-29 CORRECTION 2026-07-10: 1 XLM is the current unsponsored empty-account minimum, not a universal activation rule. CAP-0033 permits sponsored CreateAccount with startingBalance=0. Payment to a nonexistent destination still fails.\nGT-29 author/reviewer reconciliation; sd-013 records the Docs lifecycle gap."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/create-account",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0033.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/errors/result-codes/operation-specific/payment",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "CreateAccount creates the ledger account; an unsponsored empty account currently needs two reserves, while sponsored creation may use startingBalance=0 and shift reserve responsibility to the sponsor.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: official account/minimum-balance docs and CAP-0033/current CreateAccount source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: official account/minimum-balance docs and CAP-0033/current CreateAccount source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: current ledger baseReserve read and nonexistent-account probe",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The keypair/nonexistent-payment core is correct, but the inherited answer turned the ordinary unsponsored 1 XLM minimum into a universal existence rule and omitted CAP-0033 sponsored zero-balance creation.",
+      "evidence": [
+        "Solo scratchpad 575 GT-29 primary 3276 and blind lock/report 3278; blind reviewer independently exposed the sponsored-path omission."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-013-account-creation-merge-sponsorship-semantics.md"
+      ]
+    },
+    "origin": "raven-next q-pc-account-activation-not-found"
+  }
+}

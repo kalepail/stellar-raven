@@ -1,0 +1,88 @@
+{
+  "id": "q-hist-scp-rewrite-2015",
+  "question": "What was the 2015 Stellar Consensus Protocol rewrite, who authored it, and why did Stellar replace its original consensus?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "In **2015**, Stellar adopted the **Stellar Consensus Protocol**, authored by **David Mazières**, using Federated Byzantine Agreement and node-chosen quorum slices rather than PoW or PoS. SDF announced the paper/code on April 8, and its upgraded SCP network was live by **November 3, 2015**.\n\nWhy it replaced the earlier Ripple-derived design is historically disputed. SDF said the 2014 fork exposed weaknesses in the inherited system and motivated a new safety/liveness model. Ripple's contemporaneous response said Stellar's modified implementation/configuration did not demonstrate a flaw in Ripple consensus. Attribute those causal accounts rather than presenting one as uncontested.",
+    "keyFacts": [
+      "Gets Mazières/FBA/2015 paper-and-rollout history right and explicitly attributes the disputed fork causation."
+    ],
+    "avoid": [
+      "Do NOT call SCP PoW/PoS, misattribute authorship/year, or state SDF's fork explanation as uncontested fact."
+    ],
+    "notes": "GT-27 2026-07-10: primary sources establish April paper/code and November 3 rollout. Treat fork causation as a disclosed SDF-versus-Ripple historical dispute, not settled narrative.\nGT-27 CORRECTION 2026-07-10: replace Wikipedia-dependent causation with attributed primary-source conflict."
+  },
+  "tags": {
+    "category": "history-org-tokenomics",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-10",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/stellar-consensus-protocol-proof-code",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/developers/upgraded-network-is-here",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/safety-liveness-and-fault-tolerance-consensus-choice",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://xrpl.org/blog/2014/why-the-stellar-forking-issue-does-not-affect-ripple",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Mazières announced SCP paper/code in April 2015 and the upgraded network went live November 3; SDF and Ripple dispute what the 2014 fork demonstrated about the inherited consensus.",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: SDF incident/announcement/rollout sources and SCP paper",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: SDF incident/announcement/rollout sources and SCP paper",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D/A-independent: XRPL's contemporaneous rebuttal",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: disputed-causation."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The 2015 SCP authorship/FBA/timeline is confirmed, but the inherited causal narrative treated SDF's account of the 2014 fork as uncontested despite Ripple's contemporaneous rebuttal.",
+      "evidence": [
+        "Solo scratchpad 575 GT-27 primary 3270 and blind 3272."
+      ],
+      "rootCause": [
+        "Secondary chronology collapsed a disputed causal narrative into settled fact.",
+        "improvements/lumenloop/ll-016-historical-dispute-provenance.md"
+      ]
+    },
+    "origin": "raven-next q-hist-scp-rewrite-2015"
+  }
+}

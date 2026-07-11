@@ -1,0 +1,97 @@
+{
+  "id": "q-defi-blend-scf-funding",
+  "question": "Has Blend received any Stellar Community Fund (SCF) funding, and what's its SCF history?",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_project",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "**Yes.** The current official SCF record for **Blend Capital** identifies **Liquidity Award - '24 Q1**, displays **$50.0K**, marks it **Awarded**, and reports project **totalAwarded = $50,000** and **totalPaid = $50,000** as of **2026-07-10**. This is Blend's project-specific award record. If discussing the broader Script3 team lineage, separately label earlier OptionBlox/YieldBlox SCF and Seed Fund awards with their own program, currency, and date; do not add those predecessor records into a fabricated single Blend cumulative USD total.",
+    "keyFacts": [
+      "Reports Blend's official Q1-2024 Liquidity Award as $50K awarded and paid, with source and as-of date.",
+      "Keeps the Blend project award separate from earlier Script3/OptionBlox/YieldBlox team-lineage funding."
+    ],
+    "avoid": [
+      "Do NOT invent another Blend round, amount, currency, or award status.",
+      "Do NOT confuse Blend with blend.com or silently aggregate predecessor/team awards into a single Blend-project total."
+    ],
+    "notes": "GROUNDED: live Scout (2026-06-22, /api/projects/search?q=Blend) confirms Blend (Lending, Live) scfAwarded=true, scfTotalAwardedUSD=50000. The Phase-1 dossier had NO confirmed Blend SCF figure; live data fills it in. Rubric now rewards reporting the real ~$50K and forbids fabricating a different amount. Entity-resolution trap (Blend vs blend.com) preserved. REVIEWED 2026-06-29: re-confirmed live (q=Blend → category Protocol/Contract, type Lending, Live, scfTotalAwardedUSD=50000, blend.capital). SCF $ is drift-sensitive, so set freshness_sensitive:true (quarterly) and rubric gates on the discipline (cite the directory SCF record + allow honest restatement if the live figure moved), not the frozen $50K.\nAlso good if the answer: Identifies Blend as the Soroban lending/money-market protocol (independent blend-capital team) when scoping the SCF lookup.\nGolden cites: The SCF submission/funding record for Blend (Lumenloop/Scout directory).\nSupersedes the 2026-07-03 note: current official SCF data does publish Blend's $50K project total and awarded/paid status. Team lineage remains valid extra context only when separately labeled; it must not erase or inflate the Blend-project record."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/submissions/recRSgNDEycVg2xG8",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/blend",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Blend's official current SCF project record shows a Q1-2024 $50K Liquidity Award as awarded and paid",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current communityfund.stellar.org Blend submission/project payload — Liquidity Award - '24 Q1, $50.0K, Awarded, totalAwarded=50000, totalPaid=50000",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: Lumenloop/Scout records asOf 2026-07-10 link the same Blend submission and $50K project row",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Older Script3/OptionBlox/YieldBlox funding is team lineage, not additional Blend-project award history",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official OptionBlox/YieldBlox SCF #7 project page and Stellar Seed Fund #1 wrap-up",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent GT-14 source-conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-14 primary and blind golden-truth reviews (Solo 3239/3242, 2026-07-10) supersede the July-3 note that no official cumulative Blend-project figure exists. The current official SCF page directly exposes the Q1-2024 Liquidity Award, $50K displayed amount, Awarded status, and project totalAwarded/totalPaid = 50000. Earlier Script3/OptionBlox/YieldBlox awards remain separate lineage records and must not be summed into a fabricated Blend USD total.",
+      "evidence": [
+        "Solo scratchpad 575: GT-14 primary process 3239 and independent blind process 3242",
+        "Official SCF Blend submission recRSgNDEycVg2xG8 and current project payload fetched 2026-07-10"
+      ],
+      "rootCause": [
+        "eval-side provenance drift: the earlier review stopped at an inconclusive JS shell and incorrectly generalized that no official project total existed",
+        "improvements/stellar-light-scout/sls-011 — project/round/count-basis provenance remains relevant even though the official Blend record now resolves this particular amount"
+      ]
+    },
+    "origin": "raven-next q-defi-blend-scf-funding"
+  }
+}

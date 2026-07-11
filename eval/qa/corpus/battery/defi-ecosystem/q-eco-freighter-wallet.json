@@ -1,0 +1,87 @@
+{
+  "id": "q-eco-freighter-wallet",
+  "question": "What is Freighter and who maintains it?",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_document",
+    "lumenloop.get_project",
+    "lumenloop.get_scf_submissions",
+    "lumenloop.list_documents",
+    "lumenloop.search_directory",
+    "lumenloop.search_documents"
+  ],
+  "golden": {
+    "answer": "**Freighter** is an open-source, self-custody Stellar wallet provided and maintained by the Stellar Development Foundation. As of **2026-07-10**, official sources showed browser-extension and iOS/Android surfaces. It signs Stellar transactions, including smart-contract interactions. Treat specific browsers, security integrations, swaps, NFT handling, biometrics, and multi-address support as current feature/platform claims that must be rechecked rather than durable identity facts.",
+    "keyFacts": [
+      "Identifies Freighter as SDF-maintained, open-source, and self-custody; dates current platform/feature claims."
+    ],
+    "avoid": [
+      "Do NOT describe Freighter as custodial, an Ultra Stellar product, or broadly multi-chain.",
+      "Do NOT freeze platform or feature availability without a dated official source."
+    ],
+    "notes": "GROUNDED 2026-06-22: Scout confirms Freighter (User-Facing App, type Wallet, Live, NOT SCF-awarded, freighter.app): 'the Stellar Development Foundation's official non-custodial Stellar wallet: a browser extension (Chrome, Firefox, Brave) and iOS/Android apps. Users self-custody their private keys...' Per-project identity → lumenloop_get_project. SDF authorship + non-custodial + Stellar/Soroban.\nAlso good if the answer: It signs Stellar/Soroban transactions in the browser and supports features like Blockaid scam protection, DEX swaps, and NFT management.\nGolden cites: A source identifying Freighter as the SDF-built Stellar wallet (freighter.app, Stellar docs, or Lumenloop record).\nGT-19 UPDATE 2026-07-10: preserve SDF/self-custody identity; make platform and feature claims explicitly dated."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/freighter",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://freighter.app/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.freighter.app/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/freighter",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Freighter is an SDF-maintained open-source self-custody Stellar wallet with browser and mobile surfaces as of 2026-07-10.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official Stellar/Freighter documentation and stores",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar/freighter repository",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — Freighter's SDF/self-custody identity is durable, but platforms and feature claims are current-state facts despite inherited freshness=false metadata.",
+      "evidence": [
+        "Solo scratchpad 575 GT-19 primary 3254 and blind 3258; wallet sibling sweep."
+      ],
+      "rootCause": [
+        "Volatile platform/features were embedded under freshness=false; Solo todo 935 tracks tag override support."
+      ]
+    },
+    "origin": "raven-next q-eco-freighter-wallet"
+  }
+}

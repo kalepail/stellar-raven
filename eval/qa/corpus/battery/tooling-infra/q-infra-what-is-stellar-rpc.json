@@ -1,0 +1,74 @@
+{
+  "id": "q-infra-what-is-stellar-rpc",
+  "question": "What is Stellar RPC, and is it the same thing as Soroban RPC?",
+  "surface": [
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "**Stellar RPC** is a **JSON-RPC 2.0 server** that surfaces **Soroban smart-contract state** and lets you\n**simulate contract calls (`simulateTransaction`) and submit transactions (`sendTransaction`)**, plus\nread events, ledger entries, and network info. **It is the same product that was previously called\n\"Soroban RPC\" — renamed to \"Stellar RPC\" in November 2024** to reflect that it reaches beyond\nSoroban-only use. So \"Soroban RPC\" and \"Stellar RPC\" are **not two different services**; Soroban RPC no\nlonger exists as a separate live product. It is **distinct from Horizon** (Horizon is the REST/HAL API\nfor classic Stellar data). Both return XDR-encoded values inside JSON, decodable by the SDKs.",
+    "keyFacts": [
+      "Stellar RPC is a JSON-RPC 2.0 server for current/recent Classic and smart-contract data plus simulation and submission.",
+      "Stellar RPC is the November-2024 name for the product previously called Soroban RPC.",
+      "It is distinct from Horizon and from a durable full-history indexer."
+    ],
+    "avoid": [
+      "Do NOT claim Stellar RPC and Soroban RPC are unrelated/currently separate products.",
+      "Do NOT describe Stellar RPC as REST, contracts-only, full-history, or a drop-in replacement for every Horizon endpoint."
+    ],
+    "notes": "The Soroban-RPC→Stellar-RPC rename (Nov 2024) is a documented naming trap agents get wrong.\nAlso good if the answer: It is distinct from Horizon (Horizon is the REST/HAL API for classic Stellar data).\nGolden cites: developers.stellar.org RPC overview or the migrate-from-horizon-to-rpc page.\nGT-50 PRECISION CORRECTION 2026-07-11: retain rename/JSON-RPC identity and require current Classic-plus-contract scope with explicit retention/indexer limits."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/migrate-from-horizon-to-rpc",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Stellar RPC is the renamed Soroban RPC JSON-RPC service and currently covers Classic plus smart-contract transaction/current-state workflows while remaining retention-bounded.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current RPC and Stellar stack documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current stellar-rpc method/source surface",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The rename and JSON-RPC identity were correct, but the answer narrowed current Stellar RPC to Soroban state and omitted its Classic transaction/current-ledger scope and explicit non-indexer limits.",
+      "evidence": [
+        "Solo scratchpad 575 GT-50 primary process 3349 confirmed the identity; blind process 3361 independently supplied the Classic-plus-contract/non-indexer scope precision.",
+        "Sibling sweep checked q-protocol-horizon-vs-rpc, q-infra-horizon-rpc-migration, and q-infra-hubble-vs-rpc-layer."
+      ],
+      "rootCause": [
+        "Eval-side scope lag: post-rename product identity was retained while the broader current method surface was omitted."
+      ]
+    },
+    "origin": "raven-next q-infra-what-is-stellar-rpc"
+  }
+}

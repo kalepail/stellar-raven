@@ -1,0 +1,93 @@
+{
+  "id": "q-infra-horizon-rpc-migration",
+  "question": "I'm migrating an app off Horizon onto Stellar RPC — which of my Horizon endpoints have no direct RPC equivalent?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "Migrating from Horizon to Stellar RPC is not a base-URL swap. Use the official endpoint-by-endpoint table, and expect XDR/shape changes plus custom indexing for curated accounts, payments, effects, trades, relationships, and list resources that lack direct equivalents. Do not gate on a permanent fraction; on 2026-07-11, 15 of 36 table rows explicitly lacked a direct equivalent. RPC serves classic and smart-contract current/recent workloads, not Soroban only. Its transaction/event retention is operator-configurable (current default 120960 ledgers, roughly seven days); data-lake integration extends `getLedgers`, not every RPC method. The migration page's 'near-future' classic-asset event warning is stale: CAP-67 is Final since protocol 23 and current networks are protocol 27.",
+    "keyFacts": [
+      "Requires endpoint-by-endpoint mapping and custom indexing for unmapped curated resources.",
+      "Corrects RPC scope, retention/data-lake limits, and CAP-67 status."
+    ],
+    "avoid": [
+      "Do NOT claim one-to-one/full parity or invent RPC methods.",
+      "Do NOT freeze 24h retention, call RPC Soroban-only, or repeat CAP-67 future tense."
+    ],
+    "notes": "Hard migration case; the trap is over-claiming parity. Verified against the official migration guide's mapping table (no-equivalent set: operations/{id}, accounts list, claimable_balances, liquidity_pools, offers list, payments/effects sub-resources).\nAlso good if the answer: Examples of endpoints that DO map: /transactions→getTransactions, /accounts/{address}→getLedgerEntries, /fee_stats→getFeeStats. | Payments/effects flows can be reconstructed via getEvents + getTransactions rather than a 1:1 endpoint.\nGolden cites: developers.stellar.org migrate-from-horizon-to-rpc guide.\nGT-49 CORRECTION 2026-07-11: grade durable mapping/shape/indexing behavior, not a brittle fraction."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/migrate-from-horizon-to-rpc",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/admin-guide/configuring",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/rpc/admin-guide/data-lake-integration",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0067.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Migration is endpoint-by-endpoint, with many curated Horizon resources lacking direct RPC equivalents; current RPC is not Soroban-only, default history is configurable 120960 ledgers, data-lake extension is getLedgers-specific, and CAP-67 is Final/live.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current migration/RPC admin docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: CAP-0067 and current RPC/OpenRPC source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live protocol 27/getHealth/getEvents probes",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-docs-conflict."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited mapping retained stale Soroban-only scope, static 24-hour retention, a brittle parity fraction, and pre-CAP-67 future tense.",
+      "evidence": [
+        "Solo scratchpad 575 GT-49 primary 3335 and blind 3341; sd-017/sd-023 dedupe plus sd-025 migration-page drift."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-023-rpc-event-retention-config-drift.md",
+        "improvements/stellar-docs/sd-025-horizon-rpc-migration-cap67-drift.md"
+      ]
+    },
+    "origin": "raven-next q-infra-horizon-rpc-migration"
+  }
+}

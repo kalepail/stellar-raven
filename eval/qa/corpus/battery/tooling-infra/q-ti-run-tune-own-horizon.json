@@ -1,0 +1,167 @@
+{
+  "id": "q-ti-run-tune-own-horizon",
+  "question": "How do I run and tune my own Horizon (reingestion with parallel workers, Postgres tuning, asset/pool ingestion whitelist, Captive Core vs standalone), and what changed in v24 that removed non-history data?",
+  "surface": [
+    "stellarDocs.search_asset_token_docs",
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "Run a pinned `stellar-horizon` release against PostgreSQL and initialize/migrate the schema through the documented flow. A low-volume deployment may combine ingestion, API serving, and transaction submission; production can separate those roles, run redundant live ingesters, and scale stateless API/submission instances independently. Captive Core is the normal ingestion path. A read-only API commonly uses `INGEST=false` and `DISABLE_TX_SUB=true`; a submission-only role needs its configured Core URL. Put rate limiting outside Horizon when scaling API replicas.\n\nSet retention explicitly. Current source as of **2026-07-11** defaults `HISTORY_RETENTION_COUNT` to **0**, meaning unlimited; official docs recommend **518400 ledgers** as an approximate one-month window for unfiltered history, but another docs sentence incorrectly calls that the default. Treat 518400 as a dated recommendation, not the executable default, and recalculate for current cadence/storage. Filters reduce retained historical scope but do not increase ingestion throughput or retroactively purge/backfill; run explicit historical ingestion when needed.\n\nKeep `ADMIN_PORT`, `/metrics`, and profiling private. Monitor ingestion lag/timing, HTTP latency/errors, rate limits, PostgreSQL query/pool behavior, disk and process resources, and Core freshness; tune retention/filter scope, database/storage and role isolation before increasing connection pools. For Docker, options precede the image: `docker run --env-file <horizon.env> stellar/stellar-horizon:<pinned-tag>`. Use tested blue/green or hot-backup upgrades, apply migrations once on an ingest-enabled instance, verify health, then roll peers.\n\nThe canonical repository release was **v27.0.0 as of 2026-07-11**; that version is volatile and must be rechecked. The older claim that Horizon v24 'removed non-history data' remains unverifiable from the reviewed primary release evidence and is not a grading requirement.",
+    "keyFacts": [
+      "Explains combined versus role-separated Horizon topology, PostgreSQL/schema lifecycle, Captive Core, and external rate limiting.",
+      "States source default HISTORY_RETENTION_COUNT=0/unlimited and distinguishes it from the dated 518400 one-month recommendation.",
+      "Explains that filtering changes storage scope but not throughput and is not retroactive backfill/purge.",
+      "Keeps ADMIN_PORT/metrics/pprof private and tunes from measured ingestion/database/API bottlenecks.",
+      "Uses valid Docker option ordering and a tested single-migration rolling/blue-green upgrade flow.",
+      "Dates any release/version claim and keeps the unverified v24 statement non-gating."
+    ],
+    "avoid": [
+      "Do NOT call 518400 the executable Horizon default.",
+      "Do NOT expose ADMIN_PORT, metrics, pprof, or the database publicly.",
+      "Do NOT treat Quickstart, a floating image tag, or one hardware/connection recipe as production guidance.",
+      "Do NOT place --env-file after the Docker image or run schema migrations concurrently on every ingester.",
+      "Do NOT claim filtering speeds ingestion or retroactively rewrites history.",
+      "Do NOT assert the Horizon v24 non-history-data claim without dated primary evidence."
+    ],
+    "notes": "The general Horizon ops/filtering guidance is verified from current docs. The specific 'v24 removed non-history data' phrasing was not verified from a primary release note in Phase 3, so it remains a caveated should-level expectation rather than a hard gate.\nAlso good if the answer: For v24/non-history change, requires a dated release note or upstream Horizon source before asserting exact behavior; answer should state the caveat if not verified. | Distinguishes Horizon REST classic-data APIs from Stellar RPC JSON-RPC and recommends RPC/indexers where appropriate. | Mentions Captive Core as the normal embedded ingestion path and standalone Core as a specialized ops choice.\nGolden cites: Primary Horizon admin-guide docs, plus a dated release/source URL for any Horizon v24-specific claim.\nGT-53 independently reverified 2026-07-11. The durable gates are topology, explicit retention, source-default/docs-recommendation distinction, private admin surface, measured tuning, and safe upgrade flow. v27.0.0 is only an as-of example; the v24 claim remains non-gating."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/admin-guide/configuring",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/admin-guide/ingestion",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/admin-guide/ingestion-filtering",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/admin-guide/scaling",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/admin-guide/monitoring",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/admin-guide/upgrading",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-horizon/blob/main/internal/flags.go",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-horizon/releases/tag/v27.0.0",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "F",
+        "ref": "https://docs.docker.com/reference/cli/docker/container/run/",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Horizon roles, retention/filter semantics, admin security and upgrade flow",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Horizon configuring/ingestion/filtering/scaling/monitoring/upgrading docs, accessed 2026-07-11",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: stellar-horizon flags source, release and Helm chart",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: read-only public Horizon root",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "HISTORY_RETENTION_COUNT executable default is 518400",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: one docs passage calls 518400 the Horizon default/recommendation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current flags.go defaults to 0 and defines 0 as unlimited",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Rendered Docker command places --env-file correctly",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Horizon page renders the option after the image",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/F: Docker's command grammar requires run options before IMAGE",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "A/F: Docker's command grammar requires run options before IMAGE",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited Horizon operations core was correct but omitted current role separation, executable defaults and security, while retaining only a v24 caveat. GT-53 independently confirmed the deployment model and found a source-versus-doc retention-default conflict plus invalid Docker option order.",
+      "evidence": [
+        "Solo scratchpad 575, GT-53 primary 3372 and blind 3378. The blind parent plus harvested child 3379 deeply re-derived the primary helper's failed-no-output scope before authoring.",
+        "The primary's unverified Horizon-v24 subclaim remains explicitly non-gating; no unsupported release assertion was promoted."
+      ],
+      "rootCause": [
+        "Eval-side operations incompleteness plus an upstream Horizon admin-guide executable/configuration candidate recorded in the GT-53 audit; sd-017 remains scoped only to lifecycle wording."
+      ],
+      "note": "GT-53 final state imported from process 3153; near-term re-verification retained by design."
+    },
+    "origin": "raven-next q-ti-run-tune-own-horizon"
+  }
+}

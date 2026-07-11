@@ -1,0 +1,89 @@
+{
+  "id": "q-infra-horizon-deprecated",
+  "question": "Is Horizon deprecated now that Stellar RPC exists? Should I rip out my Horizon integration?",
+  "surface": [
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-11**, official Stellar sources disagree on the lifecycle word: the APIs Overview says Horizon is considered deprecated, while the newer Stellar Stack policy wording says Horizon is nearing end of life and will only eventually be deprecated. Do not pin either polarity as uncontested. Durable facts are clearer: significant new feature development is curtailed, compatibility releases and live v27 endpoints continue, no shutdown date is published, and Stellar RPC is not a drop-in replacement for every Horizon resource. Migrate endpoint-by-endpoint and retain Horizon, indexers, Portfolio APIs, or Hubble where the workload still requires them.",
+    "keyFacts": [
+      "Discloses the official lifecycle-label conflict.",
+      "States live compatibility maintenance, no published shutdown date, and incomplete RPC parity."
+    ],
+    "avoid": [
+      "Do NOT categorically say Horizon is either fully not-deprecated or already replaced/shut down.",
+      "Do NOT invent an EOL date or full RPC parity."
+    ],
+    "notes": "Directly probes the 'Horizon is deprecated' misconception flagged in must_avoid for this category. Verified: the migration guide does not declare Horizon deprecated; it documents that many Horizon endpoints have no direct RPC equivalent.\nAlso good if the answer: Because ~half of Horizon endpoints have no direct RPC equivalent, you should keep Horizon (or add an indexer) for those rather than ripping it out wholesale.\nGolden cites: developers.stellar.org Horizon page and/or migrate-from-horizon-to-rpc guide.\nGT-49 DISPUTE ENCODING 2026-07-11: grade either lifecycle word leniently only when the answer discloses the official conflict and durable facts."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "disputed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-09-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/stellar-stack",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-docs/commit/b3b508dc2bbac10e735dff88ee0ffcc009aa664c",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-horizon/releases/tag/v27.0.0",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "As of 2026-07-11 official sources conflict on the word deprecated, while agreeing that feature development is curtailed, compatibility releases/endpoints remain live, no sunset date is published, and RPC lacks full parity.",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: APIs Overview versus Stellar Stack official pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: explicit stellar-docs policy-correction commit and Horizon v27 release",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: live Pubnet Horizon 27 endpoint",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — Official Stellar pages conflict on Horizon's lifecycle label: one calls it deprecated while a newer policy correction says nearing EOL and only eventually deprecated. A binary golden would codify one side of a live official dispute.",
+      "evidence": [
+        "Solo scratchpad 575 GT-49 primary 3335 and blind 3341 independently preserved the official-source conflict; improvements/stellar-docs/sd-017-horizon-lifecycle-wording-conflict.md."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-017-horizon-lifecycle-wording-conflict.md"
+      ]
+    },
+    "origin": "raven-next q-infra-horizon-deprecated"
+  }
+}

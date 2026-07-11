@@ -1,0 +1,44 @@
+{
+  "id": "q-protocol-validator-node-roles",
+  "question": "What are the different node roles you can run on the Stellar network, and what is the difference between a Basic Validator and a Full Validator?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs"
+  ],
+  "golden": {
+    "answer": "- **Watcher**: reads the network but does **not** vote in consensus [1].\n- **Validator**: votes on / signs ledgers [1]. The key Basic-vs-Full distinction: a **Full Validator additionally publishes a public history archive**; a **Basic Validator does not** [1].\n- The history archive lets other nodes **catch up** on history and supports network **resilience** [1].\n- **Non-consensus roles**: a **Stellar RPC node** (state queries / tx simulation) and a **Galexie node** (bulk ledger data for analytics) [1].\n- Running even a single Basic or Full Validator is a meaningful **decentralization contribution** before attempting Tier 1. There is **no staking and no block rewards** — Basic vs Full is not a stake-size difference [1].",
+    "keyFacts": [
+      "Distinguishes a Watcher (reads the network, does not vote) from a Validator (votes on / signs ledgers).",
+      "States the key difference: a Full Validator additionally publishes a public history archive, whereas a Basic Validator does not."
+    ],
+    "avoid": [
+      "Do NOT claim Basic and Full Validators differ by staking amount or that validators earn block rewards.",
+      "Do NOT claim a Watcher participates in consensus voting."
+    ],
+    "notes": "The Full-vs-Basic distinction is the publish-history-archive bit. Trap is staking/reward framing.\nAlso good if the answer: Mentions non-consensus node roles such as a Stellar RPC node (state queries / tx simulation) and a Galexie node (bulk ledger data for analytics). | Notes the history archive lets other nodes catch up on history / supports network resilience.\nGolden cites: The validators overview on developers.stellar.org/docs/validators."
+  },
+  "tags": {
+    "category": "protocol-core",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/validators",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-34-soroban-launch-archival-core-tier1-validators-history accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-protocol-validator-node-roles"
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "id": "q-defi-reflector-content",
+  "question": "Find all the content about Reflector — which protocols integrate it?",
+  "surface": [
+    "lumenloop.find_content_about_project",
+    "lumenloop.find_content_by_entity",
+    "lumenloop.search_content_semantic"
+  ],
+  "golden": {
+    "answer": "Run a dated **exact-entity content lookup** for Reflector and return the sourced rows by content type; use semantic search only as adjacent discovery and label it accordingly. A live 2026-07-10 corpus read returned Reflector-related articles, audiovisual items, governance proposals, and SCF submissions, so a static project profile is not an 'all content' answer.\n\nFor integration context, Stellar's official oracle page listed **Blend, OrbitCDP, DeFindex, Laina, EquitX, Slender, and SorobanDomains**. Reflector's operator page additionally declared **Etherfuse, Normal, Stratum, and xBidAI**. Keep the official-seven and provider-eleven rosters separate, date them, and do not infer that every listing is a current dependency.\n\nInclude the February 22 YieldBlox incident only with the verified boundary: a manipulated thin USTRY/USDC SDEX market dominated Reflector Pulse's five-minute VWAP in fresh rounds, and the consuming YieldBlox pool accepted the values. No Reflector-contract compromise was established. Do not claim dominance without a reproducible metric.",
+    "keyFacts": [
+      "Returns a dated, sourced exact-entity content set and distinguishes it from semantic adjacent discovery.",
+      "Separates the dated official-seven integration roster from the provider-declared eleven-name roster.",
+      "Describes the YieldBlox incident without claiming a Reflector contract compromise."
+    ],
+    "avoid": [
+      "Do NOT substitute one project profile for the requested content set or present semantic neighbors as exact matches.",
+      "Do NOT fabricate or hard-gate integrations without a dated, source-attributed roster.",
+      "Do NOT claim Reflector itself was hacked or that a five-minute VWAP made thin-market pricing manipulation-proof.",
+      "Do NOT assert an unsupported dominance/de-facto ranking."
+    ],
+    "notes": "All-content-for-one-project → lumenloop_find_content_about_project (this is the content/news lane; the reverse-dependency 'who depends on Reflector' query is q-defi-reflector-related-projects → lumenloop_get_related_projects, so get_related_projects removed from acceptable here to keep lanes distinct). Grounded on Scout: Reflector = decentralized price oracle / data-feed network for Stellar & Soroban via a DAO-run node quorum, powering DeFi protocols such as Blend, Laina, and Slender (dossier also lists Orbit CDP, EquitX, DeFindex). YieldBlox tie-in VERIFIED 2026-06-29 — the Feb 22 2026 (~00:25 UTC) YieldBlox/Blend V2 USTRY oracle-manipulation incident (~$10.2M, ~$7.2M/48M XLM frozen by Tier-1 validators) is multi-sourced (Halborn, QuillAudits, Olympix, Protos, Script3, Reflector). Reflector's thin-liquidity VWAP USTRY feed was the exploited price source; root cause was the consuming pool operator's feed config, NOT Reflector core (Reflector quoted correct prices for the data it observed).\nAlso good if the answer separates exact-entity content from semantic discovery and distinguishes official-listed, provider-declared, and code-evidenced relationships.\nGolden cites: Each surfaced item carries its source.\nGT-17 CORRECTION 2026-07-10: content and rosters are freshness-sensitive. Require sourced exact-entity rows, source-relative roster tiers, and the market/feed/consumer incident boundary; no Reflector-compromise or dominance claim."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/oracles/oracle-providers",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://reflector.network/docs/interface",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/project/reflector",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://x.com/in_reflector/status/2025700358626877576",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://x.com/i/article/2029281732231344128",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Reflector is a Stellar oracle/data-provider system with a current official integration roster",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/E: current Stellar oracle-provider docs list Reflector and integrators",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "E",
+            "ref": "A/E: current Stellar oracle-provider docs list Reflector and integrators",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: Reflector interface/source",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: Scout/Lumenloop current project/content discovery",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Reflector itself was compromised in the YieldBlox incident",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: Reflector incident disclosures",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: adapter/feed mechanics",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent incident reports",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "A static integration profile is equivalent to all current content about Reflector.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live exact-entity Lumenloop lookup returned dated article, AV, governance, and SCF rows; semantic content search also returned adjacent items",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/B: official/provider rosters and sampled integration code distinguish listings from current implementation evidence",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: official/provider rosters and sampled integration code distinguish listings from current implementation evidence",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The answer used an unsupported de-facto superlative and treated one static profile as fulfillment of an all-content request. GT-17 independently confirmed the incident boundary but found that current exact-entity corpus results, semantic discovery, the official seven-name roster, and the provider-declared eleven-name roster must remain distinct.",
+      "evidence": [
+        "Solo scratchpad 575 GT-09 primary/blind incident matrices and GT-17 primary process 3247 / blind process 3248 content matrices."
+      ],
+      "rootCause": [
+        "A static directory/profile record was treated as an all-content answer and a dated roster as timeless/exhaustive.",
+        "Causal-chain shorthand implied a Reflector compromise."
+      ]
+    },
+    "origin": "raven-next q-defi-reflector-content"
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "id": "q-scf-funded-similar-passkey",
+  "question": "I'm building a passkey/smart-wallet SDK for Stellar — has the SCF funded anything similar already?",
+  "surface": [
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions"
+  ],
+  "golden": {
+    "answer": "Yes. Status-bearing official records confirm prior passkey/smart-account work: **SocketFi $88,200 awarded/paid, with only SCF #32 awarded**; **JS-Capacitor Passkey Kit $10,000 awarded/paid, with only SCF #40 awarded**; and **Zig3v2 $2,500 awarded/paid**. Other relevant records include a Beans cards/passkeys submission ($99,740, distinct from the project's lifetime total), **Latch $120K awarded / $36K paid**, and KMP Stellar SDK smart-account work ($14K awarded/paid). Scout's broader SocketFi [31,32,39,43] and JS kit [37,40,41] lists include non-awarded submissions and must not be called awarded rounds. A **Passkey UI Kit** RFP appeared in the dated open Scout set on 2026-07-10; re-check it live. Use overlap as differentiation evidence and validate current repos before recommending an SDK.",
+    "keyFacts": [
+      "Returns official status-bearing passkey/smart-account award examples.",
+      "Correctly limits SocketFi to awarded #32 and JS kit to awarded #40 while dating the RFP signal."
+    ],
+    "avoid": [
+      "Do NOT call every submitted round awarded or infer payment from a bare budget.",
+      "Do NOT freeze the Passkey UI Kit RFP as permanently open or grade hidden research-tool non-use."
+    ],
+    "notes": "GT-37 CORRECTION 2026-07-10: only SocketFi #32 and JS kit #40 are Awarded; other listed rounds are submissions. Require official status/payment basis and date any Passkey UI Kit RFP claim.\nGT-37 independently confirmed by processes 3296/3298."
+  },
+  "tags": {
+    "category": "scf-grants-builders",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/socketfi-smart-wallet-infra-on-stellar-ipr",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/js-capacitor-passkey-kit-nmc",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/zig3v2-j3u",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/beans-app-noa",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/latch-olg",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://communityfund.stellar.org/project/kmp-stellar-sdk-23m",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/rfps",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Official records confirm passkey/smart-account awards with narrower awarded-round membership than Scout reports",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: official SCF project pages",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C: live Lumenloop/Scout discovery and RFP feed",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/D: current project repositories",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "B/D: current project repositories",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-service-conflict."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The named examples are real, but Scout's round lists include non-awarded submissions, bare archive budgets omit payment basis, the RFP state drifted, and the hidden research-route prohibition is not answer-visible.",
+      "evidence": [
+        "Solo scratchpad 575 GT-37 primary 3296 and blind 3298."
+      ],
+      "rootCause": [
+        "Submission membership was conflated with awarded rounds and tool-routing policy leaked into the factual rubric.",
+        "improvements/stellar-light-scout/sls-026-scf-status-aggregate-conflict.md",
+        "improvements/lumenloop/ll-013-scf-submission-award-fields.md"
+      ]
+    },
+    "origin": "raven-next q-scf-funded-similar-passkey"
+  }
+}

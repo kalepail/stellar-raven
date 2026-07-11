@@ -1,0 +1,112 @@
+{
+  "id": "q-tool-freighter-wallet",
+  "question": "What is Freighter and is it the official Stellar wallet?",
+  "surface": [
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "As of **2026-07-11**, **Freighter is an official SDF-provided Stellar wallet product**: open source at `stellar/freighter`, noncustodial, and available through browser and mobile clients. Users control their keys and use Freighter to hold Stellar assets, sign transactions, and connect to Stellar/Soroban applications. SDF does not custody the user's seed merely because it provides the product.\n\nThat does **not** make Freighter the Stellar network's one exclusive 'official wallet' or the only valid wallet. Stellar supports a multi-wallet ecosystem with independent products. Freighter is also not the Stellar Wallets Kit: the kit is a separate community-maintained multi-wallet integration layer. Recheck client/platform availability on product releases rather than treating browser-only or mobile availability as timeless.",
+    "keyFacts": [
+      "Identifies Freighter as an SDF-provided, open-source, noncustodial Stellar wallet product whose users control keys and sign transactions.",
+      "Dates its browser and mobile scope to 2026-07-11.",
+      "Rejects network exclusivity and distinguishes Freighter from Stellar Wallets Kit and other wallets."
+    ],
+    "avoid": [
+      "Do NOT call Freighter custodial or say SDF holds user keys.",
+      "Do NOT call it the network's exclusive official/reference wallet or imply other wallets are invalid.",
+      "Do NOT confuse it with Stellar Wallets Kit or freeze browser/mobile availability without a date."
+    ],
+    "notes": "Freighter = SDF wallet; the trap is confusing it with the (Creit-Tech) Wallets Kit.\nAlso good if the answer: Its source is open (github.com/stellar/freighter).\nGolden cites: developers.stellar.org Freighter docs or the stellar/freighter repo.\nGT-55 CORRECTION 2026-07-11: accept 'official SDF-provided wallet product' only with noncustodial and non-exclusive qualification. Browser/mobile scope is dated; Freighter is not Stellar Wallets Kit."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/freighter",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.freighter.app",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/freighter",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/freighter/releases",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Freighter is an SDF-provided, open-source, noncustodial Stellar wallet whose users control keys and sign app interactions.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current official Freighter developer guide and product site",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current stellar/freighter source and releases",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "As of 2026-07-11 Freighter had browser and mobile clients, but was not the network's exclusive official wallet.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: current Freighter browser/iOS/Android product surface and Stellar multi-wallet documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current repository/release artifacts",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: GT-55 sealed blind reconciliation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-as-of-2026-07-11."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited 'the official Stellar wallet' and 'reference wallet' wording could imply a network-exclusive status. Current primary sources support an SDF-provided open-source noncustodial product across browser and mobile, not exclusivity over independent wallets.",
+      "evidence": [
+        "GT-55 primary 3392 retained the inherited wording; sealed blind 3393 independently required the exclusive/reference qualifier and current mobile scope.",
+        "Current developers.stellar.org calls Freighter provided by SDF; freighter.app and stellar/freighter establish noncustodial browser/mobile and open-source status.",
+        "Sibling sweep kept Freighter distinct from the community-maintained Stellar Wallets Kit and from other independent wallets."
+      ],
+      "rootCause": [
+        "Eval-side product/status collapse: 'an official SDF-provided wallet' became the network-exclusive 'official/reference wallet'."
+      ]
+    },
+    "origin": "raven-next q-tool-freighter-wallet"
+  }
+}

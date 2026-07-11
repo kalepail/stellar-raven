@@ -1,0 +1,116 @@
+{
+  "id": "q-tool-passkeykit-smart-wallet",
+  "question": "What library do I use to build a passkey-based smart wallet on Stellar?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_soroban_contract_docs",
+    "stellarDocs.search_wallet_dapp_docs"
+  ],
+  "golden": {
+    "answer": "For a new project, use **`smart-account-kit`** with the relevant **OpenZeppelin Stellar smart-account contracts**, then pin and inspect the exact SDK, verifier, signer, context-rule, and policy contract versions you deploy. As of **2026-07-11**, npm showed Smart Account Kit **0.4.2**; OpenZeppelin `stellar-contracts` stable release **v0.7.2** was observed on **2026-06-09**. The kit supports WebAuthn/passkey and delegated or external signer flows plus context rules and policy-based authorization, but exact verifier and policy capabilities belong to the selected releases.\n\nTreat **`passkey-kit`** as the legacy predecessor. Its current README directs greenfield users to Smart Account Kit and explicitly labels the code **unaudited demo material** that should not secure real value. Do not infer that Smart Account Kit itself is SDF-maintained or that every application component inherits an OpenZeppelin audit. A separate G-account or relayer may submit and pay, but authorization remains in the C-account's `__check_auth` path and selected signer/verifier/policy contracts.",
+    "keyFacts": [
+      "Routes greenfield work to smart-account-kit plus the relevant OpenZeppelin Stellar account contracts.",
+      "Dates Smart Account Kit 0.4.2 and OpenZeppelin stellar-contracts v0.7.2 to their observed releases.",
+      "Preserves Passkey Kit's legacy, unaudited-demo, no-real-value warning.",
+      "Ties signer/verifier/context/policy behavior and audit claims to exact selected versions and separates relaying from authorization."
+    ],
+    "avoid": [
+      "Do NOT present Passkey Kit as the safe greenfield default or omit its unaudited/no-real-value warning.",
+      "Do NOT say both kits expose identical primitives or APIs across versions.",
+      "Do NOT imply that an OpenZeppelin contract audit covers Smart Account Kit, the relayer, indexer, frontend, policies, and deployment configuration as one inherited guarantee.",
+      "Do NOT confuse transaction submission or fee sponsorship with smart-account authorization, or call Smart Account Kit SDF-maintained."
+    ],
+    "notes": "GT-56 SAFETY/FRESHNESS CORRECTION 2026-07-11: Smart Account Kit 0.4.2 plus exact selected OpenZeppelin account contracts is the greenfield route. Passkey Kit is legacy, explicitly unaudited demo material, and warns against real-value use. Do not assume identical primitives or inherited full-stack audit coverage."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "stellarDocs",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://github.com/kalepail/passkey-kit",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/kalepail/smart-account-kit",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://www.npmjs.com/package/smart-account-kit",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.openzeppelin.com/stellar-contracts/accounts/smart-account",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/OpenZeppelin/stellar-contracts/releases/tag/v0.7.2",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Passkey Kit is the legacy predecessor and its current repository warns that it is unaudited demo material not suitable for securing real value.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: current kalepail/passkey-kit README",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "registry: current passkey-kit package metadata",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Greenfield work should use Smart Account Kit with the selected OpenZeppelin Stellar account contracts, while signer/verifier/context/policy behavior and audit scope must be tied to exact releases.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: kalepail/smart-account-kit 0.4.2 source/package",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "A-product/B: OpenZeppelin account documentation and stellar-contracts v0.7.2 release",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-as-of-2026-07-11."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited migration direction was right, but it omitted Passkey Kit's explicit unaudited/demo/no-real-value warning, used a stale successor version, treated both kits as exposing identical primitives, and allowed OpenZeppelin audit scope to flow across the whole application stack.",
+      "evidence": [
+        "Solo scratchpad 575 GT-56 primary process 3394 and sealed blind process 3398 independently retained the successor direction and required the legacy safety warning, exact versioning, and audit-scope boundary.",
+        "Sibling sweep checked q-tool-passkey-wallet-recovery, q-tool-smart-wallet-repos-discovery, q-infra-secp256r1-passkeys, and q-soroban-add-signer-smart-wallet-howto.",
+        "The stale official smart-wallet guide routing is recorded separately in improvements/stellar-docs/sd-034-smart-wallet-passkey-kit-legacy-routing.md; sd-027 remains limited to LaunchTube submission/indexing migration."
+      ],
+      "rootCause": [
+        "improvements/stellar-docs/sd-034-smart-wallet-passkey-kit-legacy-routing.md",
+        "Eval-side audit-scope and API-lineage overreach: a dependency's audit and broad signer vocabulary were promoted to the entire SDK/application stack."
+      ]
+    },
+    "origin": "raven-next q-tool-passkeykit-smart-wallet"
+  }
+}

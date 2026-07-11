@@ -1,0 +1,164 @@
+{
+  "id": "q-defi-agentic-payment-standards-compare",
+  "question": "How do x402, MPP, AP2, and ACP compare for agent payments, and which are Stellar-specific vs general?",
+  "surface": [
+    "skills.stellar-dev.agentic-payments"
+  ],
+  "golden": {
+    "answer": "All four are **general/external protocols or commerce layers**; none is intrinsically a Stellar standard. Their Stellar relationship differs:\n\n- **x402:** an open HTTP-402 payment protocol created at Coinbase and now governed through the x402 Foundation/Linux Foundation ecosystem. Stellar has an available x402 scheme using signed Soroban authorization entries, a facilitator, and SEP-41 tokens such as USDC.\n- **MPP (Machine Payments Protocol):** a payment-method-agnostic Challenge–Credential–Receipt protocol. General MPP supports charge, session, and subscription intents; it is not streaming-only. The draft Stellar method supports one-time SEP-41 charge transfers and optional session/channel work.\n- **AP2 (Agent Payments Protocol):** an emerging authorization/commerce protocol built around signed mandates and moving through FIDO standardization. x402 is an optional extension/composition path, not a required AP2 settlement route.\n- **ACP (Agentic Commerce Protocol):** a beta checkout/commerce interaction protocol. It delegates payment to compatible handlers/PSPs and is not a Stellar-native settlement rail.\n- **SEP-41:** Stellar's Soroban Token Interface and the token substrate used by Stellar x402/MPP implementations. It does not turn x402 or MPP into SEPs and does not apply to AP2/ACP as whole protocols.\n\nUse dated maturity terms: available integration, beta, Draft/Internet-Draft, proposed, or emerging are not interchangeable.",
+    "keyFacts": [
+      "Classifies x402 and MPP as general protocols with available/draft Stellar integrations that can settle SEP-41 tokens.",
+      "States that MPP includes charge as well as session/channel behavior, rather than equating MPP with streaming.",
+      "Classifies AP2 as an emerging authorization/coordination protocol with optional x402 composition and ACP as a beta commerce/checkout protocol, not settlement rails.",
+      "Keeps SEP-41's Stellar token-interface role distinct from the status and scope of all four external protocols."
+    ],
+    "avoid": [
+      "Do NOT call x402 or MPP Stellar standards merely because Stellar implements methods for them.",
+      "Do NOT equate MPP with sessions/streaming or omit its one-time charge intent.",
+      "Do NOT claim AP2 always routes payment through x402 or that SEP-41/USDC applies across AP2 and ACP as whole protocols.",
+      "Do NOT describe ACP as a Stellar/blockchain settlement mechanism or MPP as a Stripe/Tempo chain."
+    ],
+    "notes": "VERIFIED 2026-06-22: developers.stellar.org/docs/build/agentic-payments documents EXACTLY TWO Stellar-settlement patterns side-by-side — x402 (Coinbase, per-request, Soroban authorization entries, facilitator verify/settle) and MPP (Machine Payments Protocol: direct on-chain settlement via Soroban SAC transfers, supporting one-time charge payments AND high-frequency off-chain payment channels). AP2 (Google Agent Payments Protocol) and ACP are general/coordination standards NOT documented as Stellar-native settlement. The AP2 'routes the actual payment through x402' framing is reasonable coordination-vs-settlement industry framing but NOT a Stellar-docs claim — DEMOTED from must_have to should_have. Freshness:true (fast-moving). 2026-06-29 RE-VERIFIED: both source docs pages (agentic-payments, agentic-payments/x402) resolve 200; AP2=Google Agent Payments Protocol composing with x402 corroborated by independent writeups (The Graph, foojay.io). No fabricated SEP/contract/project names — SEP-41 is real. Confidence stays medium (fast-moving standards space).\nAlso good if the answer: Distinguishes Stellar-settlement standards (x402, MPP) from general/coordination standards (AP2, ACP). | Notes AP2 is a coordination layer that can route the underlying payment through a settlement protocol like x402 (industry framing, not a Stellar-docs claim).\nGolden cites: At least one primary developers.stellar.org agentic-payments docs page (x402 + MPP).\nAdded 2026-07-10 after GT-12 primary + blind agreement. Grade protocol layer, optionality, and maturity precisely. The safe comparison is general protocol versus Stellar implementation/token substrate—not a binary list of 'Stellar standards' and 'coordination standards'."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "skills",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/agentic-payments",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/x402-foundation/x402",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/tempoxyz/mpp-specs",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/google-agentic-commerce/AP2",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://github.com/agentic-commerce-protocol/agentic-commerce-protocol",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0041.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "x402 and MPP are general protocols with Stellar implementations/methods that can use SEP-41",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: x402 Foundation/Linux Foundation record, x402 repo, MPP specs/paymentauth, Stellar x402 and MPP repos/SDK/docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: x402 Foundation/Linux Foundation record, x402 repo, MPP specs/paymentauth, Stellar x402 and MPP repos/SDK/docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: live Stellar Docs/Raven plus independent conflict sweeps asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: live Stellar Docs/Raven plus independent conflict sweeps asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "AP2 and ACP are general commerce/authorization layers; AP2's x402 composition is optional and ACP is not a settlement rail",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: Google/FIDO AP2 primary records and extension repo; canonical ACP repo/site and Stripe documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Google/FIDO AP2 primary records and extension repo; canonical ACP repo/site and Stripe documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: deep Parallel/Perplexity challenge sweep with erroneous future dates rejected against primary records",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "SEP-41 is a Stellar token interface used by Stellar x402/MPP settlement, not a status conversion for the four external protocols",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: pinned SEP-41 primary record, Draft v0.4.1",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B/C: Stellar x402/MPP implementation and developer documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "B/C: Stellar x402/MPP implementation and developer documentation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-12 primary and independent blind reviews (Solo 3237/3241) found that the inherited comparison collapses general protocol identity into a Stellar integration, reduces MPP to streaming/channels, and turns optional AP2+x402 composition into a universal route. The two Stellar docs pages are insufficient primary evidence for four external protocols.",
+      "evidence": [
+        "Solo scratchpad 575: GT-12 primary process 3237 and blind process 3241",
+        "Primary x402, MPP, AP2/FIDO, ACP, SEP-41, and current Stellar integration records rechecked 2026-07-10"
+      ],
+      "rootCause": [
+        "eval-side protocol-layer conflation: external standard identity, network method, settlement substrate, and optional composition were merged",
+        "improvements/stellar-docs/sd-005 — Stellar agentic-payments documentation taxonomy/content gap"
+      ]
+    },
+    "origin": "raven-next q-defi-agentic-payment-standards-compare"
+  }
+}

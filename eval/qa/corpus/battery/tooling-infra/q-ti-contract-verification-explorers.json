@@ -1,0 +1,111 @@
+{
+  "id": "q-ti-contract-verification-explorers",
+  "question": "Why do Stellar Lab and stellar.expert disagree on whether my contract's source is verified (what does release.yml do), what are the main explorers (StellarExpert vs StellarChain) and their 'verified' badges, and how do I make a Soroban/SAC token show up in xBull/ LOBSTR?",
+  "surface": [
+    "scout.searchProjects"
+  ],
+  "golden": {
+    "answer": "Separate the layers. **SEP-46** metadata and **SEP-48** interface/spec availability do not prove source. **SEP-55** (Draft) defines GitHub-attestation-based build verification; current Stellar Lab Contract Explorer is the directly confirmed implementation. A Lab **Build Verified** result means the attested workflow produced Wasm matching the deployed hash/repository evidence. It does not prove the source is safe, audited, correct, independently reproducible, or free of malicious build steps. **SEP-58** is a separate Draft standard for describing a digest-pinned environment/options/source so another builder can compare bytes.\n\n`release.yml` is a GitHub workflow convention used to publish build artifacts/attestations, not protocol state and not proof by itself. Do not assume StellarExpert, StellarChain, or every explorer exposes the same badge without current direct evidence. Wallet visibility is separate: LOBSTR's classic-asset listing policy is not a universal custom-token policy, and SAC/custom SEP-41 visibility remains wallet/indexer-specific. Deployment or a verification badge does not guarantee xBull/LOBSTR listing.",
+    "keyFacts": [
+      "Separates metadata/interface, SEP-55 attestation, and SEP-58 reproducible rebuilding; both build standards are Draft.",
+      "Names Stellar Lab as the directly confirmed current verifier implementation.",
+      "Defines Build Verified as provenance, not safety/audit/correctness.",
+      "Keeps release.yml and wallet/explorer listing policies separate from protocol state."
+    ],
+    "avoid": [
+      "Do NOT equate Build Verified with safe, audited, correct, independently reproducible, or bug-free.",
+      "Do NOT call SEP-55/58 Final or claim every explorer implements them.",
+      "Do NOT say release.yml or deployment guarantees a badge or wallet listing.",
+      "Do NOT conflate classic/SAC metadata policy with arbitrary custom-token indexing."
+    ],
+    "notes": "2026-06-29 verified via stellar/stellar-protocol ecosystem README: SEP-55 = 'Contract Build Info' (Status Draft), SEP-46 = 'Contract Meta' (Active), SEP-48 = 'Contract Interface Specification' (Active); SEP-41 = Soroban Token Interface (Draft). SEP/explorer URLs resolve. Exact current StellarExpert/StellarChain badge rules and xBull/LOBSTR listing policies remain accepted residual caveats (product-specific, not fully specified by primary protocol docs).\nAlso good if the answer: Mentions Stellar Lab's contract explorer can view/download contract specs but may not match third-party source-verified badges. | Cites live explorer URLs and primary SEP/protocol docs.\nGolden cites: SEP-55 for build verification. | Official Stellar docs for contract spec/metadata or Lab contract explorer. | Live explorer URLs for explorer-specific claims.\nGT-51 CORRECTION 2026-07-11: require Draft status, verifier-specific evidence, and provenance-not-safety. Lack of evidence for another explorer is not proof of absence; leave it unclaimed."
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0055.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0058.md",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/lab/smart-contracts/contract-explorer",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/laboratory/blob/master/src/helpers/getBuildVerification.ts",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/cli/cookbook/contract-build-meta",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "SEP-55 and SEP-58 are Draft complementary build-provenance/reproducibility standards; current Stellar Lab implements attestation-based Build Info verification.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: normative SEP-55/SEP-58 and Lab docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: current Lab getBuildVerification implementation",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      },
+      {
+        "claim": "Build Verified proves matching build provenance, not safety/audit/correctness or universal explorer/wallet support.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A: SEP security/trust-model disclaimers",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "B: Lab implementation and current explorer-source sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer blurred metadata, attested builds, and independent reproducibility; overstated unverified explorer badge support; and allowed wallet listing to look like a consequence of deployment or verification.",
+      "evidence": [
+        "Solo scratchpad 575 GT-51 primary/blind matrices independently required a material verification/product-policy repair; blind independently disproved a research synthesis that SEP-58 did not exist.",
+        "Sibling sweep checked q-soroban-contract-build-verification, which already encodes the SEP-55/58 complementary model."
+      ],
+      "rootCause": [
+        "Eval-side authority collapse: interface metadata, attestation, reproducible build, explorer badges, and wallet listing were treated as one verification state."
+      ]
+    },
+    "origin": "raven-next q-ti-contract-verification-explorers"
+  }
+}

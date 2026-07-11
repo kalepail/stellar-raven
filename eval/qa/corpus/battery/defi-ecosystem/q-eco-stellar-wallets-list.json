@@ -1,0 +1,88 @@
+{
+  "id": "q-eco-stellar-wallets-list",
+  "question": "List the Stellar wallets the ecosystem directory tracks — enumerate the wallet projects available for Stellar.",
+  "surface": [
+    "scout.searchProjects"
+  ],
+  "golden": {
+    "answer": "To enumerate Stellar wallet directory records, page through the current directory response, then filter the raw `types` array for exact **Wallet** membership. Return the query/source, generated-at time, total exact rows, lifecycle labels, duplicate/canonical handling, and every matching row—or explicitly label a sample as non-exhaustive.\n\nTwo independent reads on **2026-07-10** produced **60** and then **59** exact Wallet-typed rows while the keyword result stayed 164; the unresolved one-row difference is itself evidence that a frozen count is unsafe. The later snapshot had 54 Live, 1 Development, and 4 Inactive rows, including duplicate-name Stellar Passport records under different slugs. **StellarTerm was typed DEX, not Wallet.** Directory status is source-relative and does not prove current installability, custody, chain support, maintenance, jurisdiction, or app-store availability; verify those separately with operator/app-store evidence.",
+    "keyFacts": [
+      "Uses pagination and exact Wallet-type filtering with source/generatedAt/count provenance.",
+      "Separates directory lifecycle from product availability and handles duplicates/canonical records.",
+      "Does not include StellarTerm as Wallet-typed in the current snapshot."
+    ],
+    "avoid": [
+      "Do NOT call a small hand-picked roster exhaustive or hard-code 59/60 as permanent.",
+      "Do NOT treat keyword/semantic matches, directory Live, or app code as proof of exact Wallet typing or current availability."
+    ],
+    "notes": "GROUNDED 2026-06-25: Lumen Loop / Scout directory wallet records confirm Freighter, Lobstr, Hana, xBull, with StellarTerm + Hot Wallet as adjacent options. Enumerating wallets the directory tracks → scout_projects (free-text directory); lumenloop_search_directory acceptable. Trap = fabricating wallet names or routing to general-web. List is curated, not exhaustive and should be treated as freshness-sensitive.\nAlso good if the answer: Distinguishes wallet types (browser-extension vs mobile vs multi-wallet kits) where the directory supports it.\nGolden cites: The Stellar project directory (scout_projects / lumenloop directory) entries for wallets.\nGT-20 CORRECTION 2026-07-10: grade pagination, exact-type filtering, generatedAt/count/source provenance, duplicate handling, and status-versus-availability separation. Never require a frozen roster/count."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "corpus-grounded",
+    "status": "confirmed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/directory",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/tools/developer-tools/wallets",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A complete current wallet enumeration requires pagination and exact raw-type filtering; 2026-07-10 snapshots returned 59 versus 60 Wallet-typed rows, while StellarTerm was DEX-typed.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: two independent paginated live Scout projections with generatedAt timestamps",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A/B: Stellar wallet docs and operator/repo checks validate sampled products",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Stellar wallet docs and operator/repo checks validate sampled products",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "F",
+            "ref": "F: app-store/HTTP checks show directory Live does not prove availability",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited answer claimed to enumerate Wallet-typed directory entries but returned a stale handful, included StellarTerm despite its current DEX type, and conflated directory status with usable application availability. Independent live runs differed by one exact Wallet row within an hour, demonstrating why the golden must gate behavior rather than a count.",
+      "evidence": [
+        "Solo scratchpad 575 GT-20 primary 3256 and blind 3257",
+        "Sibling sweep: q-eco-wallets-overview/similar, q-eco-freighter-wallet, q-eco-lobstr-wallet, q-eco-hana-wallet-scf, and wallet tooling cases"
+      ],
+      "rootCause": [
+        "A small directory snapshot was presented as exhaustive and semantic/keyword routing was confused with exact type and availability.",
+        "improvements/stellar-light-scout/sls-024-project-lifecycle-operator-conflicts.md"
+      ]
+    },
+    "origin": "raven-next q-eco-stellar-wallets-list"
+  }
+}

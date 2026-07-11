@@ -1,0 +1,78 @@
+{
+  "id": "q-soroban-reentrancy",
+  "question": "Is reentrancy a concern in Soroban smart contracts the way it is on Ethereum?",
+  "surface": [
+    "scout.searchResearch"
+  ],
+  "golden": {
+    "answer": "For ordinary public contract calls, Soroban prevents invoking a contract that is already executing on the call stack, so classic Ethereum-style same-contract reentrancy is structurally blocked and a Solidity-style ReentrancyGuard is not the primary defense. The host has narrow internal/self-allowed modes and a special custom-account `__check_auth` path; those are not general public reentry and should not be used to claim the host has no exceptions internally. Continue to reason about cross-contract ordering, authorization, state assumptions, and rollback semantics.",
+    "keyFacts": [
+      "Ordinary public calls cannot re-enter an executing contract, blocking classic same-contract reentrancy.",
+      "Scopes the statement around internal auth/custom-account modes and preserves composition risk."
+    ],
+    "avoid": [
+      "Do NOT prescribe Solidity nonReentrant as the primary Soroban defense.",
+      "Do NOT claim an exceptionless internal-host rule or zero cross-contract ordering risk."
+    ],
+    "notes": "Soroban host disallows re-entering a contract already on the call stack, so classic single-contract reentrancy is structurally prevented; dominant risks are storage-growth DoS / auth / oracle. Trap: asserting EVM-identical reentrancy and prescribing nonReentrant.\nAlso good if the answer: You should still reason about cross-contract call ordering and state assumptions (checks-effects-interactions-style discipline) for composed flows.\nGolden cites: A Soroban security source (Veridise/Inferara/SDF) on the reentrancy/host model.\nGT-46 CORRECTION 2026-07-11: scope the no-reentry claim to ordinary public calls."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/rs-soroban-env",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/authorization",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Ordinary public contract invocation cannot re-enter an already executing contract; internal host/auth modes exist but do not create general public Ethereum-style reentry.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "B: rs-soroban-env v27 host frame/reentry tests",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "A",
+            "ref": "A: current Stellar authorization docs",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: independent Soroban security guidance",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ],
+        "note": "Legacy verdict: confirmed-with-scope."
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The inherited conclusion was broadly right for ordinary public calls but used an unqualified 'host disallows' absolute that omitted internal auth-only modes and the special custom-account authentication path.",
+      "evidence": [
+        "Solo scratchpad 575 GT-46 blind 3329 narrowed the primary retain decision after reviewing current host internal modes."
+      ],
+      "rootCause": [
+        "Eval-side simplification promoted normal public-call behavior to an exceptionless internal-host claim."
+      ]
+    },
+    "origin": "raven-next q-soroban-reentrancy"
+  }
+}

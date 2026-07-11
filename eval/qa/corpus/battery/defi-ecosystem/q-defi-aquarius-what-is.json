@@ -1,0 +1,92 @@
+{
+  "id": "q-defi-aquarius-what-is",
+  "question": "What is Aquarius (AQUA) on Stellar and what role does the AQUA token play?",
+  "surface": [
+    "lumenloop.find_content_by_entity",
+    "lumenloop.get_project",
+    "lumenloop.search_directory"
+  ],
+  "golden": {
+    "answer": "**Aquarius** is a Stellar/Soroban liquidity layer and AMM; **AQUA** is its transferable utility/reward asset. Locking AQUA creates a claimable balance and mints a non-transferable ICE-family position that melts toward unlock. Current docs distinguish **ICE** for lock/boost accounting, **upvoteICE** for liquidity-market voting, and **governICE** for DAO proposal voting; legacy downvoteICE was deprecated in June 2026. Longer locks can receive a larger multiplier.\n\nICE can boost AQUA rewards for eligible LP/SDEX activity, but simply holding ICE or casting governance votes does not guarantee/base-earn AQUA emissions; governance voting is documented as unrewarded. Aquarius is an AMM/liquidity protocol, not a lender, oracle, or bridge. Treat TVL and market-rank claims separately as live, dated metrics.",
+    "keyFacts": [
+      "Identifies Aquarius as a Stellar/Soroban liquidity layer and AMM with AQUA as the transferable utility/reward asset.",
+      "Distinguishes non-transferable ICE, upvoteICE, and governICE roles and describes reward boosting as conditional on eligible LP/SDEX activity rather than guaranteed yield."
+    ],
+    "avoid": [
+      "Do NOT call ICE-family tokens transferable or collapse ICE, upvoteICE, and governICE into one governance/reward token.",
+      "Do NOT claim that merely holding ICE or voting guarantees AQUA emissions.",
+      "Do NOT describe Aquarius as a lender, oracle, or bridge."
+    ],
+    "notes": "Per-project identity + tokenomics. AQUA/ICE lock mechanic is the precision trap. Grounded on Scout: Aquarius (AQUA) = DeFi liquidity layer + AMM on Soroban, stable/volatile pools with multihop swaps; LPs earn fees + AQUA yield; AQUA locks into ICE for on-chain DAO governance directing rewards. TVL is freshness-sensitive (DeFiLlama ~$48M in mid-2026) — gate on 'cite a current source,' not a frozen number.\nAlso good if the answer: Aquarius is the largest DEX on Stellar by TVL (roughly ~20% of DeFiLlama-listed Stellar TVL). | Integrates with wallets such as LOBSTR, StellarX, Freighter, StellarTerm.\nGolden cites: A source on Aquarius and the AQUA/ICE token mechanics (Lumenloop record, aqua.network, or DeFiLlama).\nCorrected 2026-07-10 by GT-13 independent agreement. Grade current token-role distinctions and conditional boost mechanics; do not require stale downvoteICE or a blanket emissions claim."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://docs.aqua.network/aqua-and-ice/what-are-aqua-tokens",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.aqua.network/aqua-and-ice/ice-tokens-locking-aqua-and-getting-benefits",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://docs.aqua.network/aqua-and-ice/ice-boosts-how-to-maximize-lp-rewards",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "AQUA and the current ICE-family derivatives have distinct transfer, voting, and conditional reward-boost roles",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: current Aquarius AQUA/ICE, locking, and ICE-boost documentation plus repository footprint",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: current Aquarius AQUA/ICE, locking, and ICE-boost documentation plus repository footprint",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: live Scout/Lumenloop and independent Parallel/Perplexity corroboration asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: live Scout/Lumenloop and independent Parallel/Perplexity corroboration asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-13 primary and blind reviews confirmed Aquarius' product identity but found the inherited AQUA/ICE model too coarse and its 'ICE earns AQUA emissions' key fact false as a general statement. Current docs distinguish non-transferable ICE, upvoteICE, and governICE, and make reward boosting conditional on eligible LP/SDEX activity.",
+      "evidence": [
+        "Solo scratchpad 575: GT-13 primary 3238 and blind 3240",
+        "Current Aquarius docs rechecked 2026-07-10; downvoteICE was deprecated in June 2026"
+      ],
+      "rootCause": [
+        "eval-side token-model compression and documentation drift: specialized ICE derivatives and conditional boost mechanics were flattened into one guaranteed-emissions claim"
+      ]
+    },
+    "origin": "raven-next q-defi-aquarius-what-is"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "id": "q-defi-aquarius-tvl-freshness",
+  "question": "What's Aquarius's current TVL and trading volume?",
+  "surface": [
+    "lumenloop.find_similar_scf_submissions",
+    "lumenloop.get_scf_submissions"
+  ],
+  "golden": {
+    "answer": "Aquarius TVL and volume are volatile and **source/method/window-specific**. Quote them only with the source, definition, and timestamp. For example, at **2026-07-10T17:03–17:04Z**, Aquarius' own API reported about **$46.07M TVL**, DeFiLlama about **$44.29M**, and Scout **$43.64M as of 2026-07-09**. For volume, Aquarius and DeFiLlama agreed on the completed 2026-07-09 day (about **$1.207M**) and prior 30 complete days (about **$68.67M**), while Aquarius' rolling-24h and partial-current-day endpoints represented different windows.\n\nDo not average these numbers or silently choose one. Re-query live before answering. A claim that Aquarius is Stellar's largest AMM/DEX also requires a dated concurrent peer comparison and is not a durable key fact.",
+    "keyFacts": [
+      "Reports Aquarius TVL/volume with source, metric definition or time window, timestamp, and a staleness caveat.",
+      "Discloses concurrent source disagreement rather than averaging or presenting one snapshot as permanent truth."
+    ],
+    "avoid": [
+      "Do NOT repeat the stale ~$48M/$104M/$584M examples or any precise figure as fixed current truth.",
+      "Do NOT merge rolling 24-hour, completed-day, partial-day, 30-day, and cumulative volume windows.",
+      "Do NOT hard-gate a largest-AMM rank without a dated concurrent peer table."
+    ],
+    "notes": "FRESHNESS item. Aquarius is grounded as Live (Scout, AMM/DEX, SCF $391K). The dossier figures (DeFiLlama ~$48M TVL, ~$104M 30-day DEX volume, ~$584M cumulative) are dated reads and move — and since chain-wide Stellar TVL has dropped sharply since the May-2026 record, Aquarius's share has likely moved too. Gate on 'cite DeFiLlama/aqua.network dated figure + flag staleness + confirm live', NOT a fixed number. Confidence: low (volatile). 2026-06-29 reviewed: re-verified Aquarius is Live DEX, SCF $391K (Scout); SDF 2026-04-23 dev-meeting recorded Aquarius crossing ~$50M TVL (Aquarius-Stellar read $51.69M near the April peak), so dossier ~$48M is in-range; chain-wide DeFiLlama live read is now ~$137.84M (down from the $242M May record), confirming the number moves. Gating unchanged; kept low (volatile).\nAlso good if the answer: Attributes the figure to a specific dated source (DeFiLlama / aqua.network) rather than asserting a bare number. | Notes Aquarius is roughly the largest single DEX/AMM on Stellar by TVL (~20% of listed Stellar TVL).\nGolden cites: A dated TVL/volume source (DeFiLlama or aqua.network) with a freshness caveat.\nCorrected 2026-07-10. The example block is illustrative only; grade timestamp/window/source discipline and explicit disagreement handling, never one exact number or rank."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "lumenloop",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "disputed",
+    "asOf": "2026-07-10",
+    "reverifyBy": "2026-08-01",
+    "sources": [
+      {
+        "class": "D",
+        "ref": "https://amm-api.aqua.network/api/external/v2/statistics/all-time/",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://api.llama.fi/protocol/aquarius-stellar",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://defillama.com/protocol/aquarius-stellar",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Aquarius TVL and volume require source, definition/window, timestamp, and staleness disclosure",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "A/B: Aquarius statistics APIs and DeFiLlama adapters/API asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "B",
+            "ref": "A/B: Aquarius statistics APIs and DeFiLlama adapters/API asOf 2026-07-10",
+            "observedAt": "2026-07-10",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "C",
+            "ref": "C/D: concurrent Scout snapshot, live Raven probes, and independent conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "C/D: concurrent Scout snapshot, live Raven probes, and independent conflict sweep",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-10",
+      "by": "Golden-truth sweep import — GT-13 primary, blind, and the independent TVL probe found concurrent Aquarius TVL/volume surfaces disagree by method and time window. The inherited examples are stale and the largest-AMM rank is unsupported without a concurrent peer table.",
+      "evidence": [
+        "2026-07-10T17:03-17:04Z: Aquarius TVL $46.069M; DeFiLlama $44.290M; Scout $43.638M asOf previous day",
+        "Aquarius/DeFiLlama completed-day and 30-day volume agreed near $1.207M/$68.673M while rolling-24h and partial-day windows differed",
+        "Solo scratchpad 575 GT-13 primary 3238, blind 3240, and ADHOC-TVL lane 3212"
+      ],
+      "rootCause": [
+        "eval-side freshness/methodology conflation: stale snapshots and an unsupported market rank were embedded as facts",
+        "service surfaces use different TVL adapters, snapshot times, and rolling-versus-completed volume windows"
+      ]
+    },
+    "origin": "raven-next q-defi-aquarius-tvl-freshness"
+  }
+}

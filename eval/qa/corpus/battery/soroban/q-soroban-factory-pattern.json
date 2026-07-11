@@ -1,0 +1,49 @@
+{
+  "id": "q-soroban-factory-pattern",
+  "question": "How do I implement a factory contract that deploys other contracts on Soroban?",
+  "surface": [
+    "stellarDocs.search_soroban_contract_docs"
+  ],
+  "golden": {
+    "answer": "A **factory contract deploys child contracts on-chain** using the **`env.deployer()`** API — Soroban\ncontracts can deploy other contracts, no off-chain CLI step required. The flow:\n\n1. **Upload the child Wasm once** (`stellar contract upload`, or an upload host call) to get its\n   **Wasm hash**; the factory references the child **by hash**, not by re-embedding bytecode each\n   deploy.\n2. The factory calls `env.deployer().with_address(deployer_addr, salt)` /\n   `with_current_contract(salt)` then `.deploy_v2(wasm_hash, constructor_args)` to instantiate a\n   child.\n\nThe child's **contract ID/address is deterministic** from the network ID plus the deployer\naddress/preimage and **salt**, so the factory can pre-compute and control child addresses for a given\ndeployer/salt pair. The **Wasm hash selects the executable code** used for the deployment; it is not\npart of the contract ID/address derivation. A child **`__constructor`** can initialize each instance\natomically at deploy time.\n\nThis is **not** Solidity `new Contract()` / `CREATE2` — it is the native `env.deployer()` mechanism.\nSee the soroban-examples **`deployer`** example.",
+    "keyFacts": [
+      "A factory deploys child contracts on-chain using `env.deployer()` (e.g., `deploy_v2` / `with_current_contract` / `with_address`) from an already-uploaded Wasm hash and a salt.",
+      "The child's contract ID/address is deterministic from the network ID plus the deployer address/preimage and salt; the Wasm hash selects the executable code but is not part of the contract ID derivation."
+    ],
+    "avoid": [
+      "Do NOT describe Solidity `new Contract()` / CREATE2 opcode as the Soroban mechanism.",
+      "Do NOT claim contracts can only be deployed off-chain via the CLI and never from another contract.",
+      "Do NOT claim the Wasm hash is part of the child contract ID/address derivation."
+    ],
+    "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections (verified 2026-06-29). Trap: Solidity new/CREATE2; claiming no on-chain deploy; claiming Wasm hash is part of contract ID/address derivation. scout_repos acceptable. Verified: on-chain deploy is via env.deployer() from an uploaded Wasm hash + salt; contract ID/address is deterministic from network ID + deployer address/preimage + salt; __constructor can init atomically.\nAlso good if the answer: The Wasm of the child must be uploaded first; the factory references it by hash rather than re-embedding bytecode each deploy. | A constructor (`__constructor`) can initialize each child atomically at deploy time.\nGolden cites: A developers.stellar.org deployer/factory guide or soroban-examples deployer example."
+  },
+  "tags": {
+    "category": "soroban",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/smart-contracts/example-contracts/deployer",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/soroban-examples/tree/main/deployer",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-45-constructor-verification-ids-events-cross-contract-versions accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-soroban-factory-pattern"
+  }
+}

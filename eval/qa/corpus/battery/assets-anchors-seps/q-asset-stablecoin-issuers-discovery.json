@@ -1,0 +1,46 @@
+{
+  "id": "q-asset-stablecoin-issuers-discovery",
+  "question": "Which projects or companies issue stablecoins on Stellar?",
+  "surface": [
+    "scout.getPartners",
+    "scout.matchPartners",
+    "scout.searchProjects"
+  ],
+  "golden": {
+    "answer": "A directory-discovery question: route to the **ecosystem project directory** (Scout / Lumenloop) and\nground the list, rather than answering from memory. The verifiable anchor of the answer is\n**Circle**, which issues both **USDC** (USD-backed) and **EURC** (euro-backed) on Stellar — the\ndominant stablecoin issuer on the network [1]. A good answer:\n\n- Names **Circle (USDC + EURC)** correctly, and attributes USDC/EURC to **Circle, not** Tether /\n  Paxos / SDF [1].\n- Surfaces **additional anchor-operated / fiat-pegged issuers from the directory** (rather than\n  naming only Circle), attributing each token to a specific entity.\n- **Flags freshness** — the issuer set evolves, so this is a point-in-time directory snapshot.\n\nThe worst failure is **fabricating issuers or token tickers** not present in the corpus; the\ndirectory must ground any names beyond Circle's USDC/EURC.\n\nSource: [1] stellar.org \"USDC and EURC on Stellar\" (Circle); the Scout / Lumenloop project directory.",
+    "keyFacts": [
+      "Names Circle (USDC and EURC) as the dominant stablecoin issuer on Stellar."
+    ],
+    "avoid": [
+      "Do NOT fabricate stablecoin issuers or invent token tickers not present in the corpus.",
+      "Do NOT attribute USDC/EURC to a non-Circle issuer."
+    ],
+    "notes": "Discovery → scout_projects. Freshness-sensitive (issuer set evolves). Dossier §4.4. The dominant, verifiable anchor is Circle (USDC + EURC); the broader issuer set must be grounded in the live directory, not invented. Verified 2026-06-29: stellar.org/products-and-tools/circle-usdc-eurc resolves and confirms Circle issues both USDC and EURC on Stellar.\nAlso good if the answer: Surfaces additional anchor-operated / fiat-pegged issuers from the directory rather than only naming Circle. | Frames the answer as a discovery over the project directory, attributing issuers to specific entities.\nGolden cites: The Stellar Light / Scout project directory or a stellar.org stablecoin page."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "scout",
+    "freshness": "scheduled"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "asOf": "2026-06-29",
+    "reverifyBy": "2026-10-01",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://stellar.org/products-and-tools/circle-usdc-eurc",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-04-sac-stablecoins-issuance-fx accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-asset-stablecoin-issuers-discovery"
+  }
+}

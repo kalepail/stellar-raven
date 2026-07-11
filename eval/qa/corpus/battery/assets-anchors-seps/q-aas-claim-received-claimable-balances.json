@@ -1,0 +1,61 @@
+{
+  "id": "q-aas-claim-received-claimable-balances",
+  "question": "How do I find all Stellar claimable balances addressed to me, claim one or several by id, and confirm none remain?",
+  "surface": [
+    "stellarDocs.search_protocol_concepts_docs",
+    "stellarDocs.search_rpc_horizon_data_docs",
+    "stellarDocs.search_sdk_cli_tools_docs"
+  ],
+  "golden": {
+    "answer": "Discover first, then claim by balance id. On Horizon, use the claimable-balances collection and filter for the claimant account, then page through the result set until exhausted. Each record has a claimable-balance id and claimants/predicates. A single claimable balance can also be retrieved by `/claimable_balances/:claimable_balance_id`.\n\nTo claim, the claimant account submits one `ClaimClaimableBalance` operation per balance id, with the claimant account as the operation source. Multiple claim operations can be placed in one transaction if the transaction size/operation limits and account sequence handling allow it. The protocol operation adds the claimable-balance amount to the source account and deletes the claimable-balance entry on success.\n\nA listed balance is not necessarily claimable at this ledger close. The operation fails with `CLAIM_CLAIMABLE_BALANCE_CANNOT_CLAIM` if no claimant matches the source account or the matched claimant's predicate is false. For non-native assets, the claiming account also needs the relevant trustline, enough remaining trustline limit, and required authorization. After the transaction confirms, query the claimant filter again and verify the claimed ids are absent and no remaining balances match.",
+    "keyFacts": [
+      "Mentions using Horizon's claimable balances endpoint filtered by claimant, or equivalent ledger-entry lookup, to discover claimable balance ids.",
+      "Explains that claiming requires submitting `ClaimClaimableBalance`/claim-claimable-balance operations for specific balance ids from the claimant account.",
+      "Mentions predicates must be satisfied for a claim to succeed."
+    ],
+    "avoid": [
+      "Do NOT tell the user to send a normal payment to claim a claimable balance.",
+      "Do NOT imply all listed balances are claimable before their predicates become true."
+    ],
+    "notes": "Verified Horizon endpoint, claim operation, and predicate failure semantics. Phase 3 may check whether current SDK examples should prefer Horizon or RPC for discovery.\nAlso good if the answer: Explains batching multiple claim operations in one transaction when feasible. | Mentions re-querying the claimant filter after confirmation to verify no remaining claimable balances.\nGolden cites: Horizon or Stellar docs for claimable balances and the claim operation."
+  },
+  "tags": {
+    "category": "assets-anchors-seps",
+    "service": "stellarDocs",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/data/apis/horizon/api-reference/list-all-claimable-balances",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/build/guides/transactions/claimable-balances",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "A",
+        "ref": "https://developers.stellar.org/docs/learn/fundamentals/transactions/list-of-operations#claim-claimable-balance",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/stellar/stellar-protocol/blob/master/core/cap-0023.md",
+        "note": "class inferred at migration"
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "GT-01-asset-lifecycle-safety-metadata accepted in Solo scratchpad 575 rev 291",
+      "evidence": [
+        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+      ]
+    },
+    "origin": "raven-next q-aas-claim-received-claimable-balances"
+  }
+}

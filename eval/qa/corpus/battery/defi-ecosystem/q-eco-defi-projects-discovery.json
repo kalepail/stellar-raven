@@ -1,0 +1,73 @@
+{
+  "id": "q-eco-defi-projects-discovery",
+  "question": "Who is building DeFi on Stellar — give me a directory of the main DeFi projects.",
+  "surface": [
+    "scout.getClusters",
+    "scout.getPartners",
+    "scout.matchPartners",
+    "scout.searchProjects"
+  ],
+  "golden": {
+    "answer": "Provide a **dated, illustrative directory** rather than a timeless list of the 'main' projects. State the selection rule and, for each row, give category, operator URL, and verified status. A 2026-07-10 starting set can include Blend and Templar (lending/credit); native Stellar liquidity, Aquarius, Soroswap, Phoenix, and Sushi (liquidity/DEX, with roles separated); DeFindex (vaults); Reflector (oracles); and selected RWA/DeFi products only with deployment-state caveats. YieldBlox and DeFindex should not be presented as independent base lenders when they build on other liquidity/protocol layers.",
+    "keyFacts": [
+      "Labels the roster illustrative and dated and exposes the selection rule, category, operator source, status, and dependency/role distinctions."
+    ],
+    "avoid": [
+      "Do NOT grade against one permanent project roster or call every directory row live/main.",
+      "Do NOT miscategorize projects or treat a vault/front end as an independent base lender."
+    ],
+    "notes": "FLAT directory-roster lane (who-is-building → scout_projects, each project + category + source) — DISTINCT from q-eco-defi-market-map (analytic crowded-vs-whitespace saturation → scout_clusters). Anchor case for the directory card. Re-verified 2026-06-29: anchor projects + categories grounded against the live Scout directory (each carries a project URL/category).\nAlso good if the answer: Each project carries a one-line category descriptor and a source.\nGolden cites: Each listed project carries a directory source.\nGT-19 REFRAME 2026-07-10: replace the frozen 'main projects' gate with a dated illustrative-directory contract and objective selection/status fields."
+  },
+  "tags": {
+    "category": "defi-ecosystem",
+    "service": "scout",
+    "freshness": "stable"
+  },
+  "truth": {
+    "domain": "real-world",
+    "status": "confirmed",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/directory",
+        "note": "class inferred at migration"
+      },
+      {
+        "class": "D",
+        "ref": "https://defillama.com/chain/stellar",
+        "note": "class inferred at migration"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "A useful directory is possible only with an as-of date, selection rule, category, operator URL, and current status.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "C: live Scout/Lumenloop directory records",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          },
+          {
+            "class": "D",
+            "ref": "D: current operator pages and DeFiLlama",
+            "observedAt": "2026-07-11",
+            "note": "verbatim legacy evidence descriptor imported at migration"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-11",
+      "by": "Golden-truth sweep import — The named projects are broadly real, but 'main' was undefined and a frozen roster flattened current, legacy, derivative, and underlying protocol roles.",
+      "evidence": [
+        "Solo scratchpad 575 GT-19 primary 3254 and blind 3258."
+      ],
+      "rootCause": [
+        "An illustrative directory was authored as a timeless canonical roster."
+      ]
+    },
+    "origin": "raven-next q-eco-defi-projects-discovery"
+  }
+}
