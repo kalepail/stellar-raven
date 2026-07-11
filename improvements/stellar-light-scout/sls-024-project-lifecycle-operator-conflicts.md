@@ -11,6 +11,7 @@ evidence:
   - GT-17 recurrence 2026-07-10: official/provider Reflector pages still list OrbitCDP as an integration while Scout marks the project Inactive
   - GT-20 recurrence 2026-07-10: xBull remained Live with Android platform metadata while its Google Play URL returned 404 and operator page described passkey/hybrid V2 as forthcoming
   - GT-29 recurrence 2026-07-10: Centaurus remained Live+Unverified while its linked repositories had no activity after 2021 and no current primary deployment evidence was found
+  - Eval recurrence 2026-07-11: super-corpus baseline headline run (result stamp 2026-07-11T15-36-44-variantA.json, case q-defi-streaming-payments-prior-art) — live Scout labeled Fluxity and SStream Live with no contract/network deployment proof, and the answering agent promoted the label into deployment and audit maturity; re-judge confirmed wrong
 ---
 
 ## Finding
@@ -57,6 +58,16 @@ Live and still exposed Android support, while the Google Play listing returned
 404. The operator roadmap described passkey/hybrid V2 as forthcoming, contrary
 to corpus wording that treated it as shipped. Project lifecycle, per-platform
 availability, and roadmap feature state need separate evidence.
+
+The 2026-07-11 super-corpus baseline reproduced the class in an eval answer
+(`q-defi-streaming-payments-prior-art`, headline result stamp
+`2026-07-11T15-36-44-variantA.json`, reviewed in
+`eval/qa/reviewed/2026-07-super-corpus-baseline.md`): Scout labeled Fluxity and
+SStream `Live`, the answer inferred mainnet deployment and audit maturity from
+the label, and live re-execution found no contract/network deployment proof
+behind it. The consumer-facing consequence is exactly the missing qualifier this
+finding recommends — without a deployment basis, `Live` keeps getting promoted
+into deployment truth.
 
 ## Recommendation
 
