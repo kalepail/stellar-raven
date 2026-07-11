@@ -8,25 +8,26 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "This is a **directory-discovery** question: the correct behavior is to **surface named anchor /\non-off-ramp projects from the ecosystem directory** (Scout / Lumenloop), not to emit generic prose\nor a docs paragraph. A grounded answer should:\n\n- Return **actual directory-listed anchor implementations** — e.g. **MoneyGram Ramps** (which runs\n  on the Stellar \"Ramps\" standard) and other directory-listed on/off-ramp operators [1].\n- **Distinguish operators from tooling**: anchor *operators* (run fiat ramps) vs. anchor\n  *infrastructure* (SDF's **Anchor Platform** / **Wallet SDK** / **SDP**), which are tooling, not\n  anchors themselves.\n- **Flag freshness** — the anchor roster shifts over time, so the list should be presented as a\n  point-in-time directory snapshot.\n\nThe defining failure is **fabricating anchor names** not in the corpus. (Names beyond MoneyGram\nshould be sourced live from the directory rather than asserted from memory.)\n\nSources: [1] stellar.org Ramps / MoneyGram; the Scout / Lumenloop ecosystem project directory.",
+    "answer": "Use `scout.getPartners`, `scout.matchPartners`, `scout.searchProjects`, `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Surfaces named anchor / on-off-ramp projects from the ecosystem directory rather than generic prose.",
     "keyFacts": [
+      "Retrieves source-bounded live results via scout.getPartners, scout.matchPartners, scout.searchProjects, scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Surfaces named anchor / on-off-ramp projects from the ecosystem directory rather than generic prose."
     ],
     "avoid": [
-      "Do NOT fabricate anchor names that are not in the corpus/directory."
+      "Do NOT fabricate anchor names that are not in the corpus/directory.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "Discovery → scout_projects. Freshness-sensitive (anchor roster shifts). The 'answer' is correct routing + a directory-grounded list, not a fixed roster. Source list anchors the routing/grounding requirement; named operators must come from the live directory, not be invented. Verified 2026-06-29: stellar.org/use-cases/ramps and developers.stellar.org/docs/learn/fundamentals/anchors both resolve and describe Ramps/MoneyGram + Anchor Platform tooling.\nAlso good if the answer: Includes recognizable anchor implementations (e.g. MoneyGram Ramps and/or other directory-listed anchors). | Distinguishes anchor operators from anchor tooling (e.g. SDF's Anchor Platform).\nGolden cites: The Stellar Light / Scout project directory."
   },
   "tags": {
     "category": "assets-anchors-seps",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "corpus-grounded",
     "status": "confirmed",
-    "asOf": "2026-06-29",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -41,9 +42,13 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "GT-02-anchor-discovery-platform-disbursement accepted in Solo scratchpad 575 rev 291",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+        "P4 Lane R behavioral conversion queue, row 1 (q-anchor-list-builders-discovery): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://stellar.org/use-cases/ramps"
+      ],
+      "rootCause": [
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-anchor-list-builders-discovery"

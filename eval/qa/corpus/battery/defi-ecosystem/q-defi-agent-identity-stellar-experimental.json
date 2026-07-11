@@ -7,30 +7,29 @@
     "scout.searchRepos"
   ],
   "golden": {
-    "answer": "**ERC-8004 ('Trustless Agents')** is an external **Ethereum Draft** for agent identity, reputation, and validation; payments are explicitly separate and can compose with protocols such as x402. As of **2026-07-10**, the pinned official Stellar SEP registry contains no corresponding ratified agent-identity SEP. `SRC-8004` and `SEP-8004` labels seen in project material are not official Stellar registry entries.\n\nStellar nevertheless has real community Soroban adaptations. **trionlabs/stellar-8004** provides three registries plus SDK/CLI/explorer/test material and verifiable pubnet deployments; **progax01/stellar8004** independently deploys an agent registry. That makes them available and substantial early implementations—not merely hackathon-stage—but deployment does **not** prove a ratified standard, independent audit, mature adoption, or production reliability.\n\nThe exact January-2026 Ethereum deployment date is not established by the primary ERC record and is not a correctness gate.",
+    "answer": "Use `scout.getHackathon`, `scout.getHackathons`, `scout.searchRepos` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Identifies ERC-8004 as an external Ethereum Draft for identity/reputation/validation with payments kept separate.",
     "keyFacts": [
-      "Identifies ERC-8004 as an external Ethereum Draft for identity/reputation/validation with payments kept separate.",
-      "States the negative precisely: no corresponding ratified Stellar SEP appears in the official registry asOf 2026-07-10.",
-      "Recognizes live community Stellar deployments while distinguishing implementation availability from ratification, audit, adoption, or maturity."
+      "Retrieves source-bounded live results via scout.getHackathon, scout.getHackathons, scout.searchRepos and reports their source and as-of date without freezing a roster, rank, count, or current value.",
+      "Identifies ERC-8004 as an external Ethereum Draft for identity/reputation/validation with payments kept separate."
     ],
     "avoid": [
       "Do NOT promote ERC-8004, SRC-8004, or SEP-8004 into a ratified Stellar standard.",
       "Do NOT claim no Stellar implementation exists or dismiss the current deployed repositories as merely hackathon-stage.",
       "Do NOT infer ratification, audit, mature adoption, or reliability from pubnet deployment alone.",
-      "Do NOT gate the answer on an exact Ethereum deployment date that the primary ERC record does not establish."
+      "Do NOT gate the answer on an exact Ethereum deployment date that the primary ERC record does not establish.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "Freshness:true + honesty case. Phase-2 VERIFIED: ERC-8004 ('Trustless Agents') proposed Aug 13 2025, went LIVE on Ethereum mainnet Jan 29 2026 (still EIP 'Draft' status), excludes payments and composes with x402. On Stellar, agent-identity is real but EARLY/hackathon-stage — Scout shows trionlabs/stellar-8004 ('Trustless Agents (8004) on Stellar/Soroban', repoScore 69, Agentic Hackathon, judgeScore 0.8, homepage stellar8004.com) and progax01/stellar8004 — NOT a ratified Stellar standard. emperorsixpacks/-bear-protocol also bundles agent identity. Reward honest immaturity-flagging. 2026-06-29 RE-VERIFIED: ERC-8004 EIP still 'Draft' (eips.ethereum.org) and composes with x402 for payments per The Graph/eco.com writeups; Scout repos confirm trionlabs/stellar-8004 (repoScore 69, judge 0.8, homepage stellar8004.com) and progax01/stellar8004 (repoScore 53, judge 0.6). CORRECTED repo handle bear-protocol -> emperorsixpacks/-bear-protocol (leading dash; bare 'bear-protocol' 404s); GitHub-confirmed (desc: 'commerce layer for AI agent payments on Stellar. Job escrow, agent identity, and x402 micropayments'). Confidence stays medium: the exact Jan-29 mainnet date leans on a single social-post source.\nAlso good if the answer: Surfaces real Stellar agent-identity experiments with provenance (Scout repo links, e.g. trionlabs/stellar-8004 from the Agentic Hackathon).\nGolden cites: Scout repo provenance for any Stellar experiment named; an ERC-8004 reference for the Ethereum framing.\nGT-12 CORRECTION 2026-07-10: supersedes the prior 'experimental/hackathon-stage' gate. Grade the three-way distinction: external Draft standard; registry-relative absence of Stellar ratification; real deployed but early/unratified community implementations. Never convert one of those into the other."
   },
   "tags": {
     "category": "defi-ecosystem",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "mixed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-08-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "D",
@@ -110,15 +109,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-10",
-      "by": "Golden-truth sweep import — GT-12 primary and independent blind golden-truth reviews (Solo 3237/3241, 2026-07-10) agree that the prior override fixed an unsupported Ethereum date but still conflated standards maturity with implementation maturity. The official Stellar registry has no corresponding ratified SEP, while two community implementations now have verifiable pubnet contracts and substantial code. They are early/unratified, not merely hackathon-stage and not nonexistent.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575: GT-12 primary process 3237 and independent blind process 3241",
-        "Pinned official SEP registry, both implementation repositories, official Stellar meeting context, and four empirical pubnet contract fetches asOf 2026-07-10"
+        "P4 Lane R behavioral conversion queue, row 19 (q-defi-agent-identity-stellar-experimental): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://eips.ethereum.org/EIPS/eip-8004"
       ],
       "rootCause": [
-        "eval-side authoring collapsed absence of standards ratification into absence/immaturity of implementation and relied on stale repository metadata",
-        "solo://proj/49/todo/golden-corpus-health--901 — the earlier exact-date correction remained valid but incomplete"
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-defi-agent-identity-stellar-experimental"

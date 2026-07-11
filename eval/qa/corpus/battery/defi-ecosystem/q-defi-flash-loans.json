@@ -8,27 +8,28 @@
     "stellarDocs.search_soroban_contract_docs"
   ],
   "golden": {
-    "answer": "Soroban has no protocol-native flash-loan operation, but a contract can implement one through synchronous cross-contract calls inside an atomic invocation: lend, invoke borrower logic, and require repayment before return; an uncaught error rolls back the call tree. Authorization, simulation, resource/footprint limits, and reentrancy/economic controls still matter.\n\nCurrent evidence as of **2026-07-10**:\n- **Blend v2:** mainnet Fixed Pool bytecode matched the published v2.0.0 pool artifact and its interface exposes `flash_loan`—verified deployed evidence.\n- **XycLoans:** public flash-loan code and historical SCF/Futurenet evidence, but stale repo/docs and a failing current pools route; usable deployment was not verified.\n- **Slender:** operator marketing claims flash loans, while the app showed no usable state and Scout marks it Inactive; feature association is real, current deployment/liquidity unverified.\n\nDo not infer deployment from code, a closed issue, marketing, or a directory label alone.",
+    "answer": "Use `stellarDocs.search_asset_token_docs`, `stellarDocs.search_protocol_concepts_docs`, `stellarDocs.search_sdk_cli_tools_docs`, `stellarDocs.search_soroban_contract_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Explains atomic Soroban cross-contract flash-loan mechanics and rollback constraints. Distinguishes verified deployed Blend v2 from XycLoans code/history and Slender marketing/unverified usability.",
     "keyFacts": [
+      "Executes the current documented lookup/workflow via stellarDocs.search_asset_token_docs, stellarDocs.search_protocol_concepts_docs, stellarDocs.search_sdk_cli_tools_docs, stellarDocs.search_soroban_contract_docs and labels version, UI, provider, and availability claims as observed.",
       "Explains atomic Soroban cross-contract flash-loan mechanics and rollback constraints.",
       "Distinguishes verified deployed Blend v2 from XycLoans code/history and Slender marketing/unverified usability."
     ],
     "avoid": [
       "Do NOT claim XycLoans is the sole/current mainnet implementation or that Slender has no flash-loan association.",
-      "Do NOT treat source code, marketing, issue status, or directory status alone as deployment/liquidity proof."
+      "Do NOT treat source code, marketing, issue status, or directory status alone as deployment/liquidity proof.",
+      "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
     ],
     "notes": "CORRECTED 2026-06-29: prior version misattributed flash loans to Slender. Live Scout confirms Slender is a noncustodial lending/borrowing money market (by eq-lab), NOT a flash-loan protocol. XycLoans is the credible Soroban flash-loans protocol ('a decentralized flash loans protocol that runs on Soroban... a flash loans-only protocol'), audited by OtterSec Jan 2024 (sorobansecurity.com/report/33). Slender reference removed; XycLoans is the named flash-loan provider, with dated/source evidence required before treating as production-safe.\nAlso good if the answer: Names XycLoans as the credible Soroban flash-loans protocol (flash-loans-only, per-token liquidity pools enforcing same-transaction repayment), with current evidence required for any live-availability claim. | Mentions simulation/testing for resource limits and failure behavior.\nGolden cites: Stellar/Soroban transaction and contract invocation docs, plus dated protocol docs for any live flash-loan implementation.\nCorrected 2026-07-10. Deployment evidence tiers—not an exclusive project name—are the factual gate."
   },
   "tags": {
     "category": "defi-ecosystem",
     "service": "stellarDocs",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "D",
@@ -79,13 +80,13 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "Golden-truth sweep import — GT-15 blind verification found Blend v2 flash_loan deployed on mainnet with matching published bytecode, while the inherited answer treated XycLoans as the only credible implementation and categorically denied Slender's advertised feature.",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Blend Fixed Pool CAJJZSGMMM3PD7N33TAPHGBUGTB43OC73HVIK2L2G6BNGGGYOSSYBXBD matched v2.0.0 pool WASM and exposed flash_loan",
-        "Solo scratchpad 575 GT-15 processes 3243/3246"
+        "P4 Lane R behavioral conversion queue, row 24 (q-defi-flash-loans): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
+        "Current source retained for behavioral retrieval: https://github.com/blend-capital/blend-contracts-v2"
       ],
       "rootCause": [
-        "eval-side deployment evidence drift and false mutually exclusive protocol trap"
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-defi-flash-loans"

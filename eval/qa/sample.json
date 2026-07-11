@@ -1,7 +1,7 @@
 {
   "$comment": "Deterministic stratified sample (N=30, by service) of the owned QA battery.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "5431d395c1a2bf0a69d881d45e8a186d6e6890ba99dd9c2a5a2c4cca66d47235",
+  "corpusContentSha256": "7406ec462807c02f4364e78aa817f388a6b8f39b83f9e7611a616989e39754c3",
   "counts": {
     "total": 30,
     "byCategory": {
@@ -24,7 +24,8 @@
       "stellarDocs": 17
     },
     "byFreshness": {
-      "scheduled": 13,
+      "live": 3,
+      "scheduled": 10,
       "stable": 17
     },
     "traps": {
@@ -342,26 +343,26 @@
         "lumenloop.find_av_passages"
       ],
       "golden": {
-        "answer": "- The correct behavior is a **dated, caveated figure**, not a confident permanent number — the headline figures share one scope (RWA **excluding** stablecoins, per rwa.xyz data) and differ by DATE, so an undated number is meaningless [1][2].\n- The 2026 trajectory: **$796M** at the start of Q1 → **$1.52B at Q1-end** (+91% QoQ, Messari \"State of Stellar Q1 2026\") → SDF announced Stellar **\"crossed $2 billion\" in RWAs on ~April 11, 2026** (>4x growth in 12 months) → **~$2.8B by early June 2026** (rwa.xyz distributed asset value; the figure is volatile — a late-June read showed ~$2.4B) [1][2].\n- Leading issuers: **Spiko** (EU/US T-bill tokens, largest), **Franklin Templeton (BENJI)**, **Ondo Finance**, **WisdomTree** [1][2].\n- **Flag this as time-sensitive** — verify against a current dated source (SDF, Messari, rwa.xyz) before relying on it.",
+        "answer": "Use `lumenloop.find_av_passages` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
         "keyFacts": [
-          "Provides a current tokenized-RWA figure for Stellar with a dated source rather than a confident undated number."
+          "Retrieves source-bounded live results via lumenloop.find_av_passages and reports their source and as-of date without freezing a roster, rank, count, or current value."
         ],
         "avoid": [
           "Do NOT assert a precise TVL/RWA figure as a permanent fact without a date or freshness caveat.",
-          "Do NOT fabricate a number not grounded in a cited report."
+          "Do NOT fabricate a number not grounded in a cited report.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "Freshness item — figure is genuinely contested across sources, so the rubric gates on dated/caveated behavior, NOT one number. Live re-check 2026-06-29: rwa.xyz/networks/stellar resolves and shows ~$2.40B distributed asset value (69 RWA tokens, ~18.4k holders), down from the ~$2.84B seen earlier in June — still low-single-digit $B, confirming the order-of-magnitude gate. SDF announced 'crossed $2B' on 2026-04-11/14 (~4x YoY); Messari Q1-2026 tracked ~$1.2-1.5B excluding stablecoins. Issuers: Spiko, Franklin Templeton (BENJI), Ondo, WisdomTree.\nAlso good if the answer: Cites a dated source in the right order of magnitude (low-single-digit $B tokenized RWA on Stellar as of early/mid 2026, ~4x YoY growth). | Explicitly flags the figure as time-sensitive / as-of-date.\nGolden cites: A dated State-of-Stellar / network report or analytics source (e.g. SDF, Messari, rwa.xyz).\nCorrected 2026-07-03 (todo 829 contradiction sweep + deep verification): the prior '$1.2-1.5B excluding stablecoins' Messari range was a third-party paraphrase — the written report says $796M → $1.52B at Q1-end, crossed $2B Apr 11 (all EXCL. stablecoins, on rwa.xyz data the report itself links). The ~$2.8B is a June-2026 point-in-time rwa.xyz value (also stated by the SDF president in Messari's 2026-06-04 INTERVIEW — not the written report). All figures share one ex-stablecoin scope; differences are temporal, not methodological. Any dated figure on that trajectory is correct; never require one number."
       },
       "tags": {
         "category": "assets-anchors-seps",
         "service": "lumenloop",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-03",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "D",
@@ -407,14 +408,14 @@
           }
         ],
         "verified": {
-          "date": "2026-07-03",
-          "by": "Golden-truth sweep import — Consistency-sweep contradiction (register sweep 2026-07-03) resolved by deep verification: the corpus attributed ~$2.8B to both rwa.xyz and Messari and pinned Messari at two values. Truth: one shared scope (RWA excl. stablecoins, rwa.xyz data — which Messari's report itself sources), one time series ($796M start-Q1 → $1.52B Q1-end → $2B on Apr 11 → ~$2.8B early June). This case's '$1.2-1.5B' Messari range traces to a loose third-party paraphrase, and its 'sources disagree by methodology' framing is wrong — the differences are temporal.",
+          "date": "2026-07-11",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "eval/qa/consistency-register.json sweep 2026-07-03 (the contradiction record); deep-verification quotes/URLs in Solo scratchpad 521"
+            "P4 Lane R behavioral conversion queue, row 2 (q-asset-rwa-tokenized-freshness): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://app.rwa.xyz/networks/stellar"
           ],
           "rootCause": [
-            "eval-side authoring: the '$1.2-1.5B' range came from a third-party paraphrase, not the report; single-source-class verification",
-            "solo://proj/49/todo/corpus-health-instru--829 (contradiction-scan instrument, first sweep) — sibling sweep 2026-07-03: grep for 2.8B/2.84/1.52/Messari/rwa.xyz hits exactly the three RWA cases, all corrected in this pass"
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-asset-rwa-tokenized-freshness"
@@ -479,28 +480,29 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Stellar can be a good settlement layer for a remittance business because it gives fast settlement, standardized anchor protocols, and liquid stablecoin rails, but it is not a complete remittance company by itself. A real corridor needs: source on-ramp, customer onboarding/KYC, settlement asset, FX/quote path, destination off-ramp, liquidity/float, sanctions/fraud controls, reconciliation, refunds, customer support, and legal/compliance coverage in each jurisdiction.\n\nMap rails to the job. SEP-1 lets wallets discover anchor metadata; SEP-10 authenticates account control; SEP-12 handles KYC/customer data; SEP-24/SEP-6 handle deposit and withdrawal flows; SEP-31 handles cross-border payments; SEP-38 gives price/FX quotes. MoneyGram Access is an example of a USDC cash-in/cash-out integration using SEP-10 and SEP-24, not proof that every remittance corridor is available.\n\nStablecoin choice should be corridor-specific: use issuer quality, liquidity, redemption, geography, compliance fit, and anchor support rather than defaulting universally to XLM or one stablecoin. Most founders should first integrate existing anchors/ramp partners in a narrow corridor, measure quote quality and failure handling, and only become an anchor where owning licensing, payout rails, liquidity, and support creates an advantage.",
+        "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Frames Stellar as useful for fast low-cost settlement but not a complete remittance business by itself. Explains the corridor design needs source on-ramp, Stellar settlement asset, FX/quote path, destination off-ramp, KYC/AML/sanctions, liquidity, reconciliation, and customer support (the business architecture, not just a protocol). Drives stablecoin selection by issuer quality, liquidity, destination/geography, redemption, and regulatory fit (e.g. USDC vs EURC vs a local-currency stablecoin) rather than defaulting to XLM or one asset universally.",
         "keyFacts": [
+          "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
           "Frames Stellar as useful for fast low-cost settlement but not a complete remittance business by itself.",
           "Explains the corridor design needs source on-ramp, Stellar settlement asset, FX/quote path, destination off-ramp, KYC/AML/sanctions, liquidity, reconciliation, and customer support (the business architecture, not just a protocol).",
           "Drives stablecoin selection by issuer quality, liquidity, destination/geography, redemption, and regulatory fit (e.g. USDC vs EURC vs a local-currency stablecoin) rather than defaulting to XLM or one asset universally."
         ],
         "avoid": [
           "Do NOT give legal or licensing advice as definitive for all jurisdictions.",
-          "Do NOT imply Stellar removes the need for fiat partners, KYC/AML, liquidity, or customer remediation."
+          "Do NOT imply Stellar removes the need for fiat partners, KYC/AML, liquidity, or customer remediation.",
+          "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
         ],
         "notes": "2026-06-29: Differentiated toward stablecoin-selection + business architecture — promoted stablecoin-choice to a 5-weight must_have, demoted the SEP rail-map to should_have (the rail-map lane is owned by q-crp-become-an-anchor-licensing). Specific corridor/provider recommendations still require fresh provider checks; architecture/stablecoin-selection guidance is high confidence.\nAlso good if the answer: Maps relevant SEP rails as applicable: SEP-1 discovery, SEP-10 auth, SEP-12 KYC, SEP-24/6 deposit-withdrawal, SEP-31 cross-border payments, SEP-38 quotes. | Mentions integrating existing anchors is usually lower lift than becoming an anchor in every corridor.\nGolden cites: Stellar SEP/anchor docs plus dated corridor/provider sources for concrete recommendations."
       },
       "tags": {
         "category": "compliance-rwa-payments",
         "service": "scout",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-06-29",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "A",
@@ -525,9 +527,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "GT-10-corridors-custody-licensing-sdp-rwa accepted in Solo scratchpad 575 rev 291",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "solo://proj/49/scratchpad/truth-maintenance-20--575"
+            "P4 Lane R behavioral conversion queue, row 16 (q-crp-remittance-founder-advisory): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+            "Current source retained for behavioral retrieval: https://developers.stellar.org/docs/learn/fundamentals/anchors"
+          ],
+          "rootCause": [
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-crp-remittance-founder-advisory"
@@ -636,27 +642,28 @@
         "stellarDocs.search_soroban_contract_docs"
       ],
       "golden": {
-        "answer": "Soroban has no protocol-native flash-loan operation, but a contract can implement one through synchronous cross-contract calls inside an atomic invocation: lend, invoke borrower logic, and require repayment before return; an uncaught error rolls back the call tree. Authorization, simulation, resource/footprint limits, and reentrancy/economic controls still matter.\n\nCurrent evidence as of **2026-07-10**:\n- **Blend v2:** mainnet Fixed Pool bytecode matched the published v2.0.0 pool artifact and its interface exposes `flash_loan`—verified deployed evidence.\n- **XycLoans:** public flash-loan code and historical SCF/Futurenet evidence, but stale repo/docs and a failing current pools route; usable deployment was not verified.\n- **Slender:** operator marketing claims flash loans, while the app showed no usable state and Scout marks it Inactive; feature association is real, current deployment/liquidity unverified.\n\nDo not infer deployment from code, a closed issue, marketing, or a directory label alone.",
+        "answer": "Use `stellarDocs.search_asset_token_docs`, `stellarDocs.search_protocol_concepts_docs`, `stellarDocs.search_sdk_cli_tools_docs`, `stellarDocs.search_soroban_contract_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Explains atomic Soroban cross-contract flash-loan mechanics and rollback constraints. Distinguishes verified deployed Blend v2 from XycLoans code/history and Slender marketing/unverified usability.",
         "keyFacts": [
+          "Executes the current documented lookup/workflow via stellarDocs.search_asset_token_docs, stellarDocs.search_protocol_concepts_docs, stellarDocs.search_sdk_cli_tools_docs, stellarDocs.search_soroban_contract_docs and labels version, UI, provider, and availability claims as observed.",
           "Explains atomic Soroban cross-contract flash-loan mechanics and rollback constraints.",
           "Distinguishes verified deployed Blend v2 from XycLoans code/history and Slender marketing/unverified usability."
         ],
         "avoid": [
           "Do NOT claim XycLoans is the sole/current mainnet implementation or that Slender has no flash-loan association.",
-          "Do NOT treat source code, marketing, issue status, or directory status alone as deployment/liquidity proof."
+          "Do NOT treat source code, marketing, issue status, or directory status alone as deployment/liquidity proof.",
+          "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
         ],
         "notes": "CORRECTED 2026-06-29: prior version misattributed flash loans to Slender. Live Scout confirms Slender is a noncustodial lending/borrowing money market (by eq-lab), NOT a flash-loan protocol. XycLoans is the credible Soroban flash-loans protocol ('a decentralized flash loans protocol that runs on Soroban... a flash loans-only protocol'), audited by OtterSec Jan 2024 (sorobansecurity.com/report/33). Slender reference removed; XycLoans is the named flash-loan provider, with dated/source evidence required before treating as production-safe.\nAlso good if the answer: Names XycLoans as the credible Soroban flash-loans protocol (flash-loans-only, per-token liquidity pools enforcing same-transaction repayment), with current evidence required for any live-availability claim. | Mentions simulation/testing for resource limits and failure behavior.\nGolden cites: Stellar/Soroban transaction and contract invocation docs, plus dated protocol docs for any live flash-loan implementation.\nCorrected 2026-07-10. Deployment evidence tiers—not an exclusive project name—are the factual gate."
       },
       "tags": {
         "category": "defi-ecosystem",
         "service": "stellarDocs",
-        "freshness": "scheduled"
+        "freshness": "live"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-10-01",
+        "asOf": "2026-07-11",
         "sources": [
           {
             "class": "D",
@@ -707,13 +714,13 @@
         ],
         "verified": {
           "date": "2026-07-11",
-          "by": "Golden-truth sweep import — GT-15 blind verification found Blend v2 flash_loan deployed on mainnet with matching published bytecode, while the inherited answer treated XycLoans as the only credible implementation and categorically denied Slender's advertised feature.",
+          "by": "P4 conversions (Solo 3418)",
           "evidence": [
-            "Blend Fixed Pool CAJJZSGMMM3PD7N33TAPHGBUGTB43OC73HVIK2L2G6BNGGGYOSSYBXBD matched v2.0.0 pool WASM and exposed flash_loan",
-            "Solo scratchpad 575 GT-15 processes 3243/3246"
+            "P4 Lane R behavioral conversion queue, row 24 (q-defi-flash-loans): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
+            "Current source retained for behavioral retrieval: https://github.com/blend-capital/blend-contracts-v2"
           ],
           "rootCause": [
-            "eval-side deployment evidence drift and false mutually exclusive protocol trap"
+            "eval-authoring"
           ]
         },
         "origin": "raven-next q-defi-flash-loans"

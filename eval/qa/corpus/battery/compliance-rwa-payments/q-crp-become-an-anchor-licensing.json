@@ -7,8 +7,9 @@
     "stellarDocs.search_soroban_contract_docs"
   ],
   "golden": {
-    "answer": "Becoming an anchor has separate technical, operating, and legal workstreams. Technically, publish SEP-1 discovery and implement only the services you offer: SEP-6 or SEP-24 for ramps, SEP-10 for G/M authentication and SEP-45 for C accounts where applicable, SEP-12 when client-driven customer data is required, SEP-31 for receiving cross-border payments, and SEP-38 for quotes. Anchor Platform can supply plumbing but does not confer permission or licensing.\n\nFor the legal perimeter, identify each legal entity, country/customer nexus, asset and legal issuer, and who accepts/transmits/exchanges/issues/redeems/custodies value. Then assess the applicable federal registration, state money-transmitter, bank/payment/e-money/CASP, agent/exemption, sanctions, consumer, privacy, and safeguarding rules. In the US, federal MSB registration and state licensing are distinct; in the EU, EMT issuance, crypto-asset services, and payment/money-remittance services are separate classifications. The answer depends on facts and jurisdiction—obtain local counsel.\n\nOperationally, demonstrate banking/payout access, liquidity and settlement capacity, reconciliation, support, security, KYC/sanctions processes, and incident handling. Settlement capacity may be own prefunding, payout-partner credit, JIT liquidity, or another documented arrangement; do not hard-code one model.",
+    "answer": "Use `stellarDocs.search_anchor_sep_docs`, `stellarDocs.search_protocol_concepts_docs`, `stellarDocs.search_soroban_contract_docs` to perform the current documented lookup or workflow for this question. Report the source and as-of date for the observed documentation or response. Treat version, UI, provider, and availability statements as observations of that retrieval, not timeless facts.\n\nStable guardrails that remain in force: Separates conditional SEP capabilities from operating and legal workstreams. Classifies actual entities, activities, custody, routes, assets, and jurisdictions rather than assuming one anchor license. Requires demonstrable settlement/liquidity capacity without making prefunding universal.",
     "keyFacts": [
+      "Executes the current documented lookup/workflow via stellarDocs.search_anchor_sep_docs, stellarDocs.search_protocol_concepts_docs, stellarDocs.search_soroban_contract_docs and labels version, UI, provider, and availability claims as observed.",
       "Separates conditional SEP capabilities from operating and legal workstreams.",
       "Classifies actual entities, activities, custody, routes, assets, and jurisdictions rather than assuming one anchor license.",
       "Requires demonstrable settlement/liquidity capacity without making prefunding universal."
@@ -17,20 +18,20 @@
       "Do NOT say Anchor Platform or Stellar grants a license or compliance.",
       "Do NOT prescribe one universal SEP or licensing stack.",
       "Do NOT give jurisdiction-specific legal advice without primary law and local counsel.",
-      "Do NOT claim every model requires the operator's own prefunded float."
+      "Do NOT claim every model requires the operator's own prefunded float.",
+      "Do NOT state a specific current version, UI, provider, or availability observation as a timeless fact."
     ],
     "notes": "2026-06-29: Re-weighted toward anchor operations/economics — promoted liquidity/float, treasury/reconciliation, and on/off-ramp float profiles to must_have; demoted the 'Anchor Platform != license' point to should_have/weight-3 must_avoid (that misconception is owned by q-comp-anchor-platform and q-pay-anchor-msb-licensing). Legal/licensing stays jurisdiction-specific; reward bounded compliance framing, not definitive legal advice.\nAlso good if the answer: Distinguishes on-ramp-only, off-ramp, and cross-border anchor roles by their float/liquidity profiles (e.g. on-ramp may collect fiat before issuing, while off-ramp/cross-border generally need prefunded liquidity or payout-partner credit). | Mentions Anchor Platform can implement much of the technical SEP surface but is not a license and does not remove business, banking, and operational requirements.\nGolden cites: Stellar Anchor Platform or anchor docs plus dated jurisdiction/regulatory sources for legal claims.\nCORRECTION 2026-07-10: require an entity/activity/custody/route/jurisdiction classification method. Technical anchor status is not a legal classification; settlement capacity is durable, prefunding is one example."
   },
   "tags": {
     "category": "compliance-rwa-payments",
     "service": "stellarDocs",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "mixed",
     "status": "unverifiable",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -111,13 +112,13 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "Golden-truth sweep import — The technical checklist was directionally useful but protocol/product docs were carrying a legal perimeter. An anchor label does not determine licensing, and prefunded float is not a universal requirement.",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-10 legal matrices"
+        "P4 Lane R behavioral conversion queue, row 11 (q-crp-become-an-anchor-licensing): Behavioral golden: execute the current documented workflow/lookup, state version or UI/provider claims only as observed, and do not pin a snapshot.",
+        "Current source retained for behavioral retrieval: https://developers.stellar.org/docs/learn/fundamentals/anchors"
       ],
       "rootCause": [
-        "Product taxonomy substituted for legal entity/activity analysis.",
-        "A common settlement model became a universal requirement."
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-crp-become-an-anchor-licensing"

@@ -5,31 +5,31 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "**SEP-0057** is a **Draft v0.3.0** Stellar proposal for a T-REX/ERC-3643-style regulated-token architecture. Its normative core defines a minimal identity verifier and token/compliance hooks; it does not require one particular claim-registry implementation.\n\nThe SEP also contains an expressly **non-normative claim-based reference appendix** where functions such as add_identity appear. Separately, OpenZeppelin's current stellar-contracts RWA suite implements concrete identity registries/profiles, compliance modules, manager roles, pause/freeze/recovery, and examples. Those library helpers and authorization boundaries are implementation APIs, not automatically the SEP's stable core interface.\n\nPin both the SEP and library commit before copying signatures. Current hosted docs/examples still contain older can_transfer/can_create wording while v0.3 source uses Transferred/Created/Destroyed hooks. Treat source/spec at the selected commit as controlling. Stellar classic flags, clawback, SEP-8, and SAC remain separate mechanisms. None of these contracts creates securities-law, custody, disclosure, transfer-agent, or off-chain-rights compliance.",
+    "answer": "Use `scout.searchResearch` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Identifies SEP-0057 as Draft v0.3.0 and separates its normative core from the non-normative claim-based appendix. Explains that add_identity exists in the reference appendix and concrete OpenZeppelin implementation, not as a guaranteed stable core-token API. Explains that technical policy enforcement does not establish legal compliance or off-chain rights.",
     "keyFacts": [
+      "Retrieves source-bounded live results via scout.searchResearch and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Identifies SEP-0057 as Draft v0.3.0 and separates its normative core from the non-normative claim-based appendix.",
       "Explains that add_identity exists in the reference appendix and concrete OpenZeppelin implementation, not as a guaranteed stable core-token API.",
-      "Identifies the current OpenZeppelin Stellar RWA suite as an implemented contract library with commit-sensitive APIs.",
       "Explains that technical policy enforcement does not establish legal compliance or off-chain rights."
     ],
     "avoid": [
       "Do NOT claim SEP-0057 is already a final, native protocol standard.",
       "Do NOT label add_identity invented, or present an optional appendix/library helper as a required normative core API.",
       "Do NOT copy stale hosted signatures without checking pinned source/spec.",
-      "Do NOT claim the contracts alone create legal compliance."
+      "Do NOT claim the contracts alone create legal compliance.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "2026-06-29 VERIFIED against the SEP-0057 source: status Draft, title 'T-REX (Token for Regulated EXchanges)', authors OpenZeppelin + Boyan Barakov/Ozgun Ozerk/Dennis O'Connell, last updated 2026-06-11, explicitly based on ERC-3643. Real trait fns include mint/forced_transfer/set_address_frozen/set_compliance/set_identity_verifier/verify_identity/recovery_target -- so the must_avoid example 'add_identity' is correctly an INVENTED name (not in the spec). Draft + freshness keep confidence medium; re-check status/API names before treating function-level details as stable.\nAlso good if the answer: Mentions Stellar-native regulated asset tools may include authorization flags, SEP-8 approval-server patterns, SAC/Soroban token interfaces, or OZ contract libraries depending on design. | Flags freshness because contract libraries and APIs can change quickly.\nGolden cites: Current OpenZeppelin Stellar contracts docs/repository and any Stellar docs for regulated-asset patterns.\nRECONCILED 2026-07-10 (GT-10 processes 3230/3232): disregard the inherited claim that add_identity is invented. It exists in the non-normative appendix and concrete library. Grade normative-core versus appendix versus implementation boundaries and pinned-source behavior; hosted docs currently lag v0.3 hooks."
   },
   "tags": {
     "category": "compliance-rwa-payments",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-10-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "B",
@@ -121,16 +121,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-09",
-      "by": "Golden-truth sweep import — The earlier correction established that add_identity exists, but still blurred three different surfaces: SEP-0057's minimal normative core, its expressly non-normative claim-based appendix, and OpenZeppelin's concrete Stellar RWA library. Current hosted docs/examples also lag the v0.3 source hooks. The golden must describe those boundaries and remove the contradictory inherited grader instruction.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 569 Batch E, 2026-07-09; direct check of SEP-0057.",
-        "Solo scratchpad 575 GT-10 primary/blind processes 3230/3232; pinned OpenZeppelin source/tests and hosted-doc conflict."
+        "P4 Lane R behavioral conversion queue, row 14 (q-crp-oz-rwa-erc3643-trex): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://github.com/stellar/stellar-protocol/blob/fbf05c9d3220b711e181577e7dca19844c765c3c/ecosystem/sep-0057.md"
       ],
       "rootCause": [
-        "Eval-side API freshness drift: absence from the minimal core trait was mistaken for nonexistence across appendix and implementation.",
-        "Normative spec, non-normative reference appendix, concrete library, and stale hosted docs were conflated.",
-        "solo://proj/49/todo/golden-corpus-health--901 — risk-weighted refute batch E"
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-crp-oz-rwa-erc3643-trex"

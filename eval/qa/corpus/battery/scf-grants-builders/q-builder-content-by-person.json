@@ -5,27 +5,27 @@
     "lumenloop.search_content_semantic"
   ],
   "golden": {
-    "answer": "Published material about **Tyler van der Hoeven (`kalepail`)** includes the official Developer Docs author index (seven posts), the **2024-06-13 developer meeting** covering Super Peach, Passkey Kit, and Launchtube, **Practical Path Payments** (2020-04-10), the **Turing Complete Contract Proposal for Stellar** talk (whose page has a date conflict that should be disclosed), the **SDF Developer Advocates AMA** (2023-05-04), and the 2022 SDF Stellar Lounge at SXSW video. Current project context includes `passkey-kit` and `stellar/launchtube`; Passkey Kit now labels itself a legacy precursor/demo and points new work to Smart Account Kit. Use official Docs/Scout research first. Lumenloop semantic results are candidate discovery only and require exact-name/source/date validation; its current exact-person lane returning empty is a service limitation, not evidence that nothing exists.",
+    "answer": "Use `lumenloop.search_content_semantic` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Treats empty person-lane results and semantic matches according to their evidence limits.",
     "keyFacts": [
-      "Returns a bounded official-source publication/appearance roster for Tyler.",
+      "Retrieves source-bounded live results via lumenloop.search_content_semantic and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Treats empty person-lane results and semantic matches according to their evidence limits."
     ],
     "avoid": [
       "Do NOT infer no publication from an all-empty person response.",
-      "Do NOT attribute semantic A/V results without exact-name and source validation."
+      "Do NOT attribute semantic A/V results without exact-name and source validation.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "GT-35 CORRECTION 2026-07-10: the exact Lumenloop person lane is all-empty and Scout has no Tyler row. Grade a bounded official-source roster and explicit validation of semantic candidates; empty service output is inconclusive.\nGT-35 independently confirmed by processes 3287/3289; this case is freshness-sensitive despite its inherited tag."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "lumenloop",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-09-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "A",
@@ -85,15 +85,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-10",
-      "by": "Golden-truth sweep import — The prescribed exact-person Lumenloop lane returns silent all-empty groups for Tyler, its A/V fallback returns semantic false positives, and Scout has no Tyler profile, while official sources contain a substantial publication roster.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-35 primary 3287 and blind 3289; live probes and official-source roster on 2026-07-10."
+        "P4 Lane R behavioral conversion queue, row 6 (q-builder-content-by-person): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://developers.stellar.org/meetings/authors/kalepail"
       ],
       "rootCause": [
-        "Route recipe was treated as truth and an empty data-shaped response was mistaken for absence.",
-        "improvements/lumenloop/ll-005-person-entity-empty-lane.md",
-        "improvements/lumenloop/ll-017-semantic-person-match-provenance.md"
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-builder-content-by-person"

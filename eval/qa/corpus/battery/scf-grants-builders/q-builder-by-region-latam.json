@@ -5,27 +5,27 @@
     "scout.searchProjects"
   ],
   "golden": {
-    "answer": "As of **2026-07-10**, Scout's Latin America filter returned 19 builders; combining the 7 payments and 3 DeFi matches produced this 8-person union: **Joaquin Farfan** (Sozu Pay, Chile), **Juan Carlos / Micoh18** (DataVend-x402, Chile), **Brandon Fernandez / Bran18** (Mercato and KindFi, Costa Rica), **Bruno Miranda / wrever** (ArcusX, Chile), **Cleverson Silva** (Boleto Guardian, Brazil), **Miguel Nieto** (Tippa, Colombia), **Matheus Brasil Aguiar** (ChatPay Go Labs, Brazil), and **Robson Campos dos Anjos** (DeFarm, Brazil). These are dated directory candidates, not endorsements. Public repos/sites corroborate each footprint, but deployment, audit status, depth, and availability must be checked before outreach. The live filters are `q`, `location`, and `skill`; do not rely on removed `scfTier`/`featured` claims or freeze the directory total.",
+    "answer": "Use `scout.searchProjects` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Attributes names to Scout while using independent project footprints only as corroboration.",
     "keyFacts": [
-      "Returns a dated bounded roster from the live Latin America payments/DeFi result union.",
+      "Retrieves source-bounded live results via scout.searchProjects and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Attributes names to Scout while using independent project footprints only as corroboration."
     ],
     "avoid": [
       "Do NOT treat the roster as permanent or infer mainnet/audit/seniority status from a directory row.",
-      "Do NOT replace live directory discovery with memory or web search; external sources may corroborate returned profiles."
+      "Do NOT replace live directory discovery with memory or web search; external sources may corroborate returned profiles.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "GT-35 CORRECTION 2026-07-10: grade a dated, Scout-attributed roster with evidence boundaries. Live filters are q/location/skill; directory count and membership are volatile. Public footprints may corroborate results and Tippa/Stellar View are not corpus-only.\nGT-35 independently confirmed by processes 3287/3289. Treat freshness as required despite the inherited static tag."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "scout",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-08-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "C",
@@ -95,16 +95,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-10",
-      "by": "Golden-truth sweep import — The effective answer remained a routing recipe with removed filters, a stale static count, and a false corpus-only caveat instead of returning the dated builders the user requested.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-35 primary 3287 and blind 3289, independently executed 2026-07-10.",
-        "Live Scout directory had 114 profiles; location=Latin America returned 19, payments 7, DeFi 3."
+        "P4 Lane R behavioral conversion queue, row 4 (q-builder-by-region-latam): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://stellarlight.xyz/builders"
       ],
       "rootCause": [
-        "Eval-side routing affordances and a historical count were promoted into the answer instead of returning dated results.",
-        "improvements/stellar-light-scout/sls-040-builder-scf-tier-contract-data-split.md",
-        "improvements/stellar-light-scout/sls-041-builder-skill-match-provenance.md"
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-builder-by-region-latam"

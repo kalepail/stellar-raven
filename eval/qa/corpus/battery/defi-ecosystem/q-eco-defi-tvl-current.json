@@ -5,25 +5,25 @@
     "lumenloop.search_directory"
   ],
   "golden": {
-    "answer": "Quote **one provider's Stellar chain TVL with its retrieval timestamp, endpoint, and definition**. At checks on **2026-07-10**, DeFiLlama's live chain endpoint moved around **$229.1M** intraday; its completed daily point was different. Treat that only as a dated example. Do not call May 30 the all-time high: the same historical series reports a higher value on June 19. Do not reconstruct chain TVL by summing protocol, RWA, asset, or CEX rows because scopes overlap. Any 'largest contributor' statement needs a same-time peer table from the same methodology.",
+    "answer": "Use `lumenloop.search_directory` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
     "keyFacts": [
-      "Gives provider, endpoint/definition, and answer-visible timestamp; treats the value as volatile and separates chain TVL from protocol/RWA/asset measures."
+      "Retrieves source-bounded live results via lumenloop.search_directory and reports their source and as-of date without freezing a roster, rank, count, or current value."
     ],
     "avoid": [
-      "Do NOT pin May 30 as the record, give an undated current scalar, sum overlapping rows, or compare contributors from mismatched snapshots/methods."
+      "Do NOT pin May 30 as the record, give an undated current scalar, sum overlapping rows, or compare contributors from mismatched snapshots/methods.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "FRESHNESS item, RE-VERIFIED LIVE 2026-06-29 (perplexity/DeFiLlama): figure is HIGHLY volatile and the dossier's ~$227M is stale. Record = ~$242M on May 30 2026 (confirmed via CryptoCompass/BSCNews). Live DeFiLlama chain reads have since ranged DOWN — mid-June 2026 reads near ~$200M, and the 2026-06-29 DeFiLlama read is ~$137.84M (matching the 06-22 scrape). So the gate MUST be on 'cite a dated source + flag staleness + confirm live', NOT a fixed number. Two distinct figures (record vs live snapshot) must not be merged. Confidence: low (volatile).\nAlso good if the answer: Attributes the figure to a specific dated source (DeFiLlama, SDF blog, or dated news) rather than a bare number. | Notes the live DeFiLlama snapshot moves substantially (it has ranged from a ~$242M May-2026 record down toward ~$140-200M since) — i.e. confirm against the live source.\nGolden cites: A dated TVL source (DeFiLlama / SDF / dated news) with a freshness caveat.\nGT-19 CORRECTION 2026-07-10: the June 19 historical point exceeds May 30. Gate provider/endpoint/asOf/definition and chain-vs-protocol separation, never one record/current scalar."
   },
   "tags": {
     "category": "defi-ecosystem",
     "service": "lumenloop",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-08-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "D",
@@ -62,14 +62,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-10",
-      "by": "Golden-truth sweep import — The corpus correctly warned that TVL moves, but pinned a May 30 all-time high that the same provider's history now disproves and mixed provider/chain/protocol definitions.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-19 primary 3254 and blind 3258; live 2026-07-10 reads moved around $229.1M intraday."
+        "P4 Lane R behavioral conversion queue, row 30 (q-eco-defi-tvl-current): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://api.llama.fi/v2/chains"
       ],
       "rootCause": [
-        "A volatile third-party scalar and record label were frozen; chain and protocol TVL definitions were under-specified.",
-        "improvements/stellar-light-scout/sls-031-tvl-methodology-provenance.md"
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-eco-defi-tvl-current"

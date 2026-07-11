@@ -6,29 +6,29 @@
     "lumenloop.search_directory"
   ],
   "golden": {
-    "answer": "Treat this as provider discovery, not a static Stellar feature list. Stellar settles assets such as USDC/XLM; local bank, debit-card, cash, M-Pesa, Wave, Orange Money, MoMo, USSD, and agent-network payouts are supplied by wallets, anchors, processors, or local partners. A correct answer asks for the country, asset, payout rail, amount, and user type, then verifies the provider's current support, limits, fees, KYC, settlement time, and API availability.\n\nMoneyGram Ramps is the clearest cited cash-access example: SDF describes it as letting wallets/apps convert cash to digital dollars and back via Stellar USDC, and MoneyGram's developer docs document SEP-10/SEP-24 integration, USDC asset details, production onboarding/KYB/legal steps, and production limits/country availability. Scout also surfaces HoneyCoin as an African fiat-to-stablecoin anchor with mobile-money/bank rails across multiple markets and USDC cash-out at MoneyGram on Stellar; that is a directory lead to verify against HoneyCoin's own current docs before promising a corridor.\n\nFor builders, distinguish consumer wallet availability from API availability. A wallet may let a user cash out, while a builder may need a separate partner/API contract, KYB, compliance review, webhooks, support SLAs, and reconciliation. SEP-24/SEP-6 are the on-chain withdrawal patterns and SEP-31 is relevant for cross-border payments, but the SEP flow only hands the value to the off-chain payout partner — it does not perform the M-Pesa/Wave/Orange Money/USSD/agent-network leg. Design for last-mile failure explicitly: a wrong phone number, dormant mobile-money account, agent liquidity outage, or USSD timeout can leave a payout pending/failed after the on-chain leg succeeds, so reconciliation, retries, refunds, and user support are part of the integration, not an afterthought.",
+    "answer": "Use `lumenloop.get_project`, `lumenloop.search_directory` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.\n\nStable guardrails that remain in force: Explains Stellar itself does not provide local bank, debit-card, M-Pesa, Wave, Orange Money, MoMo, or USSD payout rails; those come from anchors, wallets, payment processors, or local partners. Says integration requires checking supported assets, countries, KYC, fees, limits, settlement time, and API/SEP support for each provider.",
     "keyFacts": [
-      "Treats wallet/anchor cash-out availability by country and rail as a live, dated discovery problem.",
+      "Retrieves source-bounded live results via lumenloop.get_project, lumenloop.search_directory and reports their source and as-of date without freezing a roster, rank, count, or current value.",
       "Explains Stellar itself does not provide local bank, debit-card, M-Pesa, Wave, Orange Money, MoMo, or USSD payout rails; those come from anchors, wallets, payment processors, or local partners.",
       "Says integration requires checking supported assets, countries, KYC, fees, limits, settlement time, and API/SEP support for each provider."
     ],
     "avoid": [
       "Do NOT claim a mobile-money corridor is supported without current provider evidence.",
       "Do NOT imply Stellar can directly push funds to mobile-money or bank rails without an off-chain partner.",
-      "Do NOT answer only at the corridor-selection/cost-structure level; this question owns the last-mile payout-rail integration, including failed-payout remediation."
+      "Do NOT answer only at the corridor-selection/cost-structure level; this question owns the last-mile payout-rail integration, including failed-payout remediation.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "2026-06-29: Sharpened to own last-mile payout-rail integration — promoted consumer-wallet-vs-builder-API split and failed-payout remediation to should_have, added a must_avoid against answering only at the corridor-selection level (that lane is owned by q-crp-anchors-by-corridor). MoneyGram USDC cash-out and HoneyCoin mobile-money lead unchanged; country/mobile-money support stays monthly-freshness.\nAlso good if the answer: Separates consumer wallet availability (a user can cash out) from builder/API availability (a separate partner/API contract, KYB, webhooks, SLAs, reconciliation). | Treats failed/partial/reversed last-mile payout (wrong number, agent-network outage, USSD failure, dormant mobile-money account) as a remediation/support requirement the builder must design for. | Maps SEP-24/6 withdrawal (and SEP-31 for cross-border) as the on-chain side that hands off to the off-chain payout partner, not the payout itself.\nGolden cites: Dated provider/anchor docs or directory entries for any named cash-out option."
   },
   "tags": {
     "category": "compliance-rwa-payments",
     "service": "lumenloop",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-06-29",
-    "reverifyBy": "2026-09-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "D",
@@ -53,9 +53,13 @@
     ],
     "verified": {
       "date": "2026-07-11",
-      "by": "GT-10-corridors-custody-licensing-sdp-rwa accepted in Solo scratchpad 575 rev 291",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "solo://proj/49/scratchpad/truth-maintenance-20--575"
+        "P4 Lane R behavioral conversion queue, row 15 (q-crp-regional-offramp-mobilemoney): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://developer.moneygram.com/moneygram-developer/docs/integrate-moneygram-ramps"
+      ],
+      "rootCause": [
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-crp-regional-offramp-mobilemoney"

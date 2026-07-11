@@ -10,27 +10,26 @@
     "lumenloop.search_directory"
   ],
   "golden": {
-    "answer": "As of **2026-07-10**, `get_regions` returned **95 raw distinct `based_in` / `operating_region` strings from Lumenloop project records**. It is not a controlled taxonomy and does not classify Scout builders. The values mix countries and macro-regions and include aliases/case duplicates such as `africa`/`Africa`, `asia`/`Asia`, `global`/`Global`, `mena`/`MENA`, `latam`, `Latin America & Caribbean`, `Middle East`, and `Middle East & North Africa`. Enumerate the live response when the exact full list is needed; do not normalize or invent canonical filter terms unless the service publishes an enum.",
+    "answer": "Use `lumenloop.get_categories`, `lumenloop.get_project`, `lumenloop.get_project_tags_vocabulary`, `lumenloop.get_regions`, `lumenloop.get_tags_vocabulary`, `lumenloop.search_directory` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
     "keyFacts": [
-      "Identifies the result as raw project geography strings, not a controlled project-and-builder vocabulary.",
-      "Reports the dated count and representative duplicate/alias behavior."
+      "Retrieves source-bounded live results via lumenloop.get_categories, lumenloop.get_project, lumenloop.get_project_tags_vocabulary, lumenloop.get_regions, lumenloop.get_tags_vocabulary, lumenloop.search_directory and reports their source and as-of date without freezing a roster, rank, count, or current value."
     ],
     "avoid": [
       "Do NOT call these values canonical, normalized, or shared with Scout builders.",
-      "Do NOT cite the Scout builders page as the source for Lumenloop project-region values."
+      "Do NOT cite the Scout builders page as the source for Lumenloop project-region values.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "GT-35 CORRECTION 2026-07-10: get_regions is a dated raw distinct-value list for project geography, not a controlled enum or builder taxonomy. Grade truthful scoping, live enumeration, and duplicate/alias disclosure.\nTreat count and members as freshness-sensitive despite the inherited static tag; ll-003 owns normalization recurrence."
   },
   "tags": {
     "category": "scf-grants-builders",
     "service": "lumenloop",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "corpus-grounded",
     "status": "confirmed",
-    "asOf": "2026-07-10",
-    "reverifyBy": "2026-09-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "C",
@@ -65,14 +64,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-10",
-      "by": "Golden-truth sweep import — The golden called raw, mixed, duplicate project geography strings a controlled canonical vocabulary and cited the unrelated Scout builder surface.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "Solo scratchpad 575 GT-35 primary 3287 and blind 3289; 2026-07-10 recurrence."
+        "P4 Lane R behavioral conversion queue, row 7 (q-builder-lumenloop-regions-vocab): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://api.lumenloop.com/v1/tools/get_regions"
       ],
       "rootCause": [
-        "A desired future normalization contract was presented as current truth.",
-        "improvements/lumenloop/ll-003-region-vocabulary-free-text.md"
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-builder-lumenloop-regions-vocab"

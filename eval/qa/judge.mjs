@@ -304,7 +304,7 @@ const SELF_TEST_CANDIDATES = [
 const PROMPT_SHA256_FIXTURES = new Map([
   ["q-aas-burn-clawback-redemption-mechanics", "9c0236ebd6a3b481c10c55eb0759b7b4f4d97a2f2733289c74a4b2ae0d2c8349"],
   ["q-aas-list-token-on-exchanges-aggregators", "6048620b9abb84e7271af0a1f8fd92b1eaf47bad2b18d80c7ba03eb22319d813"],
-  ["q-asset-rwa-tokenized-freshness", "ee15caaceb352dba79497c8f8567a6bf790579dbc0fa47e1c33e95464c117d5f"],
+  ["q-asset-rwa-tokenized-freshness", "738d1af2630b64dc7cffe0d15589fef068a499ecf928839b378323e2ab6dbc34"],
   ["q-comp-sep8-number-lookup-no-deepresearch", "bc5eb25233a3f6d895f381d8445b5aa07f2d986f75bd944feab9675546f9cea4"],
   ["q-edge-1xlm-activation-fee", "dbecace2f637b55c7b0b5fd76df2301d4eaf749e49cef1905822ecd74faff60e"],
   ["q-edge-ambig-best-wallet", "a6151455693dab9876802b9b7156fb8f99b85961c5dbe5cd1871feb36c266b6e"],

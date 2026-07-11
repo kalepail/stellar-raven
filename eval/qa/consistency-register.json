@@ -21,8 +21,13 @@
           "why": "The ~$2.8B figure is attributed to two different sources (rwa.xyz in q-asset-rwa-tokenized-freshness vs Messari in the other two), and Messari's Q1-2026 headline is pinned at two different values (~$1.2-1.5B excluding stablecoins vs ~$2.8B tokenized-RWA stack). Under the standard reading of 'tokenized-RWA stack' (excludes stablecoins) both cannot be Messari's tokenized-RWA number. q-eco-stellar-rwa-stablecoin-volume's graderNotes partially reconcile it ('the $1.2-2B vs $2.8B gap is a scope difference — registered funds vs broad RWA incl. stablecoins'), but that reconciliation is not carried by the other two cases, so a candidate correctly quoting Messari-per-one-golden fails the sibling's framing.",
           "disposition": "resolved by provenance-bearing overrides on 2026-07-03; retained as historical contradiction evidence and rechecked in the 2026-07-09 corpus-health sweep",
           "memberContentSha256": {
-            "q-asset-rwa-tokenized-freshness": "ef95624edc84d69b59e39a8916d8649a82a3bb01d2184fbae16206a6ea5cfbf0",
+            "q-asset-rwa-tokenized-freshness": "75289339b1b33100f65c72b7d150e534611700322a527cea0142faf371b38598",
             "q-eco-stellar-rwa-stablecoin-volume": "cc18344d59fe32f4e4607dc57dae5e14c8e13d73106b217da093d8e88fdf26dc"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         }
       ],
@@ -39,8 +44,13 @@
           "why": "Both agree on the 174/170+ core figures, but they disagree on the provenance and currency of '180+': the overridden case calls 180+ 'older SDF material' while the sibling calls it the CURRENT live product page. The overridden case is the more-verified side (2026-07-03). Graders on either case should accept 170+/174/180+ with any dated sourcing and never hard-gate one of them.",
           "disposition": "grader-caution candidate",
           "memberContentSha256": {
-            "q-crp-anchors-by-corridor": "3d71a570dd044379ff8322446b401e6d072d9094dbcec7cb5920c8d2cd752ffc",
+            "q-crp-anchors-by-corridor": "0e098a4f4cf3152b8988bed1e68a9b05ab3be0052407cf000a7777296ceff3fd",
             "q-hist-remittance-corridors": "f8c448828ce0385720a88dcf45cc09d795849fecfe98539487dcb7b66d7a9540"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -210,7 +220,7 @@
           "note": "SEP-1/9/10/12/24/31/46/48 Active; SEP-6 Active with only interactive components deprecated in favor of SEP-24 (the only-partial-deprecation nuance is stated identically in all 3 cases that touch it); SEP-30/38/39/41/43/45/55/57/58 Draft — consistent everywhere. SEP-8 moved to tensions (upstream repo itself inconsistent).",
           "memberContentSha256": {
             "q-aas-sep30-recoverable-wallets": "c72eedb4d18b6c17775d0d963c134f23ce8eac867eb666e1c2dda123727a629f",
-            "q-crp-oz-rwa-erc3643-trex": "9b027dc7cdb59942d355e3d779b4f77f074b2e61dbc6bd299774036d54639d0d",
+            "q-crp-oz-rwa-erc3643-trex": "a6b8ebb46feb987cc854df2c9db0355111e3bf85e6e32316e00ac7e983172d06",
             "q-sep-1-toml": "248a159e7b6e8dc220acef9209b7fa9883ecffa5c25e799e3d7ce69be4866fb7",
             "q-sep-12-kyc": "6510a9b0102ea22bef0c1f1520be925dfe5583cd2b5ffdd3ec5c96a845c65f88",
             "q-sep-31-cross-border": "4547c299b9315f7ae9f9c8b34b510b62e96b8bc8c084830c1ebd0913f0a5a726",
@@ -237,9 +247,14 @@
           ],
           "note": "All three agree on both halves: perps are EMERGING (Noether testnet, Stellars Finance mainnet-targeted, Zenex pre-release — so NOT whitespace) AND no perp DEX is confirmed mainnet-live; all three exclude Turbolong as leveraged spot. The whitespace-vs-live split that silently drifted in the ancestor corpora is coherently pinned here, including the Scout-status-vs-self-description discrepancy (directory 'Live' vs own 'testnet') documented inside q-defi-perps-whitespace.",
           "memberContentSha256": {
-            "q-defi-named-newer-protocols": "27fb4cb46089839081f6c269d45577902337d1bdd9fff5d014012c514f819efa",
+            "q-defi-named-newer-protocols": "aca967b0104b79c48c151f0c2e0c923fd43dfdc9673ec38dcd018aa62543b7eb",
             "q-defi-perps-whitespace": "ca5f63b8ead47a03f567b998bb0de7dae625b6188ff392fe4067471363dcd5a1",
             "q-eco-defi-market-map": "0b8e5c99627f1c90a4299d14485d192750ec313a1d72e70e78f4e9361432da3a"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -315,10 +330,15 @@
           "memberContentSha256": {
             "q-defi-phoenix-what-is": "6bd374c5391470d6ae63a4ba09c18544d19d3054821b4cbf7be230f54e1e0671",
             "q-defi-reflector-oracle": "5d5110fe6e94db172516a5d248c7a1a0560c521232da27a2cba39c04b63af4f9",
-            "q-defi-rwa-scf-similar": "716b70957f01bef07ff12bebab1284e1fcfa8d767e7b3edb5457d6283952b651",
+            "q-defi-rwa-scf-similar": "eedaae5353d6e4daee50bf466e83cc45982eb50a0a3722a46bf8bb24bedc0307",
             "q-defi-soroswap-what-is": "86daa625039419f533796797b2b9cb2ef2fe9a6d2fcaa1900e9791c5c1e1602f",
             "q-eco-hana-wallet-scf": "76900c4257c93b31cad7eee7cc826a9fda1536895b2e85bb7958502d009b040e",
             "q-scf-history-soroswap": "184509b9fc47cc395109b7f6dc1965af991a1b733dfeceff63fce978f232e300"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -333,9 +353,14 @@
           "note": "Date (Feb 21-22 2026, ~00:25 UTC Feb 22), size (~$10M/~$10.2M), freeze (~48M XLM ≈ $7.2-7.5M by Tier-1 validators), vector (USTRY Etherfuse Stablebond pumped ~$1.06→~$106 on illiquid SDEX poisoning Reflector VWAP), and the app-level-not-protocol-level framing are identical across all five cases.",
           "memberContentSha256": {
             "q-comp-security-disclosure-programs": "e82cea45171cf31b5ce1a59cbb0fa9fc6bec04d71b1b9c760c9a640a3e757f72",
-            "q-comp-yieldblox-oracle-incident": "5ea5720a1526bd0075ee03af7f7c3b3e764fdf2801f214f5f2f8b311e9a41fb1",
-            "q-defi-etherfuse-stablebonds": "86998d09b214facad8c23da06c5dd8ae26878d1d3a4dbf0227c9019161f64788",
+            "q-comp-yieldblox-oracle-incident": "813f2f65a0d53cb78f237ff9b58e67455a7df97b95b23110e016aeede98cb23d",
+            "q-defi-etherfuse-stablebonds": "ebb3f7b6fc7dec9da2b99863c54c4385cc1aa927aabb39797f60c3bf11c49673",
             "q-soroban-oracle-defensive-consumption": "96589f90b771c258a8adc60ab9f68377b54db23c17b1ce2f1911eb79e078b91f"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -379,7 +404,7 @@
           ],
           "note": "CRDT=WisdomTree Sep 12 2025, USDY=Ondo Sep 17 2025, and PYUSD=PayPal-branded/Paxos-issued Sep 18 2025; Templar is another verified Nov 5 2025 launch. The set is illustrative, not exhaustive, and the old Meridian 'inflection point' narrative is not a truth gate. Announced, approved, technically integrated, listed, and publicly live remain distinct states. EURC=Circle 2023-09-26; CCTP live on Stellar 2026-05-19; BENJI=Franklin Templeton since 2021; Figure YLDS live 2026-05-05; DTCC DTC service planned H1 2027 NOT live.",
           "memberContentSha256": {
-            "q-asset-rwa-tokenized-freshness": "ef95624edc84d69b59e39a8916d8649a82a3bb01d2184fbae16206a6ea5cfbf0",
+            "q-asset-rwa-tokenized-freshness": "75289339b1b33100f65c72b7d150e534611700322a527cea0142faf371b38598",
             "q-asset-usdc-eurc-issuer": "f66c9cf923e027db215975b2a2f41de0a444ea36bcd376baed6d23fd53db4ec1",
             "q-defi-benji-franklin-templeton": "4013b5d48f17b52495c9c282db319e6a97e3442d04fe30c1b4d7557e61967a4b",
             "q-defi-ondo-usdy": "084bf1b02daebdc1f0ddfcc018a104f9d28917e9aa902890a6fc937136074308",
@@ -407,9 +432,14 @@
           "note": "174 (dev docs, exact) with 170+ marketing rounding, SEP-24 + USDC rails, $5-$2,500 off-ramp per tx, launched via Vibrant/LOBSTR 2022 — consistent across all four (the 180+ provenance question is filed under tensions).",
           "memberContentSha256": {
             "q-anchor-moneygram-ramps": "4db6ff0f2a65fee40b4c3261c4a3f1a976f898361d1b9e777d8c9c222b57b8f6",
-            "q-crp-anchors-by-corridor": "3d71a570dd044379ff8322446b401e6d072d9094dbcec7cb5920c8d2cd752ffc",
+            "q-crp-anchors-by-corridor": "0e098a4f4cf3152b8988bed1e68a9b05ab3be0052407cf000a7777296ceff3fd",
             "q-hist-remittance-corridors": "f8c448828ce0385720a88dcf45cc09d795849fecfe98539487dcb7b66d7a9540",
             "q-pay-moneygram-ramps": "49973681eb7b65b589215df2502520d3adc4cecdc5222bd94e74cd7029c181d0"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -540,9 +570,14 @@
           "memberContentSha256": {
             "q-defi-aquarius-what-is": "c11c995962eb4bc57a0068ec7811b666b20b2b25172ab9872dd46696bb307c41",
             "q-defi-defindex-honest": "abde03c42e2b7f805f2db555856385da3020bb715f76289034199f915e8320df",
-            "q-eco-defi-tvl-current": "5b0034376eeac207bc461eb396e5efad5446c7f3da4a31c58b30a13fb287d851",
+            "q-eco-defi-tvl-current": "71b686a6b5fa489ef61c8eab48fafa70d797c1a48234d53be836afedd6bedf48",
             "q-edge-fresh-latest-blend-tvl": "d0799561b518147599cf1140671e31da26e730945e00a0e85295a017f4eb7284",
             "q-edge-noinfo-exact-tvl-figure": "7fdfbdda5e54f05c0c6603a60098d2d9e46e5bf8f7dc8293a0f8a451d7263274"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -730,7 +765,12 @@
           "why": "A moving draft invalidated the false-avoid example.",
           "disposition": "resolved: current function acknowledged while draft/non-stable status remains explicit",
           "memberContentSha256": {
-            "q-crp-oz-rwa-erc3643-trex": "9b027dc7cdb59942d355e3d779b4f77f074b2e61dbc6bd299774036d54639d0d"
+            "q-crp-oz-rwa-erc3643-trex": "a6b8ebb46feb987cc854df2c9db0355111e3bf85e6e32316e00ac7e983172d06"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -766,7 +806,12 @@
           "why": "Useful core facts were bundled with unnecessary claims that lacked a defined source methodology.",
           "disposition": "resolved by removing the unverifiable clauses and retaining the supported core",
           "memberContentSha256": {
-            "q-defi-agent-identity-stellar-experimental": "9d967f506da564bae5c5811576185885482e4cbfcf8eb1670bee5d0c977579fd"
+            "q-defi-agent-identity-stellar-experimental": "1838b7dab79a28018f1340776e45f51335bce6dd8ab79b6960440c69059e4d96"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         }
       ],
@@ -817,10 +862,15 @@
           "why": "These are disclosed provenance/scope disagreements, not facts that can be collapsed into one timeless scalar.",
           "disposition": "retain grader caution and accept accurately dated/source-scoped answers",
           "memberContentSha256": {
-            "q-crp-anchors-by-corridor": "3d71a570dd044379ff8322446b401e6d072d9094dbcec7cb5920c8d2cd752ffc",
+            "q-crp-anchors-by-corridor": "0e098a4f4cf3152b8988bed1e68a9b05ab3be0052407cf000a7777296ceff3fd",
             "q-eco-lobstr-wallet": "d9cb16d6099add68fc6dcdcd52e6666ab280c6a8aeb029975e4f3b42abb781e2",
             "q-sep-8-regulated-assets": "21e5699c9289499fc31ec9fe18e910b355801aca0bc0869b5bdaafe632e43e9a",
             "q-sep-catalog-list": "332f613d8ef16443ed4bacf1896eec42c8eb43432228ac5f05ca1ba18eb0f6c3"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         }
       ],
@@ -896,7 +946,7 @@
           "note": "Dated/provenance-bearing overrides now distinguish source snapshots, legal entities, directory reconstructions, and current CLI/API semantics without unsupported comparisons.",
           "memberContentSha256": {
             "q-asset-usdc-eurc-issuer": "f66c9cf923e027db215975b2a2f41de0a444ea36bcd376baed6d23fd53db4ec1",
-            "q-builder-by-region-latam": "0c360386ba2107b31d29cb4efe488c2a4b5dc43359b275de88bdae4a21872b2b",
+            "q-builder-by-region-latam": "9a7ca9e3f397d8ed377ae2257dcd172cb51f029f7d65b91c37a3c5ae96d0dc23",
             "q-eco-pyusd-stellar-freshness": "bca4c3a220620e0eaf282795d8701195f70b4ea8780538ef0e492d0fcad5ce7b",
             "q-scf-funding-by-category": "0a447671f02a65a6dbc27d2a1fb6584b5d4bb68362cfe3a4a24279cda9062946",
             "q-soroban-deploy-cli": "fb814a3ee0db326611cce267c2033e234e0d8618436ae8862b8cb8860b7e780d"
@@ -960,9 +1010,14 @@
           "note": "Native XLM has no issuer/trustline and is not ERC-20, but it has a deterministic network-specific SAC ID exposing the same asset through SEP-41. Ordinary MetaMask EVM custom-network flow cannot add Stellar; a dated third-party Stellar Snap exists and is distinct from MetaMask Bridge or a safety endorsement. Wrapped/bridged assets remain separate representations.",
           "memberContentSha256": {
             "q-asset-trustline-vs-sac": "f26baa8d8ea38c2553d449c13dfcd83f82914ea4332106574485d7cbd6074063",
-            "q-defi-bridge-evm-to-stellar-axelar": "62cc536d31711f3f1e21a9bf408c5a5d621e3c296c6c8dbeab060760aa90a730",
+            "q-defi-bridge-evm-to-stellar-axelar": "3345c8585b6ebe9f06c16ca7296552ed5042d198dd884ea7632b3b4a4165e9e9",
             "q-edge-metamask-evm-mental-model": "30840585d4d1ff80b6a5be70d0d77f7080c49511cc57656e3af9842d61035515",
             "q-pc-address-types-strkey": "197917e03024f531a3f8843ce5aa9cf647720aec030029102b8fab3030268b3b"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -1091,9 +1146,14 @@
           "note": "A live provider may expose a many-decimal scalar, but it remains a provider/endpoint/as-of/inclusion/pricing snapshot rather than an objective protocol fact. The corpus no longer requires an approximate range or claims TVL necessarily moves block-by-block.",
           "memberContentSha256": {
             "q-defi-defindex-honest": "abde03c42e2b7f805f2db555856385da3020bb715f76289034199f915e8320df",
-            "q-eco-defi-tvl-current": "5b0034376eeac207bc461eb396e5efad5446c7f3da4a31c58b30a13fb287d851",
+            "q-eco-defi-tvl-current": "71b686a6b5fa489ef61c8eab48fafa70d797c1a48234d53be836afedd6bedf48",
             "q-edge-fresh-latest-blend-tvl": "d0799561b518147599cf1140671e31da26e730945e00a0e85295a017f4eb7284",
             "q-edge-noinfo-exact-tvl-figure": "7fdfbdda5e54f05c0c6603a60098d2d9e46e5bf8f7dc8293a0f8a451d7263274"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -1317,9 +1377,14 @@
           ],
           "note": "M addresses encode G+uint64 and share the underlying G account state. Only specified account positions accept M; current InvokeHostFunction sources and some external services do not. Compatibility is dated, not universal.",
           "memberContentSha256": {
-            "q-crp-sdp-operation": "7994347f39418a1aeb4ac7a73adc10aa7c0bd06d7426ee6bbe2737138a29fb27",
+            "q-crp-sdp-operation": "de889b42ccbb184e891d3e69dad78b2c2493338d5136ae03bf1c14b18c5dbc89",
             "q-pc-address-types-strkey": "197917e03024f531a3f8843ce5aa9cf647720aec030029102b8fab3030268b3b",
             "q-pc-muxed-accounts": "28b99f373f09b4e5af2992522e9f8aec0b178985b791970dbe134339224d4375"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -1515,7 +1580,12 @@
           "why": "A desired schema and three distinct SCF concepts were presented as current data.",
           "disposition": "corrected; sls-040",
           "memberContentSha256": {
-            "q-builder-by-scf-tier": "51c70d6080f4c20a1e1ef2b47716ca80eeb1e6c5d77973437ff39aa2f7c8d55a"
+            "q-builder-by-scf-tier": "7995c4190e4a269eab2272e8a9fa2cd6edaa0684ccadd3e5b97d03440fec5908"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -1529,7 +1599,12 @@
           "why": "Route success/semantic similarity was mistaken for person attribution and empty output for absence.",
           "disposition": "corrected; ll-005 and ll-017",
           "memberContentSha256": {
-            "q-builder-content-by-person": "c1718432ac649a812fca662033d3311a0e2e1f5819551a8baa80425e62e534c5"
+            "q-builder-content-by-person": "41b07374e6a06340a20afa0d58067b9669f607e7df369fb580d8b11f6a8534a7"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -1544,8 +1619,13 @@
           "why": "The region case copied the category-vocabulary semantics and cited the unrelated Scout builder surface.",
           "disposition": "corrected; ll-003",
           "memberContentSha256": {
-            "q-builder-lumenloop-regions-vocab": "11ed2ed978e10d38bddbe0466aba94ff6ed4483afd49039000cb2aa3fc32572a",
+            "q-builder-lumenloop-regions-vocab": "55df02c9c9433bb60659148822261958a4d695560acf2b95a2bb3679c25d17a4",
             "q-defi-lumenloop-categories-vocab": "8a51e31b6c862dec21f6036397a48cd29dc1088e8da8bd4d835e2ad700764a77"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         }
       ],
@@ -1560,9 +1640,14 @@
           ],
           "note": "Scout is candidate discovery. Membership/counts are dated; public footprints corroborate returned rows but do not establish deployment, audit status, seniority, or availability. Skill matches need row-level provenance (sls-041).",
           "memberContentSha256": {
-            "q-anchor-list-builders-discovery": "359cbc28299b629b547d32fc1e9ecec688983e9a65b6ceba512a772bb1bd427c",
-            "q-builder-by-region-latam": "0c360386ba2107b31d29cb4efe488c2a4b5dc43359b275de88bdae4a21872b2b",
-            "q-builder-rust-soroban-devs": "d8fb7d12fbb6ac9ebe27674970838749d2770f881bdda321eb796c0956710be5"
+            "q-anchor-list-builders-discovery": "8b458d71d6c5f7cc33786856f01570eb9d802dc26999e7e07bfc2e43cd905965",
+            "q-builder-by-region-latam": "9a7ca9e3f397d8ed377ae2257dcd172cb51f029f7d65b91c37a3c5ae96d0dc23",
+            "q-builder-rust-soroban-devs": "8a52e18cc4a462d6507a10f405fcbcf399ab8e5ef0b453f5d26fc457e3de3337"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -1575,9 +1660,14 @@
           ],
           "note": "Verified/Pathfinder/Navigator/Pilot are governance roles. Award programs and submission records concern projects. Neither supplies a person-level advisor ranking without a current attribution crosswalk.",
           "memberContentSha256": {
-            "q-builder-by-scf-tier": "51c70d6080f4c20a1e1ef2b47716ca80eeb1e6c5d77973437ff39aa2f7c8d55a",
+            "q-builder-by-scf-tier": "7995c4190e4a269eab2272e8a9fa2cd6edaa0684ccadd3e5b97d03440fec5908",
             "q-scf-nqg-voting": "9d8954b7ccd14627480fda0d4a360db9a379df6791323568c9b33b6a4e2f740a",
             "q-scf-verified-members": "d2fef6ea69981d0c1a8bd54cba401213a0732092a76c5944a339a4dac539b350"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         },
         {
@@ -1590,10 +1680,15 @@
           ],
           "note": "The person lane is silently empty and semantic candidates need exact validation; this does not establish failure of working project/org/token entity lanes.",
           "memberContentSha256": {
-            "q-builder-content-by-person": "c1718432ac649a812fca662033d3311a0e2e1f5819551a8baa80425e62e534c5",
+            "q-builder-content-by-person": "41b07374e6a06340a20afa0d58067b9669f607e7df369fb580d8b11f6a8534a7",
             "q-defi-benji-franklin-templeton": "4013b5d48f17b52495c9c282db319e6a97e3442d04fe30c1b4d7557e61967a4b",
             "q-defi-ondo-usdy": "084bf1b02daebdc1f0ddfcc018a104f9d28917e9aa902890a6fc937136074308",
             "q-defi-wisdomtree-crdt": "b3c9cfb60942105cefe352f526d44e480a0b2bbfd9641f26f2ab2159e9555622"
+          },
+          "verdict": "reopen",
+          "reopened": {
+            "date": "2026-07-11",
+            "reason": "member-content-changed"
           }
         }
       ]

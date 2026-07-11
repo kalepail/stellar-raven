@@ -5,26 +5,26 @@
     "lumenloop.find_av_passages"
   ],
   "golden": {
-    "answer": "- The correct behavior is a **dated, caveated figure**, not a confident permanent number — the headline figures share one scope (RWA **excluding** stablecoins, per rwa.xyz data) and differ by DATE, so an undated number is meaningless [1][2].\n- The 2026 trajectory: **$796M** at the start of Q1 → **$1.52B at Q1-end** (+91% QoQ, Messari \"State of Stellar Q1 2026\") → SDF announced Stellar **\"crossed $2 billion\" in RWAs on ~April 11, 2026** (>4x growth in 12 months) → **~$2.8B by early June 2026** (rwa.xyz distributed asset value; the figure is volatile — a late-June read showed ~$2.4B) [1][2].\n- Leading issuers: **Spiko** (EU/US T-bill tokens, largest), **Franklin Templeton (BENJI)**, **Ondo Finance**, **WisdomTree** [1][2].\n- **Flag this as time-sensitive** — verify against a current dated source (SDF, Messari, rwa.xyz) before relying on it.",
+    "answer": "Use `lumenloop.find_av_passages` to retrieve current, source-bounded results for this question. Report the source and as-of date. Treat returned rosters, ranks, counts, and current values as observations, not timeless facts.",
     "keyFacts": [
-      "Provides a current tokenized-RWA figure for Stellar with a dated source rather than a confident undated number."
+      "Retrieves source-bounded live results via lumenloop.find_av_passages and reports their source and as-of date without freezing a roster, rank, count, or current value."
     ],
     "avoid": [
       "Do NOT assert a precise TVL/RWA figure as a permanent fact without a date or freshness caveat.",
-      "Do NOT fabricate a number not grounded in a cited report."
+      "Do NOT fabricate a number not grounded in a cited report.",
+      "Do NOT state a specific current TVL, count, roster, rank, or value as a timeless fact."
     ],
     "notes": "Freshness item — figure is genuinely contested across sources, so the rubric gates on dated/caveated behavior, NOT one number. Live re-check 2026-06-29: rwa.xyz/networks/stellar resolves and shows ~$2.40B distributed asset value (69 RWA tokens, ~18.4k holders), down from the ~$2.84B seen earlier in June — still low-single-digit $B, confirming the order-of-magnitude gate. SDF announced 'crossed $2B' on 2026-04-11/14 (~4x YoY); Messari Q1-2026 tracked ~$1.2-1.5B excluding stablecoins. Issuers: Spiko, Franklin Templeton (BENJI), Ondo, WisdomTree.\nAlso good if the answer: Cites a dated source in the right order of magnitude (low-single-digit $B tokenized RWA on Stellar as of early/mid 2026, ~4x YoY growth). | Explicitly flags the figure as time-sensitive / as-of-date.\nGolden cites: A dated State-of-Stellar / network report or analytics source (e.g. SDF, Messari, rwa.xyz).\nCorrected 2026-07-03 (todo 829 contradiction sweep + deep verification): the prior '$1.2-1.5B excluding stablecoins' Messari range was a third-party paraphrase — the written report says $796M → $1.52B at Q1-end, crossed $2B Apr 11 (all EXCL. stablecoins, on rwa.xyz data the report itself links). The ~$2.8B is a June-2026 point-in-time rwa.xyz value (also stated by the SDF president in Messari's 2026-06-04 INTERVIEW — not the written report). All figures share one ex-stablecoin scope; differences are temporal, not methodological. Any dated figure on that trajectory is correct; never require one number."
   },
   "tags": {
     "category": "assets-anchors-seps",
     "service": "lumenloop",
-    "freshness": "scheduled"
+    "freshness": "live"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-03",
-    "reverifyBy": "2026-08-01",
+    "asOf": "2026-07-11",
     "sources": [
       {
         "class": "D",
@@ -70,14 +70,14 @@
       }
     ],
     "verified": {
-      "date": "2026-07-03",
-      "by": "Golden-truth sweep import — Consistency-sweep contradiction (register sweep 2026-07-03) resolved by deep verification: the corpus attributed ~$2.8B to both rwa.xyz and Messari and pinned Messari at two values. Truth: one shared scope (RWA excl. stablecoins, rwa.xyz data — which Messari's report itself sources), one time series ($796M start-Q1 → $1.52B Q1-end → $2B on Apr 11 → ~$2.8B early June). This case's '$1.2-1.5B' Messari range traces to a loose third-party paraphrase, and its 'sources disagree by methodology' framing is wrong — the differences are temporal.",
+      "date": "2026-07-11",
+      "by": "P4 conversions (Solo 3418)",
       "evidence": [
-        "eval/qa/consistency-register.json sweep 2026-07-03 (the contradiction record); deep-verification quotes/URLs in Solo scratchpad 521"
+        "P4 Lane R behavioral conversion queue, row 2 (q-asset-rwa-tokenized-freshness): Behavioral golden: retrieve current source-bounded results, report an as-of/source, and do not pin a roster, rank, count, or current value.",
+        "Current source retained for behavioral retrieval: https://app.rwa.xyz/networks/stellar"
       ],
       "rootCause": [
-        "eval-side authoring: the '$1.2-1.5B' range came from a third-party paraphrase, not the report; single-source-class verification",
-        "solo://proj/49/todo/corpus-health-instru--829 (contradiction-scan instrument, first sweep) — sibling sweep 2026-07-03: grep for 2.8B/2.84/1.52/Messari/rwa.xyz hits exactly the three RWA cases, all corrected in this pass"
+        "eval-authoring"
       ]
     },
     "origin": "raven-next q-asset-rwa-tokenized-freshness"
