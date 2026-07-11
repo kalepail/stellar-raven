@@ -107,8 +107,9 @@ reviewer append a verdict with file:line evidence to a Solo scratchpad, then rec
 every finding before committing. Reviewer briefs should be narrow enough to verify, for
 example:
 
-- `golden/eval reviewer`: inspect active golden overrides, QA/corpus cases, skill cases,
-  plan/gates, and report any stale expected answers or missing eval coverage.
+- `golden/eval reviewer`: inspect owned QA battery cases (`eval/qa/corpus/battery/**`),
+  live contracts, skill cases, plan/gates, and report any stale expected answers or missing
+  eval coverage.
 - `improvements reviewer`: inspect fixed/recurring/new upstream findings and lint/index
   state.
 - `runtime/source reviewer`: inspect `src/**`, runner declarations/projections, fixtures,

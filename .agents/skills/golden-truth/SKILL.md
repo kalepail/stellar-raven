@@ -1,6 +1,6 @@
 ---
 name: golden-truth
-description: "Change the golden Q→A corpus without codifying lies: classify the truth domain, triangulate across independent source classes, encode disputed or unverifiable facts honestly, and land provenance-bearing overrides. Use when editing eval golden answers, key facts, avoid clauses, sources, or grader notes."
+description: "Change the golden Q→A corpus without codifying lies: classify the truth domain, triangulate across independent source classes, encode disputed or unverifiable facts honestly, and land provenance-bearing edits to the owned per-case corpus. Use when editing eval golden answers, key facts, avoid clauses, sources, grader notes, or truth metadata."
 ---
 
 # Golden gospel-truth verification — how to change the golden corpus without codifying lies
@@ -20,11 +20,15 @@ replaced, because it now carries the authority of a review. Therefore:
 > triangulation across independent source classes, and disputed facts are encoded as
 > disputes, never pinned.
 
-This skill governs ANY change to golden content — `answer`, `keyFacts`, `avoid`, `sources`,
-`graderNotes` — all of which land as `eval/qa/golden-overrides.json` entries (the corpus
-archive is verbatim/read-only; see the override doctrine in `eval/qa/README.md`: overrides
-are stop-gaps wearing their provenance, and `compile-qa.mjs` refuses entries missing their
-provenance fields).
+This skill governs ANY change to judge-facing gospel — `question`, `golden.answer`,
+`golden.keyFacts`, `golden.avoid`, `golden.notes`, `tags.freshness`, `tags.trap` — and to the
+judge-blind `truth` block that carries its provenance. The corpus is **owned**: edits land
+directly in the per-case file `eval/qa/corpus/battery/<category>/<id>.json`, reviewed like
+code. The CI **gospel-change lint** (`eval/qa/lint-corpus.mjs`, diff-aware against the merge
+base) refuses any judge-facing change whose `truth.verified` did not change in the same diff
+with non-empty `evidence` + `rootCause` — that lint is the successor to the retired
+override-file enforcement, and it moves the check from compile-time bookkeeping to the moment
+of change.
 
 ## Step 1 — classify the truth domain (this picks the verification standard)
 
@@ -32,9 +36,10 @@ provenance fields).
 |---|---|---|
 | **real-world / protocol** | Authoritative primary sources + source code. The corpus/aggregators may lag or be wrong — that's an `improvements/` finding, never an excuse to weaken the golden. | RPC limits, CLI commands, SEP semantics, build targets |
 | **corpus-grounded** | What the live community corpora (Scout, Lumenloop) support NOW, **cross-checked against the real world**. Distinguish *real-world-confirmed* from *corpus-only* (in the aggregator, no external footprint). Corpus-only facts may appear in goldens but must be labeled so graders treat them as source-relative. A corpus-vs-world contradiction → `improvements/` finding + grade leniently on both sides. | Regional community events, builder directories, project records |
-| **freshness-sensitive** | A *behavior*, never a pinned value. Point-in-time figures require an `asOf` date in the golden text itself. | SCF amounts, country counts, versions, rosters |
+| **freshness-sensitive** | A *behavior*, never a pinned value. Point-in-time figures require an `asOf` date in the golden text itself, `tags.freshness: "scheduled"`, and a `truth.reverifyBy` date. | SCF amounts, country counts, versions, rosters |
 
-Most questions mix domains — classify per CLAIM, not per case.
+The classification is recorded per case as `truth.domain` (`real-world | corpus-grounded |
+mixed`). Most questions mix domains — classify per CLAIM, not per case.
 
 ## Step 2 — know your source classes (independence is between CLASSES)
 
@@ -64,7 +69,8 @@ not present.
   reading about it. The strongest evidence class for how-to facts — "the command is real,
   not a doc guess": docs can describe behavior that shipped differently, so run it.
 
-Two perplexity hits are ONE class. Corroboration = agreement across classes.
+Two perplexity hits are ONE class. Corroboration = agreement across classes. These letters
+are the `class` values in `truth.sources[]` and corroboration evidence rows.
 
 ## Step 3 — corroboration thresholds by claim criticality
 
@@ -75,6 +81,17 @@ Two perplexity hits are ONE class. Corroboration = agreement across classes.
 | Existence / footprint (events, builders, programs) | 1 authoritative source + a no-contradiction web sweep. Corpus-domain: live corpus + a real-world sample check (do ≥5 sampled items have external footprints — lu.ma pages, articles, repos?). |
 | **Negative claims** ("X is NOT funded", "no Y exists") | The hardest class — absence from primary records + an explicit web sweep, and even then phrase as of-date and source-relative ("per SCF records as of <date>") rather than absolute. |
 
+**Where the matrix lands.** Corroboration rows live in the case file itself as
+`truth.corroboration[]`: `{claim, verdict, evidence: [{class, ref, observedAt, note}]}`.
+Verdict enum: `confirmed | confirmed-as-of | disputed | unverifiable | corpus-only |
+contradicted` — `confirmed-as-of` for dated point-facts; `contradicted` is legal **only** for
+claims mirrored in `golden.avoid` (it documents, with evidence, why an avoid trap exists),
+never for claims the golden asserts. The lint **requires** corroboration rows when
+`truth.status` is `disputed`/`unverifiable`, when the case is named by a register
+`numericInvariants` entry, and for numeric/version/date keyFacts on `real-world` cases;
+negative claims are heuristically warned but the hard bar above is this skill's and the
+reviewer's to hold.
+
 ## Step 4 — fan out verification subagents (parallel by claim cluster)
 
 Group claims into clusters (one topic per agent), assign each agent an explicit source-class
@@ -82,7 +99,7 @@ mix, and require a **corroboration matrix** back:
 
 ```json
 {"claims":[{"claim":"...","verdict":"confirmed|disputed|contradicted|unverifiable",
-  "sources":[{"class":"A|B|C|D|E","ref":"url or repo path","quote":"exact text","asOf":"date"}],
+  "sources":[{"class":"A|B|C|D|E|F","ref":"url or repo path","quote":"exact text","asOf":"date"}],
   "notes":"nuances"}],"overallNotes":"..."}
 ```
 
@@ -98,14 +115,14 @@ command lacks it (bindings live in [`AGENTS.md` “Coordination”](../../../AGE
 Pick each agent's model per
 [`AGENTS.md` “Model routing for repo-work fan-out”](../../../AGENTS.md#model-routing-for-repo-work-fan-out)
 — verification research is bulk-tier work, adjudicating disputed clusters is review-tier — and
-have agents append matrices
-directly to the scratchpad. The authoring agent edits `golden-overrides.json` only after
-reconciling those independent matrices. For broad corpus-health or drift-refresh work, let
-`truth-maintenance` coordinate this lane alongside eval and improvements review.
+have agents append matrices directly to the scratchpad. The authoring agent edits the owned
+case files only after reconciling those independent matrices. For broad corpus-health or
+drift-refresh work, let `truth-maintenance` coordinate this lane alongside eval and
+improvements review.
 
 **Independent re-verification lane (high-stakes changes).** The corroboration matrix is
 authored by the agent proposing the change — a matrix review can rubber-stamp its blind
-spots. For overrides touching disputed facts, negative claims, or high-weight/volatile
+spots. For changes touching disputed facts, negative claims, or high-weight/volatile
 truth, add a second agent that re-derives the fact from live sources WITHOUT reading the
 proposer's evidence notes ("do not rely on the prior verification — query the sources
 yourself, list every URL you hit"). Reviewer ≠ author is the invariant — an independent
@@ -117,53 +134,71 @@ review of the author's own notes rubber-stamps.
 | Verdict | What the golden may do |
 |---|---|
 | confirmed | Pin it — with an `asOf` in the golden text if the fact is volatile. |
-| **disputed** | **NEVER pin.** Encode the disagreement: grader caution ("sources disagree — do not penalize either figure"), answer-visible sourcing-guard avoid items instead of number traps, and file the reconciliation upstream (`improvements/`). |
+| **disputed** | **NEVER pin.** Encode the disagreement: `truth.status: "disputed"` + corroboration rows for both sides, grader caution in `golden.notes` ("sources disagree — do not penalize either figure"), answer-visible sourcing-guard avoid items instead of number traps, and file the reconciliation upstream (`improvements/`). |
 | contradicted | Fix the golden AND capture the root cause of the original error (how did the wrong fact get in?). |
-| unverifiable | The golden must not claim it. Downgrade to nice-to-have in graderNotes or remove; corpus-only community facts get labeled source-relative ("per the Scout corpus"). |
+| unverifiable | The golden must not claim it. Downgrade to nice-to-have in `golden.notes` or remove; corpus-only community facts get labeled source-relative ("per the Scout corpus"). |
 
 **Durable-fact gating (authoring rule for volatile/contested facts).** When sources
 genuinely disagree or a number is contested, never gate the golden on the brittle value —
 gate the durable formulation: the protocol version, the CAP/SEP id, "cite a dated primary
-source", the behavior of flagging staleness. Record the disagreement in graderNotes and
+source", the behavior of flagging staleness. Record the disagreement in `golden.notes` and
 lower the claim's standing. Honesty > false precision.
+
+**Updating `truth.verified` (required on every gospel change).** The case file carries the
+LATEST verification event only — git history holds the rest. Set `date`, `by` (who/what
+verified — a lane, sweep, or scratchpad ref), `evidence` (live provenance a stranger can
+re-walk: URLs, `solo://` refs), and — whenever the event changed gospel — `rootCause`:
+`improvements/` paths for upstream defects, `solo://` refs for eval-side authoring flaws, or
+the explicit value `freshness-drift`. The lint rejects rootCause lists that are only
+score/result rationales — "the judge failed this case" is never a reason to change truth.
+Refresh `truth.asOf` for volatile facts and set a new staggered, quarter-granular
+`truth.reverifyBy` on `scheduled` cases so the stale queue drips instead of cliffing.
 
 **Sibling-consistency sweep (required on every change).** The dominant drift mechanism
 observed in the ancestor corpora was a correction pass fixing one file while its topical
 sibling kept the old fact — producing goldens that cannot both be true. Before closing a
-gospel change: enumerate other cases touching the same entity/topic (grep the compiled
-cases for the entity names and key numbers), confirm the changed fact doesn't contradict
-them, and record the sweep (cases checked, verdict) in the override entry's evidence.
+gospel change: enumerate other cases touching the same entity/topic (grep the battery files
+for the entity names and key numbers), confirm the changed fact doesn't contradict them, and
+record the sweep (cases checked, verdict) in `truth.verified.evidence` or the round
+scratchpad. Then run `npm run eval:qa:register` — it re-stamps consistency-register member
+hashes and auto-reopens any cluster whose member content changed.
 
-**Provenance correction.** If the debunked fact came from (or also lives in) the vendored
-corpus snapshots (`eval/corpus/`), do not edit the archive — but record the correction
-pointer in the override entry and, where a finding exists, in `improvements/`, so future
-mining or judge-context use can't silently resurrect the lie.
-
-Every gospel change lands as a `golden-overrides.json` entry carrying `why` + `evidence` +
-`rootCause` (compile-enforced) **plus** `truthDomain` and a `corroboration` block (the
-matrix rows that justified the change — also compile-enforced). The compile checks the
-fields exist; the reviewer checks they're true.
+**Provenance correction.** If the debunked fact also lives in the archival snapshots
+(`eval/corpus/` — read-only; mining them for gospel is prohibited), do not edit the archive —
+the owned case's `truth` block and, where a finding exists, `improvements/` are where the
+correction is recorded so it can't silently resurrect.
 
 ## Step 6 — test and close
 
-- `node eval/qa/compile-qa.mjs --sample 30` — validation passes, exactly the intended cases
-  changed (parsed-JSON diff, not line diff).
-- `npm run eval:qa:lint` — no new judge-blind avoid items.
+- `npm run eval:qa:compile` — validation passes; exactly the intended cases changed
+  (parsed-JSON diff, not line diff); regenerated `cases.json`/`sample.json` are committed with
+  the case edits (CI byte-pins both).
+- `npm run eval:qa:lint -- --since <ref>` — the documented pre-push check for Solo lanes:
+  runs every deterministic lane **plus** the gospel-change guard against the ref you branched
+  from, exactly as CI will against the merge base. Add `--stale` when touching `reverifyBy`
+  dates. No new judge-blind avoid items.
+- `npm run eval:qa:register` — stamp/reopen consistency clusters (see the sibling sweep).
 - `npm run eval:plan -- <last-results>` — plan grades unchanged (goldens don't affect plan
   rules, so any change here means something leaked).
 - If a saved run's verdict hinged on the changed golden: re-judge that row
   (`judgeCase` on `rows[].answer`) and record the flip direction in the round record —
-  a fix that only ever flips verdicts toward "correct" is a smell (see score-laundering
-  note in `eval/qa/README.md`).
+  a fix that only ever flips verdicts toward "correct" is a smell (see the score-laundering
+  note below).
 - Solo: record the corroboration matrices in the round/working scratchpad; close the todo
   with commit refs.
+
+**Score laundering is the failure mode all of this guards against** — "correcting" a golden
+until the agent's answer grades right. The live-evidence bar plus the root-cause pointer keep
+every gospel change auditable back to a defect that exists independently of the eval score;
+the CI lint enforces the fields exist, the reviewer checks they're true.
 
 ## Hard rules
 
 - The aggregator never corroborates itself; a judge's opinion never justifies a gospel
   change; a single source class never suffices.
 - Disputed facts are never pinned. Unverifiable facts are never claimed.
-- Volatile facts always carry `asOf` in the golden text.
+- Volatile facts always carry `asOf` in the golden text, `truth.asOf` in metadata, and
+  (when `scheduled`) a `truth.reverifyBy` date the CI stale gate can enforce.
 - Paid Lumenloop research stays gated/off; perplexity/parallel spend is expected and
   appropriate here. Never print or commit secrets.
 - Traps must punish claims that are FALSE per this skill's verification — a trap that

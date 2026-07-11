@@ -40,6 +40,13 @@ Use the standard frontmatter plus `Finding`, `Evidence`, and `Recommendation` se
 `discovered` as `YYYY-MM-DD`. Evidence must be a non-empty list. If evidence contains a GitHub issue
 or PR URL, the status must be `reported-upstream` or `fixed-upstream`; otherwise lint fails.
 
+When the consumer-side workaround for a finding is a golden change (a grader caution, avoid
+trap, or disputed-truth encoding), it lands directly in the owned case file
+(`eval/qa/corpus/battery/<category>/<id>.json`) through the `golden-truth` skill — cite the
+case file and its `truth.verified` entry in the finding's evidence, and have the case's
+`truth.verified.rootCause` point back at the finding. The two references keep the defect and
+its eval-side patch mutually auditable.
+
 Resolve intake through `improvements/intake.json`: per-finding override wins, then a service repo,
 then an explicit service-level `unclear` or `mixed` rule. Use honest unclear when no public owner can
 plausibly receive it; do not file to this repo just to close the loop. The drafter script renders and

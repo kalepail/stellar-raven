@@ -20,7 +20,7 @@ npm run eval:playground -- --confirm-paid --url http://localhost:8787 --sample 5
 npm run eval:playground -- --confirm-paid --ids q-aas-burn-clawback-redemption-mechanics
 
 # Whole named contract, only when it stays within the one-subject 30/hour cap.
-npm run eval:playground -- --confirm-paid --cases eval/qa/live-cases.json --full
+npm run eval:playground -- --confirm-paid --cases eval/qa/corpus/live/live-cases.json --full
 ```
 
 `--no-judge` captures a route/trace diagnostic only; omit it for the semantic result. Results are timestamped JSON below `eval/local-lanes/playground-semantic/`, which is gitignored. Their saved transcript uses `mcp__playground__search` / `mcp__playground__execute` aliases with full JSON-stringified inputs and results, so the existing plan grader works directly:

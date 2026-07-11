@@ -22,12 +22,14 @@ the headline wins.
 | `eval/agentic/` | agent-driven `search`, live server | ~$, minutes — after major search-behavior changes | Diagnostic (label-ambiguity analysis) |
 | `eval/qa/run-qa.mjs` — main battery (469) | **end-to-end search → execute → answer** | ~$0.2–0.7/case, ~30 min per 30-case sample — before/after big changes, A/Bs | **HEADLINE** (correct / partial / wrong) |
 | `npm run eval:playground` — actual `/playground/chat` SSE over existing QA cases | public playground model loop → tools → answer | paid; seeded 5-case default, max 30 per run-scoped subject — after playground prompt/model/loop changes | Diagnostic, scored by the same QA judge/evidence pack; never merge its denominator with the main MCP headline |
-| — canonical live-data contract `live-data-canonical-v1` (`--cases eval/qa/live-cases.json`, 10 = 7 Scout / 2 Lumenloop / 1 cant-do) | `execute` **grounding** where priors fail | ~$2.20–6.70 full at the documented ~$0.22–0.67/case — after executor/adapter changes | Diagnostic for the execute path; membership/order is the pre-drift 10 while full case content is pinned to the current vetted v1 digest (including 6fed730's hackathon-grounding correction); graded on behavior, never exact values |
-| — opt-in digest contract `live-digest-supplement-v1` (`--cases eval/qa/live-digest-supplement-cases.json`, 2 Lumenloop) | `execute` recency-digest grounding | ~$0.44–1.34 full at the same per-case estimate — only for digest/skill-run questions | Diagnostic supplement; report separately from the canonical live-data lane and main battery |
+| — canonical live-data contract `live-data-canonical-v2` (`--cases eval/qa/corpus/live/live-cases.json`, 10 = 7 Scout / 2 Lumenloop / 1 cant-do) | `execute` **grounding** where priors fail | ~$2.20–6.70 full at the documented ~$0.22–0.67/case — after executor/adapter changes | Diagnostic for the execute path; membership/order stays the frozen 10 while full case content is pinned by the contract's `caseContentDigest`; graded on behavior, never exact values |
+| — opt-in digest contract `live-digest-supplement-v2` (`--cases eval/qa/corpus/live/live-digest-supplement-cases.json`, 2 Lumenloop) | `execute` recency-digest grounding | ~$0.44–1.34 full at the same per-case estimate — only for digest/skill-run questions | Diagnostic supplement; report separately from the canonical live-data lane and main battery |
 | `eval/plan/grade-plan.mjs` | which services `execute` actually touched | free (regrades stored QA transcripts) | Diagnostic (coverage; progression informational only) |
 
-Corpus provenance (all lanes): `eval/corpus/PROVENANCE.md`. The corpus is **archival** —
-the raven sibling repos are retired; growth happens in this repo's own formats.
+Corpus provenance: the QA battery is **owned** at `eval/qa/corpus/battery/` (one hand-authored
+file per case; `eval/qa/README.md`); `eval/corpus/` is the **archival** vendored snapshot and
+the routing eval's committed label source (`eval/corpus/PROVENANCE.md`) — the raven sibling
+repos are retired; growth happens in this repo's own formats.
 
 ## Rules that keep this from getting messy
 
@@ -60,14 +62,15 @@ the raven sibling repos are retired; growth happens in this repo's own formats.
 5. **Freshness-sensitive truth is graded as behavior, not values.** Anything that drifts
    (RFPs, leaderboards, rounds, region vocab) belongs in the live-data lane with a
    behavioral golden; putting a snapshot value in a hard gate is how evals rot.
-6. **Hand-authored files are load-time supplements** (`skills-cases.json`,
-   `build-question-overlay.json`, `live-cases.json`,
-   `qa/live-digest-supplement-cases.json`) — compiles can't wipe them, and they are
-   committed. `eval:selftest` pins both named QA contracts' names, complete case arrays
-   (SHA-256 over `JSON.stringify(cases)`), membership/order, service counts, trap control, and
-   disjointness. Any question/golden/tag/note change requires an explicit contract-version bump,
-   provenance note, and digest update. Generated files (`routing-cases.json`, `qa/cases.json`)
-   are never hand-edited.
+6. **Hand-authored files are the sources; compiles can't wipe them.** The owned QA battery
+   (`qa/corpus/battery/**`), the routing supplements (`skills-cases.json`,
+   `build-question-overlay.json`), and the frozen live contracts
+   (`qa/corpus/live/live-cases.json`, `qa/corpus/live/live-digest-supplement-cases.json`) are
+   committed. `eval:selftest` pins both named QA contracts' names, ordered membership, and
+   case-content digests. Any live-contract question/golden/tag/note change requires an explicit
+   contract-version bump, provenance note, and digest update. Generated files
+   (`routing-cases.json`, `qa/cases.json`, `qa/sample.json`) are never hand-edited — CI
+   byte-pins them.
 7. **Results are local-only evidence** (`eval/**/results/`, gitignored); READMEs carry the
    committed record with the exact results-file stamp they cite. The results dirs are unbounded
    — prune them periodically (e.g. drop results older than 30 days), keeping any stamp still
@@ -103,7 +106,7 @@ matching collection: `lumenloop/`, `stellar-light-scout/`, `stellar-docs/`, `ski
   skipped; stage-attribution grading dropped.
 - **Weighted rubric scores / citation hard-gates** — replaced by coarse
   correct/partial/wrong + explicit missingFacts/wrongClaims (robust to judge variance;
-  rationale in `eval/qa/README.md`).
+  rationale in `research/audits/2026-07-qa-history.md`).
 - **Exact placements/rankings from surfaces that don't carry them** — the upstream reviews
   rejected those cases (`sl-hackathon-kale-reflector-1st`, `sl-hackathon-kale-vs-blend-counts`,
   `sl-ecosystem-asset-rwa-underbuilt-unfunded`); the rejections hold here and the live-data

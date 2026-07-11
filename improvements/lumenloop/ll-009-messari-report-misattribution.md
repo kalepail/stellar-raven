@@ -53,7 +53,7 @@ hyperlink target the report — interview-derived numbers should be labeled
 as such, since interviews carry later data than the publication they
 promote. Consumer-side, this gateway's goldens now carry the corrected
 attributions and instruct graders not to fail answers that repeat the
-corpus's own misattribution (eval/qa/golden-overrides.json, three entries).
+corpus's own misattribution (three owned cases under eval/qa/corpus/battery/).
 
 GT-20 reproduced the broader mechanism. Lumenloop search could surface the
 SDF Q1 payment-volume snapshot, a later ~$3B RWA summary, and related reporting,

@@ -91,7 +91,8 @@ exact CLI mechanics live in `research/agent-model-roster.md`.
 - Evals produce evidence-backed upstream findings in `improvements/`; scores are instruments, not
   the final product.
 - Retired sibling repos must not be referenced as live paths. Retained prior art is read-only under
-  `eval/corpus/`; use `research/prior-art.md` for history.
+  `eval/corpus/`; it is also the routing eval's committed label source. The QA battery is owned
+  under `eval/qa/corpus/` and does not read it. Use `research/prior-art.md` for history.
 
 ## Task runbooks
 

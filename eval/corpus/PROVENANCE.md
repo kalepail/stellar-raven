@@ -1,10 +1,14 @@
 # eval/corpus — vendored golden-question source material (archival)
 
 Captured 2026-07-02 ahead of retiring the `stellar-raven`, `stellar-raven-next`, and
-`raven-golden-qa` sibling checkouts. **These snapshots are the source of truth now** — the
-sibling paths will stop existing. Everything here is **read-only archival input**: codemode's
-eval case formats stay our own (spirit, not schema — see `eval/qa/README.md`); compiled
-artifacts (`eval/routing-cases.json`, `eval/qa/cases.json`) are regenerated from these copies.
+`raven-golden-qa` sibling checkouts. Everything here is **read-only archival input**:
+codemode's eval case formats stay our own (spirit, not schema — see `eval/qa/README.md`).
+
+> **Scope (as of 2026-07-11).** The QA battery is **owned** at `eval/qa/corpus/` and is no
+> longer compiled from these snapshots; they remain the **routing eval's committed label
+> source** (`eval/compile-routing.mjs` reads `raven-golden-qa/big.json` and `raven-next/`)
+> and archival prior art. **Mining them for gospel is prohibited** — the owned corpus plus
+> `eval/qa/corpus/migration-ledger.json` are the truth record.
 
 ## What's here
 
@@ -84,9 +88,12 @@ Also **excluded** upstream (never vendored): `messages_by_thread_raw.json` (166 
 
 ## Consumers
 
-- `eval/compile-routing.mjs` → `raven-golden-qa/big.json`
-- `eval/qa/compile-qa.mjs` → `raven-next/` (reads `research/golden/compiled/golden.json` +
-  per-question frontmatter via `sourceFile`)
+- `eval/compile-routing.mjs` → `raven-golden-qa/big.json` (labels) + `raven-next/` (extended
+  lane: `research/golden/compiled/golden.json` + per-question frontmatter)
+- `eval/qa/compile-qa.mjs` no longer reads this directory — the QA battery compiles from the
+  owned per-case files at `eval/qa/corpus/battery/` (see the scope note above); lineage from
+  these snapshots is recorded per case in `truth.origin` and in
+  `eval/qa/corpus/migration-ledger.json`.
 
-Both compiles are deterministic; after repointing to these copies the regenerated
-`routing-cases.json` / `qa/cases.json` were verified byte-identical to the pre-capture artifacts.
+The routing compile is deterministic; after repointing to these copies the regenerated
+`routing-cases.json` was verified byte-identical to the pre-capture artifact.

@@ -5,7 +5,7 @@ status: fixed-upstream
 discovered: 2026-07-03
 evidence:
   - live production execute 2026-07-03 (scout.searchProjects + lumenloop.get_project on slug lobstr; Solo scratchpad 521 follow-up, todo 826 comment 2224)
-  - consumer-side workaround shipped: eval/qa/golden-overrides.json q-eco-lobstr-wallet graderNotes instruct not penalizing either figure
+  - consumer-side workaround shipped in the golden for q-eco-lobstr-wallet: grader notes instruct not penalizing either figure (owned case eval/qa/corpus/battery/defi-ecosystem/q-eco-lobstr-wallet.json)
   - live re-verified 2026-07-06 (eval round todo 846): lobstr still Scout $232,000 (scfAmountStatus:"disclosed") vs Lumenloop $267,463 — same $35,463 gap, same rounds [2,17,22], still no basis note on either figure; partial improvement: Scout now exposes scfAwardedRounds:[2,17,22], but no per-round dollars
   - upstream issue filed 2026-07-07: https://github.com/Stellar-Light/stellar-scout/issues/1
   - "fixed upstream and live re-verified 2026-07-09T13:01Z after Stellar-Light/stellar-scout#1 closure: GET https://stellarlight.xyz/api/projects/search?q=lobstr&limit=5 returns LOBSTR with scfTotalAwardedUSD:232000, scfAwardedRounds:[2,17,22], and meta.scfCountBasis explaining totals are in-house reconstructions and should reconcile on rounds; GET https://stellarlight.xyz/api/analyze?dimension=funding returns funding.countBasis plus byRound entries for rounds 2, 17, and 22"

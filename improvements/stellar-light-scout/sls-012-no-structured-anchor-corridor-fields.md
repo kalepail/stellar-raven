@@ -5,7 +5,7 @@ status: fixed-upstream
 discovered: 2026-07-03
 evidence:
   - live production execute 2026-07-03 (scout.searchProjects category Anchor, scout.matchPartners, lumenloop.search_directory/get_project; Solo scratchpad 521 follow-up, todo 826 comment 2224)
-  - consumer-side workaround shipped: eval/qa/golden-overrides.json q-crp-anchors-by-corridor (dated-citation guard instead of structured grounding)
+  - consumer-side workaround shipped in the golden for q-crp-anchors-by-corridor (dated-citation guard instead of structured grounding; owned case eval/qa/corpus/battery/compliance-rwa-payments/q-crp-anchors-by-corridor.json)
   - live re-verified 2026-07-06 (eval round todo 846): 19 Anchor-category projects still carry coverage only in shortDescription prose — no countries[]/currencies[]/seps[] structured fields (and no regions field) on project rows
   - upstream issue filed 2026-07-07: https://github.com/Stellar-Light/stellar-scout/issues/3
   - fixed upstream in 2026-07-08 drift: Project schema now exposes coverage.{countries,currencies,seps,asOf}; live category=Anchor check returned 14/19 anchors with non-null coverage, including Bitso/Mexico/MXN and Cash Abroad/Mexico, with dated asOf values

@@ -70,24 +70,45 @@ Reviewer and author are separate roles. A spawned reviewer must re-derive from f
 live probes, or GitHub state, not rubber-stamp the coordinator's summary. Let reviewers finish
 unless the user cancels or they clearly error.
 
+## Stale-gospel queue (the freshness lane — owned by this skill)
+
+Golden freshness is not maintained by batch re-audits; it is a **standing due-date queue**.
+Every `scheduled`-freshness QA case carries a `truth.reverifyBy` date, and
+`npm run eval:qa:lint -- --stale` fails on any past-due case — wired into PR CI and the daily
+refresh workflow, so a date passing fires within 24 hours. This skill owns that queue:
+
+- **Triage on fire.** When the stale gate fails, dispatch each past-due case through the
+  `golden-truth` lane: re-verify (update `truth.verified` + `truth.asOf` + a new
+  `reverifyBy`) or record an explicit dated extension with rootCause. Never silently bump a
+  date — the gospel-change lint audits either remedy.
+- **Drip policy.** `reverifyBy` dates are set by the verifying author, quarter-granular and
+  staggered across cases, so re-verification arrives as a steady drip instead of a cliff.
+  When a round re-verifies many cases at once, spread the new dates; a wall of identical
+  dates is a review finding.
+- **Look ahead, not just behind.** A maintenance round should also sweep upcoming dates
+  (e.g. the next 2–4 weeks) and fold near-due cases into the current round's golden lane
+  rather than waiting for the gate to fire.
+
 ## Round plan
 
-1. Define the question: scheduled truth refresh, drift issue, post-eval closeout, upstream
-   PR/issue follow-up, golden-health sweep, or release/CI readiness.
+1. Define the question: scheduled truth refresh, stale-queue triage, drift issue, post-eval
+   closeout, upstream PR/issue follow-up, golden-health sweep, or release/CI readiness.
 2. Open the Solo ledger and write the lane plan: lanes in scope, spawned agents, exact
    commands/probes, expected artifacts, and stopping criteria.
 3. Run the lane runbooks in parallel where independent:
    - Drift lane: use `live-drift-resolution` for service inventory/catalog/spec/op-class
      refresh and drift classification.
    - Eval lane: use `run-evals` for selected instruments and result review.
-   - Golden lane: use `golden-truth` for stale, contradictory, disputed, or volatile truth.
+   - Golden lane: use `golden-truth` for stale, contradictory, disputed, or volatile truth;
+     the stale-gospel queue above feeds this lane its due and near-due cases.
    - Improvements lane: use `improvements-pipeline` for findings, probes, intake, and
      upstream issue/PR state.
 4. Reconcile cross-lane effects:
    - Drift changed facts consumed by goldens or eval cases.
    - Eval failures imply new or updated improvements.
    - Upstream issue/PR resolution requires live re-probe of the original trigger.
-   - Golden override changes require root-cause capture in improvements or Solo todos.
+   - Golden gospel changes require root-cause capture in improvements or Solo todos (the
+     gospel-change lint enforces `truth.verified` evidence + rootCause in the same diff).
 5. Run the final gates from the affected lane runbooks, then record exact commands, result
    stamps, issue/PR URLs, commit refs, and remaining risks in the Solo ledger.
 
@@ -138,7 +159,9 @@ next follow-up instead of relying on memory.
 - Every spawned agent is idle/finished; useful output is incorporated; no orphan follow-up
   timer remains unless intentionally scheduled.
 - Drift-generated artifacts are regenerated, not hand-edited.
-- Golden changes went through `golden-truth` and include root-cause capture.
+- Golden changes went through `golden-truth` and include root-cause capture; the stale queue
+  has no past-due `reverifyBy` dates left (`npm run eval:qa:lint -- --stale` is green) and
+  newly set dates are staggered.
 - Improvements index/lint/probes ran when `improvements/` changed.
 - Open upstream PRs/issues have deterministic next actions or scheduled follow-up.
 - `npm run secrets:scan -- --tree` runs before any commit that includes generated artifacts

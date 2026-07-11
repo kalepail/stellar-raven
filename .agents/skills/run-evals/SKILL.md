@@ -61,8 +61,8 @@ When asked to run evals "from this Codex agent", use this loop:
    row, including surprising passes.
 5. Join each result row with its golden from `eval/qa/cases.json` before analysis.
 6. Classify each issue with the Step 5 root-cause table.
-7. Apply own-repo fixes where appropriate; file upstream findings in `improvements/`; use
-   golden overrides only through the `golden-truth` workflow.
+7. Apply own-repo fixes where appropriate; file upstream findings in `improvements/`; make
+   gospel edits to owned case files only through the `golden-truth` workflow.
 8. Update the committed eval record and close the round only after failures and learnings are
    accounted for.
 
@@ -77,11 +77,12 @@ Decide what changed (or what question you're asking) — that picks the instrume
 | Skills routing / skill store changes | routing; read the skills lane vs its floor |
 | Major search-behavior change | + agentic lane (~$, minutes, needs live server) |
 | Big change / A-B / before-after on answer quality | + QA battery sample (headline; ~$0.2–0.7/case, ~30 min per 30) |
-| Executor / adapter / envelope changes | + QA live-data lane (`--cases eval/qa/live-cases.json`) |
+| Executor / adapter / envelope changes | + QA live-data lane (`--cases eval/qa/corpus/live/live-cases.json`) |
 | Tool-description / agent-prompt-surface change (tool descriptions, MCP instructions, nudges) | QA sample + plan regrade — behavior shifts, routing math doesn't |
 | Any QA run already stored | + plan regrade (free, offline) |
-| Upstream drift refresh landed | routing `--gate`; refresh `improvements/` statuses (drift is the natural checkpoint for `fixed-upstream` re-checks) and re-check `eval/qa/golden-overrides.json` entries — they cite live facts that rot; update with fresh evidence |
-| Corpus-health cadence (periodic, no code change needed) | cross-question contradiction scan (corpus-internal, no live calls: flag golden pairs whose answers can't both be true — the ancestor corpora's dominant silent-drift failure; results + verified-consistent clusters + method all live in `eval/qa/consistency-register.json`) + a sampled refute-then-repair sweep (skeptic agent attacks a small sample of goldens' claims/citations with real tools, weighted toward freshness-sensitive + numeric/version claims and lower `confidence` tags — the strata where breaks concentrate; fixes go through the `golden-truth` skill) + re-verify any `dateContingentTraps` in the register whose trigger has passed. |
+| Upstream drift refresh landed | routing `--gate`; refresh `improvements/` statuses (drift is the natural checkpoint for `fixed-upstream` re-checks) |
+| Stale-gospel gate fired (PR CI or the daily refresh runs `eval:qa:lint -- --stale`) | triage each past-due `truth.reverifyBy` case via `golden-truth`: re-verify (update `truth.verified` + `asOf` + a new staggered `reverifyBy`) or record an explicit dated extension with rootCause — never silently bump the date; `truth-maintenance` owns the queue |
+| Corpus-health cadence (periodic, no code change needed) | cross-question contradiction scan (corpus-internal, no live calls: flag golden pairs whose answers can't both be true — the ancestor corpora's dominant silent-drift failure; results + verified-consistent clusters + method all live in `eval/qa/consistency-register.json`, member hashes stamped by `npm run eval:qa:register`) + a sampled refute-then-repair sweep (skeptic agent attacks a small sample of goldens' claims/citations with real tools, weighted toward freshness-sensitive + numeric/version claims and `truth.status != "confirmed"` cases — the strata where breaks concentrate; fixes go through the `golden-truth` skill) + re-verify any `dateContingentTraps` in the register whose trigger has passed. |
 
 Tracking (Solo MCP — this repo's project binding is in
 [`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination)): create or claim a todo for the
@@ -110,20 +111,22 @@ answer to reviewers.
 ## Step 1 — preflight (always, free)
 
 ```sh
-npm run eval:selftest           # grader math sanity — no src/ or catalog needed
+npm run eval:selftest           # grader math sanity + live-contract pins — no server needed
 npm run eval:compile            # corpus → eval/routing-cases.json (deterministic)
-npm run eval:qa:compile         # only if running QA; add --sample 30 for the stratified sample
-npm run eval:qa:selftest        # only if judging — 4 candidates vs 1 case
+npm run eval:qa:compile         # only if running QA; always emits cases.json + sample.json
+npm run eval:qa:lint -- --stale # owned-corpus lint lanes + the stale-gospel gate (CI runs this)
+npm run eval:qa:selftest        # only if judging — scored fixtures + promptSha256 pins
 ```
 
-Compiles are deterministic and never touch the hand-authored supplements
-(`eval/skills-cases.json`, `eval/build-question-overlay.json`, `eval/qa/live-cases.json`,
-`eval/qa/live-digest-supplement-cases.json`) — those are load-time files, committed, and safe
-from recompiles. `live-cases.json` is the membership-frozen 10-case
-`live-data-canonical-v1` contract; its full vetted case array and the separate two-case opt-in
-`live-digest-supplement-v1` array are digest-pinned. Change either contract's case content only
-with a recorded provenance note, contract-version bump, and digest update. Generated files
-(`routing-cases.json`, `qa/cases.json`, `plan/op-classes.json`) are never hand-edited.
+Compiles are deterministic and never touch the hand-authored files: the owned QA battery
+(`eval/qa/corpus/battery/**`), the routing supplements (`eval/skills-cases.json`,
+`eval/build-question-overlay.json`), and the frozen live contracts
+(`eval/qa/corpus/live/live-cases.json` — the membership-frozen 10-case
+`live-data-canonical-v2` contract — and the two-case opt-in `live-digest-supplement-v2`).
+Both live contracts are membership- and digest-pinned by `eval:selftest`; change their case
+content only with a recorded provenance note, contract-version bump, and digest update.
+Generated files (`routing-cases.json`, `qa/cases.json`, `qa/sample.json`,
+`plan/op-classes.json`) are never hand-edited — CI byte-pins them.
 
 ## Step 2 — live server (only for QA / agentic / live-data lanes)
 
@@ -173,10 +176,10 @@ node eval/qa/run-qa.mjs --variant A --sample 30 --port "$PORT"
 # targeted smoke: --ids a,b,c ; collect-only: --no-judge ; overrides: --model/--judge-model
 
 # QA live-data lane (grounding behavior; graded behaviorally, never on snapshot values)
-node eval/qa/run-qa.mjs --cases eval/qa/live-cases.json --port "$PORT"
+node eval/qa/run-qa.mjs --cases eval/qa/corpus/live/live-cases.json --port "$PORT"
 
 # Opt-in digest supplement — run and report separately from the canonical lane
-node eval/qa/run-qa.mjs --cases eval/qa/live-digest-supplement-cases.json --port "$PORT"
+node eval/qa/run-qa.mjs --cases eval/qa/corpus/live/live-digest-supplement-cases.json --port "$PORT"
 
 # Plan regrade (offline, reads stored transcripts)
 npm run eval:plan -- eval/qa/results/<stamp>-variantA.json
@@ -217,11 +220,14 @@ Known judge failure modes (from `eval/qa/README.md`):
   `correct` counts; compare variants only on the
   same sample; re-judging is cheap (`rows[].answer` is saved — feed back through `judgeCase`:
   `judgeCase({ ...caseFromCasesFile, candidateAnswer: row.answer, transcript: row.transcript })`).
-  Never cross-compare runs judged under different rubric versions without a re-judge
-  (`JUDGE_RUBRIC` in `judge.mjs` is the current version; verdicts carry a `rubric` stamp).
-  The calibrated baseline of record lives in `eval/qa/README.md` ("Judging rubric" →
-  calibrated record) — compare a new run against the re-judged baseline for the current
-  rubric version, never against stale original verdicts in same-stamp files.
+  Never cross-compare runs judged under different rubric/pack versions without a re-judge
+  (`JUDGE_RUBRIC` in `judge.mjs` is the current version; verdicts carry
+  `{rubric, packVersion, promptSha256}` stamps). The comparability rules and the committed
+  noise floor live in `eval/qa/README.md` ("Judging rubric and score comparability").
+- **Denominator note:** the owned battery (469 cases as seeded at the 2026-07-11 rebuild) is
+  the baseline denominator; pre-rebuild aggregate baselines are archival
+  (`research/audits/2026-07-qa-history.md`) and are not directly comparable at the aggregate
+  level. Per-id comparisons remain valid for continuing case ids (same rubric).
 - Freshness cases: sourced drift from the golden snapshot is fine; confident unsourced
   contradiction is not. Expect a small floor of judge-vs-live disagreements.
 - **Avoid-clause bypass of the rubric-v2 addendum**: a golden whose must-avoid item bans
@@ -257,7 +263,7 @@ For each miss/wrong/partial (and each surprising pass), classify and route:
 | Judge artifact | live re-execution contradicts the verdict | round record; re-judge; rubric note if a new failure mode |
 | Agent failure | tool use / synthesis genuinely wrong in transcript | round record; only actionable if a pattern → Solo todo (prompt/tool-shape) |
 | Own-repo gap: scoring/catalog/executor/adapters/normalizers | search buried the right entry; envelope/normalizer misread a payload | **own-repo Solo todo** — never improvements/ |
-| Eval-side gap: stale golden, mislabeled case, missing lane coverage | golden disagrees with live truth from the service's own mouth | Solo todo (goldens live in this repo); the fix lands as an `eval/qa/golden-overrides.json` entry (the corpus archive is verbatim/read-only) **via the `golden-truth` skill** (`.agents/skills/golden-truth/SKILL.md` — gospel changes need multi-source triangulation, never a single source class); freshness-drifting truth moves to the live-data lane as behavioral golden |
+| Eval-side gap: stale golden, mislabeled case, missing lane coverage | golden disagrees with live truth from the service's own mouth | Solo todo (goldens live in this repo); the fix lands directly in the owned case file (`eval/qa/corpus/battery/<category>/<id>.json`) **via the `golden-truth` skill** (`.agents/skills/golden-truth/SKILL.md` — gospel changes need multi-source triangulation, never a single source class) with `truth.verified` updated in the same diff (the CI gospel-change lint enforces it); freshness-drifting truth moves to the live-data lane as behavioral golden |
 | **Upstream data/content gap**: missing fields, unordered arrays, empty lanes, extraction quality, stale skill content | correct agent + correct plumbing still can't answer from what the service returns | **`improvements/` finding** |
 | **Upstream semantics/spec gap**: response contracts, error shapes, vocabulary, index tokenization/ranking | the service works but its self-description or behavior misleads any consumer, not just us | **`improvements/` finding** |
 
@@ -297,14 +303,16 @@ the manifest). Then route:
 Measure prose changes like code changes: before/after on the same instrument, delta in the
 round record. A prose edit with no measured behavior shift gets reverted, not accumulated.
 
-**Override doctrine — overrides are stop-gaps wearing their provenance.** A
-`golden-overrides.json` entry corrects the eval's *copy* of the truth; the defect that made
-it necessary lives somewhere else and MUST be captured where it can actually get fixed:
-upstream service gap → `improvements/` finding, eval-side authoring/rubric flaw → Solo todo,
-plain freshness drift → named as such. An override without its root-cause capture is a patch
-hiding a defect. This is compile-enforced (every entry needs `why` + live `evidence` +
-`rootCause`; `compile-qa.mjs` refuses entries missing any) — but the enforcement only checks
-the fields exist; the reviewer checks they're true.
+**Gospel-change doctrine — a golden fix always wears its provenance.** Editing a case
+corrects the eval's *copy* of the truth; the defect that made it necessary lives somewhere
+else and MUST be captured where it can actually get fixed: upstream service gap →
+`improvements/` finding, eval-side authoring/rubric flaw → Solo todo, plain freshness drift →
+named as such (`freshness-drift` in `truth.verified.rootCause`). A gospel edit without its
+root-cause capture is a patch hiding a defect. This is CI-enforced by the gospel-change lint
+(`eval:qa:lint`, diff-aware in CI; run `-- --since <ref>` locally): any judge-facing change
+requires `truth.verified` to change in the same diff with non-empty `evidence` + `rootCause`,
+and score-only rationales are rejected — but the enforcement only checks the fields exist;
+the reviewer checks they're true.
 
 ## Step 6 — file the findings (the round's primary artifact)
 
@@ -362,8 +370,10 @@ Close-out checklist:
 - [ ] New/updated `improvements/` findings committed — a round with zero findings needs an
       explicit "nothing new surfaced, here's what was re-checked" note to be credible
 - [ ] Own-repo fixes filed as Solo todos (not improvements/, not silently patched)
-- [ ] Any new/changed golden override carries live evidence + `rootCause` (compile enforces
-      the fields; the reviewer verifies the substance) and its root cause is actually filed
+- [ ] Corpus lint green: `npm run eval:qa:lint -- --since <ref> --stale` passes over any case
+      edits — every gospel change carries an updated `truth.verified` with live evidence +
+      `rootCause` (the lint enforces the fields; the reviewer verifies the substance) and its
+      root cause is actually filed; `npm run eval:qa:register` re-stamped/reopened clusters
 - [ ] Independent/adversarial review finished and every finding was reconciled or explicitly
       recorded as a non-blocking residual risk
 - [ ] Solo round todo closed with a comment linking scratchpad + results stamps

@@ -5,7 +5,7 @@ status: fixed-upstream
 discovered: 2026-07-03
 evidence:
   - live production execute 2026-07-03 (scout.getBuilders 16-probe fan-out; Solo scratchpad 521 follow-up, todo 826 comment 2224)
-  - consumer-side workaround shipped: eval/qa/golden-overrides.json q-builder-by-region-latam graderNotes instruct per-country fan-out
+  - consumer-side workaround shipped in the golden for q-builder-by-region-latam: grader notes instruct per-country fan-out (owned case eval/qa/corpus/battery/scf-grants-builders/q-builder-by-region-latam.json)
   - live re-check 2026-07-06 (eval round todo 846): claim (1) FIXED — location:"Latin America" now returns 19 builders with country-valued locations (Chile, Brazil, Costa Rica), confirming region→country synonym expansion shipped; claim (2) strict-literal q bio matching was not probed this round, so the finding stays open on that half
   - upstream issue filed 2026-07-07: https://github.com/Stellar-Light/stellar-scout/issues/2
   - "fixed upstream and live re-verified 2026-07-09T13:00Z after Stellar-Light/stellar-scout#2 closure: GET https://stellarlight.xyz/api/builders?location=Latin%20America&limit=50 and GET https://stellarlight.xyz/api/builders?location=LatAm&limit=50 each return 19 builders across Brazil/Chile/Colombia/Costa%20Rica; GET https://stellarlight.xyz/api/builders?location=Brazil&q=payments&limit=50 returns 2 builders including Cleverson Silva's Boleto Guardian profile, which does not contain the literal token 'payments'"
