@@ -1,12 +1,13 @@
 ---
 id: sls-038
 service: stellar-light-scout
-status: verified
+status: fixed-upstream
 discovered: 2026-07-10
 evidence:
   - live /api/analyze?dimension=all returned categories, funding, hackathons, and meta but no TVL
   - live catalog description promised ecosystem DeFi TVL rollups
   - concurrent external chain-TVL sources differed by provider, time, and completion window
+  - 2026-07-11 live re-check after Scout 1.7.15: /api/analyze?dimension=all and dimension=tvl both return tvl with totalTvlUSD, trackedProjects, asOf, provider=DefiLlama, top10 rows, and an explicit undercount/inclusion basis
   - Solo scratchpad 575 GT-19 primary 3254 and blind 3258
 ---
 

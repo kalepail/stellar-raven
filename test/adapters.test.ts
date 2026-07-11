@@ -130,6 +130,19 @@ describe("scout adapter", () => {
     expect(calls[1]?.url).toBe("https://stellarlight.xyz/api/skills/stellar-scout");
   });
 
+  it("serializes project type and lifecycle filters from the refreshed contract", async () => {
+    const { fetchImpl, calls } = stubFetch(fixture("scout-success.json"), 200);
+    await callScout(
+      entry("scout.searchProjects"),
+      { type: "Wallet", status: "Live", limit: 5 },
+      {},
+      fetchImpl
+    );
+    expect(calls[0]?.url).toBe(
+      "https://stellarlight.xyz/api/projects/search?type=Wallet&status=Live&limit=5"
+    );
+  });
+
   it("passes non-JSON (CSV) through as { text, contentType } in the data payload", async () => {
     const { fetchImpl } = stubFetch("rank,slug\n1,soroswap\n", 200, "text/csv");
     const r = await callScout(entry("scout.getLeaderboard"), { format: "csv" }, {}, fetchImpl);

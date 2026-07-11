@@ -81,6 +81,14 @@ describe("validateArgs — the manifest schema dialect", () => {
     expect(JSON.stringify(issues)).toContain("must be one of");
   });
 
+  it("accepts current Scout project filters and rejects unknown enum values", () => {
+    const schema = entry("scout.searchProjects").inputSchema;
+    expect(validateArgs(schema, { type: "Wallet", status: "Live" })).toEqual([]);
+    const issues = validateArgs(schema, { type: "Bank", status: "Retired" });
+    expect(issues).toHaveLength(2);
+    expect(JSON.stringify(issues)).toContain("must be one of");
+  });
+
   it("rejects non-object args outright", () => {
     expect(validateArgs(schema, "query")).toHaveLength(1);
   });

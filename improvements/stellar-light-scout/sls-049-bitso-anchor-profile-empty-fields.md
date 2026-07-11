@@ -1,11 +1,12 @@
 ---
 id: sls-049
 service: stellar-light-scout
-status: proposed
+status: fixed-upstream
 discovered: 2026-07-11
 evidence:
   - P4 Lane X observed scout.searchProjects(q="Bitso") describe a live Stellar anchor serving USDC/local-fiat LATAM corridors while embedded anchorProfile returned assets:[], seps:[], and rampTypes:[]; solo://proj/49/scratchpad/super-corpus-rebuild--585
   - sls-012's fixed structured coverage fields show the service can represent dated country/currency evidence, but they do not make empty capability arrays distinguishable from unknown
+  - 2026-07-11 live re-check after Scout 1.7.15: scout.searchProjects(q=Bitso) returns anchorProfile.profileState=profiled with assets=[USDC] and on-ramp/off-ramp capability values
 ---
 
 ## Finding

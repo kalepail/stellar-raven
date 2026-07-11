@@ -152,7 +152,7 @@ async function main() {
   const frontier = summarize(frontierHits);
   const replayLexical = await runReplay("lexical");
   const replayFrontier = await runReplay("frontier");
-  const expectedCalibration = { legacy: { n: 338, top1: 213, top3: 267, top5: 305 }, skills: { n: 23, top1: 18 } };
+  const expectedCalibration = { legacy: { n: 338, top1: 213, top3: 271, top5: 304 }, skills: { n: 23, top1: 18 } };
   const calibrationPass =
     lexical.legacy.n === expectedCalibration.legacy.n &&
     lexical.legacy.top1 === expectedCalibration.legacy.top1 &&

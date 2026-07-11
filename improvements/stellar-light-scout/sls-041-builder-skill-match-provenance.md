@@ -1,12 +1,13 @@
 ---
 id: sls-041
 service: stellar-light-scout
-status: verified
+status: fixed-upstream
 discovered: 2026-07-10
 evidence:
   - live skill=Rust and skill=Soroban searches produced ten unique candidates
   - seven candidates had direct public Soroban/Rust code footprints; three had weak or absent direct code evidence in the bounded sweep
   - builder rows do not expose matched fields, matched projects, or code evidence
+  - 2026-07-11 live re-check: skill=Rust and skill=Soroban rows now expose match.matchedFields, match.matchedProjects, match.matchedTerms, codeEvidence, and meta.matchBasis
   - Solo scratchpad 575 GT-35 primary 3287 and blind 3289
 ---
 

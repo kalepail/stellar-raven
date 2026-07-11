@@ -1,10 +1,11 @@
 ---
 id: sls-047
 service: stellar-light-scout
-status: proposed
+status: fixed-upstream
 discovered: 2026-07-11
 evidence:
   - P4 H1 live scout.searchRepos(q="zero-knowledge") ranked noir-lang/noir first by repoScore although its codeVerified.stellarProof was none, ahead of Stellar deployable verifier/game repositories; solo://proj/49/scratchpad/super-corpus-rebuild--585
+  - 2026-07-11 live re-check after Scout 1.7.15: the first five zero-knowledge results carry stellarEvidence=code-verified and the generic noir-lang/noir dependency no longer appears ahead of them
 ---
 
 ## Finding

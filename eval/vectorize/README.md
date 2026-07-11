@@ -155,3 +155,15 @@ or index state is added. The honest artifact is this reusable isolated harness, 
 artifact, replay lane, raw local results, and negative decision record. Nothing new surfaced as an
 upstream service defect: the failure is this repo's retrieval experiment, so `improvements/` is
 unchanged.
+
+### Drift-maintenance refresh (2026-07-11, issue #19)
+
+Scout 1.7.15 and the three added Docs monitoring titles changed routing-card text without changing
+the 272-entry card count. The artifact was regenerated through
+`npm run eval:vectorize:build`, and the referee's lexical calibration was advanced to the shipped
+213/271/304 legacy and 18/22/22 skills results. The refreshed run
+`2026-07-11T19-07-10-806Z-vectorize-frontier.json` passed calibration, then again rejected the
+semantic arm: frontier legacy 95/211/269, extended strict 42/88/109, extended accept-either
+50/100/116, and mined replay deltas −15.4 points top-1 / −8.8 points top-5. The command exits 1
+by design when `triggerCleared:false`; this remains a measured no-ship experiment, not a failing
+production gate.

@@ -796,3 +796,31 @@ only one run per cell with order reversed across lanes rather than within each l
 surface, routing, golden, or baseline changed. Full identities, usage counters, row review, live
 rechecks, and limitations are in
 [`eval/qa/reviewed/2026-07-10-per-operation-architecture-ab.md`](./qa/reviewed/2026-07-10-per-operation-architecture-ab.md).
+
+## Re-baseline (2026-07-11, issue #19): Scout 1.7.15 + Docs monitoring titles
+
+The daily drift refresh moved Scout OpenAPI/status 1.7.11 → 1.7.15 and Stellar Docs titles
+632 → 635. The actual path/method and operationId sets are unchanged. Four Scout operation
+descriptions changed (`analyzeEcosystem`, `getBuilders`, `getLeaderboard`, `searchProjects`),
+seven operation schemas gained provenance/scope fields, and three monitoring-page titles were
+added. No exposure or runnable-skill runner decision was required.
+
+Immediate pre-drift `main` versus the regenerated catalog:
+
+| lane | before | after | reading |
+|---|---:|---:|---|
+| legacy strict top-1/3/5 | 213/267/305 | **213/271/304** | top-1 flat, top-3 +4, top-5 −1 |
+| legacy accept-either | 263/314/333 | **268/317/333** | +5/+3/0 |
+| skills strict | 18/22/22 | **18/22/22** | unchanged |
+| extended strict | 79/104/110 | **71/101/107** | diagnostic regression; not called a win |
+| extended accept-either | 110/121/122 | **111/120/122** | family availability largely holds |
+
+The legacy movement is accepted as intended routing enrichment from the new structured project
+filters, builder match provenance, and TVL wording. A targeted seven-case Sonnet 5 check at low
+and medium effort kept the appropriate Docs/Lumenloop family as a primary or alternate on the
+affected boundaries; the primary shifts were the already-documented structured-directory versus
+editorial/freshness label ambiguity. Nothing was tuned per question. The extended-lane
+`searchProjects` spillover remains an own-repo follow-up (Solo todo 940) for a general,
+query-independent mitigation; it is explicitly recorded rather than laundered through the new
+baseline. Decision record: `solo://proj/49/scratchpad/issue-19-drift-resol--591`. Baseline result:
+`routing-2026-07-11T18-53-06-914Z.json`.

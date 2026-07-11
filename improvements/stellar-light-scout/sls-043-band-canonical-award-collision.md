@@ -1,12 +1,13 @@
 ---
 id: sls-043
 service: stellar-light-scout
-status: verified
+status: fixed-upstream
 discovered: 2026-07-10
 evidence:
   - Scout band-protocol row points canonicalSlug band and reports SCF #16 / $60K
   - Scout canonical band row reports SCF #41 / $100K
   - official Band Protocol project record reports one SCF #16 award, $60K awarded and paid
+  - 2026-07-11 live re-check: scout.searchProjects(q=Band) returns one canonical band row with scfTotalAwardedUSD=60000 and the 1.7.15 changelog identifies the SCF #16 correction
   - Solo scratchpad 575 GT-37 primary 3296 and blind 3298
 ---
 

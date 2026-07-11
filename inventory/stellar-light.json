@@ -1,15 +1,16 @@
 {
-  "changelogEntryCount": 61,
+  "changelogEntryCount": 66,
   "changelogLatest": {
-    "date": "2026-07-10",
-    "detail": "Directory truth change only — no shape change. Live count 871 → 832. Inactive records stay name-searchable (heavily down-ranked) and now explain themselves via lifecycle.note; they drop out of active listings, leaderboard, clusters and funding aggregates. Methodology + full evidence table: the liveness triage in our changelog-linked improvements notes.",
-    "summary": "Liveness wave: 38 provably-defunct projects flipped Live → Inactive (each individually researched with positive evidence — shutdown notices, parked/unregistered domains, abandoned footprints — recorded on the row as lifecycle.note, e.g. Whalestack wound down to a BTCPay redirect; nTokens discontinued the BRL anchor; Lumenaut's inflation pool ended with Protocol 12). 13 records whose PRODUCT is alive got their dead recorded URL repointed (stellarbeat → OBSRVR Radar, fastbuka → Choppaddi rebrand, afriex, xycloans, arst…). chainatlas merged into chainsatlas (duplicate).",
+    "date": "2026-07-11",
+    "detail": "Data fixes riding the wave: Band award facts aligned to the official SCF record (SCF #16, $60K — the canonical row's unsourced #41/$100K corrected); Bitso anchor profile filled from Bitso's own sources (USDC on/off-ramp over Stellar); Vibrant→Vesseo rename mapped bidirectionally in search synonyms. Regression guards ship in the daily self-audit (band award lock, rfps row/count contract, clusters⇄analyze population parity, stellar-core classification, zero-knowledge ranking evidence, vibrant→vesseo recall).",
+    "summary": "sls-041..050 wave (all additive): getBuilders rows carry `match` (matchedFields/matchedProjects/matchedTerms — WHY a skill query hit) + `codeEvidence` (indexed repos owned by the builder that match the query) + meta.matchBasis; getClusters no longer truncates its input at 500 active projects and both it and analyzeEcosystem carry a `meta.population` scope digest (id/totalAvailable/included/truncated — identical ids ⇒ comparable numbers); getStatus sources gain `populationId`; analyze funding gains `projectSetHash` (stable digest of the awarded-project SET — distinguishes amount corrections from membership changes across snapshots); getRfps rows carry a `rowType` discriminator ('rfp' vs synthetic 'scf-round') + counts.syntheticRounds + meta.countBasis (open counts briefs; returned counts rows); searchRepos rows carry `stellarEvidence` (code-verified/sdf-org/curated/mentioned/none — why a repo ranks), scanned-but-proof-'none' repos no longer rank as Stellar-proven, and `codeVerified.isDeployableContract` is pinned false for known platform/SDK/tooling repos (stellar-core, rs-soroban-env, CLI/SDKs — their cdylibs are runtime/fixtures, not deployable products); searchProjects anchorProfile gains `profileState` + meta.anchorProfileBasis (empty capability arrays = unknown, never a negative claim).",
     "surfaces": [
       "api"
     ],
-    "type": "changed"
+    "type": "added",
+    "version": "spec 1.7.15"
   },
-  "fetchedAt": "2026-07-10T14:10:40.561Z",
+  "fetchedAt": "2026-07-11T18:51:42.072Z",
   "openapi": {
     "components": {
       "parameters": {
@@ -474,10 +475,48 @@
           },
           "type": "object"
         },
+        "PopulationScope": {
+          "description": "sls-048: the population a quantitative response aggregated, made answer-visible. Identical `id`s across responses (e.g. analyze vs clusters) mean the numbers are mechanically comparable; different `id`s are DIFFERENT populations — never merge/sum them without labeling the scopes. `truncated: true` means the result is a sample of the population, not a census. Null when the underlying fetch failed.",
+          "nullable": true,
+          "properties": {
+            "basis": {
+              "type": "string"
+            },
+            "generatedAt": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "id": {
+              "description": "Stable digest of collection + filters (NOT count/time), e.g. 'projects|status:Development+Live+Pre-Release'. /api/status sources use 'projects|status:all' (full collection).",
+              "type": "string"
+            },
+            "included": {
+              "description": "Docs actually aggregated into this response.",
+              "type": "integer"
+            },
+            "statusScope": {
+              "description": "Status filter applied; null = no status filter.",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "type": "array"
+            },
+            "totalAvailable": {
+              "description": "Docs matching the scope in the DB at generation time.",
+              "type": "integer"
+            },
+            "truncated": {
+              "description": "included < totalAvailable — the response is a sample, not the population.",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
         "Project": {
           "properties": {
             "anchorProfile": {
-              "description": "Integration-oriented ramp/anchor profile joined from the partner directory (Anchor-typed rows only; null otherwise). Complements `coverage`: rampTypes says WHAT ramps exist, seps says over WHICH interop surface — `seps: []` with non-empty rampTypes means a proprietary ramp API rather than SEP-6/24. `url` links the full partner profile.",
+              "description": "Integration-oriented ramp/anchor profile joined from the partner directory (Anchor-typed rows only; null otherwise). Complements `coverage`: rampTypes says WHAT ramps exist, seps says over WHICH interop surface — `seps: []` with non-empty rampTypes means a proprietary ramp API rather than SEP-6/24. EMPTY-FIELD SEMANTICS (sls-049): capability arrays fill only from VERIFIABLE sources (the anchor's stellar.toml / its own docs); when ALL of assets/seps/rampTypes are empty the anchor is `profileState: 'not-profiled'` — unknown, NOT capability-free. Never turn an empty array into a negative claim when the description asserts live corridors. `url` links the full partner profile.",
               "nullable": true,
               "properties": {
                 "asOf": {
@@ -492,6 +531,14 @@
                 },
                 "country": {
                   "nullable": true,
+                  "type": "string"
+                },
+                "profileState": {
+                  "description": "'profiled' = at least one capability field is verified-filled; 'not-profiled' = capabilities not yet verified for this anchor (empty arrays mean UNKNOWN, not absent).",
+                  "enum": [
+                    "profiled",
+                    "not-profiled"
+                  ],
                   "type": "string"
                 },
                 "rampTypes": {
@@ -731,7 +778,7 @@
               "type": "string"
             },
             "status": {
-              "description": "Lifecycle status. 'Inactive' = defunct/archived (e.g. product shut down) — such projects stay name-searchable but are heavily down-ranked and excluded from the leaderboard/directory.",
+              "description": "Lifecycle status. 'Inactive' = defunct/archived (e.g. product shut down) — such projects stay name-searchable but are heavily down-ranked and excluded from the leaderboard/directory. Status describes the PROJECT/entity lifecycle, not proof that a specific product is deployed on Stellar mainnet — check statusAsOf/statusSourceUrl/statusBasis for the label's provenance, and supportedNetworks/description for deployment scope.",
               "enum": [
                 "Draft",
                 "Development",
@@ -739,6 +786,28 @@
                 "Live",
                 "Inactive"
               ],
+              "type": "string"
+            },
+            "statusAsOf": {
+              "description": "When the current status value was last asserted/verified (ISO 8601). Null = undated legacy label — treat the status as source-relative, not freshly confirmed.",
+              "nullable": true,
+              "type": "string"
+            },
+            "statusBasis": {
+              "description": "What kind of evidence backs the current status: 'operator-announcement' = the team/operator said so (can describe PLANS, not deployment — read statusAsOf + the description), 'site-liveness' = the product surface was checked, 'onchain-activity' = contract/network probe, 'human-verified' = owner-confirmed, 'source-inherited' = label carried from a seed source, unverified. Null = provenance not yet recorded.",
+              "enum": [
+                "operator-announcement",
+                "site-liveness",
+                "onchain-activity",
+                "human-verified",
+                "source-inherited"
+              ],
+              "nullable": true,
+              "type": "string"
+            },
+            "statusSourceUrl": {
+              "description": "Primary evidence URL behind the current status (operator announcement, checked product surface, on-chain probe). Null on legacy rows.",
+              "nullable": true,
               "type": "string"
             },
             "supportedNetworks": {
@@ -750,6 +819,16 @@
             },
             "tvlAsOf": {
               "description": "When tvlUSD was fetched from DefiLlama (ISO 8601).",
+              "nullable": true,
+              "type": "string"
+            },
+            "tvlMethod": {
+              "description": "How tvlUSD was computed (e.g. sum of the mapped DefiLlama protocol rows in llamaSlugs, USD at DefiLlama pricing time) — the inclusion-scope note that lets a consumer reconcile modest cross-source differences instead of calling them contradictions.",
+              "nullable": true,
+              "type": "string"
+            },
+            "tvlSource": {
+              "description": "Source that produced tvlUSD (e.g. 'defillama'). Null = legacy value predating provenance. Concurrent sources (operator site, DefiLlama, Dune) legitimately differ by pricing time and inclusion scope — cite tvlUSD as '<tvlSource> as of <tvlAsOf>', never as exact universal truth.",
               "nullable": true,
               "type": "string"
             },
@@ -803,6 +882,10 @@
                 },
                 {
                   "properties": {
+                    "anchorProfileBasis": {
+                      "description": "Present only when the page carries anchor rows (sls-049): empty-field semantics for the anchorProfile join — empty capability arrays mean not-yet-profiled (see each profile's profileState), never a negative capability claim.",
+                      "type": "string"
+                    },
                     "matchMode": {
                       "description": "Tier of match relaxation that produced these results. `semantic` means NO keyword tier matched — every row is a vector-similarity fallback guess (each tagged `via: \"semantic\"`, confidence capped at medium): verify relevance before relying on them.",
                       "enum": [
@@ -857,7 +940,7 @@
                   "type": "number"
                 },
                 "isDeployableContract": {
-                  "description": "Cargo cdylib — a real deployable Soroban contract (vs a CLI/indexer/frontend that only uses Stellar).",
+                  "description": "This repo's PRODUCT is a deployable Soroban contract (Cargo cdylib — vs a CLI/indexer/frontend that only uses Stellar). Known platform/SDK/tooling repos (stellar-core, rs-soroban-env, the SDKs/CLI/RPC…) are pinned FALSE even though they vendor cdylib crates — those are runtime/fixtures, not a deployable contract product (sls-046).",
                   "type": "boolean"
                 },
                 "mainnetContractId": {
@@ -884,13 +967,14 @@
                   "type": "string"
                 },
                 "stellarProof": {
-                  "description": "How we verified it's Stellar, strongest→weakest: cargo-sdk (soroban-sdk dep) / contract-macros (#[contract] usage) / lang-sdk (Swift/Kotlin/Go/Python Stellar SDK) / js-sdk / stellar-toml.",
+                  "description": "How we verified it's Stellar, strongest→weakest: cargo-sdk (soroban-sdk dep) / contract-macros (#[contract] usage) / lang-sdk (Swift/Kotlin/Go/Python Stellar SDK) / js-sdk / stellar-toml. 'none' = the repo WAS scanned and no direct Stellar code evidence was found (a scanned general-purpose dependency) — such repos rank below Stellar-evidenced ones and carry stellarEvidence 'none' unless their own text mentions Stellar.",
                   "enum": [
                     "cargo-sdk",
                     "contract-macros",
                     "lang-sdk",
                     "js-sdk",
-                    "stellar-toml"
+                    "stellar-toml",
+                    "none"
                   ],
                   "type": "string"
                 },
@@ -1002,6 +1086,17 @@
             "stars": {
               "type": "integer"
             },
+            "stellarEvidence": {
+              "description": "WHY this repo ranks as Stellar-relevant (sls-047) — ranking puts Stellar evidence ABOVE raw keyword score, and this names the tier: code-verified (scan found real Stellar/Soroban code) / sdf-org / curated (canonical or flagship map) / mentioned (stellar|soroban in its own name/topics/description/README) / none — a general-purpose toolchain or dependency with NO direct Stellar evidence. 'none' rows can still topic-match a query (e.g. a ZK language for q=zero-knowledge): treat them as toolchains, never cite them as Stellar reference implementations.",
+              "enum": [
+                "code-verified",
+                "sdf-org",
+                "curated",
+                "mentioned",
+                "none"
+              ],
+              "type": "string"
+            },
             "topics": {
               "items": {
                 "type": "string"
@@ -1103,6 +1198,10 @@
                   },
                   "notes": {
                     "type": "string"
+                  },
+                  "populationId": {
+                    "description": "Scope digest of what `count` counts (sls-048) — same format as meta.population.id on /api/analyze and /api/clusters. DB-backed sources here are `<collection>|status:all` (the FULL collection incl. Inactive), which is why projects.count is larger than analyze/clusters' active-only populations. Different ids = different populations: never merge or compare the numbers without labeling the scopes.",
+                    "type": "string"
                   }
                 },
                 "type": "object"
@@ -1166,13 +1265,13 @@
       },
       "summary": "Agent-native data layer for the Stellar ecosystem — projects, builders, hackathons, SCF, audits, research.",
       "title": "Stellar Scout API",
-      "version": "1.7.11"
+      "version": "1.7.15"
     },
     "openapi": "3.1.0",
     "paths": {
       "/api/analyze": {
         "get": {
-          "description": "Returns the **cross-everything ecosystem rollup** — the macro totals that single-event or single-cluster tools can't answer alone. `dimension=all` (default) or slice to `hackathons` (totalEvents, upcoming/active/completed counts, totalPrizePoolUSD, totalRegisteredHackers — live from DoraHacks), `categories` (project-count distribution + scfFunded + hackathon winners per category), or `funding` (scfAwardedProjects, scfTotalDistributedUSD, meanAwardUSD, per-round breakdown, and the post-hackathon Built/In-Progress/Abandoned status funnel). **Use when:** 'what's the overall state of Stellar hackathons/grants', 'total SCF funding distributed / mean award size', 'how much prize money across all hackathons', 'how many projects get built vs abandoned after hackathons'. **Not for:** crowdedness or whitespace per category → use get_clusters; a ranked list of top/active projects → use get_leaderboard; one specific hackathon's details → use get_hackathon; comparing two hackathons head-to-head → use compare_hackathons. Use for ecosystem-wide totals and macro stats — project counts by category, total SCF funding, hackathon totals, and developer-activity aggregates across the whole ecosystem. Includes ecosystem-wide DeFi TVL rollups (as-of dated — never an exact to-the-dollar live figure) and totals across all events/categories.",
+          "description": "Returns the **cross-everything ecosystem rollup** — the macro totals that single-event or single-cluster tools can't answer alone. `dimension=all` (default) or slice to `hackathons` (totalEvents, upcoming/active/completed counts, totalPrizePoolUSD, totalRegisteredHackers — live from DoraHacks), `categories` (project-count distribution + scfFunded + hackathon winners per category), `funding` (scfAwardedProjects, scfTotalDistributedUSD, meanAwardUSD, per-round breakdown, and the post-hackathon Built/In-Progress/Abandoned status funnel), or `tvl` (the DeFi TVL rollup: totalTvlUSD + top10 projects by tvlUSD, DefiLlama-sourced per-project figures, as-of dated — never an exact to-the-dollar live figure, and directory-scoped: protocols not tracked on DefiLlama are absent, so it undercounts chain-wide TVL). **Use when:** 'what's the overall state of Stellar hackathons/grants', 'total SCF funding distributed / mean award size', 'how much prize money across all hackathons', 'how many projects get built vs abandoned after hackathons', 'total/top DeFi TVL on Stellar'. **Not for:** crowdedness or whitespace per category → use get_clusters; a ranked list of top/active projects → use get_leaderboard; one specific hackathon's details → use get_hackathon; comparing two hackathons head-to-head → use compare_hackathons. Use for ecosystem-wide totals and macro stats — project counts by category, total SCF funding, hackathon totals, TVL rollups, and developer-activity aggregates across the whole ecosystem.",
           "operationId": "analyzeEcosystem",
           "parameters": [
             {
@@ -1185,7 +1284,8 @@
                   "all",
                   "hackathons",
                   "categories",
-                  "funding"
+                  "funding",
+                  "tvl"
                 ],
                 "type": "string"
               }
@@ -1196,6 +1296,25 @@
               "content": {
                 "application/json": {
                   "schema": {
+                    "properties": {
+                      "funding": {
+                        "description": "Present for dimension=all|funding. Carries computedAt, methodologyVersion, countBasis, byRound — and projectSetHash (sls-044): a stable sha256-prefix digest of the sorted awarded-project slug set. Same hash across your snapshots ⇒ same project SET (only amounts/labels can differ); different hash ⇒ membership changed (adds/removals/reclassifications) — the honest explanation for a moving cumulative total under an unchanged methodology.",
+                        "properties": {
+                          "projectSetHash": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "meta": {
+                        "properties": {
+                          "population": {
+                            "$ref": "#/components/schemas/PopulationScope"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
                     "type": "object"
                   }
                 }
@@ -1211,7 +1330,7 @@
       },
       "/api/builders": {
         "get": {
-          "description": "The Stellar **people directory** — curated builder PROFILES (synced from Stellar Passport): displayName, githubUsername, bio, roleTitle, location, scfTier, and the projects[] each has shipped. Free-text `q`/`skill` searches across bio + role + project names/descriptions; `location` filters by place; featured builders sort first. **Use when:** 'find me a teammate/collaborator who has shipped X', 'Stellar devs in Lagos who've done Soroban', 'who can I hire for an anchor build' — i.e. you want a PERSON to contact. **Not for:** a funded project/product or 'who built X (the company)' → use search_projects; the GitHub repo/code itself → use search_repos; ecosystem-wide dev *counts*/activity stats → use get_leaderboard. Use for recruiting or hiring: find developers, engineers, contributors, or teammates to recruit or hire by skill, SCF tier, or track record of SCF awards. Filter/find PEOPLE by region (Latin America, India, Africa, Asia, Europe) or by stack — e.g. 'experienced Soroban devs I could reach out to', 'Rust builders to hire', or 'builders in LatAm working on payments'.",
+          "description": "The Stellar **people directory** — curated builder PROFILES (synced from Stellar Passport): displayName, githubUsername, bio, roleTitle, location, and the projects[] each has shipped. Free-text `q`/`skill` searches across bio + role + project names/descriptions; `location` filters by place; featured builders sort first. **Use when:** 'find me a teammate/collaborator who has shipped X', 'Stellar devs in Lagos who've done Soroban', 'who can I hire for an anchor build' — i.e. you want a PERSON to contact. **Not for:** a funded project/product or 'who built X (the company)' → use search_projects; the GitHub repo/code itself → use search_repos; ecosystem-wide dev *counts*/activity stats → use get_leaderboard; SCF-tier or award-track filtering — NOT supported: profiles carry no populated SCF-tier/award data (the response's `scfTier` field is empty on every profile today), so a project's SCF award history must come from search_projects, not from a person's profile. Use for recruiting or hiring: find developers, engineers, contributors, or teammates by skill, location, or the projects they've shipped. Filter/find PEOPLE by region (Latin America, India, Africa, Asia, Europe) or by stack — e.g. 'experienced Soroban devs I could reach out to', 'Rust builders to hire', or 'builders in LatAm working on payments'.",
           "operationId": "getBuilders",
           "parameters": [
             {
@@ -1250,6 +1369,101 @@
               "content": {
                 "application/json": {
                   "schema": {
+                    "properties": {
+                      "builders": {
+                        "items": {
+                          "description": "A builder profile row. When the request had a q/skill filter, `match` and `codeEvidence` carry the match provenance (sls-041).",
+                          "properties": {
+                            "codeEvidence": {
+                              "description": "Indexed repos owned by this builder's GitHub account that match the query — observable facts (language, last activity), kept SEPARATE from subjective profile text. [] = no direct code evidence in the index (a weaker match, not a disqualification); null without a q/skill filter.",
+                              "items": {
+                                "properties": {
+                                  "fullName": {
+                                    "type": "string"
+                                  },
+                                  "lastCommitAt": {
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "type": "string"
+                                  },
+                                  "primaryLanguage": {
+                                    "nullable": true,
+                                    "type": "string"
+                                  },
+                                  "repoScore": {
+                                    "type": "number"
+                                  },
+                                  "stars": {
+                                    "type": "integer"
+                                  },
+                                  "url": {
+                                    "nullable": true,
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              },
+                              "nullable": true,
+                              "type": "array"
+                            },
+                            "match": {
+                              "description": "WHY this row matched (null without a q/skill filter). Free-text profile evidence — treat bio/role text as claims, not verified experience.",
+                              "nullable": true,
+                              "properties": {
+                                "basis": {
+                                  "enum": [
+                                    "profile-text"
+                                  ],
+                                  "type": "string"
+                                },
+                                "matchedFields": {
+                                  "description": "Profile fields the query hit (bio, roleTitle, displayName, githubUsername, location, projects).",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "type": "array"
+                                },
+                                "matchedProjects": {
+                                  "description": "Projects whose name/description matched the query.",
+                                  "items": {
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "slug": {
+                                        "nullable": true,
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  },
+                                  "type": "array"
+                                },
+                                "matchedTerms": {
+                                  "additionalProperties": {
+                                    "type": "string"
+                                  },
+                                  "description": "Per query token, the literal term that hit — a token can match via a synonym (e.g. 'payments' via 'remittance').",
+                                  "type": "object"
+                                }
+                              },
+                              "type": "object"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "meta": {
+                        "properties": {
+                          "matchBasis": {
+                            "description": "What a skill match IS (sls-041): free-text hits over profile + project prose = candidate discovery, NOT verified experience/seniority/availability. Read each row's `match` for where the query hit, and `codeEvidence` for repository-backed facts.",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
                     "type": "object"
                   }
                 }
@@ -1401,6 +1615,22 @@
               "content": {
                 "application/json": {
                   "schema": {
+                    "properties": {
+                      "clusters": {
+                        "items": {
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "meta": {
+                        "properties": {
+                          "population": {
+                            "$ref": "#/components/schemas/PopulationScope"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
                     "type": "object"
                   }
                 }
@@ -1647,7 +1877,7 @@
       },
       "/api/leaderboard": {
         "get": {
-          "description": "Returns a **ranked list of active Stellar projects** (default top 50, max 300) sortable by `sort=activity|stars|issues` over a `range` (7d/30d/90d/1y/all), with per-project GitHub rollups (`totalStars`, `openIssuesTotal`, `lastActivityAt`, `repoCount`) and `scfAwarded`; optional `category` filter and `format=csv`. Also bundles an **Electric Capital ecosystem dev macro** block (28-day active / Stellar-only / multichain dev counts, commits28d, full-time/part-time/one-time dev splits). **Use when:** 'who/what are the top/most-active Stellar projects', 'most-starred projects', 'which projects shipped recently (last 30d)', 'how many active Stellar devs / how does Stellar's dev activity look', or you need a CSV/Dune-style export of ranked projects. **Not for:** category counts or crowded-vs-underbuilt whitespace → use get_clusters; ecosystem-wide hackathon/funding/status-funnel totals → use analyze_ecosystem; finding a specific project's profile/funding/competitors → use search_projects; ranking individual developers (this ranks PROJECTS, plus an EC macro snapshot — it does not list named devs) → use get_builders.",
+          "description": "Returns a **ranked list of active Stellar projects** (default top 50, max 300) sortable by `sort=activity|stars|issues` over a `range` (7d/30d/90d/1y/all), with per-project GitHub rollups (`totalStars`, `openIssuesTotal`, `lastActivityAt`, `repoCount`) and `scfAwarded`; optional `category` filter and `format=csv`. `meta.metricDefinitions` states exactly what each served metric counts — read it before relabeling a ranking: `activity`/`lastActivityAt` = latest default-branch commit across the project's indexed repos (a recency signal, NOT commit volume — commit counts are not served); `issues` = the OPEN-issue backlog rollup (issue-only, excludes PRs — a backlog snapshot, not activity or quality); `repoCount` = indexed-repo coverage. Also bundles an **Electric Capital ecosystem dev macro** block (28-day active / Stellar-only / multichain dev counts, commits28d, full-time/part-time/one-time dev splits). **Use when:** 'who/what are the top/most-active Stellar projects', 'most-starred projects', 'which projects shipped recently (last 30d)', 'how many active Stellar devs / how does Stellar's dev activity look', or you need a CSV/Dune-style export of ranked projects. **Not for:** category counts or crowded-vs-underbuilt whitespace → use get_clusters; ecosystem-wide hackathon/funding/status-funnel totals → use analyze_ecosystem; finding a specific project's profile/funding/competitors → use search_projects; ranking individual developers (this ranks PROJECTS, plus an EC macro snapshot — it does not list named devs) → use get_builders.",
           "operationId": "getLeaderboard",
           "parameters": [
             {
@@ -2139,7 +2369,7 @@
       },
       "/api/projects/search": {
         "get": {
-          "description": "Search the curated Stellar **project/product directory** — what's been *built*, by whom, with SCF-funding and live/inactive status (wallets, DEXes, anchors, lending, oracles, RWAs, tooling). Keyword + synonym match (dex→amm/swap, rosca→susu/chama) ranked by curated **prominence**, SDF/community verification, SCF funding, and Live status; falls back to semantic vector search when keyword hits are thin. Each result carries status, scfAwarded/scfTotalAwardedUSD, `builtBy` (the org/entity behind it — 'who built X'), the project's own links, a confidence score, and its top indexed `repos` inline. **Use when:** 'who/what already exists for X', 'has anyone built X', 'is there a live/funded project for X', or you need a project's funding/status/competitors. **Not for:** raw GitHub source repos ranked by code quality → use search_repos; docs, SEPs, audits, how-to/feasibility knowledge → use search_research; category counts or whitespace → use get_clusters. Use for 'who has built / is there a / which projects / give me a directory of' questions about Stellar apps, products, protocols, dApps, teams, companies and startups by category — DeFi, lending, credit, yield, AMM, DEX, swap, NFT marketplace, wallets, anchors and on/off-ramps, RWA and real-world-asset tokenization, stablecoins, payments, oracles, identity, gaming, infrastructure, tooling. Also 'is there a mature X I could integrate', 'who is building Y', projects operating as anchors, and named products (Etherfuse Stablebonds, Soroswap) — for DIRECTORY FACTS about those products only (status, funding, builder, links); for editorial/analysis content about them (articles, interviews, metrics commentary, deep dives) use content platforms instead. Also answers list/enumerate/compare questions from the curated directory: which wallets exist and how they differ, anchors and anchor infrastructure, the main DeFi projects (directory / market map), NFT marketplaces, perpetuals/derivatives DEXes, block explorers (stellar.expert, StellarChain), AMM/liquidity protocols and their yields, and specific products like Etherfuse Stablebonds (USTRY/CETES) — again as directory records, not articles about them.",
+          "description": "Search the curated Stellar **project/product directory** — what's been *built*, by whom, with SCF-funding and live/inactive status (wallets, DEXes, anchors, lending, oracles, RWAs, tooling). For an exact product-type roster use the `type` filter (server-side `types[]` membership, e.g. `type=Wallet`) — keyword hits alone are NOT exact type matches. Keyword + synonym match (dex→amm/swap, rosca→susu/chama) ranked by curated **prominence**, SDF/community verification, SCF funding, and Live status; falls back to semantic vector search when keyword hits are thin. Each result carries status, scfAwarded/scfTotalAwardedUSD, `builtBy` (the org/entity behind it — 'who built X'), the project's own links, a confidence score, and its top indexed `repos` inline. **Use when:** 'who/what already exists for X', 'has anyone built X', 'is there a live/funded project for X', or you need a project's funding/status/competitors. **Not for:** raw GitHub source repos ranked by code quality → use search_repos; docs, SEPs, audits, how-to/feasibility knowledge → use search_research; category counts or whitespace → use get_clusters. Use for 'who has built / is there a / which projects / give me a directory of' questions about Stellar apps, products, protocols, dApps, teams, companies and startups by category — DeFi, lending, credit, yield, AMM, DEX, swap, NFT marketplace, wallets, anchors and on/off-ramps, RWA and real-world-asset tokenization, stablecoins, payments, oracles, identity, gaming, infrastructure, tooling. Also 'is there a mature X I could integrate', 'who is building Y', projects operating as anchors, and named products (Etherfuse Stablebonds, Soroswap) — for DIRECTORY FACTS about those products only (status, funding, builder, links); for editorial/analysis content about them (articles, interviews, metrics commentary, deep dives) use content platforms instead. Also answers list/enumerate/compare questions from the curated directory: which wallets exist and how they differ, anchors and anchor infrastructure, the main DeFi projects (directory / market map), NFT marketplaces, perpetuals/derivatives DEXes, block explorers (stellar.expert, StellarChain), AMM/liquidity protocols and their yields, and specific products like Etherfuse Stablebonds (USTRY/CETES) — again as directory records, not articles about them.",
           "operationId": "searchProjects",
           "parameters": [
             {
@@ -2163,11 +2393,57 @@
               }
             },
             {
+              "description": "Filter to projects whose `types[]` includes this product type — server-side exact membership, e.g. `type=Wallet` enumerates Wallet-typed records (combine with `q` and/or `status` to scope further, or use alone to list a type). Distinct from `category` (a project has ONE category but can carry several types). Unknown values return 400 with validTypes.",
+              "in": "query",
+              "name": "type",
+              "schema": {
+                "enum": [
+                  "Wallet",
+                  "DEX",
+                  "Lending",
+                  "Bridge",
+                  "Infrastructure",
+                  "Payments",
+                  "Anchor",
+                  "SDK",
+                  "Indexer",
+                  "Explorer",
+                  "Analytics",
+                  "AI",
+                  "Gaming",
+                  "Education",
+                  "Security",
+                  "NFT",
+                  "RWA",
+                  "Stablecoin",
+                  "Social Impact",
+                  "RPC",
+                  "Faucet"
+                ],
+                "type": "string"
+              }
+            },
+            {
               "description": "Filter to SCF-funded projects only",
               "in": "query",
               "name": "scfAwarded",
               "schema": {
                 "type": "boolean"
+              }
+            },
+            {
+              "description": "Filter by lifecycle status (e.g. status=Inactive lists retired/defunct projects; status=Live restricts to operating ones). Unknown values return 400 with validStatuses.",
+              "in": "query",
+              "name": "status",
+              "schema": {
+                "enum": [
+                  "Live",
+                  "Inactive",
+                  "Development",
+                  "Pre-Release",
+                  "Pre-Development"
+                ],
+                "type": "string"
               }
             },
             {
@@ -2250,6 +2526,7 @@
                             "type": "number"
                           },
                           "isDeployableContract": {
+                            "description": "The routed repo's PRODUCT is a deployable Soroban contract. Known platform/SDK/tooling repos (stellar-core, rs-soroban-env, the SDKs/CLI/RPC…) are pinned FALSE — they vendor cdylib crates as runtime/fixtures, and this flag must never be read as 'Stellar Core itself is deployable' (sls-046).",
                             "type": "boolean"
                           },
                           "mainnetContractId": {
@@ -2559,6 +2836,35 @@
                           "activeQuarter": {
                             "type": "string"
                           },
+                          "countBasis": {
+                            "description": "Plain-language statement of what each count counts and how to count briefs (filter rowType === 'rfp').",
+                            "type": "string"
+                          },
+                          "counts": {
+                            "description": "total/open/closed count curated BRIEFS only; matched/returned count result ROWS, which also include synthetic scf-round rows — so open=5 with returned=6 is consistent, not a discrepancy (sls-045). See countBasis.",
+                            "properties": {
+                              "closed": {
+                                "type": "integer"
+                              },
+                              "matched": {
+                                "type": "integer"
+                              },
+                              "open": {
+                                "type": "integer"
+                              },
+                              "returned": {
+                                "type": "integer"
+                              },
+                              "syntheticRounds": {
+                                "description": "Synthetic scf-round rows in the returned page (rowType 'scf-round').",
+                                "type": "integer"
+                              },
+                              "total": {
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
                           "scfRound": {
                             "description": "SCF round identity + submission window (curated — SCF publishes no machine-readable round feed): fields are null when unconfirmed rather than guessed. Always cite asOf alongside answers built on this.",
                             "properties": {
@@ -2606,6 +2912,21 @@
                       },
                       "rfps": {
                         "items": {
+                          "description": "An RFP row. rowType discriminates real briefs from the synthetic live-round row (sls-045).",
+                          "properties": {
+                            "rowType": {
+                              "description": "'rfp' = a curated sponsor brief. 'scf-round' = a SYNTHETIC row representing the live SCF round's open submission window (served as a row so row-reading agents don't miss the open round). Synthetic rows are NOT briefs — count/render briefs by filtering rowType === 'rfp'.",
+                              "enum": [
+                                "rfp",
+                                "scf-round"
+                              ],
+                              "type": "string"
+                            },
+                            "synthetic": {
+                              "description": "True only on synthetic scf-round rows — mirror of rowType.",
+                              "type": "boolean"
+                            }
+                          },
                           "type": "object"
                         },
                         "type": "array"
@@ -2802,7 +3123,7 @@
       }
     ]
   },
-  "openapiVersion": "1.7.11",
+  "openapiVersion": "1.7.15",
   "operationCount": 24,
   "service": "stellar-light",
   "source": {
@@ -2814,7 +3135,7 @@
     "status": "https://stellarlight.xyz/api/status"
   },
   "status": {
-    "apiVersion": "1.7.11",
+    "apiVersion": "1.7.15",
     "docs": "https://stellarlight.xyz/scout",
     "endpoints": [
       "/api/status",
@@ -2846,33 +3167,37 @@
     "skill": "https://stellarlight.xyz/skills/stellar-scout.md",
     "sources": [
       {
-        "count": 922,
-        "lastUpdatedAt": "2026-07-10T11:24:38.527Z",
-        "name": "projects"
+        "count": 957,
+        "lastUpdatedAt": "2026-07-11T18:13:54.901Z",
+        "name": "projects",
+        "populationId": "projects|status:all"
       },
       {
         "count": 0,
         "lastUpdatedAt": null,
         "name": "hackathons",
-        "notes": "Curated DB collection only (may be 0). /api/hackathons additionally merges live DoraHacks-sourced events — see its meta.counts for the served total."
+        "notes": "Curated DB collection only (may be 0). /api/hackathons additionally merges live DoraHacks-sourced events — see its meta.counts for the served total.",
+        "populationId": "hackathons|status:all"
       },
       {
         "count": 114,
-        "lastUpdatedAt": "2026-07-10T06:00:34.988Z",
+        "lastUpdatedAt": "2026-07-11T06:00:21.445Z",
         "name": "builders",
-        "notes": "Synced from Stellar Passport — small and growing dataset"
+        "notes": "Synced from Stellar Passport — small and growing dataset",
+        "populationId": "builders|status:all"
       },
       {
-        "count": 2423,
-        "lastUpdatedAt": "2026-07-10T06:44:33.813Z",
+        "count": 2473,
+        "lastUpdatedAt": "2026-07-11T15:48:25.805Z",
         "name": "repos",
-        "notes": "Indexed-and-scored Stellar GitHub repos (powers /api/repos/search)"
+        "notes": "Indexed-and-scored Stellar GitHub repos (powers /api/repos/search)",
+        "populationId": "repos|status:all"
       },
       {
         "count": 1,
-        "lastUpdatedAt": "2026-07-09T17:17:59.754015+00:00",
+        "lastUpdatedAt": "2026-07-10T16:52:42.026958+00:00",
         "name": "ecosystemStats",
-        "notes": "Electric Capital snapshot, as of 2026-07-01"
+        "notes": "Electric Capital snapshot, as of 2026-07-02"
       },
       {
         "count": 7,

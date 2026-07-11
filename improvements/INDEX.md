@@ -62,18 +62,18 @@ Total findings: 126
 | sls-035 | Scout's DEX type/cluster cannot answer how many independent liquidity venues or     | verified       | 2026-07-10 | 0           |
 | sls-036 | The leaderboard does not make the exact activity calculation or repository          | verified       | 2026-07-10 | 1           |
 | sls-037 | One Live project status cannot represent partial deployment. Rarible has            | verified       | 2026-07-10 | 0           |
-| sls-038 | The live analyze response omits the TVL rollup promised by the exposed catalog      | verified       | 2026-07-10 | 0           |
+| sls-038 | The live analyze response omits the TVL rollup promised by the exposed catalog      | fixed-upstream | 2026-07-10 | 0           |
 | sls-039 | Scout's project-level tvlUSD/tvlAsOf point is useful but cannot answer a            | verified       | 2026-07-10 | 0           |
 | sls-040 | Scout presents mutually incompatible builder contracts. Descriptions and the        | verified       | 2026-07-10 | 0           |
-| sls-041 | Builder skill search returns useful candidates but does not explain why a row       | verified       | 2026-07-10 | 0           |
-| sls-042 | The category-cluster endpoint silently truncates its active-project input at        | verified       | 2026-07-10 | 0           |
-| sls-043 | Scout exposes two canonically linked Band identities with opposite SCF histories    | verified       | 2026-07-10 | 0           |
+| sls-041 | Builder skill search returns useful candidates but does not explain why a row       | fixed-upstream | 2026-07-10 | 0           |
+| sls-042 | The category-cluster endpoint silently truncates its active-project input at        | fixed-upstream | 2026-07-10 | 0           |
+| sls-043 | Scout exposes two canonically linked Band identities with opposite SCF histories    | fixed-upstream | 2026-07-10 | 0           |
 | sls-044 | Funding-v2 now documents its methodology, fixing the earlier provenance defect, but | proposed       | 2026-07-10 | 0           |
-| sls-045 | The RFP discovery response prepends a synthetic current-round row to the            | verified       | 2026-07-10 | 1           |
-| sls-046 | Scout marks stellar/stellar-core as codeVerified.isDeployableContract:true          | proposed       | 2026-07-11 | 0           |
-| sls-047 | Scout's generic repository score can outrank Stellar-specific implementations       | proposed       | 2026-07-11 | 0           |
+| sls-045 | The RFP discovery response prepends a synthetic current-round row to the            | fixed-upstream | 2026-07-10 | 1           |
+| sls-046 | Scout marks stellar/stellar-core as codeVerified.isDeployableContract:true          | fixed-upstream | 2026-07-11 | 0           |
+| sls-047 | Scout's generic repository score can outrank Stellar-specific implementations       | fixed-upstream | 2026-07-11 | 0           |
 | sls-048 | Scout quantitative operations expose locally plausible totals but lack a common     | proposed       | 2026-07-11 | 0           |
-| sls-049 | Scout's Bitso project narrative claims live anchor/corridor activity while its      | proposed       | 2026-07-11 | 0           |
+| sls-049 | Scout's Bitso project narrative claims live anchor/corridor activity while its      | fixed-upstream | 2026-07-11 | 0           |
 | sls-050 | Scout directory identity handling does not make the Vibrant-to-Vesseo naming        | proposed       | 2026-07-11 | 0           |
 
 ## stellar-docs
