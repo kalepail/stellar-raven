@@ -89,6 +89,28 @@ Tracking (Solo MCP — this repo's project binding is in
 round; open a scratchpad as the round's working record (numbers, per-case notes, triage table, findings drafted). Repo
 fixes discovered during the round become **their own Solo todos** — never `improvements/` files.
 
+**Pre-spend plan review — a launch gate for any round with paid instruments** (QA, agentic,
+live-data — anything the table above prices). Before the first paid token: draft the round
+brief in the round scratchpad (instruments, sample, reading rules, budget); have it
+adversarially reviewed by an arm from the
+[`AGENTS.md` routing table](../../../AGENTS.md#model-routing-for-repo-work-fan-out) that is
+not the brief's author; reconcile every finding; on a major revision, run a bounded delta
+re-review of what changed. Only then spend. The review checks, at minimum, the patterns
+pre-spend review has actually caught (dated evidence:
+[`research/audits/2026-07-11-eval-round-orchestration.md`](../../../research/audits/2026-07-11-eval-round-orchestration.md)):
+
+- The round's own independent review is scheduled as mandatory, not optional.
+- Attribution over a composite interval is predeclared: name the cases each landed change
+  can deterministically affect before running, or claim only a diagnostic.
+- The noise floor bounds what variance can explain; it is never a significance threshold.
+- Environment and revision pins (prompt-surface overrides, server revision, sample
+  membership) are asserted before spend, not reconstructed after.
+- Budget caps are enforceable: define counted costs and reserves, and structure paid work
+  around observable checkpoints or bounded call-count authorizations so the cap can stop
+  the next spend.
+
+A missed plan review blocks launch; it never retroactively invalidates data already collected.
+
 For a multi-lane or CI-like round, use `truth-maintenance` as the coordinator rather than
 holding every transcript, drift note, golden check, and improvement follow-up in one context
 window. The coordinator should own the Solo ledger and spawn isolated reviewers for:
