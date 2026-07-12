@@ -1,6 +1,6 @@
 {
-  "$comment": "Membership-frozen canonical live-data contract (todo 818; repaired and content-pinned by todo 913) — exactly 10 hand-authored cases: 7 Scout, 2 Lumenloop, 1 cant-do control. Membership/order comes from the pre-drift eb412bd^ lane; case content is the current vetted state, including 6fed730's deliberate q-live-hackathon-recent-winners correction for Scout winnersRanked/placementRank evidence. NOT compiled. Grades the execute path's differentiator: does the agent GROUND its answer in live tool output (search → execute → answer) where priors fail? Goldens are BEHAVIORAL (live-derived facts, as-of framing, honest refusal when live grounding is impossible) — never exact values, which drift. Sources: the theboycoder/boxy DEFER_FRESHNESS candidates (eval/corpus/raven-next/research/golden/_meta/_prior-art/review-theboycoder-stellarlight-synthesis.md) reframed per that review's own guidance, plus codemode-targeted drift cases. Run: node eval/qa/run-qa.mjs --cases eval/qa/corpus/live/live-cases.json --port 8788 (needs wrangler dev). The opt-in digest contract is eval/qa/corpus/live/live-digest-supplement-cases.json and is never included in this denominator. Grade execute-grounding coverage with eval/plan/grade-plan.mjs on the results file. NEVER merge this lane into the main QA battery or the digest supplement's numbers. Any case-content change requires an explicit contract-version bump, provenance note, and digest update.",
-  "contract": "live-data-canonical-v2",
+  "$comment": "Membership-frozen canonical live-data contract (todo 818; v2 repaired/content-pinned by todo 913; v3 expanded by todo 964) — 10 v2 cases carried byte-identically plus 5 behavioral cases for lifecycle provenance, non-digest recency, cross-service reconciliation, soft-empty absence discipline, and artifact continuation. NOT compiled. Goldens grade live-grounding behavior, state-conditional qualification, and honest scope rather than volatile exact values. Run only as its own denominator; the opt-in digest contract remains live-digest-supplement-v2 and is never merged. Any case-content change requires an explicit contract-version bump, provenance note, and digest update.",
+  "contract": "live-data-canonical-v3",
   "membership": [
     "q-live-rfps-open-now",
     "q-live-rfps-passkey-smart-account",
@@ -11,14 +11,19 @@
     "q-live-ecosystem-crowded-underbuilt",
     "q-live-ll-scf-latest-round",
     "q-live-ll-regions-vocab",
-    "q-live-trap-market-price"
+    "q-live-trap-market-price",
+    "q-live-fluxity-status-provenance",
+    "q-live-ll-active-jobs-recency",
+    "q-live-beans-cross-service-reconcile",
+    "q-live-ll-guessed-slug-soft-empty",
+    "q-live-builders-artifact-continuation"
   ],
   "contractProvenance": {
-    "membership": "Ordered membership pinned explicitly in live-data-canonical-v2.",
-    "content": "Case bodies schema-migrated mechanically from live-data-canonical-v1; judge-visible projection unchanged.",
-    "caseContentDigest": "sha256(JSON.stringify(cases))=d5fd27a15c3ef0dd711df565e9809c15ebfb6d62f1a414738f47f41484866a90"
+    "membership": "Ordered membership pinned explicitly in live-data-canonical-v3: the v2 ten retain order and content, followed by the five todo-964 manifest-approved cases.",
+    "content": "The live-data-canonical-v2 ten are carried byte-identically; five behavioral cases were added after golden-truth production verification and blind re-derivation. The independent v2 projection digest remains pinned in eval/self-test.mjs.",
+    "caseContentDigest": "sha256(JSON.stringify(cases))=2a9c98d1088acc7bbbf563ac3a95fbe74e2bea81901c6d0fcc6e5860b1c23340"
   },
-  "authoredAt": "2026-07-02",
+  "authoredAt": "2026-07-12",
   "cases": [
     {
       "id": "q-live-rfps-open-now",
@@ -486,6 +491,535 @@
           ]
         },
         "origin": "live-data-canonical-v1 q-live-trap-market-price"
+      }
+    },
+    {
+      "id": "q-live-fluxity-status-provenance",
+      "question": "Is Fluxity actually live on Stellar mainnet today? Please tell me what Scout says and what evidence backs that status.",
+      "surface": [
+        "scout.searchProjects"
+      ],
+      "golden": {
+        "answer": "A grounded answer queries Scout for Fluxity and reports its lifecycle label as Scout's current, source-relative claim with an as-of date. The behavior is state-conditional: when statusAsOf, statusBasis, or statusSourceUrl are null and supportedNetworks is empty, say that the record does not establish the label's date, basis, or network deployment and therefore does not prove mainnet availability or audit maturity. If those qualifiers are populated at run time, report the stated date, basis, source, and network scope accurately, but do not promote the label beyond what statusBasis actually supports. Repository or contract-source existence is useful context, not proof of a deployed mainnet product.",
+        "keyFacts": [
+          "Reports Fluxity's live-queried Scout status as a dated, source-relative label rather than universal deployment truth.",
+          "Inspects statusAsOf, statusBasis, statusSourceUrl, and supportedNetworks and changes the qualification to match their current populated-or-null state.",
+          "Does not infer mainnet deployment, product reachability, or audit maturity beyond the evidence named by statusBasis and its source."
+        ],
+        "avoid": [
+          "Do NOT turn an unqualified Scout Live label, a repository, or deployable source code into proof that Fluxity is currently deployed on mainnet or audited.",
+          "Do NOT keep saying the qualifier fields are null if the live record has populated them; report the current basis and date source-relatively."
+        ],
+        "notes": "LIVE-DATA CASE: state-conditional sls-024 discriminator. Upstream may populate the nullable lifecycle qualifiers. Grade whether the answer reads and respects their current state, not whether they remain null. A populated operator-announcement basis proves only that announcement; a null basis proves no deployment scope."
+      },
+      "tags": {
+        "category": "defi-ecosystem",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-12",
+        "reverifyBy": "2026-10-01",
+        "sources": [
+          {
+            "class": "C",
+            "ref": "https://stellarlight.xyz/project/fluxity",
+            "note": "Production scout.searchProjects observation; lifecycle qualifier state is re-read at run time."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/luanlabs/fluxity-v1-core",
+            "note": "Primary contract source establishes code existence, not deployment."
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/networks",
+            "note": "Official distinction among Mainnet, Testnet, and Futurenet."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Scout's Fluxity row serves a lifecycle label plus separate date, basis, source, verification, and network qualifiers whose current state bounds the claim.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "https://stellarlight.xyz/project/fluxity",
+                "observedAt": "2026-07-12",
+                "note": "Production row observed Live/Unverified with null statusAsOf/statusBasis/statusSourceUrl and empty supportedNetworks; golden remains conditional on future populated states."
+              },
+              {
+                "class": "B",
+                "ref": "catalog/manifest.json#scout.searchProjects",
+                "observedAt": "2026-07-12",
+                "note": "Exposed operation contract describes project status/funding discovery rather than deployment certification."
+              }
+            ]
+          },
+          {
+            "claim": "A Scout Live label or public contract repository alone proves current Fluxity mainnet deployment or audit maturity.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "B",
+                "ref": "https://github.com/luanlabs/fluxity-v1-core",
+                "observedAt": "2026-07-12",
+                "note": "Repository supplies source but no mainnet deployment proof."
+              },
+              {
+                "class": "A",
+                "ref": "https://developers.stellar.org/docs/networks",
+                "observedAt": "2026-07-12",
+                "note": "Official docs distinguish production Mainnet from non-production networks."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-12",
+          "by": "Lane 4 live-v3 author + blind Terra re-derivation",
+          "evidence": [
+            "solo://proj/49/scratchpad/lane-4-v3-manifest-r--604",
+            "improvements/stellar-light-scout/sls-024-project-lifecycle-operator-conflicts.md",
+            "Sibling sweep: q-defi-streaming-payments-prior-art and q-defi-blend-alternatives reviewed; this case uniquely isolates state-conditional lifecycle provenance."
+          ],
+          "rootCause": [
+            "solo://proj/49/todo/964"
+          ]
+        },
+        "origin": "authored 2026-07 (live-v3 lifecycle provenance)"
+      }
+    },
+    {
+      "id": "q-live-ll-active-jobs-recency",
+      "question": "Which Stellar ecosystem jobs still look active right now, and when was each listing last seen? I don't want stale openings.",
+      "surface": [
+        "lumenloop.list_documents"
+      ],
+      "golden": {
+        "answer": "A grounded answer queries the ordinary Lumenloop jobs collection with status active, dates and scopes the result, and follows pagination before making a complete-list claim. It must report the date fields that are actually returned. If the exposed job summaries omit last_seen_at, say that exact last-seen times are unavailable through this result and do not relabel created_at as last-seen; use the official listing URLs for a current availability check. An active index status means the listing was served as active at query time, not that the employer guarantees the role is still hiring.",
+        "keyFacts": [
+          "Uses the live jobs collection with an active filter and reports an as-of date plus pagination or an explicitly scoped slice.",
+          "Reports only returned recency fields; if last_seen_at is absent, states that limitation and does not substitute created_at.",
+          "Treats active as index-relative and uses the returned official listing URLs for current employer-side confirmation.",
+          "Preserves distinct listing URLs or stable identities when titles repeat; it does not deduplicate jobs by title alone."
+        ],
+        "avoid": [
+          "Do NOT invent last-seen timestamps or rename created_at/published_at as last_seen_at when the response omits that field.",
+          "Do NOT claim that an index-active row guarantees the employer is still accepting applications.",
+          "Do NOT collapse repeated job titles into one opening without evidence that their listing identities are duplicates."
+        ],
+        "notes": "LIVE-DATA CASE: non-digest recency grounding through list_documents. Production observation on 2026-07-12 returned active job summaries and pagination but only created_at on rows. Grade honest field/scope handling; a later response may expose last_seen_at, in which case reporting it accurately is correct."
+      },
+      "tags": {
+        "category": "scf-grants-builders",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "corpus-grounded",
+        "status": "confirmed",
+        "asOf": "2026-07-12",
+        "reverifyBy": "2026-10-08",
+        "sources": [
+          {
+            "class": "C",
+            "ref": "lumenloop.list_documents(collection=jobs,status=active,sort=last_seen_at)",
+            "note": "Production response shape and current active-listing slice."
+          },
+          {
+            "class": "A",
+            "ref": "https://jobs.ashbyhq.com/stellar",
+            "note": "Primary SDF job board used to corroborate the returned listing footprint."
+          },
+          {
+            "class": "B",
+            "ref": "catalog/manifest.json#lumenloop.list_documents",
+            "note": "Exposed filter/sort/pagination contract."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "The live jobs operation can return an active, paginated listing slice while its exposed summary rows may omit exact last_seen_at values.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "lumenloop.list_documents(collection=jobs,status=active,sort=last_seen_at)",
+                "observedAt": "2026-07-12",
+                "note": "Production returned 30 active rows in pagination; summaries carried created_at but no last_seen_at."
+              },
+              {
+                "class": "A",
+                "ref": "https://jobs.ashbyhq.com/stellar",
+                "observedAt": "2026-07-12",
+                "note": "Primary board independently exposed current open positions."
+              }
+            ]
+          },
+          {
+            "claim": "A served active status or created_at value guarantees that the employer is still hiring and supplies an exact last-seen time.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "lumenloop.list_documents(collection=jobs,status=active,sort=last_seen_at)",
+                "observedAt": "2026-07-12",
+                "note": "The served summary did not expose last_seen_at."
+              },
+              {
+                "class": "A",
+                "ref": "https://jobs.ashbyhq.com/stellar",
+                "observedAt": "2026-07-12",
+                "note": "The primary board is the appropriate current-availability check."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-12",
+          "by": "Lane 4 live-v3 author + blind Terra re-derivation",
+          "evidence": [
+            "solo://proj/49/scratchpad/lane-4-v3-manifest-r--604",
+            "Sibling sweep: q-gap-lumen-documents-browse and digest recency cases reviewed; none grades active jobs or missing last_seen_at discipline."
+          ],
+          "rootCause": [
+            "solo://proj/49/todo/964"
+          ]
+        },
+        "origin": "authored 2026-07 (live-v3 non-digest recency)"
+      }
+    },
+    {
+      "id": "q-live-beans-cross-service-reconcile",
+      "question": "I'm evaluating Beans for a Stellar payment app. What do Scout and Lumenloop each say it is, who is behind it, and whether it's current? Reconcile any differences for me.",
+      "surface": [
+        "scout.searchProjects",
+        "lumenloop.search_directory",
+        "lumenloop.get_project"
+      ],
+      "golden": {
+        "answer": "A grounded answer resolves Beans independently in Scout and Lumenloop, attributes each field to the service that served it, and reconciles identity, product description, builder/company evidence, category, links, and lifecycle scope. Agreement that Beans is a non-custodial Stellar payments/money-transfer app may be reported as agreement, while differences in taxonomy, location, funding detail, or omitted fields remain scoped to each record. A Scout status must be qualified by its current statusAsOf/statusBasis/statusSourceUrl/supportedNetworks state; a null builtBy is not permission to invent a builder. Primary Beans operator/store/company evidence may identify Beans B.V., but directory agreement alone is not independent proof of deployment.",
+        "keyFacts": [
+          "Queries both services and attributes their current Beans identity, descriptions, links, and lifecycle fields separately.",
+          "Reconciles agreement, omission, taxonomy differences, and actual conflicts instead of silently selecting or fusing one record.",
+          "Uses primary Beans evidence for company/builder attribution and does not over-promote an unqualified directory status to verified deployment."
+        ],
+        "avoid": [
+          "Do NOT fabricate a Scout builtBy value, merge incompatible fields into a fictional canonical record, or call an omitted field a contradiction.",
+          "Do NOT treat two aggregator records agreeing as independent proof of current mainnet deployment."
+        ],
+        "notes": "LIVE-DATA CASE: grade reconciliation, not a frozen field roster. Current services may converge or diverge later. Correct behavior labels every claim by source and uses primary evidence for builder/company claims."
+      },
+      "tags": {
+        "category": "retail-consumer",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "mixed",
+        "asOf": "2026-07-12",
+        "reverifyBy": "2026-10-15",
+        "sources": [
+          {
+            "class": "C",
+            "ref": "https://stellarlight.xyz/project/beans",
+            "note": "Scout's current Beans record."
+          },
+          {
+            "class": "C",
+            "ref": "lumenloop.search_directory(query=Beans) -> lumenloop.get_project(slug=beans)",
+            "note": "Lumenloop's independently queried current Beans record."
+          },
+          {
+            "class": "A",
+            "ref": "https://play.google.com/store/apps/details?id=com.beansapp.app",
+            "note": "Primary app-store/operator evidence naming Beans B.V. and current product claims."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/beans-bv",
+            "note": "Primary organization/repository footprint."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "Scout and Lumenloop currently resolve the same Beans product and agree on its non-custodial Stellar payments identity while serving different field scopes.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "https://stellarlight.xyz/project/beans",
+                "observedAt": "2026-07-12",
+                "note": "Scout product row, links, status, repositories, and qualifiers."
+              },
+              {
+                "class": "C",
+                "ref": "lumenloop.search_directory(query=Beans) -> lumenloop.get_project(slug=beans)",
+                "observedAt": "2026-07-12",
+                "note": "Lumenloop identity, Applications taxonomy, Netherlands fields, links, and SCF history."
+              },
+              {
+                "class": "A",
+                "ref": "https://play.google.com/store/apps/details?id=com.beansapp.app",
+                "observedAt": "2026-07-12",
+                "note": "Operator-controlled listing describes a non-custodial global money app and names Beans B.V."
+              }
+            ]
+          },
+          {
+            "claim": "A null builder field or unqualified directory lifecycle label supports inventing the builder or asserting verified mainnet deployment.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "https://stellarlight.xyz/project/beans",
+                "observedAt": "2026-07-12",
+                "note": "Observed builtBy null and lifecycle qualifier fields null/empty."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/beans-bv",
+                "observedAt": "2026-07-12",
+                "note": "Primary organization footprint supports attribution without fabricating the missing Scout field."
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-12",
+          "by": "Lane 4 live-v3 author + blind Terra re-derivation",
+          "evidence": [
+            "solo://proj/49/scratchpad/lane-4-v3-manifest-r--604",
+            "Sibling sweep: Beans appears only incidentally in q-crp-anchors-by-corridor evidence; no Beans reconciliation question exists."
+          ],
+          "rootCause": [
+            "solo://proj/49/todo/964"
+          ]
+        },
+        "origin": "authored 2026-07 (live-v3 cross-service reconciliation)"
+      }
+    },
+    {
+      "id": "q-live-ll-guessed-slug-soft-empty",
+      "question": "I tried the Lumenloop slug reflector-network and got no project back. Does that mean Reflector isn't in the directory?",
+      "surface": [
+        "lumenloop.get_project",
+        "lumenloop.search_directory"
+      ],
+      "golden": {
+        "answer": "No absolute absence conclusion follows from one exact-slug soft-empty. A grounded answer checks the failed envelope, explains that get_project requires an exact resolved slug, searches the directory by the name Reflector, and follows any returned slug with get_project. It reports the current result with an as-of date: a resolved record disproves the guessed-slug absence inference; if name search is also empty later, the conclusion is only that these directory checks found no record at that time, not that the real project does not exist.",
+        "keyFacts": [
+          "Classifies the guessed exact-slug result as soft-empty and says it is inconclusive about entity or directory absence.",
+          "Uses search_directory to resolve Reflector by name and calls get_project only with the returned slug.",
+          "Scopes any remaining no-result conclusion to the checked directory and observation time rather than asserting real-world nonexistence."
+        ],
+        "avoid": [
+          "Do NOT say Reflector is absent or nonexistent solely because get_project returned soft-empty for the guessed slug reflector-network.",
+          "Do NOT guess a replacement slug and present it as resolved without using directory search."
+        ],
+        "notes": "LIVE-DATA CASE: production verification on 2026-07-12 found reflector-network soft-empty and resolved reflector through name search. Grade the continuation and maximum justified absence claim; if slugs change, a name-resolved live answer remains correct."
+      },
+      "tags": {
+        "category": "edge-behavior",
+        "service": "lumenloop",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "mixed",
+        "asOf": "2026-07-12",
+        "reverifyBy": "2026-10-22",
+        "sources": [
+          {
+            "class": "C",
+            "ref": "lumenloop.get_project(slug=reflector-network) + search_directory(query=Reflector)",
+            "note": "Production soft-empty and name-resolution sequence."
+          },
+          {
+            "class": "A",
+            "ref": "https://reflector.network/",
+            "note": "Primary operator surface independently establishes the real entity."
+          },
+          {
+            "class": "B",
+            "ref": "catalog/manifest.json#lumenloop.get_project",
+            "note": "Exact-slug detail contract and discovery guidance."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "The guessed reflector-network slug can soft-empty while name discovery resolves Reflector under a different current slug.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "lumenloop.get_project(slug=reflector-network) + search_directory(query=Reflector) + get_project(returned slug)",
+                "observedAt": "2026-07-12",
+                "note": "Production returned soft-empty for reflector-network and resolved slug reflector."
+              },
+              {
+                "class": "A",
+                "ref": "https://reflector.network/",
+                "observedAt": "2026-07-12",
+                "note": "Primary operator surface independently confirms the entity exists."
+              }
+            ]
+          },
+          {
+            "claim": "One soft-empty exact-slug lookup proves that Reflector is absent from the directory or does not exist.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "lumenloop.search_directory(query=Reflector)",
+                "observedAt": "2026-07-12",
+                "note": "Name discovery returned the current record."
+              },
+              {
+                "class": "A",
+                "ref": "https://reflector.network/",
+                "observedAt": "2026-07-12"
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-12",
+          "by": "Lane 4 live-v3 author + blind Terra re-derivation",
+          "evidence": [
+            "solo://proj/49/scratchpad/lane-4-v3-manifest-r--604",
+            "Sibling sweep: person-entity, partner-detail, docs-zero-hit, and builder-filter empty cases reviewed; none tests guessed Lumenloop project slug resolution."
+          ],
+          "rootCause": [
+            "solo://proj/49/todo/964"
+          ]
+        },
+        "origin": "authored 2026-07 (live-v3 soft-empty absence)"
+      }
+    },
+    {
+      "id": "q-live-builders-artifact-continuation",
+      "question": "Build me a complete current shortlist of Stellar builders with Soroban or Rust experience, grouped by location and the projects they've shipped. Don't stop at the first screenful.",
+      "surface": [
+        "scout.getBuilders"
+      ],
+      "golden": {
+        "answer": "A grounded answer establishes the full query scope through filters and pagination, then returns a compact, dated shortlist rather than claiming completeness from a visible prefix. If a broad execute result is truncated and its source-basis block supplies an artifact id, the agent must use a later execute with codemode.artifact.read(id), inspect the full redacted value in-sandbox, and project the relevant builders; a narrower non-truncated re-run is also valid when it covers the requested scope. It must preserve the service's evidence tiers: profile/project text is self-described candidate discovery, codeEvidence or linked Rust repositories are stronger observable signals, missing location stays unknown, and neither match type is an audit or hiring endorsement.",
+        "keyFacts": [
+          "Establishes complete scope with the returned totals/pagination or explicitly limits the claim; it does not treat a truncated prefix as complete.",
+          "When a source-basis artifact id is supplied, reads it with codemode.artifact.read in a later execute before deriving the shortlist; otherwise uses a sufficient narrow/paginated result without inventing an artifact.",
+          "Groups returned candidates by served location and shipped projects while distinguishing self-described profile matches from observable code/repository evidence.",
+          "Includes an as-of date and leaves missing location or project evidence unknown."
+        ],
+        "avoid": [
+          "Do NOT claim a complete shortlist from the visible portion of a truncated execute result or guess an artifact id.",
+          "Do NOT treat a free-text Soroban/Rust match as verified expertise, an audit, or proof that every listed project shipped to mainnet."
+        ],
+        "notes": "LIVE-DATA CASE: production proof on 2026-07-12 returned 114 builders in an 84k-character broad result, supplied a source-basis artifact, and artifact.read recovered all 114 for in-sandbox projection. Focused Soroban/Rust queries were small and non-truncated. Grade the conditional continuation/completeness behavior, not a frozen roster."
+      },
+      "tags": {
+        "category": "scf-grants-builders",
+        "service": "scout",
+        "freshness": "live"
+      },
+      "truth": {
+        "domain": "mixed",
+        "status": "confirmed",
+        "asOf": "2026-07-12",
+        "reverifyBy": "2026-10-29",
+        "sources": [
+          {
+            "class": "F",
+            "ref": "production execute: scout.getBuilders -> source-basis artifact -> codemode.artifact.info/read, observed 2026-07-12",
+            "note": "Empirical continuation proof; ephemeral artifact identity is recorded in Solo scratchpad 604, not pinned in the golden."
+          },
+          {
+            "class": "B",
+            "ref": "src/artifacts/store.ts; src/executor/providers.ts; src/policy/source-basis.ts",
+            "note": "Artifact persistence, sandbox provider, and source-basis guidance implementation."
+          },
+          {
+            "class": "C",
+            "ref": "https://stellarlight.xyz/builders",
+            "note": "Current builder directory and returned profile/project evidence."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/TryTippa/tippa-contracts",
+            "note": "One of more than five primary profile/repository footprint samples."
+          }
+        ],
+        "corroboration": [
+          {
+            "claim": "An available source-basis artifact can be read in a later authenticated execute and projected from the full untruncated value in-sandbox.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "F",
+                "ref": "production execute continuation recorded at solo://proj/49/scratchpad/lane-4-v3-manifest-r--604",
+                "observedAt": "2026-07-12",
+                "note": "Broad 114-row result truncated; artifact info/read recovered all rows and supported a compact projection."
+              },
+              {
+                "class": "B",
+                "ref": "test/smoke/executor.test.ts; src/executor/providers.ts",
+                "observedAt": "2026-07-12",
+                "note": "Repository implementation and fixtures cover artifact read semantics and limits."
+              }
+            ]
+          },
+          {
+            "claim": "Sampled builder identities and linked project/repository footprints have primary external footprints, but free-text matches alone do not verify expertise.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "C",
+                "ref": "https://stellarlight.xyz/builders",
+                "observedAt": "2026-07-12",
+                "note": "Profiles expose match basis and linked projects."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/miguelnietoa; https://github.com/TryTippa/tippa-contracts; https://github.com/salazarsebas/Cougr; https://github.com/aolieman/soroban-pre-order; https://github.com/Klorenn/Phase; https://github.com/samogera/matxchange",
+                "observedAt": "2026-07-12",
+                "note": "Six primary GitHub footprint samples; evidence strength varies by owner/repository linkage."
+              }
+            ]
+          },
+          {
+            "claim": "The visible prefix of a truncated execute result is a complete builder roster.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "F",
+                "ref": "production source-basis/artifact continuation recorded at solo://proj/49/scratchpad/lane-4-v3-manifest-r--604",
+                "observedAt": "2026-07-12",
+                "note": "The source-basis explicitly reported bulk loss and supplied the continuation artifact."
+              },
+              {
+                "class": "B",
+                "ref": "src/policy/source-basis.ts",
+                "observedAt": "2026-07-12"
+              }
+            ]
+          }
+        ],
+        "verified": {
+          "date": "2026-07-12",
+          "by": "Lane 4 live-v3 author + blind Terra re-derivation",
+          "evidence": [
+            "solo://proj/49/scratchpad/lane-4-v3-manifest-r--604",
+            "Sibling sweep: q-gap-builders-person-empty and q-edge-deep-full-history-report reviewed; repository-wide corpus search found no artifact.read continuation case."
+          ],
+          "rootCause": [
+            "solo://proj/49/todo/964"
+          ]
+        },
+        "origin": "authored 2026-07 (live-v3 artifact continuation)"
       }
     }
   ]

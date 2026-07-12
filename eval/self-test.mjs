@@ -233,10 +233,10 @@ check("frontmatterRouting: extracts service, fire flag, and both card lists", ()
 // --- content-pinned hand-authored QA lane contracts (todo 913) --------------------
 const caseContentDigest = (cases) => createHash("sha256").update(JSON.stringify(cases)).digest("hex");
 
-check("live-data-canonical-v2 pins contract, ordered membership, and full case content", () => {
+check("live-data-canonical-v3 pins carried-v2 identity, ordered membership, and full case content", () => {
   const canonical = JSON.parse(readFileSync(new URL("./qa/corpus/live/live-cases.json", import.meta.url), "utf8"));
-  assert.equal(canonical.contract, "live-data-canonical-v2");
-  const expectedMembership = [
+  assert.equal(canonical.contract, "live-data-canonical-v3");
+  const carriedV2Membership = [
       "q-live-rfps-open-now",
       "q-live-rfps-passkey-smart-account",
       "q-live-hackathon-recent-winners",
@@ -248,15 +248,30 @@ check("live-data-canonical-v2 pins contract, ordered membership, and full case c
       "q-live-ll-regions-vocab",
       "q-live-trap-market-price"
     ];
+  const expectedMembership = [
+    ...carriedV2Membership,
+    "q-live-fluxity-status-provenance",
+    "q-live-ll-active-jobs-recency",
+    "q-live-beans-cross-service-reconcile",
+    "q-live-ll-guessed-slug-soft-empty",
+    "q-live-builders-artifact-continuation"
+  ];
   assert.deepEqual(canonical.membership, expectedMembership);
   assert.deepEqual(canonical.cases.map((c) => c.id), expectedMembership);
+  assert.deepEqual(canonical.cases.slice(0, carriedV2Membership.length).map((c) => c.id), carriedV2Membership);
+  const carriedV2Projection = carriedV2Membership.map((id) => canonical.cases.find((c) => c.id === id));
+  assert.ok(carriedV2Projection.every(Boolean));
+  assert.equal(
+    caseContentDigest(carriedV2Projection),
+    "d5fd27a15c3ef0dd711df565e9809c15ebfb6d62f1a414738f47f41484866a90"
+  );
   const services = canonical.cases.map((c) => c.tags.service);
   assert.deepEqual(
     Object.fromEntries([...new Set(services)].sort().map((service) => [service, services.filter((x) => x === service).length])),
-    { lumenloop: 2, none: 1, scout: 7 }
+    { lumenloop: 4, none: 1, scout: 10 }
   );
   assert.equal(canonical.cases.find((c) => c.tags.service === "none")?.tags.trap, "cant-do");
-  const expectedDigest = "d5fd27a15c3ef0dd711df565e9809c15ebfb6d62f1a414738f47f41484866a90";
+  const expectedDigest = "2a9c98d1088acc7bbbf563ac3a95fbe74e2bea81901c6d0fcc6e5860b1c23340";
   assert.equal(caseContentDigest(canonical.cases), expectedDigest);
   assert.equal(
     canonical.contractProvenance.caseContentDigest,
