@@ -23,59 +23,59 @@ Total findings: 127
 
 ## stellar-light-scout
 
-| id      | title                                                                               | status         | discovered | recurrences |
-| ------- | ----------------------------------------------------------------------------------- | -------------- | ---------- | ----------- |
-| sls-001 | The hackathon detail endpoint returned winner lists WITHOUT placement fields, but   | fixed-upstream | 2026-07-03 | 0           |
-| sls-002 | Some SCF award entries carry null amounts — e.g. Liqvid.xyz is marked awarded       | fixed-upstream | 2026-07-03 | 0           |
-| sls-003 | Positive finding, recorded as a trust anchor: the audit corpus is excellent. All    | verified       | 2026-07-03 | 0           |
-| sls-004 | 404 responses were sometimes non-JSON (content-type inconsistency with the rest of  | fixed-upstream | 2026-07-03 | 0           |
-| sls-005 | Successor to the fixed sls-001. On events whose winners were announced as a         | fixed-upstream | 2026-07-03 | 0           |
-| sls-006 | The scout research corpus's sdf-blog source indexes blog listing,                   | fixed-upstream | 2026-07-03 | 0           |
-| sls-007 | /api/rfps exposes activeQuarter plus per-RFP quarter and status,                    | fixed-upstream | 2026-07-03 | 0           |
-| sls-008 | The project directory carries two live, Lending-typed records that appear to be     | fixed-upstream | 2026-07-03 | 0           |
-| sls-009 | searchProjects ranks authority/prominence above exact name match: the queries       | fixed-upstream | 2026-07-03 | 0           |
-| sls-010 | Builder-directory filtering is literal substring over free-text fields, which       | fixed-upstream | 2026-07-03 | 0           |
-| sls-011 | Scout and Lumenloop disagree on the same project's total SCF funding with no        | fixed-upstream | 2026-07-03 | 0           |
-| sls-012 | Anchor corridor/coverage data exists only as free-text prose; no structured         | fixed-upstream | 2026-07-03 | 0           |
-| sls-013 | The analyze funding dimension is unstable and internally inconsistent:              | fixed-upstream | 2026-07-03 | 0           |
-| sls-014 | Successor to the fixed sls-007 — and its cautionary sequel. The scfRound            | fixed-upstream | 2026-07-06 | 0           |
-| sls-015 | First, credit where due: the 1.4.4/1.5.0 enrichments to searchProjects'             | fixed-upstream | 2026-07-06 | 0           |
-| sls-016 | Per-winner award amounts are not structured. Winner entries on completed            | fixed-upstream | 2026-07-07 | 1           |
-| sls-017 | LOBSTR's directory records omit its XRP Ledger support. LOBSTR's own site           | fixed-upstream | 2026-07-07 | 0           |
-| sls-018 | Structured coverage exists for Etherfuse, but generic Mexico on-ramp queries        | fixed-upstream | 2026-07-08 | 0           |
-| sls-019 | Scout 1.7.11 adds source=cap to GET /api/research, but exact canonical CAP          | verified       | 2026-07-10 | 0           |
-| sls-020 | Scout research retrieval does not surface the May 7, 2026 Stellar Development       | verified       | 2026-07-10 | 0           |
-| sls-021 | Scout's partner search and structured partner fields omit current HoneyCoin         | verified       | 2026-07-10 | 0           |
-| sls-022 | Scout's YieldBlox incident research record conflates event and publication          | verified       | 2026-07-10 | 0           |
-| sls-023 | Scout's broad RWA discovery does not separate entity/project status from the        | verified       | 2026-07-10 | 0           |
-| sls-024 | Scout exposes one project-level lifecycle label without the source, scope, or       | verified       | 2026-07-10 | 0           |
-| sls-025 | Scout can retrieve Stellar ERC-8004-style implementation records under broad        | verified       | 2026-07-10 | 3           |
-| sls-026 | Scout's Aquarius SCF summary collapses incompatible award statuses into one         | verified       | 2026-07-10 | 3           |
-| sls-027 | Scout's Phoenix total is correct, but its awarded-round membership is not           | verified       | 2026-07-10 | 0           |
-| sls-028 | Scout can retain a Live/project discovery row after its linked domain becomes       | verified       | 2026-07-10 | 0           |
-| sls-029 | Oracle discovery collapses provider identity, product family, network, and          | verified       | 2026-07-10 | 0           |
-| sls-030 | Scout's Comet record reports scfAwarded: false and does not represent the           | verified       | 2026-07-10 | 0           |
-| sls-031 | Scout exposes a DeFindex TVL value and timestamp but not enough calculation         | verified       | 2026-07-10 | 0           |
-| sls-032 | Bridge discovery is project-level, while safe route selection is asset- and         | verified       | 2026-07-10 | 0           |
-| sls-033 | Scout does not offer a first-class exact-type wallet enumeration with canonical     | verified       | 2026-07-10 | 1           |
-| sls-034 | Scout's stablecoin discovery surface is neither an exhaustive asset registry nor    | verified       | 2026-07-10 | 0           |
-| sls-035 | Scout's DEX type/cluster cannot answer how many independent liquidity venues or     | verified       | 2026-07-10 | 0           |
-| sls-036 | The leaderboard does not make the exact activity calculation or repository          | verified       | 2026-07-10 | 1           |
-| sls-037 | One Live project status cannot represent partial deployment. Rarible has            | verified       | 2026-07-10 | 0           |
-| sls-038 | The live analyze response omits the TVL rollup promised by the exposed catalog      | fixed-upstream | 2026-07-10 | 0           |
-| sls-039 | Scout's project-level tvlUSD/tvlAsOf point is useful but cannot answer a            | verified       | 2026-07-10 | 0           |
-| sls-040 | Scout presents mutually incompatible builder contracts. Descriptions and the        | verified       | 2026-07-10 | 0           |
-| sls-041 | Builder skill search returns useful candidates but does not explain why a row       | fixed-upstream | 2026-07-10 | 0           |
-| sls-042 | The category-cluster endpoint silently truncates its active-project input at        | fixed-upstream | 2026-07-10 | 0           |
-| sls-043 | Scout exposes two canonically linked Band identities with opposite SCF histories    | fixed-upstream | 2026-07-10 | 0           |
-| sls-044 | Funding-v2 now documents its methodology, fixing the earlier provenance defect, but | proposed       | 2026-07-10 | 0           |
-| sls-045 | The RFP discovery response prepends a synthetic current-round row to the            | fixed-upstream | 2026-07-10 | 1           |
-| sls-046 | Scout marks stellar/stellar-core as codeVerified.isDeployableContract:true          | fixed-upstream | 2026-07-11 | 0           |
-| sls-047 | Scout's generic repository score can outrank Stellar-specific implementations       | fixed-upstream | 2026-07-11 | 0           |
-| sls-048 | Scout quantitative operations expose locally plausible totals but lack a common     | proposed       | 2026-07-11 | 0           |
-| sls-049 | Scout's Bitso project narrative claims live anchor/corridor activity while its      | fixed-upstream | 2026-07-11 | 0           |
-| sls-050 | Scout directory identity handling does not make the Vibrant-to-Vesseo naming        | proposed       | 2026-07-11 | 0           |
-| sls-051 | searchProjects' upstream description is broad enough to lexically capture           | proposed       | 2026-07-11 | 0           |
+| id      | title                                                                               | status            | discovered | recurrences |
+| ------- | ----------------------------------------------------------------------------------- | ----------------- | ---------- | ----------- |
+| sls-001 | The hackathon detail endpoint returned winner lists WITHOUT placement fields, but   | fixed-upstream    | 2026-07-03 | 0           |
+| sls-002 | Some SCF award entries carry null amounts — e.g. Liqvid.xyz is marked awarded       | fixed-upstream    | 2026-07-03 | 0           |
+| sls-003 | Positive finding, recorded as a trust anchor: the audit corpus is excellent. All    | verified          | 2026-07-03 | 0           |
+| sls-004 | 404 responses were sometimes non-JSON (content-type inconsistency with the rest of  | fixed-upstream    | 2026-07-03 | 0           |
+| sls-005 | Successor to the fixed sls-001. On events whose winners were announced as a         | fixed-upstream    | 2026-07-03 | 0           |
+| sls-006 | The scout research corpus's sdf-blog source indexes blog listing,                   | fixed-upstream    | 2026-07-03 | 0           |
+| sls-007 | /api/rfps exposes activeQuarter plus per-RFP quarter and status,                    | fixed-upstream    | 2026-07-03 | 0           |
+| sls-008 | The project directory carries two live, Lending-typed records that appear to be     | fixed-upstream    | 2026-07-03 | 0           |
+| sls-009 | searchProjects ranks authority/prominence above exact name match: the queries       | fixed-upstream    | 2026-07-03 | 0           |
+| sls-010 | Builder-directory filtering is literal substring over free-text fields, which       | fixed-upstream    | 2026-07-03 | 0           |
+| sls-011 | Scout and Lumenloop disagree on the same project's total SCF funding with no        | fixed-upstream    | 2026-07-03 | 0           |
+| sls-012 | Anchor corridor/coverage data exists only as free-text prose; no structured         | fixed-upstream    | 2026-07-03 | 0           |
+| sls-013 | The analyze funding dimension is unstable and internally inconsistent:              | fixed-upstream    | 2026-07-03 | 0           |
+| sls-014 | Successor to the fixed sls-007 — and its cautionary sequel. The scfRound            | fixed-upstream    | 2026-07-06 | 0           |
+| sls-015 | First, credit where due: the 1.4.4/1.5.0 enrichments to searchProjects'             | fixed-upstream    | 2026-07-06 | 0           |
+| sls-016 | Per-winner award amounts are not structured. Winner entries on completed            | fixed-upstream    | 2026-07-07 | 1           |
+| sls-017 | LOBSTR's directory records omit its XRP Ledger support. LOBSTR's own site           | fixed-upstream    | 2026-07-07 | 0           |
+| sls-018 | Structured coverage exists for Etherfuse, but generic Mexico on-ramp queries        | fixed-upstream    | 2026-07-08 | 0           |
+| sls-019 | Scout 1.7.11 adds source=cap to GET /api/research, but exact canonical CAP          | verified          | 2026-07-10 | 0           |
+| sls-020 | Scout research retrieval does not surface the May 7, 2026 Stellar Development       | verified          | 2026-07-10 | 0           |
+| sls-021 | Scout's partner search and structured partner fields omit current HoneyCoin         | verified          | 2026-07-10 | 0           |
+| sls-022 | Scout's YieldBlox incident research record conflates event and publication          | verified          | 2026-07-10 | 0           |
+| sls-023 | Scout's broad RWA discovery does not separate entity/project status from the        | verified          | 2026-07-10 | 0           |
+| sls-024 | Scout lifecycle labels lack populated provenance and deployment qualifiers          | reported-upstream | 2026-07-10 | 0           |
+| sls-025 | Scout can retrieve Stellar ERC-8004-style implementation records under broad        | verified          | 2026-07-10 | 3           |
+| sls-026 | Scout's Aquarius SCF summary collapses incompatible award statuses into one         | verified          | 2026-07-10 | 3           |
+| sls-027 | Scout's Phoenix total is correct, but its awarded-round membership is not           | verified          | 2026-07-10 | 0           |
+| sls-028 | Scout can retain a Live/project discovery row after its linked domain becomes       | verified          | 2026-07-10 | 0           |
+| sls-029 | Oracle discovery collapses provider identity, product family, network, and          | verified          | 2026-07-10 | 0           |
+| sls-030 | Scout's Comet record reports scfAwarded: false and does not represent the           | verified          | 2026-07-10 | 0           |
+| sls-031 | Scout exposes a DeFindex TVL value and timestamp but not enough calculation         | verified          | 2026-07-10 | 0           |
+| sls-032 | Bridge discovery is project-level, while safe route selection is asset- and         | verified          | 2026-07-10 | 0           |
+| sls-033 | Scout does not offer a first-class exact-type wallet enumeration with canonical     | verified          | 2026-07-10 | 1           |
+| sls-034 | Scout's stablecoin discovery surface is neither an exhaustive asset registry nor    | verified          | 2026-07-10 | 0           |
+| sls-035 | Scout's DEX type/cluster cannot answer how many independent liquidity venues or     | verified          | 2026-07-10 | 0           |
+| sls-036 | The leaderboard does not make the exact activity calculation or repository          | verified          | 2026-07-10 | 1           |
+| sls-037 | One Live project status cannot represent partial deployment. Rarible has            | verified          | 2026-07-10 | 0           |
+| sls-038 | The live analyze response omits the TVL rollup promised by the exposed catalog      | fixed-upstream    | 2026-07-10 | 0           |
+| sls-039 | Scout's project-level tvlUSD/tvlAsOf point is useful but cannot answer a            | verified          | 2026-07-10 | 0           |
+| sls-040 | Scout presents mutually incompatible builder contracts. Descriptions and the        | verified          | 2026-07-10 | 0           |
+| sls-041 | Builder skill search returns useful candidates but does not explain why a row       | fixed-upstream    | 2026-07-10 | 0           |
+| sls-042 | The category-cluster endpoint silently truncates its active-project input at        | fixed-upstream    | 2026-07-10 | 0           |
+| sls-043 | Scout exposes two canonically linked Band identities with opposite SCF histories    | fixed-upstream    | 2026-07-10 | 0           |
+| sls-044 | Funding-v2 now documents its methodology, fixing the earlier provenance defect, but | proposed          | 2026-07-10 | 0           |
+| sls-045 | The RFP discovery response prepends a synthetic current-round row to the            | fixed-upstream    | 2026-07-10 | 1           |
+| sls-046 | Scout marks stellar/stellar-core as codeVerified.isDeployableContract:true          | fixed-upstream    | 2026-07-11 | 0           |
+| sls-047 | Scout's generic repository score can outrank Stellar-specific implementations       | fixed-upstream    | 2026-07-11 | 0           |
+| sls-048 | Scout quantitative operations expose locally plausible totals but lack a common     | proposed          | 2026-07-11 | 0           |
+| sls-049 | Scout's Bitso project narrative claims live anchor/corridor activity while its      | fixed-upstream    | 2026-07-11 | 0           |
+| sls-050 | Scout directory identity handling does not make the Vibrant-to-Vesseo naming        | proposed          | 2026-07-11 | 0           |
+| sls-051 | searchProjects' upstream description is broad enough to lexically capture           | proposed          | 2026-07-11 | 0           |
 
 ## stellar-docs
 
