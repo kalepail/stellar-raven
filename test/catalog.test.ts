@@ -12,7 +12,8 @@ import { fileURLToPath } from "node:url";
 import { loadManifest, type Catalog } from "../src/catalog/search.ts";
 import { RUNNERS } from "../src/skills/runners/index.ts";
 // Import-safe: build-catalog.mjs is main-guarded (see its footer).
-import { assertNoNonExposedRefs } from "../scripts/build-catalog.mjs";
+import { assertNoNonExposedRefs, assertSideEffectingOpsExcluded } from "../scripts/build-catalog.mjs";
+import { EXCLUDED_SCOUT_OPS } from "../scripts/exposure.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MANIFEST_PATH = join(ROOT, "catalog", "manifest.json");
@@ -216,6 +217,39 @@ describe("x-routing ingestion — routingKeywords field (scoring lever 7, issue 
     const victim = entries.find((e) => e.id === "scout.getBuilders")!;
     victim.routingKeywords = [...(victim.routingKeywords ?? []), "scout.partnerAssistant"];
     expect(() => assertNoNonExposedRefs(entries)).toThrow(/ADR-0003 leak/);
+  });
+});
+
+describe("x-side-effecting exposure gate (coverage review 2026-07-12)", () => {
+  const specWith = (marked: boolean) => ({
+    paths: {
+      "/api/new-write": { post: { operationId: "newWrite", ...(marked ? { "x-side-effecting": true } : {}) } },
+      "/api/read": { get: { operationId: "read" } }
+    }
+  });
+
+  it("breaks the build when an upstream-marked op is not in the exclusion data", () => {
+    expect(() => assertSideEffectingOpsExcluded(specWith(true), new Set())).toThrow(
+      /exposure gate: upstream marks "POST \/api\/new-write" x-side-effecting/
+    );
+  });
+
+  it("passes when the marked op is excluded, and ignores unmarked ops", () => {
+    expect(() =>
+      assertSideEffectingOpsExcluded(specWith(true), new Set(["POST /api/new-write"]))
+    ).not.toThrow();
+    expect(() => assertSideEffectingOpsExcluded(specWith(false), new Set())).not.toThrow();
+  });
+
+  it("holds on the committed inventory: every live-marked scout op is excluded", () => {
+    const inv = JSON.parse(readFileSync(join(ROOT, "inventory", "stellar-light.json"), "utf8"));
+    expect(() => assertSideEffectingOpsExcluded(inv.openapi, EXCLUDED_SCOUT_OPS)).not.toThrow();
+    // The gate is live, not vacuous: the inventory really carries marked ops.
+    const marked = Object.entries(inv.openapi.paths as Record<string, Record<string, unknown>>)
+      .flatMap(([p, item]) =>
+        Object.entries(item).filter(([, op]) => (op as Record<string, unknown>)?.["x-side-effecting"] === true).map(() => p)
+      );
+    expect(marked.length).toBeGreaterThanOrEqual(3);
   });
 });
 

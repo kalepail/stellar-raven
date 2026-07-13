@@ -203,6 +203,31 @@ function assertScoutExclusionsResolve(openapi) {
   }
 }
 
+// Inverse gate: upstream marks write/side-effecting scout operations with
+// `x-side-effecting: true` (all three current POSTs carry it, all excluded).
+// A FUTURE marked operation must not auto-emit just because nobody updated
+// the exclusion data — emitting a side-effecting op is a reviewed exposure
+// decision (ADR-0003; AGENTS.md hard rules), never a default. Exported for
+// the guard tests. Found by the 2026-07-12 coverage review (Solo 607): until
+// this gate, the upstream signal was ingested but enforced nowhere.
+export function assertSideEffectingOpsExcluded(openapi, excluded = EXCLUDED_SCOUT_OPS) {
+  for (const [path, pathItem] of Object.entries(openapi.paths ?? {})) {
+    for (const method of HTTP_METHODS) {
+      const op = pathItem[method];
+      if (!op || op["x-side-effecting"] !== true) continue;
+      const key = `${method.toUpperCase()} ${path}`;
+      if (!excluded.has(key)) {
+        throw new Error(
+          `exposure gate: upstream marks "${key}" x-side-effecting but the exclusion data ` +
+            `(scripts/exposure.mjs EXCLUDED_SCOUT_OPS) does not cover it. Decide the policy — ` +
+            `exclude it, or expose it deliberately through the reviewed side-effect path — ` +
+            `before the catalog can build (ADR-0003).`
+        );
+      }
+    }
+  }
+}
+
 function assertLumenloopExclusionsResolve(inv) {
   const names = new Set(inv.tools.map((t) => t.name));
   const stale = [...EXCLUDED_LUMENLOOP_OPS].filter((n) => !names.has(n));
@@ -844,6 +869,7 @@ function main() {
   assertLumenloopExclusionsResolve(lumenloop);
   assertLumenloopSkillsMirrored(lumenloop, skillsManifest);
   assertScoutExclusionsResolve(stellarLight.openapi);
+  assertSideEffectingOpsExcluded(stellarLight.openapi);
 
   const stellarDocsEntries = buildStellarDocs(stellarDocsSpec);
   const scout = buildScout(stellarLight);
