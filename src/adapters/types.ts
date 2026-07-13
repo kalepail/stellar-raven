@@ -22,8 +22,12 @@ import type { CatalogEntry } from "../catalog/types.ts";
 /** The Worker env slice adapters need. Structurally satisfied by the real Env. */
 export type AdapterEnv = {
   LUMENLOOP_API_KEY?: string;
-  ALGOLIA_APPLICATION_ID?: string;
-  ALGOLIA_API_KEY?: string;
+  /** developers.stellar.org DocSearch app (search-only key). */
+  ALGOLIA_APPLICATION_ID_DOCS?: string;
+  ALGOLIA_API_KEY_DOCS?: string;
+  /** stellar.org site app — English `pages` index only (search-only key). */
+  ALGOLIA_APPLICATION_ID_SITE?: string;
+  ALGOLIA_API_KEY_SITE?: string;
 };
 
 /** Injectable fetch so unit tests run against recorded fixtures, no network. */

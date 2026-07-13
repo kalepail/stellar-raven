@@ -14,12 +14,12 @@ the network.
 node scripts/refresh-inventory.mjs
 ```
 
-Plain Node 20+, zero dependencies; reads `LUMENLOOP_API_KEY` / `ALGOLIA_APPLICATION_ID` /
-`ALGOLIA_API_KEY` from `.env` at the repo root. The script is idempotent (a file is only
+Plain Node 20+, zero dependencies; reads `LUMENLOOP_API_KEY` plus the per-property Algolia pairs
+`ALGOLIA_{APPLICATION_ID,API_KEY}_{DOCS,SITE}` from `.env` at the repo root. The script is idempotent (a file is only
 rewritten when its content — ignoring `fetchedAt` — changed, so back-to-back runs produce
 zero diff) and deterministic (keys sorted recursively, tool/skill arrays sorted by name),
 so any diff is a real upstream contract change. It refuses to write any output containing
-a `.env` value (Algolia hostnames are written with an `{ALGOLIA_APPLICATION_ID}` placeholder).
+a `.env` value (Algolia hostnames are written with an `{ALGOLIA_APPLICATION_ID_DOCS}` / `{ALGOLIA_APPLICATION_ID_SITE}` placeholder).
 
 ## Files
 

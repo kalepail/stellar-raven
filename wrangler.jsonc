@@ -96,8 +96,8 @@
   // output; without maps, errors point at minified positions).
   "upload_source_maps": true
   // NOTE: stateless server (PLAN §1) — deliberately no Durable Object
-  // bindings/migrations. Secrets (LUMENLOOP_API_KEY, ALGOLIA_APPLICATION_ID,
-  // ALGOLIA_API_KEY, WORKOS_CLIENT_ID, WORKOS_API_KEY, MCP_ADMIN_TOKEN,
+  // bindings/migrations. Secrets (LUMENLOOP_API_KEY, ALGOLIA_{APPLICATION_ID,API_KEY}_{DOCS,SITE},
+  // WORKOS_CLIENT_ID, WORKOS_API_KEY, MCP_ADMIN_TOKEN,
   // MCP_SERVER_SECRET) go via `wrangler secret put` in prod and `.dev.vars`
   // locally. DEV_ALLOW_UNAUTHENTICATED lives ONLY in `.dev.vars` (auth
   // bypass for local dev) — never deploy it as a var or secret. Even if it

@@ -50,8 +50,8 @@ describe("Algolia behavioral rule canary", () => {
 
   it("is safely inconclusive without credentials and makes no request", () => {
     const env = { ...process.env };
-    delete env.ALGOLIA_APPLICATION_ID;
-    delete env.ALGOLIA_API_KEY;
+    delete env.ALGOLIA_APPLICATION_ID_DOCS;
+    delete env.ALGOLIA_API_KEY_DOCS;
     const result = spawnSync(process.execPath, ["scripts/check-algolia-rule-canary.mjs"], {
       cwd: process.cwd(),
       env,
@@ -64,8 +64,8 @@ describe("Algolia behavioral rule canary", () => {
 
   it("fails closed on missing credentials when daily CI requires them", () => {
     const env = { ...process.env };
-    delete env.ALGOLIA_APPLICATION_ID;
-    delete env.ALGOLIA_API_KEY;
+    delete env.ALGOLIA_APPLICATION_ID_DOCS;
+    delete env.ALGOLIA_API_KEY_DOCS;
     const result = spawnSync(
       process.execPath,
       ["scripts/check-algolia-rule-canary.mjs", "--require-env"],

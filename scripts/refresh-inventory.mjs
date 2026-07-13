@@ -4,7 +4,7 @@
 //   node scripts/refresh-inventory.mjs
 //
 // Plain Node 20+ (global fetch, node:fs only — no deps). Reads .env at the repo
-// root for LUMENLOOP_API_KEY / ALGOLIA_APPLICATION_ID / ALGOLIA_API_KEY.
+// root for LUMENLOOP_API_KEY / ALGOLIA_{APPLICATION_ID,API_KEY}_{DOCS,SITE}.
 //
 // Guarantees:
 //   - Deterministic output: object keys sorted recursively, tool/skill arrays
@@ -13,7 +13,7 @@
 //     top-level `fetchedAt`) actually changed; back-to-back runs produce zero diff.
 //   - No key material in outputs: every .env value (including the Algolia app id,
 //     which would otherwise appear in hostnames) is asserted absent from every
-//     output before writing; URLs use `{ALGOLIA_APPLICATION_ID}` placeholders.
+//     output before writing; URLs use `{ALGOLIA_APPLICATION_ID_DOCS}` placeholders.
 //
 // Authored config (NOT fetched — preserved verbatim across refreshes):
 //   LUMENLOOP_PARTNER_TOOLS — the partner-lane tool names hidden from GET
@@ -76,7 +76,7 @@ function stableStringify(value) {
 // Env var names this script reads for auth — asserted absent from every output
 // even on an env-only run (no .env file, e.g. secrets exported into the
 // environment) where parseEnvFile below returns nothing.
-const SECRET_ENV_NAMES = ["LUMENLOOP_API_KEY", "ALGOLIA_APPLICATION_ID", "ALGOLIA_API_KEY"];
+const SECRET_ENV_NAMES = ["LUMENLOOP_API_KEY", "ALGOLIA_APPLICATION_ID_DOCS", "ALGOLIA_API_KEY_DOCS", "ALGOLIA_APPLICATION_ID_SITE", "ALGOLIA_API_KEY_SITE"];
 
 // Scrub-check values: the union of .env entries (generic — every value, as
 // before) AND process.env values for the secret key names above, so a run that
@@ -327,8 +327,8 @@ async function refreshStellarLight() {
 // Stellar Docs (Algolia)
 // ---------------------------------------------------------------------------
 async function refreshStellarDocs() {
-  const appId = requireEnv("ALGOLIA_APPLICATION_ID");
-  const apiKey = requireEnv("ALGOLIA_API_KEY");
+  const appId = requireEnv("ALGOLIA_APPLICATION_ID_DOCS");
+  const apiKey = requireEnv("ALGOLIA_API_KEY_DOCS");
   const settingsPath = `/1/indexes/${encodeURIComponent(STELLAR_DOCS_INDEX)}/settings`;
 
   const settings = await fetchJson(`https://${appId}-dsn.algolia.net${settingsPath}`, {
@@ -344,8 +344,8 @@ async function refreshStellarDocs() {
     fetchedAt: new Date().toISOString(),
     source: {
       // Hostname templated so the output never contains the .env app-id value.
-      settings: `https://{ALGOLIA_APPLICATION_ID}-dsn.algolia.net${settingsPath}`,
-      authEnv: ["ALGOLIA_APPLICATION_ID", "ALGOLIA_API_KEY"],
+      settings: `https://{ALGOLIA_APPLICATION_ID_DOCS}-dsn.algolia.net${settingsPath}`,
+      authEnv: ["ALGOLIA_APPLICATION_ID_DOCS", "ALGOLIA_API_KEY_DOCS"],
       research: "research/services/stellar-docs-algolia.md",
     },
     index: STELLAR_DOCS_INDEX,
@@ -395,8 +395,8 @@ async function refreshStellarDocs() {
     service: "stellar-docs",
     fetchedAt: new Date().toISOString(),
     source: {
-      query: `https://{ALGOLIA_APPLICATION_ID}-dsn.algolia.net${queryPath}`,
-      authEnv: ["ALGOLIA_APPLICATION_ID", "ALGOLIA_API_KEY"],
+      query: `https://{ALGOLIA_APPLICATION_ID_DOCS}-dsn.algolia.net${queryPath}`,
+      authEnv: ["ALGOLIA_APPLICATION_ID_DOCS", "ALGOLIA_API_KEY_DOCS"],
       method:
         "empty-query POST filtered to type:lvl1 (one record per page title); title = hierarchy.lvl1, path = url_without_anchor without origin; deduped, sorted by path then title",
     },

@@ -8,15 +8,15 @@
 
   "backend": {
     "type": "algolia",
-    "applicationIdEnv": "ALGOLIA_APPLICATION_ID",
-    "apiKeyEnv": "ALGOLIA_API_KEY",
+    "applicationIdEnv": "ALGOLIA_APPLICATION_ID_DOCS",
+    "apiKeyEnv": "ALGOLIA_API_KEY_DOCS",
     "index": "crawler_Stellar Docs - Docusaurus",
     "endpoint": "POST /1/indexes/crawler_Stellar%20Docs%20-%20Docusaurus/query",
     "hosts": [
-      "{ALGOLIA_APPLICATION_ID}-dsn.algolia.net",
-      "{ALGOLIA_APPLICATION_ID}-1.algolianet.com",
-      "{ALGOLIA_APPLICATION_ID}-2.algolianet.com",
-      "{ALGOLIA_APPLICATION_ID}-3.algolianet.com"
+      "{ALGOLIA_APPLICATION_ID_DOCS}-dsn.algolia.net",
+      "{ALGOLIA_APPLICATION_ID_DOCS}-1.algolianet.com",
+      "{ALGOLIA_APPLICATION_ID_DOCS}-2.algolianet.com",
+      "{ALGOLIA_APPLICATION_ID_DOCS}-3.algolianet.com"
     ],
     "retry": "network/5xx only, escalating timeout, fallback hosts in order; never retry 4xx; treat 429 as back-off, not host-retry",
     "auth": "algolia-key",
@@ -45,7 +45,7 @@
     "kind": "operation",
     "auth": "algolia-key",
     "cost": "free",
-    "provenanceSource": "https://{ALGOLIA_APPLICATION_ID}-dsn.algolia.net/1/indexes/crawler_Stellar%20Docs%20-%20Docusaurus/settings",
+    "provenanceSource": "https://{ALGOLIA_APPLICATION_ID_DOCS}-dsn.algolia.net/1/indexes/crawler_Stellar%20Docs%20-%20Docusaurus/settings",
     "note": "Wave 2: each operation below maps 1:1 to a CatalogEntry — id/description/params(inputSchema) verbatim; transport from backend + operation.algolia; taxonomy block may additionally be used to enrich descriptions or emit per-category entries."
   },
 

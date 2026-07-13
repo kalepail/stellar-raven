@@ -103,7 +103,7 @@ describe("validateArgs — the manifest schema dialect", () => {
 });
 
 describe("redaction", () => {
-  const secrets = secretsFromEnv({ LUMENLOOP_API_KEY: "llmcp_secret_value_123", ALGOLIA_API_KEY: "short" });
+  const secrets = secretsFromEnv({ LUMENLOOP_API_KEY: "llmcp_secret_value_123", ALGOLIA_API_KEY_DOCS: "short" });
 
   it("collects only plausible secrets (min length)", () => {
     expect(secrets).toEqual(["llmcp_secret_value_123"]);
@@ -112,7 +112,7 @@ describe("redaction", () => {
   it("collects every current secret env name, and NOT the retired MCP_BEARER_TOKEN", () => {
     const collected = secretsFromEnv({
       LUMENLOOP_API_KEY: "lumen_key_abcdefgh",
-      ALGOLIA_API_KEY: "algolia_key_abcdefgh",
+      ALGOLIA_API_KEY_DOCS: "algolia_key_abcdefgh",
       MCP_ADMIN_TOKEN: "admin_token_abcdefgh",
       MCP_SERVER_SECRET: "server_secret_abcdefgh",
       WORKOS_API_KEY: "workos_key_abcdefgh",

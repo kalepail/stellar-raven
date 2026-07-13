@@ -44,7 +44,7 @@ function stubFetch(
 }
 
 const env = { LUMENLOOP_API_KEY: "test-key-not-real-1234" };
-const docsEnv = { ALGOLIA_APPLICATION_ID: "TESTAPPID", ALGOLIA_API_KEY: "test-algolia-key-1234" };
+const docsEnv = { ALGOLIA_APPLICATION_ID_DOCS: "TESTAPPID", ALGOLIA_API_KEY_DOCS: "test-algolia-key-1234" };
 
 describe("lumenloop adapter", () => {
   it("maps success envelope (format json) to ok/data", async () => {

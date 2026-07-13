@@ -40,11 +40,11 @@ function parseArgs(argv) {
 function readAuth(args) {
   const fileEnv = args.envFile ? parseEnvFile(resolve(args.envFile)) : {};
   const env = { ...fileEnv, ...process.env };
-  const missing = ["ALGOLIA_APPLICATION_ID", "ALGOLIA_API_KEY"].filter((name) => !env[name]);
+  const missing = ["ALGOLIA_APPLICATION_ID_DOCS", "ALGOLIA_API_KEY_DOCS"].filter((name) => !env[name]);
   if (missing.length) return { missing };
   return {
-    applicationId: env.ALGOLIA_APPLICATION_ID,
-    apiKey: env.ALGOLIA_API_KEY,
+    applicationId: env.ALGOLIA_APPLICATION_ID_DOCS,
+    apiKey: env.ALGOLIA_API_KEY_DOCS,
     missing: [],
   };
 }

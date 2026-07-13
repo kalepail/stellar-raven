@@ -181,17 +181,22 @@ export async function callStellarDocs(
     });
   }
 
-  const appId = env[(transport.applicationIdEnv ?? "ALGOLIA_APPLICATION_ID") as keyof AdapterEnv];
-  const apiKey = env[(transport.apiKeyEnv ?? "ALGOLIA_API_KEY") as keyof AdapterEnv];
+  // Env names come from the authored spec's transport (per-property pairs:
+  // _DOCS for developers.stellar.org, _SITE for stellar.org). No generic
+  // fallback — a transport that names no env vars is a build defect.
+  const appIdEnvName = transport.applicationIdEnv as keyof AdapterEnv | undefined;
+  const apiKeyEnvName = transport.apiKeyEnv as keyof AdapterEnv | undefined;
+  const appId = appIdEnvName ? env[appIdEnvName] : undefined;
+  const apiKey = apiKeyEnvName ? env[apiKeyEnvName] : undefined;
   if (!appId || !apiKey) {
     return errResult({
       service: SERVICE,
       kind: "error",
-      message: "ALGOLIA_APPLICATION_ID / ALGOLIA_API_KEY are not configured on the host — docs search is unavailable"
+      message: `${transport.applicationIdEnv ?? "applicationIdEnv"} / ${transport.apiKeyEnv ?? "apiKeyEnv"} are not configured on the host — search is unavailable`
     });
   }
 
-  const hosts = transport.hosts.map((h) => h.replace("{ALGOLIA_APPLICATION_ID}", appId));
+  const hosts = transport.hosts.map((h) => h.replace(`{${transport.applicationIdEnv}}`, appId));
   const headers = {
     "X-Algolia-Application-Id": appId,
     "X-Algolia-API-Key": apiKey,

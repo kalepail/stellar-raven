@@ -35,7 +35,7 @@ Grounding research (live-verified across 2026-07-01…07-03; service specs refre
    - **Stellar Docs** — integrate via **direct Algolia REST** (decided 2026-07-01), not the MCP.
      App `VNSJF5AWIZ`, index `crawler_Stellar Docs - Docusaurus` (crawler active; one replica
      `docs_replica_agent` used by the MCP). A **dedicated search key is in hand**
-     (`.env`: `ALGOLIA_APPLICATION_ID` / `ALGOLIA_API_KEY` — verified live: ACL
+     (`.env`: `ALGOLIA_APPLICATION_ID_DOCS` / `ALGOLIA_API_KEY_DOCS` — verified live: ACL
      search/listIndexes/settings-read, no index restriction, no per-IP rate cap, never expires).
      Spec: `research/services/stellar-docs-algolia.md`. The Docs MCP endpoint stays documented in
      `research/services/stellar-docs-mcp.md` as fallback only; it's the same index behind
@@ -313,7 +313,7 @@ Phases 2–3 are independently parallelizable after 1; 4–6 after 3.
 
 | Decision | Default | Alternative |
 |---|---|---|
-| Docs search path | **Decided: direct Algolia REST** — dedicated key in hand (`.env` → Worker secrets `ALGOLIA_APPLICATION_ID`/`ALGOLIA_API_KEY`); MCP as documented fallback | MCP-only (slower, protocol overhead) |
+| Docs search path | **Decided: direct Algolia REST** — dedicated key in hand (`.env` → Worker secrets `ALGOLIA_APPLICATION_ID_DOCS`/`ALGOLIA_API_KEY_DOCS`; the stellar.org site lane uses the `_SITE` pair); MCP as documented fallback | MCP-only (slower, protocol overhead) |
 | `request_research` (paid) | off at launch | on with budget gate from day one |
 | Server auth | **Decided: WorkOS OAuth** (`workers-oauth-provider` + AuthKit; admin/dev bypasses — §4, README.md) | plain bearer secret (retired placeholder) |
 | Skills scope | **18 of 19 mirrored public skills exposed**; retired onboarding surfaces never emitted, and one composite skill is runnable via `codemode.skill.run` | re-expose an onboarding skill only after a transport-agnostic rewrite and a fresh ADR |

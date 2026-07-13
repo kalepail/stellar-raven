@@ -16,14 +16,16 @@ const REPLACEMENT = "[REDACTED]";
  * scrubbed before it reaches the sandbox/model (MCP_BEARER_TOKEN was retired
  * and is intentionally absent).
  *
- * ALGOLIA_APPLICATION_ID is DELIBERATELY absent: it is a semi-public app id
- * (appears in docs.stellar.org / hostnames by design), not a secret — the
- * refresh script even asserts it stays OUT of the generated inventory. Adding
- * it here would scrub a public identifier from legitimate results.
+ * The ALGOLIA_APPLICATION_ID_* names are DELIBERATELY absent: they are
+ * semi-public app ids (appear in site payloads / hostnames by design), not
+ * secrets — the refresh script even asserts they stay OUT of the generated
+ * inventory. Adding them here would scrub public identifiers from
+ * legitimate results.
  */
 const SECRET_ENV_NAMES = [
   "LUMENLOOP_API_KEY",
-  "ALGOLIA_API_KEY",
+  "ALGOLIA_API_KEY_DOCS",
+  "ALGOLIA_API_KEY_SITE",
   "MCP_ADMIN_TOKEN",
   "MCP_SERVER_SECRET",
   "WORKOS_API_KEY"

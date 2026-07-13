@@ -42,7 +42,7 @@ no SSE/double-JSON parsing, `processingTimeMS` present) and equally fast.
 
 ## Auth + env vars
 
-Two tiers now live in `.env`. The **read/search key** (`ALGOLIA_API_KEY`) powers the runtime
+Two tiers now live in `.env`. The **read/search key** (`ALGOLIA_API_KEY_DOCS`) powers the runtime
 gateway and is mirrored to Worker secrets. The **operator credentials** (write / crawler /
 analytics / usage / monitoring) are new as of 2026-07-09 and are for the maintenance and
 improvements loop — scripts and agents acting on the shared docs corpus — **not** the `execute`
@@ -51,8 +51,8 @@ never print, echo, or commit any Algolia key** (`npm run secrets:scan` covers th
 
 | Env var | Value | Tier | Notes |
 | --- | --- | --- | --- |
-| `ALGOLIA_APPLICATION_ID` | `VNSJF5AWIZ` | public | appears in hostnames; safe to log |
-| `ALGOLIA_API_KEY` | (secret) | read | dedicated search key; runtime + Worker secret |
+| `ALGOLIA_APPLICATION_ID_DOCS` | `VNSJF5AWIZ` | public | appears in hostnames; safe to log |
+| `ALGOLIA_API_KEY_DOCS` | (secret) | read | dedicated search key; runtime + Worker secret |
 | `ALGOLIA_DOCS_INDEX` | `crawler_Stellar Docs - Docusaurus` | — | suggested env var; note the literal spaces |
 | `ALGOLIA_WRITE_API_KEY` | (secret) | operator write | index records + settings + rules + synonyms |
 | `ALGOLIA_CRAWLER_USER_ID` / `ALGOLIA_CRAWLER_API_KEY` | (secret) | operator crawler | Crawler Admin API (config, reindex, task status) |
@@ -60,7 +60,7 @@ never print, echo, or commit any Algolia key** (`npm run secrets:scan` covers th
 | `ALGOLIA_USAGE_API_KEY` | (secret) | operator read | account usage/operations metering |
 | `ALGOLIA_MONITORING_API_KEY` | (secret) | operator read | infra/latency/incident monitoring |
 
-Read-key introspection (`GET /1/keys/$ALGOLIA_API_KEY`, verified live): `acl: ["search",
+Read-key introspection (`GET /1/keys/$ALGOLIA_API_KEY_DOCS`, verified live): `acl: ["search",
 "listIndexes", "settings"]`, `validity: 0` (never expires), created 2022-10, **no index
 restriction, no rate cap, no referer/IP restriction, no forced query params**. It can query both
 the primary and the replica, list every index on the app, and read index settings. (The app is
@@ -158,8 +158,8 @@ policy above: it is a read-only alarm, never an automated Algolia repair.
 Headers on every request:
 
 ```
-X-Algolia-Application-Id: $ALGOLIA_APPLICATION_ID
-X-Algolia-API-Key: $ALGOLIA_API_KEY
+X-Algolia-Application-Id: $ALGOLIA_APPLICATION_ID_DOCS
+X-Algolia-API-Key: $ALGOLIA_API_KEY_DOCS
 Content-Type: application/json
 ```
 
@@ -436,10 +436,10 @@ endpoint. The replica is a valid emergency fallback if the primary is ever renam
 
 ```sh
 set -a; source .env; set +a
-APP=$ALGOLIA_APPLICATION_ID
+APP=$ALGOLIA_APPLICATION_ID_DOCS
 IDX='crawler_Stellar%20Docs%20-%20Docusaurus'
 AH1="X-Algolia-Application-Id: $APP"
-AH2="X-Algolia-API-Key: $ALGOLIA_API_KEY"
+AH2="X-Algolia-API-Key: $ALGOLIA_API_KEY_DOCS"
 
 # 1. Settings drift (diff against the committed snapshot; facets/searchable/distinct are the contract)
 curl -sS "https://$APP-dsn.algolia.net/1/indexes/$IDX/settings" -H "$AH1" -H "$AH2" \

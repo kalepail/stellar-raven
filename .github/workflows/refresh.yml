@@ -41,8 +41,10 @@ jobs:
         run: |
           {
             echo "LUMENLOOP_API_KEY=${{ secrets.LUMENLOOP_API_KEY }}"
-            echo "ALGOLIA_APPLICATION_ID=${{ secrets.ALGOLIA_APPLICATION_ID }}"
-            echo "ALGOLIA_API_KEY=${{ secrets.ALGOLIA_API_KEY }}"
+            echo "ALGOLIA_APPLICATION_ID_DOCS=${{ secrets.ALGOLIA_APPLICATION_ID_DOCS }}"
+            echo "ALGOLIA_APPLICATION_ID_SITE=${{ secrets.ALGOLIA_APPLICATION_ID_SITE }}"
+            echo "ALGOLIA_API_KEY_DOCS=${{ secrets.ALGOLIA_API_KEY_DOCS }}"
+            echo "ALGOLIA_API_KEY_SITE=${{ secrets.ALGOLIA_API_KEY_SITE }}"
           } > .env
       - run: node scripts/refresh-inventory.mjs
       # Search-only behavioral guard. The script's exit codes distinguish real

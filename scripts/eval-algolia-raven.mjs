@@ -144,10 +144,10 @@ function envCandidates(explicit) {
 
 function requireAlgoliaEnv(args) {
   const fileEnv = Object.assign({}, ...envCandidates(args.envFile).map(loadDotEnv));
-  const applicationId = process.env.ALGOLIA_APPLICATION_ID || fileEnv.ALGOLIA_APPLICATION_ID;
-  const apiKey = process.env.ALGOLIA_API_KEY || fileEnv.ALGOLIA_API_KEY;
+  const applicationId = process.env.ALGOLIA_APPLICATION_ID_DOCS || fileEnv.ALGOLIA_APPLICATION_ID_DOCS;
+  const apiKey = process.env.ALGOLIA_API_KEY_DOCS || fileEnv.ALGOLIA_API_KEY_DOCS;
   if (!applicationId || !apiKey) {
-    throw new Error("ALGOLIA_APPLICATION_ID / ALGOLIA_API_KEY are required; pass --env-file if .env is elsewhere");
+    throw new Error("ALGOLIA_APPLICATION_ID_DOCS / ALGOLIA_API_KEY_DOCS are required; pass --env-file if .env is elsewhere");
   }
   return { applicationId, apiKey };
 }

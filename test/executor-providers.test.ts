@@ -28,8 +28,8 @@ const bundle: SkillBundle = JSON.parse(
 
 const env = {
   LUMENLOOP_API_KEY: "test-key-not-real-1234",
-  ALGOLIA_APPLICATION_ID: "TESTAPPID",
-  ALGOLIA_API_KEY: "test-algolia-key-1234"
+  ALGOLIA_APPLICATION_ID_DOCS: "TESTAPPID",
+  ALGOLIA_API_KEY_DOCS: "test-algolia-key-1234"
 };
 
 type Stored = {

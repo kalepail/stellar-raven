@@ -6176,8 +6176,8 @@
     "stellarDocs": {
       "authoredAt": "2026-07-02T14:03:39Z",
       "backend": {
-        "apiKeyEnv": "ALGOLIA_API_KEY",
-        "applicationIdEnv": "ALGOLIA_APPLICATION_ID",
+        "apiKeyEnv": "ALGOLIA_API_KEY_DOCS",
+        "applicationIdEnv": "ALGOLIA_APPLICATION_ID_DOCS",
         "auth": "algolia-key",
         "baseParams": {
           "analytics": false,
@@ -6217,10 +6217,10 @@
         "cost": "free",
         "endpoint": "POST /1/indexes/crawler_Stellar%20Docs%20-%20Docusaurus/query",
         "hosts": [
-          "{ALGOLIA_APPLICATION_ID}-dsn.algolia.net",
-          "{ALGOLIA_APPLICATION_ID}-1.algolianet.com",
-          "{ALGOLIA_APPLICATION_ID}-2.algolianet.com",
-          "{ALGOLIA_APPLICATION_ID}-3.algolianet.com"
+          "{ALGOLIA_APPLICATION_ID_DOCS}-dsn.algolia.net",
+          "{ALGOLIA_APPLICATION_ID_DOCS}-1.algolianet.com",
+          "{ALGOLIA_APPLICATION_ID_DOCS}-2.algolianet.com",
+          "{ALGOLIA_APPLICATION_ID_DOCS}-3.algolianet.com"
         ],
         "index": "crawler_Stellar Docs - Docusaurus",
         "retry": "network/5xx only, escalating timeout, fallback hosts in order; never retry 4xx; treat 429 as back-off, not host-retry",
