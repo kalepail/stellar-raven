@@ -98,6 +98,8 @@ export type SearchPage = {
   hits: SearchHit[];
   total: number;
   truncated: boolean;
+  /** The page size after the default/min/max clamp was applied. */
+  effectiveLimit: number;
 };
 
 export const DEFAULT_SEARCH_LIMIT = 10;
@@ -509,7 +511,7 @@ export function searchCatalogPage(catalog: Catalog, opts: SearchOptions): Search
     return hit;
   });
 
-  return { hits, total, truncated: total > hits.length };
+  return { hits, total, truncated: total > hits.length, effectiveLimit: limit };
 }
 
 /**

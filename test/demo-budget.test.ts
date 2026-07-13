@@ -57,6 +57,7 @@ describe("createDemoToolBudget", () => {
   it("initializes every per-turn aggregate counter to zero", () => {
     expect(createDemoToolBudget()).toEqual({
       searchCalls: 0,
+      searchTruncatedCalls: 0,
       executeCalls: 0,
       searchRefusals: 0,
       executeRefusals: 0,

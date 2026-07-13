@@ -355,6 +355,55 @@ describe("search behavior (host-side ranked)", () => {
     expect(structured.nextSteps).toContain("More entries matched than shown");
   });
 
+  it("logs privacy-bounded search page facts and honest invalid-filter semantics", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    try {
+      await client.callTool({
+        name: "search",
+        arguments: { query: "stellar soroban contract", limit: 5 }
+      });
+      await client.callTool({
+        name: "search",
+        arguments: { query: "docs search", service: "stellardocs", limit: 3 }
+      });
+      const events = logSpy.mock.calls
+        .map((call) => {
+          try {
+            return JSON.parse(String(call[0])) as Record<string, unknown>;
+          } catch {
+            return null;
+          }
+        })
+        .filter((event): event is Record<string, unknown> => event?.evt === "search");
+      const valid = events.find((event) => event.queryPreview === "stellar soroban contract");
+      const invalid = events.find((event) => event.queryPreview === "docs search");
+
+      expect(valid).toMatchObject({
+        source: "tool",
+        queryChars: 24,
+        requestedLimit: 5,
+        effectiveLimit: 5,
+        truncated: true
+      });
+      expect(valid?.queryHash).toMatch(/^[a-f0-9]{16}$/);
+      expect(valid).not.toHaveProperty("query");
+      expect(Number(valid?.gatedHits) + Number(valid?.backfillHits)).toBe(valid?.hits);
+      expect(invalid).toMatchObject({
+        requestedLimit: 3,
+        effectiveLimit: null,
+        omittedCount: 0,
+        gatedHits: 0,
+        backfillHits: 0,
+        hits: 0,
+        total: 0,
+        truncated: false
+      });
+      expect(invalid).not.toHaveProperty("query");
+    } finally {
+      logSpy.mockRestore();
+    }
+  });
+
   it("a VALID service filter flows through validation to service-scoped hits (todo 839)", async () => {
     const result = await client.callTool({
       name: "search",

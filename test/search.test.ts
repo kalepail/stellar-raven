@@ -349,6 +349,7 @@ describe("searchCatalogPage — tier marker + total/truncated (todos 838/840)", 
 
   it("marks tiers on a mixed page and counts gated + novel ungated candidates", () => {
     const page = searchCatalogPage(tiny, { query: LONG_QUERY, limit: 5 });
+    expect(page.effectiveLimit).toBe(5);
     expect(page.hits).toHaveLength(5);
     // Exactly one entry passes the coverage gate; it leads the page.
     expect(page.hits[0]!.id).toBe("lumenloop.alpha_handler");
@@ -361,6 +362,12 @@ describe("searchCatalogPage — tier marker + total/truncated (todos 838/840)", 
     // total = 1 gated + 6 novel ungated (every entry matches ≥1 token).
     expect(page.total).toBe(7);
     expect(page.truncated).toBe(true);
+  });
+
+  it("reports the effective page limit from the same default/min/max clamp search uses", () => {
+    expect(searchCatalogPage(tiny, { query: "alpha beta" }).effectiveLimit).toBe(10);
+    expect(searchCatalogPage(tiny, { query: "alpha beta", limit: 0 }).effectiveLimit).toBe(1);
+    expect(searchCatalogPage(tiny, { query: "alpha beta", limit: 500 }).effectiveLimit).toBe(50);
   });
 
   it("keeps page membership, total, and truncated fixed while interleaving", () => {

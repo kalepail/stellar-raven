@@ -8,6 +8,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { hashPrefix, logEvent, preview, PREVIEW_LOG_MAX } from "../src/observability.ts";
 import {
+  SEARCH_QUERY_PREVIEW_CHARS,
+  searchEventFields
+} from "../src/observability-search.ts";
+import {
   authSubjectFromProps,
   buildMcpRequestObservability,
   normalizeRayId,
@@ -69,6 +73,56 @@ describe("preview", () => {
   it("honors a custom max", () => {
     expect(preview("abcdef", 3)).toBe("abc…[+3 chars]");
     expect(preview("abc", 3)).toBe("abc");
+  });
+});
+
+describe("searchEventFields", () => {
+  it("replaces the raw query with bounded join fields and honest page-shape counts", async () => {
+    const query = "sensitive search ".repeat(30);
+    const queryHash = await hashPrefix(query);
+    const fields = searchEventFields({
+      query,
+      queryHash,
+      requestedLimit: 5,
+      page: {
+        hits: [
+          { id: "a", service: "scout", kind: "operation", score: 10, tier: "gated", description: "a" },
+          { id: "b", service: "skills", kind: "skill", score: 5, tier: "backfill", description: "b" }
+        ],
+        total: 7,
+        truncated: true,
+        effectiveLimit: 5
+      }
+    });
+
+    expect(fields).toEqual({
+      queryPreview: preview(query, SEARCH_QUERY_PREVIEW_CHARS),
+      queryHash,
+      queryChars: query.length,
+      requestedLimit: 5,
+      effectiveLimit: 5,
+      omittedCount: 5,
+      gatedHits: 1,
+      backfillHits: 1
+    });
+    expect(JSON.stringify(fields)).not.toContain(query);
+    expect(fields).not.toHaveProperty("query");
+  });
+
+  it("represents a validation/refusal path without pretending a clamp or page ran", async () => {
+    const query = "docs search";
+    expect(searchEventFields({
+      query,
+      queryHash: await hashPrefix(query),
+      requestedLimit: null,
+      page: null
+    })).toMatchObject({
+      requestedLimit: null,
+      effectiveLimit: null,
+      omittedCount: 0,
+      gatedHits: 0,
+      backfillHits: 0
+    });
   });
 });
 

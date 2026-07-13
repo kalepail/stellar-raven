@@ -101,8 +101,10 @@ ones instead of a silently-empty page — the frozen `searchCatalog` contract ke
 silent, so validation lives at the tool boundary (and, for `codemode.search`, at the
 sandbox boundary in `src/executor/providers.ts`, where an unknown `kind`/`service` is an
 error envelope listing the valid values). A `search` telemetry event
-(`src/observability.ts` → Workers Logs) records the query, hit/total/truncated counts,
-top-3 ids, response size in chars (`responseChars` — the measurement that set
+(`src/observability.ts` → Workers Logs) records a bounded query preview, exact-match query hash
+and character count (never the full raw query), requested/effective limits, consulted-pool omitted
+count, returned gated/backfill hit counts, hit/total/truncated counts, top-3 ids, and response size
+in chars (`responseChars` — the measurement that set
 `COMPACT_OUTPUT_THRESHOLD`, §2; it stays on to verify the compaction holds), and latency.
 
 ## 2. The scoring pipeline
@@ -555,7 +557,9 @@ before model/tool execution, so later model or tool failure still counts.
 Observability to query: `demo-chat`, `demo-step`, `demo-search`, `demo-execute`,
 `demo-search-refused`, `demo-execute-refused`, and `demo-chat-rejected`. `demo-step`,
 `demo-execute`, and the final `demo-chat` event carry compact operation-outcome totals; bounded,
-redacted execute previews remain available for answer-quality forensics.
+redacted execute previews remain available for answer-quality forensics. The final `demo-chat`
+event also carries `searchTruncatedCalls`; it deliberately does not claim that a later execute was
+caused by or recovered a particular truncated search.
 
 ### MCP-only `/mcp`
 

@@ -49,6 +49,8 @@ export const DEMO_CAPS = {
 
 export type DemoToolBudget = {
   searchCalls: number;
+  /** Search calls whose consulted match pool exceeded the returned page. */
+  searchTruncatedCalls: number;
   executeCalls: number;
   searchRefusals: number;
   executeRefusals: number;
@@ -75,6 +77,7 @@ export type DemoToolBudget = {
 export function createDemoToolBudget(): DemoToolBudget {
   return {
     searchCalls: 0,
+    searchTruncatedCalls: 0,
     executeCalls: 0,
     searchRefusals: 0,
     executeRefusals: 0,

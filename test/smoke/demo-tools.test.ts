@@ -28,6 +28,74 @@ function makeTools(budget?: DemoToolBudget) {
 }
 
 describe("demo tools at the worker boundary", () => {
+  it("records truncated-search turn count and the shared bounded event fields", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    try {
+      const { search, budgetReport } = makeTools();
+      const result = (await search.execute({ query: "stellar", limit: 1 })) as {
+        truncated: boolean;
+      };
+      expect(result.truncated).toBe(true);
+      expect(budgetReport().searchTruncatedCalls).toBe(1);
+      const event = logSpy.mock.calls
+        .map((call) => {
+          try {
+            return JSON.parse(String(call[0])) as Record<string, unknown>;
+          } catch {
+            return null;
+          }
+        })
+        .find((candidate) => candidate?.evt === "demo-search");
+      expect(event).toMatchObject({
+        queryPreview: "stellar",
+        queryChars: 7,
+        requestedLimit: 1,
+        effectiveLimit: 1,
+        truncated: true,
+        hits: 1
+      });
+      expect(event).not.toHaveProperty("query");
+    } finally {
+      logSpy.mockRestore();
+    }
+  });
+
+  it("removes the raw query from demo search-refusal telemetry too", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    try {
+      const { search } = makeTools();
+      await search.execute({ query: "first" });
+      await search.execute({ query: "second" });
+      await search.execute({ query: "third" });
+      const refusedQuery = "refused sensitive query ".repeat(20);
+      await search.execute({ query: refusedQuery, limit: 6 });
+      const event = logSpy.mock.calls
+        .map((call) => {
+          try {
+            return JSON.parse(String(call[0])) as Record<string, unknown>;
+          } catch {
+            return null;
+          }
+        })
+        .find((candidate) => candidate?.evt === "demo-search-refused");
+
+      expect(event).toMatchObject({
+        reason: "call-limit",
+        queryChars: refusedQuery.length,
+        requestedLimit: 6,
+        effectiveLimit: null,
+        omittedCount: 0,
+        gatedHits: 0,
+        backfillHits: 0
+      });
+      expect(event?.queryHash).toMatch(/^[a-f0-9]{16}$/);
+      expect(event).not.toHaveProperty("query");
+      expect(JSON.stringify(event)).not.toContain(refusedQuery);
+    } finally {
+      logSpy.mockRestore();
+    }
+  });
+
   it("spends search budget on invalid service filters but allows bounded recovery searches", async () => {
     const { search, budgetReport } = makeTools();
 

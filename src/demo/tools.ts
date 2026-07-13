@@ -25,7 +25,12 @@
 import { tool } from "ai";
 import { z } from "zod";
 import { parseExpressionAt } from "acorn";
-import { searchCatalogPage, catalogServices, type SearchHit } from "../catalog/search.ts";
+import {
+  searchCatalogPage,
+  catalogServices,
+  type SearchHit,
+  type SearchPage
+} from "../catalog/search.ts";
 import { getCatalog } from "../catalog/load.ts";
 import {
   SEARCH_DESCRIPTION,
@@ -39,7 +44,8 @@ import {
   type ExecuteOperationSummary,
   type ExecuteRunner
 } from "../executor/run.ts";
-import { logEvent, preview, CODE_LOG_MAX } from "../observability.ts";
+import { hashPrefix, logEvent, preview, CODE_LOG_MAX } from "../observability.ts";
+import { searchEventFields } from "../observability-search.ts";
 import {
   modelBoundaryMaxTokensFromEnv,
   truncateForModel,
@@ -238,6 +244,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
     execute: async (args) => {
       const id = crypto.randomUUID();
       emit({ type: "tool-start", id, tool: "search", input: args });
+      const queryHash = await hashPrefix(args.query);
       const t0 = Date.now();
       const catalog = getCatalog();
 
@@ -245,9 +252,14 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
       // `service` keeps the zero-hit response SHAPE with the diagnosis in
       // nextSteps. Same event fields under a demo-distinguishable evt name.
       const services = catalogServices(catalog);
-      const respond = (structured: SearchStructured) => {
+      const respond = (structured: SearchStructured, page: SearchPage | null) => {
         logEvent("demo-search", {
-          query: args.query,
+          ...searchEventFields({
+            query: args.query,
+            queryHash,
+            requestedLimit: args.limit ?? null,
+            page
+          }),
           kind: args.kind ?? null,
           service: args.service ?? null,
           hits: structured.hits.length,
@@ -271,7 +283,12 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
         };
         logEvent("demo-search-refused", {
           reason: "call-limit",
-          query: args.query,
+          ...searchEventFields({
+            query: args.query,
+            queryHash,
+            requestedLimit: args.limit ?? null,
+            page: null
+          }),
           searchCalls: budget.searchCalls,
           searchRefusals: budget.searchRefusals
         });
@@ -287,7 +304,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
           total: 0,
           truncated: false,
           nextSteps: `Unknown service "${args.service}" — service filter values are exact-match. Valid services: ${services.join(", ")}. Retry with one of those exact values, or drop the \`service\` filter.`
-        });
+        }, null);
       }
 
       const page = searchCatalogPage(catalog, {
@@ -300,6 +317,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
       });
       const { total, truncated } = page;
       const hits = page.hits.map(compactHitForDemo);
+      if (truncated) budget.searchTruncatedCalls += 1;
       const remainingSearches = Math.max(0, DEMO_CAPS.maxSearchCallsPerTurn - budget.searchCalls);
       const searchAgain =
         remainingSearches > 0
@@ -311,7 +329,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
           : remainingSearches > 0
             ? `No navigation hits. Use another candidate family or varied vocabulary (${remainingSearches} searches remain), or use codemode.search inside execute; do not conclude the capability or fact is absent from one empty catalog search.`
             : "No navigation hits and no top-level search calls remain. You may use codemode.search inside execute; do not conclude the capability or fact is absent from an empty catalog search, and qualify if factual evidence cannot be recovered.";
-      return respond({ hits, total, truncated, nextSteps });
+      return respond({ hits, total, truncated, nextSteps }, page);
     }
   });
 

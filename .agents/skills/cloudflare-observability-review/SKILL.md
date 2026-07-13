@@ -146,14 +146,17 @@ events:
 - `evt = "demo-execute"` grouped by `ok` and `error`.
 - `evt = "demo-chat"` with `executeFailures > 0`, grouped by
   `executeFailures`, `finishReason`, and Ray/request ID.
-- Needle searches for the visible user query terms, e.g. `ecosystem gaps
+- Needle searches for visible user-query terms in `demo-chat-start.latestUserPreview`
+  and bounded model search text in `demo-search.queryPreview`, e.g. `ecosystem gaps
   builders` or `yield rwa bond asset`.
 - Span view for `codemode.execute`, grouped by `$metadata.message` and
   `sandbox.ok`, to separate model-code failures from sandbox/runtime failures.
 
 Then join each failing request by `$metadata.requestId`:
 
-- `demo-search`: query, kind/service filters, hit count, top ids.
+- `demo-search`: bounded `queryPreview`, exact-match `queryHash`, query size,
+  requested/effective limits, kind/service filters, hit/total/omitted counts,
+  gated/backfill counts, truncation, and top ids.
 - `demo-execute`: `ok`, `error`, `codeChars`, redacted/sampled `code`, `ms`.
 - `op`: operation ids/outcomes/timings inside the execute attempt.
 - `demo-chat`: `searchCalls`, `executeCalls`, `executeFailures`,
@@ -177,7 +180,7 @@ inbound browser message surface without storing the full transcript:
 
 Full chat transcripts are intentionally not logged. If `demo-chat-start` is
 absent in older logs or a nonstandard environment, reconstruct the user ask from
-`demo-search.query`, `demo-execute.code`, answer preview, timestamp, Ray ID, and
+`demo-search.queryPreview`/`queryHash`, `demo-execute.code`, answer preview, timestamp, Ray ID, and
 screenshot text; mark that reconstruction as best-effort.
 
 Common diagnosis patterns:
@@ -196,8 +199,8 @@ Common diagnosis patterns:
 ## Field Map
 
 Cloudflare's query/filter keyspace flattens app JSON log fields. If a returned
-event object displays app data under `source.evt` / `source.query`, filter and
-group by `evt` / `query` unless the keys endpoint shows the `source.*` variant
+event object displays app data under `source.evt` / `source.queryPreview`, filter and
+group by `evt` / `queryPreview` unless the keys endpoint shows the `source.*` variant
 for that dataset. A query using `source.evt = "demo-search"` can miss events
 that `evt = "demo-search"` finds.
 
@@ -208,11 +211,14 @@ High-value fields:
   (null outside attributed OAuth); rejected events omit them entirely.
 - The older `auth` app field is redacted to `*****` by Cloudflare and is not
   useful for grouping; the `/mcp` summary deliberately uses `accessMode`.
-- App JSON logs: `evt`, `query`, `kind`, `service`, `hits`, `total`, `top`,
+- App JSON logs: `evt`, `queryPreview`, `queryHash`, `queryChars`,
+  `requestedLimit`, `effectiveLimit`, `omittedCount`, `gatedHits`, `backfillHits`,
+  `kind`, `service`, `hits`, `total`, `truncated`, `top`,
   `ok`, `error`, `code`, `resultPreview`, `answerPreview`, `finalPreview`,
   `latestUserPreview`, `latestUserHash`, `latestUserChars`, `historyChars`,
   `historyMessages`, `userMessages`, `subjectHash`, `auth`, `model`,
   `openAiApiMode`, `reasoningEffort`
+
 - `$metadata.service`, `$metadata.requestId`, `$metadata.type`,
   `$metadata.trigger`, `$metadata.message`
 - `$workers.event.rayId`, `$workers.requestId`,
@@ -224,6 +230,14 @@ High-value fields:
 - OTel: `cloudflare.script_name`, `cloudflare.ray_id`, `cloudflare.colo`,
   `cloudflare.asn`, `http.response.status_code`, `url.full`,
   `user_agent.original`, `traceId`, `spanId`
+
+`queryHash` is a stable 16-hex SHA-256 prefix of the exact raw query for
+equality grouping. It is not a secrecy mechanism: short queries are
+dictionary-recoverable, so the raw query is not logged and only the bounded
+preview is human-readable. `omittedCount` is `total - hits` for the scorer
+tiers consulted by that page; like `total`, it is a floor rather than an
+exhaustive missed-result count. A null `effectiveLimit` means validation or a
+refusal prevented the search page from running.
 
 Privacy-sensitive fields already present in platform logs:
 

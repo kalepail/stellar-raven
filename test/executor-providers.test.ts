@@ -732,6 +732,38 @@ describe("codemode fns", () => {
     expect(r.truncated).toBe(true);
   });
 
+  it("search logs the shared privacy-bounded page telemetry shape", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    try {
+      const r = (await codemode.search!({ query: "stellar soroban contract", limit: 5 })) as {
+        hits: unknown[];
+      };
+      const event = logSpy.mock.calls
+        .map((call) => {
+          try {
+            return JSON.parse(String(call[0])) as Record<string, unknown>;
+          } catch {
+            return null;
+          }
+        })
+        .find((candidate) => candidate?.evt === "search" && candidate.source === "codemode");
+
+      expect(event).toMatchObject({
+        queryPreview: "stellar soroban contract",
+        queryChars: 24,
+        requestedLimit: 5,
+        effectiveLimit: 5,
+        truncated: true,
+        hits: r.hits.length
+      });
+      expect(event?.queryHash).toMatch(/^[a-f0-9]{16}$/);
+      expect(event).not.toHaveProperty("query");
+      expect(Number(event?.gatedHits) + Number(event?.backfillHits)).toBe(r.hits.length);
+    } finally {
+      logSpy.mockRestore();
+    }
+  });
+
   it("search honors a VALID kind filter — every hit carries it (todo 839)", async () => {
     const r = (await codemode.search!({ query: "stellar project dossier", kind: "skill" })) as {
       ok: boolean;

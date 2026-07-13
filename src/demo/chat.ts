@@ -402,6 +402,7 @@ async function runTurn(
       finishReason,
       ...finalTelemetry,
       searchCalls: toolBudget.searchCalls,
+      searchTruncatedCalls: toolBudget.searchTruncatedCalls,
       executeCalls: toolBudget.executeCalls,
       searchRefusals: toolBudget.searchRefusals,
       executeRefusals: toolBudget.executeRefusals,

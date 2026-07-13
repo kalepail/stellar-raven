@@ -26,12 +26,13 @@
  */
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { searchCatalogPage, catalogServices } from "../catalog/search.ts";
+import { searchCatalogPage, catalogServices, type SearchPage } from "../catalog/search.ts";
 import { getCatalog } from "../catalog/load.ts";
 import { CATALOG_KINDS } from "../catalog/types.ts";
 import type { ExecuteCallContext, ExecuteRunner } from "../executor/run.ts";
 import type { BuildSourceBasisManifestInput, SourceBasisCall } from "../policy/source-basis.ts";
-import { logEvent, preview, CODE_LOG_MAX } from "../observability.ts";
+import { hashPrefix, logEvent, preview, CODE_LOG_MAX } from "../observability.ts";
+import { searchEventFields } from "../observability-search.ts";
 import { truncateForModel, truncateLogsForModel } from "../policy/truncate.ts";
 import { FAMILY_LINE, MICRO_MAP } from "./micro-map.ts";
 
@@ -268,6 +269,7 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
       outputSchema: rankedSearchOutputSchema
     },
     async (args) => {
+      const queryHash = await hashPrefix(args.query);
       const t0 = Date.now();
       const catalog = getCatalog();
 
@@ -283,11 +285,16 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
         total: number;
         truncated: boolean;
         nextSteps: string;
-      }) => {
+      }, page: SearchPage | null) => {
         const text = JSON.stringify(structured);
         logEvent("search", {
           source: "tool",
-          query: args.query,
+          ...searchEventFields({
+            query: args.query,
+            queryHash,
+            requestedLimit: args.limit ?? null,
+            page
+          }),
           kind: args.kind ?? null,
           service: args.service ?? null,
           hits: structured.hits.length,
@@ -313,20 +320,21 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
           total: 0,
           truncated: false,
           nextSteps: `Unknown service "${args.service}" — service filter values are exact-match. Valid services: ${services.join(", ")}. Retry with one of those exact values, or drop the \`service\` filter.`
-        });
+        }, null);
       }
 
-      const { hits, total, truncated } = searchCatalogPage(catalog, {
+      const page = searchCatalogPage(catalog, {
         query: args.query,
         kind: args.kind,
         service: args.service,
         limit: args.limit
       });
+      const { hits, total, truncated } = page;
       const nextSteps =
         hits.length > 0
           ? `These hits are composable: write ONE \`execute\` script that calls the several relevant operations (Promise.all across services for independent calls), then follows up with deeper calls parameterized by their results — e.g. \`await lumenloop.search_directory({ query: "..." })\` then \`lumenloop.get_project({ slug })\`. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under \`.data\` (\`r.data.projects\`, never \`r.projects\`); check \`r.ok\` first. Skill hits are operational playbooks — read the sections you need in-script via \`codemode.skill.read(id, { sections })\` (keys: the hit's \`availableSections\`), and pair them with stellarDocs searches for current reference truth. Hits whose \`signature\` shows a \`codemode.skill.run("<exact id>", input)\` line are runnable skills — call that line verbatim to run the whole pipeline in one step (payload under \`.data\`, constituent calls audited in \`data.calls\`). Scores compare only within the same \`tier\` (gated hits always rank above backfill hits). Signatures with a stubbed output type (\`{ /* N top-level fields: ... */ }\`) list the payload's top-level field names — for the full output shape call \`codemode.describe("<exact id>")\` inside \`execute\`. For directory/list rows, inspect keys or filter raw row JSON and nested/common field variants before projecting compact columns. Use \`codemode.search(...)\` mid-script for follow-up discovery; search again here with the other candidate family, varied vocabulary, or \`kind\`/\`service\` filters if none fit.${truncated ? " More entries matched than shown (truncated) — raise `limit`, try the other candidate family, or vary vocabulary if none of these fit." : ""}`
           : "No hits. Try the other candidate family, vary vocabulary (entity name first, then capability phrase), or drop the `kind`/`service` filters. Do not conclude the capability is missing from one empty result.";
-      return respond({ hits, total, truncated, nextSteps });
+      return respond({ hits, total, truncated, nextSteps }, page);
     }
   );
 

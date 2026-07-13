@@ -76,7 +76,8 @@ import { runSkill, assertRunnersWired } from "../skills/run.ts";
 import { RUNNERS } from "../skills/runners/index.ts";
 import type { OpsFacade, SkillRunner } from "../skills/runners/types.ts";
 import { resolveSpecRefs } from "./spec-sandbox.ts";
-import { logArtifactRead, logEvent } from "../observability.ts";
+import { hashPrefix, logArtifactRead, logEvent } from "../observability.ts";
+import { searchEventFields } from "../observability-search.ts";
 import { info as artifactInfo, read as artifactRead, type ArtifactMetadata } from "../artifacts/store.ts";
 
 /** Structurally identical to @cloudflare/codemode's ResolvedProvider. */
@@ -645,7 +646,6 @@ export function buildCodemodeProvider(
           },
 
           search: async (arg?: unknown) => {
-            const t0 = Date.now();
             const opts = (typeof arg === "string" ? { query: arg } : (arg ?? {})) as Exclude<
               SearchArg,
               string
@@ -691,15 +691,23 @@ export function buildCodemodeProvider(
                 }
               };
             }
-            const { hits, total, truncated } = searchCatalogPage(catalog, {
+            const queryHash = await hashPrefix(opts.query);
+            const t0 = Date.now();
+            const page = searchCatalogPage(catalog, {
               query: opts.query,
               kind: kindFilter as CatalogKind | undefined,
               service: serviceFilter as string | undefined,
               limit: typeof opts.limit === "number" ? opts.limit : undefined
             });
+            const { hits, total, truncated } = page;
             logEvent("search", {
               source: "codemode",
-              query: opts.query,
+              ...searchEventFields({
+                query: opts.query,
+                queryHash,
+                requestedLimit: typeof opts.limit === "number" ? opts.limit : null,
+                page
+              }),
               kind: typeof opts.kind === "string" ? opts.kind : null,
               service: typeof opts.service === "string" ? opts.service : null,
               hits: hits.length,
