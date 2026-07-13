@@ -34,6 +34,13 @@ in a networkless Dynamic Worker; host adapters own all service traffic, policy, 
 - The Solo project bound to this repo (currently project 49) is the control plane for dev
   processes, todos, scratchpads, timers, and long-running agents. Confirm scope with `whoami` and
   inspect `list_processes` before starting or replacing any of them.
+- **Solo process ownership is recursive:** an agent may spawn descendants only within its own
+  ownership tree and may stop, close, interrupt, restart, or otherwise lifecycle-manage only
+  itself or descendants it spawned. Never lifecycle-manage a parent, sibling, unrelated process,
+  or another agent's descendants. Apply the same rule to every sub-agent. Idleness, staleness, a
+  completed handoff, release cleanup, or a request to clean Solo state does not transfer ownership;
+  leave an unowned process alone and ask its owning parent to reconcile it. If the owner is unknown
+  or unavailable, ask the user for an explicit exception naming the exact target; never adopt it.
 - Independent adversarial review is a completion gate when requested: reviewer must differ from
   author, run to completion, and have every finding reconciled before finalization.
 - Before spawning, inspect `list_agent_tools`. Add a permission-bypass flag only if the saved tool

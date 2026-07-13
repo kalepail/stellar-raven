@@ -112,6 +112,26 @@ describe("build-catalog.mjs", () => {
     })).toThrow(/non-exposed operation/);
   });
 
+  it("recovers weak RPC docs results through cited research and source-code explanation", () => {
+    const rpcDocs = catalog.entries.find(
+      (entry) => entry.id === "stellarDocs.search_rpc_horizon_data_docs"
+    );
+    expect(rpcDocs?.retrievalProfile?.recoverWith).toEqual(
+      expect.arrayContaining([
+        {
+          id: "scout.searchResearch",
+          relation: "cited-research",
+          on: ["weak", "adjacent", "ambiguous", "partial"]
+        },
+        {
+          id: "scout.explainRepo",
+          relation: "source-code",
+          on: ["weak", "adjacent", "ambiguous", "partial"]
+        }
+      ])
+    );
+  });
+
   it("has the expected entry counts per service/kind", () => {
     const count = (pred: (e: Catalog["entries"][number]) => boolean) =>
       catalog.entries.filter(pred).length;

@@ -1,7 +1,7 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "92f1b54f8fbbbebe431a200e22b27470e3f7cecff9dbb76d8927750c1d62661a",
+  "corpusContentSha256": "ddc253e8c6dfa4c04581f8399b1d7a4b4afdce3384983968b45a6da7aec632c0",
   "counts": {
     "total": 490,
     "byCategory": {
@@ -31841,7 +31841,8 @@
       "id": "q-sep-6-24-deprecation",
       "question": "Are SEP-6's interactive components deprecated, and what should an anchor use instead for interactive flows?",
       "surface": [
-        "stellarDocs.search_anchor_sep_docs"
+        "stellarDocs.search_anchor_sep_docs",
+        "scout.searchResearch"
       ],
       "golden": {
         "answer": "Yes, but only the **interactive components**. **SEP-6's interactive (anchor-hosted UI) flow is\ndeprecated in favor of SEP-24** for hosted/interactive deposit & withdrawal [1][2]. SEP-6 itself is\n**not** removed — it remains **Active**, and its **non-interactive (programmatic) API** is still the\nright choice for fully API-driven anchors that want no hosted webview [1]. So an anchor that wants a\n**hosted UI / KYC webview** should implement **SEP-24**, not the SEP-6 interactive flow; an anchor\nthat wants a pure programmatic API (wallet collects data itself, e.g. via SEP-12) stays on SEP-6.\nThe replacement for interactive flows is **SEP-24 only** — not SEP-31 (cross-border) or SEP-12\n(KYC).\n\nSources: [1] stellar-protocol `ecosystem/sep-0006.md` (Deposit and Withdrawal API, Active —\ninteractive components deprecated); [2] `ecosystem/sep-0024.md` (Hosted Deposit and Withdrawal,\nActive).",
@@ -31876,17 +31877,20 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 5B numeric corroboration backfill",
+          "date": "2026-07-13",
+          "by": "Truth-maintenance recovery with independent Fable live-source audit",
           "evidence": [
             "https://developers.stellar.org/docs/learn/fundamentals/anchors",
             "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
             "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
+            "Live scout.searchResearch result quoting SEP-0006 status and canonical URL, 2026-07-13",
+            "solo://proj/49/scratchpad/truth-maintenance-20--627#fable-open-questions-audit",
             "solo://proj/49/scratchpad/super-corpus-rebuild--585",
             "Sibling consistency sweep: checked the affected numeric/SEP/CAP mappings against related P4 5B cases and consistency-register members."
           ],
           "rootCause": [
-            "eval-authoring"
+            "eval-authoring",
+            "improvements/stellar-docs/sd-009-sep-6-interactive-deprecation-undiscoverable.md"
           ]
         },
         "origin": "raven-next q-sep-6-24-deprecation",
@@ -32743,6 +32747,7 @@
       "question": "When should an integration use SEP-6, SEP-24, or SEP-31 for fiat on/off-ramp and cross-border flows?",
       "surface": [
         "stellarDocs.search_anchor_sep_docs",
+        "scout.searchResearch",
         "skills.stellar-dev.standards"
       ],
       "golden": {
@@ -33009,14 +33014,20 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 H2 primary+blind (Solo 3411/3412)",
+          "date": "2026-07-13",
+          "by": "P4 H2 primary+blind plus truth-maintenance sibling surface audit",
           "evidence": [
             "https://developers.stellar.org/docs/anchoring-assets/anchor-platform",
             "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
             "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
             "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
-            "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md"
+            "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md",
+            "Live scout.searchResearch result quoting SEP-0006 status and canonical URL, 2026-07-13",
+            "solo://proj/49/scratchpad/truth-maintenance-20--627#fable-open-questions-audit"
+          ],
+          "rootCause": [
+            "Sibling consistency sweep for q-sep-6-24-deprecation",
+            "improvements/stellar-docs/sd-009-sep-6-interactive-deprecation-undiscoverable.md"
           ]
         },
         "origin": "kaan sep24-vs-sep31-vs-sep6"
@@ -41158,7 +41169,9 @@
         "stellarDocs.search_asset_token_docs",
         "stellarDocs.search_protocol_concepts_docs",
         "stellarDocs.search_rpc_horizon_data_docs",
-        "stellarDocs.search_soroban_contract_docs"
+        "stellarDocs.search_soroban_contract_docs",
+        "scout.searchResearch",
+        "scout.explainRepo"
       ],
       "golden": {
         "answer": "For the first `getTransactions` page, send an inclusive `startLedger` and an optional `limit`. For continuation, omit `startLedger` and send the prior response's opaque `pagination.cursor`; the cursor resumes after the last returned position. `startLedger` and `cursor` are mutually exclusive. Process idempotently and persist the new cursor only after downstream writes succeed.\n\nAs of **2026-07-11**, stock Stellar RPC configuration defaults `getTransactions` to 50 records and a maximum of 200, but source exposes operator-configurable default/max options; treat provider behavior as configurable rather than a protocol constant. Horizon is separately 1–200/default 10; stock `getEvents` is 100/10000 and `getLedgers` is 50/200. Check the current provider and `getHealth` retention bounds. RPC returns failed as well as successful transactions, diagnostic events may be absent, and a cursor cannot recover history outside retention; use a suitable indexer/data-lake path when falling behind.\n\nIn default base64 mode, decode `envelopeXdr` as `TransactionEnvelope`, `resultXdr` as `TransactionResult`, `resultMetaXdr` as `TransactionMeta`, `diagnosticEventsXdr` entries as `DiagnosticEvent`, and `transactionEventsXdr` entries as `TransactionEvent`; contract-event payloads use `ContractEvent`. The public JS SDK may already parse these fields. With `xdrFormat=json`, the response uses corresponding `*Json` names, so do not expect base64-field names or double-decode SDK values.",
@@ -41307,13 +41320,16 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The 2026-07-03 override fixed the false Horizon-only 200-limit premise, but left the inherited grader-note contradiction in place and lacked the exact initial-page/cursor and XDR/JSON contracts. GT-53 preserved the correct limit correction while adding only independently confirmed pagination and type precision.",
+          "date": "2026-07-13",
+          "by": "Golden-truth sweep plus truth-maintenance live source-surface recovery",
           "evidence": [
             "eval/qa/results/2026-07-03T16-06-45-variantA.json (q-ti-rpc-gettransactions-pagination-xdr)",
             "Live 2026-07-03: developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getTransactions — limit 'can range from 1 to 200 — an upper limit that is hardcoded in Stellar-RPC for performance reasons', default 50",
             "Root cause both sides missed it: RPC method reference pages unindexed in Algolia — improvements/stellar-docs/sd-003",
-            "Solo scratchpad 575, GT-53 primary 3372 and pre-read-locked blind 3378, independently reconciled 2026-07-11."
+            "Solo scratchpad 575, GT-53 primary 3372 and pre-read-locked blind 3378, independently reconciled 2026-07-11.",
+            "Live scout.searchResearch reachability for the official getTransactions and pagination pages, 2026-07-13",
+            "Live scout.explainRepo answer grounded in stellar/stellar-rpc options.go and main.go for configurable 50/200 defaults, 2026-07-13",
+            "solo://proj/49/scratchpad/truth-maintenance-20--627#fable-open-questions-audit"
           ],
           "rootCause": [
             "improvements/stellar-docs/sd-003 (verified, awaiting upstream) — RPC method reference pages unindexed in Algolia; the upstream fix that would have prevented both the agent's and the golden author's error. When sd-003 is fixed-upstream, this override's facts should be re-verified against the then-indexed page but the correction itself remains valid.",

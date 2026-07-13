@@ -78,7 +78,7 @@ Total findings: 130
 | sls-051 | searchProjects' upstream description is broad enough to lexically capture                              | fixed-upstream    | 2026-07-11 | 0           |
 | sls-052 | The 1.7.16 structural fix (sls-051) moved routing vocabulary out of operation                          | fixed-upstream    | 2026-07-12 | 0           |
 | sls-053 | The Scout ecosystem-skills directory (GET /api/skills) still advertises the                            | fixed-upstream    | 2026-07-12 | 0           |
-| sls-054 | The live sls-050 changelog entry contradicts itself about the project rename-continuity response shape | reported-upstream | 2026-07-13 | 0           |
+| sls-054 | The live sls-050 changelog entry contradicts itself about the project rename-continuity response shape | fixed-upstream    | 2026-07-13 | 0           |
 
 ## stellar-docs
 

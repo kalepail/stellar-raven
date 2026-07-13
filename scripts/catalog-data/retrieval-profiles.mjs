@@ -119,7 +119,8 @@ export const RETRIEVAL_PROFILES = {
   ] },
   "stellarDocs.search_rpc_horizon_data_docs": { lane: "corpus", emptyScope: "operation", recoverWith: [
     { id: "stellarDocs.search_docs", relation: "corpus-wide", on: BROAD_MISS },
-    { id: "scout.searchResearch", relation: "cited-research", on: CORROBORATE }
+    { id: "scout.searchResearch", relation: "cited-research", on: CORROBORATE },
+    { id: "scout.explainRepo", relation: "source-code", on: CORROBORATE }
   ] },
   "stellarDocs.search_sdk_cli_tools_docs": { lane: "corpus", emptyScope: "operation", recoverWith: [
     { id: "stellarDocs.search_docs", relation: "corpus-wide", on: BROAD_MISS },

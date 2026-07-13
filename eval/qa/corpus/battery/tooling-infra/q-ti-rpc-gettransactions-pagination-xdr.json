@@ -5,7 +5,9 @@
     "stellarDocs.search_asset_token_docs",
     "stellarDocs.search_protocol_concepts_docs",
     "stellarDocs.search_rpc_horizon_data_docs",
-    "stellarDocs.search_soroban_contract_docs"
+    "stellarDocs.search_soroban_contract_docs",
+    "scout.searchResearch",
+    "scout.explainRepo"
   ],
   "golden": {
     "answer": "For the first `getTransactions` page, send an inclusive `startLedger` and an optional `limit`. For continuation, omit `startLedger` and send the prior response's opaque `pagination.cursor`; the cursor resumes after the last returned position. `startLedger` and `cursor` are mutually exclusive. Process idempotently and persist the new cursor only after downstream writes succeed.\n\nAs of **2026-07-11**, stock Stellar RPC configuration defaults `getTransactions` to 50 records and a maximum of 200, but source exposes operator-configurable default/max options; treat provider behavior as configurable rather than a protocol constant. Horizon is separately 1–200/default 10; stock `getEvents` is 100/10000 and `getLedgers` is 50/200. Check the current provider and `getHealth` retention bounds. RPC returns failed as well as successful transactions, diagnostic events may be absent, and a cursor cannot recover history outside retention; use a suitable indexer/data-lake path when falling behind.\n\nIn default base64 mode, decode `envelopeXdr` as `TransactionEnvelope`, `resultXdr` as `TransactionResult`, `resultMetaXdr` as `TransactionMeta`, `diagnosticEventsXdr` entries as `DiagnosticEvent`, and `transactionEventsXdr` entries as `TransactionEvent`; contract-event payloads use `ContractEvent`. The public JS SDK may already parse these fields. With `xdrFormat=json`, the response uses corresponding `*Json` names, so do not expect base64-field names or double-decode SDK values.",
@@ -154,13 +156,16 @@
       }
     ],
     "verified": {
-      "date": "2026-07-11",
-      "by": "Golden-truth sweep import — The 2026-07-03 override fixed the false Horizon-only 200-limit premise, but left the inherited grader-note contradiction in place and lacked the exact initial-page/cursor and XDR/JSON contracts. GT-53 preserved the correct limit correction while adding only independently confirmed pagination and type precision.",
+      "date": "2026-07-13",
+      "by": "Golden-truth sweep plus truth-maintenance live source-surface recovery",
       "evidence": [
         "eval/qa/results/2026-07-03T16-06-45-variantA.json (q-ti-rpc-gettransactions-pagination-xdr)",
         "Live 2026-07-03: developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getTransactions — limit 'can range from 1 to 200 — an upper limit that is hardcoded in Stellar-RPC for performance reasons', default 50",
         "Root cause both sides missed it: RPC method reference pages unindexed in Algolia — improvements/stellar-docs/sd-003",
-        "Solo scratchpad 575, GT-53 primary 3372 and pre-read-locked blind 3378, independently reconciled 2026-07-11."
+        "Solo scratchpad 575, GT-53 primary 3372 and pre-read-locked blind 3378, independently reconciled 2026-07-11.",
+        "Live scout.searchResearch reachability for the official getTransactions and pagination pages, 2026-07-13",
+        "Live scout.explainRepo answer grounded in stellar/stellar-rpc options.go and main.go for configurable 50/200 defaults, 2026-07-13",
+        "solo://proj/49/scratchpad/truth-maintenance-20--627#fable-open-questions-audit"
       ],
       "rootCause": [
         "improvements/stellar-docs/sd-003 (verified, awaiting upstream) — RPC method reference pages unindexed in Algolia; the upstream fix that would have prevented both the agent's and the golden author's error. When sd-003 is fixed-upstream, this override's facts should be re-verified against the then-indexed page but the correction itself remains valid.",

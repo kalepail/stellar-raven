@@ -3,6 +3,7 @@
   "question": "When should an integration use SEP-6, SEP-24, or SEP-31 for fiat on/off-ramp and cross-border flows?",
   "surface": [
     "stellarDocs.search_anchor_sep_docs",
+    "scout.searchResearch",
     "skills.stellar-dev.standards"
   ],
   "golden": {
@@ -269,14 +270,20 @@
       }
     ],
     "verified": {
-      "date": "2026-07-11",
-      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "date": "2026-07-13",
+      "by": "P4 H2 primary+blind plus truth-maintenance sibling surface audit",
       "evidence": [
         "https://developers.stellar.org/docs/anchoring-assets/anchor-platform",
         "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
         "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
         "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
-        "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md"
+        "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md",
+        "Live scout.searchResearch result quoting SEP-0006 status and canonical URL, 2026-07-13",
+        "solo://proj/49/scratchpad/truth-maintenance-20--627#fable-open-questions-audit"
+      ],
+      "rootCause": [
+        "Sibling consistency sweep for q-sep-6-24-deprecation",
+        "improvements/stellar-docs/sd-009-sep-6-interactive-deprecation-undiscoverable.md"
       ]
     },
     "origin": "kaan sep24-vs-sep31-vs-sep6"
