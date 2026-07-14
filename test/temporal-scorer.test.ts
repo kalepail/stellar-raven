@@ -117,6 +117,18 @@ describe("temporal scorer", () => {
     expect(() => scoreArtifacts(expectations, missingReplicate)).toThrow(/must contain 2 positive row/);
   });
 
+  it("refuses a quarantine before accepting a malicious rows alias", () => {
+    const expectations = loadExpectations();
+    const input: any = artifact(expectations, "playground", "baseline");
+    input.data = {
+      artifactContract: "playground-semantic-quarantine/v1",
+      quarantinedMeta: { artifactContract: "playground-semantic-quarantine/v1" },
+      rows: input.data.rows
+    };
+    const inputs = [input, artifact(expectations, "mcp", "baseline"), artifact(expectations, "mcp", "candidate"), artifact(expectations, "playground", "candidate")];
+    expect(() => scoreArtifacts(expectations, inputs)).toThrow(/non-promotable playground quarantine/);
+  });
+
   it("fails clearly on missing, malformed, and incomplete expectations", () => {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), "temporal-scorer-"));
     const malformed = path.join(directory, "malformed.json");

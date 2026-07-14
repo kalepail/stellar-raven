@@ -30,6 +30,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { extractExecuteOps, expandSkillRuns, loadRunnerOps } from "../plan/grade-plan.mjs";
+import { assertNotPlaygroundQuarantine } from "../playground/artifact-contract.mjs";
 
 /**
  * §10 adoption signal: any skill.run/skill_run call in an execute input.
@@ -238,6 +239,7 @@ async function main() {
     process.exit(1);
   }
   const results = JSON.parse(readFileSync(resultsPath, "utf8"));
+  assertNotPlaygroundQuarantine(results, resultsPath);
   if (!Array.isArray(results.rows)) throw new Error(`${resultsPath}: missing rows[]`);
 
   const notes = [];

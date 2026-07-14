@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { assertNotPlaygroundQuarantine } from "../playground/artifact-contract.mjs";
 
 const CLASSES = ["caveat", "enumeration-tail", "version-number", "cross-source corroboration", "other"];
 
@@ -23,6 +24,7 @@ function classifyMissingFact(text) {
 
 function resultRows(file) {
   const parsed = JSON.parse(readFileSync(file, "utf8"));
+  assertNotPlaygroundQuarantine(parsed, file);
   if (!Array.isArray(parsed.rows)) throw new Error(`${file}: missing rows[]`);
   return parsed.rows;
 }

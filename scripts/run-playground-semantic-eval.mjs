@@ -14,8 +14,9 @@
  */
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, open, readFile, rename, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { mintDemoCookie } from "../src/demo/auth.ts";
 import { DEMO_CAPS } from "../src/demo/budget.ts";
 import {
@@ -35,7 +36,9 @@ import { QA_DIR, formatSummaryTable, loadCases, summarize } from "../eval/qa/lib
 import {
   PLAYGROUND_ROUND_CAP_CONTRACT,
   assertModelBackedRunInputs,
+  buildQuarantineArtifact,
   buildPlaygroundArtifactMeta,
+  sanitizeGenerationCheckError,
   sha256 as contractSha256,
   treeGenerationSha256
 } from "../eval/playground/artifact-contract.mjs";
@@ -445,6 +448,190 @@ async function readDevVars(file) {
   return vars;
 }
 
+function boundedCheckError(error) {
+  return sanitizeGenerationCheckError(error);
+}
+
+function actualSpend({ selectedCaseIds, attempted, completed, judged, counters, reportedJudgeCalls, reportedJudgeCostUsd }) {
+  return {
+    accountingPolicy: "started-calls-count-conservatively; quarantine releases no authorization or reserve",
+    planned: { answerCalls: selectedCaseIds.length, judgeCalls: counters.judgePlanned },
+    actual: {
+      answerCallsStarted: counters.answerStarted,
+      answerCallsCompleted: counters.answerCompleted,
+      judgeCallsStarted: counters.judgeStarted,
+      judgeCallsCompleted: counters.judgeCompleted,
+      reportedJudgeCalls,
+      reportedJudgeCostUsd,
+      answerProviderCostUsd: null,
+      answerProviderCostSemantics: "not-emitted-by-playground-artifact",
+      observedAttemptedModels: null
+    },
+    selectedCaseIds,
+    caseIdsAttempted: attempted,
+    caseIdsCompleted: completed,
+    caseIdsJudged: judged,
+    caseIdsNotRun: selectedCaseIds.slice(attempted.length),
+    nextLedgerMinimumIncrements: { answerCalls: counters.answerStarted, judgeCalls: counters.judgeStarted },
+    infraRetryAuthorized: false
+  };
+}
+
+/**
+ * Paid-loop seam. Tests inject every side effect so they can prove checkpoint
+ * ordering and that detected churn stops all later paid calls.
+ */
+export async function orchestratePlaygroundRun({
+  cases,
+  treeAtStart,
+  startMeta,
+  judgeEnabled,
+  snapshotTree,
+  runAnswer,
+  judgeAnswer,
+  makeRow,
+  buildNormalArtifact,
+  buildQuarantine = buildQuarantineArtifact,
+  writeNormalArtifact,
+  writeQuarantineArtifact,
+  onAnswerStart = () => {},
+  onRow = () => {},
+  now = () => new Date().toISOString()
+}) {
+  const rows = [];
+  const selectedCaseIds = cases.map((item) => item.id);
+  const attempted = [];
+  const completed = [];
+  const judged = [];
+  const counters = { answerStarted: 0, answerCompleted: 0, judgeStarted: 0, judgeCompleted: 0, judgePlanned: judgeEnabled ? cases.length : 0 };
+  let reportedJudgeCalls = 0;
+  let reportedJudgeCostUsd = 0;
+
+  const quarantine = async ({ code, phase, item, index, treeAtFinish, checkError }) => {
+    const reason = {
+      code,
+      phase,
+      caseId: item?.id ?? null,
+      caseIndex: item ? index : null,
+      detectedAt: now(),
+      message:
+        code === "local-provenance-generation-mismatch"
+          ? "Local working-tree generation no longer matches the pinned start generation; running-Worker bytes were not introspected."
+          : "A required local working-tree generation check failed after spend; no mismatch or server change is claimed.",
+      checkError: checkError ?? null
+    };
+    const spend = actualSpend({ selectedCaseIds, attempted, completed, judged, counters, reportedJudgeCalls, reportedJudgeCostUsd });
+    const artifact = buildQuarantine({ meta: startMeta, rows, treeAtStart, treeAtFinish, reason, spend });
+    await writeQuarantineArtifact(artifact, { reason, spend, treeAtStart, treeAtFinish });
+    return { kind: "quarantined", artifact, reason, spend };
+  };
+
+  const checkpoint = async (phase, item, index) => {
+    let tree;
+    try {
+      tree = await snapshotTree();
+    } catch (error) {
+      if (counters.answerStarted === 0) throw error;
+      return quarantine({ code: "generation-check-error", phase, item, index, treeAtFinish: null, checkError: boundedCheckError(error) });
+    }
+    if (tree.generationSha256 === treeAtStart.generationSha256) return null;
+    if (counters.answerStarted === 0) {
+      throw new Error(`working-tree generation changed before spend (${treeAtStart.generationSha256} -> ${tree.generationSha256})`);
+    }
+    return quarantine({ code: "local-provenance-generation-mismatch", phase, item, index, treeAtFinish: tree });
+  };
+
+  for (const [index, item] of cases.entries()) {
+    const beforeAnswer = await checkpoint("before-answer", item, index);
+    if (beforeAnswer) return beforeAnswer;
+    onAnswerStart({ item, index });
+    counters.answerStarted += 1;
+    attempted.push(item.id);
+    const run = await runAnswer(item);
+    counters.answerCompleted += 1;
+    completed.push(item.id);
+    const row = makeRow(item, run, null);
+    rows.push(row);
+
+    const beforeJudge = await checkpoint("before-judge", item, index);
+    if (beforeJudge) return beforeJudge;
+    if (judgeEnabled && run.answer) {
+      counters.judgeStarted += 1;
+      const verdict = await judgeAnswer(item, run);
+      counters.judgeCompleted += 1;
+      judged.push(item.id);
+      if (typeof verdict?.costUsd === "number" && Number.isFinite(verdict.costUsd) && verdict.costUsd >= 0) {
+        reportedJudgeCalls += 1;
+        reportedJudgeCostUsd += verdict.costUsd;
+      }
+      row.verdict = verdict;
+    } else if (judgeEnabled) {
+      row.verdict = await judgeAnswer(item, run);
+    }
+    onRow({ item, row, index });
+  }
+
+  const final = await checkpoint("finalize", null, null);
+  if (final) return final;
+  const artifact = buildNormalArtifact(rows);
+  await writeNormalArtifact(artifact, rows);
+  return { kind: "normal", artifact, rows };
+}
+
+export async function writeAtomicQuarantine(outPath, artifact, {
+  tempId = () => crypto.randomUUID(),
+  openFile = open,
+  renameFile = rename,
+  remove = unlink
+} = {}) {
+  const tempPath = `${outPath}.${tempId()}.tmp`;
+  let handle;
+  let tempOwned = false;
+  try {
+    handle = await openFile(tempPath, "wx", 0o600);
+    tempOwned = true;
+    await handle.writeFile(`${JSON.stringify(artifact, null, 2)}\n`);
+    await handle.close();
+    handle = undefined;
+    await renameFile(tempPath, outPath);
+  } catch (error) {
+    if (handle) await handle.close().catch(() => {});
+    if (tempOwned) await remove(tempPath).catch(() => {});
+    throw error;
+  }
+}
+
+function formatNoticePath(value) {
+  return JSON.stringify(sanitizeGenerationCheckError({ name: "Path", message: String(value ?? "") }).message);
+}
+
+export function formatQuarantineNotice({ writeFailed = false, path: quarantinePath, reason, treeAtStart, treeAtFinish, spend, error }) {
+  const accounting =
+    `path=${formatNoticePath(quarantinePath)} reason=${reason.code} ` +
+    `startGeneration=${treeAtStart.generationSha256} detectionGeneration=${treeAtFinish?.generationSha256 ?? "unavailable"} ` +
+    `answerStarted=${spend.actual.answerCallsStarted} answerCompleted=${spend.actual.answerCallsCompleted} ` +
+    `judgeStarted=${spend.actual.judgeCallsStarted} judgeCompleted=${spend.actual.judgeCallsCompleted}`;
+  if (!writeFailed) return `QUARANTINED — NOT A RESULT: ${accounting}`;
+  return `QUARANTINE WRITE FAILED — NOT A RESULT: ${accounting} error=${sanitizeGenerationCheckError(error).message}`;
+}
+
+export function exitCodeForRunDisposition(result) {
+  return result?.kind === "quarantined" ? 1 : 0;
+}
+
+export class QuarantineNoticeEmittedError extends Error {
+  constructor() {
+    super("quarantine persistence failed after a safe marker was emitted");
+    this.name = "QuarantineNoticeEmittedError";
+  }
+}
+
+export function handleEntryDiagnostic(error, emit = (line) => console.error(line)) {
+  if (error instanceof QuarantineNoticeEmittedError) return { exitCode: 1, emitted: false };
+  emit(`playground semantic eval failed: ${sanitizeGenerationCheckError(error).message}`);
+  return { exitCode: 1, emitted: true };
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
@@ -547,7 +734,6 @@ async function main() {
       "The assertion matches the local tree at run start/end; it does not prove that an already-running Worker loaded those bytes."
   };
   const sourceFiles = await inputFileHashes(path.resolve(casesPath));
-  const rows = [];
   const startedAt = new Date().toISOString();
   const runMeta = (finishedAt) => ({
     runId,
@@ -559,7 +745,7 @@ async function main() {
     finishedAt
   });
   // Validate every source/config/cap pin before the first paid HTTP turn.
-  buildPlaygroundArtifactMeta({
+  const startMeta = buildPlaygroundArtifactMeta({
     run: runMeta(startedAt),
     answering,
     judge,
@@ -569,37 +755,21 @@ async function main() {
     tree: treeAtStart,
     server
   });
-  for (const [index, item] of cases.entries()) {
-    process.stdout.write(`[${index + 1}/${cases.length}] ${item.id} … `);
-    const run = await runCase(item, { endpoint, timeoutMs: args.timeoutMs, cookie });
+  const outDir = args.outDir ?? DEFAULT_OUT_DIR;
+  await mkdir(outDir, { recursive: true });
+  const quarantineDir = path.join(outDir, "quarantine");
+  await mkdir(quarantineDir, { recursive: true });
+  const outPath = path.join(outDir, `${runId}-playground-semantic.json`);
+  const quarantinePath = path.join(quarantineDir, `${runId}-playground-semantic-quarantine.json`);
+  const makeRow = (item, run, verdict) => {
     const transcriptEvidence = run.answer
       ? buildTranscriptEvidence({ ...item, candidateAnswer: run.answer, transcript: run.transcript })
       : "";
-    const verdict = args.noJudge
-      ? null
-      : run.answer
-        ? await judgeCase({ ...item, candidateAnswer: run.answer, transcript: run.transcript, transcriptEvidence }, { model: judgeModel })
-        : {
-            score: "error",
-            missingFacts: [],
-            wrongClaims: [],
-            rationale:
-              run.clientError ||
-              run.httpError ||
-              run.sseErrors.join("; ") ||
-              "stream ended without an assistant final text or terminal error frame",
-            rubric: JUDGE_RUBRIC,
-            packVersion: PACK_VERSION,
-            promptSha256: null
-          };
-    rows.push({
+    return {
       id: item.id,
       question: item.question,
       tags: item.tags,
-      truth: {
-        status: item.truth.status,
-        ...(item.truth.asOf ? { asOf: item.truth.asOf } : {})
-      },
+      truth: { status: item.truth.status, ...(item.truth.asOf ? { asOf: item.truth.asOf } : {}) },
       answer: run.answer,
       transcript: run.transcript,
       frames: run.frames,
@@ -613,49 +783,60 @@ async function main() {
       sseErrors: run.sseErrors,
       clientError: run.clientError,
       verdict,
-      evidencePack: {
-        packVersion: PACK_VERSION,
-        chars: transcriptEvidence.length,
-        sha256: transcriptEvidence ? sha256(transcriptEvidence) : null
+      evidencePack: { packVersion: PACK_VERSION, chars: transcriptEvidence.length, sha256: transcriptEvidence ? sha256(transcriptEvidence) : null }
+    };
+  };
+  const result = await orchestratePlaygroundRun({
+    cases,
+    treeAtStart,
+    startMeta,
+    judgeEnabled: !args.noJudge,
+    snapshotTree: workingTreeSnapshot,
+    runAnswer: (item) => runCase(item, { endpoint, timeoutMs: args.timeoutMs, cookie }),
+    judgeAnswer: async (item, run) => {
+      if (!run.answer) {
+        return {
+          score: "error", missingFacts: [], wrongClaims: [],
+          rationale: run.clientError || run.httpError || run.sseErrors.join("; ") || "stream ended without an assistant final text or terminal error frame",
+          rubric: JUDGE_RUBRIC, packVersion: PACK_VERSION, promptSha256: null
+        };
       }
-    });
-    console.log(`${verdict?.score ?? "captured"} (${run.toolCalls.search.started} search, ${run.toolCalls.execute.started} execute, ${Math.round(run.latencyMs / 1000)}s)`);
-  }
-  const summary = args.noJudge ? null : summarize(rows);
-  const outDir = args.outDir ?? DEFAULT_OUT_DIR;
-  await mkdir(outDir, { recursive: true });
-  const outPath = path.join(outDir, `${runId}-playground-semantic.json`);
-  const treeAtFinish = await workingTreeSnapshot();
-  if (treeAtFinish.generationSha256 !== treeAtStart.generationSha256) {
-    throw new Error(
-      `working-tree generation changed during the run (${treeAtStart.generationSha256} -> ${treeAtFinish.generationSha256}); refusing to write a causally mixed artifact`
-    );
-  }
-  const finishedAt = new Date().toISOString();
-  const meta = buildPlaygroundArtifactMeta({
-    run: runMeta(finishedAt),
-    answering,
-    judge,
-    capContext,
-    inputFiles: sourceFiles,
-    selectedCases: cases,
-    tree: treeAtStart,
-    server
+      const transcriptEvidence = buildTranscriptEvidence({ ...item, candidateAnswer: run.answer, transcript: run.transcript });
+      return judgeCase({ ...item, candidateAnswer: run.answer, transcript: run.transcript, transcriptEvidence }, { model: judgeModel });
+    },
+    makeRow,
+    buildNormalArtifact: (rows) => {
+      const meta = buildPlaygroundArtifactMeta({
+        run: runMeta(new Date().toISOString()), answering, judge, capContext, inputFiles: sourceFiles,
+        selectedCases: cases, tree: treeAtStart, server
+      });
+      return { meta, summary: args.noJudge ? null : summarize(rows), rows };
+    },
+    writeNormalArtifact: async (artifact) => {
+      await writeFile(outPath, `${JSON.stringify(artifact, null, 2)}\n`);
+      console.log(`\nwrote ${outPath}`);
+      if (artifact.summary) console.log(`\n${formatSummaryTable(artifact.summary)}`);
+    },
+    writeQuarantineArtifact: async (artifact, details) => {
+      try {
+        await writeAtomicQuarantine(quarantinePath, artifact);
+      } catch (error) {
+        console.error(formatQuarantineNotice({ writeFailed: true, path: quarantinePath, ...details, error }));
+        throw new QuarantineNoticeEmittedError();
+      }
+      console.error(formatQuarantineNotice({ path: quarantinePath, ...details }));
+    },
+    onAnswerStart: ({ item, index }) => process.stdout.write(`[${index + 1}/${cases.length}] ${item.id} … `),
+    onRow: ({ item, row, index }) => {
+      console.log(`${row.verdict?.score ?? "captured"} (${row.toolCalls.search.started} search, ${row.toolCalls.execute.started} execute, ${Math.round(row.latencyMs / 1000)}s)`);
+    }
   });
-  await writeFile(
-    outPath,
-    `${JSON.stringify(
-      {
-        meta,
-        summary,
-        rows
-      },
-      null,
-      2
-    )}\n`
-  );
-  console.log(`\nwrote ${outPath}`);
-  if (summary) console.log(`\n${formatSummaryTable(summary)}`);
+  process.exitCode = exitCodeForRunDisposition(result);
 }
 
-await main();
+const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (isMain) {
+  main().catch((error) => {
+    process.exitCode = handleEntryDiagnostic(error).exitCode;
+  });
+}

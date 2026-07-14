@@ -2,14 +2,22 @@ import { describe, expect, it } from "vitest";
 // Plain Node evaluator module; exercised directly by Vitest without a build step.
 // @ts-expect-error no declaration file is emitted for the local .mjs contract.
 import * as artifactContract from "../eval/playground/artifact-contract.mjs";
+// @ts-expect-error local executable module intentionally exposes a test seam.
+import { orchestratePlaygroundRun } from "../scripts/run-playground-semantic-eval.mjs";
 
 const {
   PLAYGROUND_ARTIFACT_CONTRACT,
+  PLAYGROUND_QUARANTINE_CONTRACT,
   PLAYGROUND_INPUT_SNAPSHOT_CONTRACT,
   PLAYGROUND_ROUND_CAP_CONTRACT,
   assertModelBackedRunInputs,
+  assertNotPlaygroundQuarantine,
   assertPlaygroundArtifactMeta,
+  assertQuarantineArtifact,
+  buildQuarantineArtifact,
   buildPlaygroundArtifactMeta,
+  sanitizeGenerationCheckError,
+  sha256Json,
   treeGenerationSha256
 } = artifactContract;
 
@@ -128,6 +136,53 @@ function fixtureMeta(roundAuthorization: any = reviewedRound()) {
   });
 }
 
+function fixtureQuarantine() {
+  const meta = fixtureMeta();
+  const treeAtStart = meta.inputSnapshot.tree;
+  const treeAtDetection = {
+    ...treeAtStart,
+    headRevision: "9e891fa6f9b913b723af897d1bf55bb2b5251c34"
+  };
+  treeAtDetection.generationSha256 = treeGenerationSha256(treeAtDetection);
+  return buildQuarantineArtifact({
+    meta,
+    rows: [{ id: "a", answer: "captured", verdict: null }],
+    treeAtStart,
+    treeAtFinish: treeAtDetection,
+    reason: {
+      code: "local-provenance-generation-mismatch",
+      phase: "before-judge",
+      caseId: "a",
+      caseIndex: 0,
+      detectedAt: "2026-07-14T00:00:30.000Z",
+      message: "Local generation changed.",
+      checkError: null
+    },
+    spend: {
+      accountingPolicy: "started-calls-count-conservatively; quarantine releases no authorization or reserve",
+      planned: { answerCalls: 2, judgeCalls: 2 },
+      actual: {
+        answerCallsStarted: 1,
+        answerCallsCompleted: 1,
+        judgeCallsStarted: 0,
+        judgeCallsCompleted: 0,
+        reportedJudgeCalls: 0,
+        reportedJudgeCostUsd: 0,
+        answerProviderCostUsd: null,
+        answerProviderCostSemantics: "not-emitted-by-playground-artifact",
+        observedAttemptedModels: null
+      },
+      selectedCaseIds: ["a", "b"],
+      caseIdsAttempted: ["a"],
+      caseIdsCompleted: ["a"],
+      caseIdsJudged: [],
+      caseIdsNotRun: ["b"],
+      nextLedgerMinimumIncrements: { answerCalls: 1, judgeCalls: 0 },
+      infraRetryAuthorized: false
+    }
+  });
+}
+
 describe("playground semantic artifact contract", () => {
   it("requires both paid-run provenance inputs before model execution", () => {
     expect(() => assertModelBackedRunInputs({})).toThrow(/server-generation/);
@@ -199,5 +254,134 @@ describe("playground semantic artifact contract", () => {
     const omitted = structuredClone(nullCaps) as Record<string, unknown>;
     delete omitted.absoluteAnswerCallCap;
     expect(() => fixtureMeta(omitted)).toThrow(/absoluteAnswerCallCap/);
+  });
+
+  it("builds a structurally non-promotable quarantine and rejects tampering", () => {
+    const artifact = fixtureQuarantine();
+    expect(artifact.artifactContract).toBe(PLAYGROUND_QUARANTINE_CONTRACT);
+    expect(Object.hasOwn(artifact, "meta")).toBe(false);
+    expect(Object.hasOwn(artifact, "rows")).toBe(false);
+    expect(Object.hasOwn(artifact, "summary")).toBe(false);
+    expect(() => assertQuarantineArtifact(artifact)).not.toThrow();
+    expect(() => assertNotPlaygroundQuarantine(artifact, "fixture")).toThrow(/non-promotable/);
+    expect(() => assertNotPlaygroundQuarantine({ quarantinedMeta: { artifactContract: PLAYGROUND_QUARANTINE_CONTRACT } }, "renamed")).toThrow(/non-promotable/);
+    expect(() => assertNotPlaygroundQuarantine({ meta: { artifactContract: PLAYGROUND_QUARANTINE_CONTRACT } }, "legacy")).toThrow(/non-promotable/);
+
+    const tamperedRows = structuredClone(artifact);
+    tamperedRows.quarantinedRows.push({ id: "b", verdict: null });
+    expect(() => assertQuarantineArtifact(tamperedRows)).toThrow(/quarantinedRowsSha256/);
+
+    const equalGeneration = structuredClone(artifact);
+    equalGeneration.provenanceFailure.treeAtDetection = equalGeneration.provenanceFailure.treeAtStart;
+    equalGeneration.provenanceFailure.observedGenerationSha256 = equalGeneration.provenanceFailure.treeAtStart.generationSha256;
+    expect(() => assertQuarantineArtifact(equalGeneration)).toThrow(/differing/);
+  });
+
+  it("permits only a bounded post-spend generation-check error", () => {
+    const artifact = fixtureQuarantine();
+    artifact.reason = {
+      ...artifact.reason,
+      code: "generation-check-error",
+      phase: "before-judge",
+      checkError: { name: "Error", message: "git unavailable" }
+    };
+    artifact.provenanceFailure.treeAtDetection = null;
+    artifact.provenanceFailure.observedGenerationSha256 = null;
+    expect(() => assertQuarantineArtifact(artifact)).not.toThrow();
+    artifact.spend.actual.answerCallsStarted = 0;
+    expect(() => assertQuarantineArtifact(artifact)).toThrow(/allowed only after an answer call started/);
+  });
+
+  it("normalizes generation-check errors and rejects every hardened accounting mutation", () => {
+    expect(sanitizeGenerationCheckError({ name: "bad name!", message: `\u001bline\n${"x".repeat(501)}` })).toEqual({
+      name: "Error",
+      message: `line ${"x".repeat(495)}`
+    });
+    const mutations: Array<[string, (artifact: any) => void, RegExp]> = [
+      ["reason flags", (a) => { a.reason.serverChangeEstablished = true; }, /reason flags/],
+      ["missing tree field", (a) => { delete a.provenanceFailure.treeAtDetection.statusSha256; }, /statusSha256/],
+      ["bad check name", (a) => { a.reason.code = "generation-check-error"; a.reason.phase = "before-judge"; a.reason.checkError = { name: "bad name!", message: "x\n" }; a.provenanceFailure.treeAtDetection = null; a.provenanceFailure.observedGenerationSha256 = null; }, /normalized checkError/],
+      ["preserved counters", (a) => { a.preserved.unjudgedRowCount = 0; }, /preserved judged counters/],
+      ["completed prefix", (a) => { a.spend.caseIdsCompleted = ["b"]; }, /caseIdsCompleted.*match quarantinedRows|ordered prefix/],
+      ["planned counts", (a) => { a.spend.planned.answerCalls = 0; }, /planned.answerCalls/],
+      ["policy", (a) => { a.spend.accountingPolicy = "anything"; }, /accountingPolicy/],
+      ["phase", (a) => { a.reason.phase = "generation-check-error"; }, /mismatch reason.phase/]
+    ];
+    for (const [name, mutate, matcher] of mutations) {
+      const artifact = structuredClone(fixtureQuarantine());
+      mutate(artifact);
+      expect(() => assertQuarantineArtifact(artifact), name).toThrow(matcher);
+    }
+
+    const paid = structuredClone(fixtureQuarantine());
+    paid.quarantinedRows[0].verdict = { score: "error", costUsd: 0.25 };
+    paid.preserved.quarantinedRowsSha256 = sha256Json(paid.quarantinedRows);
+    Object.assign(paid.spend.actual, { judgeCallsStarted: 1, judgeCallsCompleted: 1, reportedJudgeCalls: 0 });
+    paid.spend.caseIdsJudged = ["a"];
+    Object.assign(paid.preserved, { fullyJudgedRowCount: 1, unjudgedRowCount: 0 });
+    expect(() => assertQuarantineArtifact(paid)).toThrow(/reported judge cost accounting/);
+    paid.spend.actual.reportedJudgeCalls = 1;
+    paid.spend.actual.reportedJudgeCostUsd = 0.25;
+    paid.spend.nextLedgerMinimumIncrements.judgeCalls = 1;
+    expect(() => assertQuarantineArtifact(paid)).not.toThrow();
+  });
+
+  it("composes the real orchestrator and builder for every quarantined checkpoint", async () => {
+    const scenarios = [
+      { name: "before judge", snapshots: ["same", "changed"], code: "local-provenance-generation-mismatch", phase: "before-judge", rows: 1 },
+      { name: "check error", snapshots: ["same", "throw"], code: "generation-check-error", phase: "before-judge", rows: 1 },
+      { name: "before next answer", snapshots: ["same", "same", "changed"], code: "local-provenance-generation-mismatch", phase: "before-answer", rows: 1 },
+      { name: "finalize", snapshots: ["same", "same", "same", "same", "changed"], code: "local-provenance-generation-mismatch", phase: "finalize", rows: 2 }
+    ];
+    for (const scenario of scenarios) {
+      const meta = fixtureMeta();
+      const start = meta.inputSnapshot.tree;
+      const changed = { ...start, headRevision: "7e891fa6f9b913b723af897d1bf55bb2b5251c34" };
+      changed.generationSha256 = treeGenerationSha256(changed);
+      let index = 0;
+      let saved: any;
+      const result: any = await orchestratePlaygroundRun({
+        cases: [{ id: "a" }, { id: "b" }], treeAtStart: start, startMeta: meta, judgeEnabled: true,
+        snapshotTree: async () => {
+          const step = scenario.snapshots[index++]!;
+          if (step === "throw") throw new Error("git\nfailed");
+          return step === "changed" ? changed : start;
+        },
+        runAnswer: async (item: any) => ({ answer: item.id }),
+        judgeAnswer: async () => ({ score: "pass", costUsd: 0.25 }),
+        makeRow: (item: any, run: any, verdict: any) => ({ id: item.id, answer: run.answer, verdict }),
+        buildNormalArtifact: (rows: any[]) => ({ rows }),
+        writeNormalArtifact: async () => { throw new Error("normal write must not run"); },
+        writeQuarantineArtifact: async (artifact: any) => { saved = artifact; }
+      });
+      expect(result.kind, scenario.name).toBe("quarantined");
+      expect(result.reason).toMatchObject({ code: scenario.code, phase: scenario.phase });
+      expect(saved.quarantinedRows).toHaveLength(scenario.rows);
+      expect(() => assertQuarantineArtifact(saved), scenario.name).not.toThrow();
+    }
+  });
+
+  it("preserves a synthetic empty-answer verdict as unjudged in the real quarantine builder", async () => {
+    const meta = fixtureMeta();
+    const start = meta.inputSnapshot.tree;
+    const changed = { ...start, headRevision: "6e891fa6f9b913b723af897d1bf55bb2b5251c34" };
+    changed.generationSha256 = treeGenerationSha256(changed);
+    let snapshots = 0;
+    let saved: any;
+    const result: any = await orchestratePlaygroundRun({
+      cases: [{ id: "a" }, { id: "b" }], treeAtStart: start, startMeta: meta, judgeEnabled: true,
+      snapshotTree: async () => (++snapshots === 3 ? changed : start),
+      runAnswer: async () => ({ answer: "" }),
+      judgeAnswer: async () => ({ score: "error" }),
+      makeRow: (item: any, run: any, verdict: any) => ({ id: item.id, answer: run.answer, verdict }),
+      buildNormalArtifact: () => { throw new Error("normal artifact must not be built"); },
+      writeNormalArtifact: async () => { throw new Error("normal artifact must not be written"); },
+      writeQuarantineArtifact: async (artifact: any) => { saved = artifact; }
+    });
+    expect(result.reason).toMatchObject({ code: "local-provenance-generation-mismatch", phase: "before-answer" });
+    expect(saved.spend.actual).toMatchObject({ judgeCallsStarted: 0, judgeCallsCompleted: 0, reportedJudgeCalls: 0 });
+    expect(saved.spend.caseIdsJudged).toEqual([]);
+    expect(saved.preserved).toMatchObject({ fullyJudgedRowCount: 0, unjudgedRowCount: 1 });
+    expect(() => assertQuarantineArtifact(saved)).not.toThrow();
   });
 });

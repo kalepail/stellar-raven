@@ -19,6 +19,7 @@ import { buildTranscriptEvidence, JUDGE_MODEL, JUDGE_RUBRIC, judgeCase } from ".
 import { PACK_VERSION } from "./evidence-pack.mjs";
 import {
   PLAYGROUND_ARTIFACT_CONTRACT,
+  assertNotPlaygroundQuarantine,
   assertPlaygroundArtifactMeta
 } from "../playground/artifact-contract.mjs";
 
@@ -193,6 +194,7 @@ function selectRows(results, { ids, flipsVs, allowEmpty }) {
 
   const baselinePath = path.resolve(process.cwd(), flipsVs);
   const { parsed: baseline, sha256: baselineSha256 } = readJson(baselinePath, "baseline results");
+  assertNotPlaygroundQuarantine(baseline, "baseline results");
   requireRows(baseline, "baseline results");
   const baselineById = new Map(baseline.rows.map((row) => [row.id, row]));
   const sourceOnly = results.rows.map((row) => row.id).filter((id) => !baselineById.has(id));
@@ -217,6 +219,7 @@ async function main() {
   const options = parseArgs(process.argv.slice(2));
   const sourceResultsPath = path.resolve(process.cwd(), options.resultsPath);
   const { parsed: results, sha256: sourceResultsSha256 } = readJson(sourceResultsPath, "source results");
+  assertNotPlaygroundQuarantine(results, "source results");
   requireRows(results, "source results");
   if (results?.meta?.artifactContract === PLAYGROUND_ARTIFACT_CONTRACT) {
     assertPlaygroundArtifactMeta(results.meta);

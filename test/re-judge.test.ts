@@ -46,6 +46,27 @@ afterEach(() => {
 });
 
 describe("re-judge saved-answer selection", () => {
+  it("refuses a quarantine source or flips baseline before dry-run processing", () => {
+    const directory = mkdtempSync(join(tmpdir(), "raven-rejudge-quarantine-"));
+    temporaryDirectories.push(directory);
+    const quarantinePath = join(directory, "quarantine.json");
+    writeFileSync(quarantinePath, JSON.stringify({ artifactContract: "playground-semantic-quarantine/v1", quarantinedRows: [] }));
+    const source = spawnSync(process.execPath, [REJUDGE_PATH, quarantinePath, "--ids", "anything", "--allow-non-identical", "--dry-run"], {
+      cwd: ROOT,
+      encoding: "utf8"
+    });
+    expect(source.status).toBe(1);
+    expect(source.stderr).toContain("non-promotable playground quarantine");
+
+    const { resultsPath } = writeResults([{ score: "correct" }]);
+    const baseline = spawnSync(process.execPath, [REJUDGE_PATH, resultsPath, "--flips-vs", quarantinePath, "--allow-non-identical", "--dry-run"], {
+      cwd: ROOT,
+      encoding: "utf8"
+    });
+    expect(baseline.status).toBe(1);
+    expect(baseline.stderr).toContain("non-promotable playground quarantine");
+  });
+
   it("labels an all-unjudged --ids dry run as initial judging without spending", () => {
     const { resultsPath, ids } = writeResults([null]);
     const result = spawnSync(

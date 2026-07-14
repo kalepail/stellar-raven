@@ -36,6 +36,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
 import { QA_CATEGORIES, QA_SERVICES } from "../qa/lib.mjs";
+import { assertNotPlaygroundQuarantine } from "../playground/artifact-contract.mjs";
 
 const PLAN_DIR = path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_RULES_PATH = path.join(PLAN_DIR, "coverage-rules.json");
@@ -383,6 +384,7 @@ async function main() {
   const rulesDoc = JSON.parse(readFileSync(rulesPath, "utf8"));
   const opClasses = JSON.parse(readFileSync(OP_CLASSES_PATH, "utf8")).classes;
   const results = JSON.parse(readFileSync(resultsPath, "utf8"));
+  assertNotPlaygroundQuarantine(results, resultsPath);
   if (!Array.isArray(results.rows)) throw new Error(`${resultsPath}: missing rows[]`);
 
   const { runnerOps, note: runnerNote } = await loadRunnerOps();

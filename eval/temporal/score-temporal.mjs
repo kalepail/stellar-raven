@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { assertNotPlaygroundQuarantine } from "../playground/artifact-contract.mjs";
 
 export const EXPECTATIONS_CONTRACT = "temporal-expectations-v1";
 export const FIXTURES_CONTRACT = "temporal-detector-fixtures-v1";
@@ -215,6 +216,7 @@ function validateArtifact(input, expectations) {
   if (!["mcp", "playground"].includes(surface)) fail(`invalid input surface ${JSON.stringify(surface)}`);
   if (!["baseline", "candidate"].includes(arm)) fail(`invalid input arm ${JSON.stringify(arm)}`);
   if (!isRecord(data)) fail(`result artifact ${source} must be a JSON object`);
+  assertNotPlaygroundQuarantine(data, `result artifact ${source}`);
   const inferred = detectedSurface(data.meta);
   if (inferred && inferred !== surface) {
     fail(`result artifact ${source} identifies surface ${inferred}, not declared surface ${surface}`);

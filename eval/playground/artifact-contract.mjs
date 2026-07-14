@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 export const PLAYGROUND_ARTIFACT_CONTRACT = "playground-semantic-result/v2";
+export const PLAYGROUND_QUARANTINE_CONTRACT = "playground-semantic-quarantine/v1";
 export const PLAYGROUND_INPUT_SNAPSHOT_CONTRACT = "playground-semantic-input/v1";
 export const PLAYGROUND_ROUND_CAP_CONTRACT = "playground-semantic-round-cap/v1";
 export const PLAYGROUND_LANE = "playground-semantic-v1";
@@ -234,6 +235,260 @@ export function assertPlaygroundArtifactMeta(meta) {
   }
   if (snapshot.capContextSha256 !== sha256Json(caps)) {
     fail("inputSnapshot.capContextSha256 does not match capContext");
+  }
+}
+
+const QUARANTINE_ALLOWED_USES = ["spend-reconciliation", "runner-forensics"];
+const QUARANTINE_PROHIBITED_USES = [
+  "factual-evidence",
+  "upstream-finding-evidence",
+  "eval-result",
+  "causal-claim",
+  "scoring",
+  "rejudge",
+  "aggregation",
+  "comparison",
+  "ordinary-result-claim"
+];
+
+function hasOwn(value, key) {
+  return Object.prototype.hasOwnProperty.call(value, key);
+}
+
+function assertNonNegativeInteger(value, field, fail) {
+  if (!Number.isInteger(value) || value < 0) fail(`${field} must be a non-negative integer`);
+}
+
+function assertExactArray(value, expected, field, fail) {
+  if (JSON.stringify(value) !== JSON.stringify(expected)) fail(`${field} must be ${JSON.stringify(expected)}`);
+}
+
+function assertTree(tree, field, fail) {
+  if (!tree || typeof tree !== "object") fail(`${field} must be an object`);
+  if (typeof tree.headRevision !== "string" || !tree.headRevision) fail(`${field}.headRevision is required`);
+  if (typeof tree.dirty !== "boolean") fail(`${field}.dirty is required`);
+  for (const key of ["statusSha256", "trackedDiffSha256", "untrackedFilesSha256", "generationSha256"]) {
+    if (typeof tree[key] !== "string" || !/^[a-f0-9]{64}$/.test(tree[key])) fail(`${field}.${key} must be a lowercase SHA-256`);
+  }
+  if (tree.generationSha256 !== treeGenerationSha256(tree)) {
+    fail(`${field}.generationSha256 must match its tree components`);
+  }
+}
+
+const CHECK_ERROR_NAME = /^[A-Za-z][A-Za-z0-9_.-]{0,63}$/;
+const CHECK_ERROR_CONTROL = /[\u0000-\u001F\u007F-\u009F\u2028\u2029]/g;
+
+export function sanitizeGenerationCheckError(error) {
+  const rawName = error && typeof error === "object" && "name" in error ? String(error.name) : "Error";
+  const rawMessage = error && typeof error === "object" && "message" in error ? String(error.message) : String(error ?? "");
+  const name = CHECK_ERROR_NAME.test(rawName) ? rawName : "Error";
+  const message = (rawMessage.replace(CHECK_ERROR_CONTROL, " ").replace(/\s+/g, " ").trim() || "working-tree snapshot failed").slice(0, 500);
+  return { name, message };
+}
+
+function assertUniqueIds(ids, field, fail) {
+  if (!Array.isArray(ids) || ids.some((id) => typeof id !== "string" || !id)) fail(`${field} must be string ids`);
+  if (new Set(ids).size !== ids.length) fail(`${field} must not contain duplicate ids`);
+}
+
+function assertPrefix(prefix, values, field, fail) {
+  if (prefix.length > values.length || prefix.some((id, index) => id !== values[index])) fail(`${field} must be an ordered prefix`);
+}
+
+function assertOrderedSubset(subset, values, field, fail) {
+  let at = 0;
+  for (const id of subset) {
+    at = values.indexOf(id, at);
+    if (at === -1) fail(`${field} must be an ordered subset`);
+    at += 1;
+  }
+}
+
+/**
+ * Reject artifacts whose content was intentionally quarantined after local
+ * provenance attestation failed. This guard is deliberately structural and
+ * recognises the two cheapest single-key tampering variants too.
+ */
+export function assertNotPlaygroundQuarantine(value, label = "artifact") {
+  if (
+    value?.artifactContract === PLAYGROUND_QUARANTINE_CONTRACT ||
+    value?.quarantinedMeta?.artifactContract === PLAYGROUND_QUARANTINE_CONTRACT ||
+    value?.meta?.artifactContract === PLAYGROUND_QUARANTINE_CONTRACT
+  ) {
+    throw new Error(
+      `${label} is a non-promotable playground quarantine; it is allowed only for spend reconciliation and runner forensics`
+    );
+  }
+}
+
+/** Build a distinct, non-promotable preservation artifact after attestation fails. */
+export function buildQuarantineArtifact({ meta, rows, treeAtStart, treeAtFinish, reason, spend }) {
+  const quarantinedMeta = {
+    ...structuredClone(meta),
+    artifactContract: PLAYGROUND_QUARANTINE_CONTRACT,
+    quarantinedFrom: PLAYGROUND_ARTIFACT_CONTRACT
+  };
+  const quarantinedRows = structuredClone(rows);
+  const artifact = {
+    artifactContract: PLAYGROUND_QUARANTINE_CONTRACT,
+    status: "quarantined-non-evidence",
+    nonPromotable: true,
+    allowedUses: QUARANTINE_ALLOWED_USES,
+    prohibitedUses: QUARANTINE_PROHIBITED_USES,
+    quarantinedMeta,
+    reason: {
+      ...reason,
+      serverChangeEstablished: false,
+      continuousMonitoring: false
+    },
+    provenanceFailure: {
+      treeAtStart,
+      treeAtDetection: treeAtFinish,
+      expectedGenerationSha256: treeAtStart.generationSha256,
+      observedGenerationSha256: treeAtFinish?.generationSha256 ?? null,
+      serverChangeEstablished: false,
+      continuousMonitoring: false
+    },
+    spend,
+    preserved: {
+      rowCount: quarantinedRows.length,
+      // A completed paid judge, not a non-null verdict, defines "fully judged".
+      fullyJudgedRowCount: spend.caseIdsJudged.length,
+      unjudgedRowCount: quarantinedRows.length - spend.caseIdsJudged.length,
+      quarantinedRowsSha256: sha256Json(quarantinedRows)
+    },
+    quarantinedRows
+  };
+  assertQuarantineArtifact(artifact);
+  return artifact;
+}
+
+export function assertQuarantineArtifact(artifact) {
+  const fail = (message) => {
+    throw new Error(`invalid ${PLAYGROUND_QUARANTINE_CONTRACT}: ${message}`);
+  };
+  if (!artifact || typeof artifact !== "object") fail("artifact must be an object");
+  if (artifact.artifactContract !== PLAYGROUND_QUARANTINE_CONTRACT) fail("artifactContract is required");
+  for (const key of ["meta", "rows", "summary"]) {
+    if (hasOwn(artifact, key)) fail(`top-level ${key} is forbidden`);
+  }
+  if (artifact.status !== "quarantined-non-evidence" || artifact.nonPromotable !== true) {
+    fail("status and nonPromotable must mark the artifact non-promotable");
+  }
+  assertExactArray(artifact.allowedUses, QUARANTINE_ALLOWED_USES, "allowedUses", fail);
+  assertExactArray(artifact.prohibitedUses, QUARANTINE_PROHIBITED_USES, "prohibitedUses", fail);
+  if (!artifact.quarantinedMeta || typeof artifact.quarantinedMeta !== "object") fail("quarantinedMeta is required");
+  if (artifact.quarantinedMeta.artifactContract !== PLAYGROUND_QUARANTINE_CONTRACT) {
+    fail("quarantinedMeta.artifactContract is required");
+  }
+  if (artifact.quarantinedMeta.quarantinedFrom !== PLAYGROUND_ARTIFACT_CONTRACT) {
+    fail("quarantinedMeta.quarantinedFrom is required");
+  }
+  const restoredMeta = structuredClone(artifact.quarantinedMeta);
+  delete restoredMeta.quarantinedFrom;
+  restoredMeta.artifactContract = PLAYGROUND_ARTIFACT_CONTRACT;
+  assertPlaygroundArtifactMeta(restoredMeta);
+  if (!Array.isArray(artifact.quarantinedRows)) fail("quarantinedRows must be an array");
+  if (artifact.preserved?.quarantinedRowsSha256 !== sha256Json(artifact.quarantinedRows)) {
+    fail("preserved.quarantinedRowsSha256 does not match quarantinedRows");
+  }
+  if (artifact.preserved.rowCount !== artifact.quarantinedRows.length) fail("preserved.rowCount does not match quarantinedRows");
+
+  const reason = artifact.reason;
+  if (!reason || typeof reason !== "object") fail("reason is required");
+  if (!["local-provenance-generation-mismatch", "generation-check-error"].includes(reason.code)) {
+    fail("reason.code is invalid");
+  }
+  if (reason.serverChangeEstablished !== false || reason.continuousMonitoring !== false) fail("reason flags must deny server change and continuous monitoring");
+  const provenance = artifact.provenanceFailure;
+  if (!provenance || typeof provenance !== "object") fail("provenanceFailure is required");
+  assertTree(provenance.treeAtStart, "provenanceFailure.treeAtStart", fail);
+  if (provenance.expectedGenerationSha256 !== provenance.treeAtStart.generationSha256) {
+    fail("provenanceFailure.expectedGenerationSha256 must match treeAtStart");
+  }
+  if (provenance.serverChangeEstablished !== false || provenance.continuousMonitoring !== false) {
+    fail("provenanceFailure must not claim a server change or continuous monitoring");
+  }
+  if (reason.code === "local-provenance-generation-mismatch") {
+    if (!["before-answer", "before-judge", "finalize"].includes(reason.phase)) fail("mismatch reason.phase is invalid");
+    assertTree(provenance.treeAtDetection, "provenanceFailure.treeAtDetection", fail);
+    if (provenance.treeAtDetection.generationSha256 === provenance.treeAtStart.generationSha256) {
+      fail("mismatch reason requires differing start and detection generations");
+    }
+    if (provenance.observedGenerationSha256 !== provenance.treeAtDetection.generationSha256 || reason.checkError != null) {
+      fail("mismatch reason must carry the observed generation and no checkError");
+    }
+  } else {
+    if (!["before-answer", "before-judge", "finalize"].includes(reason.phase)) fail("generation-check-error reason.phase is invalid");
+    if (provenance.treeAtDetection !== null || provenance.observedGenerationSha256 !== null) {
+      fail("generation-check-error requires a null detection snapshot");
+    }
+    const normalized = sanitizeGenerationCheckError(reason.checkError);
+    if (reason.checkError?.name !== normalized.name || reason.checkError?.message !== normalized.message) fail("generation-check-error requires a normalized checkError");
+  }
+
+  const spend = artifact.spend;
+  if (!spend || typeof spend !== "object") fail("spend is required");
+  const actual = spend.actual;
+  if (!actual || typeof actual !== "object") fail("spend.actual is required");
+  for (const key of ["answerCallsStarted", "answerCallsCompleted", "judgeCallsStarted", "judgeCallsCompleted", "reportedJudgeCalls"]) {
+    assertNonNegativeInteger(actual[key], `spend.actual.${key}`, fail);
+  }
+  if (actual.answerCallsStarted < 1) fail("quarantine is allowed only after an answer call started");
+  if (actual.answerCallsStarted < actual.answerCallsCompleted || actual.answerCallsCompleted < artifact.quarantinedRows.length) {
+    fail("answer call accounting is not conservative");
+  }
+  if (actual.judgeCallsStarted < actual.judgeCallsCompleted || actual.judgeCallsCompleted < actual.reportedJudgeCalls) {
+    fail("judge call accounting is not conservative");
+  }
+  if (actual.answerProviderCostUsd !== null || actual.answerProviderCostSemantics !== "not-emitted-by-playground-artifact") {
+    fail("answer provider cost must remain explicitly unavailable");
+  }
+  if (actual.observedAttemptedModels !== null) fail("observed attempted models must remain unavailable");
+  if (typeof actual.reportedJudgeCostUsd !== "number" || !Number.isFinite(actual.reportedJudgeCostUsd) || actual.reportedJudgeCostUsd < 0) {
+    fail("reportedJudgeCostUsd must be a non-negative numeric sum");
+  }
+  for (const key of ["selectedCaseIds", "caseIdsAttempted", "caseIdsCompleted", "caseIdsJudged", "caseIdsNotRun"]) assertUniqueIds(spend[key], `spend.${key}`, fail);
+  if (sha256Json(spend.selectedCaseIds) !== artifact.quarantinedMeta.inputSnapshot.caseIdsSha256) fail("spend.selectedCaseIds must match quarantinedMeta input snapshot");
+  if (spend.accountingPolicy !== "started-calls-count-conservatively; quarantine releases no authorization or reserve") fail("spend.accountingPolicy is invalid");
+  if (spend.planned?.answerCalls !== spend.selectedCaseIds.length) fail("spend.planned.answerCalls must match selected cases");
+  if (spend.planned?.judgeCalls !== (artifact.quarantinedMeta.judge.enabled ? spend.selectedCaseIds.length : 0)) fail("spend.planned.judgeCalls is invalid");
+  if (JSON.stringify(spend.caseIdsCompleted) !== JSON.stringify(artifact.quarantinedRows.map((row) => row?.id))) {
+    fail("spend.caseIdsCompleted must match quarantinedRows in order");
+  }
+  if (spend.caseIdsAttempted.length !== actual.answerCallsStarted || spend.caseIdsCompleted.length !== actual.answerCallsCompleted) {
+    fail("answer call ids must match accounting");
+  }
+  assertPrefix(spend.caseIdsAttempted, spend.selectedCaseIds, "spend.caseIdsAttempted", fail);
+  assertPrefix(spend.caseIdsCompleted, spend.caseIdsAttempted, "spend.caseIdsCompleted", fail);
+  if (spend.caseIdsJudged.length !== actual.judgeCallsCompleted) fail("judged ids must match accounting");
+  assertOrderedSubset(spend.caseIdsJudged, spend.caseIdsCompleted, "spend.caseIdsJudged", fail);
+  if (JSON.stringify(spend.caseIdsNotRun) !== JSON.stringify(spend.selectedCaseIds.slice(spend.caseIdsAttempted.length))) {
+    fail("attempted and not-run ids must partition selected cases in order");
+  }
+  const fullyJudged = spend.caseIdsJudged.length;
+  if (artifact.preserved.fullyJudgedRowCount !== fullyJudged || artifact.preserved.unjudgedRowCount !== artifact.quarantinedRows.length - fullyJudged) {
+    fail("preserved judged counters do not match paid judge ids");
+  }
+  if (artifact.preserved.fullyJudgedRowCount + artifact.preserved.unjudgedRowCount !== artifact.preserved.rowCount) fail("preserved judged counters do not sum to rowCount");
+  const judgedIds = new Set(spend.caseIdsJudged);
+  let reportedJudgeCalls = 0;
+  let reportedJudgeCostUsd = 0;
+  for (const row of artifact.quarantinedRows) {
+    const cost = row?.verdict?.costUsd;
+    if (cost === undefined || cost === null) continue;
+    if (typeof cost !== "number" || !Number.isFinite(cost) || cost < 0) fail(`row ${row?.id ?? "unknown"} has invalid verdict.costUsd`);
+    if (!judgedIds.has(row.id)) fail(`row ${row.id} has a cost without a completed paid judge`);
+    reportedJudgeCalls += 1;
+    reportedJudgeCostUsd += cost;
+  }
+  if (actual.reportedJudgeCalls !== reportedJudgeCalls || actual.reportedJudgeCostUsd !== reportedJudgeCostUsd) fail("reported judge cost accounting does not match judged rows");
+  if (spend.infraRetryAuthorized !== false) fail("quarantine cannot authorize an infra retry");
+  if (
+    spend.nextLedgerMinimumIncrements?.answerCalls !== actual.answerCallsStarted ||
+    spend.nextLedgerMinimumIncrements?.judgeCalls !== actual.judgeCallsStarted
+  ) {
+    fail("next ledger minimum increments must use started calls");
   }
 }
 
