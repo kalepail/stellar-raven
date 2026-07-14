@@ -13,17 +13,74 @@ npm run eval:playground -- --dry-run
 # Free route-auth validation: signed run cookie reaches body validation before throttle/model work.
 npm run eval:playground -- --preflight
 
-# Small paid run (the default is five cases). This invokes the playground model and QA judge.
-npm run eval:playground -- --confirm-paid --url http://localhost:8787 --sample 5 --seed baseline-a
+# Print the source-tree generation after the reviewed tree is frozen.
+npm run eval:playground -- --print-generation
+
+# Small paid run. Both provenance assertions are mandatory before model spend.
+npm run eval:playground -- --confirm-paid --url http://localhost:8787 \
+  --server-generation <sha256-from-print-generation> \
+  --round-cap-context /tmp/playground-round-cap.json \
+  --sample 5 --seed baseline-a
 
 # Targeted reproduction.
-npm run eval:playground -- --confirm-paid --ids q-aas-burn-clawback-redemption-mechanics
+npm run eval:playground -- --confirm-paid \
+  --server-generation <sha256-from-print-generation> \
+  --round-cap-context /tmp/playground-round-cap.json \
+  --ids q-aas-burn-clawback-redemption-mechanics
 
 # Whole named contract, only when it stays within the one-subject 30/hour cap.
-npm run eval:playground -- --confirm-paid --cases eval/qa/corpus/live/live-cases.json --full
+npm run eval:playground -- --confirm-paid \
+  --server-generation <sha256-from-print-generation> \
+  --round-cap-context /tmp/playground-round-cap.json \
+  --cases eval/qa/corpus/live/live-cases.json --full
 ```
 
-`--no-judge` captures a route/trace diagnostic only; omit it for the semantic result. Results are timestamped JSON below `eval/local-lanes/playground-semantic/`, which is gitignored. Their saved transcript uses `mcp__playground__search` / `mcp__playground__execute` aliases with full JSON-stringified inputs and results, so the existing plan grader works directly:
+`--server-generation` is deliberately an operator assertion, not runtime introspection. The
+harness requires it, checks it against the complete local working-tree generation before the
+first model call, checks that the tree stayed unchanged before writing, and records the limit
+honestly: this does not prove that an already-running Worker loaded those bytes. The reviewed
+operator must ensure the reused Solo `dev` process represents that generation. A generation is
+machine-local, not a portable build or deployment identity; the value only attests to the named
+operator's local tree at the harness checkpoints.
+
+`--round-cap-context` is a JSON `playground-semantic-round-cap/v1` input. A reviewed round uses
+non-negative integer ceilings and consumption counters; the harness refuses before spend when
+the selected answer/judge calls would exceed an absolute cap:
+
+```json
+{
+  "contract": "playground-semantic-round-cap/v1",
+  "experimentId": "solo-todo-1001-round-a",
+  "kind": "reviewed-round",
+  "runAllocation": "planned",
+  "plannedAnswerCalls": 10,
+  "absoluteAnswerCallCap": 12,
+  "answerCallsConsumedBeforeRun": 0,
+  "plannedJudgeCalls": 10,
+  "absoluteJudgeCallCap": 12,
+  "judgeCallsConsumedBeforeRun": 0,
+  "infraRetryReserve": 2,
+  "infraRetryConsumedBeforeRun": 0,
+  "savedAnswerRejudgeReserve": 3,
+  "savedAnswerRejudgesConsumedBeforeRun": 0
+}
+```
+
+Do not copy those example numbers into a real run: encode the independently reviewed round's
+actual authorization and current consumption. Set `runAllocation` to `planned` for ordinary calls
+or `infra-retry` for a transcript-proven retry; the latter is bounded by the remaining retry
+reserve. A one-off unreviewed diagnostic must instead use `kind: "not-applicable"`, a non-empty
+`reason`, `runAllocation: null`, and all ten numeric cap fields present as explicit `null`; such an
+artifact is labeled diagnostic and is not evidence for a reviewed eval-round conclusion.
+
+The cap context is an operator-maintained cumulative ledger, not a shared transactional counter:
+the named round owner updates `*ConsumedBeforeRun` between invocations and verifies the next
+projection before spending. The harness fail-closes an inconsistent or over-cap input, but cannot
+account for model calls made outside the supplied machine-local context.
+
+`--no-judge` captures a route/trace diagnostic only; omit it for the semantic result. Results are timestamped JSON below `eval/local-lanes/playground-semantic/`, which is gitignored. Newly produced files use metadata contract `playground-semantic-result/v2` and input snapshot `playground-semantic-input/v1`. They pin the ordered configured primary/fallback models, effective/requested API mode, reasoning effort, answering temperature, explicit judge model/rubric/pack/unpinned-temperature semantics, demo/evaluator/round caps, local tree generation, and raw corpus/manifest/super-spec plus evaluator-source hashes. The answering block also records that the route does not expose actual attempted models in SSE; configured fallback is pinned, fallback activation is not claimed. Internal hashes are revalidated by the re-judge reader; omission or mismatch fails. Historical artifacts remain untouched.
+
+Their saved transcript uses `mcp__playground__search` / `mcp__playground__execute` aliases with full JSON-stringified inputs and results, so the existing plan grader works directly:
 
 ```sh
 npm run eval:plan -- eval/local-lanes/playground-semantic/<stamp>-playground-semantic.json

@@ -13,19 +13,38 @@
  * additional explicit acknowledgement before selecting the complete battery.
  */
 import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { mintDemoCookie } from "../src/demo/auth.ts";
 import { DEMO_CAPS } from "../src/demo/budget.ts";
+import {
+  DEMO_MODELS,
+  DEMO_OPENAI_API_MODE,
+  DEMO_REASONING_EFFORT,
+  DEMO_TEMPERATURE,
+  demoModelsFromOverride,
+  demoOpenAiApiModeFromOverride,
+  demoReasoningEffortFromOverride,
+  demoReasoningEffortOverride
+} from "../src/demo/model-config.ts";
 import { buildTranscriptEvidence, judgeCase, JUDGE_MODEL, JUDGE_RUBRIC } from "../eval/qa/judge.mjs";
 import { PACK_VERSION } from "../eval/qa/evidence-pack.mjs";
 import { QA_DIR, formatSummaryTable, loadCases, summarize } from "../eval/qa/lib.mjs";
+import {
+  PLAYGROUND_ROUND_CAP_CONTRACT,
+  assertModelBackedRunInputs,
+  buildPlaygroundArtifactMeta,
+  sha256 as contractSha256,
+  treeGenerationSha256
+} from "../eval/playground/artifact-contract.mjs";
 
 const DEFAULT_SAMPLE = 5;
 const DEFAULT_SEED = "playground-semantic-v1";
 const DEFAULT_TIMEOUT_MS = 150_000;
 const DEFAULT_OUT_DIR = path.join("eval", "local-lanes", "playground-semantic");
 const MAX_CASES_PER_RUN_SUBJECT = DEMO_CAPS.chatsPerHour;
+const REPO_ROOT = path.resolve(QA_DIR, "..", "..");
 
 function usage() {
   return `Usage: npm run eval:playground -- [options]
@@ -45,17 +64,24 @@ Options:
   --confirm-paid        Allow model-backed HTTP turns (required unless --dry-run)
   --no-judge            Capture turns but skip the paid QA judge call
   --judge-model NAME    Existing QA judge model (default ${JUDGE_MODEL})
+  --server-generation SHA
+                        REQUIRED for model-backed runs: operator assertion of the loopback
+                        server's local working-tree generation SHA-256
+  --round-cap-context PATH
+                        REQUIRED for model-backed runs: JSON ${PLAYGROUND_ROUND_CAP_CONTRACT}
   --timeout-ms N        Per-turn client timeout in milliseconds (default ${DEFAULT_TIMEOUT_MS})
   --out-dir PATH        Local-only results directory (default ${DEFAULT_OUT_DIR})
+  --print-generation    Print the current working-tree generation SHA-256; no model request
   --dry-run             Validate case selection only; sends no HTTP/model request
   --preflight           Verify signed-cookie route access with an invalid body; no model request
   --help                Show this help
 
 Examples:
   npm run eval:playground -- --dry-run
-  npm run eval:playground -- --confirm-paid --sample 5 --seed baseline-a
-  npm run eval:playground -- --confirm-paid --ids q-aas-burn-clawback-redemption-mechanics
-  npm run eval:playground -- --confirm-paid --cases eval/qa/corpus/live/live-cases.json --full
+  npm run eval:playground -- --print-generation
+  npm run eval:playground -- --confirm-paid --server-generation <sha256> --round-cap-context <path> --sample 5 --seed baseline-a
+  npm run eval:playground -- --confirm-paid --server-generation <sha256> --round-cap-context <path> --ids q-aas-burn-clawback-redemption-mechanics
+  npm run eval:playground -- --confirm-paid --server-generation <sha256> --round-cap-context <path> --cases eval/qa/corpus/live/live-cases.json --full
 `;
 }
 
@@ -69,9 +95,9 @@ function parseArgs(argv) {
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === "--help") out.help = true;
-    else if (arg === "--full" || arg === "--confirm-paid" || arg === "--no-judge" || arg === "--dry-run" || arg === "--preflight") {
+    else if (arg === "--full" || arg === "--confirm-paid" || arg === "--no-judge" || arg === "--dry-run" || arg === "--preflight" || arg === "--print-generation") {
       out[arg.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = true;
-    } else if (["--url", "--cases", "--ids", "--sample", "--seed", "--judge-model", "--timeout-ms", "--out-dir"].includes(arg)) {
+    } else if (["--url", "--cases", "--ids", "--sample", "--seed", "--judge-model", "--server-generation", "--round-cap-context", "--timeout-ms", "--out-dir"].includes(arg)) {
       const value = argv[++index];
       if (!value || value.startsWith("--")) throw new Error(`${arg} requires a value`);
       out[arg.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = value;
@@ -84,11 +110,130 @@ function parseArgs(argv) {
   out.timeoutMs = Number(out.timeoutMs);
   if (!Number.isInteger(out.sample) || out.sample <= 0) throw new Error(`--sample must be a positive integer, got ${out.sample}`);
   if (!Number.isInteger(out.timeoutMs) || out.timeoutMs <= 0) throw new Error(`--timeout-ms must be a positive integer, got ${out.timeoutMs}`);
+  if (out.serverGeneration && !/^[a-f0-9]{64}$/.test(out.serverGeneration)) {
+    throw new Error("--server-generation must be a lowercase SHA-256");
+  }
   return out;
 }
 
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
+}
+
+function gitBytes(args) {
+  const result = spawnSync("git", args, { cwd: REPO_ROOT, maxBuffer: 256 * 1024 * 1024 });
+  if (result.status !== 0) {
+    throw new Error(`git ${args.join(" ")} failed: ${String(result.stderr).slice(0, 500)}`);
+  }
+  return result.stdout;
+}
+
+async function workingTreeSnapshot() {
+  const headRevision = gitBytes(["rev-parse", "HEAD"]).toString("utf8").trim();
+  const status = gitBytes(["status", "--porcelain=v1", "--untracked-files=all"]);
+  const trackedDiff = gitBytes(["diff", "--binary", "HEAD", "--"]);
+  const untracked = gitBytes(["ls-files", "--others", "--exclude-standard", "-z"])
+    .toString("utf8")
+    .split("\0")
+    .filter(Boolean)
+    .sort();
+  const untrackedHash = createHash("sha256");
+  for (const relativePath of untracked) {
+    untrackedHash.update(relativePath);
+    untrackedHash.update("\0");
+    untrackedHash.update(await readFile(path.join(REPO_ROOT, relativePath)));
+    untrackedHash.update("\0");
+  }
+  const tree = {
+    headRevision,
+    dirty: status.length > 0,
+    statusSha256: sha256(status),
+    trackedDiffSha256: sha256(trackedDiff),
+    untrackedFilesSha256: untrackedHash.digest("hex")
+  };
+  return { ...tree, generationSha256: treeGenerationSha256(tree) };
+}
+
+function overrideFrom(name, devVars) {
+  if (Object.hasOwn(process.env, name)) return { value: process.env[name], source: "process-env" };
+  if (Object.hasOwn(devVars, name)) return { value: devVars[name], source: ".dev.vars" };
+  return { value: undefined, source: "default" };
+}
+
+function effectiveOpenAiApiModeForModels(models, requestedMode) {
+  if (requestedMode !== "responses") return "chat";
+  return models.every(({ model }) => model.startsWith("openai/")) ? "responses" : "chat";
+}
+
+function answeringConfiguration(devVars) {
+  const modelOverride = overrideFrom("DEMO_MODEL_OVERRIDE", devVars);
+  const apiModeOverride = overrideFrom("DEMO_OPENAI_API_MODE", devVars);
+  const reasoningOverride = overrideFrom("DEMO_REASONING_EFFORT_OVERRIDE", devVars);
+  const models = demoModelsFromOverride(modelOverride.value).map(({ model, role }) => ({ model, role }));
+  const requestedApiMode = demoOpenAiApiModeFromOverride(apiModeOverride.value);
+  const effectiveApiMode = effectiveOpenAiApiModeForModels(models, requestedApiMode);
+  const validReasoningOverride = demoReasoningEffortOverride(reasoningOverride.value);
+  return {
+    primaryModel: models[0].model,
+    fallbackModels: models.slice(1).map(({ model }) => model),
+    models,
+    fallbackPolicy: "advance only when an attempt ends before useful output; attempts share one tool budget",
+    apiMode: {
+      requested: requestedApiMode,
+      effective: effectiveApiMode,
+      source: apiModeOverride.source,
+      default: DEMO_OPENAI_API_MODE
+    },
+    reasoningEffort: {
+      value: demoReasoningEffortFromOverride(reasoningOverride.value),
+      source: validReasoningOverride ? reasoningOverride.source : "default",
+      default: DEMO_REASONING_EFFORT,
+      invalidOverrideIgnored: reasoningOverride.value !== undefined && !validReasoningOverride
+    },
+    temperature: DEMO_TEMPERATURE,
+    modelSource: modelOverride.source,
+    defaultModels: DEMO_MODELS.map(({ model, role }) => ({ model, role })),
+    configurationBasis: "local model-config plus evaluator-visible process/.dev.vars overrides",
+    runtimeIntrospection: "not-available",
+    observedAttemptedModels: null,
+    proofLimit:
+      "Pins evaluator-visible process/.dev.vars configuration and the configured primary/fallback tuple; it does not prove the already-running Worker booted with those values or expose which model attempts actually ran."
+  };
+}
+
+async function inputFileHashes(casesPath) {
+  const files = {
+    corpusFileSha256: casesPath,
+    manifestFileSha256: path.join(REPO_ROOT, "catalog", "manifest.json"),
+    superSpecFileSha256: path.join(REPO_ROOT, "specs", "super-spec.json"),
+    runnerFileSha256: path.join(REPO_ROOT, "scripts", "run-playground-semantic-eval.mjs"),
+    modelConfigFileSha256: path.join(REPO_ROOT, "src", "demo", "model-config.ts"),
+    judgeFileSha256: path.join(REPO_ROOT, "eval", "qa", "judge.mjs"),
+    evidencePackFileSha256: path.join(REPO_ROOT, "eval", "qa", "evidence-pack.mjs")
+  };
+  return Object.fromEntries(
+    await Promise.all(
+      Object.entries(files).map(async ([field, file]) => [field, contractSha256(await readFile(file))])
+    )
+  );
+}
+
+async function loadRoundCapContext(file) {
+  const resolved = path.resolve(file);
+  const raw = await readFile(resolved, "utf8");
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (error) {
+    throw new Error(`--round-cap-context is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  return {
+    ...parsed,
+    sourceFile: {
+      path: file,
+      sha256: sha256(raw)
+    }
+  };
 }
 
 function seededStratifiedSample(cases, count, seed) {
@@ -323,6 +468,10 @@ async function main() {
     `playground semantic eval: ${battery.contract ? `contract ${battery.contract} · ` : ""}${cases.length} case(s) · ${args.full ? "full" : args.ids ? "ids" : `sample ${args.sample}, seed ${args.seed}`} · judge ${args.noJudge ? "OFF" : args.judgeModel ?? JUDGE_MODEL}`
   );
   console.log(`case ids: ${cases.map((item) => item.id).join(", ")}`);
+  if (args.printGeneration) {
+    console.log((await workingTreeSnapshot()).generationSha256);
+    return;
+  }
   if (args.dryRun) {
     console.log("dry-run complete: no HTTP request, playground model call, or judge call was made.");
     return;
@@ -361,9 +510,69 @@ async function main() {
   if (!args.confirmPaid) {
     throw new Error("Refusing a model-backed playground evaluation without --confirm-paid. Use --dry-run or --preflight to validate for free.");
   }
+  assertModelBackedRunInputs(args);
   const judgeModel = args.judgeModel ?? JUDGE_MODEL;
+  const treeAtStart = await workingTreeSnapshot();
+  if (args.serverGeneration !== treeAtStart.generationSha256) {
+    throw new Error(
+      `--server-generation mismatch: expected ${args.serverGeneration}, current working tree is ${treeAtStart.generationSha256}`
+    );
+  }
+  const answering = answeringConfiguration(devVars);
+  const judge = {
+    enabled: !args.noJudge,
+    model: args.noJudge ? null : judgeModel,
+    rubric: args.noJudge ? null : JUDGE_RUBRIC,
+    packVersion: PACK_VERSION,
+    temperature: {
+      value: null,
+      semantics: "provider-default-unpinned"
+    }
+  };
+  const capContext = {
+    demo: { ...DEMO_CAPS },
+    evaluator: {
+      timeoutMs: args.timeoutMs,
+      maxCasesPerRunSubject: MAX_CASES_PER_RUN_SUBJECT,
+      selectedCases: cases.length,
+      answerCallsThisRun: cases.length,
+      judgeCallsThisRun: args.noJudge ? 0 : cases.length,
+      answerCallUnit: "one POST /playground/chat turn; provider fallback attempts remain inside that turn"
+    },
+    roundAuthorization: await loadRoundCapContext(args.roundCapContext)
+  };
+  const server = {
+    endpoint,
+    generationBasis: "operator-asserted-local-working-tree",
+    generationSha256: treeAtStart.generationSha256,
+    operatorAssertionSha256: args.serverGeneration,
+    runtimeIntrospection: "not-available",
+    proofLimit:
+      "The assertion matches the local tree at run start/end; it does not prove that an already-running Worker loaded those bytes."
+  };
+  const sourceFiles = await inputFileHashes(path.resolve(casesPath));
   const rows = [];
   const startedAt = new Date().toISOString();
+  const runMeta = (finishedAt) => ({
+    runId,
+    casesPath,
+    caseContract: battery.contract ?? null,
+    caseCount: cases.length,
+    selection: args.ids ? { ids: args.ids } : args.full ? { full: true } : { sample: args.sample, seed: args.seed },
+    startedAt,
+    finishedAt
+  });
+  // Validate every source/config/cap pin before the first paid HTTP turn.
+  buildPlaygroundArtifactMeta({
+    run: runMeta(startedAt),
+    answering,
+    judge,
+    capContext,
+    inputFiles: sourceFiles,
+    selectedCases: cases,
+    tree: treeAtStart,
+    server
+  });
   for (const [index, item] of cases.entries()) {
     process.stdout.write(`[${index + 1}/${cases.length}] ${item.id} … `);
     const run = await runCase(item, { endpoint, timeoutMs: args.timeoutMs, cookie });
@@ -420,26 +629,28 @@ async function main() {
   const outDir = args.outDir ?? DEFAULT_OUT_DIR;
   await mkdir(outDir, { recursive: true });
   const outPath = path.join(outDir, `${runId}-playground-semantic.json`);
+  const treeAtFinish = await workingTreeSnapshot();
+  if (treeAtFinish.generationSha256 !== treeAtStart.generationSha256) {
+    throw new Error(
+      `working-tree generation changed during the run (${treeAtStart.generationSha256} -> ${treeAtFinish.generationSha256}); refusing to write a causally mixed artifact`
+    );
+  }
+  const finishedAt = new Date().toISOString();
+  const meta = buildPlaygroundArtifactMeta({
+    run: runMeta(finishedAt),
+    answering,
+    judge,
+    capContext,
+    inputFiles: sourceFiles,
+    selectedCases: cases,
+    tree: treeAtStart,
+    server
+  });
   await writeFile(
     outPath,
     `${JSON.stringify(
       {
-        meta: {
-          lane: "playground-semantic-v1",
-          transport: "POST /playground/chat SSE",
-          authentication: "run-scoped signed demo cookie (loopback only)",
-          runId,
-          endpoint,
-          casesPath,
-          caseContract: battery.contract ?? null,
-          caseCount: rows.length,
-          selection: args.ids ? { ids: args.ids } : args.full ? { full: true } : { sample: args.sample, seed: args.seed },
-          judgeModel: args.noJudge ? null : judgeModel,
-          judgeRubric: args.noJudge ? null : JUDGE_RUBRIC,
-          packVersion: PACK_VERSION,
-          startedAt,
-          finishedAt: new Date().toISOString()
-        },
+        meta,
         summary,
         rows
       },

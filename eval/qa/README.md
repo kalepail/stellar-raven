@@ -185,10 +185,16 @@ unsourced contradiction is not.
 
 **Comparability rules:**
 
-- Current tuple: **rubric `v2.4` / pack `p3`** (exported as `JUDGE_RUBRIC` / `PACK_VERSION`;
-  short changelog in the `judge.mjs` header). Compare stored rows only when rubric, packVersion,
-  and prompt/pack-hash semantics match — otherwise re-judge the saved `rows[].answer` under the
+- Re-judge identity is the **judge model + rubric + pack** tuple (currently `claude-sonnet-5` /
+  `v2.4` / `p3`; rubric and pack are exported as `JUDGE_RUBRIC` / `PACK_VERSION`, with a short
+  changelog in the `judge.mjs` header). Compare stored rows only when that tuple and
+  prompt/pack-hash semantics match — otherwise re-judge the saved `rows[].answer` under the
   target tuple first (cheap; feed back through `judgeCase` with the row's transcript).
+- A `--no-judge` capture has no source judge tuple or verdict. Its first judging is not an
+  identical-input re-judge, so record it as such and require the explicit
+  `re-judge.mjs --ids <ids> --allow-non-identical` acknowledgement; the resulting artifact marks
+  `initialJudging: true` and is not variance evidence. It cannot be mixed with already judged
+  rows or used with `--flips-vs`.
 - **A rubric bump is required** for any change to grading semantics: judge prompt text, score
   meanings, avoid/freshness/trap handling. A pack bump is required for evidence-pack
   serialization/selection changes. Cosmetic refactors that keep `buildJudgePrompt` output
@@ -246,7 +252,7 @@ verdict inconclusive: zero strict adjudicated recoveries for either stronger arm
 persistent partial mass is not simply answering-model-bound and no default-model change follows.
 Re-judges now persist as machine-readable artifacts: `eval/qa/re-judge.mjs <results> --ids a,b`
 or `--flips-vs <baseline-results>` re-judges identical saved input behind casesSha256 identity
-and rubric/pack tuple guards, writing `results/<stamp>-rejudge.json`.
+and judge-model/rubric/pack tuple guards, writing `results/<stamp>-rejudge.json`.
 
 ### 2026-07-13 release-closeout targeted diagnostics
 

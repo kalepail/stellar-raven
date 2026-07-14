@@ -17,10 +17,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildTranscriptEvidence, JUDGE_MODEL, JUDGE_RUBRIC, judgeCase } from "./judge.mjs";
 import { PACK_VERSION } from "./evidence-pack.mjs";
+import {
+  PLAYGROUND_ARTIFACT_CONTRACT,
+  assertPlaygroundArtifactMeta
+} from "../playground/artifact-contract.mjs";
 
 const QA_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(QA_DIR, "..", "..");
-const TOOL_VERSION = "re-judge/v1";
+const TOOL_VERSION = "re-judge/v2";
 
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
@@ -147,13 +151,28 @@ function verifySourceCases(results, sourceResultsPath) {
   };
 }
 
-function tupleGuard(results) {
-  const source = {
-    rubric: results?.meta?.judgeRubric,
-    packVersion: results?.meta?.packVersion
+function tupleGuard(results, judgeModel) {
+  const versionedPlayground = results?.meta?.artifactContract === PLAYGROUND_ARTIFACT_CONTRACT;
+  const source = versionedPlayground
+    ? {
+        model: results.meta.judge?.model,
+        rubric: results.meta.judge?.rubric,
+        packVersion: results.meta.judge?.packVersion
+      }
+    : {
+        model: results?.meta?.judgeModel,
+        rubric: results?.meta?.judgeRubric,
+        packVersion: results?.meta?.packVersion
+      };
+  const current = { model: judgeModel, rubric: JUDGE_RUBRIC, packVersion: PACK_VERSION };
+  return {
+    source,
+    current,
+    matches:
+      source.model === current.model &&
+      source.rubric === current.rubric &&
+      source.packVersion === current.packVersion
   };
-  const current = { rubric: JUDGE_RUBRIC, packVersion: PACK_VERSION };
-  return { source, current, matches: source.rubric === current.rubric && source.packVersion === current.packVersion };
 }
 
 function selectRows(results, { ids, flipsVs, allowEmpty }) {
@@ -165,8 +184,11 @@ function selectRows(results, { ids, flipsVs, allowEmpty }) {
     const selected = results.rows.filter((row) => wantedSet.has(row.id));
     const missing = wanted.filter((id) => !selected.some((row) => row.id === id));
     if (missing.length) fail(`--ids not found in source results: ${missing.join(", ")}`);
-    selected.forEach((row) => requireVerdictScore(row, "source results"));
-    return { mode: "ids", rows: selected };
+    const verdictStates = selected.map((row) => typeof row.verdict?.score === "string");
+    if (verdictStates.some(Boolean) && verdictStates.some((hasVerdict) => !hasVerdict)) {
+      fail("--ids cannot mix saved verdicts with --no-judge rows; judge them in separate invocations");
+    }
+    return { mode: "ids", rows: selected, initialJudging: !verdictStates[0] };
   }
 
   const baselinePath = path.resolve(process.cwd(), flipsVs);
@@ -188,7 +210,7 @@ function selectRows(results, { ids, flipsVs, allowEmpty }) {
     if (!allowEmpty) fail(message);
     console.warn(`warning: ${message}`);
   }
-  return { mode: "flips-vs", rows: selected, baselinePath, baselineSha256 };
+  return { mode: "flips-vs", rows: selected, baselinePath, baselineSha256, initialJudging: false };
 }
 
 async function main() {
@@ -196,15 +218,29 @@ async function main() {
   const sourceResultsPath = path.resolve(process.cwd(), options.resultsPath);
   const { parsed: results, sha256: sourceResultsSha256 } = readJson(sourceResultsPath, "source results");
   requireRows(results, "source results");
+  if (results?.meta?.artifactContract === PLAYGROUND_ARTIFACT_CONTRACT) {
+    assertPlaygroundArtifactMeta(results.meta);
+  }
 
   const identity = verifySourceCases(results, sourceResultsPath);
-  const tuple = tupleGuard(results);
+  const tuple = tupleGuard(results, options.judgeModel);
   const selection = selectRows(results, options);
   const nonIdentical = !identity.guard.matches || !tuple.matches;
   const guards = { cases: identity.guard, tuple, allowNonIdentical: options.allowNonIdentical, wouldRefuse: nonIdentical && !options.allowNonIdentical };
 
   if (options.dryRun) {
-    console.log(JSON.stringify({ sourceResultsPath, selectedIds: selection.rows.map((row) => row.id), guards }, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          sourceResultsPath,
+          selectedIds: selection.rows.map((row) => row.id),
+          initialJudging: selection.initialJudging,
+          guards
+        },
+        null,
+        2
+      )
+    );
     return;
   }
   if (nonIdentical && !options.allowNonIdentical) {
@@ -217,8 +253,8 @@ async function main() {
     }
     if (!tuple.matches) {
       reasons.push(
-        `judge tuple differs (source rubric ${tuple.source.rubric ?? "missing"}/pack ${tuple.source.packVersion ?? "missing"}; ` +
-          `current ${tuple.current.rubric}/${tuple.current.packVersion})`
+        `judge tuple differs (source model ${tuple.source.model ?? "missing"}/rubric ${tuple.source.rubric ?? "missing"}/pack ${tuple.source.packVersion ?? "missing"}; ` +
+          `current ${tuple.current.model}/${tuple.current.rubric}/${tuple.current.packVersion})`
       );
     }
     fail(`refusing non-identical re-judge: ${reasons.join("; ")}. Pass --allow-non-identical to create a loudly labeled artifact.`);
@@ -242,14 +278,14 @@ async function main() {
       id: row.id,
       original: row.verdict,
       new: verdict,
-      agreement: row.verdict.score === verdict.score,
+      agreement: typeof row.verdict?.score === "string" ? row.verdict.score === verdict.score : null,
       evidencePack: {
         packVersion: PACK_VERSION,
         chars: transcriptEvidence.length,
         sha256: transcriptEvidence ? sha256(transcriptEvidence) : null
       }
     });
-    console.log(`${row.verdict.score} → ${verdict.score}`);
+    console.log(`${row.verdict?.score ?? "unjudged"} → ${verdict.score}`);
   }
 
   const reportedCosts = rows.map((row) => row.new.costUsd).filter((cost) => typeof cost === "number");
@@ -263,6 +299,7 @@ async function main() {
       sourceResultsSha256,
       ...(selection.baselinePath ? { baselinePath: selection.baselinePath, baselineSha256: selection.baselineSha256 } : {}),
       mode: selection.mode,
+      initialJudging: selection.initialJudging,
       selectedIds: rows.map((row) => row.id),
       emptySelection: rows.length === 0,
       sourceCasesPath: identity.sourceCasesPath,
