@@ -1,7 +1,7 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "ddc253e8c6dfa4c04581f8399b1d7a4b4afdce3384983968b45a6da7aec632c0",
+  "corpusContentSha256": "3b18de5e049632c97848bf02c6a0c2128a52db3156217b9c36fc2017555ff0c8",
   "counts": {
     "total": 490,
     "byCategory": {
@@ -25,8 +25,8 @@
     },
     "byFreshness": {
       "live": 153,
-      "scheduled": 128,
-      "stable": 209
+      "scheduled": 130,
+      "stable": 207
     },
     "traps": {
       "ambiguous": 2,
@@ -19683,7 +19683,7 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "A grounded answer consults the live Stellar Scout directory or research data, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-13, the verified sources supported this observed answer:\n\nSDF organizes its work under mandate buckets funded from entrusted XLM rather than shareholder equity. The framework has changed: **2019** used Direct Development, Ecosystem Support, Use-Case Investment, and User Acquisition; the **2025-era** framing uses SDF Development, Stellar Growth, Product and Innovation, and Assets and Liquidity. The live page simultaneously says real-time public balances will be made available again “imminently” while rendering current-balance rows. Treat that as a dated page-state observation: it is fair to report that rows are visible, but not to call them a synchronized real-time feed. Cite the applicable dated mandate, attach an as-of date to any balance, and do not invent an exact allocation split or mechanically sum asynchronous rows as one synchronized total.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
+        "answer": "A grounded answer consults the live Stellar Scout directory or research data, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-13, the verified sources supported this observed answer:\n\nSDF organizes its work under mandate buckets funded from entrusted XLM rather than shareholder equity. The framework has changed: **2019** used Direct Development, Ecosystem Support, Use-Case Investment, and User Acquisition; the **2025-era** framing uses SDF Development, Stellar Growth, Product and Innovation, and Assets and Liquidity. The live page simultaneously says real-time public balances will be made available again “imminently” while rendering current-balance rows. Treat that only as a dated, first-party page-state observation: no independent source class was found for the interface state, so it is not independently verified telemetry. It is fair to report that rows were visible at that observation time, but not to call them a synchronized real-time feed. Cite the applicable dated mandate, attach an as-of date to any balance, and do not invent an exact allocation split or mechanically sum asynchronous rows as one synchronized total.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
         "keyFacts": [
           "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
           "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
@@ -19727,14 +19727,14 @@
         ],
         "corroboration": [
           {
-            "claim": "2019 and 2025 mandate bucket names differ as stated; the current page says real-time balances will return imminently while rendering balance rows, so availability must be described as a dated page state.",
+            "claim": "The first-party 2019 and 2025 mandate sources use the two different bucket-name sets stated in the answer.",
             "verdict": "confirmed-as-of",
             "evidence": [
               {
                 "class": "A",
                 "ref": "https://stellar.org/foundation/mandate",
                 "observedAt": "2026-07-13",
-                "note": "Current 2025-era bucket labels and the mixed page state: rendered balance rows alongside the promise that real-time balances will return imminently."
+                "note": "Current 2025-era bucket labels. No independent source class was found, so this establishes the named first-party taxonomy rather than independent external confirmation."
               },
               {
                 "class": "A",
@@ -19743,14 +19743,28 @@
                 "note": "Historical 2019 taxonomy; prevents substituting the separate 2017 previous-mandate route."
               }
             ]
+          },
+          {
+            "claim": "The current page simultaneously promised that real-time balances would return imminently and rendered balance rows on 2026-07-13.",
+            "verdict": "unverifiable",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/foundation/mandate",
+                "observedAt": "2026-07-13",
+                "note": "Single first-party page-state observation only. No independent capture or telemetry source was found, so this is retained solely as a scoped grading caveat and must not gate on a synchronized-feed claim."
+              }
+            ]
           }
         ],
         "verified": {
-          "date": "2026-07-13",
-          "by": "Todo 972 release-closeout golden-truth reconciliation after independent Fable and Sol reviews",
+          "date": "2026-07-14",
+          "by": "Todo 993 adversarial closeout corroboration repair after independent Sol review",
           "evidence": [
             "https://stellar.org/foundation/mandate",
             "https://stellar.org/foundation/mandate/2019",
+            "scout.searchResearch({ q: \"Stellar Development Foundation mandate buckets 2019 current allocation SDF Development Stellar Growth Product and Innovation Assets and Liquidity\", limit: 8 }) — live 2026-07-14 discovery probe returned the official updated-mandate blog and lumen-supply documentation; it is an aggregator re-surfacing class-A sources, not an independent class",
+            "research/evidence-poor-retrieval-2026-07-13.md#intermediary-source-boundary--2026-07-14 — replayable query, returned sources, and mediation boundary",
             "solo://proj/49/scratchpad/stellarorg-algolia-l--609 — independent Fable and Sol live-page reviews",
             "Sibling sweep: q-org-sdf-structure-mandate and q-org-sdf-enterprise-fund preserve metric/source scope."
           ],
@@ -31845,7 +31859,7 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Yes, but only the **interactive components**. **SEP-6's interactive (anchor-hosted UI) flow is\ndeprecated in favor of SEP-24** for hosted/interactive deposit & withdrawal [1][2]. SEP-6 itself is\n**not** removed — it remains **Active**, and its **non-interactive (programmatic) API** is still the\nright choice for fully API-driven anchors that want no hosted webview [1]. So an anchor that wants a\n**hosted UI / KYC webview** should implement **SEP-24**, not the SEP-6 interactive flow; an anchor\nthat wants a pure programmatic API (wallet collects data itself, e.g. via SEP-12) stays on SEP-6.\nThe replacement for interactive flows is **SEP-24 only** — not SEP-31 (cross-border) or SEP-12\n(KYC).\n\nSources: [1] stellar-protocol `ecosystem/sep-0006.md` (Deposit and Withdrawal API, Active —\ninteractive components deprecated); [2] `ecosystem/sep-0024.md` (Hosted Deposit and Withdrawal,\nActive).",
+        "answer": "Yes, but only the **interactive components**. As of 2026-07-13, **SEP-6's interactive (anchor-hosted UI) flow is\ndeprecated in favor of SEP-24** for hosted/interactive deposit & withdrawal [1][2]. SEP-6 itself is\n**not** removed — it remains **Active**, and its **non-interactive (programmatic) API** is still the\nright choice for fully API-driven anchors that want no hosted webview [1]. So an anchor that wants a\n**hosted UI / KYC webview** should implement **SEP-24**, not the SEP-6 interactive flow; an anchor\nthat wants a pure programmatic API (wallet collects data itself, e.g. via SEP-12) stays on SEP-6.\nThe replacement for interactive flows is **SEP-24 only** — not SEP-31 (cross-border) or SEP-12\n(KYC).\n\nSources: [1] stellar-protocol `ecosystem/sep-0006.md` (Deposit and Withdrawal API, Active —\ninteractive components deprecated); [2] `ecosystem/sep-0024.md` (Hosted Deposit and Withdrawal,\nActive).",
         "keyFacts": [
           "Yes — SEP-6's interactive components are deprecated in favor of SEP-24 for hosted/interactive deposit & withdrawal.",
           "SEP-6's non-interactive (programmatic) API portion remains useful for fully API-driven anchors."
@@ -31859,11 +31873,13 @@
       "tags": {
         "category": "assets-anchors-seps",
         "service": "stellarDocs",
-        "freshness": "stable"
+        "freshness": "scheduled"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
+        "asOf": "2026-07-13",
+        "reverifyBy": "2026-10-15",
         "sources": [
           {
             "class": "B",
@@ -31877,18 +31893,20 @@
           }
         ],
         "verified": {
-          "date": "2026-07-13",
-          "by": "Truth-maintenance recovery with independent Fable live-source audit",
+          "date": "2026-07-14",
+          "by": "Todo 993 adversarial freshness correction after independent Sol review",
           "evidence": [
             "https://developers.stellar.org/docs/learn/fundamentals/anchors",
             "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
             "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0024.md",
             "Live scout.searchResearch result quoting SEP-0006 status and canonical URL, 2026-07-13",
             "solo://proj/49/scratchpad/truth-maintenance-20--627#fable-open-questions-audit",
+            "solo://proj/49/scratchpad/24-hour-adversarial--629#sol-box-review",
             "solo://proj/49/scratchpad/super-corpus-rebuild--585",
             "Sibling consistency sweep: checked the affected numeric/SEP/CAP mappings against related P4 5B cases and consistency-register members."
           ],
           "rootCause": [
+            "freshness-drift",
             "eval-authoring",
             "improvements/stellar-docs/sd-009-sep-6-interactive-deprecation-undiscoverable.md"
           ]
@@ -31897,7 +31915,7 @@
         "corroboration": [
           {
             "claim": "Yes — SEP-6's interactive components are deprecated in favor of SEP-24 for hosted/interactive deposit & withdrawal. SEP-6's non-interactive (programmatic) API portion remains useful for fully API-driven anchors.",
-            "verdict": "confirmed",
+            "verdict": "confirmed-as-of",
             "evidence": [
               {
                 "class": "A",
@@ -32767,11 +32785,13 @@
       "tags": {
         "category": "assets-anchors-seps",
         "service": "stellarDocs",
-        "freshness": "stable"
+        "freshness": "scheduled"
       },
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
+        "asOf": "2026-07-11",
+        "reverifyBy": "2026-11-15",
         "sources": [
           {
             "class": "A",
@@ -32828,7 +32848,7 @@
           },
           {
             "claim": "SEP-6 remains Active; its legacy interactive flow, not the whole SEP, is deprecated in favor of SEP-24.",
-            "verdict": "confirmed",
+            "verdict": "confirmed-as-of",
             "evidence": [
               {
                 "class": "A",
@@ -32890,7 +32910,7 @@
           },
           {
             "claim": "SEP-6, SEP-24, SEP-31, and SEP-38 were Active as of 2026-07-11; SEP-38 applies when quotes/rates are part of the corridor.",
-            "verdict": "confirmed",
+            "verdict": "confirmed-as-of",
             "evidence": [
               {
                 "class": "A",
@@ -33014,8 +33034,8 @@
           }
         ],
         "verified": {
-          "date": "2026-07-13",
-          "by": "P4 H2 primary+blind plus truth-maintenance sibling surface audit",
+          "date": "2026-07-14",
+          "by": "Todo 993 adversarial freshness correction after independent Sol review",
           "evidence": [
             "https://developers.stellar.org/docs/anchoring-assets/anchor-platform",
             "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
@@ -33023,9 +33043,13 @@
             "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
             "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md",
             "Live scout.searchResearch result quoting SEP-0006 status and canonical URL, 2026-07-13",
-            "solo://proj/49/scratchpad/truth-maintenance-20--627#fable-open-questions-audit"
+            "solo://proj/49/scratchpad/truth-maintenance-20--627#fable-open-questions-audit",
+            "solo://proj/49/scratchpad/24-hour-adversarial--629#sol-box-review",
+            "Sibling sweep: q-sep-6-24-deprecation now carries the same scheduled Active-status treatment; q-sep-interactive-deposit-withdraw has no mutable Active-status key fact."
           ],
           "rootCause": [
+            "freshness-drift",
+            "eval-authoring",
             "Sibling consistency sweep for q-sep-6-24-deprecation",
             "improvements/stellar-docs/sd-009-sep-6-interactive-deprecation-undiscoverable.md"
           ]

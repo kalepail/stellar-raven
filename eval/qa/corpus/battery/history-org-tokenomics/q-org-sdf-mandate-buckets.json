@@ -5,7 +5,7 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "A grounded answer consults the live Stellar Scout directory or research data, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-13, the verified sources supported this observed answer:\n\nSDF organizes its work under mandate buckets funded from entrusted XLM rather than shareholder equity. The framework has changed: **2019** used Direct Development, Ecosystem Support, Use-Case Investment, and User Acquisition; the **2025-era** framing uses SDF Development, Stellar Growth, Product and Innovation, and Assets and Liquidity. The live page simultaneously says real-time public balances will be made available again “imminently” while rendering current-balance rows. Treat that as a dated page-state observation: it is fair to report that rows are visible, but not to call them a synchronized real-time feed. Cite the applicable dated mandate, attach an as-of date to any balance, and do not invent an exact allocation split or mechanically sum asynchronous rows as one synchronized total.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
+    "answer": "A grounded answer consults the live Stellar Scout directory or research data, directly answers the question with source-supported content, and dates any version-, provider-, or availability-sensitive claim. As of 2026-07-13, the verified sources supported this observed answer:\n\nSDF organizes its work under mandate buckets funded from entrusted XLM rather than shareholder equity. The framework has changed: **2019** used Direct Development, Ecosystem Support, Use-Case Investment, and User Acquisition; the **2025-era** framing uses SDF Development, Stellar Growth, Product and Innovation, and Assets and Liquidity. The live page simultaneously says real-time public balances will be made available again “imminently” while rendering current-balance rows. Treat that only as a dated, first-party page-state observation: no independent source class was found for the interface state, so it is not independently verified telemetry. It is fair to report that rows were visible at that observation time, but not to call them a synchronized real-time feed. Cite the applicable dated mandate, attach an as-of date to any balance, and do not invent an exact allocation split or mechanically sum asynchronous rows as one synchronized total.\n\nThe dated example is illustrative: a later grounded answer should report what the same source basis supports at its own observation time while preserving the stable distinctions above.",
     "keyFacts": [
       "Presents specific source-supported content as a current or dated observation rather than as an unsupported memory claim.",
       "Makes the as-of date visible for every changeable roster, status, version, or measurement.",
@@ -49,14 +49,14 @@
     ],
     "corroboration": [
       {
-        "claim": "2019 and 2025 mandate bucket names differ as stated; the current page says real-time balances will return imminently while rendering balance rows, so availability must be described as a dated page state.",
+        "claim": "The first-party 2019 and 2025 mandate sources use the two different bucket-name sets stated in the answer.",
         "verdict": "confirmed-as-of",
         "evidence": [
           {
             "class": "A",
             "ref": "https://stellar.org/foundation/mandate",
             "observedAt": "2026-07-13",
-            "note": "Current 2025-era bucket labels and the mixed page state: rendered balance rows alongside the promise that real-time balances will return imminently."
+            "note": "Current 2025-era bucket labels. No independent source class was found, so this establishes the named first-party taxonomy rather than independent external confirmation."
           },
           {
             "class": "A",
@@ -65,14 +65,28 @@
             "note": "Historical 2019 taxonomy; prevents substituting the separate 2017 previous-mandate route."
           }
         ]
+      },
+      {
+        "claim": "The current page simultaneously promised that real-time balances would return imminently and rendered balance rows on 2026-07-13.",
+        "verdict": "unverifiable",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://stellar.org/foundation/mandate",
+            "observedAt": "2026-07-13",
+            "note": "Single first-party page-state observation only. No independent capture or telemetry source was found, so this is retained solely as a scoped grading caveat and must not gate on a synchronized-feed claim."
+          }
+        ]
       }
     ],
     "verified": {
-      "date": "2026-07-13",
-      "by": "Todo 972 release-closeout golden-truth reconciliation after independent Fable and Sol reviews",
+      "date": "2026-07-14",
+      "by": "Todo 993 adversarial closeout corroboration repair after independent Sol review",
       "evidence": [
         "https://stellar.org/foundation/mandate",
         "https://stellar.org/foundation/mandate/2019",
+        "scout.searchResearch({ q: \"Stellar Development Foundation mandate buckets 2019 current allocation SDF Development Stellar Growth Product and Innovation Assets and Liquidity\", limit: 8 }) — live 2026-07-14 discovery probe returned the official updated-mandate blog and lumen-supply documentation; it is an aggregator re-surfacing class-A sources, not an independent class",
+        "research/evidence-poor-retrieval-2026-07-13.md#intermediary-source-boundary--2026-07-14 — replayable query, returned sources, and mediation boundary",
         "solo://proj/49/scratchpad/stellarorg-algolia-l--609 — independent Fable and Sol live-page reviews",
         "Sibling sweep: q-org-sdf-structure-mandate and q-org-sdf-enterprise-fund preserve metric/source scope."
       ],

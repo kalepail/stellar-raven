@@ -33,7 +33,7 @@ names an exact exposed operation, a relation (for example wider semantic, cited 
 different medium, or corpus-wide), and the insufficiency reasons it handles. Catalog generation
 fails on an orphaned, non-operation, self, duplicate, or empty-trigger edge.
 
-Public `search` and in-script `codemode.search` accept exact attempted operation IDs in
+Public `search` and in-script `codemode.search` accept caller-reported exact prior operation IDs in
 `recoverFrom` plus an optional `reason`. They return at most three `recovery` candidates separately
 from ranked `hits` only when `recoverFrom` is non-empty; an omitted list or a reason without IDs
 returns no recovery. The graph does not add query rewrites, alter scoring, auto-execute calls, expose
@@ -95,3 +95,33 @@ authorized after this failed checkpoint.
 
 Evidence and model-lane reports are retained in
 `solo://proj/49/scratchpad/evidence-poor-retrie--611`.
+
+## Intermediary-source boundary — 2026-07-14
+
+A follow-up truth audit used the recovery mechanism on two different gaps: mutable SEP status and
+the configurability of a Stellar RPC implementation. `scout.searchResearch` found a cited SEP
+snapshot, while `scout.explainRepo` surfaced relevant repository paths. Those results establish
+that the broad tools are useful discovery and recovery surfaces; they do not make either tool the
+authority for the underlying claim.
+
+Scout research is snapshot-backed and `explainRepo` is an AI/DeepWiki intermediary. Golden truth
+therefore retains the direct first-party SEP page, specification, documentation, or source file as
+the claim authority, and records the Scout/DeepWiki result only as corroborating discovery with an
+observation date and mediation caveat. A broad hit cannot replace direct inspection, prove corpus
+freshness, or turn an adjacent passage into attribution.
+
+The mandate-bucket replay used
+`scout.searchResearch({ q: "Stellar Development Foundation mandate buckets 2019 current allocation SDF Development Stellar Growth Product and Innovation Assets and Liquidity", limit: 8 })`
+on 2026-07-14. It returned the official SDF updated-mandate blog (all four current labels) and
+official lumen-supply documentation (historical mandate account labels). That proves recovery and
+source discoverability only: Scout re-surfaced class-A SDF pages, so it is not an independent
+source class and did not establish the live page's balance-row/interface state.
+
+No new source-family adapter is justified by these two cases. The general policy is to use exposed
+wide-spectrum tools when narrow evidence is insufficient, then follow their provenance to the
+best available primary source. Add another official-source family only if a recurring, measured
+corpus gap cannot be recovered this way. The remaining corpus-freshness question is tracked
+separately rather than inferred from two successful probes.
+
+Evidence and caveats are retained in
+`solo://proj/49/scratchpad/durable-agent-truth--625`.

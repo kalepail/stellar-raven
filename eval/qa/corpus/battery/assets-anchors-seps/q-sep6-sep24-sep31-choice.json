@@ -23,11 +23,13 @@
   "tags": {
     "category": "assets-anchors-seps",
     "service": "stellarDocs",
-    "freshness": "stable"
+    "freshness": "scheduled"
   },
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
+    "asOf": "2026-07-11",
+    "reverifyBy": "2026-11-15",
     "sources": [
       {
         "class": "A",
@@ -84,7 +86,7 @@
       },
       {
         "claim": "SEP-6 remains Active; its legacy interactive flow, not the whole SEP, is deprecated in favor of SEP-24.",
-        "verdict": "confirmed",
+        "verdict": "confirmed-as-of",
         "evidence": [
           {
             "class": "A",
@@ -146,7 +148,7 @@
       },
       {
         "claim": "SEP-6, SEP-24, SEP-31, and SEP-38 were Active as of 2026-07-11; SEP-38 applies when quotes/rates are part of the corridor.",
-        "verdict": "confirmed",
+        "verdict": "confirmed-as-of",
         "evidence": [
           {
             "class": "A",
@@ -270,8 +272,8 @@
       }
     ],
     "verified": {
-      "date": "2026-07-13",
-      "by": "P4 H2 primary+blind plus truth-maintenance sibling surface audit",
+      "date": "2026-07-14",
+      "by": "Todo 993 adversarial freshness correction after independent Sol review",
       "evidence": [
         "https://developers.stellar.org/docs/anchoring-assets/anchor-platform",
         "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md",
@@ -279,9 +281,13 @@
         "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0031.md",
         "https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0038.md",
         "Live scout.searchResearch result quoting SEP-0006 status and canonical URL, 2026-07-13",
-        "solo://proj/49/scratchpad/truth-maintenance-20--627#fable-open-questions-audit"
+        "solo://proj/49/scratchpad/truth-maintenance-20--627#fable-open-questions-audit",
+        "solo://proj/49/scratchpad/24-hour-adversarial--629#sol-box-review",
+        "Sibling sweep: q-sep-6-24-deprecation now carries the same scheduled Active-status treatment; q-sep-interactive-deposit-withdraw has no mutable Active-status key fact."
       ],
       "rootCause": [
+        "freshness-drift",
+        "eval-authoring",
         "Sibling consistency sweep for q-sep-6-24-deprecation",
         "improvements/stellar-docs/sd-009-sep-6-interactive-deprecation-undiscoverable.md"
       ]
