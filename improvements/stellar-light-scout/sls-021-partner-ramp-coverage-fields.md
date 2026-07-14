@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-10
 evidence:
+  - live re-check 2026-07-14: mobile-money/off-ramp search returns Honey Coin with USDC/USDT and explicit ramp fields; resolving PR https://github.com/Stellar-Light/stellarlight/pull/493
   - live scout.getPartners query for mobile money plus off-ramp returned only Zeam
   - HoneyCoin partner row has empty assets, seps, and rampTypes fields
   - current HoneyCoin operator coverage and API documentation describe mobile-money and off-ramp capabilities across multiple markets

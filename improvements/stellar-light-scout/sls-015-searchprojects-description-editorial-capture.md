@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-06
 evidence:
+  - live re-check 2026-07-14: searchProjects has terse directory-scoped prose and x-routing notFor guidance for editorial/analysis questions; resolving PR https://github.com/Stellar-Light/stellarlight/pull/316 and verification issue https://github.com/Stellar-Light/stellarlight/issues/318
   - agentic lane run 2026-07-06, workflow wf_b5be4d53-41f (30 cases x sonnet-5, low + medium efforts), compared against the 2026-07-04 agentic run
   - verdict-review workflow wf_01b3347d-1b8 (round-close review, eval round todo 846)
   - live verification 2026-07-06: the emitted searchProjects catalog description carries both the upstream product name-drops and the gateway's counter-balancing routing note

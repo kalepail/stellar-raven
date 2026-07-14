@@ -1,0 +1,69 @@
+name: Upstream improvement ready for verification
+description: Notify Raven that upstream work may resolve a recorded improvements/ finding.
+title: "[upstream-ready] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sending the resolution signal back. Raven treats this as a request for an independent live recheck; an issue closure or merged PR is not proof by itself.
+
+  - type: input
+    id: finding_id
+    attributes:
+      label: Finding ID
+      description: The exact Raven finding id, such as sls-024 or ll-013.
+      placeholder: sls-024
+    validations:
+      required: true
+
+  - type: input
+    id: source_record
+    attributes:
+      label: Raven source record
+      description: Link the exact public improvements/... Markdown file referenced by the upstream report.
+      placeholder: https://github.com/kalepail/stellar-raven/blob/main/improvements/stellar-light-scout/sls-024-project-lifecycle-operator-conflicts.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: upstream_work
+    attributes:
+      label: Resolving upstream work
+      description: Link the upstream issue, pull request, commit, release, or changelog entry that addresses the finding.
+      placeholder: |
+        - Issue: https://github.com/owner/repo/issues/123
+        - PR or commit: https://github.com/owner/repo/pull/456
+    validations:
+      required: true
+
+  - type: textarea
+    id: deployment
+    attributes:
+      label: Deployment evidence
+      description: Give the deployed version, environment, and timestamp or release date. Do not include credentials or private partner details.
+      placeholder: Deployed to the public API in v1.2.3 at 2026-07-14T18:00:00Z.
+    validations:
+      required: true
+
+  - type: textarea
+    id: recheck
+    attributes:
+      label: Smallest live recheck
+      description: Provide the public request, query, or deterministic steps Raven should run to verify the original trigger no longer reproduces.
+      placeholder: |
+        1. Call GET https://example.test/api/...
+        2. Confirm field X now distinguishes Y from Z.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Verification contract
+      options:
+        - label: I linked the exact Raven finding and the resolving upstream work.
+          required: true
+        - label: I understand Raven will independently recheck the live surface before marking the finding fixed.
+          required: true
+        - label: This report contains no credentials, private partner-tier details, or other secrets.
+          required: true

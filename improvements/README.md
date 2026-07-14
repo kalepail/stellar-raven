@@ -80,6 +80,17 @@ Known channels (issue access confirmed 2026-07-09):
   <https://github.com/lumenloop/stellar-ecosystem-db>; skill-content findings remain in
   <https://github.com/lumenloop/lumenloop-skills>. Record the exact issue URL in the finding.
 
+Use `npm run improvements:file -- --file improvements/<collection>/<finding>.md --dry-run` to
+review the resolved owner and standardized body, then omit `--dry-run` to file it. The generated
+issue links the exact public finding and includes a resolution handoff back to this repository.
+When upstream work is deployed, maintainers can open the **Upstream improvement ready for
+verification** issue form with the finding id, resolving issue/PR, deploy/version timestamp, and
+smallest live recheck. Raven independently verifies the live surface before marking a finding fixed.
+
+Do not file an issue solely for bookkeeping when a live recheck already proves the defect fixed.
+`fixed-upstream` without an issue URL is valid when its evidence records that dated recheck; add an
+existing resolving issue/PR when one can be found without inventing a ceremonial report.
+
 ## Resolution paths (stellar-docs: upstream vs. direct Algolia)
 
 Filing upstream is still the default. But `stellar-docs` findings split by root cause, and one class

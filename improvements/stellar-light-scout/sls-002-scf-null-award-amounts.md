@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-03
 evidence:
+  - live re-check 2026-07-14: Liqvid exposes scfAwarded=true with null total and scfAmountStatus=undisclosed; resolving PR https://github.com/Stellar-Light/stellarlight/pull/268
   - eval/qa/results/2026-07-03T03-49-35-variantA.json
   - eval/qa/results/2026-07-03T04-13-42-variantA.json
   - Solo project 49, todo 822, comments 2204-2210

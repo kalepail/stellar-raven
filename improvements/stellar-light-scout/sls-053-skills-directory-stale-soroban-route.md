@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-12
 evidence:
+  - live re-check 2026-07-14: /api/skills exposes smart-contracts and no legacy soroban entry; resolving PR https://github.com/Stellar-Light/stellarlight/pull/508
   - live check 2026-07-12 (coverage review, solo://proj/49/scratchpad/first-principles-sta--607): GET https://stellarlight.xyz/api/skills (30 entries) carries a `soroban` skill-md entry, and https://skills.stellar.org/skills/soroban/SKILL.md serves a full legacy skill (frontmatter `name: soroban`, ~200-page scope)
   - the authoritative site source (stellar/stellar-dev-skill, site/src/data/skills.ts) contains zero references to `skills/soroban/` — its SKILL_CARD_SOURCES list the successor `smart-contracts` card instead; https://skills.stellar.org/llms.txt likewise lists smart-contracts and not soroban
   - the directory does NOT list `smart-contracts` (verified in the same live fetch), so the directory's only smart-contract skill pointer is the superseded one

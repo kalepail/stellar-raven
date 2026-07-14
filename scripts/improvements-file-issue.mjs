@@ -14,6 +14,8 @@ import {
 } from "./improvements-lib.mjs";
 
 const args = parseArgs(process.argv.slice(2));
+const RAVEN_REPO = "kalepail/stellar-raven";
+const HANDOFF_TEMPLATE = "upstream-improvement-ready.yml";
 if (!args.file) {
   console.error("usage: node scripts/improvements-file-issue.mjs --file improvements/...md [--repo owner/name] [--dry-run] [--render-body-file /tmp/body.md]");
   process.exit(2);
@@ -37,6 +39,14 @@ if (args.renderBodyFile) {
   writeFileSync(args.renderBodyFile, body);
   console.log(args.renderBodyFile);
   process.exit(0);
+}
+
+if (["reported-upstream", "fixed-upstream"].includes(finding.frontmatter.status)) {
+  console.error(
+    `${finding.frontmatter.id}: status is ${finding.frontmatter.status}; dedupe and live-recheck before filing a new issue`,
+  );
+  console.error("Use --dry-run or --render-body-file to inspect the issue body without posting.");
+  process.exit(2);
 }
 
 const dir = mkdtempSync(path.join(tmpdir(), "improvement-issue-"));
@@ -81,10 +91,20 @@ writeFindingFrontmatter(finding, {
   status: "reported-upstream",
   evidenceAppend: `upstream issue filed ${new Date().toISOString().slice(0, 10)}: ${url}`,
 });
+const indexResult = spawnSync(process.execPath, [path.join(import.meta.dirname, "improvements-index.mjs")], {
+  encoding: "utf8",
+});
+if (indexResult.status !== 0) {
+  process.stderr.write(indexResult.stderr);
+  process.stderr.write(indexResult.stdout);
+  console.error("issue was filed and the finding was updated, but improvements/INDEX.md regeneration failed");
+  process.exit(indexResult.status ?? 1);
+}
 
 function renderBody(finding) {
   const fm = finding.frontmatter;
-  const sourceUrl = `https://github.com/kalepail/stellar-raven/blob/main/${finding.relPath}`;
+  const sourceUrl = `https://github.com/${RAVEN_REPO}/blob/main/${finding.relPath}`;
+  const handoffUrl = `https://github.com/${RAVEN_REPO}/issues/new?template=${HANDOFF_TEMPLATE}&title=${encodeURIComponent(`[upstream-ready] ${fm.id}: `)}`;
   return [
     "## Finding",
     "",
@@ -104,7 +124,17 @@ function renderBody(finding) {
     "",
     "## Source Record",
     "",
-    `This was found by the downstream Raven eval/improvements loop and recorded as ${fm.id} (${fm.service}, discovered ${fm.discovered}). Public record: ${sourceUrl}`,
+    `This was found by the downstream Raven eval/improvements loop and recorded as ${fm.id} (${fm.service}, discovered ${fm.discovered}).`,
+    "",
+    `Public source record: [${finding.relPath}](${sourceUrl})`,
+    "",
+    "## Resolution Handoff",
+    "",
+    "When a fix is deployed, please link the resolving issue or PR to the source record above and notify Raven through:",
+    "",
+    handoffUrl,
+    "",
+    "Include the finding id, resolving issue/PR, deployed version or timestamp, and the smallest live recheck. Raven independently verifies the upstream surface before changing the finding to `fixed-upstream`; issue closure or a merged PR alone is not treated as proof.",
     "",
   ].join("\n");
 }

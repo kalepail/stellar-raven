@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-03
 evidence:
+  - live re-check 2026-07-14: missing hackathon, partner, and skill routes all return parseable application/json 404 responses; resolving PR https://github.com/Stellar-Light/stellarlight/pull/286 and verification issue https://github.com/Stellar-Light/stellarlight/issues/321
   - src/adapters/scout.ts (host-side normalization, hardening commit 62fa42d)
   - Solo project 49, todo 822, comments 2204-2210
   - exhaustive live re-check 2026-07-09: all current GET path-parameter routes (hackathons/{slug}, partners/{slug}, skills/{name}) returned status 404, content-type application/json, and parseable JSON for guaranteed-missing values

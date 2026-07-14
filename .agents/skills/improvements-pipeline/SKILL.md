@@ -53,6 +53,30 @@ plausibly receive it; do not file to this repo just to close the loop. The draft
 scrubs the upstream issue body, resolves the repo from intake when unambiguous, and refuses unclear or
 mixed targets unless a human supplies `--repo`.
 
+File through the script so every issue has the same durable source and resolution contract:
+
+```sh
+# Inspect the exact title/body and resolved owner before the write.
+npm run improvements:file -- --file improvements/<collection>/<finding>.md --dry-run
+
+# Post, append the durable URL to evidence, move to reported-upstream, and regenerate INDEX.md.
+npm run improvements:file -- --file improvements/<collection>/<finding>.md
+```
+
+The generated issue body must retain all five sections: `Finding`, `Evidence`, `Recommendation`,
+`Source Record`, and `Resolution Handoff`. `Source Record` links the exact public
+`improvements/...` file on `kalepail/stellar-raven`; `Resolution Handoff` directs the owner to the
+repo's `upstream-improvement-ready.yml` issue form with the finding id, resolving issue/PR, deployed
+version or timestamp, and smallest live recheck. Do not hand-file a shortened body that drops either
+link. An upstream maintainer who prefers a patch can use
+`.github/PULL_REQUEST_TEMPLATE/upstream-improvement-handoff.md` for an evidence-only PR. The filing
+script refuses to re-file `reported-upstream` or `fixed-upstream` records: search and dedupe first,
+and use a successor finding when the remaining defect is materially different.
+
+A finding can legitimately become `fixed-upstream` before anyone files it. If the original trigger no
+longer reproduces, do not create a ceremonial issue merely to make every record have a URL. Add dated
+live evidence and, when discoverable, record the pre-existing upstream issue/PR that explains the fix.
+
 Current owner map (confirmed 2026-07-13): `lumenloop/lumenloop-backend` owns Lumenloop API and
 content-pipeline findings, while `lumenloop/stellar-ecosystem-db` owns committed directory-record
 corrections. For Stellar Light, `Stellar-Light/stellarlight` owns API/data/discovery behavior,
@@ -100,6 +124,8 @@ or when a user asks whether previous improvements were resolved.
    - `rg -n "github.com/.+/(issues|pull)/" improvements`
    - include `reported-upstream` and non-fixed `verified` findings first, then fixed findings
      if a regression/recurrence is suspected.
+   - also enumerate inbound `upstream-improvement-ready.yml` issues in `kalepail/stellar-raven`;
+     they are notification signals to verify, not proof of a fix.
 2. Build a deterministic state table in a Solo scratchpad:
 
 ```
@@ -112,6 +138,9 @@ or when a user asks whether previous improvements were resolved.
    comments, review decision, unresolved requested changes, failing checks, and last update.
    For PRs this repo opened, also check whether it needs author action, review response,
    rebase, CI fix, or abandonment.
+   Confirm that either the issue body or a durable tracking comment links the exact originating
+   `improvements/...` source record. If missing, add one concise backlink comment; do not rewrite
+   maintainer-authored issue prose merely to normalize the template.
 4. Re-run the original trigger:
    - finding with `probe` frontmatter: `npm run improvements:probes` or a targeted equivalent.
    - eval-origin finding: use the stored transcript only to reconstruct the original claim,
@@ -130,6 +159,10 @@ or when a user asks whether previous improvements were resolved.
    - `superseded`: link the successor finding or upstream ref; do not stretch the old finding.
    - `inconclusive`: do not change status; record the missing evidence and create a Solo todo or
      timer for the next concrete check.
+   - inbound handoff issue/PR: acknowledge with the live-recheck result, update the finding only
+     when the evidence bar is met, and close the Raven notification after recording the resulting
+     finding/status/ref. An evidence-only PR may append refs or reproduction evidence, but must not
+     claim `fixed-upstream` without a reproducible live check.
 6. Regenerate and verify after edits:
 
 ```sh
@@ -149,6 +182,10 @@ Probe frontmatter is optional and shaped as:
 Run `npm run improvements:probes` to re-check non-fixed findings with probes. A recurring hit should
 be converted into a structured `recurrences` entry with a date and evidence; probe failures or
 inconclusive results are review signals, not automatic status changes.
+Use repeatable `--service <service>` or `--exclude-service <service>` filters when the task has an
+explicit collection boundary; for example,
+`npm run improvements:probes -- --exclude-service stellar-docs`. Do not touch an excluded upstream
+surface merely because the unfiltered cadence command normally covers it.
 
 ## Regeneration and lint
 

@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-10
 evidence:
+  - live re-check 2026-07-14: Comet reports $291,000, rounds 13 and 18, inactive status, and its embedded Blend-backstop lifecycle; resolving PR https://github.com/Stellar-Light/stellarlight/pull/490
   - live Scout Comet record reported scfAwarded false
   - official SCF pages show Comet Awarded 150000 in round 13 and 141000 in round 18
   - mainnet Blend backstop contract/interface verifies a live Comet-derived weighted pool

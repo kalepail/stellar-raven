@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-11
 evidence:
+  - live re-check 2026-07-14: OpenAPI 1.7.22 keeps operation descriptions terse and preserves x-routing boundaries; resolving PR https://github.com/Stellar-Light/stellarlight/pull/501
   - routing A/B at the Scout 1.7.15 absorb (commit 6cf5bbf): 22 extended-lane stellarDocs-labeled questions ranked scout.searchProjects at top-1 (the 1.7.15 description/enum enrichment added ~9 to a pre-existing ~13), plus 3 legacy-lane stellarDocs cases; solo://proj/49/scratchpad/todo-940-general-mit--592
   - score-attribution sweep 2026-07-11 (same scratchpad): removing keywords left the capture intact on every case; truncating the description to 180 chars eliminated it — the description surface alone drives the capture
   - independent adversarial review 2026-07-11 (fable lane 3443): in captured cases the correct docs operation out-scored searchProjects 1.9–3.6x on the gate-free lexical metric (707 vs 383; 806 vs 437; 857 vs 560) and still lost on tier placement

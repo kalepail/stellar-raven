@@ -9,7 +9,8 @@ evidence:
   - caused 2 baseline QA verdicts in the 2026-07-03 round
   - Solo project 49, todo 822, comments 2204-2210
   - live re-verified 2026-07-06 (eval round todo 846): skill.read of build-deploy-invoke still serves wasm32-unknown-unknown twice (build comment + deploy --wasm path), zero occurrences of wasm32v1-none
-  - upstream remediation filed 2026-07-07: stellar/stellar-dev-skill#44; PR stellar/stellar-dev-skill#45 updates the source skill to `wasm32v1-none`, removes `--global`, and switches examples to canonical `--source-account`.
+  - upstream remediation filed 2026-07-07: https://github.com/stellar/stellar-dev-skill/issues/44; https://github.com/stellar/stellar-dev-skill/pull/45 updates the source skill to `wasm32v1-none`, removes `--global`, and switches examples to canonical `--source-account`.
+  - live re-check 2026-07-14: upstream SKILL.md contains wasm32v1-none four times, contains no wasm32-unknown-unknown or --global, and retains --source-account; resolving PR https://github.com/stellar/stellar-dev-skill/pull/45 remains merged
   - fixed upstream and refreshed locally 2026-07-07: PR #45 merged at stellar-dev-skill commit 3d75a157f6fe; `ecosystem-skills/update.sh` now pins `stellar-dev` to that commit.
 recurrences:
   - date: 2026-07-03

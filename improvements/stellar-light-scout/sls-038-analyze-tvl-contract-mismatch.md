@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-10
 evidence:
+  - live re-check 2026-07-14: TVL analysis returns provider, as-of, inclusion/undercount basis, and top10 rows; resolving PR https://github.com/Stellar-Light/stellarlight/pull/495
   - live /api/analyze?dimension=all returned categories, funding, hackathons, and meta but no TVL
   - live catalog description promised ecosystem DeFi TVL rollups
   - concurrent external chain-TVL sources differed by provider, time, and completion window

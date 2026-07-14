@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-03
 evidence:
+  - live re-check 2026-07-14: ordinal winners carry placement labels and numeric ranks 1-5; resolving PR https://github.com/Stellar-Light/stellarlight/pull/219
   - eval/qa/results/2026-07-03T03-49-35-variantA.json
   - eval/qa/results/2026-07-03T04-13-42-variantA.json
   - live-lane case q-live-hackathon-recent-winners (wrong verdict caused by this)

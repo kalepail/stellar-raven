@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-03
 evidence:
+  - live re-check 2026-07-14: exact Slender and Blend records rank before adjacent Reflector matches; resolving PR https://github.com/Stellar-Light/stellarlight/pull/285
   - live production execute 2026-07-03 (scout.searchProjects name probes; Solo scratchpad 521 follow-up, todo 826 comment 2224)
   - live re-check 2026-07-06 (eval round todo 846): FIXED — q:"Slender" and q:"Blend" now rank the exact-name match #1 in both queries, with Reflector demoted to rank 2
 ---

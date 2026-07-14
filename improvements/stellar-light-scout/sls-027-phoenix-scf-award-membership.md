@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-10
 evidence:
+  - live re-check 2026-07-14: Phoenix reports $394,500 and awarded rounds 16, 20, and 25 while excluding not-awarded rounds 18 and 24; resolving PR https://github.com/Stellar-Light/stellarlight/pull/490
   - live Scout Phoenix record reports 394500 but awarded-round membership includes rounds 18 and 24
   - official Phoenix SCF project page exposes seven submission cards, four Awarded and three Not Awarded
   - live Lumenloop Phoenix SCF response returns the same four awarded rows and 394500 total

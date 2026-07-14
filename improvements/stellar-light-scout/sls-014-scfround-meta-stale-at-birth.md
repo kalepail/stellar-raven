@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-06
 evidence:
+  - live re-check 2026-07-14: RFP metadata is dated 2026-07-14 and reports SCF round 45, Submission phase, and 2026-08-16 close; resolving PR https://github.com/Stellar-Light/stellarlight/pull/316 and verification issue https://github.com/Stellar-Light/stellarlight/issues/317
   - eval/qa/results/2026-07-06T18-48-22-variantA.json (q-scf-current-round, wrong)
   - verdict-review workflow wf_01b3347d-1b8 (triage: upstream-data-gap, verdict stands on outcome)
   - live verification 2026-07-06: production scout.getRfps reproduced the stale scfRound meta verbatim; communityfund.stellar.org/awards fetched the same day shows SCF #45 in Submission

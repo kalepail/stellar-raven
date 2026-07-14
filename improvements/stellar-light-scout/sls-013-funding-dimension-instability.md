@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-03
 evidence:
+  - live re-check 2026-07-14: funding analysis exposes computedAt, funding-v2 methodology/count basis, and 41 byRound rows; resolving PR https://github.com/Stellar-Light/stellarlight/pull/275
   - live production execute 2026-07-03T18:34Z (scout.analyzeEcosystem dimension=funding; todo 829 skeptic sweep, Solo scratchpad 521)
   - prior live probes recorded in the golden corpus: 2026-06-22 and 2026-06-29 (grader notes of q-scf-total-distributed)
   - communityfund.stellar.org fetched same day (homepage + awards page)

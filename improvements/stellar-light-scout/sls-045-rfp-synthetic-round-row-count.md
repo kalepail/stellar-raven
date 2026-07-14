@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-10
 evidence:
+  - live re-check 2026-07-14: RFP results explicitly type five RFP rows plus one synthetic scf-round row and expose the count basis; resolving PR https://github.com/Stellar-Light/stellarlight/pull/498
   - live getRfps/open probe returned five actual Q2 briefs plus a synthetic scf-round-45 row
   - response metadata reported open=5 while matched/returned contained six rows
   - official SCF RFP page independently listed the same five real briefs

@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-10
 evidence:
+  - live re-check 2026-07-14: builder skill matches expose match, codeEvidence, and meta.matchBasis provenance; resolving PR https://github.com/Stellar-Light/stellarlight/pull/498
   - live skill=Rust and skill=Soroban searches produced ten unique candidates
   - seven candidates had direct public Soroban/Rust code footprints; three had weak or absent direct code evidence in the bounded sweep
   - builder rows do not expose matched fields, matched projects, or code evidence

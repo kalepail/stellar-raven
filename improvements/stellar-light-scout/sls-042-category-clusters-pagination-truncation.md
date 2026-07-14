@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-10
 evidence:
+  - live re-check 2026-07-14: analyze and category clusters both report 845 included/available records with truncated=false; resolving PR https://github.com/Stellar-Light/stellarlight/pull/498
   - near-simultaneous /api/analyze?dimension=categories and /api/clusters?dimension=category&minSize=1 reads produced different totals and funded-ratio winners
   - analyze covered 841 active projects and made Protocol/Contract 68/129 the winner
   - clusters summed exactly 500 projects and made User-Facing App 104/207 the winner

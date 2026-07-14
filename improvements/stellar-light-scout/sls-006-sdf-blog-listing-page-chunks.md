@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-03
 evidence:
+  - live re-check 2026-07-14: sampled SDF-blog research hits return substantive Q1 article body rather than listing/tag chunks; resolving PR https://github.com/Stellar-Light/stellarlight/pull/277
   - eval/qa/results/2026-07-03T16-06-45-variantA.json (q-eco-stellar-rwa-stablecoin-volume)
   - live searchResearch probes source:sdf-blog + source:dev-docs (2026-07-03 evening, production)
   - Solo project 49, todo 807, scratchpad 521

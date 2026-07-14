@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-11
 evidence:
+  - live re-check 2026-07-14: stellar-core repo explanation returns codeVerified.isDeployableContract=false; resolving PR https://github.com/Stellar-Light/stellarlight/pull/498
   - P4 N1 live scout.explainRepo({q:"Where are transaction result codes defined?",repo:"stellar/stellar-core"}) returned codeVerified.isDeployableContract:true while identifying stellar-core as the C++ core/XDR transaction-processing repository; solo://proj/49/scratchpad/super-corpus-rebuild--585
   - 2026-07-11 live re-check after Scout 1.7.15: the same explainRepo trigger returns codeVerified.isDeployableContract=false for stellar/stellar-core
 ---

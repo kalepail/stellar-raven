@@ -4,6 +4,7 @@ service: lumenloop
 status: fixed-upstream
 discovered: 2026-07-11
 evidence:
+  - live re-check 2026-07-14: public https://lumenloop.com/search?q=SCF%20%2343 still returns "SCF #43 Round Recap" dated 2026-06-02; owner-repo title/body/comment/PR search found no pre-existing tracking ref, so no ceremonial issue was created for the already-fixed gap
   - P4 N2 observed Lumenloop's public SCF landing-page recap path ending at round 40 while the official SCF #43 recap is current; solo://proj/49/scratchpad/super-corpus-rebuild--585
   - official SCF #43 recap, published 2026-06-02, reports 85 submissions, 29 awarded projects, and $3,139,069 worth of XLM; the 2026-07-11 dashboard snapshot instead showed 28 selected cards totaling $3,049,069
   - live re-check 2026-07-13: https://lumenloop.com/search?q=SCF%20%2343 returns "SCF #43 Round Recap" dated 2026-06-02, so the proposed discoverability gap no longer reproduces and no upstream issue was filed

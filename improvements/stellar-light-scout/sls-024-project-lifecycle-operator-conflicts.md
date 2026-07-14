@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: reported-upstream
 discovered: 2026-07-10
 evidence:
+  - service-owner verification issue source backlink added 2026-07-14: https://github.com/Stellar-Light/stellarlight/issues/494#issuecomment-4971116711
   - direct Scout project queries and operator-site/repository re-checks for Slender, Laina, K2 Lend, and OrbitCDP on 2026-07-10
   - 2026-07-11 live `searchProjects({q:"streaming recurring payments"})` response: all 19 returned projects were `Live`; Fluxity was `Live` plus `Unverified` with null `statusAsOf`, `statusBasis`, and `statusSourceUrl`, and empty `supportedNetworks`
   - additional direct recurrences: xBull was `Live` while its Android store URL returned 404; Centaurus was `Live` plus `Unverified` while linked repositories had no activity after 2021 and no current primary deployment evidence was located

@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-03
 evidence:
+  - live re-check 2026-07-14: open-RFP metadata reports current round 45, Submission phase, and 2026-08-16 close date; resolving PR https://github.com/Stellar-Light/stellarlight/pull/273
   - eval/qa/results/2026-07-03T16-06-45-variantA.json (q-scf-current-round)
   - live getRfps re-execution (2026-07-03 evening, production)
   - Solo project 49, todo 807, scratchpad 521

@@ -130,7 +130,7 @@ Total findings: 131
 | ll-001 | Weekly-roundup canonical slugs mismatch their content dates. The research doc for  | reported-upstream | 2026-07-03 | 0           |
 | ll-002 | The Messari "State of Stellar Q1 2026" AV/research item carries only ~702 chars of | reported-upstream | 2026-07-03 | 0           |
 | ll-003 | Region vocabulary is free-text rather than a controlled list. The live-lane eval   | reported-upstream | 2026-07-03 | 2           |
-| ll-004 | Partner items were hidden from /v1/tools even for a partner-tier caller, so a      | fixed-upstream    | 2026-07-03 | 0           |
+| ll-004 | Partner items are again hidden from /v1/tools for a partner-tier caller, so a      | reported-upstream | 2026-07-03 | 1           |
 | ll-005 | findcontentbyentity advertises entitytype: "person" in its input schema enum,      | reported-upstream | 2026-07-03 | 4           |
 | ll-006 | searchcontentsemantic over articles has no freshness weighting, so                 | reported-upstream | 2026-07-03 | 0           |
 | ll-007 | Event summary prose can contradict the structured startat field. The               | reported-upstream | 2026-07-03 | 2           |

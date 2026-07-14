@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { appendFileSync } from "node:fs";
-import { listFindingFiles, parseFinding } from "./improvements-lib.mjs";
+import { ALLOWED_SERVICES, listFindingFiles, parseFinding } from "./improvements-lib.mjs";
 
 const AUTH_PROBE_HOSTS = {
   LUMENLOOP_API_KEY: "api.lumenloop.com",
@@ -8,7 +8,18 @@ const AUTH_PROBE_HOSTS = {
 
 const today = new Date().toISOString().slice(0, 10);
 const appendDrafts = process.argv.includes("--append-drafts");
-const findings = listFindingFiles().map(parseFinding);
+const includedServices = new Set(argValues("--service"));
+const excludedServices = new Set(argValues("--exclude-service"));
+for (const service of [...includedServices, ...excludedServices]) {
+  if (!ALLOWED_SERVICES.has(service)) {
+    console.error(`unknown service '${service}'; expected one of ${[...ALLOWED_SERVICES].join(", ")}`);
+    process.exit(2);
+  }
+}
+const findings = listFindingFiles()
+  .map(parseFinding)
+  .filter((finding) => !includedServices.size || includedServices.has(finding.frontmatter.service))
+  .filter((finding) => !excludedServices.has(finding.frontmatter.service));
 const probed = findings.filter((finding) => finding.frontmatter.status !== "fixed-upstream" && finding.frontmatter.probe);
 const fixed = [];
 const recurring = [];
@@ -41,6 +52,14 @@ console.log(
 );
 
 if (failed.length) process.exitCode = 1;
+
+function argValues(name) {
+  const values = [];
+  for (let i = 0; i < process.argv.length; i++) {
+    if (process.argv[i] === name && process.argv[i + 1]) values.push(process.argv[++i]);
+  }
+  return values;
+}
 
 async function runProbe(probe) {
   if (probe.type !== "http-text") throw new Error(`unsupported probe type ${probe.type}`);

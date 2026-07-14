@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-10
 evidence:
+  - live re-check 2026-07-14: Band search returns one canonical row with $60,000 and round 16; resolving PR https://github.com/Stellar-Light/stellarlight/pull/498
   - Scout band-protocol row points canonicalSlug band and reports SCF #16 / $60K
   - Scout canonical band row reports SCF #41 / $100K
   - official Band Protocol project record reports one SCF #16 award, $60K awarded and paid

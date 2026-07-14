@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-11
 evidence:
+  - live re-check 2026-07-14: Vesseo/Vibrant search exposes structured identity aliases and a source URL; resolving PR https://github.com/Stellar-Light/stellarlight/pull/509
   - P4 H3 primary-source extraction cites current Stellar material as "the Vesseo app" while older directory/eval references use Vibrant; solo://proj/49/scratchpad/super-corpus-rebuild--585
   - P4 H3's wallet/recovery review treated the naming transition as a factual identity boundary requiring current-source verification
   - 2026-07-13 live re-check against Stellar Light 1.7.18: GET /api/projects/search?q=Vibrant and q=Vesseo returned the same canonical id/slug/name and identity={currentName:"Vesseo",aliases:["Vibrant"],renamedAt:null,sourceUrl:"https://vesseoapp.com/"}; inventory/stellar-light.json

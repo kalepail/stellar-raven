@@ -4,6 +4,7 @@ service: stellar-light-scout
 status: fixed-upstream
 discovered: 2026-07-03
 evidence:
+  - live re-check 2026-07-14: tier-only event exposes null placement ranks and winnersRanked=false; resolving PR https://github.com/Stellar-Light/stellarlight/pull/285
   - live probe of all 11 completed hackathons via production execute (2026-07-03 afternoon)
   - buildonstellarchile — 14 winners, every hackathonPlacement "Winners", every placementRank null, awards heterogeneous ($50/$100 video-pitch prizes)
   - also tier-only: stellar-hacks-zk-gaming (5), ideaton2026 (6), ideatontelluscoop (3)
