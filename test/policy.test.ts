@@ -113,6 +113,7 @@ describe("redaction", () => {
     const collected = secretsFromEnv({
       LUMENLOOP_API_KEY: "lumen_key_abcdefgh",
       ALGOLIA_API_KEY_DOCS: "algolia_key_abcdefgh",
+      ALGOLIA_API_KEY_SITE: "algolia_site_key_abcdefgh",
       MCP_ADMIN_TOKEN: "admin_token_abcdefgh",
       MCP_SERVER_SECRET: "server_secret_abcdefgh",
       WORKOS_API_KEY: "workos_key_abcdefgh",
@@ -121,6 +122,7 @@ describe("redaction", () => {
     expect(collected).toEqual([
       "lumen_key_abcdefgh",
       "algolia_key_abcdefgh",
+      "algolia_site_key_abcdefgh",
       "admin_token_abcdefgh",
       "server_secret_abcdefgh",
       "workos_key_abcdefgh"
@@ -136,6 +138,19 @@ describe("redaction", () => {
     const clean = redactSecrets(dirty, secrets) as typeof dirty;
     expect(JSON.stringify(clean)).not.toContain("llmcp_secret_value_123");
     expect(clean.note).toContain("[REDACTED]");
+  });
+
+  it("scrubs both property-specific Algolia API keys", () => {
+    const propertySecrets = secretsFromEnv({
+      ALGOLIA_API_KEY_DOCS: "docs_property_key_abcdefgh",
+      ALGOLIA_API_KEY_SITE: "site_property_key_abcdefgh"
+    });
+    const clean = redactSecrets(
+      { docs: "docs_property_key_abcdefgh", site: "site_property_key_abcdefgh" },
+      propertySecrets
+    );
+    expect(JSON.stringify(clean)).not.toContain("docs_property_key_abcdefgh");
+    expect(JSON.stringify(clean)).not.toContain("site_property_key_abcdefgh");
   });
 
   it("returns the same reference when nothing matches", () => {

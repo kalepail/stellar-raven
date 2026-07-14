@@ -34,7 +34,7 @@ import {
   type SearchPage
 } from "../catalog/search.ts";
 import { getCatalog } from "../catalog/load.ts";
-import { CATALOG_KINDS, RETRIEVAL_REASONS, type RetrievalReason } from "../catalog/types.ts";
+import { SEARCH_KINDS, RETRIEVAL_REASONS, type RetrievalReason } from "../catalog/types.ts";
 import type { ExecuteCallContext, ExecuteRunner } from "../executor/run.ts";
 import type { BuildSourceBasisManifestInput, SourceBasisCall } from "../policy/source-basis.ts";
 import { hashPrefix, logEvent, preview, CODE_LOG_MAX } from "../observability.ts";
@@ -42,9 +42,7 @@ import { searchEventFields } from "../observability-search.ts";
 import { truncateForModel, truncateLogsForModel } from "../policy/truncate.ts";
 import { FAMILY_LINE, MICRO_MAP } from "./micro-map.ts";
 
-// Single source of truth: the search tool's `kind` enum IS the catalog's kind
-// set (F7 — no duplicated literal to drift from src/catalog/types.ts).
-export const SEARCH_KINDS = CATALOG_KINDS;
+export { SEARCH_KINDS };
 
 export const SEARCH_TOOL_NAME = "search";
 export const EXECUTE_TOOL_NAME = "execute";
@@ -61,7 +59,7 @@ export const rankedSearchInputSchema = {
     .enum(SEARCH_KINDS)
     .optional()
     .describe(
-      "Restrict results to one entry kind: a service operation, a whole skill, or a single skill section."
+      "Restrict ranked results to a service operation or a whole skill. Skill sections are exact-read affordances exposed on whole-skill hits through availableSections, not independent search hits."
     ),
   service: z
     .string()
@@ -81,13 +79,13 @@ export const rankedSearchInputSchema = {
     .max(10)
     .optional()
     .describe(
-      "Exact operation ids already attempted. Returns bounded recovery candidates separately from ranked hits; ids are never fuzzy-resolved."
+      "Caller-reported exact operation ids already attempted. The host validates exact ids and exposure, not an execution ledger. Returns bounded recovery candidates separately from ranked hits; ids are never fuzzy-resolved."
     ),
   reason: z
     .enum(RETRIEVAL_REASONS)
     .optional()
     .describe(
-      "Why the attempted operation is insufficient: empty, weak, adjacent, ambiguous, or partial. Filters recovery candidates without changing hit ranking."
+      "Why the caller reports the operation was insufficient: empty, weak, adjacent, ambiguous, or partial. Filters recovery candidates without changing hit ranking."
     )
 };
 
@@ -121,7 +119,7 @@ export const searchHitSchema = z.object({
 });
 
 export const recoveryCandidateSchema = z.object({
-  from: z.string().describe("Exact attempted operation id that declared this recovery edge."),
+  from: z.string().describe("Caller-reported exact operation id that declared this recovery edge."),
   id: z.string().describe("Exact recovery operation id; call or describe it verbatim."),
   service: z.string(),
   relation: z.string(),
@@ -151,7 +149,7 @@ export const rankedSearchOutputSchema = {
   recovery: z
     .array(recoveryCandidateSchema)
     .describe(
-      "Bounded, query-independent exact-ID contingencies for attempted operations. Advisory and separate from lexical ranking; validate returned evidence before making a claim."
+      "Bounded, query-independent exact-ID contingencies for caller-reported prior operations; the host does not verify an execution ledger. Advisory and separate from lexical ranking; validate returned evidence before making a claim."
     ),
   nextSteps: z.string().describe("What to do with these results (server hint).")
 };
@@ -192,9 +190,9 @@ function sourceBasisForTelemetry(sourceBasis: BuildSourceBasisManifestInput | un
 // (ADR-0003 spirit — consumers are never told about, and never sold, what
 // the gateway cannot do). Exported (with EXECUTE_DESCRIPTION) so the /demo
 // playground drives the exact production tool contract.
-export const SEARCH_DESCRIPTION = `Ranked lexical search over the unified catalog of everything this server can do: every service operation (lumenloop.*, scout.*, stellarDocs.*), every skill, and every skill section.
+export const SEARCH_DESCRIPTION = `Ranked lexical search over every exposed service operation (lumenloop.*, scout.*, stellarDocs.*) and whole skill. Skill sections are exact-read affordances exposed on whole-skill hits through availableSections; they are not independent ranked hits.
 
-Returns ranked hits with rendered TypeScript signatures so you can call them from the \`execute\` tool without guessing. Pass exact attempted ids in \`recoverFrom\` (and optionally \`reason\`) to receive bounded recovery candidates separately from the ranking.
+Returns ranked hits with rendered TypeScript signatures so you can call them from the \`execute\` tool without guessing. Pass caller-reported exact attempted ids in \`recoverFrom\` (and optionally \`reason\`) to receive bounded recovery candidates separately from the ranking.
 
 ## Workflow
 
@@ -213,7 +211,7 @@ Most questions have a primary family and a corroborating one — pick both up fr
 
 - Never guess operation or skill names — always discover them here first (or with \`codemode.search\` mid-script).
 - Prefer targeted queries ("account trustlines", "soroban storage patterns") over broad ones, and vary vocabulary across candidate families.
-- Use \`kind\` to narrow to operations vs skills vs skill sections, and \`service\` to narrow to one namespace. Filter values are exact-match — an unknown \`service\` is rejected with the valid names, never silently empty.
+- Use \`kind\` to narrow to \`operation\` or \`skill\`, and \`service\` to narrow to one namespace. Filter values are exact-match — an unknown \`service\` is rejected with the valid names, never silently empty.
 - Each hit's \`tier\` says which scorer ranked it: "gated" (strict, primary) or "backfill" (gate-relaxed page fill for long queries). Scores share one scale; gated hits lead except a backfill hit may be promoted when it decisively dominates (>=1.6x). Hit order is authoritative.
 - \`truncated: true\` means more entries matched (\`total\`) than the page shows — if nothing here fits, search again with a higher \`limit\`, the other candidate family, or varied vocabulary before concluding the capability is missing.
 - Skill hits are operational playbooks and carry \`availableSections\` — read those sections via \`codemode.skill.read(id, { sections })\` inside \`execute\`.
@@ -390,8 +388,9 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
         limit: args.limit
       });
       const { hits, total, truncated } = page;
-      // Recovery is evidence of a prior attempted operation, never a hint
-      // inferred from uncalled ranked hits. A bare reason is therefore inert.
+      // Recovery reflects a caller-reported prior operation, never a hint
+      // inferred from uncalled ranked hits. The host validates exact IDs and
+      // exposure, not an execution ledger. A bare reason is therefore inert.
       const recoverFrom = args.recoverFrom ?? [];
       const recovery = recoverFrom.length > 0
         ? recoveryCandidates(catalog, recoverFrom, args.reason as RetrievalReason | undefined)

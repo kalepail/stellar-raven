@@ -527,14 +527,13 @@ function buildSkillsPaths(skillIndex, runnableIndex) {
         "x-runnable-index": runnableIndex
       }
     },
-    "/skills/search_skill_sections": {
+    "/skills/search_skills": {
       post: {
-        operationId: "skills.search_skill_sections",
-        summary: "Ranked lexical search over all skills and skill sections.",
+        operationId: "skills.search_skills",
+        summary: "Ranked lexical search over whole skills.",
         description:
-          "Scores every skill and every '##' section against a targeted query and returns ranked hits with exact " +
-          "ids (skill ids and 'skills.<source>.<name>#<section-slug>' section ids) that codemode.skill.read accepts. " +
-          "Use when grepping x-skill-index headings is not enough and you want relevance ranking over descriptions too.",
+          "Scores whole skills against a targeted query and returns ranked skill ids. Each hit's availableSections " +
+          "lists exact section keys accepted by codemode.skill.read; sections remain readable but are not independent ranked hits.",
         tags: ["skills"],
         requestBody: {
           required: true,
@@ -558,13 +557,13 @@ function buildSkillsPaths(skillIndex, runnableIndex) {
               "{ ok: true, hits: [{ id, service, kind, score, tier, description }], total, truncated } or " +
               "{ ok: false, error } (an unknown kind/service filter value is rejected with the valid names — " +
               "filters are exact-match). Each hit's tier is \"gated\" (strict primary scorer) or \"backfill\" " +
-              "(gate-relaxed page fill, always ranked below every gated hit); score compares ONLY among " +
-              "same-tier hits — a backfill score can be numerically larger than a gated one ranked above it. " +
+              "(gate-relaxed page fill). Scores share one scale; gated hits lead except a backfill hit may be " +
+              "promoted when it decisively dominates (>=1.6x), so hit order is authoritative. " +
               "truncated: true means more entries matched (total) than returned — raise limit, try a different family, or vary vocabulary."
           }
         },
         "x-service": "skills",
-        "x-execute": `await codemode.search({ query, service: "skills" })`
+        "x-execute": `await codemode.search({ query, kind: "skill", service: "skills" })`
       }
     }
   };

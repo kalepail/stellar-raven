@@ -35,6 +35,13 @@ export const CATALOG_SERVICES = ["lumenloop", "scout", "stellarDocs", "skills"] 
 export const CATALOG_KINDS = ["operation", "skill", "skill-section"] as const;
 export type CatalogKind = (typeof CATALOG_KINDS)[number];
 
+// Search intentionally excludes section entries (ADR-0005). Sections remain
+// cataloged so exact-id describe/read and availableSections can expose them,
+// but advertising a section filter would promise a lane that always returns
+// zero hits.
+export const SEARCH_KINDS = ["operation", "skill"] as const;
+export type SearchKind = (typeof SEARCH_KINDS)[number];
+
 /** A JSON Schema fragment — kept opaque; only the TS renderer walks it. */
 const jsonSchemaShape = z.record(z.string(), z.unknown());
 

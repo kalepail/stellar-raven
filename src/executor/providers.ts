@@ -61,11 +61,13 @@
  */
 import {
   CATALOG_KINDS,
+  SEARCH_KINDS,
   RETRIEVAL_REASONS,
   type BuildAuthorityRole,
   type Catalog,
   type CatalogEntry,
   type CatalogKind,
+  type SearchKind,
   type RetrievalReason
 } from "../catalog/types.ts";
 import {
@@ -688,13 +690,13 @@ export function buildCodemodeProvider(
             // LLM code passes `maybeService ?? null`), same as `limit: null`.
             const kindFilter = opts.kind ?? undefined;
             const serviceFilter = opts.service ?? undefined;
-            if (kindFilter !== undefined && !(CATALOG_KINDS as readonly unknown[]).includes(kindFilter)) {
+            if (kindFilter !== undefined && !(SEARCH_KINDS as readonly unknown[]).includes(kindFilter)) {
               return {
                 ok: false,
                 error: {
                   service: "codemode",
                   kind: "error",
-                  message: `codemode.search: unknown kind ${JSON.stringify(kindFilter)} — valid kinds (exact-match): ${CATALOG_KINDS.join(", ")}`
+                  message: `codemode.search: unknown kind ${JSON.stringify(kindFilter)} — valid kinds (exact-match): ${SEARCH_KINDS.join(", ")}; skill sections are selected from a whole skill's availableSections and read by exact id`
                 }
               };
             }
@@ -755,14 +757,15 @@ export function buildCodemodeProvider(
             const t0 = Date.now();
             const page = searchCatalogPage(catalog, {
               query: opts.query,
-              kind: kindFilter as CatalogKind | undefined,
+              kind: kindFilter as SearchKind | undefined,
               service: serviceFilter as string | undefined,
               limit: typeof opts.limit === "number" ? opts.limit : undefined
             });
             const { hits, total, truncated } = page;
-            // Recovery models a real prior attempt, never the ranked hits
-            // the model merely saw in this search response. A reason with no
-            // explicit attempted operation is inert rather than an escalation.
+            // Recovery models a caller-reported prior attempt, never the ranked
+            // hits the model merely saw in this search response. The host
+            // validates exact IDs and exposure, not an execution ledger. A
+            // reason without an explicit attempted operation is inert.
             const recovery = Array.isArray(recoverFrom) && recoverFrom.length > 0
               ? recoveryCandidates(catalog, recoverFrom as string[], reason as RetrievalReason | undefined)
               : [];

@@ -862,7 +862,9 @@ describe("codemode fns", () => {
     expect(r.ok).toBe(false);
     expect(r.error.kind).toBe("error");
     expect(r.error.message).toContain('"operations"');
-    expect(r.error.message).toContain("operation, skill, skill-section");
+    expect(r.error.message).toContain("operation, skill");
+    expect(r.error.message).not.toContain("operation, skill, skill-section");
+    expect(r.error.message).toContain("availableSections");
   });
 
   it("catalog() returns the full manifest view — every entry callable, host detail stripped", async () => {

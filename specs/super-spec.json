@@ -734,6 +734,14 @@
             },
             "type": "object"
           },
+          "llamaSlugs": {
+            "description": "sls-039: the curated DefiLlama protocol slugs whose rows SUM to tvlUSD (several per project — e.g. Blend = pools + backstops). The mapped-provider identifiers tvlMethod refers to: follow each as https://defillama.com/protocol/{slug} for the provider's own page and full TVL time series (history/peak/record live at the provider — this API serves the current dated point only). Null = not llama-mapped (matches tvlUSD null = not tracked).",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "type": "array"
+          },
           "logoUrl": {
             "nullable": true,
             "type": "string"
@@ -755,6 +763,69 @@
             "items": {
               "$ref": "#/components/schemas/scout.Repo"
             },
+            "type": "array"
+          },
+          "routes": {
+            "description": "sls-032: curated ROUTE-LEVEL bridge evidence for Bridge-typed records. A project hit alone is DISCOVERY-only — it never establishes that a specific transfer route exists, which direction is supported, or what the destination asset representation is (canonical Circle-issued USDC vs a bridged representation like USDC.axl). Each row here is a curator-verified route fact grounded in the provider's own docs (sourceUrl + asOf). Null = no curated route evidence (UNKNOWN, never 'no routes exist'). Quote-time facts (fees, live availability, current quotes) are intentionally NOT encoded — confirm those with the provider at transfer time.",
+            "items": {
+              "properties": {
+                "asOf": {
+                  "description": "YYYY-MM-DD the route evidence was verified — routes are dated facts, re-verify before relying on them for a live transfer.",
+                  "nullable": true,
+                  "type": "string"
+                },
+                "assetRepresentation": {
+                  "description": "What the DESTINATION asset is: 'canonical' = issuer-native (e.g. Circle-issued USDC via CCTP burn-mint), 'wrapped'/'bridged'/'interchain' = a representation (e.g. USDC.axl). Null = quote-time/unverified — never assume canonical.",
+                  "enum": [
+                    "canonical",
+                    "wrapped",
+                    "bridged",
+                    "interchain"
+                  ],
+                  "nullable": true,
+                  "type": "string"
+                },
+                "assets": {
+                  "description": "Asset codes moved on this route (e.g. USDC). Empty = asset scope not curated (unknown, not none).",
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "direction": {
+                  "description": "'bidirectional' = the reverse leg is also evidenced; 'one-way' = only fromChain→toChain is. Null = direction not verified.",
+                  "enum": [
+                    "one-way",
+                    "bidirectional"
+                  ],
+                  "nullable": true,
+                  "type": "string"
+                },
+                "fromChain": {
+                  "description": "Source network, lowercase — same vocabulary as supportedNetworks ('evm' is the EVM umbrella).",
+                  "type": "string"
+                },
+                "mechanism": {
+                  "description": "Settlement mechanism, e.g. 'cctp-burn-mint', 'native-liquidity-pool', 'lock-mint', 'aggregator-router'.",
+                  "nullable": true,
+                  "type": "string"
+                },
+                "sourceUrl": {
+                  "description": "Provider source the route evidence was verified from.",
+                  "nullable": true,
+                  "type": "string"
+                },
+                "toChain": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "fromChain",
+                "toChain"
+              ],
+              "type": "object"
+            },
+            "nullable": true,
             "type": "array"
           },
           "scfAmountStatus": {
@@ -840,6 +911,12 @@
             "nullable": true,
             "type": "string"
           },
+          "tvlMethodUrl": {
+            "description": "sls-039: citation URL for the project's PRIMARY mapped DefiLlama protocol row (first of llamaSlugs) — the provider/method page to cite alongside tvlUSD. When llamaSlugs has multiple entries, tvlUSD sums ALL of them, so this page shows one component, not necessarily the whole sum — enumerate llamaSlugs for the full inclusion set. Null when not llama-mapped.",
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
           "tvlSource": {
             "description": "Source that produced tvlUSD (e.g. 'defillama'). Null = legacy value predating provenance. Concurrent sources (operator site, DefiLlama, Dune) legitimately differ by pricing time and inclusion scope — cite tvlUSD as '<tvlSource> as of <tvlAsOf>', never as exact universal truth.",
             "nullable": true,
@@ -859,6 +936,18 @@
           },
           "url": {
             "format": "uri",
+            "type": "string"
+          },
+          "venueRole": {
+            "description": "sls-035: role in the DEX/trading landscape. 'amm' and 'native-orderbook' are INDEPENDENT LIQUIDITY VENUES; 'aggregator-router' routes across venues and runs none; 'trading-ui' is an interface over other venues (e.g. the native SDEX); 'wallet-integrated' is trading embedded in a wallet. A DEX type/cluster count is a directory TAXONOMY count, not a competitor or venue count — count venueRole in ('amm','native-orderbook') for independent venues. Null = not yet classified (unknown, NOT 'not a venue').",
+            "enum": [
+              "amm",
+              "native-orderbook",
+              "aggregator-router",
+              "trading-ui",
+              "wallet-integrated"
+            ],
+            "nullable": true,
             "type": "string"
           },
           "verificationLevel": {
@@ -1269,7 +1358,7 @@
     "description": "One spec covering every operation this MCP server can execute, across four services: lumenloop, scout (Stellar Light), stellarDocs (Algolia-backed docs search), and skills (bundled agent playbooks). Paths are keyed '/{service}/{operation}' and each operationId is the exact callable name: an operation with operationId 'lumenloop.search_directory' is invoked inside the execute tool's sandbox as `await lumenloop.search_directory(args)` — args is ONE object matching the operation's requestBody schema (POST ops) or its parameter names (GET ops). The exact call line is on each operation as x-execute. Every call resolves (never throws) to { ok: true, data } or { ok: false, error: { service, kind, message } }; the 200 response schema documents `data`. Every path in this spec is callable — exposure is filtered at build time, so nothing uncallable is described. Auth is handled host-side — code never sees keys.",
     "title": "stellar-raven-codemode — unified super spec",
     "version": "1.0.0",
-    "x-generatedAt": "2026-07-13T21:32:54.648Z"
+    "x-generatedAt": "2026-07-14T00:14:25.327Z"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -2830,10 +2919,99 @@
                 "schema": {
                   "properties": {
                     "funding": {
-                      "description": "Present for dimension=all|funding. Carries computedAt, methodologyVersion, countBasis, byRound — and projectSetHash (sls-044): a stable sha256-prefix digest of the sorted awarded-project slug set. Same hash across your snapshots ⇒ same project SET (only amounts/labels can differ); different hash ⇒ membership changed (adds/removals/reclassifications) — the honest explanation for a moving cumulative total under an unchanged methodology.",
+                      "description": "Present for dimension=all|funding. Carries computedAt, methodologyVersion, countBasis, byRound — and projectSetHash (sls-044): a stable sha256-prefix digest of the sorted awarded-project slug set. Same hash across your snapshots ⇒ same project SET (only amounts/labels can differ); different hash ⇒ membership changed (adds/removals/reclassifications) — the honest explanation for a moving cumulative total under an unchanged methodology. #520 delta provenance: snapshotAsOf / previousSnapshot / snapshotDelta make the set change ANSWER-VISIBLE — which slugs were added/removed vs the preceding persisted snapshot and mechanical reason codes for removals; deltaBasis documents the semantics and deltaUnavailable states explicitly when the comparison cannot be served (no differing prior snapshot yet, or store unavailable).",
                       "properties": {
+                        "deltaBasis": {
+                          "type": "string"
+                        },
+                        "deltaUnavailable": {
+                          "description": "Non-null when snapshotDelta cannot be served, stating WHY (no differing prior snapshot recorded yet, or snapshot store unavailable) — an explicit reason, never a silent omission.",
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "previousSnapshot": {
+                          "description": "The most recent persisted snapshot with a DIFFERENT project set. Null when none exists yet (see deltaUnavailable).",
+                          "nullable": true,
+                          "properties": {
+                            "computedAt": {
+                              "format": "date-time",
+                              "nullable": true,
+                              "type": "string"
+                            },
+                            "projectSetHash": {
+                              "type": "string"
+                            },
+                            "scfAwardedProjects": {
+                              "nullable": true,
+                              "type": "integer"
+                            },
+                            "scfTotalDistributedUSD": {
+                              "nullable": true,
+                              "type": "number"
+                            }
+                          },
+                          "type": "object"
+                        },
                         "projectSetHash": {
                           "type": "string"
+                        },
+                        "snapshotAsOf": {
+                          "description": "When the CURRENT projectSetHash was first observed (persisted snapshot time). computedAt is when THIS response was computed; snapshotAsOf dates the set state.",
+                          "format": "date-time",
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "snapshotDelta": {
+                          "description": "Membership diff: this response's awarded set vs previousSnapshot's. Null when previousSnapshot is null (deltaUnavailable says why).",
+                          "nullable": true,
+                          "properties": {
+                            "addedCount": {
+                              "type": "integer"
+                            },
+                            "addedProjects": {
+                              "description": "Slugs in the current set but not the previous snapshot.",
+                              "items": {
+                                "type": "string"
+                              },
+                              "type": "array"
+                            },
+                            "removedCount": {
+                              "type": "integer"
+                            },
+                            "removedProjects": {
+                              "items": {
+                                "type": "string"
+                              },
+                              "type": "array"
+                            },
+                            "removedReasons": {
+                              "description": "Per removed slug, a MECHANICAL reason from the record's current state — never a guess.",
+                              "items": {
+                                "properties": {
+                                  "reason": {
+                                    "description": "'dedupe' = record now points at a canonical slug (duplicate merged); 'eligibility-reclassification' = record left the active status pool; 'source-correction' = scf.awarded corrected to false; 'unknown' = record missing or no mechanical signal.",
+                                    "enum": [
+                                      "dedupe",
+                                      "eligibility-reclassification",
+                                      "source-correction",
+                                      "unknown"
+                                    ],
+                                    "type": "string"
+                                  },
+                                  "slug": {
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              },
+                              "type": "array"
+                            },
+                            "totalUSDDelta": {
+                              "description": "This response's scfTotalDistributedUSD minus the previous snapshot's.",
+                              "type": "number"
+                            }
+                          },
+                          "type": "object"
                         }
                       },
                       "type": "object"
@@ -3632,6 +3810,35 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "properties": {
+                    "ecosystem": {
+                      "type": "object"
+                    },
+                    "meta": {
+                      "description": "Carries filters, metricDefinitions (what each served metric IS), generatedAt, and dataAsOf.",
+                      "properties": {
+                        "dataAsOf": {
+                          "description": "sls-036: the repository-index rollup timestamp — the most recent index refresh across the repo rows this response aggregated. Every github.* number (stars/issues/lastActivityAt) is as-of THIS moment, not a live GitHub read. Distinct from generatedAt (response serialization time). Null when no indexed repos matched.",
+                          "format": "date-time",
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "metricDefinitions": {
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "projects": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
                   "type": "object"
                 }
               }
@@ -4451,7 +4658,7 @@
             }
           },
           {
-            "description": "Optional source filter. Use 'audit' for security questions, 'ec-developer-report' for ecosystem stats, 'paper' for foundational protocol questions.",
+            "description": "Optional source filter. Use 'audit' for security questions, 'incident' for exploit/post-mortem history, 'security-program' for bug-bounty / vulnerability-disclosure program status (which program is current, where to report), 'ec-developer-report' for ecosystem stats, 'paper' for foundational protocol questions.",
             "in": "query",
             "name": "source",
             "schema": {
@@ -4467,6 +4674,7 @@
                 "lumenloop-research",
                 "audit",
                 "incident",
+                "security-program",
                 "ec-developer-report"
               ],
               "type": "string"
@@ -5198,10 +5406,10 @@
         "x-service": "skills"
       }
     },
-    "/skills/search_skill_sections": {
+    "/skills/search_skills": {
       "post": {
-        "description": "Scores every skill and every '##' section against a targeted query and returns ranked hits with exact ids (skill ids and 'skills.<source>.<name>#<section-slug>' section ids) that codemode.skill.read accepts. Use when grepping x-skill-index headings is not enough and you want relevance ranking over descriptions too.",
-        "operationId": "skills.search_skill_sections",
+        "description": "Scores whole skills against a targeted query and returns ranked skill ids. Each hit's availableSections lists exact section keys accepted by codemode.skill.read; sections remain readable but are not independent ranked hits.",
+        "operationId": "skills.search_skills",
         "requestBody": {
           "content": {
             "application/json": {
@@ -5230,14 +5438,14 @@
         },
         "responses": {
           "200": {
-            "description": "{ ok: true, hits: [{ id, service, kind, score, tier, description }], total, truncated } or { ok: false, error } (an unknown kind/service filter value is rejected with the valid names — filters are exact-match). Each hit's tier is \"gated\" (strict primary scorer) or \"backfill\" (gate-relaxed page fill, always ranked below every gated hit); score compares ONLY among same-tier hits — a backfill score can be numerically larger than a gated one ranked above it. truncated: true means more entries matched (total) than returned — raise limit, try a different family, or vary vocabulary."
+            "description": "{ ok: true, hits: [{ id, service, kind, score, tier, description }], total, truncated } or { ok: false, error } (an unknown kind/service filter value is rejected with the valid names — filters are exact-match). Each hit's tier is \"gated\" (strict primary scorer) or \"backfill\" (gate-relaxed page fill). Scores share one scale; gated hits lead except a backfill hit may be promoted when it decisively dominates (>=1.6x), so hit order is authoritative. truncated: true means more entries matched (total) than returned — raise limit, try a different family, or vary vocabulary."
           }
         },
-        "summary": "Ranked lexical search over all skills and skill sections.",
+        "summary": "Ranked lexical search over whole skills.",
         "tags": [
           "skills"
         ],
-        "x-execute": "await codemode.search({ query, service: \"skills\" })",
+        "x-execute": "await codemode.search({ query, kind: \"skill\", service: \"skills\" })",
         "x-service": "skills"
       }
     },
@@ -6158,7 +6366,7 @@
   "x-generated": {
     "builder": "scripts/build-super-spec.mjs",
     "catalogEntries": 272,
-    "generatedAt": "2026-07-13T21:32:54.648Z"
+    "generatedAt": "2026-07-14T00:14:25.327Z"
   },
   "x-services": {
     "lumenloop": {
@@ -6170,7 +6378,7 @@
     },
     "scout": {
       "base": "https://stellarlight.xyz",
-      "fetchedAt": "2026-07-13T21:32:54.648Z",
+      "fetchedAt": "2026-07-14T00:14:25.327Z",
       "note": "Read-only keyless API, carried near-verbatim from the upstream OpenAPI (components namespaced 'scout.*').",
       "source": "https://stellarlight.xyz/api/openapi.json"
     },

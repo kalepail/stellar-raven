@@ -48,7 +48,7 @@ describe("searchCatalog — contract shape", () => {
     for (const hit of hits) {
       expect(typeof hit.id).toBe("string");
       expect(typeof hit.service).toBe("string");
-      expect(["operation", "skill", "skill-section"]).toContain(hit.kind);
+      expect(["operation", "skill"]).toContain(hit.kind);
       expect(typeof hit.score).toBe("number");
       expect(typeof hit.description).toBe("string");
       if (hit.signature !== undefined) expect(typeof hit.signature).toBe("string");
@@ -634,12 +634,12 @@ describe("search-hit signature compaction (todo 841)", () => {
 
   it("only output blocks over the threshold are compacted; every other op's search signature is byte-identical", () => {
     const ops = catalog.entries.filter((e) => e.kind === "operation" && e.inputSchema);
-    let compacted = 0;
+    const compacted: string[] = [];
     for (const entry of ops) {
       const full = renderSignature(entry)!;
       const compact = renderSignature(entry, { compactOversizedOutput: true })!;
       if (outputBlockLength(entry) > COMPACT_OUTPUT_THRESHOLD) {
-        compacted += 1;
+        compacted.push(entry.id);
         expect(compact, entry.id).not.toBe(full);
         // The describe pointer is the branch-independent stub invariant
         // (object schemas list field names; non-object ones degrade to an
@@ -649,11 +649,17 @@ describe("search-hit signature compaction (todo 841)", () => {
         expect(compact, entry.id).toBe(full); // byte-identical below the line
       }
     }
-    // The threshold trims ONLY the measured monsters (rationale on the
-    // constant): a manifest refresh growing this set should be a conscious
-    // re-measurement, not silent drift.
-    expect(compacted).toBeGreaterThan(0);
-    expect(compacted).toBeLessThanOrEqual(5);
+    // The threshold trims ONLY the measured monsters. Scout 1.7.21 expanded
+    // analyzeEcosystem past the line; pin the complete set so a later schema
+    // refresh cannot silently widen compaction coverage.
+    expect(compacted.sort()).toEqual([
+      "scout.analyzeEcosystem",
+      "scout.explainRepo",
+      "scout.getPartners",
+      "scout.getRfps",
+      "scout.searchProjects",
+      "scout.searchRepos"
+    ]);
   });
 
   it("search hits (both surfaces share searchCatalogPage) carry the compact rendering", () => {

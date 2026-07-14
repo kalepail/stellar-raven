@@ -113,6 +113,10 @@ describe("demo tools at the worker boundary", () => {
     expect(recovery.nextSteps).toContain("not factual evidence");
     expect(recovery.nextSteps).toContain("`codemode.search`");
     expect(recovery.nextSteps).toContain("`soft-empty` is inconclusive");
+    expect(recovery.nextSteps).toContain("Scores share one scale");
+    expect(recovery.nextSteps).toContain(">=1.6x");
+    expect(recovery.nextSteps).toContain("hit order is authoritative");
+    expect(recovery.nextSteps).not.toMatch(/only within the same .*tier/i);
     expect(budgetReport()).toMatchObject({ searchCalls: 2, unknownServiceSearches: 1 });
 
     const finalAllowed = (await search.execute({ query: "search directory" })) as { hits: unknown[]; nextSteps: string };

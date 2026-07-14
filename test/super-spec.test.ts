@@ -24,6 +24,7 @@ type Operation = {
   description?: string;
   tags?: string[];
   requestBody?: { content?: Record<string, { schema?: Record<string, unknown> }> };
+  responses?: Record<string, { description?: string }>;
   "x-service": string;
   "x-execute"?: string;
   "x-algolia"?: unknown;
@@ -122,6 +123,22 @@ describe("shape and counts", () => {
         expect(op["x-execute"]).toBe(`await ${op.operationId}(args)`);
       }
     }
+  });
+
+  it("describes search scores on the shared cross-tier interleave scale", () => {
+    const search = spec.paths["/skills/search_skills"]!.post!;
+    const description = search.responses?.["200"]?.description ?? "";
+    expect(description).toContain("Scores share one scale");
+    expect(description).toContain(">=1.6x");
+    expect(description).toContain("hit order is authoritative");
+    expect(description).not.toMatch(/always ranked below every gated hit/i);
+    expect(description).not.toMatch(/only among same-tier/i);
+    expect(search.summary).toBe("Ranked lexical search over whole skills.");
+    expect(search.description).toContain("sections remain readable");
+    expect(search.description).toContain("not independent ranked hits");
+    expect(search["x-execute"]).toBe(
+      'await codemode.search({ query, kind: "skill", service: "skills" })'
+    );
   });
 });
 

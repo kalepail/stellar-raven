@@ -11,8 +11,12 @@ import { describe, expect, it } from "vitest";
 import {
   BASE_SERVER_INSTRUCTIONS,
   EXECUTE_DESCRIPTION,
+  SEARCH_KINDS,
   SEARCH_DESCRIPTION,
   SERVER_INSTRUCTIONS,
+  rankedSearchOutputSchema,
+  rankedSearchInputSchema,
+  recoveryCandidateSchema,
   searchHitSchema
 } from "../src/mcp/tools";
 
@@ -81,5 +85,25 @@ describe("server instructions — Claude Code 2KB budget (todo 971)", () => {
     expect(SEARCH_DESCRIPTION).toContain("Hit order is authoritative");
     expect(SEARCH_DESCRIPTION).not.toMatch(/always ranked below every gated hit/i);
     expect(SEARCH_DESCRIPTION).not.toMatch(/only among same-tier/i);
+  });
+
+  it("advertises only searchable kinds while preserving exact section reads", () => {
+    expect(SEARCH_KINDS).toEqual(["operation", "skill"]);
+    expect(rankedSearchInputSchema.kind.description).toContain("not independent search hits");
+    expect(SEARCH_DESCRIPTION).toContain("not independent ranked hits");
+    expect(SEARCH_DESCRIPTION).toContain("availableSections");
+    expect(SEARCH_DESCRIPTION).not.toMatch(/kind.*skill sections/i);
+  });
+
+  it("labels recovery as caller-reported rather than host-verified execution", () => {
+    const from = recoveryCandidateSchema.shape.from.description ?? "";
+    const recovery = rankedSearchOutputSchema.recovery.description ?? "";
+    const reason = rankedSearchInputSchema.reason.description ?? "";
+    for (const contract of [from, recovery, reason]) {
+      expect(contract).toMatch(/caller(?:-reported| reports)/i);
+      expect(contract).not.toMatch(/evidence of a prior|verified attempt/i);
+    }
+    expect(rankedSearchInputSchema.recoverFrom.description).toContain("not an execution ledger");
+    expect(recovery).toContain("does not verify an execution ledger");
   });
 });

@@ -104,8 +104,9 @@ around "deliver skill context when and as relevant" plus the vetted runnable ski
 - `POST /skills/read_skill` — `name` is an **enum of the 18 exposed skill ids** (no guessing), plus
   optional `sections` (headings, slugs, or `file:` keys) for partial retrieval.
   `x-execute: await codemode.skill.read(name, { sections })` — the real, existing affordance.
-- `POST /skills/search_skill_sections` — ranked lexical search over skills + sections;
-  `x-execute: await codemode.search({ query, service: "skills" })` — again a real affordance.
+- `POST /skills/search_skills` — ranked lexical search over whole skills;
+  `x-execute: await codemode.search({ query, kind: "skill", service: "skills" })`. Section keys
+  stay in `availableSections` and are readable through `skill.read`, but do not enter ranking.
 - `POST /skills/run_skill` — executes a runnable skill host-side through
   `codemode.skill.run(name, input)`. Current shipped state has one runnable id
   (`skills.lumenloop.stellar-ecosystem-digest`); the original two-runner design

@@ -153,9 +153,10 @@ untouched.
    pipeline (keyword blend → stopword rescue → kind weight) over a **gate-free replica of the
    vendor math** — kept beside the vendor file, byte-for-byte except the coverage gate is
    dropped (the coverage *bonus* stays), the same way lever 4 double-scores rather than editing
-   the vendor. `searchCatalog` uses it only to **backfill a short page** (below): gated tier-1
-   hits always rank first, so any page the gated tier fills is byte-identical to the pre-lever-5
-   behavior; only long questions that previously returned zero hits change.
+   the vendor. `searchCatalog` uses it only to **backfill a short page** (below). Membership is
+   gated-first, then the fixed page is interleaved on the shared score scale: a backfill hit may
+   move above adjacent gated hits only when it dominates by at least 1.6×. A page the gated tier
+   fills remains byte-identical to the pre-lever-5 behavior.
 
 **Set shaping** — `src/catalog/search.ts`. `loadManifest` enforces structural invariants at
 load: globally unique entry ids, and unique operation terminal names per service (those
@@ -188,7 +189,7 @@ way:
 operation entries carry a manifest-validated `retrievalProfile` whose exact-ID `recoverWith`
 edges name bounded wider, cross-family, cited-research, or different-medium contingencies for
 `empty | weak | adjacent | ambiguous | partial` outcomes. Public `search` and in-sandbox
-`codemode.search` accept exact attempted operation ids in `recoverFrom` plus an optional `reason`
+`codemode.search` accept caller-reported exact prior operation ids in `recoverFrom` plus an optional `reason`
 and return `recovery` separately from `hits`; omitted or empty `recoverFrom` always returns no
 recovery, and a reason without IDs never escalates. Normal hit membership, score, and order are
 therefore unchanged. The host does not inspect arbitrary payload semantics, automatically execute a recovery,

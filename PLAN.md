@@ -60,8 +60,8 @@ MCP client (LLM)
 Host Worker  (Workers Paid · wrangler: worker_loaders LOADER · nodejs_compat)
   ├─ tool "search"  { query, kind?, service?, limit?, recoverFrom?, reason? }
   │     [no isolate — host-side; recovery is exact-ID advisory metadata, separate from ranking]
-  │     ranked search over the unified catalog (ConnectorDescription[]):
-  │     every service operation + every skill + every skill section
+  │     ranked search over searchable catalog entries (ConnectorDescription[]):
+  │     every service operation + every whole skill; section keys ride on skill hits
   │     top-k hits returned WITH rendered TS signatures (describeTarget)
   ├─ tool "execute" { code }                                   [one Dynamic Worker per call]
   │     DynamicWorkerExecutor · globalOutbound: null · 60s wall-clock timeout
@@ -111,7 +111,7 @@ callable surface — fields chosen for what search/execute actually consume, not
 {
   "id": "lumenloop.search_directory",
   "service": "lumenloop",
-  "kind": "operation",            // operation | skill | skill-section
+  "kind": "operation",            // manifest: operation | skill | skill-section
   "description": "...",           // + when_to_use, returns
   "inputSchema": { ... },         // JSON Schema (rendered to TS on demand)
   "transport": { "type": "http", "method": "POST", "path": "/v1/tools/search_directory" },
@@ -119,6 +119,9 @@ callable surface — fields chosen for what search/execute actually consume, not
   // further fields only when a concrete consumer exists — no speculative schema
 }
 ```
+
+The manifest retains exact-readable `skill-section` entries, while ranked `search` accepts only
+`operation | skill`; section keys are discovered on whole-skill hits through `availableSections`.
 
 Actual catalog counts are authoritative in `catalog/manifest.json`, not repeated here because
 daily upstream and skill drift can change them. The catalog contains exposed service operations,
