@@ -14,3 +14,4 @@ Describe the evidence or reference this PR adds to the Raven record.
 - [ ] I linked the exact `improvements/...` source record and resolving upstream work.
 - [ ] I did not include credentials, private partner-tier details, or other secrets.
 - [ ] This PR leaves the finding short of `fixed-upstream` unless it includes a reproducible live recheck showing the original trigger no longer reproduces.
+- [ ] I understand a distinct Raven reviewer must repeat that trigger before the active finding is deleted and recorded in `improvements/resolved.json`.

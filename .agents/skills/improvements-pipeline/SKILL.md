@@ -16,8 +16,17 @@ Statuses are evidence bars:
 - `verified`: live re-execution proves the finding against the upstream surface; record the command,
   service response, result stamp, or other reproducible evidence.
 - `reported-upstream`: filed with the service owner; evidence must include the durable filed ref.
+- `declined-upstream`: the trigger still reproduces but the owner explicitly declined, classified it
+  as legacy, or rejected the recommendation as overfit. Keep the record, include the decline ref and
+  a non-empty `disposition`, do not re-file/pester, and revisit only on drift or materially new evidence.
 - `fixed-upstream`: live re-check confirms the upstream fix. If a residual remains, create or update a
-  successor finding instead of stretching the old one.
+  successor finding instead of stretching the old one. This is a transient deletion-candidate queue,
+  not an archive state.
+
+The terminal resolved transition is deletion from the active collection plus an entry in
+`improvements/resolved.json`. IDs are unique across the active tree and resolved ledger and are never
+reused; choose the next numeric id from the maximum across both. Git history, the resolved receipt,
+and the upstream resolution comment preserve evidence without retaining stale finding files.
 
 Findings are for upstream service/data/content/spec gaps only. Own-repo fixes go to Solo todos.
 
@@ -38,7 +47,8 @@ stranger can reproduce. Use the next id in the service prefix sequence:
 
 Use the standard frontmatter plus `Finding`, `Evidence`, and `Recommendation` sections. Keep
 `discovered` as `YYYY-MM-DD`. Evidence must be a non-empty list. If evidence contains a GitHub issue
-or PR URL, the status must be `reported-upstream` or `fixed-upstream`; otherwise lint fails.
+or PR URL, the status must be `reported-upstream`, `declined-upstream`, or `fixed-upstream`; otherwise
+lint fails.
 
 When the consumer-side workaround for a finding is a golden change (a grader caution, avoid
 trap, or disputed-truth encoding), it lands directly in the owned case file
@@ -65,12 +75,13 @@ npm run improvements:file -- --file improvements/<collection>/<finding>.md
 
 The generated issue body must retain all five sections: `Finding`, `Evidence`, `Recommendation`,
 `Source Record`, and `Resolution Handoff`. `Source Record` links the exact public
-`improvements/...` file on `kalepail/stellar-raven`; `Resolution Handoff` directs the owner to the
+`improvements/...` file on `kalepail/stellar-raven` and, when committed, its immutable blob snapshot;
+`Resolution Handoff` directs the owner to the
 repo's `upstream-improvement-ready.yml` issue form with the finding id, resolving issue/PR, deployed
 version or timestamp, and smallest live recheck. Do not hand-file a shortened body that drops either
 link. An upstream maintainer who prefers a patch can use
 `.github/PULL_REQUEST_TEMPLATE/upstream-improvement-handoff.md` for an evidence-only PR. The filing
-script refuses to re-file `reported-upstream` or `fixed-upstream` records: search and dedupe first,
+script refuses to re-file `reported-upstream`, `declined-upstream`, or `fixed-upstream` records: search and dedupe first,
 and use a successor finding when the remaining defect is materially different.
 
 A finding can legitimately become `fixed-upstream` before anyone files it. If the original trigger no
@@ -163,7 +174,39 @@ or when a user asks whether previous improvements were resolved.
      when the evidence bar is met, and close the Raven notification after recording the resulting
      finding/status/ref. An evidence-only PR may append refs or reproduction evidence, but must not
      claim `fixed-upstream` without a reproducible live check.
-6. Regenerate and verify after edits:
+6. Drain genuinely resolved records. The author-side `fixed-upstream` classification is not enough;
+   a distinct reviewer must re-derive every deletion candidate by:
+   - reading the finding and current upstream issue/PR directly;
+   - confirming the change is deployed, not merely merged or closed;
+   - freshly executing the original trigger rather than accepting the author's transcript;
+   - scanning adjacent behavior for residuals and creating a self-contained successor when needed;
+   - running `rg -n "<finding-id>" .` and reconciling golden, register, research, Algolia-rule,
+     intake, and other persistent references;
+   - verifying cleanup removes the file, its probe and intake override, regenerates the index, and
+     appends a complete resolved receipt;
+   - confirming a resolution comment with the live result and commit-pinned source was posted on
+     every upstream ref, or recording why that is not applicable for a never-filed fix.
+
+   Then use the resolver, first as a dry run:
+
+```sh
+npm run improvements:resolve -- --file improvements/<collection>/<finding>.md \
+  --live-recheck "<dated command/URL/result>" \
+  --review-evidence "<distinct reviewer and evidence>" \
+  --references-reviewed --upstream-commented --dry-run
+```
+
+   Omit `--dry-run` only after the printed upstream comment is posted. Use
+   `--upstream-comment-na` only when the finding was never filed. Pass each resolving issue/PR with
+   `--resolving-ref`. The resolver appends `improvements/resolved.json`, removes any per-finding
+   intake override, deletes the active file, and regenerates `INDEX.md`.
+
+   Superseded records with an open upstream issue do not delete until that ref is commented/closed
+   with a successor link and the successor restates the evidence. Partial fixes follow the same rule.
+   A regression after deletion gets a new id and cites the resolved ledger entry; never resurrect or
+   reuse the retired id.
+
+7. Regenerate and verify after edits:
 
 ```sh
 npm run improvements:index
@@ -179,9 +222,11 @@ finding ids, upstream refs, scratchpad id, and the exact re-check to run.
 
 Probe frontmatter is optional and shaped as:
 `probe.type: http-text`, `probe.url`, and `probe.expect.status`, `contains`, or `excludes`.
-Run `npm run improvements:probes` to re-check non-fixed findings with probes. A recurring hit should
+Run `npm run improvements:probes` to re-check non-fixed, non-declined findings with probes. A recurring hit should
 be converted into a structured `recurrences` entry with a date and evidence; probe failures or
 inconclusive results are review signals, not automatic status changes.
+Use `npm run improvements:probes -- --include-declined` only on a drift round or when materially new
+evidence warrants revisiting an accepted owner decision.
 Use repeatable `--service <service>` or `--exclude-service <service>` filters when the task has an
 explicit collection boundary; for example,
 `npm run improvements:probes -- --exclude-service stellar-docs`. Do not touch an excluded upstream
@@ -192,7 +237,8 @@ surface merely because the unfiltered cadence command normally covers it.
 `improvements/INDEX.md` is generated. Never hand-edit it; run `npm run improvements:index`
 after finding/frontmatter/status changes.
 `npm run improvements:lint` is the gate. It fails when finding frontmatter is malformed, status/service
-values are invalid, evidence or recurrence fields are missing, the generated index bytes differ from
+values are invalid, declined disposition/evidence is missing, resolved-ledger receipts are malformed
+or collide with active IDs, evidence or recurrence fields are missing, the generated index bytes differ from
 the committed file, intake services do not cover the four collections exactly, an override points to a
 missing finding id, a repo string is not `owner/repo`, or a finding cannot resolve to a repo, mixed
 rule, or explicit unclear marker. `npm run improvements:lint -- --live` additionally checks each

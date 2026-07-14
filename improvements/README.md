@@ -34,7 +34,7 @@ One file per finding. YAML-ish frontmatter, then three short sections.
 ---
 id: <collection>-NNN
 service: lumenloop | stellar-light-scout | stellar-docs | skills
-status: proposed | verified | reported-upstream | fixed-upstream
+status: proposed | verified | reported-upstream | declined-upstream | fixed-upstream
 discovered: YYYY-MM-DD
 evidence:
   - eval/qa/results/<results-file stamp>
@@ -52,8 +52,17 @@ evidence:
 - A finding enters as `proposed`. It graduates to `verified` **only with live
   re-execution evidence** — an eval judge's opinion alone is not verification.
 - `reported-upstream` when it has been filed with the service owner;
-  `fixed-upstream` when a live re-check confirms the fix. Refresh status whenever
-  upstream changes (drift refresh is a natural checkpoint).
+  `declined-upstream` when an owner explicitly declines a still-reproducing change and the record
+  carries the decline ref plus a `disposition`; `fixed-upstream` when an author-side live re-check
+  confirms the fix. Refresh status whenever upstream changes (drift refresh is a natural checkpoint).
+- This directory is an active queue, not an archive. `fixed-upstream` is a short-lived deletion
+  candidate. A distinct reviewer must independently re-run the original trigger, inspect the
+  upstream resolution/deploy, scan residuals and repo references, and confirm cleanup before the
+  active file is deleted. Resolution appends a compact receipt to `resolved.json`; IDs in that
+  ledger are never reused. GitHub closure or merge alone never clears the evidence bar.
+- Declined, wontfix, legacy, and overfit decisions are retained while the original defect still
+  reproduces. A superseded record can be retired only after its upstream ref points to a
+  self-contained successor and that successor preserves the essential evidence.
 - Findings here are for the **services**. Fixes to this repo (adapters,
   normalizers, catalog, eval golden) go to Solo todos instead (the Solo project binding
   lives in [`AGENTS.md` “Coordination”](../AGENTS.md#coordination)) — a finding file may note
@@ -87,6 +96,10 @@ When upstream work is deployed, maintainers can open the **Upstream improvement 
 verification** issue form with the finding id, resolving issue/PR, deploy/version timestamp, and
 smallest live recheck. Raven independently verifies the live surface before marking a finding fixed.
 
+Before a resolved file is retired, Raven posts the dated live result and its commit-pinned source
+snapshot on the upstream ref. Future filing bodies include both the active `main` link and an
+immutable snapshot so the source remains auditable after the active queue is drained.
+
 Do not file an issue solely for bookkeeping when a live recheck already proves the defect fixed.
 `fixed-upstream` without an issue URL is valid when its evidence records that dated recheck; add an
 existing resolving issue/PR when one can be found without inventing a ceremonial report.
@@ -101,7 +114,7 @@ is now directly remediable with the operator Algolia credentials in `.env`
   stay **upstream** on `stellar/stellar-docs`. Do not "fix" them by rewriting index records; the
   crawler would overwrite it and we would be diverging a shared corpus from its source.
 - **Search-mechanism gaps** — ranking, tokenization, synonym/vocabulary, or crawler-config issues
-  (`sd-001`, `sd-003`, `sd-006`). These we *can* now remediate directly (a general rule/synonym, an
+  (`sd-001`, `sd-003`; resolved precedent `sd-006` is in `resolved.json`). These we *can* now remediate directly (a general rule/synonym, an
   index-settings change, a crawler-config fix + reindex), subject to a hard bar:
   - a **general mechanism only** — no per-page/per-query rules or synonyms (same anti-overfitting
     rule the eval loop enforces);
@@ -113,8 +126,8 @@ is now directly remediable with the operator Algolia credentials in `.env`
 
   Record a direct Algolia remediation in the finding's `evidence` (what changed, the A/B before/after,
   the live re-check) exactly like an upstream fix; keep the GitHub ref too when the underlying cause is
-  also a content/crawler issue the docs owner should know about (as `sd-006` does with its monitor-only
-  rule residual).
+  also a content/crawler issue the docs owner should know about. The resolved `sd-006` receipt is the
+  precedent for retaining a separate monitor-only rule-health canary after the active finding retires.
 
 **Analytics as evidence.** The Search Analytics / usage keys give us real user query streams and
 no-result queries — a new, low-risk evidence source. Use them to quantify a finding's prevalence

@@ -12,6 +12,8 @@ evidence:
 recurrences:
   - date: 2026-07-11
     evidence: GT-55 reproduced that issues is a cached project/repository-universe backlog rollup, not activity or quality; GitHub repository open_issues_count also cannot corroborate issue-only totals because it includes pull requests
+  - date: 2026-07-14
+    evidence: definitions and dataAsOf are live but the requested type filter remains absent; follow-up https://github.com/Stellar-Light/stellarlight/issues/524#issuecomment-4971408859
 ---
 
 ## Finding

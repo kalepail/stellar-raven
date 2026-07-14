@@ -1,7 +1,8 @@
 ---
 id: sd-004
 service: stellar-docs
-status: reported-upstream
+status: declined-upstream
+disposition: Accept the owner's operational-policy wording; preserve the consumer truth distinction between stock caps and implementation configurability without re-filing.
 discovered: 2026-07-03
 evidence:
   - developers.stellar.org method pages (getTransactions, getEvents, getLedgers) fetched 2026-07-03

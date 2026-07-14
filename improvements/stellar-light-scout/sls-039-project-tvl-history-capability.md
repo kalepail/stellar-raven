@@ -1,13 +1,15 @@
 ---
 id: sls-039
 service: stellar-light-scout
-status: reported-upstream
+status: declined-upstream
+disposition: Accept provider-hosted history as the upstream design boundary; keep consumer guidance directing trend and peak questions to tvlMethodUrl and do not request duplicated in-API history without new evidence.
 discovered: 2026-07-10
 evidence:
   - Scout project rows expose tvlUSD and tvlAsOf but not a history or method URL
   - direct same-provider Blend/Soroswap series distinguish current, quarter trend, peak, and record
   - Solo scratchpad 575 GT-23 primary 3264 and blind 3267
   - upstream issue filed 2026-07-13: https://github.com/Stellar-Light/stellarlight/issues/522
+  - upstream issue closed completed 2026-07-14 after exposing llamaSlugs, tvlMethodUrl, and methodology while explicitly leaving history at the provider
 ---
 
 ## Finding

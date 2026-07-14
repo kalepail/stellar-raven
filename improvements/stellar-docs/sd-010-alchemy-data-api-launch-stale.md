@@ -21,6 +21,9 @@ probe:
     contains:
       - now in talks to expand their service to Stellar
       - targeted launch in the first half of 2026
+recurrences:
+  - date: 2026-07-14
+    evidence: live indexers page remains stale; green PR follow-up https://github.com/stellar/stellar-docs/pull/2573#issuecomment-4971410572
 ---
 
 ## Finding

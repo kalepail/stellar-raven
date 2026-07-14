@@ -1,0 +1,873 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "entries": [
+    {
+      "id": "ll-021",
+      "title": "Lumenloop's SCF recap discovery lags the official round result. The accessible",
+      "service": "lumenloop",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-14",
+      "repo": "lumenloop/lumenloop-backend",
+      "upstreamRefs": [],
+      "resolvingRefs": [],
+      "liveRecheck": "2026-07-14 GET https://lumenloop.com/search?q=SCF%20%2343 returns 'SCF #43 Round Recap' dated 2026-06-02",
+      "reviewEvidence": "Independent Fable reviewer Solo 3645 re-derived upstream context and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/lumenloop/ll-021-scf-43-recap-discoverability.md"
+    },
+    {
+      "id": "sd-006",
+      "title": "The Algolia crawler for developers.stellar.org strips code blocks, so the",
+      "service": "stellar-docs",
+      "discovered": "2026-07-06",
+      "resolved": "2026-07-14",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2569"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2569"
+      ],
+      "liveRecheck": "2026-07-14 public DocSearch exact brew/winget/cargo and broad CLI-install queries rank the install page first with command text; rule-health canary retained",
+      "reviewEvidence": "Independent Fable reviewer Solo 3656 re-derived upstream deploy and live trigger",
+      "sourceCommit": "a4954b6a38f66de5ce4b28fc33535464df0818fb",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/a4954b6a38f66de5ce4b28fc33535464df0818fb/improvements/stellar-docs/sd-006-crawler-strips-code-blocks.md"
+    },
+    {
+      "id": "sk-002",
+      "title": "stellar-dev/smart-contracts/security.md:17 states self-reentrancy is",
+      "service": "skills",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-14",
+      "repo": "stellar/stellar-dev-skill",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-dev-skill/issues/46"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-dev-skill/issues/46"
+      ],
+      "liveRecheck": "2026-07-14 raw main security.md states the host blocks direct or indirect reentrant calls; stale sentence absent",
+      "reviewEvidence": "Independent Fable reviewer Solo 3656 re-derived upstream deploy and live trigger",
+      "sourceCommit": "a4954b6a38f66de5ce4b28fc33535464df0818fb",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/a4954b6a38f66de5ce4b28fc33535464df0818fb/improvements/skills/sk-002-security-md-reentrancy-claim.md"
+    },
+    {
+      "id": "sk-008",
+      "title": "The upstream Stellar-Light/stellar-scout skill API reference previously lagged the live",
+      "service": "skills",
+      "discovered": "2026-07-09",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellar-scout",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/8"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/8"
+      ],
+      "liveRecheck": "2026-07-14 raw main api-reference documents ramps and full codeVerified fields, matching live OpenAPI 1.7.22 and Raven served copy",
+      "reviewEvidence": "Independent Fable reviewer Solo 3656 re-derived upstream deploy and live trigger",
+      "sourceCommit": "9892897b92e41e4fdb8af2f8661abebcc7046029",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/9892897b92e41e4fdb8af2f8661abebcc7046029/improvements/skills/sk-008-stellar-scout-api-reference-17-drift.md"
+    },
+    {
+      "id": "sls-001",
+      "title": "The hackathon detail endpoint returned winner lists WITHOUT placement fields, but",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/219"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/219"
+      ],
+      "liveRecheck": "2026-07-14 GET /api/hackathons/stellar-agents-x402-stripe-mpp returns winners[5] with placementRank 1..5 and ordinal labels",
+      "reviewEvidence": "Independent Fable reviewer Solo 3645 re-derived upstream context and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-001-hackathon-winners-no-placement.md"
+    },
+    {
+      "id": "sls-002",
+      "title": "Some SCF award entries carry null amounts — e.g. Liqvid.xyz is marked awarded",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/268"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/268"
+      ],
+      "liveRecheck": "2026-07-14 GET /api/projects/search?q=liqvid returns scfAmountStatus=undisclosed; 80-row control found no unmarked awarded-null row",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-002-scf-null-award-amounts.md"
+    },
+    {
+      "id": "sls-003",
+      "title": "Positive finding, recorded as a trust anchor: the audit corpus is excellent. All",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/320"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/320"
+      ],
+      "liveRecheck": "2026-07-14 GET /api/research?source=audit resolves reports 45/31/49/77/4 on the current host with zero legacy-host URLs",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "0306425752a0fb4c1b1965d64236c5a975aafa5b",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-003-audit-corpus-trust-anchor.md"
+    },
+    {
+      "id": "sls-004",
+      "title": "404 responses were sometimes non-JSON (content-type inconsistency with the rest of",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/321",
+        "https://github.com/Stellar-Light/stellarlight/pull/286"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/321",
+        "https://github.com/Stellar-Light/stellarlight/pull/286"
+      ],
+      "liveRecheck": "2026-07-14 four guaranteed-missing API routes return 404 application/json with parseable error bodies",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-004-non-json-404s.md"
+    },
+    {
+      "id": "sls-005",
+      "title": "Successor to the fixed sls-001. On events whose winners were announced as a",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/285"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/285"
+      ],
+      "liveRecheck": "2026-07-14 buildonstellarchile returns winnersRanked=false with 14 null placement ranks; ordinal control returns true",
+      "reviewEvidence": "Independent Fable reviewer Solo 3645 re-derived upstream context and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-005-tier-winner-arrays-unordered.md"
+    },
+    {
+      "id": "sls-006",
+      "title": "The scout research corpus's sdf-blog source indexes blog listing,",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/277"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/277"
+      ],
+      "liveRecheck": "2026-07-14 Q1 2026 research query ranks the canonical article body first; top 10 contain zero listing/tag chunks",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-006-sdf-blog-listing-page-chunks.md"
+    },
+    {
+      "id": "sls-007",
+      "title": "/api/rfps exposes activeQuarter plus per-RFP quarter and status,",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/273"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/273"
+      ],
+      "liveRecheck": "2026-07-14 GET /api/rfps reports SCF 45 Submission closing 2026-08-16 with same-day live provenance",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-007-rfps-missing-round-number-dates.md"
+    },
+    {
+      "id": "sls-009",
+      "title": "searchProjects ranks authority/prominence above exact name match: the queries",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/285"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/285"
+      ],
+      "liveRecheck": "2026-07-14 q=Slender and q=Blend each rank the exact-name project first",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-009-exact-name-search-outranked.md"
+    },
+    {
+      "id": "sls-011",
+      "title": "Scout and Lumenloop disagree on the same project's total SCF funding with no",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellar-scout",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/1"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/1"
+      ],
+      "liveRecheck": "2026-07-14 LOBSTR serves $232000, rounds [2,17,22], disclosed status and explicit reconstruction count basis",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "ab6277610b3199c602d23a42121e8dde449e2ae8",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/ab6277610b3199c602d23a42121e8dde449e2ae8/improvements/stellar-light-scout/sls-011-scf-totals-cross-source-disagreement.md"
+    },
+    {
+      "id": "sls-012",
+      "title": "Anchor corridor/coverage data exists only as free-text prose; no structured",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellar-scout",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/3"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/3"
+      ],
+      "liveRecheck": "2026-07-14 Anchor search serves structured dated coverage on 9/15 rows, including Bitso countries/currencies",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "ab6277610b3199c602d23a42121e8dde449e2ae8",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/ab6277610b3199c602d23a42121e8dde449e2ae8/improvements/stellar-light-scout/sls-012-no-structured-anchor-corridor-fields.md"
+    },
+    {
+      "id": "sls-013",
+      "title": "The analyze funding dimension is unstable and internally inconsistent:",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/275"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/275"
+      ],
+      "liveRecheck": "2026-07-14 funding analysis serves computedAt, methodologyVersion, countBasis and 41 byRound rows",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-013-funding-dimension-instability.md"
+    },
+    {
+      "id": "sls-014",
+      "title": "Successor to the fixed sls-007 — and its cautionary sequel. The scfRound",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-06",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/317",
+        "https://github.com/Stellar-Light/stellarlight/pull/316"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/317",
+        "https://github.com/Stellar-Light/stellarlight/pull/316"
+      ],
+      "liveRecheck": "2026-07-14 RFP SCF metadata matches the live awards page: round 45, Submission, deadline 2026-08-16",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-014-scfround-meta-stale-at-birth.md"
+    },
+    {
+      "id": "sls-015",
+      "title": "First, credit where due: the 1.4.4/1.5.0 enrichments to searchProjects'",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-06",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/318",
+        "https://github.com/Stellar-Light/stellarlight/pull/316"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/318",
+        "https://github.com/Stellar-Light/stellarlight/pull/316"
+      ],
+      "liveRecheck": "2026-07-14 OpenAPI searchProjects prose is directory-scoped with zero product name-drops and separate x-routing/notFor",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-015-searchprojects-description-editorial-capture.md"
+    },
+    {
+      "id": "sls-016",
+      "title": "Per-winner award amounts are not structured. Winner entries on completed",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-07",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellar-scout",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/5"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/5"
+      ],
+      "liveRecheck": "2026-07-14 hackathon prizeTiers serves First Place rank 1 amountUSD 5000 XLM, joinable to winners by placementRank",
+      "reviewEvidence": "Independent Fable reviewer Solo 3645 re-derived upstream context and live trigger",
+      "sourceCommit": "fa4219cafb3f09fa3201cc9bf7a10c5fcdd2dcfc",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/fa4219cafb3f09fa3201cc9bf7a10c5fcdd2dcfc/improvements/stellar-light-scout/sls-016-winner-award-amounts-prose-only.md"
+    },
+    {
+      "id": "sls-017",
+      "title": "LOBSTR's directory records omit its XRP Ledger support. LOBSTR's own site",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-07",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellar-scout",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/4"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/4"
+      ],
+      "liveRecheck": "2026-07-14 LOBSTR serves supportedNetworks [stellar,xrpl] and names both networks",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "4fec45ef452f90472028b655abe9e29550ccc817",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/4fec45ef452f90472028b655abe9e29550ccc817/improvements/stellar-light-scout/sls-017-lobstr-multichain-omitted.md"
+    },
+    {
+      "id": "sls-018",
+      "title": "Structured coverage exists for Etherfuse, but generic Mexico on-ramp queries",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-08",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellar-scout",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/7"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/7"
+      ],
+      "liveRecheck": "2026-07-14 generic Mexico/MXN on-ramp query returns Etherfuse with dated structured coverage",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "cfc070c2f0d8f33b6eacd01bc7a8306637066aac",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/cfc070c2f0d8f33b6eacd01bc7a8306637066aac/improvements/stellar-light-scout/sls-018-etherfuse-ramp-coverage-not-retrieved.md"
+    },
+    {
+      "id": "sls-019",
+      "title": "Scout 1.7.11 adds source=cap to GET /api/research, but exact canonical CAP",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/510"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/510"
+      ],
+      "liveRecheck": "2026-07-14 seven exact CAP identifiers each rank their own document first; Asset Clawback control has zero duplicate URLs",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "0306425752a0fb4c1b1965d64236c5a975aafa5b",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-019-cap-identifier-ranking.md"
+    },
+    {
+      "id": "sls-021",
+      "title": "Scout's partner search and structured partner fields omit current HoneyCoin",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/493"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/493"
+      ],
+      "liveRecheck": "2026-07-14 mobile-money off-ramp query returns Honey Coin with on/off-ramp types, USDC/USDT and rail services",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-021-partner-ramp-coverage-fields.md"
+    },
+    {
+      "id": "sls-022",
+      "title": "Scout's YieldBlox incident research record conflates event and publication",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/513"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/513"
+      ],
+      "liveRecheck": "2026-07-14 YieldBlox incident row states 2026-02-22, 61,249,278 XLM + ~1,000,197 USDC (~$10.2M), separate publication dates and quarantine-not-recovery",
+      "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
+      "sourceCommit": "0306425752a0fb4c1b1965d64236c5a975aafa5b",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-022-yieldblox-incident-fact-model.md"
+    },
+    {
+      "id": "sls-025",
+      "title": "Scout can retrieve Stellar ERC-8004-style implementation records under broad",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/512"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/512"
+      ],
+      "liveRecheck": "2026-07-14 exact repo queries smart-account-kit, passkey-kit, ERC-8004, x402 and subquery/stellar-subql-starter return exact hits",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "0306425752a0fb4c1b1965d64236c5a975aafa5b",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-025-agent-standard-alias-recall.md"
+    },
+    {
+      "id": "sls-026",
+      "title": "Scout's Aquarius SCF summary collapses incompatible award statuses into one",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/511"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/511"
+      ],
+      "liveRecheck": "2026-07-14 Aquarius serves $291000, rounds [17,23,27], round 30 excluded and count basis disclosed",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "0306425752a0fb4c1b1965d64236c5a975aafa5b",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-026-scf-status-aggregate-conflict.md"
+    },
+    {
+      "id": "sls-027",
+      "title": "Scout's Phoenix total is correct, but its awarded-round membership is not",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/490"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/490"
+      ],
+      "liveRecheck": "2026-07-14 Phoenix serves $394500 and awarded rounds [16,20,25], with non-awarded rounds absent",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-027-phoenix-scf-award-membership.md"
+    },
+    {
+      "id": "sls-028",
+      "title": "Scout can retain a Live/project discovery row after its linked domain becomes",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/515"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/515"
+      ],
+      "liveRecheck": "2026-07-14 IRL has site-liveness provenance, SNNAC/Blue Marble are Inactive and Octoplace is removed",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "0306425752a0fb4c1b1965d64236c5a975aafa5b",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-028-stale-repurposed-project-links.md"
+    },
+    {
+      "id": "sls-030",
+      "title": "Scout's Comet record reports scfAwarded: false and does not represent the",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/490"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/490"
+      ],
+      "liveRecheck": "2026-07-14 Comet serves Inactive, scfAwarded=true, $291000, rounds [13,18] and Blend-backstop lifecycle note",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-030-comet-scf-and-deployment-identity.md"
+    },
+    {
+      "id": "sls-031",
+      "title": "Scout exposes a DeFindex TVL value and timestamp but not enough calculation",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/494"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/494"
+      ],
+      "liveRecheck": "2026-07-14 TVL analysis serves provider/asOf/inclusion basis; DeFindex carries tvlAsOf, llamaSlugs and tvlMethodUrl",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "0306425752a0fb4c1b1965d64236c5a975aafa5b",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-031-tvl-methodology-provenance.md"
+    },
+    {
+      "id": "sls-032",
+      "title": "Bridge discovery is project-level, while safe route selection is asset- and",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/516"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/516"
+      ],
+      "liveRecheck": "2026-07-14 Allbridge serves four canonical directed routes with representation/asOf; uncurated rows are null=UNKNOWN",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "0306425752a0fb4c1b1965d64236c5a975aafa5b",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-032-bridge-route-asset-representation.md"
+    },
+    {
+      "id": "sls-034",
+      "title": "Scout's stablecoin discovery surface is neither an exhaustive asset registry nor",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/518"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/518"
+      ],
+      "liveRecheck": "2026-07-14 USDY ranks first as Asset types [Stablecoin,RWA], and PYUSD/EURAU/MGUSD resolve",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "0306425752a0fb4c1b1965d64236c5a975aafa5b",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-034-stablecoin-asset-coverage-typing.md"
+    },
+    {
+      "id": "sls-035",
+      "title": "Scout's DEX type/cluster cannot answer how many independent liquidity venues or",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/517"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/517"
+      ],
+      "liveRecheck": "2026-07-14 Soroswap serves venueRole=amm and the spec states taxonomy counts are not competitor counts",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "0306425752a0fb4c1b1965d64236c5a975aafa5b",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-035-dex-role-liquidity-taxonomy.md"
+    },
+    {
+      "id": "sls-037",
+      "title": "One Live project status cannot represent partial deployment. Rarible has",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/523"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/523"
+      ],
+      "liveRecheck": "2026-07-14 Rarible serves supportedNetworks=[evm] with site-liveness provenance",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "0306425752a0fb4c1b1965d64236c5a975aafa5b",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-037-partial-deployment-network-provenance.md"
+    },
+    {
+      "id": "sls-038",
+      "title": "The live analyze response omits the TVL rollup promised by the exposed catalog",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/495"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/495"
+      ],
+      "liveRecheck": "2026-07-14 TVL analysis serves totalTvlUSD 1667765295, 12 tracked, DefiLlama, dated undercount basis; dimension=all includes tvl",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-038-analyze-tvl-contract-mismatch.md"
+    },
+    {
+      "id": "sls-041",
+      "title": "Builder skill search returns useful candidates but does not explain why a row",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "liveRecheck": "2026-07-14 Rust builder query serves row-level match fields, matched projects/terms, codeEvidence and meta.matchBasis",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-041-builder-skill-match-provenance.md"
+    },
+    {
+      "id": "sls-042",
+      "title": "The category-cluster endpoint silently truncates its active-project input at",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "liveRecheck": "2026-07-14 analyze and clusters share one population id, included=available=845 and truncated=false",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-042-category-clusters-pagination-truncation.md"
+    },
+    {
+      "id": "sls-043",
+      "title": "Scout exposes two canonically linked Band identities with opposite SCF histories",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "liveRecheck": "2026-07-14 Band query returns one canonical row, $60000, round [16]",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-043-band-canonical-award-collision.md"
+    },
+    {
+      "id": "sls-044",
+      "title": "Funding-v2 now documents its methodology, fixing the earlier provenance defect, but",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/520"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/520"
+      ],
+      "liveRecheck": "2026-07-14 funding analysis serves projectSetHash, snapshots, structured added/removed/reasons delta, deltaBasis and deltaUnavailable",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "0306425752a0fb4c1b1965d64236c5a975aafa5b",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-044-funding-v2-removal-delta-provenance.md"
+    },
+    {
+      "id": "sls-045",
+      "title": "The RFP discovery response prepends a synthetic current-round row to the",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "liveRecheck": "2026-07-14 open RFPs serve five typed rfp rows plus one typed synthetic scf-round row with countBasis",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-045-rfp-synthetic-round-row-count.md"
+    },
+    {
+      "id": "sls-046",
+      "title": "Scout marks stellar/stellar-core as codeVerified.isDeployableContract:true",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "liveRecheck": "2026-07-14 explainRepo for stellar/stellar-core serves codeVerified.isDeployableContract=false",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-046-explainrepo-deployable-contract-misclassification.md"
+    },
+    {
+      "id": "sls-047",
+      "title": "Scout's generic repository score can outrank Stellar-specific implementations",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "liveRecheck": "2026-07-14 zero-knowledge repo results lead with five code-verified Stellar repos; generic Noir is absent",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-047-repository-stellar-relevance-ranking.md"
+    },
+    {
+      "id": "sls-048",
+      "title": "Scout quantitative operations expose locally plausible totals but lack a common",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "liveRecheck": "2026-07-14 status/analyze/clusters expose shared population scope digests with availability/inclusion/truncation",
+      "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-048-quantitative-response-scope-digest.md"
+    },
+    {
+      "id": "sls-049",
+      "title": "Scout's Bitso project narrative claims live anchor/corridor activity while its",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/498"
+      ],
+      "liveRecheck": "2026-07-14 Bitso serves profiled USDC on/off-ramp anchorProfile; Yellow Card control explicitly serves not-profiled",
+      "reviewEvidence": "Independent Fable reviewer Solo 3656 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-049-bitso-anchor-profile-empty-fields.md"
+    },
+    {
+      "id": "sls-050",
+      "title": "Scout directory identity handling does not make the Vibrant-to-Vesseo naming",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/509"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/509"
+      ],
+      "liveRecheck": "2026-07-14 Vibrant and Vesseo queries resolve one canonical vesseo id with currentName, alias and source URL",
+      "reviewEvidence": "Independent Fable reviewer Solo 3656 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-050-vesseo-vibrant-identity-continuity.md"
+    },
+    {
+      "id": "sls-051",
+      "title": "searchProjects' upstream description is broad enough to lexically capture",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/501"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/501"
+      ],
+      "liveRecheck": "2026-07-14 live OpenAPI has zero descriptions over 600 chars; flagship Wasm question ranks docs first with projects absent top-five",
+      "reviewEvidence": "Independent Fable reviewer Solo 3656 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-051-searchprojects-description-docs-question-capture.md"
+    },
+    {
+      "id": "sls-052",
+      "title": "The 1.7.16 structural fix (sls-051) moved routing vocabulary out of operation",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-12",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/508"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/508"
+      ],
+      "liveRecheck": "2026-07-14 live x-routing contains all three vocabulary families and each probe ranks its intended operation first",
+      "reviewEvidence": "Independent Fable reviewer Solo 3656 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-052-xrouting-vocabulary-gaps.md"
+    },
+    {
+      "id": "sls-053",
+      "title": "The Scout ecosystem-skills directory (GET /api/skills) still advertises the",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-12",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/508"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/508"
+      ],
+      "liveRecheck": "2026-07-14 GET /api/skills serves smart-contracts and zero legacy soroban slugs",
+      "reviewEvidence": "Independent Fable reviewer Solo 3656 re-derived upstream deploy and live trigger",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-053-skills-directory-stale-soroban-route.md"
+    },
+    {
+      "id": "sls-054",
+      "title": "The live sls-050 changelog entry contradicts itself about the project rename-continuity response shape",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-13",
+      "resolved": "2026-07-14",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/525",
+        "https://github.com/Stellar-Light/stellarlight/pull/526"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/525",
+        "https://github.com/Stellar-Light/stellarlight/pull/526"
+      ],
+      "liveRecheck": "2026-07-14 live changelog and OpenAPI agree on nested identity fields and no retired top-level rename fields",
+      "reviewEvidence": "Independent Fable reviewer Solo 3656 re-derived upstream deploy and live trigger",
+      "sourceCommit": "51847b418c377a15ff5fdf48527bc685e123bcfc",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/51847b418c377a15ff5fdf48527bc685e123bcfc/improvements/stellar-light-scout/sls-054-changelog-rename-identity-shape-mismatch.md"
+    }
+  ]
+}

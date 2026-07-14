@@ -10,6 +10,7 @@ evidence:
   - unknown scfTier input was ignored and returned the same unfiltered result
   - upstream issue filed 2026-07-13: https://github.com/Stellar-Light/stellarlight/issues/521
   - Solo scratchpad 575 GT-35 primary 3287 and blind 3289
+  - 2026-07-14 live unknown scfTier still returns HTTP 200 unfiltered; follow-up https://github.com/Stellar-Light/stellarlight/issues/521#issuecomment-4971409043
 ---
 
 ## Finding

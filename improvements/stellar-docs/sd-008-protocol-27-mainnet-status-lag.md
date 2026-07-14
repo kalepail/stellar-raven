@@ -21,6 +21,9 @@ probe:
     contains:
       - Protocol 27 (Testnet, June 18, 2026)
       - Protocol 26 (Mainnet, May 6, 2026)
+recurrences:
+  - date: 2026-07-14
+    evidence: live table still labels P27 Testnet and P26 Mainnet; maintainer-ownership follow-up https://github.com/stellar/stellar-docs/issues/2574#issuecomment-4971408775
 ---
 
 ## Finding

@@ -16,6 +16,8 @@ recurrences:
     evidence: eval/qa/results/2026-07-14T03-29-01-variantA.json scored q-org-mazieres-chief-scientist wrong after five on-plan calls; the answer promoted a 2014-2015 Chief Scientist title as timeless current and omitted canonical founder/professor context
   - date: 2026-07-14
     evidence: the reopened playground generality artifact and eval/qa/results/2026-07-14T13-10-10-variantA.json both retrieved Justin Rice history but missed the live Team-page role and observation date
+  - date: 2026-07-14
+    evidence: source=sdf-org now covers Mandate, Terms, Enterprise Fund, Team, Foundation, and report pages, but the Team page's embedded leadership-role text (Founder and Chief Scientist; VP of Ecosystem) is still absent and records lack per-record crawl-observation dates
 ---
 
 ## Finding

@@ -1,13 +1,14 @@
 ---
 id: sd-025
 service: stellar-docs
-status: verified
+status: reported-upstream
 discovered: 2026-07-11
 evidence:
   - Horizon-to-RPC migration guidance describes unified classic-asset events as near-future
   - CAP-0067 is Final for Protocol 23
   - Mainnet and Testnet report Protocol 27
   - Solo scratchpad 575 GT-49 primary 3335 and blind 3341
+  - 2026-07-14 follow-up on the prior events-doc issue for the still-stale migration wording: https://github.com/stellar/stellar-docs/issues/1585#issuecomment-4971409187
 ---
 
 ## Finding

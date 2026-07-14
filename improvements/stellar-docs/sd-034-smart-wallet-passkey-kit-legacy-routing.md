@@ -1,13 +1,14 @@
 ---
 id: sd-034
 service: stellar-docs
-status: verified
+status: reported-upstream
 discovered: 2026-07-11
 evidence:
   - current developers.stellar.org smart-wallet guide routes builders to Passkey Kit
   - current kalepail/passkey-kit README calls the package a legacy precursor, directs new projects to smart-account-kit, labels the code unaudited demo material, and warns against securing real value
   - current kalepail/smart-account-kit and OpenZeppelin Stellar account documentation establish the successor SDK and underlying account-contract path
   - Solo scratchpad 575 GT-56 sealed blind process 3398, independently reconciled with primary process 3394 only after its 12-row seal
+  - 2026-07-14 combined review request on the green successor PR: https://github.com/stellar/stellar-docs/pull/2367#issuecomment-4971409358
 ---
 
 ## Finding

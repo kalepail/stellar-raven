@@ -138,7 +138,11 @@ disputed, contradicted, or unverifiable with exact sources and as-of dates.
 
 Enumerate findings with upstream issue/PR evidence, check current GitHub state, inspect
 unresolved reviews/checks/comments for PRs this repo opened, re-run the original trigger or
-probe, and append a deterministic status table plus recommended file updates.
+probe, and append a deterministic status table plus recommended file updates. Treat
+`fixed-upstream` as a deletion-candidate queue: a second reviewer, distinct from the author lane,
+must independently repeat the live trigger and reconcile repo references before the active file is
+retired through the `improvements-pipeline` resolved-ledger workflow. Declined/wontfix/legacy/overfit
+findings remain active while the trigger reproduces; they are not resolution shortcuts.
 
 ## Deterministic state table
 
@@ -163,6 +167,8 @@ next follow-up instead of relying on memory.
   has no past-due `reverifyBy` dates left (`npm run eval:qa:lint -- --stale` is green) and
   newly set dates are staggered.
 - Improvements index/lint/probes ran when `improvements/` changed.
+- Every retired finding has a complete `improvements/resolved.json` receipt, a commit-pinned source,
+  an upstream resolution comment when applicable, and no stale intake/probe/golden/research refs.
 - Open upstream PRs/issues have deterministic next actions or scheduled follow-up.
 - `npm run secrets:scan -- --tree` runs before any commit that includes generated artifacts
   or copied upstream content.

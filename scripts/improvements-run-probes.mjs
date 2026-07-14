@@ -8,6 +8,7 @@ const AUTH_PROBE_HOSTS = {
 
 const today = new Date().toISOString().slice(0, 10);
 const appendDrafts = process.argv.includes("--append-drafts");
+const includeDeclined = process.argv.includes("--include-declined");
 const includedServices = new Set(argValues("--service"));
 const excludedServices = new Set(argValues("--exclude-service"));
 for (const service of [...includedServices, ...excludedServices]) {
@@ -20,7 +21,11 @@ const findings = listFindingFiles()
   .map(parseFinding)
   .filter((finding) => !includedServices.size || includedServices.has(finding.frontmatter.service))
   .filter((finding) => !excludedServices.has(finding.frontmatter.service));
-const probed = findings.filter((finding) => finding.frontmatter.status !== "fixed-upstream" && finding.frontmatter.probe);
+const probed = findings.filter((finding) =>
+  finding.frontmatter.status !== "fixed-upstream" &&
+  (includeDeclined || finding.frontmatter.status !== "declined-upstream") &&
+  finding.frontmatter.probe,
+);
 const fixed = [];
 const recurring = [];
 const inconclusive = [];

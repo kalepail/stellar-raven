@@ -4,6 +4,7 @@ import path from "node:path";
 export const ROOT = path.resolve(new URL("..", import.meta.url).pathname);
 export const IMPROVEMENTS_DIR = path.join(ROOT, "improvements");
 export const INTAKE_PATH = path.join(IMPROVEMENTS_DIR, "intake.json");
+export const RESOLVED_PATH = path.join(IMPROVEMENTS_DIR, "resolved.json");
 export const SERVICE_ORDER = ["skills", "stellar-light-scout", "stellar-docs", "lumenloop"];
 export const ALLOWED_SERVICES = new Set([
   "lumenloop",
@@ -15,6 +16,7 @@ export const ALLOWED_STATUSES = new Set([
   "proposed",
   "verified",
   "reported-upstream",
+  "declined-upstream",
   "fixed-upstream",
 ]);
 export const GITHUB_REPO_RE = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
@@ -251,6 +253,10 @@ export function renderIndex(findings = listFindingFiles().map(parseFinding)) {
 }
 
 export function readIntake(file = INTAKE_PATH) {
+  return JSON.parse(readFileSync(file, "utf8"));
+}
+
+export function readResolved(file = RESOLVED_PATH) {
   return JSON.parse(readFileSync(file, "utf8"));
 }
 

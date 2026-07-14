@@ -12,6 +12,9 @@ evidence:
   - Solo scratchpad 575 GT-16 primary process 3244 and blind process 3245
   - Solo scratchpad 575 GT-17 primary process 3247 and blind process 3248
   - upstream issue filed 2026-07-13: https://github.com/Stellar-Light/stellarlight/issues/514
+recurrences:
+  - date: 2026-07-14
+    evidence: Band and Lightecho now carry onchain-activity provenance, but DIA and RedStone Finance still serve Live with null statusBasis and no per-product/per-network oracle deployment model; fold the residual into sls-024/#494 or a self-contained successor before resolution
 ---
 
 ## Finding

@@ -11,6 +11,7 @@ evidence:
   - consumer-side mitigation in the downstream consumer (kalepail/stellar-raven commit bb25276) improved search-tier selection but cannot supply missing lifecycle provenance or deployment scope
   - upstream issue filed 2026-07-12: https://github.com/Stellar-Light/stellar-scout/issues/9
   - correct service-owner record confirmed 2026-07-13: https://github.com/Stellar-Light/stellarlight/issues/494 documents the additive lifecycle-provenance fields and their zero-migration legacy-row boundary; the residual population gap remains tracked by the source issue above
+  - 2026-07-14 live Fluxity residual follow-up: https://github.com/Stellar-Light/stellarlight/issues/494#issuecomment-4971408499
 ---
 
 ## Finding

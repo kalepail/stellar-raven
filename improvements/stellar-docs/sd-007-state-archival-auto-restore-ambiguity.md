@@ -27,6 +27,9 @@ probe:
     contains:
       - Contract Data Automatic Restoration
       - will fail immediately
+recurrences:
+  - date: 2026-07-14
+    evidence: live page still contains both the auto-restoration section and unqualified failure sentence; follow-up https://github.com/stellar/stellar-docs/issues/2568#issuecomment-4971407165
 ---
 
 ## Finding

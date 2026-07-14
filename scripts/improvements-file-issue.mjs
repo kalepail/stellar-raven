@@ -41,7 +41,7 @@ if (args.renderBodyFile) {
   process.exit(0);
 }
 
-if (["reported-upstream", "fixed-upstream"].includes(finding.frontmatter.status)) {
+if (["reported-upstream", "declined-upstream", "fixed-upstream"].includes(finding.frontmatter.status)) {
   console.error(
     `${finding.frontmatter.id}: status is ${finding.frontmatter.status}; dedupe and live-recheck before filing a new issue`,
   );
@@ -104,6 +104,10 @@ if (indexResult.status !== 0) {
 function renderBody(finding) {
   const fm = finding.frontmatter;
   const sourceUrl = `https://github.com/${RAVEN_REPO}/blob/main/${finding.relPath}`;
+  const sourceCommit = latestSourceCommit(finding.relPath);
+  const immutableSourceUrl = sourceCommit
+    ? `https://github.com/${RAVEN_REPO}/blob/${sourceCommit}/${finding.relPath}`
+    : null;
   const handoffUrl = `https://github.com/${RAVEN_REPO}/issues/new?template=${HANDOFF_TEMPLATE}&title=${encodeURIComponent(`[upstream-ready] ${fm.id}: `)}`;
   return [
     "## Finding",
@@ -127,6 +131,7 @@ function renderBody(finding) {
     `This was found by the downstream Raven eval/improvements loop and recorded as ${fm.id} (${fm.service}, discovered ${fm.discovered}).`,
     "",
     `Public source record: [${finding.relPath}](${sourceUrl})`,
+    ...(immutableSourceUrl ? ["", `Immutable source snapshot: [${sourceCommit.slice(0, 12)}](${immutableSourceUrl})`] : []),
     "",
     "## Resolution Handoff",
     "",
@@ -134,9 +139,14 @@ function renderBody(finding) {
     "",
     handoffUrl,
     "",
-    "Include the finding id, resolving issue/PR, deployed version or timestamp, and the smallest live recheck. Raven independently verifies the upstream surface before changing the finding to `fixed-upstream`; issue closure or a merged PR alone is not treated as proof.",
+    "Include the finding id, resolving issue/PR, deployed version or timestamp, and the smallest live recheck. Raven independently verifies the upstream surface before changing the finding to `fixed-upstream`; issue closure or a merged PR alone is not treated as proof. After a distinct reviewer repeats the live check, the active finding is retired to Raven's resolved ledger while the immutable snapshot remains available.",
     "",
   ].join("\n");
+}
+
+function latestSourceCommit(relPath) {
+  const result = spawnSync("git", ["log", "-1", "--format=%H", "--", relPath], { encoding: "utf8" });
+  return result.status === 0 ? result.stdout.trim() : "";
 }
 
 function scrub(text) {

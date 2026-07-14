@@ -15,6 +15,8 @@ recurrences:
     evidence: durable reviewed row `eval/qa/reviewed/2026-07-09-improvements-evidence.md` case `q-defi-agentic-payment-standards-compare` was partial with no wrong claims and one missing fact — it still could not ground AP2/ACP as general coordination standards from the catalog. The controlled Algolia harness now uses token-boundary matching for AP2, Agentic Commerce Protocol, and ACP; generic x402/MPP meetings and the negative mutation `SNAP2 upgrade notes` both miss.
   - date: 2026-07-11
     evidence: P4 H2/N2 review again found that the surfaced material needs an explicit anti-conflation statement: x402 has no SEP number, SEP-41 is the token interface used by Stellar payment flows, and MPP Session is channel-backed rather than a separate settlement rail. solo://proj/49/scratchpad/super-corpus-rebuild--585
+  - date: 2026-07-14
+    evidence: public search still found no AP2/ACP positioning; cautious scope follow-up https://github.com/stellar/stellar-docs/issues/2565#issuecomment-4971403928
 ---
 
 ## Finding

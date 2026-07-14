@@ -1,7 +1,7 @@
 ---
 id: sls-023
 service: stellar-light-scout
-status: fixed-upstream
+status: reported-upstream
 discovered: 2026-07-10
 evidence:
   - live searchProjects query for real world asset returned 51 rows
@@ -11,6 +11,9 @@ evidence:
   - GT-17 recurrence: live WisdomTree GOLD/EQTY, Figure YLDS, and Etherfuse assets were absent from a three-product overview derived from broad discovery
   - GT-18 recurrence: CRDT required issuer-primary legal class, transfer-agent record priority, eligibility/controls, exact issuer/SAC, and multichain launch scope not represented by a project-level row
   - https://github.com/Stellar-Light/stellarlight/issues/494; live re-check 2026-07-13 returns DTCC as Development with dated operator-announcement provenance, so the false-live regression no longer reproduces
+recurrences:
+  - date: 2026-07-14
+    evidence: DTCC now correctly serves Development with dated operator-announcement provenance, but the row still exposes no product/asset/deployment keys; the product-level deployment model remains unresolved under #494
 ---
 
 ## Finding

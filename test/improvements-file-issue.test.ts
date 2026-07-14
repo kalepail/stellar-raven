@@ -15,8 +15,10 @@ describe("improvements issue filing template", () => {
 
     expect(output).toContain("## Source Record");
     expect(output).toContain(`https://github.com/kalepail/stellar-raven/blob/main/${finding}`);
+    expect(output).toMatch(new RegExp(`https://github\\.com/kalepail/stellar-raven/blob/[0-9a-f]{40}/${finding}`));
     expect(output).toContain("## Resolution Handoff");
     expect(output).toContain("template=upstream-improvement-ready.yml");
     expect(output).toContain("Raven independently verifies the upstream surface");
+    expect(output).toContain("retired to Raven's resolved ledger");
   });
 });

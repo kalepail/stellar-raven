@@ -9,6 +9,7 @@ evidence:
   - ecosystem-skills/skills/stellar-light/stellar-scout/references/api-reference.md at pinned upstream commit aea0c125325ceed746eefaa505e3bd45dabd5ca1
   - Solo scratchpad 575 drift verdict and independent read-only review by process 3209
   - upstream issue filed 2026-07-13: https://github.com/Stellar-Light/stellar-scout/issues/11
+  - 2026-07-14 follow-up narrows the residual after source=cap landed: https://github.com/Stellar-Light/stellar-scout/issues/11#issuecomment-4971409842
 ---
 
 ## Finding

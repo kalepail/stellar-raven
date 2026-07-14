@@ -7,7 +7,8 @@ the authored spec built on top of this index — why it looks the way it does �
 
 > **2026-07-09 update — crawler v15, the CLI rule, and the rejected markdown index.**
 > The production DocSearch crawler config was fixed (v15) to index **code-block text**, which
-> had been silently stripped (finding `sd-006`, now `fixed-upstream` and live-verified:
+> had been silently stripped (resolved finding `sd-006`; durable receipt in
+> `improvements/resolved.json`, live-verified:
 > `brew install stellar-cli` / `curl install.sh` / winget / cargo command text is searchable
 > and `/docs/tools/cli/install-cli` ranks #1 for exact-command queries). This was a *general*
 > fix with measured collateral improvement (`sd-003` partially mitigated: the RPC admin-guide

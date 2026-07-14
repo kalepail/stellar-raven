@@ -1,13 +1,14 @@
 ---
 id: sd-027
 service: stellar-docs
-status: verified
+status: reported-upstream
 discovered: 2026-07-11
 evidence:
   - official OpenZeppelin Relayer page says LaunchTube is discontinued and directs users to OpenZeppelin
   - official Guestbook passkeys prerequisites page still instructs users to obtain and configure a LaunchTube JWT
   - archived LaunchTube source and current Zephyr/Mercury sources confirm submission versus indexing are separate roles
   - Solo scratchpad 575 GT-53 primary process 3372 and independent blind process 3378
+  - 2026-07-14 combined review request on the green successor PR: https://github.com/stellar/stellar-docs/pull/2367#issuecomment-4971409358
 ---
 
 ## Finding

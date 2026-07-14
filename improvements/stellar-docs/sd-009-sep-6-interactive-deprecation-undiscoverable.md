@@ -1,7 +1,8 @@
 ---
 id: sd-009
 service: stellar-docs
-status: reported-upstream
+status: declined-upstream
+disposition: Accept the docs owner's noise/placement decision; retain the canonical SEP status in standards-aware consumer truth and do not re-file without materially new evidence.
 discovered: 2026-07-09
 evidence:
   - eval/qa/reviewed/2026-07-09-improvements-evidence.md (durable redacted row q-sep-6-24-deprecation, wrong; verdict manually reviewed and upheld)

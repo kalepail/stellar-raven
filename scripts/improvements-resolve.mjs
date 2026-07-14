@@ -1,0 +1,159 @@
+#!/usr/bin/env node
+import { readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+import {
+  GITHUB_REPO_RE,
+  RESOLVED_PATH,
+  oneLineTitle,
+  parseFinding,
+  readIntake,
+  readResolved,
+  resolveIntake,
+} from "./improvements-lib.mjs";
+
+const RAVEN_REPO = "kalepail/stellar-raven";
+const githubRefRe = /https:\/\/github\.com\/[^/\s)]+\/[^/\s)]+\/(?:issues|pull)\/\d+/gi;
+const githubRefExactRe = /^https:\/\/github\.com\/[^/\s)]+\/[^/\s)]+\/(?:issues|pull)\/\d+$/i;
+const args = parseArgs(process.argv.slice(2));
+
+if (!args.file || !args.liveRecheck || !args.reviewEvidence) {
+  usage();
+  process.exit(2);
+}
+
+const finding = parseFinding(path.resolve(args.file));
+const { id, service, status, discovered } = finding.frontmatter;
+if (status !== "fixed-upstream") {
+  fail(`${id}: status must be fixed-upstream before resolution; got ${status}`);
+}
+if (!/^\d{4}-\d{2}-\d{2}$/.test(args.resolved)) {
+  fail(`invalid --resolved date '${args.resolved}'; expected YYYY-MM-DD`);
+}
+
+const intake = readIntake();
+const repo = args.repo ?? resolveRepo(finding, intake);
+if (!GITHUB_REPO_RE.test(repo)) fail(`invalid repo '${repo}'; expected owner/repo`);
+
+const sourceCommit = latestSourceCommit(finding.relPath);
+if (!/^[0-9a-f]{40}$/.test(sourceCommit)) {
+  fail(`${id}: finding must exist in git history before it can be resolved`);
+}
+const sourceUrl = `https://github.com/${RAVEN_REPO}/blob/${sourceCommit}/${finding.relPath}`;
+const upstreamRefs = [...new Set(finding.raw.match(githubRefRe) ?? [])].sort();
+const resolvingRefs = [...new Set(args.resolvingRefs.length ? args.resolvingRefs : upstreamRefs)].sort();
+if (resolvingRefs.some((ref) => !githubRefExactRe.test(ref))) {
+  fail("every --resolving-ref must be a GitHub issue or PR URL");
+}
+
+if (!args.referencesReviewed) {
+  fail("pass --references-reviewed only after reconciling every repo-wide reference to the finding id");
+}
+if (upstreamRefs.length && !args.upstreamCommented) {
+  fail("pass --upstream-commented only after posting the resolution result and immutable source permalink");
+}
+if (!upstreamRefs.length && !args.upstreamCommentNa) {
+  fail("a finding without upstream refs requires --upstream-comment-na");
+}
+
+const ledger = readResolved();
+ledger.entries ??= [];
+if (ledger.entries.some((entry) => entry.id === id)) fail(`${id}: already exists in improvements/resolved.json`);
+
+const entry = {
+  id,
+  title: oneLineTitle(finding),
+  service,
+  discovered,
+  resolved: args.resolved,
+  repo,
+  upstreamRefs,
+  resolvingRefs,
+  liveRecheck: args.liveRecheck,
+  reviewEvidence: args.reviewEvidence,
+  sourceCommit,
+  sourceUrl,
+};
+
+const resolutionComment = [
+  `Raven independently rechecked ${id} on ${args.resolved} and confirmed the original trigger is resolved live.`,
+  "",
+  `Live recheck: ${args.liveRecheck}`,
+  "",
+  `The active finding is being retired under the ephemeral improvements lifecycle. Immutable source snapshot: ${sourceUrl}`,
+].join("\n");
+
+if (args.dryRun) {
+  console.log(JSON.stringify(entry, null, 2));
+  console.log("\n--- suggested upstream resolution comment ---\n");
+  console.log(resolutionComment);
+  process.exit(0);
+}
+
+ledger.entries.push(entry);
+ledger.entries.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+writeFileSync(RESOLVED_PATH, `${JSON.stringify(ledger, null, 2)}\n`);
+
+if (intake.findings?.[id]) {
+  delete intake.findings[id];
+  writeFileSync(path.resolve("improvements/intake.json"), `${JSON.stringify(intake, null, 2)}\n`);
+}
+unlinkSync(finding.file);
+
+const indexResult = spawnSync(process.execPath, [path.join(import.meta.dirname, "improvements-index.mjs")], {
+  encoding: "utf8",
+});
+if (indexResult.status !== 0) {
+  process.stderr.write(indexResult.stderr);
+  process.stderr.write(indexResult.stdout);
+  fail("finding was retired but improvements/INDEX.md regeneration failed", indexResult.status ?? 1);
+}
+
+console.log(`${id}: retired to improvements/resolved.json`);
+console.log(sourceUrl);
+
+function latestSourceCommit(relPath) {
+  const result = spawnSync("git", ["log", "-1", "--format=%H", "--", relPath], { encoding: "utf8" });
+  if (result.status !== 0) return "";
+  return result.stdout.trim();
+}
+
+function resolveRepo(currentFinding, currentIntake) {
+  const resolution = resolveIntake(currentFinding, currentIntake);
+  if (resolution.kind === "repo") return resolution.repo;
+  fail(`${currentFinding.frontmatter.id}: intake is ${resolution.kind}; pass --repo after manual owner triage`);
+}
+
+function parseArgs(argv) {
+  const out = {
+    dryRun: false,
+    referencesReviewed: false,
+    upstreamCommented: false,
+    upstreamCommentNa: false,
+    resolved: new Date().toISOString().slice(0, 10),
+    resolvingRefs: [],
+  };
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === "--dry-run") out.dryRun = true;
+    else if (arg === "--file") out.file = argv[++i];
+    else if (arg === "--repo") out.repo = argv[++i];
+    else if (arg === "--resolved") out.resolved = argv[++i];
+    else if (arg === "--live-recheck") out.liveRecheck = argv[++i];
+    else if (arg === "--review-evidence") out.reviewEvidence = argv[++i];
+    else if (arg === "--resolving-ref") out.resolvingRefs.push(argv[++i]);
+    else if (arg === "--references-reviewed") out.referencesReviewed = true;
+    else if (arg === "--upstream-commented") out.upstreamCommented = true;
+    else if (arg === "--upstream-comment-na") out.upstreamCommentNa = true;
+  }
+  return out;
+}
+
+function usage() {
+  console.error("usage: node scripts/improvements-resolve.mjs --file improvements/...md --live-recheck <evidence> --review-evidence <evidence> [--resolved YYYY-MM-DD] [--repo owner/name] [--resolving-ref URL ...] --references-reviewed (--upstream-commented | --upstream-comment-na) [--dry-run]");
+}
+
+function fail(message, code = 2) {
+  console.error(message);
+  process.exit(code);
+}

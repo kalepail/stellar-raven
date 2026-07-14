@@ -20,7 +20,7 @@ body:
     id: source_record
     attributes:
       label: Raven source record
-      description: Link the exact public improvements/... Markdown file referenced by the upstream report.
+      description: Link the exact public improvements/... Markdown file or its commit-pinned snapshot from the upstream report. Resolved active files are retired after review.
       placeholder: https://github.com/kalepail/stellar-raven/blob/main/improvements/stellar-light-scout/sls-024-project-lifecycle-operator-conflicts.md
     validations:
       required: true
@@ -63,7 +63,7 @@ body:
       options:
         - label: I linked the exact Raven finding and the resolving upstream work.
           required: true
-        - label: I understand Raven will independently recheck the live surface before marking the finding fixed.
+        - label: I understand Raven will independently recheck the live surface, then a distinct reviewer must repeat the trigger before the active finding is retired to the resolved ledger.
           required: true
         - label: This report contains no credentials, private partner-tier details, or other secrets.
           required: true

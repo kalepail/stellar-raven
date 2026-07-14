@@ -12,6 +12,7 @@ import {
   listFindingFiles,
   parseFinding,
   readIntake,
+  readResolved,
   renderIndex,
   resolveIntake,
 } from "./improvements-lib.mjs";
@@ -25,7 +26,8 @@ const statusRank = {
   proposed: 0,
   verified: 1,
   "reported-upstream": 2,
-  "fixed-upstream": 3,
+  "declined-upstream": 3,
+  "fixed-upstream": 4,
 };
 
 const errors = [];
@@ -66,6 +68,14 @@ for (const file of listFindingFiles()) {
   if (fm.evidence?.some((entry) => githubRefRe.test(entry)) && statusRank[fm.status] < statusRank["reported-upstream"]) {
     errors.push(`${label}: evidence contains a GitHub issue/PR URL but status is '${fm.status}'`);
   }
+  if (fm.status === "declined-upstream") {
+    if (!fm.evidence?.some((entry) => githubRefRe.test(entry))) {
+      errors.push(`${label}: declined-upstream requires the durable upstream decline ref in evidence`);
+    }
+    if (!String(fm.disposition ?? "").trim()) {
+      errors.push(`${label}: declined-upstream requires a non-empty disposition`);
+    }
+  }
   if (fm.recurrences !== undefined && !Array.isArray(fm.recurrences)) {
     errors.push(`${label}: recurrences must be a list when present`);
   }
@@ -81,6 +91,7 @@ for (const file of listFindingFiles()) {
 }
 
 validateIndexFreshness(findings);
+validateResolvedLedger(findings);
 const intake = validateIntake(findings);
 if (live && intake) validateLiveRepos(intake);
 
@@ -88,6 +99,54 @@ if (errors.length) {
   console.error(`improvements lint failed (${errors.length}):`);
   for (const error of errors) console.error(`- ${error}`);
   process.exit(1);
+}
+
+function validateResolvedLedger(findings) {
+  let ledger;
+  try {
+    ledger = readResolved();
+  } catch (err) {
+    errors.push(`improvements/resolved.json: invalid JSON or unreadable file (${err.message})`);
+    return;
+  }
+  if (!Array.isArray(ledger.entries)) {
+    errors.push("improvements/resolved.json: entries must be an array");
+    return;
+  }
+
+  const liveIds = new Set(findings.map((finding) => finding.frontmatter.id).filter(Boolean));
+  const resolvedIds = new Set();
+  const required = [
+    "id", "title", "service", "discovered", "resolved", "repo", "upstreamRefs",
+    "resolvingRefs", "liveRecheck", "reviewEvidence", "sourceCommit", "sourceUrl",
+  ];
+  for (const [idx, entry] of ledger.entries.entries()) {
+    const label = `improvements/resolved.json: entries[${idx}]`;
+    for (const key of required) {
+      if (entry[key] === undefined || entry[key] === "") errors.push(`${label}: missing '${key}'`);
+    }
+    if (resolvedIds.has(entry.id)) errors.push(`${label}: duplicate resolved id '${entry.id}'`);
+    if (liveIds.has(entry.id)) errors.push(`${label}: id '${entry.id}' also exists as a live finding`);
+    resolvedIds.add(entry.id);
+    if (!ALLOWED_SERVICES.has(entry.service)) errors.push(`${label}: invalid service '${entry.service}'`);
+    for (const key of ["discovered", "resolved"]) {
+      if (!dateRe.test(entry[key] ?? "")) errors.push(`${label}: ${key} must be YYYY-MM-DD`);
+    }
+    if (!GITHUB_REPO_RE.test(entry.repo ?? "")) errors.push(`${label}: repo must be owner/repo`);
+    for (const key of ["upstreamRefs", "resolvingRefs"]) {
+      if (!Array.isArray(entry[key])) errors.push(`${label}: ${key} must be an array`);
+      else if (entry[key].some((ref) => !githubRefRe.test(ref))) {
+        errors.push(`${label}: ${key} entries must be GitHub issue or PR URLs`);
+      }
+    }
+    if (!/^[0-9a-f]{40}$/.test(entry.sourceCommit ?? "")) {
+      errors.push(`${label}: sourceCommit must be a full git SHA`);
+    }
+    const expectedSource = `https://github.com/kalepail/stellar-raven/blob/${entry.sourceCommit}/improvements/`;
+    if (!String(entry.sourceUrl ?? "").startsWith(expectedSource)) {
+      errors.push(`${label}: sourceUrl must be a commit-pinned improvements/ permalink`);
+    }
+  }
 }
 
 console.log(`improvements lint ok (${findings.length} findings${live ? ", live intake checked" : ""})`);

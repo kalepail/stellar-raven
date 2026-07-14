@@ -19,6 +19,8 @@ recurrences:
     evidence: GT-30 blind process 3279 — indexed discovery did not reliably expose the exact getTransaction versus sendTransaction status contracts; direct method/source retrieval was required to correct PENDING attribution
   - date: 2026-07-13
     evidence: post-merge raw Algolia re-check — the Pagination page is crawled and `getTransactions`/default `50` appear, but the table's `1 to 200` range is absent from the method record; `getTransactions API reference limit` still ranks Horizon/noise ahead of the RPC structure page, and the generated method page remains outside the index
+  - date: 2026-07-14
+    evidence: fresh DocSearch recurrence and owner follow-up https://github.com/stellar/stellar-docs/issues/2566#issuecomment-4971405556
 ---
 
 ## Finding
