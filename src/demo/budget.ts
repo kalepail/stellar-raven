@@ -63,8 +63,12 @@ export type DemoToolBudget = {
   operationOk: number;
   operationError: number;
   operationSoftEmpty: number;
-  /** Execute calls that surfaced conditional narrow-only recovery advice. */
+  /** Execute calls that produced narrow-only or conditional-alternative advice. */
   recoveryHintedExecutes: number;
+  /** One host-prompted hint cycle is allowed per Playground turn. */
+  recoveryAdviceConsumed: boolean;
+  /** Later hint-bearing executes suppressed after the turn latch is consumed. */
+  recoveryAdviceSuppressed: number;
   latestOperationTotal: number;
   latestOperationOk: number;
   latestOperationError: number;
@@ -94,6 +98,8 @@ export function createDemoToolBudget(): DemoToolBudget {
     operationError: 0,
     operationSoftEmpty: 0,
     recoveryHintedExecutes: 0,
+    recoveryAdviceConsumed: false,
+    recoveryAdviceSuppressed: 0,
     latestOperationTotal: 0,
     latestOperationOk: 0,
     latestOperationError: 0,

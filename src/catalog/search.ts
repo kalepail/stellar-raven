@@ -27,7 +27,14 @@
 // the module graph loads under plain `node` (type stripping) — the eval CLI
 // and vitest both import this file directly (frozen contract, scratchpad 514).
 import { z } from "zod";
-import { catalogSchema, type Catalog, type CatalogEntry, type CatalogKind, type RetrievalReason } from "./types.ts";
+import {
+  RETRIEVAL_LANES,
+  catalogSchema,
+  type Catalog,
+  type CatalogEntry,
+  type CatalogKind,
+  type RetrievalReason
+} from "./types.ts";
 import { lastIdSegment, VALID_IDENT } from "./id.ts";
 import {
   scoreEntryWeighted,
@@ -97,6 +104,18 @@ export type RecoveryCandidate = {
   outputItemKeys?: Record<string, string[]>;
 };
 
+export type WiderCandidate = {
+  id: string;
+  service: string;
+  /** The candidate operation's own retrieval lane. */
+  lane: "semantic" | "research" | "av" | "corpus";
+  basis: "page-broad-hit" | "catalog-anchor";
+  description: string;
+  signature?: string;
+  outputKeys?: string[];
+  outputItemKeys?: Record<string, string[]>;
+};
+
 export type SearchOptions = {
   query: string;
   kind?: CatalogKind;
@@ -122,6 +141,11 @@ export type SearchPage = {
   truncated: boolean;
   /** The page size after the default/min/max clamp was applied. */
   effectiveLimit: number;
+  /**
+   * Advisory broad-operation recommendations for structurally poor operation
+   * pages. Separate from ranked hits: never counted, scored, or paginated.
+   */
+  widerCandidates: WiderCandidate[];
 };
 
 export const DEFAULT_SEARCH_LIMIT = 10;
@@ -135,6 +159,8 @@ export const MAX_SEARCH_LIMIT = 50;
  * the comparison is legitimate across the seam.
  */
 export const TIER_INTERLEAVE_MARGIN = 1.6;
+const BROAD_RETRIEVAL_LANES = new Set(["semantic", "research", "av", "corpus"] as const);
+type BroadRetrievalLane = WiderCandidate["lane"];
 
 /**
  * The valid `service` filter values, derived from the catalog itself (unique
@@ -583,7 +609,131 @@ export function searchCatalogPage(catalog: Catalog, opts: SearchOptions): Search
     return hit;
   });
 
-  return { hits, total, truncated: total > hits.length, effectiveLimit: limit };
+  return {
+    hits,
+    total,
+    truncated: total > hits.length,
+    effectiveLimit: limit,
+    widerCandidates: deriveWiderCandidates(catalog, hits, opts)
+  };
+}
+
+function widerCandidateOf(
+  entry: CatalogEntry,
+  basis: WiderCandidate["basis"]
+): WiderCandidate | undefined {
+  const lane = entry.retrievalProfile?.lane;
+  if (
+    entry.kind !== "operation" ||
+    lane === undefined ||
+    !BROAD_RETRIEVAL_LANES.has(lane as BroadRetrievalLane)
+  ) {
+    return undefined;
+  }
+  const signature = renderSignature(entry, { compactOversizedOutput: true });
+  const outputKeys = outputKeysOf(entry);
+  const outputItemKeys = outputItemKeysOf(entry);
+  return {
+    id: entry.id,
+    service: entry.service,
+    lane: lane as BroadRetrievalLane,
+    basis,
+    description: entry.description,
+    ...(signature ? { signature } : {}),
+    ...(outputKeys.length > 0 ? { outputKeys } : {}),
+    ...(Object.keys(outputItemKeys).length > 0 ? { outputItemKeys } : {})
+  };
+}
+
+function catalogBroadAnchors(
+  catalog: Catalog,
+  service: string | undefined
+): CatalogEntry[] {
+  const byId = new Map(catalog.entries.map((entry) => [entry.id, entry]));
+  const inbound = new Map<string, Set<string>>();
+  for (const source of catalog.entries) {
+    if (source.kind !== "operation" || !source.retrievalProfile) continue;
+    for (const edge of source.retrievalProfile.recoverWith) {
+      const target = byId.get(edge.id);
+      const lane = target?.retrievalProfile?.lane;
+      if (
+        !target ||
+        target.kind !== "operation" ||
+        lane === undefined ||
+        !BROAD_RETRIEVAL_LANES.has(lane as BroadRetrievalLane) ||
+        (service !== undefined && target.service !== service)
+      ) {
+        continue;
+      }
+      let sources = inbound.get(target.id);
+      if (!sources) {
+        sources = new Set();
+        inbound.set(target.id, sources);
+      }
+      sources.add(source.id);
+    }
+  }
+
+  const laneOrder = new Map(
+    RETRIEVAL_LANES.map((lane, index) => [lane, index] as const)
+  );
+  const winners = new Map<BroadRetrievalLane, CatalogEntry>();
+  for (const [id] of inbound) {
+    const entry = byId.get(id);
+    const lane = entry?.retrievalProfile?.lane as BroadRetrievalLane | undefined;
+    if (!entry || !lane) continue;
+    const prior = winners.get(lane);
+    const count = inbound.get(entry.id)?.size ?? 0;
+    const priorCount = prior ? (inbound.get(prior.id)?.size ?? 0) : -1;
+    if (!prior || count > priorCount || (count === priorCount && entry.id < prior.id)) {
+      winners.set(lane, entry);
+    }
+  }
+  return [...winners.values()].sort((a, b) => {
+    const countDiff = (inbound.get(b.id)?.size ?? 0) - (inbound.get(a.id)?.size ?? 0);
+    if (countDiff !== 0) return countDiff;
+    const laneDiff =
+      (laneOrder.get(a.retrievalProfile!.lane) ?? Number.MAX_SAFE_INTEGER) -
+      (laneOrder.get(b.retrievalProfile!.lane) ?? Number.MAX_SAFE_INTEGER);
+    return laneDiff || (a.id < b.id ? -1 : 1);
+  });
+}
+
+function deriveWiderCandidates(
+  catalog: Catalog,
+  hits: readonly SearchHit[],
+  opts: SearchOptions,
+  limit = 3
+): WiderCandidate[] {
+  if (limit <= 0 || opts.kind === "skill") return [];
+  const allBackfill = hits.length > 0 && hits.every((hit) => hit.tier === "backfill");
+  if (hits.length > 0 && !allBackfill) return [];
+
+  const byId = new Map(catalog.entries.map((entry) => [entry.id, entry]));
+  const selectedIds = new Set<string>();
+  const selectedLanes = new Set<BroadRetrievalLane>();
+  const out: WiderCandidate[] = [];
+  const add = (entry: CatalogEntry | undefined, basis: WiderCandidate["basis"]) => {
+    if (!entry || selectedIds.has(entry.id)) return;
+    if (opts.service !== undefined && entry.service !== opts.service) return;
+    const candidate = widerCandidateOf(entry, basis);
+    if (!candidate || selectedLanes.has(candidate.lane)) return;
+    selectedIds.add(candidate.id);
+    selectedLanes.add(candidate.lane);
+    out.push(candidate);
+  };
+
+  if (allBackfill) {
+    for (const hit of hits) {
+      add(byId.get(hit.id), "page-broad-hit");
+      if (out.length >= limit) return out;
+    }
+  }
+  for (const anchor of catalogBroadAnchors(catalog, opts.service)) {
+    add(anchor, "catalog-anchor");
+    if (out.length >= limit) break;
+  }
+  return out;
 }
 
 /**
@@ -616,6 +766,52 @@ export function recoveryCandidates(
     for (const edge of source.retrievalProfile.recoverWith) {
       if (reason && !edge.on.includes(reason)) continue;
       if (attempted.has(edge.id) || selected.has(edge.id)) continue;
+      const target = byId.get(edge.id);
+      if (!target || target.kind !== "operation") continue;
+      const signature = renderSignature(target, { compactOversizedOutput: true });
+      const outputKeys = outputKeysOf(target);
+      const outputItemKeys = outputItemKeysOf(target);
+      out.push({
+        from,
+        id: target.id,
+        service: target.service,
+        relation: edge.relation,
+        reasons: [...edge.on],
+        lane: source.retrievalProfile.lane,
+        description: target.description,
+        ...(signature ? { signature } : {}),
+        ...(outputKeys.length > 0 ? { outputKeys } : {}),
+        ...(Object.keys(outputItemKeys).length > 0 ? { outputItemKeys } : {})
+      });
+      selected.add(edge.id);
+      if (out.length >= limit) return out;
+    }
+  }
+  return out;
+}
+
+/**
+ * Execute-time graph walk: derive candidates from successful source
+ * operations while excluding every operation already attempted in the run.
+ * Separate source/exclusion sets avoid traversing failed calls merely because
+ * they must not be suggested again.
+ */
+export function recoveryCandidatesFromSources(
+  catalog: Catalog,
+  fromIds: readonly string[],
+  excludeIds: readonly string[],
+  limit = 3
+): RecoveryCandidate[] {
+  if (limit <= 0) return [];
+  const excluded = new Set(excludeIds);
+  const byId = new Map(catalog.entries.map((entry) => [entry.id, entry]));
+  const selected = new Set<string>();
+  const out: RecoveryCandidate[] = [];
+  for (const from of fromIds) {
+    const source = byId.get(from);
+    if (!source?.retrievalProfile) continue;
+    for (const edge of source.retrievalProfile.recoverWith) {
+      if (excluded.has(edge.id) || selected.has(edge.id)) continue;
       const target = byId.get(edge.id);
       if (!target || target.kind !== "operation") continue;
       const signature = renderSignature(target, { compactOversizedOutput: true });

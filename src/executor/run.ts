@@ -28,7 +28,7 @@ import { DynamicWorkerExecutor } from "@cloudflare/codemode";
 import superSpecJson from "../../specs/super-spec.json";
 import bundleJson from "../skills/bundle.json";
 import { getCatalog } from "../catalog/load.ts";
-import { recoveryCandidates } from "../catalog/search.ts";
+import { recoveryCandidatesFromSources } from "../catalog/search.ts";
 import type { BuildAuthorityRole } from "../catalog/types.ts";
 import { buildSandbox, type ArtifactReadStats, type OpLedgerCall, type SandboxProvider } from "./providers.ts";
 import {
@@ -166,6 +166,7 @@ function evidenceRecoveryHint(
   summary: ExecuteOperationSummary
 ): EvidenceRecoveryHint | undefined {
   if (summary.ok === 0) return undefined;
+  const calledIds = [...new Set(calls.map((call) => call.op))];
   const successfulIds = [...new Set(calls.filter((call) => call.outcome === "ok").map((call) => call.op))];
   const catalog = getCatalog();
   const byId = new Map(catalog.entries.map((entry) => [entry.id, entry]));
@@ -177,20 +178,26 @@ function evidenceRecoveryHint(
   // Stay silent instead of making the stronger (and potentially false) claim
   // that the host observed narrow lookups only.
   if (successfulIds.some((id) => !byId.get(id)?.retrievalProfile)) return undefined;
-  if (
-    successfulIds.some((id) => {
-      const lane = byId.get(id)?.retrievalProfile?.lane;
-      return lane !== undefined && BROAD_RETRIEVAL_LANES.has(lane);
-    })
-  ) {
-    return undefined;
+  const broadIds = successfulIds.filter((id) => {
+    const lane = byId.get(id)?.retrievalProfile?.lane;
+    return lane !== undefined && BROAD_RETRIEVAL_LANES.has(lane);
+  });
+  if (broadIds.length > 0) {
+    const candidates = recoveryCandidatesFromSources(catalog, broadIds, calledIds, 3);
+    if (candidates.length === 0) return undefined;
+    return {
+      mode: "conditional-alternatives",
+      sourceOperations: broadIds,
+      candidates: candidates.map(({ id, relation, reasons }) => ({ id, relation, reasons }))
+    };
   }
 
   const narrowIds = successfulIds.filter((id) => byId.get(id)?.retrievalProfile?.emptyScope === "operation");
   if (narrowIds.length === 0) return undefined;
-  const candidates = recoveryCandidates(catalog, successfulIds, undefined, 3);
+  const candidates = recoveryCandidatesFromSources(catalog, narrowIds, calledIds, 3);
   if (candidates.length === 0) return undefined;
   return {
+    mode: "narrow-only",
     sourceOperations: narrowIds,
     candidates: candidates.map(({ id, relation, reasons }) => ({ id, relation, reasons }))
   };

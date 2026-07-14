@@ -188,23 +188,36 @@ way:
   filter, pre diversity/paging): tier-1 candidates alone when tier 1 filled the page, plus the
   novel ungated candidates when the backfill ran; `truncated` = `total > hits.length`.
 
-**Evidence-poor recovery** is query-independent and deliberately outside the scorer. Selected
-operation entries carry a manifest-validated `retrievalProfile` whose exact-ID `recoverWith`
-edges name bounded wider, cross-family, cited-research, or different-medium contingencies for
-`empty | weak | adjacent | ambiguous | partial` outcomes. Public `search` and in-sandbox
-`codemode.search` accept caller-reported exact prior operation ids in `recoverFrom` plus an optional `reason`
-and return `recovery` separately from `hits`; omitted or empty `recoverFrom` always returns no
-recovery, and a reason without IDs never escalates. Normal hit membership, score, and order are
-therefore unchanged. The host does not inspect arbitrary payload semantics, automatically execute a recovery,
-or claim that a candidate is relevant. Model-facing instructions and adapter hints instead enforce
-the answer-level rule: a closed-world directory/index miss can be reported only at that source's
-scope, while an open-world identity/history/topic miss gets one broad pass; semantic candidates
-need exact identity (or canonical slug), source, and date before attribution. An execute run with
-service calls but zero data-bearing outcomes receives the same scoped recovery reminder. Separately,
-the operation ledger counts calls to a small exact-ID set of semantic, research, A/V, and fallback-
-directory surfaces and appends a candidate-evidence reminder even when their envelopes are healthy;
-this is operation-class advice only and never inspects rows or declares their relevance. The same
-formatter is used by `/mcp` and `/playground`. At the adapter boundary,
+**Evidence-poor recovery** is query-independent and deliberately outside the scorer
+([ADR-0007](research/decisions/0007-structural-recovery-guidance.md)). Selected operation entries
+carry a manifest-validated `retrievalProfile` whose exact-ID `recoverWith` edges name bounded wider,
+cross-family, cited-research, or different-medium contingencies for `empty | weak | adjacent |
+ambiguous | partial` outcomes. When an operation-search page has zero hits or only backfill hits,
+public `search`, in-sandbox `codemode.search`, and Playground search return up to three advisory
+`widerCandidates` separately from ranked hits. Page-resident broad operations lead on all-backfill
+pages, then deterministic manifest anchors fill one slot per remaining broad lane; zero-hit pages
+use anchors only. Service filters constrain the advice and skill-only searches suppress it. Public
+`search` and `codemode.search` also accept caller-reported exact prior operation ids in `recoverFrom`
+plus an optional `reason` and return `recovery` separately from both `hits` and `widerCandidates`;
+omitted or empty `recoverFrom` always returns no recovery, and a reason without IDs never escalates.
+Normal hit membership, score, and order are therefore unchanged.
+
+The host does not inspect arbitrary payload semantics, automatically execute a recovery, or claim
+that a candidate is relevant. Model-facing instructions and adapter hints instead enforce the
+answer-level rule: a closed-world directory/index miss can be reported only at that source's scope,
+while an open-world identity/history/topic miss gets one broad pass; semantic candidates need exact
+identity (or canonical slug), source, and date before attribution. A successful profiled
+narrow operation may produce a `narrow-only` checkpoint, while a successful profiled broad
+operation may produce a graph-derived `conditional-alternatives` checkpoint naming
+only uncalled exposed operations. Its standalone copy says the host observed operation classes, not
+row relevance, and recommends one bounded alternative pass only if the question remains unresolved.
+Runs with no successful operation evidence use the independent no-host-evidence or all-error/soft-empty
+recovery paths instead. Playground exposes at most one hint-driven recovery cycle per turn; the latch
+is consumed when its first standalone checkpoint is emitted, and a later execute supersedes any pending
+next-step restatement so independent structural failure recovery remains truthful. Separately, the operation ledger counts calls to a small exact-ID set of
+semantic, research, A/V, and fallback-directory surfaces and appends a candidate-evidence reminder
+even when their envelopes are healthy; this is operation-class advice only and never inspects rows
+or declares their relevance. The same formatter is used by `/mcp` and `/playground`. At the adapter boundary,
 `lumenloop.search_content_semantic` is forward-normalized from upstream collection arrays to one
 `{ items, counts, meta }` contract: every item carries its source `collection`, and items are stably
 sorted by the upstream numeric similarity score. Cross-collection rows also expose conservative
@@ -432,10 +445,11 @@ The `codemode` provider (`buildCodemodeProvider`, `src/executor/providers.ts`) i
   `createSpecSearchRunner` (`src/executor/run.ts`) keeps the source-injection variant
   buildable for future A/Bs.
 - **`codemode.search(queryOrOpts)`** — the same host-side `searchCatalogPage`, mid-script:
-  resolves to `{ ok: true, hits, total, truncated }` (tier-marked hits and pagination facts,
-  §1/§2), with the same kind/service filter validation at the sandbox boundary — an unknown
-  filter value returns `{ ok: false, error }` naming the valid ones (explicit `null` = no
-  filter, like `limit`).
+  resolves to `{ ok: true, hits, total, truncated, widerCandidates, recovery }` (tier-marked
+  hits, pagination facts, structural wider advice, and explicit prior-attempt recovery, §1/§2),
+  with the same kind/service/recoverFrom validation at the sandbox boundary — an unknown filter
+  or recovery operation id returns `{ ok: false, error }` naming the valid scope (explicit `null`
+  = no filter, like `limit`).
 - **`codemode.catalog({ kind?, service?, compact? })`** — the manifest as flat data for arbitrary
   code-grep, optionally sliced by exact kind/service filters. The default/full projection includes
   schemas; `compact: true` omits `inputSchema`/`outputSchema` while retaining identity,
@@ -615,6 +629,7 @@ before model/tool execution, so later model or tool failure still counts.
 | Demo search page | Default 5 hits, caller `limit` clamped to 6. | `src/demo/budget.ts`, `src/demo/tools.ts` |
 | Demo search hit text | Description clipped to 220 chars; signature clipped to 400 chars while preserving the callable line. | `src/demo/tools.ts` |
 | Execute calls | 3 per turn. The host aggregates operation outcomes (`ok` / `error` / `soft-empty`) without payload data so the loop can recover from evidence-poor runs. | `src/demo/budget.ts`, `src/demo/tools.ts`, `src/executor/run.ts` |
+| Recovery guidance | Structurally poor operation searches expose up to three `widerCandidates`; execute exposes at most one hint-driven recovery cycle per turn. Independent structural failure recovery remains active. | `src/catalog/search.ts`, `src/demo/tools.ts`, `src/demo/steps.ts` |
 | Execute code length | 8,000 chars. | `src/demo/budget.ts`, `src/demo/tools.ts` |
 | Execute preflight | Known-bad `Promise.all({ ... })` fanout is refused before sandbox execution. | `src/demo/tools.ts` |
 | In-script discovery | Same as `/mcp`: `codemode.search`, `codemode.describe`, `codemode.catalog`, and `codemode.spec`, plus skill helpers. | `src/demo/tools.ts`, `src/demo/prompt.ts` |

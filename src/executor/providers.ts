@@ -31,7 +31,7 @@
  *     provider RPC instead (a source-injected `const codemode` would shadow
  *     this provider global) — same resolved document either way.
  *   codemode.search(queryOrOpts)      — host-side searchCatalogPage (ranked;
- *     { ok, hits, total, truncated, recovery } — truncated ⇒ retry with a higher limit
+ *     { ok, hits, total, truncated, recovery, widerCandidates } — truncated ⇒ retry with a higher limit
  *     or narrower filters). Unknown kind/service filter values are rejected
  *     as error envelopes naming the valid set (todo 839) — the frozen
  *     searchCatalog contract keeps filters silent, so the validation lives
@@ -761,7 +761,7 @@ export function buildCodemodeProvider(
               service: serviceFilter as string | undefined,
               limit: typeof opts.limit === "number" ? opts.limit : undefined
             });
-            const { hits, total, truncated } = page;
+            const { hits, total, truncated, widerCandidates } = page;
             // Recovery models a caller-reported prior attempt, never the ranked
             // hits the model merely saw in this search response. The host
             // validates exact IDs and exposure, not an execution ledger. A
@@ -785,10 +785,12 @@ export function buildCodemodeProvider(
               top: hits.slice(0, 3).map((h) => h.id),
               recovery: recovery.length,
               recoveryTop: recovery.slice(0, 3).map((candidate) => candidate.id),
-              responseChars: JSON.stringify({ hits, recovery }).length,
+              widerCandidates: widerCandidates.length,
+              widerCandidateTop: widerCandidates.slice(0, 3).map((candidate) => candidate.id),
+              responseChars: JSON.stringify({ hits, recovery, widerCandidates }).length,
               ms: Date.now() - t0
             });
-            return { ok: true, hits, total, truncated, recovery };
+            return { ok: true, hits, total, truncated, recovery, widerCandidates };
           },
 
           // The canonical detail-on-demand step (todo 841, mirroring upstream

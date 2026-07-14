@@ -29,7 +29,8 @@ import {
   searchCatalogPage,
   catalogServices,
   type SearchHit,
-  type SearchPage
+  type SearchPage,
+  type WiderCandidate
 } from "../catalog/search.ts";
 import { getCatalog } from "../catalog/load.ts";
 import {
@@ -52,7 +53,11 @@ import {
   truncateLogsForModel
 } from "../policy/truncate.ts";
 import type { BuildSourceBasisManifestInput, SourceBasisCall } from "../policy/source-basis.ts";
-import { candidateEvidenceBlock, evidenceCheckpointBlock } from "../policy/evidence-checkpoint.ts";
+import {
+  candidateEvidenceBlock,
+  evidenceCheckpointBlock,
+  type EvidenceRecoveryHint
+} from "../policy/evidence-checkpoint.ts";
 import { DEMO_CAPS, createDemoToolBudget, type DemoToolBudget } from "./budget.ts";
 import type { DemoFrame } from "./frames.ts";
 
@@ -78,6 +83,7 @@ type SearchStructured = {
   hits: SearchHit[];
   total: number;
   truncated: boolean;
+  widerCandidates: WiderCandidate[];
   nextSteps: string;
 };
 
@@ -169,6 +175,16 @@ function compactHitForDemo(hit: SearchHit): SearchHit {
     description: clip(hit.description, DEMO_HIT_DESCRIPTION_CHARS),
     ...(hit.signature !== undefined
       ? { signature: clipSignature(hit.signature, DEMO_HIT_SIGNATURE_CHARS) }
+      : {})
+  };
+}
+
+function compactWiderCandidateForDemo(candidate: WiderCandidate): WiderCandidate {
+  return {
+    ...candidate,
+    description: clip(candidate.description, DEMO_HIT_DESCRIPTION_CHARS),
+    ...(candidate.signature !== undefined
+      ? { signature: clipSignature(candidate.signature, DEMO_HIT_SIGNATURE_CHARS) }
       : {})
   };
 }
@@ -267,6 +283,8 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
           total: structured.total,
           truncated: structured.truncated,
           top: structured.hits.slice(0, 3).map((h) => h.id),
+          widerCandidates: structured.widerCandidates.length,
+          widerCandidateTop: structured.widerCandidates.slice(0, 3).map((candidate) => candidate.id),
           responseChars: JSON.stringify(structured).length,
           ms: Date.now() - t0
         });
@@ -280,6 +298,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
           hits: [],
           total: 0,
           truncated: false,
+          widerCandidates: [],
           nextSteps: "Search call limit reached for this demo turn. Earlier hits are navigation only; use an exact discovered id in execute if an execute call remains, then summarize only from factual tool evidence."
         };
         logEvent("demo-search-refused", {
@@ -304,6 +323,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
           hits: [],
           total: 0,
           truncated: false,
+          widerCandidates: [],
           nextSteps: `Unknown service "${args.service}" — service filter values are exact-match. Valid services: ${services.join(", ")}. Retry with one of those exact values, or drop the \`service\` filter.`
         }, null);
       }
@@ -318,19 +338,24 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
       });
       const { total, truncated } = page;
       const hits = page.hits.map(compactHitForDemo);
+      const widerCandidates = page.widerCandidates.map(compactWiderCandidateForDemo);
       if (truncated) budget.searchTruncatedCalls += 1;
       const remainingSearches = Math.max(0, DEMO_CAPS.maxSearchCallsPerTurn - budget.searchCalls);
       const searchAgain =
         remainingSearches > 0
           ? ` If these hits are truncated, mismatched, need corroboration, or do not expose the right endpoint shape, use another targeted search (${remainingSearches} remain) with the other candidate family, varied vocabulary, or exact \`kind\`/\`service\` filters.`
           : " No search calls remain; do not conclude capability absence from mismatched hits alone, and use the best available exact ids.";
-      const nextSteps =
+      const baseNextSteps =
         hits.length > 0
           ? `Navigation only: these hits identify composable operations and skills, but they are not factual evidence for the user's answer. Write ONE \`execute\` script that calls several relevant operations (Promise.all across services for independent calls), then follow up with deeper calls parameterized by returned rows. Every call resolves to { ok: true, data } or { ok: false, error: { kind, message, hint? } } — payload fields live under \`.data\` (\`r.data.projects\`, never \`r.projects\`); check \`r.ok\` first. Errors are failed evidence and \`soft-empty\` is inconclusive: recover with remaining budget or qualify/abstain. Skill hits are operational playbooks — read needed sections via \`codemode.skill.read(id, { sections })\`; runnable hits show the exact \`codemode.skill.run("<exact id>", input)\` call. Scores share one scale; gated hits lead except a backfill hit may be promoted when it decisively dominates (>=1.6x), so hit order is authoritative. The same production discovery helpers are enabled in-script: \`codemode.search\`, \`codemode.describe\`, \`codemode.catalog\`, and \`codemode.spec\`. Avoid lossy projection false negatives: inspect row keys or filter raw rows before selecting fields.${truncated ? " More entries matched than shown (truncated)." : ""}${searchAgain}`
           : remainingSearches > 0
             ? `No navigation hits. Use another candidate family or varied vocabulary (${remainingSearches} searches remain), or use codemode.search inside execute; do not conclude the capability or fact is absent from one empty catalog search.`
             : "No navigation hits and no top-level search calls remain. You may use codemode.search inside execute; do not conclude the capability or fact is absent from an empty catalog search, and qualify if factual evidence cannot be recovered.";
-      return respond({ hits, total, truncated, nextSteps }, page);
+      const nextSteps =
+        widerCandidates.length > 0
+          ? `${baseNextSteps} This page has no gated operation match; prioritize the advisory widerCandidates in one bounded broad pass if the open-world question remains unanswered.`
+          : baseNextSteps;
+      return respond({ hits, total, truncated, widerCandidates, nextSteps }, page);
     }
   });
 
@@ -396,8 +421,30 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
       budget.latestExecuteEvidence =
         outcome.evidenceSummary?.kind ??
         (latest.ok > 0 ? "service-data" : latest.total > 0 ? "service-inconclusive" : "none");
-      budget.latestRecoveryHint = outcome.ok ? (outcome.recoveryHint ?? null) : null;
-      if (budget.latestRecoveryHint) budget.recoveryHintedExecutes += 1;
+      const recoveryHint = outcome.ok ? (outcome.recoveryHint ?? null) : null;
+      let visibleRecoveryHint: EvidenceRecoveryHint | null = null;
+      if (recoveryHint) {
+        budget.recoveryHintedExecutes += 1;
+        if (!budget.recoveryAdviceConsumed && budget.latestRecoveryHint === null) {
+          budget.latestRecoveryHint = recoveryHint;
+          visibleRecoveryHint = recoveryHint;
+          // The standalone checkpoint is already model-visible in this tool
+          // result, so reserve the turn's single hint cycle immediately. The
+          // next prepareStep may restate this same pending hint, but no later
+          // execute may surface a second cycle.
+          budget.recoveryAdviceConsumed = true;
+        } else {
+          budget.recoveryAdviceSuppressed += 1;
+          // A later execute supersedes the pending "latest execute" note.
+          // The first checkpoint was already delivered, so do not retain
+          // stale source-operation claims for the next step boundary.
+          budget.latestRecoveryHint = null;
+        }
+      } else {
+        // Structural failure/no-evidence recovery must describe this execute,
+        // not a prior hint-bearing one from the same model step.
+        budget.latestRecoveryHint = null;
+      }
       // Same model-boundary budgets as the MCP handler: logs and error text
       // are model-authored channels and get the result's ~6k-token cap each
       // (rationale in src/policy/truncate.ts and src/mcp/tools.ts).
@@ -428,7 +475,10 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
         operationSummary: outcome.operationSummary ?? null,
         evidenceSummary: outcome.evidenceSummary ?? null,
         evidenceOutcome: evidenceOutcome(outcome),
-        recoveryHint: outcome.ok ? (outcome.recoveryHint ?? null) : null,
+        recoveryHint,
+        recoveryAdviceVisible: visibleRecoveryHint !== null,
+        recoveryAdviceConsumed: budget.recoveryAdviceConsumed,
+        recoveryAdviceSuppressed: budget.recoveryAdviceSuppressed,
         sourceBasis: outcome.ok ? sourceBasisSignals(outcome.sourceBasis) : null
       });
 
@@ -445,7 +495,9 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
         outcome.evidenceSummary,
         outcome.ok && outcome.truncated
       );
-      const evidenceCheckpoint = outcome.ok ? evidenceCheckpointBlock(outcome.recoveryHint) : "";
+      const evidenceCheckpoint = outcome.ok
+        ? evidenceCheckpointBlock(visibleRecoveryHint ?? undefined)
+        : "";
       const hasPriorArtPreflight = Boolean(
         outcome.operationSummary?.priorArtCandidates &&
           outcome.evidenceSummary?.buildAuthoritySkillIds?.length

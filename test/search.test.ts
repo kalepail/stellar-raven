@@ -137,6 +137,114 @@ describe("recoveryCandidates — advisory contingency graph", () => {
   });
 });
 
+describe("searchCatalogPage — structural wider candidates", () => {
+  it("recommends semantic and research anchors for exact low-evidence person questions", () => {
+    for (const query of [
+      "Who is Justin Rice?",
+      "Who is Tyler van der Hoeven?",
+      "Who is Danel Jed McCaleb?"
+    ]) {
+      const page = searchCatalogPage(catalog, { query, limit: 5 });
+      expect(page.hits.every((hit) => hit.tier === "backfill"), query).toBe(true);
+      expect(page.widerCandidates.map((candidate) => candidate.id), query).toEqual([
+        "scout.searchResearch",
+        "lumenloop.search_content_semantic",
+        "stellarDocs.search_docs"
+      ]);
+    }
+  });
+
+  it("recommends broad page hits first on a Justin-like all-backfill page", () => {
+    const page = searchCatalogPage(catalog, {
+      query: "justin rice history",
+      kind: "operation",
+      limit: 10
+    });
+    expect(page.hits.every((hit) => hit.tier === "backfill")).toBe(true);
+    expect(page.widerCandidates.map((candidate) => candidate.id)).toEqual([
+      "lumenloop.search_content_semantic",
+      "scout.searchResearch",
+      "stellarDocs.search_meeting_notes"
+    ]);
+    expect(page.widerCandidates.every((candidate) => candidate.basis === "page-broad-hit")).toBe(true);
+    expect(page.widerCandidates.map((candidate) => candidate.id)).not.toContain("scout.explainRepo");
+  });
+
+  it("uses deterministic manifest anchors for a zero-hit operation page", () => {
+    const page = searchCatalogPage(catalog, {
+      query: "zzzzqqqq zzqqzzqq",
+      kind: "operation"
+    });
+    expect(page.hits).toEqual([]);
+    expect(page.widerCandidates.map((candidate) => candidate.id)).toEqual([
+      "scout.searchResearch",
+      "lumenloop.search_content_semantic",
+      "stellarDocs.search_docs"
+    ]);
+    expect(new Set(page.widerCandidates.map((candidate) => candidate.lane)).size).toBe(
+      page.widerCandidates.length
+    );
+  });
+
+  it("keeps long technical all-backfill advice broad-only and ranking untouched", () => {
+    const query =
+      "design a cross chain remittance corridor that quotes fees checks anchor deposit " +
+      "limits verifies trustline flags and streams payment status webhooks to a dashboard";
+    const page = searchCatalogPage(catalog, { query, kind: "operation", limit: 10 });
+    const frozenHits = searchCatalog(catalog, { query, kind: "operation", limit: 10 });
+    expect(page.hits).toEqual(frozenHits);
+    expect(page.hits.every((hit) => hit.tier === "backfill")).toBe(true);
+    expect(page.widerCandidates).toHaveLength(3);
+    expect(page.widerCandidates.every((candidate) =>
+      ["semantic", "research", "av", "corpus"].includes(candidate.lane)
+    )).toBe(true);
+    expect(page.widerCandidates.map((candidate) => candidate.id)).not.toContain("scout.explainRepo");
+  });
+
+  it("stays silent for gated, mixed, and skill-only pages and honors service filters", () => {
+    expect(
+      searchCatalogPage(catalog, {
+        query: "stellar soroban contract",
+        kind: "operation",
+        limit: 10
+      }).widerCandidates
+    ).toEqual([]);
+    expect(
+      searchCatalogPage(catalog, {
+        query:
+          "In a SEP-6 programmatic deposit, which SEP actually carries the customer's KYC data — SEP-6 itself or another SEP?",
+        kind: "operation",
+        limit: 5
+      }).widerCandidates
+    ).toEqual([]);
+    expect(
+      searchCatalogPage(catalog, {
+        query: "zzzzqqqq zzqqzzqq",
+        kind: "skill"
+      }).widerCandidates
+    ).toEqual([]);
+    const lumenloopOnly = searchCatalogPage(catalog, {
+      query: "zzzzqqqq zzqqzzqq",
+      kind: "operation",
+      service: "lumenloop"
+    }).widerCandidates;
+    expect(lumenloopOnly.length).toBeGreaterThan(0);
+    expect(lumenloopOnly.every((candidate) => candidate.service === "lumenloop")).toBe(true);
+    expect(lumenloopOnly.length).toBeLessThanOrEqual(3);
+  });
+
+  it("returns only current exposed operations", () => {
+    const exposed = new Set(
+      catalog.entries.filter((entry) => entry.kind === "operation").map((entry) => entry.id)
+    );
+    const candidates = searchCatalogPage(catalog, {
+      query: "zzzzqqqq zzqqzzqq",
+      kind: "operation"
+    }).widerCandidates;
+    expect(candidates.every((candidate) => exposed.has(candidate.id))).toBe(true);
+  });
+});
+
 describe("loadManifest — structural invariants (F6)", () => {
   function rawManifest(): { entries: Record<string, unknown>[] } {
     return JSON.parse(readFileSync(join(ROOT, "catalog", "manifest.json"), "utf8"));

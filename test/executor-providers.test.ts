@@ -754,6 +754,28 @@ describe("codemode fns", () => {
     ]);
   });
 
+  it("search carries structural wider candidates through the sandbox projection", async () => {
+    const result = (await codemode.search!({
+      query: "justin rice history",
+      kind: "operation",
+      limit: 10
+    })) as {
+      ok: boolean;
+      hits: Array<{ id: string; tier: string }>;
+      widerCandidates: Array<{ id: string; lane: string }>;
+    };
+    expect(result.ok).toBe(true);
+    expect(result.hits.every((hit) => hit.tier === "backfill")).toBe(true);
+    expect(result.widerCandidates.map((candidate) => candidate.id)).toEqual([
+      "lumenloop.search_content_semantic",
+      "scout.searchResearch",
+      "stellarDocs.search_meeting_notes"
+    ]);
+    expect(result.widerCandidates.map((candidate) => candidate.id)).not.toContain(
+      "scout.explainRepo"
+    );
+  });
+
   it("search requires explicit recoverFrom ids before returning recovery candidates", async () => {
     const baseline = (await codemode.search!({ query: "builder directory", limit: 5 })) as {
       hits: Array<{ id: string }>;

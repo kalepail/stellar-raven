@@ -91,7 +91,8 @@ describe("searchEventFields", () => {
         ],
         total: 7,
         truncated: true,
-        effectiveLimit: 5
+        effectiveLimit: 5,
+        widerCandidates: []
       }
     });
 

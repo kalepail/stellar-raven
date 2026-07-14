@@ -85,8 +85,10 @@ Host Worker  (Workers Paid · wrangler: worker_loaders LOADER · nodejs_compat)
 **Search shape — settled 2026-07-02 (`research/decisions/0001-search-tool-shape.md`, accepted).**
 Exactly two tools ship: top-level `search` is a **host-side ranked query** `{ query, kind?,
 service?, limit?, recoverFrom?, reason? }` (the round-2 implementation, over upstream's own
-vendored `searchConnectors` scorer); recovery is exact-ID advisory metadata returned separately
-from ranked hits and never changes ranking. `execute` is `{ code }`. The code-shaped discovery variant that upstream's
+vendored `searchConnectors` scorer); structurally poor operation pages add bounded manifest-derived
+`widerCandidates`, while explicit prior-attempt recovery remains exact-ID advisory metadata. Both
+are returned separately from ranked hits and never change ranking
+([ADR-0007](research/decisions/0007-structural-recovery-guidance.md)). `execute` is `{ code }`. The code-shaped discovery variant that upstream's
 `openApiMcpServer` puts at the front door was **retired into `execute`'s sandbox**: a golden Q→A
 A/B (60 paired cases, `eval/qa/`) found the host-side ranked search directionally more accurate
 and — decisively — more reliable, while the in-sandbox code search burned the caller's turn
@@ -299,8 +301,9 @@ wrangler `^4.107.0`, compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders` b
 1. **Scaffold** — wrangler + pinned deps + CLAUDE.md + hygiene checks. *(shipped)*
 2. **Catalog + `search`** — manifest types, builder over the service snapshots, authored Docs
    spec, Docs page-title snapshot, and skills manifest; host-side search with TS signatures plus
-   manifest-validated, exact-ID evidence-poor recovery candidates kept separate from ranking and
-   returned only after non-empty explicit `recoverFrom` ids (a reason alone never escalates).
+   manifest-validated evidence-poor guidance kept separate from ranking: bounded broad-lane
+   `widerCandidates` for zero-hit/all-backfill operation pages, plus exact-ID recovery returned only
+   after non-empty explicit `recoverFrom` ids (a reason alone never escalates).
    Fully offline-testable. *(shipped)*
 3. **Adapters + `execute`** — per-service clients in `src/adapters/`, `DynamicWorkerExecutor`
    with namespaced providers, and `codemode.search/describe` sandbox globals. *(shipped)*

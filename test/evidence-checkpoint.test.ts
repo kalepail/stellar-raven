@@ -18,6 +18,7 @@ describe("evidence checkpoint prose", () => {
 
   it("names only catalog-derived recovery candidates", () => {
     const block = evidenceCheckpointBlock({
+      mode: "narrow-only",
       sourceOperations: ["scout.getBuilders"],
       candidates: [
         {
@@ -30,5 +31,25 @@ describe("evidence checkpoint prose", () => {
     expect(block).toContain("scout.getBuilders");
     expect(block).toContain("lumenloop.search_content_semantic (broader-semantic; empty/weak)");
     expect(block).toContain("If it exactly answers the request");
+  });
+
+  it("renders broad alternatives conditionally without judging payload relevance", () => {
+    const block = evidenceCheckpointBlock({
+      mode: "conditional-alternatives",
+      sourceOperations: ["stellarDocs.search_docs"],
+      candidates: [
+        {
+          id: "lumenloop.search_content_semantic",
+          relation: "cross-family",
+          reasons: ["weak", "adjacent", "ambiguous"]
+        }
+      ]
+    });
+    expect(block).toContain("successful broad operation class(es)");
+    expect(block).toContain("did not inspect or judge the returned rows");
+    expect(block).toContain("If exact evidence already answers");
+    expect(block).toContain("closed-world question");
+    expect(block).toContain("at most one bounded alternative pass");
+    expect(block).not.toMatch(/rows (?:were|are) weak|irrelevant rows|non-match/i);
   });
 });

@@ -327,6 +327,29 @@ describe("search behavior (host-side ranked)", () => {
     expect(after.recovery.every((candidate) => candidate.from === "scout.getBuilders")).toBe(true);
   });
 
+  it("projects structural wider candidates separately from ranked hits", async () => {
+    const result = await client.callTool({
+      name: "search",
+      arguments: { query: "justin rice history", kind: "operation", limit: 10 }
+    });
+    expect(result.isError).toBeFalsy();
+    const structured = result.structuredContent as {
+      hits: Array<{ id: string; tier: string }>;
+      widerCandidates: Array<{ id: string; lane: string; basis: string }>;
+      nextSteps: string;
+    };
+    expect(structured.hits.every((hit) => hit.tier === "backfill")).toBe(true);
+    expect(structured.widerCandidates.map((candidate) => candidate.id)).toEqual([
+      "lumenloop.search_content_semantic",
+      "scout.searchResearch",
+      "stellarDocs.search_meeting_notes"
+    ]);
+    expect(structured.widerCandidates.map((candidate) => candidate.id)).not.toContain(
+      "scout.explainRepo"
+    );
+    expect(structured.nextSteps).toContain("widerCandidates");
+  });
+
   it("does not infer recovery from ranking or a reason without explicit attempted ids", async () => {
     const baseline = await client.callTool({
       name: "search",
@@ -352,10 +375,12 @@ describe("search behavior (host-side ranked)", () => {
     const structured = result.structuredContent as {
       hits: unknown[];
       recovery: unknown[];
+      widerCandidates: unknown[];
       nextSteps: string;
     };
     expect(structured.hits).toEqual([]);
     expect(structured.recovery).toEqual([]);
+    expect(structured.widerCandidates).toEqual([]);
     expect(structured.nextSteps).toContain("scout.getBuilder");
     expect(structured.nextSteps).toContain("exact-match");
   });
@@ -628,6 +653,7 @@ describe("execute behavior", () => {
         logs: [],
         operationSummary: { total: 2, ok: 2, error: 0, softEmpty: 0 },
         recoveryHint: {
+          mode: "narrow-only",
           sourceOperations: ["scout.getBuilders", "lumenloop.find_content_by_entity"],
           candidates: [
             {
@@ -646,6 +672,39 @@ describe("execute behavior", () => {
     expect(text).toContain("closed-world question about the named source");
     expect(text).toContain("lumenloop.search_content_semantic (broader-semantic");
     expect(text).not.toContain("--- EVIDENCE RECOVERY ---");
+  });
+
+  it("renders docs-only broad alternatives through the standalone checkpoint", async () => {
+    const execClient = await connectedClient({
+      runExecute: async () => ({
+        ok: true,
+        result: '{"hits":[{"url":"https://developers.stellar.org/docs/example"}]}',
+        truncated: false,
+        logs: [],
+        operationSummary: { total: 1, ok: 1, error: 0, softEmpty: 0 },
+        recoveryHint: {
+          mode: "conditional-alternatives",
+          sourceOperations: ["stellarDocs.search_docs"],
+          candidates: [
+            {
+              id: "lumenloop.search_content_semantic",
+              relation: "cross-family",
+              reasons: ["weak", "adjacent", "ambiguous"]
+            }
+          ]
+        }
+      })
+    });
+    const result = await execClient.callTool({
+      name: "execute",
+      arguments: { code: "async () => 1" }
+    });
+    const text = (result.content as Array<{ text: string }>)[0]?.text ?? "";
+    expect(text).not.toContain("--- CANDIDATE EVIDENCE ---");
+    expect(text).toContain("--- EVIDENCE CHECKPOINT ---");
+    expect(text).toContain("successful broad operation class(es) (stellarDocs.search_docs)");
+    expect(text).toContain("did not inspect or judge the returned rows");
+    expect(text).toContain("at most one bounded alternative pass");
   });
 
   it("adds bounded reuse caveats after Scout prior-art operations", async () => {

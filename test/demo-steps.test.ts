@@ -95,6 +95,7 @@ describe("prepareDemoStep", () => {
     budget.latestOperationOk = 2;
     budget.latestExecuteEvidence = "service-data";
     budget.latestRecoveryHint = {
+      mode: "narrow-only",
       sourceOperations: ["scout.getBuilders", "lumenloop.find_content_by_entity"],
       candidates: [
         {
@@ -110,6 +111,42 @@ describe("prepareDemoStep", () => {
     expect(prepared?.system).toContain("question is closed-world, stop at that scope");
     expect(prepared?.system).toContain("lumenloop.search_content_semantic");
     expect(prepared?.system).toContain("remaining execute budget (2)");
+    expect(budget.recoveryAdviceConsumed).toBe(true);
+    expect(budget.latestRecoveryHint).toBeNull();
+    expect(prepareDemoStep({ steps: [], stepNumber: 3, budget })).toBeUndefined();
+  });
+
+  it("consumes broad conditional advice once without masking later structural recovery", () => {
+    const budget = createDemoToolBudget();
+    budget.executeCalls = 1;
+    budget.latestOperationTotal = 1;
+    budget.latestOperationOk = 1;
+    budget.latestExecuteEvidence = "service-data";
+    budget.latestRecoveryHint = {
+      mode: "conditional-alternatives",
+      sourceOperations: ["stellarDocs.search_docs"],
+      candidates: [
+        {
+          id: "lumenloop.search_content_semantic",
+          relation: "cross-family",
+          reasons: ["weak", "adjacent", "ambiguous"]
+        }
+      ]
+    };
+    const first = prepareDemoStep({ steps: [], stepNumber: 2, budget });
+    expect(first?.system).toContain("successful broad operation class(es)");
+    expect(first?.system).toContain("did not inspect or judge their rows");
+    expect(first?.system).toContain("at most one bounded uncalled alternative");
+    expect(budget.recoveryAdviceConsumed).toBe(true);
+    expect(prepareDemoStep({ steps: [], stepNumber: 3, budget })).toBeUndefined();
+
+    budget.latestOperationTotal = 1;
+    budget.latestOperationOk = 0;
+    budget.latestOperationError = 1;
+    budget.latestExecuteEvidence = "service-inconclusive";
+    expect(prepareDemoStep({ steps: [], stepNumber: 4, budget })?.system).toContain(
+      "returned only errors"
+    );
   });
 
   it("recovers when the latest execute has no host-observed evidence", () => {

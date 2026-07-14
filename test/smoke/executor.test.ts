@@ -224,7 +224,7 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
     expect(outcome.operationSummary?.candidateEvidence).toBeUndefined();
   });
 
-  it("derives recovery advice for operation-scoped directories and suppresses it after a broad lane", async () => {
+  it("derives narrow and conditional recovery advice from the attempted-operation graph", async () => {
     vi.stubGlobal("fetch", async (input: RequestInfo | URL) => {
       const url = new URL(typeof input === "string" || input instanceof URL ? input : input.url);
       if (url.pathname.endsWith("/api/builders")) {
@@ -268,6 +268,22 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
           meta: { tool: "find_similar_projects_semantic", format: "json" }
         });
       }
+      if (url.pathname.includes("/1/indexes/")) {
+        return Response.json({
+          hits: [
+            {
+              objectID: "doc-1",
+              url: "https://developers.stellar.org/docs/example",
+              hierarchy: { lvl0: "Docs", lvl1: "Example" },
+              _snippetResult: { content: { value: "Exact official wording" } }
+            }
+          ],
+          nbHits: 1,
+          page: 0,
+          nbPages: 1,
+          hitsPerPage: 1
+        });
+      }
       return Response.json({ error: `unexpected ${url.pathname}` }, { status: 500 });
     });
 
@@ -277,11 +293,29 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
     }`);
     expect(narrow.ok).toBe(true);
     if (!narrow.ok) throw new Error(narrow.error);
+    expect(narrow.recoveryHint?.mode).toBe("narrow-only");
     expect(narrow.recoveryHint?.sourceOperations).toEqual(["scout.getBuilders"]);
     expect(narrow.recoveryHint?.candidates.map((candidate) => candidate.id)).toEqual([
       "lumenloop.search_content_semantic",
       "scout.searchResearch",
       "lumenloop.find_av_passages"
+    ]);
+
+    const failedAlternative = await run(`async () => {
+      const [builders, av] = await Promise.all([
+        scout.getBuilders({ q: "Example Builder", limit: 1 }),
+        lumenloop.find_av_passages({ query: "Example Builder", limit: 1 })
+      ]);
+      return { buildersOk: builders.ok, avOk: av.ok };
+    }`);
+    expect(failedAlternative.ok).toBe(true);
+    if (!failedAlternative.ok) throw new Error(failedAlternative.error);
+    expect(failedAlternative.operationSummary).toMatchObject({ ok: 1, error: 1 });
+    expect(failedAlternative.recoveryHint?.mode).toBe("narrow-only");
+    expect(failedAlternative.recoveryHint?.sourceOperations).toEqual(["scout.getBuilders"]);
+    expect(failedAlternative.recoveryHint?.candidates.map((candidate) => candidate.id)).toEqual([
+      "lumenloop.search_content_semantic",
+      "scout.searchResearch"
     ]);
 
     const lumenloopDirectory = await run(`async () => {
@@ -291,6 +325,7 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
     expect(lumenloopDirectory.ok).toBe(true);
     if (!lumenloopDirectory.ok) throw new Error(lumenloopDirectory.error);
     expect(lumenloopDirectory.operationSummary?.candidateEvidence).toBe(1);
+    expect(lumenloopDirectory.recoveryHint?.mode).toBe("narrow-only");
     expect(lumenloopDirectory.recoveryHint?.sourceOperations).toEqual([
       "lumenloop.search_directory"
     ]);
@@ -307,6 +342,7 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
     expect(scoutDirectory.ok).toBe(true);
     if (!scoutDirectory.ok) throw new Error(scoutDirectory.error);
     expect(scoutDirectory.operationSummary?.candidateEvidence).toBe(1);
+    expect(scoutDirectory.recoveryHint?.mode).toBe("narrow-only");
     expect(scoutDirectory.recoveryHint?.sourceOperations).toEqual(["scout.searchProjects"]);
     expect(scoutDirectory.recoveryHint?.candidates.map((candidate) => candidate.id)).toEqual([
       "lumenloop.search_content_semantic",
@@ -324,7 +360,30 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
     expect(broadened.ok).toBe(true);
     if (!broadened.ok) throw new Error(broadened.error);
     expect(broadened.operationSummary?.candidateEvidence).toBe(1);
-    expect(broadened.recoveryHint).toBeUndefined();
+    expect(broadened.recoveryHint?.mode).toBe("conditional-alternatives");
+    expect(broadened.recoveryHint?.sourceOperations).toEqual([
+      "lumenloop.search_content_semantic"
+    ]);
+    expect(broadened.recoveryHint?.candidates.map((candidate) => candidate.id)).toEqual([
+      "scout.searchResearch",
+      "stellarDocs.search_docs",
+      "lumenloop.find_av_passages"
+    ]);
+
+    const docsOnly = await run(`async () => {
+      const docs = await stellarDocs.search_docs({ query: "exact official wording", hitsPerPage: 1 });
+      return { docsOk: docs.ok };
+    }`);
+    expect(docsOnly.ok).toBe(true);
+    if (!docsOnly.ok) throw new Error(docsOnly.error);
+    expect(docsOnly.operationSummary?.candidateEvidence).toBeUndefined();
+    expect(docsOnly.recoveryHint?.mode).toBe("conditional-alternatives");
+    expect(docsOnly.recoveryHint?.sourceOperations).toEqual(["stellarDocs.search_docs"]);
+    expect(docsOnly.recoveryHint?.candidates.map((candidate) => candidate.id)).toEqual([
+      "scout.searchResearch",
+      "lumenloop.search_content_semantic",
+      "stellarDocs.search_meeting_notes"
+    ]);
 
     const unprofiledSemantic = await run(`async () => {
       const [builders, similar] = await Promise.all([

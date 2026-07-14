@@ -2,6 +2,7 @@ import { env } from "cloudflare:test";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { buildDemoTools } from "../../src/demo/tools";
 import { createDemoToolBudget, type DemoToolBudget } from "../../src/demo/budget";
+import { prepareDemoStep } from "../../src/demo/steps";
 import type { DemoFrame } from "../../src/demo/frames";
 
 type ToolWithExecute = {
@@ -28,6 +29,38 @@ function makeTools(budget?: DemoToolBudget) {
 }
 
 describe("demo tools at the worker boundary", () => {
+  it("projects clipped structural wider candidates without losing ids or output shape", async () => {
+    const { search } = makeTools();
+    const result = (await search.execute({
+      query: "Who is Justin Rice?"
+    })) as {
+      hits: Array<{ id: string }>;
+      widerCandidates: Array<{
+        id: string;
+        description: string;
+        signature?: string;
+        outputKeys?: string[];
+        outputItemKeys?: Record<string, string[]>;
+      }>;
+      nextSteps: string;
+    };
+    expect(result.widerCandidates.map((candidate) => candidate.id)).toEqual([
+      "scout.searchResearch",
+      "lumenloop.search_content_semantic",
+      "stellarDocs.search_docs"
+    ]);
+    const semantic = result.widerCandidates.find(
+      (candidate) => candidate.id === "lumenloop.search_content_semantic"
+    );
+    expect(semantic?.description.length).toBeLessThanOrEqual(244);
+    expect(semantic?.signature).toContain(
+      "lumenloop.search_content_semantic"
+    );
+    expect(semantic?.outputKeys).toEqual(["counts", "items", "meta"]);
+    expect(semantic?.outputItemKeys?.items).toContain("dateField");
+    expect(result.nextSteps).toContain("widerCandidates");
+  });
+
   it("records truncated-search turn count and the shared bounded event fields", async () => {
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
     try {
@@ -283,7 +316,8 @@ describe("demo tools at the worker boundary", () => {
       });
     });
 
-    const { execute } = makeTools();
+    const budget = createDemoToolBudget();
+    const { execute, budgetReport } = makeTools(budget);
     const ordinary = (await execute.execute({
       code: `async () => {
         const projects = await scout.searchProjects({ query: "example", limit: 1 });
@@ -292,6 +326,20 @@ describe("demo tools at the worker boundary", () => {
     })) as string;
     expect(ordinary).toContain("--- CANDIDATE EVIDENCE ---");
     expect(ordinary).toContain("These rows are candidates, not identity or absence proof");
+    expect(ordinary).toContain("--- EVIDENCE CHECKPOINT ---");
+    expect(budget.recoveryAdviceConsumed).toBe(true);
+
+    const failed = (await execute.execute({
+      code: `async () => {
+        const documents = await lumenloop.list_documents({ limit: 1 });
+        return { documentsOk: documents.ok };
+      }`
+    })) as string;
+    expect(failed).toContain("evidence: service-inconclusive");
+    expect(budget.latestRecoveryHint).toBeNull();
+    const recoveryStep = prepareDemoStep({ steps: [], stepNumber: 2, budget });
+    expect(recoveryStep?.system).toContain("returned only errors");
+    expect(recoveryStep?.system).not.toContain("successful narrow, operation-scoped lookup");
 
     const build = (await execute.execute({
       code: `async () => {
@@ -303,6 +351,12 @@ describe("demo tools at the worker boundary", () => {
       }`
     })) as string;
     expect(build).not.toContain("--- CANDIDATE EVIDENCE ---");
+    expect(build).not.toContain("--- EVIDENCE CHECKPOINT ---");
+    expect(budgetReport()).toMatchObject({
+      recoveryHintedExecutes: 2,
+      recoveryAdviceConsumed: true,
+      recoveryAdviceSuppressed: 1
+    });
   });
 
   it("adds a demo-only advisory when execute output is truncated", async () => {

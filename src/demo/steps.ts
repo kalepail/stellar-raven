@@ -148,7 +148,7 @@ export function prepareDemoStep({
     operations.ok === 0 &&
     (operations.error > 0 || operations.softEmpty > 0);
   const noHostEvidence = budget?.latestExecuteEvidence === "none";
-  const narrowRecovery = budget?.latestRecoveryHint ?? null;
+  const recoveryHint = budget?.latestRecoveryHint ?? null;
 
   if (stepNumber === DEMO_CAPS.maxSteps - 1) {
     return {
@@ -160,7 +160,7 @@ export function prepareDemoStep({
   if (
     !operationRecovery &&
     !noHostEvidence &&
-    narrowRecovery === null &&
+    recoveryHint === null &&
     signals.evidenceState !== "navigation-only" &&
     signals.evidenceState !== "needs-recovery"
   ) {
@@ -171,11 +171,14 @@ export function prepareDemoStep({
     0,
     DEMO_CAPS.maxExecuteCallsPerTurn - (budget?.executeCalls ?? signals.executeResults)
   );
+  const usesRecoveryHint = !noHostEvidence && recoveryHint !== null;
   const reason =
     noHostEvidence
       ? "The latest execute returned no host-observed service, skill-content, or artifact evidence; catalog/spec/search results and model-authored constants are navigation or unsupported data, not factual grounding."
-      : narrowRecovery
-        ? `The latest execute used only successful narrow, operation-scoped lookup(s) (${narrowRecovery.sourceOperations.join(", ")}). If the returned projection exactly answers the request or the question is closed-world, stop at that scope. If an open-world identity, history, or footprint remains empty, weak, adjacent, ambiguous, or partial, use one exact wider candidate (${narrowRecovery.candidates.map((candidate) => candidate.id).join(", ")}).`
+      : recoveryHint
+        ? recoveryHint.mode === "conditional-alternatives"
+          ? `The latest execute used successful broad operation class(es) (${recoveryHint.sourceOperations.join(", ")}); the host did not inspect or judge their rows. If exact evidence answers the request or the question names a closed-world source, stop at that scope. If the open-world question remains unanswered, use at most one bounded uncalled alternative (${recoveryHint.candidates.map((candidate) => candidate.id).join(", ")}).`
+          : `The latest execute used only successful narrow, operation-scoped lookup(s) (${recoveryHint.sourceOperations.join(", ")}). If the returned projection exactly answers the request or the question is closed-world, stop at that scope. If an open-world identity, history, or footprint remains empty, weak, adjacent, ambiguous, or partial, use one exact wider candidate (${recoveryHint.candidates.map((candidate) => candidate.id).join(", ")}).`
       : operationRecovery && operations.softEmpty > 0 && operations.error > 0
       ? "The host-observed operations returned only errors or soft-empty results, with no successful operation evidence."
       : operationRecovery && operations.softEmpty > 0
@@ -191,6 +194,11 @@ export function prepareDemoStep({
     remainingExecutes > 0
       ? `Use the remaining execute budget (${remainingExecutes}) to obtain or recover compact factual evidence; choose the correction from the actual result rather than following a fixed phase sequence.`
       : "No execute budget appears to remain; qualify the unsupported or incomplete claim, or abstain.";
+
+  if (usesRecoveryHint && budget) {
+    budget.recoveryAdviceConsumed = true;
+    budget.latestRecoveryHint = null;
+  }
 
   return {
     system: `${DEMO_SYSTEM_PROMPT}\n\nEvidence-recovery note: ${reason} ${action}`
