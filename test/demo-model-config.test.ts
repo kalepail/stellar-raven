@@ -15,6 +15,7 @@ import {
   DEMO_REASONING_EFFORT,
   DEMO_REASONING_EFFORT_OVERRIDE_VAR,
   DEMO_TEMPERATURE,
+  demoEffectiveOpenAiApiMode,
   demoOpenAiApiModeFromOverride,
   demoOpenAiProviderOptions,
   demoGatewayTransportSettings,
@@ -109,6 +110,14 @@ describe("demo model config", () => {
     expect(demoOpenAiApiModeFromOverride("nope")).toBe("responses");
     expect(demoOpenAiApiModeFromOverride("chat")).toBe("chat");
     expect(demoOpenAiApiModeFromOverride(" responses ")).toBe("responses");
+  });
+
+  it("uses the same effective API-mode rule for the configured fallback tuple", () => {
+    expect(demoEffectiveOpenAiApiMode(DEMO_MODELS, "responses")).toBe("responses");
+    expect(demoEffectiveOpenAiApiMode([{ model: "openai/gpt-5.4" }, { model: "xai/grok-4.5" }], "responses")).toBe(
+      "chat"
+    );
+    expect(demoEffectiveOpenAiApiMode(DEMO_MODELS, "chat")).toBe("chat");
   });
 
   it("maps demo reasoning values onto the narrower Workers AI catalog setting", () => {

@@ -61,6 +61,19 @@ export function demoOpenAiApiModeFromOverride(override: string | undefined): Dem
   return DEMO_OPENAI_API_MODE;
 }
 
+/**
+ * Responses transport is valid only when every configured attempt is an
+ * OpenAI model. Keep this decision shared by the runtime and evaluator so an
+ * artifact's recorded effective mode describes the route's real selection.
+ */
+export function demoEffectiveOpenAiApiMode(
+  models: readonly { model: string }[],
+  requestedMode: DemoOpenAiApiMode
+): DemoOpenAiApiMode {
+  if (requestedMode !== "responses") return "chat";
+  return models.every(({ model }) => model.startsWith("openai/")) ? "responses" : "chat";
+}
+
 export function demoOpenAiProviderOptions(model: string, reasoningEffort: DemoReasoningEffort | undefined) {
   // The provider-native Grok gateway transport uses the OpenAI-compatible
   // chat wire format too, including reasoning_effort.

@@ -41,6 +41,7 @@ import {
   DEMO_OPENAI_API_MODE_VAR,
   DEMO_REASONING_EFFORT_OVERRIDE_VAR,
   DEMO_TEMPERATURE,
+  demoEffectiveOpenAiApiMode,
   demoOpenAiApiModeFromOverride,
   demoOpenAiProviderOptions,
   demoGatewayTransportSettings,
@@ -49,7 +50,6 @@ import {
   demoModelsFromOverride,
   demoSessionAffinity,
   demoWorkersAiReasoningEffort,
-  type DemoOpenAiApiMode,
   type DemoReasoningEffort
 } from "./model-config.ts";
 import {
@@ -223,7 +223,7 @@ async function runTurn(
   let finishReason = "none";
   const demoModels = demoModelsFromOverride(env.DEMO_MODEL_OVERRIDE);
   const requestedOpenAiApiMode = demoOpenAiApiModeFromOverride(env.DEMO_OPENAI_API_MODE);
-  const openAiApiMode = openAiApiModeForModels(demoModels, requestedOpenAiApiMode);
+  const openAiApiMode = demoEffectiveOpenAiApiMode(demoModels, requestedOpenAiApiMode);
   const reasoningEffort = demoReasoningEffortFromOverride(env.DEMO_REASONING_EFFORT_OVERRIDE);
   const reasoningEffortOverride = demoReasoningEffortOverride(env.DEMO_REASONING_EFFORT_OVERRIDE);
   const openAiReasoningEffort = openAiApiMode === "responses" ? reasoningEffort : reasoningEffortOverride;
@@ -451,14 +451,6 @@ function modelSettings(model: string, sessionAffinity: string, reasoningEffort: 
     ...demoGatewayTransportSettings(model),
     extraHeaders: { "x-session-affinity": sessionAffinity }
   } as const;
-}
-
-function openAiApiModeForModels(
-  models: readonly { model: string }[],
-  requestedMode: DemoOpenAiApiMode
-): DemoOpenAiApiMode {
-  if (requestedMode !== "responses") return "chat";
-  return models.every(({ model }) => model.startsWith("openai/")) ? "responses" : "chat";
 }
 
 const cloudflareAnthropic = {

@@ -1,0 +1,154 @@
+{
+  "contract": "temporal-expectations-v1",
+  "candidateObservationMarker": "--- OBSERVATION CONTEXT ---",
+  "expectedReplicatesPerSurfaceArm": {
+    "positive": 2,
+    "control": 1
+  },
+  "cases": [
+    {
+      "id": "q-builder-justin-rice-history",
+      "class": "positive",
+      "perSurfaceBaseline": { "mcp": "wrong", "playground": "partial" },
+      "asOfRequired": true,
+      "qualifierPatterns": [
+        "(?:as (?:of|observed on)|observed (?:on|at)|when (?:checked|observed)(?: on)?)[^.!?\\n]{0,160}(?:Justin Rice|VP(?: of)? Ecosystem|leadership|team page)",
+        "(?:Justin Rice|VP(?: of)? Ecosystem|leadership|team page)[^.!?\\n]{0,160}(?:as of|observed (?:on|at)|when (?:checked|observed))"
+      ],
+      "staleTraps": [
+        {
+          "assertPattern": "(?:Justin Rice|Rice|he)\\s+(?:is|serves as)\\s+(?:SDF(?:'s)?\\s+)?(?:Head|VP)(?: of)? Ecosystem",
+          "historicalGuardPattern": "(?:as (?:of|observed on)|observed (?:on|at)|when (?:checked|observed)|in (?:20(?:20|21|22|23|24|25|26)))[^.!?\\n]{0,160}(?:Justin Rice|Rice|Head(?: of)? Ecosystem|VP(?: of)? Ecosystem)|(?:live|current) (?:SDF )?(?:team|leadership) page[^.!?\\n]{0,80}(?:lists|listed)",
+          "evidenceDate": "2026-07-13"
+        }
+      ],
+      "anchorAsFactPattern": null,
+      "spuriousHedgePattern": null
+    },
+    {
+      "id": "q-builder-content-by-person",
+      "class": "positive",
+      "perSurfaceBaseline": { "mcp": "partial", "playground": "partial" },
+      "asOfRequired": true,
+      "qualifierPatterns": [
+        "(?:as of|observed (?:on|at)|when (?:checked|observed)|generated[- ]at)[^.!?\\n]{0,180}(?:Tyler|publication|author index|repository|Passkey Kit|Launchtube|roster)",
+        "(?:Tyler|publication|author index|repository|Passkey Kit|Launchtube|roster)[^.!?\\n]{0,180}(?:as of|observed (?:on|at)|when (?:checked|observed)|generated[- ]at)"
+      ],
+      "staleTraps": [],
+      "anchorAsFactPattern": null,
+      "spuriousHedgePattern": null
+    },
+    {
+      "id": "q-edge-noinfo-stellar-native-privacy-default",
+      "class": "positive",
+      "perSurfaceBaseline": { "mcp": "partial", "playground": "partial" },
+      "asOfRequired": true,
+      "qualifierPatterns": [
+        "(?:as of|observed (?:on|at)|when (?:checked|observed)|currently)[^.!?\\n]{0,180}(?:privacy|Confidential Tokens|Private Payments|developer preview|Testnet|network|audit)",
+        "(?:privacy|Confidential Tokens|Private Payments|developer preview|Testnet|network|audit)[^.!?\\n]{0,180}(?:as of|observed (?:on|at)|when (?:checked|observed)|currently)"
+      ],
+      "staleTraps": [],
+      "anchorAsFactPattern": null,
+      "spuriousHedgePattern": null
+    },
+    {
+      "id": "q-scf-verified-members",
+      "class": "positive",
+      "perSurfaceBaseline": { "mcp": "partial", "playground": "wrong" },
+      "asOfRequired": true,
+      "qualifierPatterns": [
+        "(?:as of|observed (?:on|at)|when (?:checked|observed)|current access table)[^.!?\\n]{0,180}(?:Verified|Pathfinder|Navigator|Pilot|tier|permission|vot)",
+        "(?:Verified|Pathfinder|Navigator|Pilot|tier|permission|vot)[^.!?\\n]{0,180}(?:as of|observed (?:on|at)|when (?:checked|observed)|current access table)"
+      ],
+      "staleTraps": [],
+      "anchorAsFactPattern": null,
+      "spuriousHedgePattern": null
+    },
+    {
+      "id": "q-defi-lending-landscape-live",
+      "class": "positive",
+      "perSurfaceBaseline": { "mcp": "correct", "playground": "partial" },
+      "asOfRequired": true,
+      "qualifierPatterns": [
+        "(?:as of|observed (?:on|at)|when (?:checked|observed)|generated[- ]at)[^.!?\\n]{0,180}(?:lending|borrowing|directory|project|roster|SCF)",
+        "(?:lending|borrowing|directory|project|roster|SCF)[^.!?\\n]{0,180}(?:as of|observed (?:on|at)|when (?:checked|observed)|generated[- ]at)"
+      ],
+      "staleTraps": [],
+      "anchorAsFactPattern": null,
+      "spuriousHedgePattern": null
+    },
+    {
+      "id": "q-eco-freighter-wallet",
+      "class": "positive",
+      "perSurfaceBaseline": { "mcp": "partial", "playground": "partial" },
+      "asOfRequired": true,
+      "qualifierPatterns": [
+        "(?:as of|observed (?:on|at)|when (?:checked|observed)|currently)[^.!?\\n]{0,180}(?:Freighter|browser|extension|mobile|iOS|Android|platform|feature)",
+        "(?:Freighter|browser|extension|mobile|iOS|Android|platform|feature)[^.!?\\n]{0,180}(?:as of|observed (?:on|at)|when (?:checked|observed)|currently)"
+      ],
+      "staleTraps": [],
+      "anchorAsFactPattern": null,
+      "spuriousHedgePattern": null
+    },
+    {
+      "id": "q-sep53-message-signing",
+      "class": "control",
+      "perSurfaceBaseline": { "mcp": "partial", "playground": "wrong" },
+      "asOfRequired": false,
+      "qualifierPatterns": [],
+      "staleTraps": [],
+      "anchorAsFactPattern": null,
+      "spuriousHedgePattern": "(?:as of|observed (?:on|at)|when (?:checked|observed)|currently)[^.!?\\n]{0,140}(?:prefix|Stellar Signed Message|SHA-?256|Ed25519)"
+    },
+    {
+      "id": "q-pc-bucketlist-vs-merkle-inclusion-proof",
+      "class": "control",
+      "perSurfaceBaseline": { "mcp": "correct", "playground": "partial" },
+      "asOfRequired": false,
+      "qualifierPatterns": [],
+      "staleTraps": [],
+      "anchorAsFactPattern": null,
+      "spuriousHedgePattern": "(?:as of|observed (?:on|at)|when (?:checked|observed)|currently)[^.!?\\n]{0,160}(?:Bucket List|bucketListHash|txSetHash|txSetResultHash|transaction[- ]set)"
+    },
+    {
+      "id": "q-hist-cctp-stellar-live-announcement",
+      "class": "control",
+      "perSurfaceBaseline": { "mcp": "correct", "playground": "wrong" },
+      "asOfRequired": false,
+      "qualifierPatterns": [],
+      "staleTraps": [],
+      "anchorAsFactPattern": "(?:announced|announcement date (?:was|is)|went live|live on Stellar (?:on|since))[^.!?\\n]{0,60}(?:July 14,? 2026|2026-07-14)|(?:July 14,? 2026|2026-07-14)[^.!?\\n]{0,40}(?:was|is) (?:the )?(?:announcement|live) date",
+      "spuriousHedgePattern": null
+    },
+    {
+      "id": "q-hist-meridian-2026-corrected-venue",
+      "class": "control",
+      "perSurfaceBaseline": { "mcp": null, "playground": null },
+      "asOfRequired": false,
+      "qualifierPatterns": [],
+      "staleTraps": [],
+      "anchorAsFactPattern": "(?:scheduled for|takes place|event dates? (?:are|is)|will (?:be held|occur)(?: on)?)[^.!?\\n]{0,40}(?:July 14,? 2026|2026-07-14)",
+      "spuriousHedgePattern": "(?:may|might|possibly|perhaps|apparently)[^.!?\\n]{0,100}(?:Lisbon|Convento do Beato|October 28(?:–|-| to )29)"
+    },
+    {
+      "id": "q-edge-closed-world-builder-directory-miss",
+      "class": "control",
+      "perSurfaceBaseline": { "mcp": "partial", "playground": "correct" },
+      "asOfRequired": false,
+      "qualifierPatterns": [],
+      "staleTraps": [],
+      "anchorAsFactPattern": null,
+      "spuriousHedgePattern": "(?:may|might|possibly|perhaps|unclear whether)[^.!?\\n]{0,120}(?:Strupey|exact builder record|builder directory)|(?:Strupey|exact builder record|builder directory)[^.!?\\n]{0,120}(?:may|might|possibly|perhaps|unclear whether)"
+    },
+    {
+      "id": "q-edge-lumenloop-person-entity-empty",
+      "class": "control",
+      "perSurfaceBaseline": { "mcp": "correct", "playground": "correct" },
+      "asOfRequired": false,
+      "qualifierPatterns": [],
+      "staleTraps": [],
+      "anchorAsFactPattern": null,
+      "spuriousHedgePattern": "(?:as of|observed (?:on|at)|when (?:checked|observed)|currently)[^.!?\\n]{0,160}(?:ok:? true|data-shaped empty|soft-empty)"
+    }
+  ]
+}

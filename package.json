@@ -33,6 +33,7 @@
     "eval:qa:lint": "node eval/qa/lint-corpus.mjs",
     "eval:qa:register": "node eval/qa/register-helper.mjs",
     "eval:qa": "node eval/qa/run-qa.mjs",
+    "eval:temporal:selftest": "node eval/temporal/score-temporal.mjs --self-test",
     "eval:playground": "node scripts/run-playground-semantic-eval.mjs",
     "eval:algolia-raven": "node scripts/eval-algolia-raven.mjs",
     "eval:partner-docs": "node scripts/eval-partner-docs.mjs",

@@ -1,0 +1,47 @@
+{
+  "contract": "temporal-detector-fixtures-v1",
+  "fixtures": [
+    {
+      "name": "missing-as-of-detection",
+      "id": "q-builder-content-by-person",
+      "answer": "Tyler van der Hoeven has seven posts in the author index, and Passkey Kit is a current smart-wallet SDK.",
+      "expected": { "asOfDated": false, "staleAsCurrent": false, "anchorAsFact": false, "spuriousHedge": false }
+    },
+    {
+      "name": "justin-rice-stale-as-current",
+      "id": "q-builder-justin-rice-history",
+      "answer": "Justin Rice is SDF's Head of Ecosystem. He also wrote about Stellar AMMs in 2021.",
+      "expected": { "asOfDated": false, "staleAsCurrent": true, "anchorAsFact": false, "spuriousHedge": false }
+    },
+    {
+      "name": "positive-as-of-present",
+      "id": "q-builder-justin-rice-history",
+      "answer": "As observed on July 14, 2026, the live SDF team page lists Justin Rice as VP of Ecosystem. In 2021, first-party event pages described his historical ecosystem roles.",
+      "expected": { "asOfDated": true, "staleAsCurrent": false, "anchorAsFact": false, "spuriousHedge": false }
+    },
+    {
+      "name": "observation-anchor-as-publication-fact",
+      "id": "q-hist-cctp-stellar-live-announcement",
+      "answer": "SDF and Circle announced that CCTP was live on Stellar on July 14, 2026. It burns native USDC on the source chain and mints it on the destination chain.",
+      "expected": { "asOfDated": false, "staleAsCurrent": false, "anchorAsFact": true, "spuriousHedge": false }
+    },
+    {
+      "name": "spurious-hedge-on-stable-mechanism",
+      "id": "q-sep53-message-signing",
+      "answer": "As of July 14, 2026, SEP-53 prefixes the exact message bytes with Stellar Signed Message followed by a newline, hashes once with SHA-256, and signs the digest with Ed25519.",
+      "expected": { "asOfDated": false, "staleAsCurrent": false, "anchorAsFact": false, "spuriousHedge": true }
+    },
+    {
+      "name": "publication-date-control-zero-fires",
+      "id": "q-hist-cctp-stellar-live-announcement",
+      "answer": "As observed on July 14, 2026, the first-party pages date SDF and Circle's public CCTP-live announcement to May 19, 2026. CCTP burns native USDC on the source chain and mints native USDC on the destination after attestation.",
+      "expected": { "asOfDated": false, "staleAsCurrent": false, "anchorAsFact": false, "spuriousHedge": false }
+    },
+    {
+      "name": "event-date-control-zero-fires",
+      "id": "q-hist-meridian-2026-corrected-venue",
+      "answer": "As of July 14, 2026, the current official site schedules Meridian for October 28–29, 2026 at Convento do Beato in Lisbon; SDF announced the move on April 1, 2026.",
+      "expected": { "asOfDated": false, "staleAsCurrent": false, "anchorAsFact": false, "spuriousHedge": false }
+    }
+  ]
+}

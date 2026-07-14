@@ -23,6 +23,7 @@ import {
   DEMO_OPENAI_API_MODE,
   DEMO_REASONING_EFFORT,
   DEMO_TEMPERATURE,
+  demoEffectiveOpenAiApiMode,
   demoModelsFromOverride,
   demoOpenAiApiModeFromOverride,
   demoReasoningEffortFromOverride,
@@ -160,18 +161,13 @@ function overrideFrom(name, devVars) {
   return { value: undefined, source: "default" };
 }
 
-function effectiveOpenAiApiModeForModels(models, requestedMode) {
-  if (requestedMode !== "responses") return "chat";
-  return models.every(({ model }) => model.startsWith("openai/")) ? "responses" : "chat";
-}
-
 function answeringConfiguration(devVars) {
   const modelOverride = overrideFrom("DEMO_MODEL_OVERRIDE", devVars);
   const apiModeOverride = overrideFrom("DEMO_OPENAI_API_MODE", devVars);
   const reasoningOverride = overrideFrom("DEMO_REASONING_EFFORT_OVERRIDE", devVars);
   const models = demoModelsFromOverride(modelOverride.value).map(({ model, role }) => ({ model, role }));
   const requestedApiMode = demoOpenAiApiModeFromOverride(apiModeOverride.value);
-  const effectiveApiMode = effectiveOpenAiApiModeForModels(models, requestedApiMode);
+  const effectiveApiMode = demoEffectiveOpenAiApiMode(models, requestedApiMode);
   const validReasoningOverride = demoReasoningEffortOverride(reasoningOverride.value);
   return {
     primaryModel: models[0].model,
