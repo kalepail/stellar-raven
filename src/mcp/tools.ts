@@ -41,6 +41,7 @@ import { hashPrefix, logEvent, preview, CODE_LOG_MAX } from "../observability.ts
 import { searchEventFields } from "../observability-search.ts";
 import { truncateForModel, truncateLogsForModel } from "../policy/truncate.ts";
 import { candidateEvidenceBlock, evidenceCheckpointBlock } from "../policy/evidence-checkpoint.ts";
+import { observationContextBlock } from "../policy/observation-context.ts";
 import { FAMILY_LINE, MICRO_MAP } from "./micro-map.ts";
 
 export { SEARCH_KINDS };
@@ -491,11 +492,13 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
         artifactReadBytes: outcome.artifactReadBytes ?? 0,
         operationSummary: outcome.operationSummary ?? null,
         recoveryHint: outcome.ok ? (outcome.recoveryHint ?? null) : null,
+        observationContext: outcome.observationContext ?? null,
         sourceBasis: outcome.ok ? sourceBasisForTelemetry(outcome.sourceBasis) : null
       });
 
       const logsBlock =
         outcome.logs.length > 0 ? `\n\n--- console (${outcome.logs.length} lines) ---\n${shapedLogs.text}` : "";
+      const observationBlock = observationContextBlock(outcome.observationContext);
 
       if (!outcome.ok) {
         return {
@@ -503,7 +506,7 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
           content: [
             {
               type: "text" as const,
-              text: `Execution failed: ${shapedError ? shapedError.text : outcome.error}${logsBlock}`
+              text: `Execution failed: ${shapedError ? shapedError.text : outcome.error}${observationBlock}${logsBlock}`
             }
           ]
         };
@@ -542,7 +545,7 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
         content: [
           {
             type: "text" as const,
-            text: `${outcome.result}${recoveryBlock}${candidateBlock}${priorArtEvidenceBlock}${evidenceCheckpoint}${logsBlock}`
+            text: `${outcome.result}${observationBlock}${recoveryBlock}${candidateBlock}${priorArtEvidenceBlock}${evidenceCheckpoint}${logsBlock}`
           }
         ]
       };

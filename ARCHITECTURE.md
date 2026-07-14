@@ -329,6 +329,12 @@ Per call (`src/executor/run.ts`):
    telemetry copy caps `sourceBasis.calls` to totals plus the first 12 calls so call-heavy
    runs cannot turn the log event into a payload dump; `execute_logs_shaped` fires only
    when structural shaping actually lost something.
+8. **Observation context** — once per execute, the host captures a compact data-only
+   `{ observedAt, catalogGeneratedAt }` context and appends the same JSON object at both
+   `/mcp` and `/playground` result boundaries and their execute telemetry. `observedAt` is
+   host execution time, not returned source data or a publication/event/record date;
+   `catalogGeneratedAt` is the loaded catalog snapshot's build time. It never enters the
+   generated manifest or super-spec, source maps, or evidence/recovery prose.
 
 ### Artifact/source-basis lane
 

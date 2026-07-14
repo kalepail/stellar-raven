@@ -53,6 +53,7 @@ import {
 } from "../policy/truncate.ts";
 import type { BuildSourceBasisManifestInput, SourceBasisCall } from "../policy/source-basis.ts";
 import { candidateEvidenceBlock, evidenceCheckpointBlock } from "../policy/evidence-checkpoint.ts";
+import { observationContextBlock } from "../policy/observation-context.ts";
 import { DEMO_CAPS, createDemoToolBudget, type DemoToolBudget } from "./budget.ts";
 import type { DemoFrame } from "./frames.ts";
 
@@ -228,7 +229,13 @@ function demoExecutePreflightError(code: string): string | null {
   }
 }
 
-export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; budget?: DemoToolBudget }): {
+export function buildDemoTools(opts: {
+  env: Env;
+  emit: (f: DemoFrame) => void;
+  budget?: DemoToolBudget;
+  /** Test seam; production uses the env-stable cached runner. */
+  runExecute?: ExecuteRunner;
+}): {
   tools: Record<string, unknown>;
   budgetReport: () => DemoToolBudget;
 } {
@@ -238,6 +245,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
   // attempts. If callers omit it, a standalone turn budget is created for
   // direct smoke tests.
   const budget = opts.budget ?? createDemoToolBudget();
+  const runExecute = opts.runExecute ?? getRunner(env);
 
   const search = tool({
     description: `${SEARCH_DESCRIPTION}\n\nPlayground evidence rule: search hits are navigation metadata and callable signatures, not sufficient factual evidence for the answer. Use execute to obtain factual service or skill results.`,
@@ -371,7 +379,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
       const t0 = Date.now();
       let outcome;
       try {
-        outcome = await getRunner(env)(args.code);
+        outcome = await runExecute(args.code);
       } catch (e) {
         // The runner is designed never to throw; belt-and-braces anyway.
         outcome = {
@@ -429,6 +437,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
         evidenceSummary: outcome.evidenceSummary ?? null,
         evidenceOutcome: evidenceOutcome(outcome),
         recoveryHint: outcome.ok ? (outcome.recoveryHint ?? null) : null,
+        observationContext: outcome.observationContext ?? null,
         sourceBasis: outcome.ok ? sourceBasisSignals(outcome.sourceBasis) : null
       });
 
@@ -436,6 +445,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
         outcome.logs.length > 0
           ? `\n\n--- console (${outcome.logs.length} lines) ---\n${shapedLogs.text}`
           : "";
+      const observationBlock = observationContextBlock(outcome.observationContext);
       const truncationAdvisory =
         outcome.ok && outcome.truncated
           ? "\n\n--- demo advisory ---\nThis execute result was truncated before the final-answer step. Answer only from the visible returned fields, say the result was truncated if that affects completeness, and suggest a narrower follow-up for full detail."
@@ -455,8 +465,8 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
         : "";
 
       const text = outcome.ok
-        ? `${outcome.result}\n\n${evidenceBlock}${candidateBlock}${evidenceCheckpoint}${truncationAdvisory}${logsBlock}`
-        : `Execution failed: ${shapedError ? shapedError.text : outcome.error}\n\n${evidenceBlock}${logsBlock}`;
+        ? `${outcome.result}${observationBlock}\n\n${evidenceBlock}${candidateBlock}${evidenceCheckpoint}${truncationAdvisory}${logsBlock}`
+        : `Execution failed: ${shapedError ? shapedError.text : outcome.error}${observationBlock}\n\n${evidenceBlock}${logsBlock}`;
       emit({ type: "tool-result", id, tool: "execute", ok: outcome.ok, output: text });
       return text;
     }

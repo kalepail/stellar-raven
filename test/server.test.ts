@@ -557,6 +557,42 @@ describe("execute behavior", () => {
     expect(text).toContain("hello from sandbox");
   });
 
+  it("renders the host observation context unchanged and includes it in execute telemetry", async () => {
+    const observationContext = {
+      observedAt: "2026-07-14T15:30:00.000Z",
+      catalogGeneratedAt: "2026-07-14T00:00:00.000Z"
+    };
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    try {
+      const execClient = await connectedClient({
+        runExecute: async () => ({
+          ok: true,
+          result: '{"answer":"host data"}',
+          truncated: false,
+          logs: [],
+          observationContext
+        })
+      });
+      const result = await execClient.callTool({ name: "execute", arguments: { code: "async () => 1" } });
+      const text = (result.content as Array<{ text: string }>)[0]?.text ?? "";
+      expect(text).toContain("--- OBSERVATION CONTEXT ---");
+      expect(text).toContain(JSON.stringify(observationContext));
+
+      const event = logSpy.mock.calls
+        .map(([line]) => {
+          try {
+            return JSON.parse(String(line)) as Record<string, unknown>;
+          } catch {
+            return null;
+          }
+        })
+        .find((entry) => entry?.evt === "execute");
+      expect(event?.observationContext).toEqual(observationContext);
+    } finally {
+      logSpy.mockRestore();
+    }
+  });
+
   it("preserves error, soft-empty, mixed, data, and no-call evidence outcomes in the footer", async () => {
     for (const [summary, expectedHeader] of [
       [{ total: 2, ok: 0, error: 2, softEmpty: 0 }, "--- SERVICE ERRORS ---"],

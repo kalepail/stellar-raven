@@ -15,6 +15,7 @@
 import { env } from "cloudflare:test";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createExecuteRunner, createSpecSearchRunner } from "../../src/executor/run";
+import { getCatalog } from "../../src/catalog/load";
 import fxSemantic from "../fixtures/skill-runners/lumenloop.search_content_semantic.ts";
 import fxListDocs from "../fixtures/skill-runners/lumenloop.list_documents.ts";
 
@@ -63,6 +64,20 @@ afterEach(() => {
 });
 
 describe("execute runner (real Dynamic Worker isolate)", () => {
+  it("captures one deterministic host observation anchor per execute", async () => {
+    const clock = vi.fn(() => new Date("2026-07-14T15:30:00.000Z"));
+    const deterministicRun = createExecuteRunner(env as unknown as Env, { clock });
+
+    const outcome = await deterministicRun("async () => ({ ok: true })");
+
+    expect(clock).toHaveBeenCalledTimes(1);
+    expect(outcome.ok).toBe(true);
+    expect(outcome.observationContext).toEqual({
+      observedAt: "2026-07-14T15:30:00.000Z",
+      catalogGeneratedAt: getCatalog().generatedAt
+    });
+  });
+
   it("runs model code in a fresh isolate and returns its result", async () => {
     const outcome = await run("async (codemode) => 1 + 1");
     expect(outcome.ok).toBe(true);
