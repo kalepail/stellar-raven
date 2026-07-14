@@ -1,19 +1,21 @@
 ---
 id: sls-055
 service: stellar-light-scout
-status: verified
+status: reported-upstream
 discovered: 2026-07-13
 evidence:
   - 2026-07-13 production source-ceiling audit over four owned SDF-organizational QA cases, using Scout research/projects/builders, Lumenloop semantic/entity/A-V, and Stellar Docs search; solo://proj/49/scratchpad/sdf-organizational-s--630
   - q-org-sdf-structure-mandate: no exposed source returned the current Mandate page's self-funded/pays-taxes wording or the Terms page's Delaware nonprofit wording, while direct live reads did
   - q-org-sdf-enterprise-fund: exposed results returned historical portfolio scalars but not the current Enterprise Fund page's venture-style description and portfolio-totaling-over-$100m wording
   - boundary controls: Scout retrieved current mandate-bucket labels from an SDF blog and historical Chief Scientist/SCP material, showing that routing and blog/paper ingestion work while canonical non-blog page coverage is the residual
+  - upstream issue filed 2026-07-13 America/New_York (2026-07-14 UTC): https://github.com/Stellar-Light/stellarlight/issues/533
 ---
 
 ## Finding
 
-Scout's broad cited-research lane routes SDF-organizational questions correctly,
-but it does not reliably expose quotable sections from canonical non-blog
+Scout research does not reliably expose quotable canonical SDF organizational pages.
+Its broad cited-research lane routes SDF-organizational questions correctly, but it
+does not reliably expose quotable sections from canonical non-blog
 `stellar.org` pages. This is a source-family coverage gap rather than another
 named-person or keyword-ranking miss.
 
@@ -48,8 +50,8 @@ the results with direct live reads of:
 - `https://stellar.org/terms-of-service`
 
 The exact per-case result counts, claim classifications, counterargument, and
-independent trigger adjudication are recorded in
-`solo://proj/49/scratchpad/sdf-organizational-s--630`. Existing `sls-006`
+independent trigger adjudication are recorded in the internal audit ledger.
+Existing `sls-006`
 already covers SDF blog article-body ingestion, and `sls-052` covers routing
 vocabulary; neither covers canonical non-blog organizational pages.
 

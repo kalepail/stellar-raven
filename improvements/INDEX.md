@@ -79,7 +79,7 @@ Total findings: 131
 | sls-052 | The 1.7.16 structural fix (sls-051) moved routing vocabulary out of operation                          | fixed-upstream    | 2026-07-12 | 0           |
 | sls-053 | The Scout ecosystem-skills directory (GET /api/skills) still advertises the                            | fixed-upstream    | 2026-07-12 | 0           |
 | sls-054 | The live sls-050 changelog entry contradicts itself about the project rename-continuity response shape | fixed-upstream    | 2026-07-13 | 0           |
-| sls-055 | Scout's broad cited-research lane routes SDF-organizational questions correctly,                       | verified          | 2026-07-13 | 0           |
+| sls-055 | Scout research does not reliably expose quotable canonical SDF organizational pages                    | reported-upstream | 2026-07-13 | 0           |
 
 ## stellar-docs
 
