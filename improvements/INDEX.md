@@ -74,7 +74,7 @@ Total findings: 83
 | sd-034 | The current Stellar smart-wallet guide still routes a greenfield reader to                     | reported-upstream | 2026-07-11 | 0           |
 | sd-035 | Two current Docs tutorial surfaces still teach the legacy Wallets Kit v1 package               | reported-upstream | 2026-07-11 | 0           |
 | sd-036 | The current Final CAP-0075 source contains two internally reproducible protocol                | reported-upstream | 2026-07-11 | 0           |
-| sd-037 | Stellar Docs discovery does not clearly surface the new limits/ SLP proposal                   | proposed          | 2026-07-11 | 0           |
+| sd-037 | The canonical stellar-protocol repository contains six Stellar Limits                          | verified          | 2026-07-11 | 0           |
 
 ## lumenloop
 

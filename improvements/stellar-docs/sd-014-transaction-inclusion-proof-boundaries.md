@@ -3,10 +3,12 @@ id: sd-014
 service: stellar-docs
 status: verified
 discovered: 2026-07-10
+upstreamTitle: Document Stellar transaction inclusion verification boundaries
 evidence:
   - official Ledger, LedgerCloseMeta, and history/archive documentation
   - stellar-xdr ledger/SCP value definitions
   - stellar-core TxSetFrame and LedgerManager hash construction
+  - live recheck 2026-07-14: current stellar-docs search and repository code search expose the component concepts but no transaction-inclusion-proof guide or compact-proof claim boundary
   - Solo scratchpad 575 GT-29 primary 3276 and independent blind 3278
   - GT-41 recurrence: document timestamping guidance required historical transaction/result and ledger-close evidence because the current Manage Data entry is mutable
 ---
@@ -23,6 +25,14 @@ List state commitment as a Bitcoin/Ethereum-style per-transaction Merkle proof,
 or treating an RPC/Horizon/indexer row as a self-authenticating cryptographic
 proof. Stellar does not expose a standard compact one-call per-transaction
 Merkle branch through these surfaces.
+
+## Evidence
+
+Current Docs explain ledgers, history archives, SCP, transaction sets, and close
+metadata separately. A current repository and Docs-search recheck found no guide
+for “transaction inclusion proof” that joins those commitments into a supported
+verification procedure or explicitly distinguishes full-XDR recomputation from a
+compact Merkle branch.
 
 ## Recommendation
 
