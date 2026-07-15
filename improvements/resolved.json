@@ -34,6 +34,46 @@
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/a4954b6a38f66de5ce4b28fc33535464df0818fb/improvements/stellar-docs/sd-006-crawler-strips-code-blocks.md"
     },
     {
+      "id": "sd-010",
+      "title": "The rendered Indexers page now describes Alchemy's live Stellar Data API accurately,",
+      "service": "stellar-docs",
+      "discovered": "2026-07-09",
+      "resolved": "2026-07-15",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/pull/2573"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/pull/2573"
+      ],
+      "liveRecheck": "2026-07-15T15:24Z: cache-busted rendered Indexers page and Raven stellarDocs search both returned corrected live Alchemy Data API wording; exact former future-launch phrases returned soft-empty with zero hits.",
+      "reviewEvidence": "Independent Solo reviewer process 3770 re-ran rendered-page and agent-visible search triggers, inspected merged approved PR 2573 and adjacent records, and scanned repo references on 2026-07-15.",
+      "sourceCommit": "bb8731b3e09ac56fe0a2429e56beb583b84158b3",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/bb8731b3e09ac56fe0a2429e56beb583b84158b3/improvements/stellar-docs/sd-010-alchemy-data-api-launch-stale.md"
+    },
+    {
+      "id": "sd-033",
+      "title": "The official Client & XDR SDKs page describes the current community Python SDK",
+      "service": "stellar-docs",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-15",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/kalepail/stellar-raven/issues/25",
+        "https://github.com/stellar/stellar-docs/issues/2600",
+        "https://github.com/stellar/stellar-docs/pull/2616"
+      ],
+      "resolvingRefs": [
+        "https://github.com/kalepail/stellar-raven/issues/25",
+        "https://github.com/stellar/stellar-docs/issues/2600",
+        "https://github.com/stellar/stellar-docs/pull/2616"
+      ],
+      "liveRecheck": "2026-07-15T15:25Z: cache-busted Client SDKs page and Raven search both state Python SDK supports Horizon and Stellar RPC, expose RPC networking, use PyPy 3.11, and omit stale PyPy 3.10+ wording.",
+      "reviewEvidence": "Independent Solo reviewer process 3770 re-ran rendered-page and agent-visible search triggers, inspected issue 2600, merged approved PR 2616, Raven handoff 25, adjacent content, and repo references on 2026-07-15.",
+      "sourceCommit": "bb8731b3e09ac56fe0a2429e56beb583b84158b3",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/bb8731b3e09ac56fe0a2429e56beb583b84158b3/improvements/stellar-docs/sd-033-python-sdk-rpc-capability-omitted.md"
+    },
+    {
       "id": "sk-001",
       "title": "The upstream stellar-dev/smart-contracts skill instructed the stale build",
       "service": "skills",
@@ -436,6 +476,26 @@
       "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
       "sourceCommit": "0306425752a0fb4c1b1965d64236c5a975aafa5b",
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-019-cap-identifier-ranking.md"
+    },
+    {
+      "id": "sls-020",
+      "title": "Scout research retrieval does not surface the May 7, 2026 Stellar Development",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-15",
+      "repo": "Stellar-Light/stellar-scout",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/10",
+        "https://github.com/Stellar-Light/stellarlight/pull/529"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/10",
+        "https://github.com/Stellar-Light/stellarlight/pull/529"
+      ],
+      "liveRecheck": "2026-07-15T15:22Z: exact production transition query returned the 2026-05-07 security-program supersession record at rank 1 and controlling HackerOne policy at rank 2, including consolidated HackerOne, deprecated general Immunefi, and separate active OpenZeppelin carve-out.",
+      "reviewEvidence": "Independent Solo reviewer process 3770 re-ran exact production query, inspected issue 10 and merged PR 529, checked adjacent source-filtered results, and scanned repo references on 2026-07-15.",
+      "sourceCommit": "bb8731b3e09ac56fe0a2429e56beb583b84158b3",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/bb8731b3e09ac56fe0a2429e56beb583b84158b3/improvements/stellar-light-scout/sls-020-security-program-migration-retrieval.md"
     },
     {
       "id": "sls-021",
