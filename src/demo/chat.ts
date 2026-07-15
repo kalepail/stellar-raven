@@ -65,8 +65,6 @@ import { buildDemoTools } from "./tools.ts";
 
 declare global {
   interface Env {
-    AI: Ai;
-    DEMO_AI_GATEWAY_ID?: string;
     DEMO_MODEL_OVERRIDE?: string;
     DEMO_OPENAI_API_MODE?: string;
     DEMO_REASONING_EFFORT_OVERRIDE?: string;
