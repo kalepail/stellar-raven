@@ -195,6 +195,7 @@ details.tcard[open]>summary::before{transform:rotate(90deg)}
   .pwrap{padding:0 16px}
   .msg{max-width:90%}
   .tcard .tlabel{display:none}
+  .composer textarea{font-size:16px}
   .composer .btn-primary{padding:12px 14px}
   .site-foot{padding:8px 16px 24px}
 }
