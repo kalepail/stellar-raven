@@ -302,17 +302,12 @@ clean bump — spawn an **independent reviewer** to verify or refute the "safe t
 before committing. This mirrors the repo's independent-review rule in
 [`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination).
 
-- Use Solo to spawn a *different* agent with an explicit adversarial brief: do NOT
+- Run generic Solo mechanics and model/effort selection through `solo-operator`. Spawn a
+  *different* agent with an explicit adversarial brief: do NOT
   trust the maintainer's summary; re-derive the drift class from the actual `git diff`, re-run the
   guards and gate, check ADR-0003 exposure and secrets, and return a verdict with file:line
-  evidence. Pick the reviewer's model per
-  [`AGENTS.md` “Model routing for repo-work fan-out”](../../../AGENTS.md#model-routing-for-repo-work-fan-out)
-  — reviews call for the strong-reasoning tier, ideally a different vendor
-  than the author). Inspect `list_agent_tools`, then spawn it in yolo/permission-bypass mode so the
-  reviewer never stalls; pass a bypass flag through `spawn_agent.extra_args` only when the saved
-  command lacks it (bindings live in
-  [`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination)). Put the brief in a Solo
-  scratchpad and have the reviewer append findings to it.
+  evidence. Prefer different vendor from author. Put brief in Solo scratchpad and have reviewer
+  append findings.
 - Reviewer ≠ author is the invariant. Let it run to completion; reconcile every finding before
   committing. Watch for the reviewer with an idle-wake timer rather than polling.
 

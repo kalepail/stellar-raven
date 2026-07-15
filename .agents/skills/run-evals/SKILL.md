@@ -153,14 +153,9 @@ window. The coordinator should own the Solo ledger and spawn isolated reviewers 
 - improvements filing/follow-up,
 - adversarial closeout review.
 
-Use Solo `list_agent_tools` to pick available runtimes, `spawn_agent` + `send_input` to launch
-them in yolo/permission-bypass mode so a spawned reviewer never stalls. Inspect the saved command
-first and pass a bypass flag via `extra_args` only when it is missing (bindings live in the
-[`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination)). Use
-`timer_fire_when_idle_all`/`timer_fire_when_idle_any` to wake
-the coordinator when reviewers go idle. Each reviewer appends a narrow verdict with evidence to
-the scratchpad; the coordinator reconciles and patches. Do not pass the coordinator's expected
-answer to reviewers.
+Run generic Solo mechanics and model/effort selection through `solo-operator`. Each reviewer
+appends narrow evidence-backed verdict to scratchpad; coordinator reconciles and patches. Do not
+pass coordinator's expected answer to reviewers.
 
 ## Step 1 — preflight (always, free)
 
