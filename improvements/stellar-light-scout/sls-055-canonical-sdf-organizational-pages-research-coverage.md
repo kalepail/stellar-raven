@@ -1,7 +1,7 @@
 ---
 id: sls-055
 service: stellar-light-scout
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-13
 evidence:
   - 2026-07-13 production source-ceiling audit over four owned SDF-organizational QA cases, using Scout research/projects/builders, Lumenloop semantic/entity/A-V, and Stellar Docs search; solo://proj/49/scratchpad/sdf-organizational-s--630
@@ -11,6 +11,7 @@ evidence:
   - 2026-07-14 targeted QA q-org-mazieres-chief-scientist covered the required broad/detail plan but found historical title/SCP material without current canonical Team-page role, founder, and Stanford context
   - 2026-07-14 normalized-semantic generality round still left Justin Rice partial on both playground and main MCP because neither retrieved the live Team-page title as a dated observation
   - upstream issue filed 2026-07-13 America/New_York (2026-07-14 UTC): https://github.com/Stellar-Light/stellarlight/issues/533
+  - 2026-07-15 live recheck on spec 1.7.26 returned the canonical Team page top-ranked for source=sdf-org with David Mazières as Founder and Chief Scientist, Justin Rice as VP of Ecosystem, and observedAt 2026-07-15T08:01:44.242Z; Mandate, Terms, Enterprise Fund, and Quarterly Reports remained covered
 recurrences:
   - date: 2026-07-14
     evidence: eval/qa/results/2026-07-14T03-29-01-variantA.json scored q-org-mazieres-chief-scientist wrong after five on-plan calls; the answer promoted a 2014-2015 Chief Scientist title as timeless current and omitted canonical founder/professor context

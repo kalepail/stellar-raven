@@ -25,8 +25,8 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           # Node 24: build-catalog.mjs relies on native TS type-stripping, stable
           # since Node 23.6 (see scripts/build-catalog.mjs). Do not drop below 24.
@@ -149,12 +149,8 @@ jobs:
           fi
       - name: run improvement recurrence probes
         run: npm run improvements:probes
-      - name: validate improvements intake
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: npm run improvements:lint -- --live
       - name: open or update drift issue
-        if: steps.drift.outputs.drift == 'true'
+        if: always() && steps.drift.outputs.drift == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

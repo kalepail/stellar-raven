@@ -14,7 +14,7 @@ Total findings: 83
 | sk-005 | The Lumenloop skill corpus lacks machine-readable audience and transport metadata             | reported-upstream | 2026-07-03 | 2           |
 | sk-006 | The smart-contracts skill lacks error-keyed troubleshooting for common CLI and build failures | reported-upstream | 2026-07-03 | 3           |
 | sk-007 | The ecosystem-digest skill hard-codes a stale 2026-06-08 recency window                       | reported-upstream | 2026-07-03 | 2           |
-| sk-009 | The pinned Stellar Scout skill API reference has fallen behind the live Scout                 | reported-upstream | 2026-07-10 | 0           |
+| sk-009 | The pinned Stellar Scout skill API reference has fallen behind the live Scout                 | reported-upstream | 2026-07-10 | 1           |
 | sk-010 | The official stellar/stellar-dev-skill dapp skill embeds a stale Stellar                      | reported-upstream | 2026-07-11 | 0           |
 | sk-011 | The served upstream ZK skill is stale after Protocol 25. It describes BN254 and               | reported-upstream | 2026-07-11 | 0           |
 | sk-012 | The served agentic-payments skill presents "MPP Channel mode" as the public                   | reported-upstream | 2026-07-11 | 0           |
@@ -32,8 +32,8 @@ Total findings: 83
 | sls-033 | Scout does not offer a first-class exact-type wallet enumeration with canonical     | reported-upstream | 2026-07-10 | 2           |
 | sls-036 | The leaderboard does not make the exact activity calculation or repository          | reported-upstream | 2026-07-10 | 2           |
 | sls-039 | Scout's project-level tvlUSD/tvlAsOf point is useful but cannot answer a            | declined-upstream | 2026-07-10 | 0           |
-| sls-040 | Scout presents mutually incompatible builder contracts. Descriptions and the        | reported-upstream | 2026-07-10 | 0           |
-| sls-055 | Scout research does not reliably expose quotable canonical SDF organizational pages | reported-upstream | 2026-07-13 | 3           |
+| sls-040 | Scout presents mutually incompatible builder contracts. Descriptions and the        | fixed-upstream    | 2026-07-10 | 0           |
+| sls-055 | Scout research does not reliably expose quotable canonical SDF organizational pages | fixed-upstream    | 2026-07-13 | 3           |
 
 ## stellar-docs
 

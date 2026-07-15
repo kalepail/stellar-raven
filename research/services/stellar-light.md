@@ -1,8 +1,8 @@
 # Stellar Light / Stellar Scout — service spec
 
 > Verified live 2026-07-02 (UTC; re-fetched ~13:59Z after the 07-02 partner-pipeline release). OpenAPI `info.version: 1.2.1`, status `apiVersion: 1.2.1` (the `X-API-Version` response header stays `1`), scout-mcp npm `1.1.5`.
-> **Current committed inventory (2026-07-11): upstream OpenAPI/status `1.7.15`, still 23 paths / 24 operations.** `inventory/stellar-light.json` carries the current spec verbatim; the detailed probe log below remains the 2026-07-02/03 measurement record, not a current collection-size snapshot.
-> Earlier refresh notes: 2026-07-03 brought upstream 1.3.2 (`repoMeta`, `lastActivityAt`, inline repo `lastCommitAt`); later 1.6.1 fixes include live SCF round metadata and scoped `searchProjects` description copy; 1.7.0 typed the partner response, added `ramps` filtering, and surfaced richer code verification fields; 1.7.11 added project-search semantic fallback, nullable DefiLlama `tvlUSD`/`tvlAsOf` fields, and `source=cap` research filtering. Version 1.7.15 adds builder match/code provenance, population-scope digests, typed synthetic RFP rows/count semantics, Stellar-evidence repo ranking, project `type`/`status` filters, anchor-profile state, and `dimension=tvl`. Attach live `generatedAt`/version fields from the current inventory when citing answers.
+> **Current committed inventory (2026-07-15): upstream OpenAPI/status `1.7.26`, still 23 paths / 24 operations.** `inventory/stellar-light.json` carries the current spec verbatim; the detailed probe log below remains the 2026-07-02/03 measurement record, not a current collection-size snapshot.
+> Earlier refresh notes: 2026-07-03 brought upstream 1.3.2 (`repoMeta`, `lastActivityAt`, inline repo `lastCommitAt`); later 1.6.1 fixes include live SCF round metadata and scoped `searchProjects` description copy; 1.7.0 typed the partner response, added `ramps` filtering, and surfaced richer code verification fields; 1.7.11 added project-search semantic fallback, nullable DefiLlama `tvlUSD`/`tvlAsOf` fields, and `source=cap` research filtering. Version 1.7.15 added builder match/code provenance, population-scope digests, typed synthetic RFP rows/count semantics, Stellar-evidence repo ranking, project `type`/`status` filters, anchor-profile state, and `dimension=tvl`. Version 1.7.26 adds strict builder parameter rejection, exact leaderboard `type` filtering, `security-program` and `sdf-org` research sources, leadership-role extraction, and per-record `observedAt`. Attach live `generatedAt`/version fields from the current inventory when citing answers.
 > Current OpenAPI lives in [`inventory/stellar-light.json`](../../inventory/stellar-light.json) (refreshed daily by the CI drift job; 23 paths / 24 operations). `info.version` is now intended to bump on observable contract changes, but drift checks still diff path/method, operation text, and schemas rather than trusting the version string alone.
 > Cross-checked against prior art: `stellar-raven-next/research/capability/stellar-light-scout.md` (measured 2026-06-21→07-01) — live behavior today matches that doc.
 
@@ -55,12 +55,12 @@ Keyless throughout; GET except where marked POST. `*` = required param. Paginati
 | `POST /api/partners/onboard` (new 2026-07-02) | Get-listed helpers: `mode:'chat'` interview reply; `mode:'extract'` structures the transcript into partner-profile `fields` (null where unstated) | JSON body `{mode*: chat\|extract, messages*}` → 200/429/503 | reply or `fields{}` |
 | `POST /api/partners/submit-listing` (new 2026-07-02) | **Write**: submit a company for listing → DRAFT partner account (team-reviewed) or CLAIM REQUEST if already listed; `contactEmail` becomes the account login | JSON body `{orgName* (2–120), contactEmail*, fields?}` → 200/400/429 | `{ok:true, mode:'draft'\|'claim'}` |
 | `GET /api/rfps` | SCF-funded sponsor RFP briefs plus live-round context | `status` (open\|closed), `quarter` (e.g. q2-2026), `q`, `category` (ai\|consumer-dapps\|defi\|developer-tooling\|gaming\|infrastructure\|nfts\|payments\|scf\|web3-social), `limit`, `offset`. Filter `rowType === "rfp"` when counting briefs: the array may also contain a typed synthetic `scf-round` row; `meta.countBasis` and `counts.syntheticRounds` explain the distinction. | `rfps[]` + top-level `funding` string |
-| `GET /api/research` | Vector (voyage-3) search over the research corpus, keyword fallback per-query | `q*`, `source` (sdf-blog\|scf-handbook\|sep\|cap\|dev-docs\|paper\|scf-proposal\|lumenloop\|lumenloop-research\|audit\|incident\|ec-developer-report), `limit` (max 25) | `results[]` (the only endpoint using `results`) |
+| `GET /api/research` | Vector (voyage-3) search over the research corpus, keyword fallback per-query | `q*`, `source` (sdf-blog\|scf-handbook\|sep\|cap\|dev-docs\|paper\|scf-proposal\|lumenloop\|lumenloop-research\|audit\|incident\|security-program\|sdf-org\|ec-developer-report), `limit` (max 25) | `results[]` (the only endpoint using `results`) |
 | `GET /api/skills` | AI-skill/tool catalog for Stellar builders (30) | `source` (sdf\|stellarlight\|lumenloop\|external\|community), `kind` (skill-md\|mcp-server\|sdk\|cli\|agent-kit\|tool) — no `q` | `skills[]` |
 | `GET /api/skills/{name}` | One skill incl. full markdown at `skill.content` | `name*` (slug) | `{meta, skill{…, content}}` |
 | `GET /api/clusters` | Topic clusters w/ crowdedness 1–10, SCF totals | `dimension` (category\|types, strict → 400), `minSize`; target one cluster via `key`/`category`/`type`. `meta.population` declares the included/available population and truncation state. | `clusters[]` |
 | `GET /api/analyze` | Ecosystem analytics rollups | `dimension` (all\|hackathons\|categories\|funding\|tvl, strict). `meta.population` scopes project aggregates; funding includes a stable `projectSetHash`. | `{<dimension>{…}}` (no row array) |
-| `GET /api/leaderboard` | Dev-activity leaderboard + EC ecosystem snapshot | `sort` (activity\|stars\|issues), `range` (7d\|30d\|90d\|1y\|all), `category` (validated), `format` (json\|csv), `limit`; `meta.metricDefinitions` states what activity, issue, and repository metrics count. | `{ecosystem{}, projects[]}` |
+| `GET /api/leaderboard` | Dev-activity leaderboard + EC ecosystem snapshot | `sort` (activity\|stars\|issues), `range` (7d\|30d\|90d\|1y\|all), `category` (validated), repeatable/comma-separated exact `type` (EITHER membership), `format` (json\|csv), `limit`; `meta.metricDefinitions` states what activity, issue, and repository metrics count. | `{ecosystem{}, projects[]}` |
 | `GET /api/feedback` | Returns the POST schema | — | `{schema{…}}` |
 | `POST /api/feedback` | Submit feedback (only write) | JSON body `{kind: bug\|missing-data\|wrong-answer\|suggestion\|other, message (10–4000 chars), context{query?, endpoint?, skillVersion?, agentName?}}` → 201/400/429 | — |
 
@@ -78,7 +78,9 @@ Errors are self-describing JSON, `{error, hint?, valid<Thing>?}`:
 - Bad enum → **400** with the valid list. Live: `GET /api/research?source=bogus&q=x` → 400 `{"error":"unknown source: 'bogus'","hint":"see validSources for the full list","validSources":[…11…]}` (0.16 s). Same pattern for `analyze`/`clusters` `validDimensions`, `leaderboard` `validSorts`/`validFormats`, `projects/search` + `rfps` `validCategories`.
 - Missing required arg → 400 `{error:"missing required q parameter…", validSources}` (research); `projects/search` instead returns 200 with `meta.error:"no_query"`, 0 rows, and an `advisory{summary, suggestions[]}`.
 - Unknown detail slug → **404**. Live: `GET /api/skills/nope-xyz` → 404 `{"error":"unknown skill: nope-xyz","hint":"Try /api/skills to list all available slugs."}`. Same for `partners/{slug}`, `hackathons/{slug}`.
-- Unknown/removed query params are **silently ignored** (e.g. old `builders?scfTier=`, `projects/search?hackathon=`).
+- Unknown/removed query params are endpoint-specific. As of 1.7.26,
+  `builders?scfTier=` is rejected with **400**; some older search parameters such
+  as `projects/search?hackathon=` are still silently ignored.
 - AI partner endpoints (`match`/`assistant`/`onboard`) → **503** `{unavailable:true}` when the service has no AI configured — treat as "fall back to `GET /api/partners` filters", not as a retryable outage.
 
 ## Live verification log (2026-07-02T01:52Z)
@@ -151,7 +153,9 @@ Relationship: **website API = source of truth; SKILL.md and scout-mcp are altern
 - Project `anchorProfile` capability arrays are evidence-filled. If `profileState:"not-profiled"`, empty arrays mean unknown rather than a verified absence of support.
 - `research.meta.mode` is per-query (vector-first, keyword fallback), deterministic per query string — never promise a mode.
 - `builders`/`rfps` `q` is strict term matching: send terms ("Rust"), not phrases ("Rust builders on Stellar" → 0 rows).
-- Removed params (`projects/search?hackathon`, `builders?scfTier/featured`, `leaderboard?include`) are silently ignored, not 400s.
+- Removed params are endpoint-specific: `builders?scfTier=` now returns 400,
+  while `projects/search?hackathon=` is silently ignored. Probe before assuming
+  either behavior for another retired parameter.
 - Counts drift constantly (usage grew ~1,250 calls in ~1 day) — re-read `/api/status`; never hardcode collection sizes.
 - `leaderboard?format=csv` returns `text/csv`, not JSON — special-case it or pin `format=json`.
 

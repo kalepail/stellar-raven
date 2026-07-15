@@ -1846,8 +1846,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "routingKeywords": [
@@ -1928,8 +1928,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "routingKeywords": [
@@ -2154,8 +2154,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "routingKeywords": [
@@ -2338,8 +2338,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "retrievalProfile": {
@@ -2530,8 +2530,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -2630,8 +2630,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "routingKeywords": [
@@ -2779,8 +2779,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "retrievalProfile": {
@@ -2965,8 +2965,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "retrievalProfile": {
@@ -3067,6 +3067,36 @@
               "issues"
             ],
             "type": "string"
+          },
+          "type": {
+            "description": "Filter to one or more granular project types — the same `types[]` taxonomy on project-search rows and echoed on each leaderboard row. Repeatable (`?type=DEX&type=Lending`) and comma-separable (`?type=DEX,Lending`); membership is EITHER (a project typed DEX OR Lending is kept), so you can build an explicit DEX/Lending-style grouping. Exact whole-element match, NOT substring. Unknown values return 400 with validTypes. Applied at the DB layer before ranking and limiting; `meta.filters.type` echoes the applied scope.",
+            "items": {
+              "enum": [
+                "Wallet",
+                "DEX",
+                "Lending",
+                "Bridge",
+                "Infrastructure",
+                "Payments",
+                "Anchor",
+                "SDK",
+                "Indexer",
+                "Explorer",
+                "Analytics",
+                "AI",
+                "Gaming",
+                "Education",
+                "Security",
+                "NFT",
+                "RWA",
+                "Stablecoin",
+                "Social Impact",
+                "RPC",
+                "Faucet"
+              ],
+              "type": "string"
+            },
+            "type": "array"
           }
         },
         "type": "object"
@@ -3076,6 +3106,29 @@
         "90d",
         "1y",
         "all",
+        "type",
+        "wallet",
+        "dex",
+        "lending",
+        "bridge",
+        "infrastructure",
+        "payments",
+        "anchor",
+        "sdk",
+        "indexer",
+        "explorer",
+        "analytics",
+        "ai",
+        "gaming",
+        "education",
+        "security",
+        "nft",
+        "rwa",
+        "stablecoin",
+        "social",
+        "impact",
+        "rpc",
+        "faucet",
         "json",
         "data"
       ],
@@ -3113,8 +3166,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "routingKeywords": [
@@ -3190,8 +3243,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -3588,8 +3641,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "retrievalProfile": {
@@ -3819,8 +3872,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "retrievalProfile": {
@@ -3904,8 +3957,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "routingKeywords": [
@@ -4043,8 +4096,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "routingKeywords": [
@@ -4118,8 +4171,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "routingKeywords": [
@@ -4163,8 +4216,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -4227,8 +4280,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "service": "scout",
@@ -4712,6 +4765,34 @@
                   },
                   "type": "object"
                 },
+                "availability": {
+                  "description": "sls-033/#519: per-platform availability with as-of dates. null = not curated.",
+                  "items": {
+                    "properties": {
+                      "checkedAt": {
+                        "nullable": true,
+                        "type": "string"
+                      },
+                      "note": {
+                        "nullable": true,
+                        "type": "string"
+                      },
+                      "platform": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string"
+                      },
+                      "storeUrl": {
+                        "nullable": true,
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "nullable": true,
+                  "type": "array"
+                },
                 "builtBy": {
                   "description": "The organization/entity behind this project ('who built X') — e.g. LOBSTR → Ultra Stellar, Soroswap → Paltalabs. Null when no org is linked. Browse the org's portfolio at https://stellarlight.xyz/entities/{slug}.",
                   "nullable": true,
@@ -4906,6 +4987,11 @@
                   "description": "Numeric rank parsed from hackathonPlacement (1 = best), handling both digit ('1st Place') and word ('First Place') ordinals — or null when the source gives no ordinal (a flat 'Winners' bucket). winners[] is sorted by placementRank, so winners[0] is the 1st-place entry when the event has ranked placements; unranked winners (placementRank: null) sort last and their order is not significant. Sort/filter on placementRank instead of parsing the label.",
                   "nullable": true,
                   "type": "integer"
+                },
+                "productKind": {
+                  "description": "sls-033/#519: curated product-kind for wallet-class records (hardware-wallet | mobile-app | browser-extension | web-app | protocol | sdk-kit). null = not-yet-classified (never a negative claim).",
+                  "nullable": true,
+                  "type": "string"
                 },
                 "prominence": {
                   "description": "Editorial ranking boost (0-100); higher = more canonical for its category.",
@@ -5323,8 +5409,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "retrievalProfile": {
@@ -5800,8 +5886,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "retrievalProfile": {
@@ -5925,7 +6011,7 @@
       }
     },
     {
-      "description": "Vector search over the Stellar research corpus. Semantic search over the Stellar knowledge corpus — SDF blog, SCF Handbook, SEPs/standards, dev docs, papers, audits, incident reports. Returns cited text chunks with source, section, URL, confidence (audits add auditor/severity). THE surface for 'how does X work', 'what does the SEP/spec/audit say', and how-to/feasibility questions. Not for products and their funding/status → use searchProjects.\n\nCatalog note: this is the broad Scout cited-research recovery lane for history, standards, incidents, audits, and unknown technical topics. Treat chunks as leads: preserve their source and date, and require an exact entity match before attribution.",
+      "description": "Vector search over the Stellar research corpus. Semantic search over the Stellar knowledge corpus — SDF blog, SCF Handbook, SEPs/standards, dev docs, papers, audits, incident reports. Returns cited text chunks with source, section, URL, confidence, and provenance dates (publishedAt = the source's own stated date; observedAt = when ingest last crawled the page; audits add auditor/severity). THE surface for 'how does X work', 'what does the SEP/spec/audit say', and how-to/feasibility questions. Not for products and their funding/status → use searchProjects.\n\nCatalog note: this is the broad Scout cited-research recovery lane for history, standards, incidents, audits, and unknown technical topics. Treat chunks as leads: preserve their source and date, and require an exact entity match before attribution.",
       "id": "scout.searchResearch",
       "inputSchema": {
         "properties": {
@@ -5942,7 +6028,7 @@
             "type": "string"
           },
           "source": {
-            "description": "Optional source filter. Use 'audit' for security questions, 'incident' for exploit/post-mortem history, 'security-program' for bug-bounty / vulnerability-disclosure program status (which program is current, where to report), 'ec-developer-report' for ecosystem stats, 'paper' for foundational protocol questions.",
+            "description": "Optional source filter. Use 'audit' for security questions, 'incident' for exploit/post-mortem history, 'security-program' for bug-bounty / vulnerability-disclosure program status (which program is current, where to report), 'sdf-org' for SDF's canonical organizational pages (mandate, legal structure/terms, foundation, team, enterprise fund, quarterly-reports index), 'ec-developer-report' for ecosystem stats, 'paper' for foundational protocol questions.",
             "enum": [
               "sdf-blog",
               "scf-handbook",
@@ -5956,6 +6042,7 @@
               "audit",
               "incident",
               "security-program",
+              "sdf-org",
               "ec-developer-report"
             ],
             "type": "string"
@@ -5976,8 +6063,8 @@
         "type": "object"
       },
       "provenance": {
-        "fetchedAt": "2026-07-14T00:14:25.327Z",
-        "openapiVersion": "1.7.21",
+        "fetchedAt": "2026-07-15T12:24:01.698Z",
+        "openapiVersion": "1.7.26",
         "source": "https://stellarlight.xyz/api/openapi.json"
       },
       "retrievalProfile": {
@@ -6020,14 +6107,17 @@
         "award",
         "enterprise",
         "fund",
-        "protocol",
         "mandate",
+        "protocol",
+        "structure",
         "review",
         "soroban",
-        "structure",
+        "organizational",
+        "leadership",
         "ecosystem",
         "disclosure",
         "kyc",
+        "foundation",
         "governance",
         "tiers",
         "quorum",
@@ -6036,8 +6126,6 @@
         "reentrancy",
         "asset",
         "exchanges",
-        "organizational",
-        "leadership",
         "post",
         "oracle",
         "manipulation",
@@ -6052,6 +6140,10 @@
         "fatf",
         "aml",
         "sanctions",
+        "org",
+        "service",
+        "legal",
+        "mission",
         "v7",
         "neural",
         "apply",
@@ -6094,7 +6186,6 @@
         "expert",
         "consensus",
         "development",
-        "foundation",
         "answers",
         "voyage",
         "embeddings",
@@ -6120,11 +6211,27 @@
         "hacker",
         "one",
         "report",
+        "canonical",
+        "pages",
+        "incl",
+        "self",
+        "funded",
+        "pays",
+        "taxes",
+        "terms",
+        "delaware",
+        "non",
+        "profit",
+        "form",
+        "board",
+        "roster",
+        "scope",
+        "portfolio",
+        "size",
+        "quarterly",
+        "index",
         "mechanics",
         "awards",
-        "org",
-        "mission",
-        "legal",
         "authors",
         "ambassadors",
         "cves",
@@ -6154,7 +6261,6 @@
         "reflector",
         "cve",
         "denial",
-        "service",
         "instance",
         "storage",
         "growth",
@@ -6186,7 +6292,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "service": "skills",
@@ -6269,7 +6375,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -6348,7 +6454,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -6367,7 +6473,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -6452,7 +6558,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -6490,7 +6596,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -6552,7 +6658,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -6597,7 +6703,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -6682,7 +6788,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -6701,7 +6807,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "service": "skills",
@@ -6784,7 +6890,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -6840,7 +6946,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -6859,7 +6965,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -6944,7 +7050,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7029,7 +7135,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7097,7 +7203,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7182,7 +7288,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7201,7 +7307,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "service": "skills",
@@ -7284,7 +7390,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7345,7 +7451,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7364,7 +7470,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7393,7 +7499,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7478,7 +7584,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7516,7 +7622,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7584,7 +7690,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7826,7 +7932,7 @@
       },
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "runnable": true,
@@ -7844,7 +7950,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7863,7 +7969,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7948,7 +8054,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -7966,7 +8072,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8031,7 +8137,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8116,7 +8222,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8170,7 +8276,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8214,7 +8320,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8252,7 +8358,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8296,7 +8402,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8315,7 +8421,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8363,7 +8469,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8414,7 +8520,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8433,7 +8539,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8452,7 +8558,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8537,7 +8643,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8581,7 +8687,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8666,7 +8772,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8685,7 +8791,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "service": "skills",
@@ -8768,7 +8874,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8786,7 +8892,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8834,7 +8940,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8905,7 +9011,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -8966,7 +9072,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9051,7 +9157,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9105,7 +9211,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9190,7 +9296,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9209,7 +9315,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "service": "skills",
@@ -9265,7 +9371,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9350,7 +9456,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9407,7 +9513,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9457,7 +9563,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9542,7 +9648,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9561,7 +9667,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "service": "skills",
@@ -9644,7 +9750,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9662,7 +9768,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9717,7 +9823,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9796,7 +9902,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9850,7 +9956,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9935,7 +10041,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -9981,7 +10087,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -10056,7 +10162,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "d92c56bda17ab702d3202335cfe814d64e70e191",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills"
       },
       "searchable": false,
@@ -10074,9 +10180,9 @@
       "kind": "skill",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "service": "skills",
       "transport": {
@@ -10157,9 +10263,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "searchable": false,
       "service": "skills",
@@ -10242,9 +10348,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "searchable": false,
       "service": "skills",
@@ -10327,9 +10433,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "searchable": false,
       "service": "skills",
@@ -10346,9 +10452,9 @@
       "kind": "skill",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "service": "skills",
       "transport": {
@@ -10383,9 +10489,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "searchable": false,
       "service": "skills",
@@ -10439,9 +10545,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "searchable": false,
       "service": "skills",
@@ -10498,9 +10604,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "searchable": false,
       "service": "skills",
@@ -10533,9 +10639,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "searchable": false,
       "service": "skills",
@@ -10581,9 +10687,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "searchable": false,
       "service": "skills",
@@ -10600,9 +10706,9 @@
       "kind": "skill",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "service": "skills",
       "transport": {
@@ -10646,9 +10752,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "searchable": false,
       "service": "skills",
@@ -10665,9 +10771,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "searchable": false,
       "service": "skills",
@@ -10750,9 +10856,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "searchable": false,
       "service": "skills",
@@ -10835,9 +10941,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "searchable": false,
       "service": "skills",
@@ -10920,9 +11026,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "d72005b53b6d8c937dd1b76262a3e2ebbace2edb",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/d72005b53b6d8c937dd1b76262a3e2ebbace2edb/skills"
+        "commit": "abf2a54fbf9532090a72c045a263839aa0b8f480",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills"
       },
       "searchable": false,
       "service": "skills",
@@ -10940,7 +11046,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "service": "skills",
@@ -11023,7 +11129,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -11108,7 +11214,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -11193,7 +11299,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -11278,7 +11384,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -11363,7 +11469,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -11408,7 +11514,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -11493,7 +11599,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -11567,7 +11673,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -11605,7 +11711,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -11683,7 +11789,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -11719,7 +11825,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -11804,7 +11910,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -11889,7 +11995,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -11945,7 +12051,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12026,7 +12132,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12090,7 +12196,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12143,7 +12249,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12162,7 +12268,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "service": "skills",
@@ -12243,7 +12349,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12314,7 +12420,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12399,7 +12505,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12439,7 +12545,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12496,7 +12602,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12524,7 +12630,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12609,7 +12715,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12694,7 +12800,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12761,7 +12867,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12829,7 +12935,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12862,7 +12968,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12947,7 +13053,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -12970,7 +13076,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "service": "skills",
@@ -13033,7 +13139,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13058,7 +13164,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13102,7 +13208,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13135,7 +13241,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13220,7 +13326,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13252,7 +13358,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13288,7 +13394,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13357,7 +13463,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13442,7 +13548,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13527,7 +13633,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13603,7 +13709,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13649,7 +13755,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13734,7 +13840,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13765,7 +13871,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13787,7 +13893,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "service": "skills",
@@ -13870,7 +13976,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -13955,7 +14061,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14040,7 +14146,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14125,7 +14231,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14193,7 +14299,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14237,7 +14343,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14264,7 +14370,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14291,7 +14397,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14376,7 +14482,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14413,7 +14519,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14435,7 +14541,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "service": "skills",
@@ -14452,7 +14558,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14512,7 +14618,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14597,7 +14703,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14627,7 +14733,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14712,7 +14818,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14796,7 +14902,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14880,7 +14986,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -14938,7 +15044,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15016,7 +15122,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15092,7 +15198,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15128,7 +15234,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15210,7 +15316,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15244,7 +15350,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15266,7 +15372,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "service": "skills",
@@ -15349,7 +15455,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15404,7 +15510,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15489,7 +15595,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15549,7 +15655,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15633,7 +15739,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15718,7 +15824,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15803,7 +15909,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15888,7 +15994,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15907,7 +16013,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -15935,7 +16041,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16020,7 +16126,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16081,7 +16187,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16126,7 +16232,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16211,7 +16317,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16296,7 +16402,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16381,7 +16487,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16462,7 +16568,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16547,7 +16653,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16581,7 +16687,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16644,7 +16750,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16717,7 +16823,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16755,7 +16861,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16830,7 +16936,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16869,7 +16975,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -16953,7 +17059,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17038,7 +17144,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17099,7 +17205,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17177,7 +17283,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17210,7 +17316,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17262,7 +17368,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17347,7 +17453,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17392,7 +17498,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17457,7 +17563,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17542,7 +17648,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17565,7 +17671,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17601,7 +17707,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17686,7 +17792,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17705,7 +17811,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "service": "skills",
@@ -17783,7 +17889,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17856,7 +17962,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17892,7 +17998,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17911,7 +18017,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -17955,7 +18061,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -18040,7 +18146,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -18125,7 +18231,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -18210,7 +18316,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -18295,7 +18401,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -18380,7 +18486,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -18411,7 +18517,7 @@
       "outputSchema": null,
       "provenance": {
         "commit": "c2f3c0728c32044ed8b6d696767c3aed71b4e32d",
-        "fetchedAt": "2026-07-09T23:33:45Z",
+        "fetchedAt": "2026-07-15T12:23:39Z",
         "source": "https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills"
       },
       "searchable": false,
@@ -18429,9 +18535,9 @@
       "kind": "skill",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "service": "skills",
       "transport": {
@@ -18460,9 +18566,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -18483,9 +18589,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -18522,9 +18628,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -18588,9 +18694,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -18673,9 +18779,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -18694,14 +18800,14 @@
         "source",
         "hackathons",
         "meta",
-        "hackathon",
         "projects",
-        "count",
+        "hackathon",
         "use",
+        "count",
         "status",
+        "search",
         "curated",
         "name",
-        "search",
         "category",
         "url",
         "rfps",
@@ -18735,6 +18841,7 @@
         "audit",
         "all",
         "stellarlight",
+        "data",
         "live",
         "detail",
         "every",
@@ -18747,7 +18854,6 @@
         "https",
         "read",
         "call",
-        "data",
         "events",
         "optional",
         "valid",
@@ -18757,9 +18863,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -18841,9 +18947,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -18925,9 +19031,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -19010,9 +19116,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -19077,9 +19183,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -19162,9 +19268,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -19247,9 +19353,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -19332,9 +19438,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -19416,9 +19522,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -19501,9 +19607,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -19586,9 +19692,9 @@
       "kind": "skill-section",
       "outputSchema": null,
       "provenance": {
-        "commit": "aea0c125325ceed746eefaa505e3bd45dabd5ca1",
-        "fetchedAt": "2026-07-09T23:33:45Z",
-        "source": "https://github.com/Stellar-Light/stellar-scout/tree/aea0c125325ceed746eefaa505e3bd45dabd5ca1"
+        "commit": "7a5a27ada6acdec662e0285d449b061de64155b5",
+        "fetchedAt": "2026-07-15T12:23:39Z",
+        "source": "https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5"
       },
       "searchable": false,
       "service": "skills",
@@ -21759,6 +21865,6 @@
       }
     }
   ],
-  "generatedAt": "2026-07-14T00:14:25.327Z",
+  "generatedAt": "2026-07-15T12:24:01.698Z",
   "version": 1
 }
