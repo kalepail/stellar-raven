@@ -27,7 +27,6 @@ import { createAnthropic } from "@ai-sdk/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createWorkersAI } from "workers-ai-provider";
 import type { ProviderPlugin } from "workers-ai-provider";
-import { google } from "workers-ai-provider/google";
 import { openai as openaiChat } from "workers-ai-provider/openai";
 import { allowDevUnauthenticated } from "../auth/gate.ts";
 import { logEvent } from "../observability.ts";
@@ -76,8 +75,8 @@ declare global {
 // but were slower or less stable in the exact SSE + tool-call path. Sonnet 4.6
 // is viable after the Cloudflare Anthropic system-field normalization below,
 // but slower and more likely to exhaust the demo's tight tool budget. Gemini
-// still fails after its first tool call because the OpenAI-compatible transcript
-// must preserve Google's provider-specific thought_signature on follow-up.
+// stays unregistered because its tool follow-up requires preserving Google's
+// provider-specific thought_signature in the OpenAI-compatible transcript.
 // See research/demo-model-gauntlet-2026-07-07.md for the measured matrix.
 /** Throttle-bucket subject for loopback dev requests (no cookie, no WorkOS). */
 const DEV_SUBJECT = "dev-loopback";
@@ -246,7 +245,7 @@ async function runTurn(
       // calls. Spend/rate rules are account-side posture tracked in Solo todo
       // 848, not something this binding can enforce by itself.
       gateway: { id: env.DEMO_AI_GATEWAY_ID ?? DEMO_GATEWAY_ID_FALLBACK },
-      providers: [openAiApiMode === "responses" ? openAiResponses : openaiChat, cloudflareAnthropic, google],
+      providers: [openAiApiMode === "responses" ? openAiResponses : openaiChat, cloudflareAnthropic],
       resume: false
     });
     const sessionAffinity = await demoSessionAffinity(subject);
