@@ -80,3 +80,15 @@ Tool descriptions, schemas, architecture, plan text, and all three search projec
 together. The base server instructions remain unchanged because they are under a measured
 truncation budget. Paid evaluation remains blocked until deterministic gates pass and the
 canonical Solo dev process is available through its owner or an explicit user exception.
+
+## Amendment — 2026-07-14
+
+Todo 1014 subsequently closed the advertised Playground top-level search projection mismatch for
+the pre-existing explicit caller `recoverFrom` / `reason` / `recovery` contract. The original
+non-goal above remains the historical scope boundary of this accepted decision. Playground now
+mirrors MCP precedence after its demo-only call-budget refusal, validates exposed operation ids by
+exact match, computes recovery only after the ranked page and only for non-empty `recoverFrom`, and
+returns `recovery: []` on refusal and validation-error shapes. Demo compaction affects only recovery
+description/signature text; identity, graph, lane, reason, and output-shape metadata remain intact.
+This amendment adds no fuzzy resolution, ranking change, recovery edge, payload interpretation, or
+automatic execution.

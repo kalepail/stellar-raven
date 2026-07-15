@@ -28,10 +28,13 @@ import { parseExpressionAt } from "acorn";
 import {
   searchCatalogPage,
   catalogServices,
+  recoveryCandidates,
+  type RecoveryCandidate,
   type SearchHit,
   type SearchPage,
   type WiderCandidate
 } from "../catalog/search.ts";
+import type { RetrievalReason } from "../catalog/types.ts";
 import { getCatalog } from "../catalog/load.ts";
 import {
   SEARCH_DESCRIPTION,
@@ -83,6 +86,7 @@ type SearchStructured = {
   hits: SearchHit[];
   total: number;
   truncated: boolean;
+  recovery: RecoveryCandidate[];
   widerCandidates: WiderCandidate[];
   nextSteps: string;
 };
@@ -189,6 +193,16 @@ function compactWiderCandidateForDemo(candidate: WiderCandidate): WiderCandidate
   };
 }
 
+function compactRecoveryCandidateForDemo(candidate: RecoveryCandidate): RecoveryCandidate {
+  return {
+    ...candidate,
+    description: clip(candidate.description, DEMO_HIT_DESCRIPTION_CHARS),
+    ...(candidate.signature !== undefined
+      ? { signature: clipSignature(candidate.signature, DEMO_HIT_SIGNATURE_CHARS) }
+      : {})
+  };
+}
+
 type AstNode = {
   type?: string;
   callee?: AstNode;
@@ -283,6 +297,8 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
           total: structured.total,
           truncated: structured.truncated,
           top: structured.hits.slice(0, 3).map((h) => h.id),
+          recovery: structured.recovery.length,
+          recoveryTop: structured.recovery.slice(0, 3).map((candidate) => candidate.id),
           widerCandidates: structured.widerCandidates.length,
           widerCandidateTop: structured.widerCandidates.slice(0, 3).map((candidate) => candidate.id),
           responseChars: JSON.stringify(structured).length,
@@ -294,10 +310,11 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
 
       if (budget.searchCalls >= DEMO_CAPS.maxSearchCallsPerTurn) {
         budget.searchRefusals += 1;
-        const refusal = {
+        const refusal: SearchStructured = {
           hits: [],
           total: 0,
           truncated: false,
+          recovery: [],
           widerCandidates: [],
           nextSteps: "Search call limit reached for this demo turn. Earlier hits are navigation only; use an exact discovered id in execute if an execute call remains, then summarize only from factual tool evidence."
         };
@@ -323,8 +340,24 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
           hits: [],
           total: 0,
           truncated: false,
+          recovery: [],
           widerCandidates: [],
           nextSteps: `Unknown service "${args.service}" — service filter values are exact-match. Valid services: ${services.join(", ")}. Retry with one of those exact values, or drop the \`service\` filter.`
+        }, null);
+      }
+
+      const operationIds = new Set(
+        catalog.entries.filter((entry) => entry.kind === "operation").map((entry) => entry.id)
+      );
+      const unknownRecoveryIds = (args.recoverFrom ?? []).filter((id) => !operationIds.has(id));
+      if (unknownRecoveryIds.length > 0) {
+        return respond({
+          hits: [],
+          total: 0,
+          truncated: false,
+          recovery: [],
+          widerCandidates: [],
+          nextSteps: `Unknown recoverFrom operation id(s): ${unknownRecoveryIds.map((id) => JSON.stringify(id)).join(", ")}. Recovery ids are exact-match; discover valid operations with search first.`
         }, null);
       }
 
@@ -339,6 +372,14 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
       const { total, truncated } = page;
       const hits = page.hits.map(compactHitForDemo);
       const widerCandidates = page.widerCandidates.map(compactWiderCandidateForDemo);
+      const recoverFrom = args.recoverFrom ?? [];
+      const recovery = recoverFrom.length > 0
+        ? recoveryCandidates(
+            catalog,
+            recoverFrom,
+            args.reason as RetrievalReason | undefined
+          ).map(compactRecoveryCandidateForDemo)
+        : [];
       if (truncated) budget.searchTruncatedCalls += 1;
       const remainingSearches = Math.max(0, DEMO_CAPS.maxSearchCallsPerTurn - budget.searchCalls);
       const searchAgain =
@@ -355,7 +396,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
         widerCandidates.length > 0
           ? `${baseNextSteps} This page has no gated operation match; prioritize the advisory widerCandidates in one bounded broad pass if the open-world question remains unanswered.`
           : baseNextSteps;
-      return respond({ hits, total, truncated, widerCandidates, nextSteps }, page);
+      return respond({ hits, total, truncated, recovery, widerCandidates, nextSteps }, page);
     }
   });
 

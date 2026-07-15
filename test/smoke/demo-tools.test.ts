@@ -29,6 +29,165 @@ function makeTools(budget?: DemoToolBudget) {
 }
 
 describe("demo tools at the worker boundary", () => {
+  it("projects exact-ID recovery with the full compacted shape and MCP-compatible telemetry", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    try {
+      const { search } = makeTools();
+      const baseline = (await search.execute({
+        query: "builder directory",
+        limit: 5
+      })) as { hits: Array<{ id: string }> };
+      const result = (await search.execute({
+        query: "builder directory",
+        limit: 5,
+        recoverFrom: ["scout.getBuilders"],
+        reason: "empty"
+      })) as {
+        hits: Array<{ id: string }>;
+        total: number;
+        truncated: boolean;
+        recovery: Array<{
+          from: string;
+          id: string;
+          service: string;
+          relation: string;
+          reasons: string[];
+          lane: string;
+          description: string;
+          signature?: string;
+          outputKeys?: string[];
+          outputItemKeys?: Record<string, string[]>;
+        }>;
+        widerCandidates: unknown[];
+        nextSteps: string;
+      };
+
+      expect(result.hits).toEqual(baseline.hits);
+      expect(Object.keys(result).sort()).toEqual([
+        "hits",
+        "nextSteps",
+        "recovery",
+        "total",
+        "truncated",
+        "widerCandidates"
+      ]);
+      expect(result.recovery.map((candidate) => candidate.id)).toEqual([
+        "lumenloop.search_content_semantic",
+        "scout.searchResearch"
+      ]);
+      expect(result.recovery.every((candidate) => candidate.from === "scout.getBuilders")).toBe(
+        true
+      );
+
+      const semantic = result.recovery[0]!;
+      expect(Object.keys(semantic).sort()).toEqual([
+        "description",
+        "from",
+        "id",
+        "lane",
+        "outputItemKeys",
+        "outputKeys",
+        "reasons",
+        "relation",
+        "service",
+        "signature"
+      ]);
+      expect(semantic).toMatchObject({
+        from: "scout.getBuilders",
+        id: "lumenloop.search_content_semantic",
+        service: "lumenloop",
+        relation: "broader-semantic",
+        reasons: ["empty", "weak", "adjacent", "ambiguous"],
+        lane: "directory",
+        outputKeys: ["counts", "items", "meta"]
+      });
+      expect(semantic.outputItemKeys?.items).toEqual([
+        "collection",
+        "date",
+        "dateField",
+        "snippet",
+        "source",
+        "sourceField",
+        "title",
+        "url"
+      ]);
+      expect(semantic.description.length).toBeLessThanOrEqual(244);
+      expect(semantic.signature?.length).toBeLessThanOrEqual(400);
+      expect(semantic.signature?.split("\n").at(-1)).toContain(
+        "lumenloop.search_content_semantic"
+      );
+
+      const event = logSpy.mock.calls
+        .map(([line]) => {
+          try {
+            return JSON.parse(String(line)) as Record<string, unknown>;
+          } catch {
+            return null;
+          }
+        })
+        .find((entry) => entry?.evt === "demo-search" && entry.recovery === 2);
+      expect(event).toMatchObject({
+        recovery: 2,
+        recoveryTop: ["lumenloop.search_content_semantic", "scout.searchResearch"]
+      });
+      expect(event).not.toHaveProperty("query");
+    } finally {
+      logSpy.mockRestore();
+    }
+  });
+
+  it("keeps a bare recovery reason inert", async () => {
+    const { search } = makeTools();
+    const baseline = (await search.execute({ query: "builder directory", limit: 5 })) as {
+      hits: Array<{ id: string }>;
+      recovery: unknown[];
+    };
+    const reasonOnly = (await search.execute({
+      query: "builder directory",
+      limit: 5,
+      reason: "empty"
+    })) as { hits: Array<{ id: string }>; recovery: unknown[] };
+
+    expect(baseline.recovery).toEqual([]);
+    expect(reasonOnly.hits).toEqual(baseline.hits);
+    expect(reasonOnly.recovery).toEqual([]);
+  });
+
+  it("rejects unknown recoverFrom ids by exact match after spending demo search budget", async () => {
+    const { search, budgetReport } = makeTools();
+    const result = (await search.execute({
+      query: "builder directory",
+      recoverFrom: ["scout.getBuilder"]
+    })) as {
+      hits: unknown[];
+      recovery: unknown[];
+      widerCandidates: unknown[];
+      nextSteps: string;
+    };
+
+    expect(result.hits).toEqual([]);
+    expect(result.recovery).toEqual([]);
+    expect(result.widerCandidates).toEqual([]);
+    expect(result.nextSteps).toContain("scout.getBuilder");
+    expect(result.nextSteps).toContain("exact-match");
+    expect(budgetReport()).toMatchObject({ searchCalls: 1, searchRefusals: 0 });
+  });
+
+  it("reports an unknown service before an unknown recovery id", async () => {
+    const { search, budgetReport } = makeTools();
+    const result = (await search.execute({
+      query: "builder directory",
+      service: "not-a-service",
+      recoverFrom: ["scout.getBuilder"]
+    })) as { hits: unknown[]; recovery: unknown[]; nextSteps: string };
+
+    expect(result.hits).toEqual([]);
+    expect(result.recovery).toEqual([]);
+    expect(result.nextSteps).toContain('Unknown service "not-a-service"');
+    expect(result.nextSteps).not.toContain("Unknown recoverFrom");
+    expect(budgetReport()).toMatchObject({ searchCalls: 1, unknownServiceSearches: 1 });
+  });
+
   it("projects clipped structural wider candidates without losing ids or output shape", async () => {
     const { search } = makeTools();
     const result = (await search.execute({
@@ -101,7 +260,16 @@ describe("demo tools at the worker boundary", () => {
       await search.execute({ query: "second" });
       await search.execute({ query: "third" });
       const refusedQuery = "refused sensitive query ".repeat(20);
-      await search.execute({ query: refusedQuery, limit: 6 });
+      const refused = (await search.execute({
+        query: refusedQuery,
+        limit: 6,
+        service: "not-a-service",
+        recoverFrom: ["scout.getBuilder"]
+      })) as { recovery: unknown[]; nextSteps: string };
+      expect(refused.recovery).toEqual([]);
+      expect(refused.nextSteps).toContain("Search call limit reached");
+      expect(refused.nextSteps).not.toContain("Unknown service");
+      expect(refused.nextSteps).not.toContain("Unknown recoverFrom");
       const event = logSpy.mock.calls
         .map((call) => {
           try {
