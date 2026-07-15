@@ -93,6 +93,12 @@ describe("demo page states", () => {
   it("authenticated: composer + trace client wired to /playground/chat", () => {
     expect(chatHtml).toContain('id="composer-form"');
     expect(chatHtml).toContain('id="log"');
+    expect(chatHtml).toContain('id="log" role="log" aria-live="off"');
+    expect(chatHtml).not.toContain('id="log" aria-live="polite"');
+    expect(chatHtml).toContain('id="jump"');
+    expect(chatHtml).toContain('role="status"');
+    expect(chatHtml).toContain('behavior: "instant"');
+    expect(chatHtml).toContain("preventScroll: true");
     expect(chatHtml).toContain(`maxlength="${DEMO_CAPS.maxUserMessageChars}"`);
     expect(chatHtml).toContain('fetch("/playground/chat"');
     expect(chatHtml).toContain("Ask about Stellar and Raven will search its connected sources");

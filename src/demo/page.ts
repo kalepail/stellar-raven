@@ -92,6 +92,9 @@ main.play{display:flex;flex-direction:column;padding-bottom:18px}
   color:var(--ash);text-align:left;background:rgba(0,0,0,.25)}
 .msg.md .mdtable th,.msg.md .mdtable td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
 .msg.md .mdtable tr:last-child td{border-bottom:0}
+.msg.md .mdt > :last-child{margin-bottom:0}
+.mdt{overflow-anchor:none}
+.mdt:empty{display:none}
 @keyframes blink{50%{opacity:0}}
 
 .pulse{display:flex;align-items:center;gap:10px;margin:14px 0;font-family:var(--mono);
@@ -146,6 +149,12 @@ details.tcard[open]>summary::before{transform:rotate(90deg)}
 
 /* ---- composer ---- */
 .composer{position:sticky;bottom:0;z-index:3;padding:14px 0 10px;background:transparent}
+.jump{position:absolute;right:0;top:-32px;padding:7px 12px;border:1px solid rgba(255,85,0,.45);
+  border-radius:999px;background:rgba(9,15,9,.96);color:var(--orange-2);font-family:var(--mono);
+  font-size:11.5px;cursor:pointer;box-shadow:0 8px 24px -14px rgba(0,0,0,.95)}
+.jump[hidden]{display:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip-path:inset(50%);white-space:nowrap;border:0}
 .composer form{display:flex;gap:10px;align-items:flex-end;padding:10px;border-radius:14px;
   border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(9,15,9,.96),rgba(5,9,5,.98));
   box-shadow:0 18px 52px -42px rgba(0,0,0,.95),0 18px 62px -52px rgba(255,85,0,.58)}
@@ -218,7 +227,22 @@ details.tcard[open]>summary::before{transform:rotate(90deg)}
 // ends without `done` stalls its open cards and says so.
 // ---------------------------------------------------------------------------
 
-const DEMO_SCRIPT = `
+export const DEMO_SCRIPT_CORE = `
+function mdCommitIndex(s, from){
+  var fence = false, last = from, i = from;
+  while (i < s.length) {
+    var end = s.indexOf("\\n", i);
+    if (end < 0) end = s.length;
+    var line = s.slice(i, end);
+    if (line.slice(0, 3) === "\`\`\`") fence = !fence;
+    var next = end < s.length ? end + 1 : end;
+    if (!fence && !line.trim()) last = next;
+    i = next;
+  }
+  return last;
+}`;
+
+const DEMO_SCRIPT = DEMO_SCRIPT_CORE + `
 (function(){
   "use strict";
   var log = document.getElementById("log");
@@ -226,11 +250,20 @@ const DEMO_SCRIPT = `
   var input = document.getElementById("composer-input");
   var sendBtn = document.getElementById("send");
   var note = document.getElementById("sysnote");
-  if (!log || !form || !input || !sendBtn || !note) return;
+  var composer = document.querySelector(".composer");
+  var jump = document.getElementById("jump");
+  var sr = document.getElementById("sr");
+  if (!log || !form || !input || !sendBtn || !note || !composer || !jump || !sr) return;
 
   var history = [];
   var cards = {};
   var busy = false;
+  var follow = false;
+  var suppressEngage = false;
+  var pointerDown = false;
+  var turnEl = null;
+  var unseen = false;
+  var sc = document.scrollingElement || document.documentElement;
   // Liveness indicator: a reasoning model can sit silent for tens of seconds
   // before the first token/tool frame — without this, a working turn is
   // indistinguishable from a dead one.
@@ -242,7 +275,6 @@ const DEMO_SCRIPT = `
       pulse = el("div", "pulse");
       pulse.appendChild(text("span", "pulse-dot", ""));
       pulse.appendChild(text("span", "pulse-label", ""));
-      log.appendChild(pulse);
       pulseT0 = Date.now();
       pulseTimer = setInterval(function(){
         if (!pulse) return;
@@ -252,8 +284,8 @@ const DEMO_SCRIPT = `
     }
     pulse.dataset.label = label;
     pulse.lastChild.textContent = label;
-    if (pulse !== log.lastChild) log.appendChild(pulse);
-    scrollEnd();
+    append(pulse);
+    grew();
   }
   function hidePulse(){
     if (pulseTimer) { clearInterval(pulseTimer); pulseTimer = null; }
@@ -264,10 +296,47 @@ const DEMO_SCRIPT = `
   var current = null;
   var acc = "";
   var thinkTail = "";
+  var mdTail = null;
+  var committed = 0;
+  var renderFrame = 0;
 
   function el(tag, cls){ var n = document.createElement(tag); if (cls) n.className = cls; return n; }
   function text(tag, cls, s){ var n = el(tag, cls); n.textContent = s; return n; }
-  function scrollEnd(){ window.scrollTo(0, document.body.scrollHeight); }
+  function append(node){ (turnEl || log).appendChild(node); }
+  function atBottom(){ return sc.scrollHeight - sc.scrollTop - window.innerHeight <= 40; }
+  function selectionInLog(){
+    var s = document.getSelection();
+    return !!s && !s.isCollapsed && !!s.anchorNode && log.contains(s.anchorNode);
+  }
+  function paused(){ return pointerDown || selectionInLog(); }
+  function contentBelow(){
+    var last = (turnEl || log).lastElementChild;
+    return !!last && last.getBoundingClientRect().bottom > window.innerHeight - composer.offsetHeight;
+  }
+  function readingAnchor(){
+    var nodes = log.querySelectorAll(".msg,.tcard,.pulse");
+    for (var i = 0; i < nodes.length; i++) {
+      var box = nodes[i].getBoundingClientRect();
+      if (box.bottom > 0) return { node: nodes[i], top: box.top };
+    }
+    return null;
+  }
+  function updateJump(){
+    jump.hidden = follow || !contentBelow();
+    if (!jump.hidden) jump.textContent = busy ? "\u2193 streaming" : unseen ? "\u2193 new reply" : "\u2193 latest";
+  }
+  function pinBottom(){ window.scrollTo({ top: sc.scrollHeight, behavior: "instant" }); }
+  function anchorTurn(node){
+    suppressEngage = true;
+    window.scrollTo({ top: node.getBoundingClientRect().top + sc.scrollTop - 12, behavior: "instant" });
+    requestAnimationFrame(function(){ suppressEngage = false; });
+  }
+  function grew(){
+    if (follow && !paused()) pinBottom();
+    else if (contentBelow()) unseen = true;
+    updateJump();
+  }
+  function announce(s){ sr.textContent = s; }
   function setNote(msg, kind){ note.textContent = msg || ""; note.className = "sysnote" + (kind ? " " + kind : ""); }
   function pretty(v){
     if (typeof v === "string") return v;
@@ -375,15 +444,36 @@ const DEMO_SCRIPT = `
     }
     return frag;
   }
-  function setBubbleMarkdown(node, s){
-    node.textContent = "";
-    node.appendChild(renderMarkdown(s));
+  function renderTick(final){
+    renderFrame = 0;
+    if (!current || !mdTail) return;
+    var preserve = !follow || paused();
+    var heldTop = preserve ? sc.scrollTop : null;
+    var anchor = preserve ? readingAnchor() : null;
+    var boundary = final ? acc.length : mdCommitIndex(acc, committed);
+    if (boundary > committed) {
+      current.insertBefore(renderMarkdown(acc.slice(committed, boundary)), mdTail);
+      committed = boundary;
+    }
+    mdTail.textContent = "";
+    if (committed < acc.length) mdTail.appendChild(renderMarkdown(acc.slice(committed)));
+    if (anchor && anchor.node.isConnected) {
+      sc.scrollTop += anchor.node.getBoundingClientRect().top - anchor.top;
+    } else if (heldTop !== null) sc.scrollTop = heldTop;
+    grew();
+  }
+  function scheduleRender(){
+    if (!renderFrame) renderFrame = requestAnimationFrame(function(){ renderTick(false); });
+  }
+  function finishRender(){
+    if (renderFrame) cancelAnimationFrame(renderFrame);
+    renderTick(true);
   }
 
   function addBubble(role, s){
     var b = text("div", "msg " + role, s);
-    log.appendChild(b);
-    scrollEnd();
+    append(b);
+    grew();
     return b;
   }
 
@@ -426,9 +516,9 @@ const DEMO_SCRIPT = `
       body.appendChild(pre);
     }
     d.appendChild(body);
-    log.appendChild(d);
+    append(d);
     cards[f.id] = { body: body, badge: badge, tool: f.tool, wait: wait, resolved: false };
-    scrollEnd();
+    grew();
   }
 
   function fillCard(f){
@@ -468,7 +558,7 @@ const DEMO_SCRIPT = `
     } else {
       section(c, f.ok ? "output" : "error", pretty(out), f.ok ? "" : "err");
     }
-    scrollEnd();
+    grew();
   }
 
   // Design requirement: a tool-start with no tool-result by done/error is
@@ -484,35 +574,51 @@ const DEMO_SCRIPT = `
       c.body.appendChild(text("div", "stall-note",
         "No result frame arrived for this call before the stream ended \\u2014 unresolved, not failed."));
     }
+    grew();
   }
 
   function finishTurn(){
     hidePulse();
-    if (current) current.classList.remove("streaming");
+    if (current) { finishRender(); current.classList.remove("streaming"); }
     if (acc) history.push({ role: "assistant", content: acc });
     current = null;
+    mdTail = null;
+    committed = 0;
     acc = "";
     busy = false;
     sendBtn.disabled = false;
-    input.disabled = false;
-    input.focus();
+    updateJump();
+    if (follow && (document.activeElement === document.body || document.activeElement === sendBtn)) {
+      input.focus({ preventScroll: true });
+    }
   }
 
   function handleFrame(f){
     if (!f || typeof f.type !== "string") return;
     if (f.type === "ready") {
+      announce("Raven is working");
       showPulse("model reasoning");
     } else if (f.type === "thinking") {
       thinkTail = (thinkTail + String(f.text == null ? "" : f.text)).slice(-90).replace(/\\s+/g, " ");
       showPulse("thinking \\u00b7 " + thinkTail);
     } else if (f.type === "token") {
       hidePulse();
-      if (!current) { current = addBubble("assistant", ""); current.classList.add("streaming"); current.classList.add("md"); }
+      if (!current) {
+        current = addBubble("assistant", "");
+        current.classList.add("streaming");
+        current.classList.add("md");
+        current.setAttribute("aria-live", "polite");
+        mdTail = el("div", "mdt");
+        mdTail.setAttribute("aria-hidden", "true");
+        current.appendChild(mdTail);
+        committed = 0;
+        announce("Raven is answering");
+      }
       acc += String(f.text == null ? "" : f.text);
-      setBubbleMarkdown(current, acc);
-      scrollEnd();
+      scheduleRender();
     } else if (f.type === "tool-start") {
       hidePulse();
+      announce(f.tool === "search" ? "Raven is searching" : "Raven is running code");
       startCard(f);
     } else if (f.type === "tool-result") {
       fillCard(f);
@@ -527,6 +633,7 @@ const DEMO_SCRIPT = `
       } else if (f.reason && f.reason !== "stop" && !acc) {
         setNote("The turn ended (" + f.reason + ") without a text answer \\u2014 the trace above shows what ran.", "err");
       }
+      announce("Reply finished");
       finishTurn();
     } else if (f.type === "error") {
       turnDone = true;
@@ -542,10 +649,16 @@ const DEMO_SCRIPT = `
     turnDone = false;
     thinkTail = "";
     sendBtn.disabled = true;
-    input.disabled = true;
     setNote("");
     history.push({ role: "user", content: msg });
-    addBubble("user", msg);
+    if (turnEl) turnEl.style.minHeight = "";
+    turnEl = el("div", "turn");
+    log.appendChild(turnEl);
+    turnEl.style.minHeight = Math.max(0, window.innerHeight - composer.offsetHeight - 24) + "px";
+    follow = false;
+    var userBubble = addBubble("user", msg);
+    anchorTurn(userBubble);
+    unseen = false;
     showPulse("sending");
     var res;
     try {
@@ -557,7 +670,7 @@ const DEMO_SCRIPT = `
     } catch (e) {
       hidePulse();
       setNote("Network error \\u2014 the message stays in your history; send again to retry.", "err");
-      busy = false; sendBtn.disabled = false; input.disabled = false;
+      busy = false; sendBtn.disabled = false; updateJump();
       return;
     }
     if (!res.ok || !res.body) {
@@ -565,7 +678,7 @@ const DEMO_SCRIPT = `
       setNote(res.status === 401 ? "Session expired \\u2014 reload this page to sign in again."
         : res.status === 429 ? "Hourly chat limit reached \\u2014 try again in a bit."
         : "Request failed (" + res.status + ").", "err");
-      busy = false; sendBtn.disabled = false; input.disabled = false;
+      busy = false; sendBtn.disabled = false; updateJump();
       return;
     }
     var reader = res.body.getReader();
@@ -610,6 +723,33 @@ const DEMO_SCRIPT = `
       if (form.requestSubmit) form.requestSubmit();
     }
   });
+  window.addEventListener("scroll", function(){
+    if (suppressEngage) { suppressEngage = false; updateJump(); return; }
+    follow = atBottom() && !paused();
+    if (follow) unseen = false;
+    updateJump();
+  }, { passive: true });
+  window.addEventListener("pointerdown", function(){ pointerDown = true; }, { passive: true });
+  window.addEventListener("keydown", function(e){
+    if ((e.metaKey || e.ctrlKey) && String(e.key).toLowerCase() === "f") { follow = false; updateJump(); }
+  });
+  window.addEventListener("pointerup", function(){
+    pointerDown = false;
+    if (atBottom() && !selectionInLog()) { follow = true; unseen = false; }
+    updateJump();
+  }, { passive: true });
+  document.addEventListener("selectionchange", function(){
+    if (selectionInLog()) { follow = false; updateJump(); }
+  });
+  log.addEventListener("click", function(){ follow = false; updateJump(); });
+  log.addEventListener("focusin", function(){ follow = false; updateJump(); });
+  jump.addEventListener("click", function(){
+    follow = true;
+    unseen = false;
+    pinBottom();
+    updateJump();
+  });
+  window.addEventListener("resize", updateJump, { passive: true });
   input.focus();
 })();
 `;
@@ -619,7 +759,7 @@ const DEMO_SCRIPT = `
 // hard-coded (Web Crypto is async, and these headers are a sync module const);
 // test/demo-page.test.ts recomputes it from the rendered page, so an edit to
 // DEMO_SCRIPT fails the suite with the new value to paste here.
-const DEMO_SCRIPT_SHA256 = "sha256-TKCP6Ujru4mp8JDXpahpOyq3ZK5EfkJw4IcqWqYpVGI=";
+const DEMO_SCRIPT_SHA256 = "sha256-vDPW3EUh9/RE4nCnE6NN5qXzU6vGbl4pIzEnimCu+gU=";
 
 export const DEMO_PAGE_HEADERS: Record<string, string> = {
   "content-type": "text/html; charset=utf-8",
@@ -805,15 +945,16 @@ function chatBody(): string {
     `connected sources, run focused lookups, and summarize what it found. The cards below ` +
     `show the real work behind the answer, using the same core tools available to agents ` +
     `through <code>/mcp</code>.</p>` +
-    `<div id="log" aria-live="polite"></div>` +
-    `<div class="composer"><form id="composer-form">` +
+    `<div id="log" role="log" aria-live="off"></div>` +
+    `<div class="composer"><button id="jump" class="jump" type="button" hidden></button>` +
+    `<div id="sr" class="sr-only" role="status"></div><form id="composer-form">` +
     // maxlength mirrors DEMO_CAPS.maxUserMessageChars (src/demo/budget.ts);
     // the server clamps regardless — this just fails early in the UI.
     `<textarea id="composer-input" maxlength="${DEMO_CAPS.maxUserMessageChars}" rows="1" ` +
     `placeholder="Ask about the Stellar ecosystem…" ` +
     `aria-label="Message the playground agent"></textarea>` +
     `<button id="send" class="btn btn-primary" type="submit">Send</button>` +
-    `</form><div id="sysnote" class="sysnote"></div></div>` +
+    `</form><div id="sysnote" class="sysnote" role="status"></div></div>` +
     `</main>${demoFooter()}` +
     `<script>${DEMO_SCRIPT}</script>`
   );
