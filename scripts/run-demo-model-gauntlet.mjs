@@ -4,9 +4,11 @@ import http from "node:http";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { mintDemoCookie } from "../src/demo/auth.ts";
+import { demoReasoningEffortOverride } from "../src/demo/model-config.ts";
 
-const DEFAULT_MODELS = [
+export const DEFAULT_MODELS = [
   "openai/gpt-5.4",
   "anthropic/claude-sonnet-4.6",
   "openai/gpt-5.4-mini",
@@ -18,7 +20,7 @@ const DEFAULT_MODELS = [
   "@cf/openai/gpt-oss-120b"
 ];
 
-const PROMPTS = [
+export const PROMPTS = [
   {
     id: "rpc-simulate",
     expectTools: true,
@@ -61,66 +63,71 @@ const PROMPTS = [
   }
 ];
 
-const args = parseArgs(process.argv.slice(2));
-const runId = args.runId ?? new Date().toISOString().replaceAll(":", "").replaceAll(".", "");
-const models = args.models?.length ? args.models : DEFAULT_MODELS;
-const reasoningEfforts = args.reasoningEfforts?.length ? args.reasoningEfforts : [null];
-const prompts = args.prompts?.length ? PROMPTS.filter((prompt) => args.prompts.includes(prompt.id)) : PROMPTS;
-const openAiApiMode = args.openAiApiMode ?? null;
-const repeats = Number(args.repeats ?? 1);
-const portBase = Number(args.portBase ?? 8890);
-const outDir = args.outDir ?? path.join("research", "gauntlets");
-const timeoutMs = Number(args.timeoutMs ?? 150_000);
+export async function main(argv = process.argv.slice(2)) {
+  // This deliberately precedes parsing: `--help --unknown` must remain a
+  // harmless usage request rather than a failed (or worse, launched) run.
+  if (argv.includes("--help") || argv.includes("-h")) {
+    process.stdout.write(`${usage()}\n`);
+    return;
+  }
 
-if (!Number.isInteger(repeats) || repeats < 1) throw new Error("--repeats must be a positive integer");
+  const args = parseGauntletArgs(argv);
+  const invocation = validateGauntletInvocation(args);
+  const plan = buildLaunchPlan(invocation);
+  console.log(formatLaunchPlan(plan));
+  if (!args.confirmPaid) throw new Error("Refusing to start planned Playground chat turns without --confirm-paid.");
 
-await mkdir(outDir, { recursive: true });
+  const { models, reasoningEfforts, prompts, openAiApiMode, repeats, portBase, outDir, timeoutMs } = invocation;
+  const runId = args.runId ?? new Date().toISOString().replaceAll(":", "").replaceAll(".", "");
+  await mkdir(outDir, { recursive: true });
 
-const devVars = await readDevVars(".dev.vars").catch(() => ({}));
-const demoSecret = process.env.MCP_SERVER_SECRET ?? devVars.MCP_SERVER_SECRET;
-if (!demoSecret) {
-  console.warn("[gauntlet] MCP_SERVER_SECRET unavailable; falling back to loopback dev bypass subject and throttle.");
-}
+  const devVars = await readDevVars(".dev.vars").catch(() => ({}));
+  const demoSecret = process.env.MCP_SERVER_SECRET ?? devVars.MCP_SERVER_SECRET;
+  if (!demoSecret) {
+    console.warn("[gauntlet] MCP_SERVER_SECRET unavailable; falling back to loopback dev bypass subject and throttle.");
+  }
 
-const results = [];
-for (let modelIndex = 0; modelIndex < models.length; modelIndex += 1) {
-  const model = models[modelIndex];
-  for (let reasoningIndex = 0; reasoningIndex < reasoningEfforts.length; reasoningIndex += 1) {
-    const reasoningEffort = reasoningEfforts[reasoningIndex];
-    const port = portBase + modelIndex * reasoningEfforts.length + reasoningIndex;
-    const server = await startWrangler({ model, reasoningEffort, openAiApiMode, port });
-    try {
-      const subject = `gauntlet:${runId}:${model}:${reasoningEffortLabel(reasoningEffort)}`;
-      const cookie = demoSecret ? await mintDemoCookie(demoSecret, subject) : "";
-      for (let repeat = 1; repeat <= repeats; repeat += 1) {
-        for (const prompt of prompts) {
-          const label = `${model} :: reasoning=${reasoningEffortLabel(reasoningEffort)} :: ${prompt.id} :: ${repeat}/${repeats}`;
-          console.log(`[gauntlet] ${label}`);
-          const result = await runPrompt({
-            url: `http://localhost:${port}/playground/chat`,
-            cookie,
-            model,
-            reasoningEffort,
-            prompt,
-            repeat,
-            timeoutMs
-          });
-          results.push(result);
-          await writeArtifacts({ runId, outDir, prompts, results });
-          console.log(
-            `[gauntlet] ${label} -> ${result.terminal} ${result.durationMs}ms tools=${result.searchCalls}/${result.executeCalls} pass=${result.pass.overall}`
-          );
+  const results = [];
+  for (let modelIndex = 0; modelIndex < models.length; modelIndex += 1) {
+    const model = models[modelIndex];
+    for (let reasoningIndex = 0; reasoningIndex < reasoningEfforts.length; reasoningIndex += 1) {
+      const reasoningEffort = reasoningEfforts[reasoningIndex];
+      const port = portBase + modelIndex * reasoningEfforts.length + reasoningIndex;
+      const server = await startWrangler({ model, reasoningEffort, openAiApiMode, port });
+      try {
+        const subject = `gauntlet:${runId}:${model}:${reasoningEffortLabel(reasoningEffort)}`;
+        const cookie = demoSecret ? await mintDemoCookie(demoSecret, subject) : "";
+        for (let repeat = 1; repeat <= repeats; repeat += 1) {
+          for (const prompt of prompts) {
+            const label = `${model} :: reasoning=${reasoningEffortLabel(reasoningEffort)} :: ${prompt.id} :: ${repeat}/${repeats}`;
+            console.log(`[gauntlet] ${label}`);
+            const result = await runPrompt({
+              runId,
+              url: `http://localhost:${port}/playground/chat`,
+              cookie,
+              model,
+              reasoningEffort,
+              prompt,
+              repeat,
+              timeoutMs
+            });
+            results.push(result);
+            await writeArtifacts({ runId, outDir, prompts, results });
+            console.log(
+              `[gauntlet] ${label} -> ${result.terminal} ${result.durationMs}ms tools=${result.searchCalls}/${result.executeCalls} pass=${result.pass.overall}`
+            );
+          }
         }
+      } finally {
+        await stopWrangler(server);
       }
-    } finally {
-      await stopWrangler(server);
     }
   }
-}
 
-await writeArtifacts({ runId, outDir, prompts, results });
-console.log(`[gauntlet] wrote ${path.join(outDir, `${runId}.json`)}`);
-console.log(`[gauntlet] wrote ${path.join(outDir, `${runId}-summary.md`)}`);
+  await writeArtifacts({ runId, outDir, prompts, results });
+  console.log(`[gauntlet] wrote ${path.join(outDir, `${runId}.json`)}`);
+  console.log(`[gauntlet] wrote ${path.join(outDir, `${runId}-summary.md`)}`);
+}
 
 async function startWrangler({ model, reasoningEffort, openAiApiMode, port }) {
   const vars = [
@@ -180,7 +187,7 @@ async function stopWrangler(server) {
   }
 }
 
-async function runPrompt({ url, cookie, model, reasoningEffort, prompt, repeat, timeoutMs }) {
+async function runPrompt({ runId, url, cookie, model, reasoningEffort, prompt, repeat, timeoutMs }) {
   const startedAt = Date.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -392,41 +399,180 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function parseArgs(argv) {
+export function usage() {
+  return `Usage: node scripts/run-demo-model-gauntlet.mjs [options] --confirm-paid
+
+Runs planned Playground chat turns and may incur provider charges. Review the printed launch
+plan, then pass --confirm-paid to allow any filesystem, credential, or Wrangler work.
+
+Options:
+  -h, --help                         Print this usage and exit without side effects
+  --confirm-paid                     Allow the validated paid launch
+  --model <id>                       Add one model (repeatable)
+  --models <id,...>                  Select models (default: built-in matrix)
+  --reasoning-effort <effort>        Add one effort: default, none, minimal, low, medium, high, xhigh
+  --reasoning-efforts <effort,...>   Select reasoning efforts (default: default)
+  --prompt <id>                      Add one prompt id (repeatable)
+  --prompts <id,...>                 Select prompt ids (default: all built-in prompts)
+  --openai-api-mode <chat|responses> Pass the requested API mode to Wrangler
+  --run-id <id>                      Artifact name prefix
+  --repeats <positive integer>       Repetitions per model/effort/prompt cell (default: 1)
+  --port-base <port>                 First Wrangler port (default: 8890)
+  --timeout-ms <positive integer>    Per-chat timeout (default: 150000)
+  --out-dir <path>                   Artifact directory (default: research/gauntlets)`;
+}
+
+const VALUE_FLAGS = new Set([
+  "--model",
+  "--models",
+  "--reasoning-effort",
+  "--reasoning-efforts",
+  "--openai-api-mode",
+  "--prompt",
+  "--prompts",
+  "--run-id",
+  "--repeats",
+  "--port-base",
+  "--timeout-ms",
+  "--out-dir"
+]);
+
+function requiredValue(argv, index, flag) {
+  const value = argv[index + 1];
+  if (value === undefined || value.startsWith("-")) throw new Error(`${flag} requires a value.`);
+  return value;
+}
+
+function commaList(value) {
+  return value.split(",").map((item) => item.trim());
+}
+
+export function parseGauntletArgs(argv) {
   const out = {};
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
-    if (arg === "--model") {
-      out.models ??= [];
-      out.models.push(argv[++i]);
-    } else if (arg === "--models") {
-      out.models = argv[++i].split(",").map((model) => model.trim()).filter(Boolean);
-    } else if (arg === "--reasoning-efforts") {
-      out.reasoningEfforts = argv[++i]
-        .split(",")
-        .map((effort) => effort.trim())
-        .filter(Boolean)
-        .map((effort) => (effort === "default" ? null : effort));
-    } else if (arg === "--reasoning-effort") {
-      const effort = argv[++i].trim();
-      out.reasoningEfforts ??= [];
-      out.reasoningEfforts.push(effort === "default" ? null : effort);
-    } else if (arg === "--openai-api-mode") {
-      out.openAiApiMode = argv[++i].trim();
-    } else if (arg === "--prompt") {
-      out.prompts ??= [];
-      out.prompts.push(argv[++i].trim());
-    } else if (arg === "--prompts") {
-      out.prompts = argv[++i]
-        .split(",")
-        .map((prompt) => prompt.trim())
-        .filter(Boolean);
-    } else if (arg.startsWith("--")) {
-      const key = arg.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase());
-      out[key] = argv[++i];
-    } else {
+    if (arg === "--help" || arg === "-h") {
+      out.help = true;
+    } else if (arg === "--confirm-paid") {
+      out.confirmPaid = true;
+    } else if (!VALUE_FLAGS.has(arg)) {
       throw new Error(`Unknown argument: ${arg}`);
+    } else {
+      const value = requiredValue(argv, i, arg);
+      i += 1;
+      if (arg === "--model") {
+        out.models ??= [];
+        out.models.push(value.trim());
+      } else if (arg === "--models") {
+        out.models = commaList(value);
+      } else if (arg === "--reasoning-effort") {
+        out.reasoningEfforts ??= [];
+        out.reasoningEfforts.push(value.trim() === "default" ? null : value.trim());
+      } else if (arg === "--reasoning-efforts") {
+        out.reasoningEfforts = commaList(value).map((effort) => (effort === "default" ? null : effort));
+      } else if (arg === "--prompt") {
+        out.prompts ??= [];
+        out.prompts.push(value.trim());
+      } else if (arg === "--prompts") {
+        out.prompts = commaList(value);
+      } else if (arg === "--openai-api-mode") {
+        out.openAiApiMode = value.trim();
+      } else if (arg === "--run-id") {
+        out.runId = value;
+      } else if (arg === "--repeats") {
+        out.repeats = value;
+      } else if (arg === "--port-base") {
+        out.portBase = value;
+      } else if (arg === "--timeout-ms") {
+        out.timeoutMs = value;
+      } else if (arg === "--out-dir") {
+        out.outDir = value;
+      }
     }
   }
   return out;
+}
+
+function positiveInteger(value, flag) {
+  const number = Number(value);
+  if (!Number.isInteger(number) || number < 1) throw new Error(`${flag} must be a positive integer.`);
+  return number;
+}
+
+export function validateGauntletInvocation(args) {
+  const models = args.models === undefined ? [...DEFAULT_MODELS] : args.models;
+  const reasoningEfforts = args.reasoningEfforts === undefined ? [null] : args.reasoningEfforts;
+  const requestedPromptIds = args.prompts === undefined ? PROMPTS.map((prompt) => prompt.id) : args.prompts;
+  if (models.length === 0 || models.some((model) => !model)) throw new Error("Model selection must be nonempty.");
+  if (reasoningEfforts.length === 0 || reasoningEfforts.some((effort) => effort !== null && !effort)) {
+    throw new Error("Reasoning-effort selection must be nonempty.");
+  }
+  if (requestedPromptIds.length === 0 || requestedPromptIds.some((id) => !id)) {
+    throw new Error("Prompt selection must be nonempty.");
+  }
+
+  const promptIds = new Set(PROMPTS.map((prompt) => prompt.id));
+  const invalidPromptIds = requestedPromptIds.filter((id) => !promptIds.has(id));
+  if (invalidPromptIds.length) throw new Error(`Invalid prompt ids: ${invalidPromptIds.join(", ")}.`);
+  const duplicatePromptIds = [...new Set(requestedPromptIds.filter((id, index) => requestedPromptIds.indexOf(id) !== index))];
+  if (duplicatePromptIds.length) throw new Error(`Duplicate prompt ids: ${duplicatePromptIds.join(", ")}.`);
+  const invalidEfforts = reasoningEfforts.filter(
+    (effort) => effort !== null && demoReasoningEffortOverride(effort) !== effort
+  );
+  if (invalidEfforts.length) throw new Error(`Invalid reasoning efforts: ${invalidEfforts.join(", ")}.`);
+  if (args.openAiApiMode !== undefined && args.openAiApiMode !== "chat" && args.openAiApiMode !== "responses") {
+    throw new Error("--openai-api-mode must be chat or responses.");
+  }
+
+  const repeats = positiveInteger(args.repeats ?? 1, "--repeats");
+  const timeoutMs = positiveInteger(args.timeoutMs ?? 150_000, "--timeout-ms");
+  const portBase = positiveInteger(args.portBase ?? 8890, "--port-base");
+  const cellCount = models.length * reasoningEfforts.length;
+  const lastPort = portBase + cellCount - 1;
+  if (lastPort > 64_535 || lastPort + 1000 > 65_535) {
+    throw new Error("--port-base leaves no valid port range for Wrangler and its inspector.");
+  }
+
+  const prompts = requestedPromptIds.map((id) => PROMPTS.find((prompt) => prompt.id === id));
+  const totalPaidTurns = models.length * reasoningEfforts.length * prompts.length * repeats;
+  if (totalPaidTurns < 1) throw new Error("The planned Playground chat-turn matrix must be nonempty.");
+  return {
+    models,
+    reasoningEfforts,
+    prompts,
+    openAiApiMode: args.openAiApiMode ?? null,
+    repeats,
+    portBase,
+    outDir: args.outDir ?? path.join("research", "gauntlets"),
+    timeoutMs,
+    totalPaidTurns
+  };
+}
+
+export function buildLaunchPlan(invocation) {
+  const cellCount = invocation.models.length * invocation.reasoningEfforts.length;
+  return {
+    models: [...invocation.models],
+    reasoningEfforts: invocation.reasoningEfforts.map(reasoningEffortLabel),
+    promptIds: invocation.prompts.map((prompt) => prompt.id),
+    repeats: invocation.repeats,
+    timeoutMs: invocation.timeoutMs,
+    outDir: invocation.outDir,
+    portBase: invocation.portBase,
+    portLast: invocation.portBase + cellCount - 1,
+    inspectorPortLast: invocation.portBase + cellCount - 1 + 1000,
+    totalPaidTurns: invocation.totalPaidTurns
+  };
+}
+
+export function formatLaunchPlan(plan) {
+  return `[gauntlet] launch plan\nmodels (${plan.models.length}): ${plan.models.join(", ")}\nreasoning efforts (${plan.reasoningEfforts.length}): ${plan.reasoningEfforts.join(", ")}\nprompts (${plan.promptIds.length}): ${plan.promptIds.join(", ")}\nrepeats: ${plan.repeats}\nplanned Playground chat turns: ${plan.totalPaidTurns} (not guaranteed provider calls)\ntimeout: ${plan.timeoutMs}ms\nWrangler ports: ${plan.portBase}-${plan.portLast}; inspector ports: ${plan.portBase + 1000}-${plan.inspectorPortLast}\noutput: ${plan.outDir}`;
+}
+
+const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (isMain) {
+  main().catch((error) => {
+    console.error(`[gauntlet] ${error instanceof Error ? error.message : String(error)}`);
+    process.exitCode = 1;
+  });
 }
