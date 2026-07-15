@@ -1,17 +1,16 @@
 {
-  "changelogEntryCount": 74,
+  "changelogEntryCount": 80,
   "changelogLatest": {
-    "date": "2026-07-13",
-    "detail": "searchResearch's `source` enum gains 'security-program' (records ingested from the live HackerOne program policy via public GraphQL, publishedAt from the policy's own effective date, plus a curated dated supersession record). The scout-mcp source enum also gains the previously-missing 'cap' value — the MCP wrapper was rejecting a filter the live API serves; both MCP changes ride the next npm publish.",
-    "summary": "sls-020: new `security-program` research source — SDF's bug-bounty / vulnerability-disclosure program status. Covers the 2026-05-07 consolidation into a single HackerOne program (general Stellar Immunefi program deprecated; the OpenZeppelin-on-Stellar Immunefi bounty remains active and separate) and labels the stale stellar.org bug-bounty landing page as superseded for program-status claims.",
+    "date": "2026-07-14",
+    "detail": "Team-page extraction parses the embedded Sanity card blocks (fail-safe: if the structure changes the ingester's signature guard REFUSES the page rather than silently re-ingesting a role-less list); the leadership roles are now registered signatures. `observedAt` is stamped on every ingest run — re-written even when content is unchanged (metadata-only, no re-embed) — so it reflects last-observation, not last-change like Payload updatedAt. First lit on the sdf-org corpus.",
+    "summary": "searchResearch now answers SDF leadership-role questions and stamps crawl-observation dates. The Team page's per-member ROLES ('Founder and Chief Scientist', 'VP of Ecosystem') live only in the page's embedded card data — a plain <main> scrape yielded a role-less name list — so ingestion now recovers the Name→Role roster from that embedded data. Every research chunk also carries a new `observedAt` (crawl-observation date: when ingest last observed the content live at the source), distinct from `publishedAt` (the source's own stated date).",
     "surfaces": [
-      "api",
-      "mcp"
+      "api"
     ],
     "type": "added",
-    "version": "spec 1.7.21"
+    "version": "spec 1.7.26"
   },
-  "fetchedAt": "2026-07-14T00:14:25.327Z",
+  "fetchedAt": "2026-07-15T12:24:01.698Z",
   "openapi": {
     "components": {
       "parameters": {
@@ -573,6 +572,34 @@
               },
               "type": "object"
             },
+            "availability": {
+              "description": "sls-033/#519: per-platform availability with as-of dates. null = not curated.",
+              "items": {
+                "properties": {
+                  "checkedAt": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "note": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "platform": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "type": "string"
+                  },
+                  "storeUrl": {
+                    "nullable": true,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "nullable": true,
+              "type": "array"
+            },
             "builtBy": {
               "description": "The organization/entity behind this project ('who built X') — e.g. LOBSTR → Ultra Stellar, Soroswap → Paltalabs. Null when no org is linked. Browse the org's portfolio at https://stellarlight.xyz/entities/{slug}.",
               "nullable": true,
@@ -767,6 +794,11 @@
               "description": "Numeric rank parsed from hackathonPlacement (1 = best), handling both digit ('1st Place') and word ('First Place') ordinals — or null when the source gives no ordinal (a flat 'Winners' bucket). winners[] is sorted by placementRank, so winners[0] is the 1st-place entry when the event has ranked placements; unranked winners (placementRank: null) sort last and their order is not significant. Sort/filter on placementRank instead of parsing the label.",
               "nullable": true,
               "type": "integer"
+            },
+            "productKind": {
+              "description": "sls-033/#519: curated product-kind for wallet-class records (hardware-wallet | mobile-app | browser-extension | web-app | protocol | sdk-kit). null = not-yet-classified (never a negative claim).",
+              "nullable": true,
+              "type": "string"
             },
             "prominence": {
               "description": "Editorial ranking boost (0-100); higher = more canonical for its category.",
@@ -1381,7 +1413,7 @@
       },
       "summary": "Agent-native data layer for the Stellar ecosystem — projects, builders, hackathons, SCF, audits, research.",
       "title": "Stellar Scout API",
-      "version": "1.7.21"
+      "version": "1.7.26"
     },
     "openapi": "3.1.0",
     "paths": {
@@ -2365,6 +2397,42 @@
               "schema": {
                 "type": "string"
               }
+            },
+            {
+              "description": "Filter to one or more granular project types — the same `types[]` taxonomy on project-search rows and echoed on each leaderboard row. Repeatable (`?type=DEX&type=Lending`) and comma-separable (`?type=DEX,Lending`); membership is EITHER (a project typed DEX OR Lending is kept), so you can build an explicit DEX/Lending-style grouping. Exact whole-element match, NOT substring. Unknown values return 400 with validTypes. Applied at the DB layer before ranking and limiting; `meta.filters.type` echoes the applied scope.",
+              "explode": true,
+              "in": "query",
+              "name": "type",
+              "schema": {
+                "items": {
+                  "enum": [
+                    "Wallet",
+                    "DEX",
+                    "Lending",
+                    "Bridge",
+                    "Infrastructure",
+                    "Payments",
+                    "Anchor",
+                    "SDK",
+                    "Indexer",
+                    "Explorer",
+                    "Analytics",
+                    "AI",
+                    "Gaming",
+                    "Education",
+                    "Security",
+                    "NFT",
+                    "RWA",
+                    "Stablecoin",
+                    "Social Impact",
+                    "RPC",
+                    "Faucet"
+                  ],
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "style": "form"
             },
             {
               "description": "Response format.",
@@ -3483,7 +3551,7 @@
       },
       "/api/research": {
         "get": {
-          "description": "Semantic search over the Stellar knowledge corpus — SDF blog, SCF Handbook, SEPs/standards, dev docs, papers, audits, incident reports. Returns cited text chunks with source, section, URL, confidence (audits add auditor/severity). THE surface for 'how does X work', 'what does the SEP/spec/audit say', and how-to/feasibility questions. Not for products and their funding/status → use searchProjects.",
+          "description": "Semantic search over the Stellar knowledge corpus — SDF blog, SCF Handbook, SEPs/standards, dev docs, papers, audits, incident reports. Returns cited text chunks with source, section, URL, confidence, and provenance dates (`publishedAt` = the source's own stated date; `observedAt` = when ingest last crawled the page; audits add auditor/severity). THE surface for 'how does X work', 'what does the SEP/spec/audit say', and how-to/feasibility questions. Not for products and their funding/status → use searchProjects.",
           "operationId": "searchResearch",
           "parameters": [
             {
@@ -3497,7 +3565,7 @@
               }
             },
             {
-              "description": "Optional source filter. Use 'audit' for security questions, 'incident' for exploit/post-mortem history, 'security-program' for bug-bounty / vulnerability-disclosure program status (which program is current, where to report), 'ec-developer-report' for ecosystem stats, 'paper' for foundational protocol questions.",
+              "description": "Optional source filter. Use 'audit' for security questions, 'incident' for exploit/post-mortem history, 'security-program' for bug-bounty / vulnerability-disclosure program status (which program is current, where to report), 'sdf-org' for SDF's canonical organizational pages (mandate, legal structure/terms, foundation, team, enterprise fund, quarterly-reports index), 'ec-developer-report' for ecosystem stats, 'paper' for foundational protocol questions.",
               "in": "query",
               "name": "source",
               "schema": {
@@ -3514,6 +3582,7 @@
                   "audit",
                   "incident",
                   "security-program",
+                  "sdf-org",
                   "ec-developer-report"
                 ],
                 "type": "string"
@@ -3655,6 +3724,7 @@
               "'how does X work', 'is X possible / has X been discussed on Stellar', 'what does the SEP/spec/audit say about X'",
               "primary-source citations for a thesis or design question; ecosystem KNOWLEDGE & explainer questions ('what is / how does / who / why / is it true that…')",
               "security & risk (audits, exploits, incidents, post-mortems, oracle manipulation), bug-bounty / disclosure program status (source=security-program: which program is current, HackerOne vs Immunefi, where to report), compliance & regulation (Travel Rule, FATF, KYC/AML, sanctions)",
+              "SDF's canonical organizational pages (source=sdf-org): mandate incl. self-funded/pays-taxes structure, terms of service / Delaware non-profit legal form, foundation mission, leadership & board roster, Enterprise Fund scope & portfolio size, quarterly-reports index",
               "funding & governance (SCF v7.0, award tiers, Neural Quorum Governance) and SCF program mechanics — how to apply step-by-step, Build/Instawards/Liquidity/Public-Goods awards, eligibility, review timeline (prescreen, panel review, community vote, KYC), deadlines",
               "SDF org/mission/legal structure; protocol history (SCP whitepaper, authors); ecosystem programs (ambassadors, regional chapters, bootcamps)",
               "Soroban security incidents (reentrancy, sdk advisories/CVEs, DoS); ecosystem history (Protocol 20 mainnet launch, XLM initial supply, UNHCR aid, Enterprise Fund)",
@@ -4137,7 +4207,7 @@
       }
     ]
   },
-  "openapiVersion": "1.7.21",
+  "openapiVersion": "1.7.26",
   "operationCount": 24,
   "service": "stellar-light",
   "source": {
@@ -4149,7 +4219,7 @@
     "status": "https://stellarlight.xyz/api/status"
   },
   "status": {
-    "apiVersion": "1.7.21",
+    "apiVersion": "1.7.26",
     "docs": "https://stellarlight.xyz/scout",
     "endpoints": [
       "/api/status",
@@ -4182,7 +4252,7 @@
     "sources": [
       {
         "count": 961,
-        "lastUpdatedAt": "2026-07-14T00:06:35.964Z",
+        "lastUpdatedAt": "2026-07-15T05:30:29.636Z",
         "name": "projects",
         "populationId": "projects|status:all"
       },
@@ -4194,24 +4264,24 @@
         "populationId": "hackathons|status:all"
       },
       {
-        "count": 116,
-        "lastUpdatedAt": "2026-07-13T06:01:27.792Z",
+        "count": 118,
+        "lastUpdatedAt": "2026-07-15T06:00:36.749Z",
         "name": "builders",
         "notes": "Synced from Stellar Passport — small and growing dataset",
         "populationId": "builders|status:all"
       },
       {
         "count": 2481,
-        "lastUpdatedAt": "2026-07-14T00:11:45.314Z",
+        "lastUpdatedAt": "2026-07-15T05:31:25.847Z",
         "name": "repos",
         "notes": "Indexed-and-scored Stellar GitHub repos (powers /api/repos/search)",
         "populationId": "repos|status:all"
       },
       {
         "count": 1,
-        "lastUpdatedAt": "2026-07-13T17:11:03.796137+00:00",
+        "lastUpdatedAt": "2026-07-14T16:11:05.451148+00:00",
         "name": "ecosystemStats",
-        "notes": "Electric Capital snapshot, as of 2026-07-05"
+        "notes": "Electric Capital snapshot, as of 2026-07-06"
       },
       {
         "count": 9,

@@ -1,7 +1,7 @@
 ---
 id: sls-040
 service: stellar-light-scout
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-10
 evidence:
   - live getBuilders returned 114 profiles and all 114 scfTier values were blank
@@ -11,6 +11,7 @@ evidence:
   - upstream issue filed 2026-07-13: https://github.com/Stellar-Light/stellarlight/issues/521
   - Solo scratchpad 575 GT-35 primary 3287 and blind 3289
   - 2026-07-14 live unknown scfTier still returns HTTP 200 unfiltered; follow-up https://github.com/Stellar-Light/stellarlight/issues/521#issuecomment-4971409043
+  - 2026-07-15 live recheck on spec 1.7.26 found no scfTier field on 118 builder rows and GET /api/builders?scfTier=top returned HTTP 400; upstream resolution https://github.com/Stellar-Light/stellarlight/issues/521#issuecomment-4974457684
 ---
 
 ## Finding

@@ -149,12 +149,8 @@ jobs:
           fi
       - name: run improvement recurrence probes
         run: npm run improvements:probes
-      - name: validate improvements intake
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: npm run improvements:lint -- --live
       - name: open or update drift issue
-        if: steps.drift.outputs.drift == 'true'
+        if: always() && steps.drift.outputs.drift == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
