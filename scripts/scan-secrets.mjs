@@ -238,7 +238,9 @@ function tryGitleaks(mode) {
   } catch {
     return null;
   }
-  const args = mode === "staged" ? ["protect", "--staged", "--redact"] : ["detect", "--redact", "--no-git"];
+  const args = mode === "staged"
+    ? ["git", "--staged", "--redact"]
+    : ["git", "--redact", "--log-opts=-1 HEAD"];
   try {
     execFileSync("gitleaks", args, { cwd: ROOT, stdio: "inherit" });
     return true; // clean

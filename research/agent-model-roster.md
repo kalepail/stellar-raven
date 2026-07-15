@@ -1,26 +1,28 @@
 # Agent model roster
 
-Verified 2026-07-09 against Solo project 49, the installed CLI help/model catalogs, live Solo
+Verified 2026-07-15 against Solo project 49, the installed CLI help/model catalogs, live Solo
 spawns, provider announcements/docs, and independent Artificial Analysis results. This is the
 availability, mechanics, and external-evidence record for repo-work fan-out. Active selection
-policy lives in `AGENTS.md`; historical house ratings are not an operational routing surface.
+policy lives in `.agents/skills/solo-operator/references/model-routing.md`, linked from `AGENTS.md`;
+historical house ratings are not an operational routing surface.
 
 ## Callable Solo runtimes
 
 | Solo tool | Saved command | Default model | Explicit model syntax |
 |---|---|---|---|
-| Codex | `codex --yolo` | `gpt-5.6-sol` (host config: high; catalog default: low) | `-m <model>` |
-| Claude | `claude --dangerously-skip-permissions` | account/runtime default | `--model <alias-or-id>` |
+| Codex | `headroom wrap codex --no-proxy --yolo` | `gpt-5.6-sol` (host config: high; catalog default: low) | `-m <model>` |
+| Claude | `headroom wrap claude --no-proxy --1m --dangerously-skip-permissions` | account/runtime default | `--model <alias-or-id>` |
 | Grok | `grok --yolo` | `grok-4.5` | `-m <model>` |
-| OpenCode | `opencode --auto` | runtime/provider dependent | `-m <provider/model>` |
+| OpenCode | `headroom wrap opencode --no-proxy --auto` | runtime/provider dependent | `-m <provider/model>` |
 
-The saved commands already contain their non-interactive permission flags. Inspect
+The saved commands already contain permission-bypass flags, but generic runtimes can still expose
+setup/trust prompts. Inspect
 `list_agent_tools` before every fan-out and add a bypass flag only when the saved command lacks
 one. In particular, passing a second Codex `--yolo` in `extra_args` kills the spawn.
 
 ## Codex models
 
-Installed Codex CLI `0.144.0` exposes these relevant ids:
+Installed Codex CLI `0.144.4` exposes these relevant ids:
 
 | id | catalog positioning | Codex context | reasoning efforts |
 |---|---|---:|---|
@@ -47,7 +49,7 @@ or Luna slug explicitly.
 
 ## Grok models
 
-Installed Grok CLI `0.2.93` reports:
+Installed Grok CLI `0.2.101` reports:
 
 - `grok-4.5` — default frontier model, 500k context, low/medium/high reasoning.
 - `grok-composer-2.5-fast` — fast coding model without the same reasoning-effort control.
@@ -59,6 +61,11 @@ spawn_agent(agent_tool_id=<Grok>, extra_args=["-m", "grok-4.5", "--reasoning-eff
 ```
 
 Do not repeat `--yolo`; the saved tool command already includes it.
+
+Current interactive Solo spawn can still stop at Grok's directory-trust screen before prompt
+delivery. Verify status/output after spawn. For bounded read-only review, current headless
+`--single` plus `--permission-mode bypassPermissions` avoided interactive prompt; do not send
+blind trust input or assume saved `--yolo` alone makes generic tool non-interactive.
 
 ## Public evidence snapshot — 2026-07-09
 
@@ -138,15 +145,17 @@ Sol/Terra `ultra` as a separate multi-agent arm.
 
 ## Claude aliases
 
-Claude Code `2.1.206` accepts `fable`, `opus`, and `sonnet` aliases. Fable 5 must be invoked as
+Claude Code `2.1.210` accepts `fable`, `opus`, and `sonnet` aliases. Fable 5 must be invoked as
 `--model fable` (or the full `claude-fable-5` id); `--model fable-5` is not a valid CLI alias.
 Solo's saved Claude command already includes `--dangerously-skip-permissions`.
 
 ## Evidence boundaries
 
-- GPT-5.6 Sol/Terra/Luna and Grok 4.5 are verified callable and appear in the active routing table
-  in `AGENTS.md`. External benchmarks support their interim roles; local gauntlets or Tyler's
-  direct judgment would be required before reintroducing house cost/intelligence/taste scores.
+- GPT-5.6 Sol/Terra, Claude Fable/Opus, and Grok 4.5 are verified callable and covered by the
+  `solo-operator` model-routing reference. Luna is verified callable but intentionally remains
+  evidence-only, not an active house lane. External benchmarks support interim roles; local
+  gauntlets or Tyler's direct judgment would be required before reintroducing house
+  cost/intelligence/taste scores.
 - The public demo's Workers AI/provider models are a separate surface and measurement contract
   (`research/demo-model-gauntlet-2026-07-07.md`). Do not infer Solo-agent quality from that table.
 - QA answering and judge defaults are another separate measurement contract (`run-evals` skill).

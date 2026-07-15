@@ -43,9 +43,6 @@
     }
   },
   "findings": {
-    "sk-001": {
-      "repo": "stellar/stellar-dev-skill"
-    },
     "sk-003": {
       "repo": "stellar/stellar-dev-skill"
     },
@@ -101,17 +98,9 @@
       "repo": "stellar/stellar-docs",
       "reason": "Developer docs omit the canonical SEP-6 interactive-component deprecation status."
     },
-    "sd-010": {
-      "repo": "stellar/stellar-docs",
-      "reason": "The Indexers page describes Alchemy's Stellar Data API as a future launch after the provider's official indexed-data product became live."
-    },
     "sd-011": {
       "repo": "stellar/stellar-docs",
       "reason": "Current SDEX documentation can lead readers to rely on unused offer lifecycle effects instead of transaction result XDR and current-state resources."
-    },
-    "sls-020": {
-      "repo": "Stellar-Light/stellar-scout",
-      "reason": "Current security-program migration and supersession facts are absent from research retrieval, allowing stale SDF landing content to double-count or misroute disclosure programs."
     },
     "sls-023": {
       "repo": "Stellar-Light/stellarlight",
@@ -172,10 +161,6 @@
     "sd-017": {
       "repo": "stellar/stellar-docs",
       "reason": "Official Docs disagree on whether Horizon is deprecated versus nearing EOL/not yet deprecated, despite continuing endpoint availability."
-    },
-    "sls-040": {
-      "repo": "Stellar-Light/stellarlight",
-      "reason": "Builder descriptions advertise SCF-tier/award-track filtering while the callable surface omits the parameter, all values are blank, and unknown input is silently ignored."
     },
     "ll-017": {
       "repo": "lumenloop/lumenloop-backend",
@@ -248,10 +233,6 @@
     "sd-032": {
       "repo": "stellar/stellar-docs",
       "reason": "Current Flutter wallet tutorial dependency ranges are stale and can conflict with the current wallet SDK dependency graph."
-    },
-    "sd-033": {
-      "repo": "stellar/stellar-docs",
-      "reason": "The Client SDKs page describes the current Python SDK as Horizon-only despite shipped and documented Stellar RPC support."
     },
     "sd-034": {
       "repo": "stellar/stellar-docs",

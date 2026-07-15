@@ -31,9 +31,10 @@ in a networkless Dynamic Worker; host adapters own all service traffic, policy, 
 
 ## Coordination
 
-- The Solo project bound to this repo (currently project 49) is the control plane for dev
-  processes, todos, scratchpads, timers, and long-running agents. Confirm scope with `whoami` and
-  inspect `list_processes` before starting or replacing any of them.
+- Use the `solo-operator` skill for every Solo/Solo Docs task, process action, long-running agent,
+  cross-model fan-out, or grounded external research supporting a build decision. The bound Solo
+  project is currently 49; confirm scope with `whoami` and inspect `list_processes` before process
+  action.
 - **Solo process ownership is recursive:** an agent may spawn processes only as its own
   descendants and may stop, close, interrupt, restart, or otherwise lifecycle-manage only
   itself or descendants it spawned. Never lifecycle-manage a parent, sibling, unrelated process,
@@ -42,38 +43,21 @@ in a networkless Dynamic Worker; host adapters own all service traffic, policy, 
   leave a process you do not own alone and ask its owning parent to reconcile it. If the owner is
   unknown or unavailable, ask the user for an explicit exception naming the exact target; never
   adopt it.
+- Apply the same ownership gate to `send_input`, rename, output clearing, UI selection, timer
+  delivery, and other target-process control. Solo reads do not expose reliable parentage: record
+  returned child IDs; unknown provenance means not owned. YAML-backed commands are shared project
+  processes, not descendants; control one only when the task or matching runbook authorizes it.
 - Independent adversarial review is a completion gate when requested: reviewer must differ from
   author, run to completion, and have every finding reconciled before finalization.
-- Before spawning, inspect `list_agent_tools`. Add a permission-bypass flag only if the saved tool
-  command lacks one; duplicating Codex `--yolo` breaks the spawn.
-- Every Solo-spawned agent must run non-interactively, using the saved bypass flag or an added one,
-  and its brief must require the same non-interactive mode for any descendants it spawns.
-- Keep long-lived or shared fan-out in Solo so status and output remain visible to other agents.
-- For a running service, use `get_process_ports` / `wait_for_bound_port` instead of guessing a URL.
 
 ## Model routing for repo-work fan-out
 
-Use explicit model IDs and reasoning effort where the runtime supports it. Current evidence and
-exact CLI mechanics live in `research/agent-model-roster.md`.
-
-| Work | Preferred arm | Effort / review rule |
-|---|---|---|
-| Default hard implementation or analysis | `gpt-5.6-sol` | `high`; use `max` for genuinely frontier tasks |
-| Balanced routine implementation | `gpt-5.6-terra` | `high`, with task-proportionate review |
-| Mechanical sweeps and bounded first passes | `gpt-5.6-luna` | `medium` or `high`; require a stronger reviewer |
-| Vendor-diverse adversarial review | `grok-4.5` | `high`; do not treat it as a taste-calibrated reviewer |
-| User-facing design, API, code-quality, or copy review | Fable 5 or Opus 4.8 | Claude aliases `fable` (never `fable-5`) / `opus`; Sonnet 5 is acceptable for bounded review |
-
-- Set Codex effort with `-c 'model_reasoning_effort="<effort>"'`; set Grok effort with
-  `--reasoning-effort <effort>`. Do not rely on catalog defaults.
-- Only choose repo-work models explicitly listed in the table above. Never use Haiku or an
-  unlisted legacy model; catalog availability is not authorization.
-- Sol/Terra `ultra` is a delegated multi-agent system, not another comparable reasoning depth;
-  evaluate it as a separate arm.
-- Public benchmark scores inform routing but do not become house cost/intelligence/taste ratings.
-- If a selected arm misses the quality bar, rerun or redo the work with a stronger listed model
-  without waiting for permission; cost is only a tie-breaker.
-- Eval answering and judge models are separate measurement contracts controlled by `run-evals`.
+Use explicit model and effort through `solo-operator`; do not rely on runtime defaults. Active
+roles, launch mechanics, escalation, and evidence boundaries live in its
+[`model-routing` reference](.agents/skills/solo-operator/references/model-routing.md).
+Callable-runtime evidence remains in `research/agent-model-roster.md`; dated policy evidence is in
+`research/solo-agent-orchestration-2026-07-15.md`. Eval answering and judge models remain separate
+measurement contracts controlled by `run-evals`.
 
 ## Hard rules
 
@@ -106,6 +90,7 @@ exact CLI mechanics live in `research/agent-model-roster.md`.
 
 Use the matching repo skill when the task triggers it:
 
+- `solo-operator` — operate Solo, coordinate cross-model agents, and manage durable shared state.
 - `truth-maintenance` — coordinate a full live-drift/eval/golden/improvements maintenance pass.
 - `live-drift-resolution` — regenerate, classify, verify, and resolve live catalog drift.
 - `run-evals` — select instruments, review verdicts, triage causes, and file findings.

@@ -12,6 +12,8 @@ evidence:
   - upstream issue filed 2026-07-07: https://github.com/stellar/stellar-docs/issues/2566
   - live re-check 2026-07-09 (Solo scratchpad 565): `getTransactions limit 200 default 50 pagination` now ranks `/docs/data/apis/rpc/admin-guide/configuring` at #1 with the getTransactions transaction cap snippet, but `getTransactions API reference limit` still drifts to Horizon/API Explorer/structure pages and the generated method page remains unindexed; partial mitigation only
   - upstream PR https://github.com/stellar/stellar-docs/pull/2572 merged 2026-07-10 at final head fb4e8ecbb50218b52313c434a9d0d4e8571fdb3a; it added a per-method limits/defaults table to the indexed Pagination page after reverting the intermediate configurable-per-instance wording
+  - independent Docs-team audit 2026-07-14 confirmed generated method pages remain unindexed and #2566 is the only crawler-inclusion tracker; close only after the Algolia-dashboard owner has a durable replacement task: https://gist.githubusercontent.com/ElliotFriend/3b3641b929b4408a834b85bcb4e75449/raw/0183ead04f484e7b870499d9f12129d1673f1a3f/raven-issues-audit.md
+  - scope/disposition correction posted and read back 2026-07-15: https://github.com/stellar/stellar-docs/issues/2566#issuecomment-4981955612
 recurrences:
   - date: 2026-07-10
     evidence: architecture A/B todo 903 — both QA arms answered q-ti-rpc-gettransactions-pagination-xdr only partially; a fresh live execute re-check still returned soft-empty for the generated getTransactions method page, while the targeted admin query surfaced 200/default-50 and API-reference phrasing did not
@@ -94,5 +96,7 @@ and every cell, or render the three ranges/defaults in crawl-stable prose or a
 definition list. The broader alternative remains including the auto-generated
 method/endpoint reference pages in the Algolia crawl; they are the authoritative
 source for per-method numbers.
+Keep #2566 open until that crawler-inclusion work has a durable tracker owned by
+the Algolia-dashboard operator; PR #2572 alone does not resolve this residual.
 Consumer-side, this gateway cannot work around the gap without shipping
 hardcoded limits that would rot.

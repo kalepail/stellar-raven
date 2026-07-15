@@ -12,6 +12,8 @@ evidence:
   - Solo scratchpad 575 GT-43 primary 3311 and blind 3320
   - P4 H2 recurrence 2026-07-11: the served ZK material still describes CAP-0074/CAP-0075 as proposed or gated after Protocol 25, while the official CAP index and v25 release notes mark the changes Final/shipped; solo://proj/49/scratchpad/super-corpus-rebuild--585
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2614
+  - independent Docs-team audit 2026-07-14 found the same hash-versus-permutation error on docs/build/apps/privacy.mdx, making three affected surfaces: https://gist.githubusercontent.com/ElliotFriend/3b3641b929b4408a834b85bcb4e75449/raw/a90e6b453ee3505ef2525b4428eaa75752e3ae08/raven-audit-rebuttal.md
+  - third-surface scope note posted and read back 2026-07-15: https://github.com/stellar/stellar-docs/issues/2614#issuecomment-4981955613
 recurrences:
   - date: 2026-07-11
     evidence: H2 independently reproduced the stale P25 BN254/Poseidon status language and the resulting incorrect advice to wait for BN254 before using Noir or RISC Zero toolchains.
@@ -30,10 +32,11 @@ The current Software Versions page links “BN254 Elliptic Curve Operations” t
 CAP-79 in both Protocol 25 sections; the normative proposal is CAP-74. The
 current ZK page labels `poseidon` and `poseidon2` as host functions, while the
 raw SDK surface exposes feature-gated `poseidon_permutation` and
-`poseidon2_permutation` APIs and higher-level hashing is a separate crate.
+`poseidon2_permutation` APIs and higher-level hashing is a separate crate. The
+privacy-app page repeats the same hash-versus-permutation conflation.
 
 ## Recommendation
 
 Link P25 BN254 to CAP-0074, document the P25+ typed BN254 wrapper surface, name
 raw `poseidon_permutation`/`poseidon2_permutation` behind `hazmat-crypto`, and
-separately show higher-level hash APIs.
+separately show higher-level hash APIs on both ZK and privacy-app pages.

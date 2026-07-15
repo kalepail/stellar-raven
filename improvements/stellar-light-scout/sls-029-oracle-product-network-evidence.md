@@ -15,6 +15,8 @@ evidence:
 recurrences:
   - date: 2026-07-14
     evidence: Band and Lightecho now carry onchain-activity provenance, but DIA and RedStone Finance still serve Live with null statusBasis and no per-product/per-network oracle deployment model; fold the residual into sls-024/#494 or a self-contained successor before resolution
+  - date: 2026-07-15
+    evidence: Scout 1.7.26 improves project-level basis/source values, but oracleDeployments, deployments, and products remain null across the named provider rows; residual posted and read back at https://github.com/Stellar-Light/stellarlight/issues/514#issuecomment-4982290253
 ---
 
 ## Finding

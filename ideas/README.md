@@ -12,3 +12,6 @@ Research notes and possible future work that are not committed product plans.
   embedding hybrid, MCP 2026-07-28 spec spike, evidence sidecar, and deferred leftovers).
 - [Docs Recency Ranking](./docs-recency-ranking.md) — why modification time should remain
   agent-visible metadata or a measured experiment rather than a default ranking boost.
+- [ChatGPT Subscription Login for `/playground`](./playground-chatgpt-subscription-login.md) —
+  optional user-funded playground inference via ChatGPT/Codex OAuth, with hosted-token custody,
+  consistency, budget, and upstream-support gates recorded before any spike.

@@ -18,11 +18,9 @@ lane verdicts, evidence, follow-ups, and cleaned-up spawned work.
 
 ## Solo orchestration contract
 
-Solo is the control plane. Before doing work, call `whoami`, confirm the Solo project
-binding from [`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination), and inspect current
-processes/todos/scratchpads. Do not start duplicate
-dev servers; use the Solo `dev` command and `wait_for_bound_port`/`services_list` when a
-live server is needed.
+Run identity, ownership, fan-out admission, spawning, model/effort selection, timers, shared
+state, monitoring, integration, and cleanup through `solo-operator`. This skill adds only
+truth-maintenance lane structure.
 
 Create or claim one Solo todo for the maintenance round and one scratchpad as the ledger.
 Use fixed headings so spawned agents can append without clobbering each other:
@@ -40,31 +38,8 @@ Use fixed headings so spawned agents can append without clobbering each other:
 ## Final checklist
 ```
 
-For anything beyond a tiny single-lane check, spawn isolated Solo agents with narrow briefs.
-Use `list_agent_tools` to inspect the saved command, then `spawn_agent`, then `send_input` with the
-returned `agent_instructions` prepended. Spawn each agent in non-interactive
-yolo/permission-bypass mode so a child never stalls on an approval prompt; pass a runtime's bypass
-flag through `spawn_agent.extra_args` only when the saved command lacks it (current bindings and
-flags live in [`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination)). Have the brief tell any agent that spawns its
-own sub-agents to apply the same check. By default, agents research/review and append to the Solo
-ledger; the coordinator owns repo edits. Only delegate patches when the write set is narrow,
-explicit, and disjoint. Use `timer_fire_when_idle_all` or `timer_fire_when_idle_any` to wake the
-coordinator when agents go idle. Do not poll in a loop.
-
-Agent/model selection is a default, not a limit. The current model rankings and per-runtime spawn
-mechanics are bindings in
-[`AGENTS.md` “Model routing for repo-work fan-out”](../../../AGENTS.md#model-routing-for-repo-work-fan-out)
-and [`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination) — consult them when spawning;
-this skill carries only the patterns:
-
-- Mechanical catalog/data/script checks and bulk sweeps: the cheapest agent that clears the bar
-  (per the rankings' bulk/mechanical row), or a terminal script — then a stronger reviewer samples.
-- Adversarial plan/code/golden review: the strongest reasoning agents in the rankings, with an
-  independent second perspective from a different vendor's agent when useful.
-- UI/copy/API-design taste calls: an agent whose model meets the rankings' taste bar; cost is a
-  tie-breaker only.
-- Escalate without asking: if a cheaper agent's output misses the bar, redo the work with a
-  smarter model. Judge the output, not the price tag.
+By default, workers research/review and append to ledger; coordinator owns repo edits. Delegate
+patches only when write set is narrow, explicit, and disjoint.
 
 Reviewer and author are separate roles. A spawned reviewer must re-derive from files, diffs,
 live probes, or GitHub state, not rubber-stamp the coordinator's summary. Let reviewers finish

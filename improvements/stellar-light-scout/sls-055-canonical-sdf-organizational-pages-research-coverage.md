@@ -1,7 +1,7 @@
 ---
 id: sls-055
 service: stellar-light-scout
-status: fixed-upstream
+status: reported-upstream
 discovered: 2026-07-13
 evidence:
   - 2026-07-13 production source-ceiling audit over four owned SDF-organizational QA cases, using Scout research/projects/builders, Lumenloop semantic/entity/A-V, and Stellar Docs search; solo://proj/49/scratchpad/sdf-organizational-s--630
@@ -12,6 +12,7 @@ evidence:
   - 2026-07-14 normalized-semantic generality round still left Justin Rice partial on both playground and main MCP because neither retrieved the live Team-page title as a dated observation
   - upstream issue filed 2026-07-13 America/New_York (2026-07-14 UTC): https://github.com/Stellar-Light/stellarlight/issues/533
   - 2026-07-15 live recheck on spec 1.7.26 returned the canonical Team page top-ranked for source=sdf-org with David Mazières as Founder and Chief Scientist, Justin Rice as VP of Ecosystem, and observedAt 2026-07-15T08:01:44.242Z; Mandate, Terms, Enterprise Fund, and Quarterly Reports remained covered
+  - closed-unfixed verification posted and read back 2026-07-15: https://github.com/Stellar-Light/stellarlight/issues/533#issuecomment-4982290851
 recurrences:
   - date: 2026-07-14
     evidence: eval/qa/results/2026-07-14T03-29-01-variantA.json scored q-org-mazieres-chief-scientist wrong after five on-plan calls; the answer promoted a 2014-2015 Chief Scientist title as timeless current and omitted canonical founder/professor context
@@ -19,6 +20,8 @@ recurrences:
     evidence: the reopened playground generality artifact and eval/qa/results/2026-07-14T13-10-10-variantA.json both retrieved Justin Rice history but missed the live Team-page role and observation date
   - date: 2026-07-14
     evidence: source=sdf-org now covers Mandate, Terms, Enterprise Fund, Team, Foundation, and report pages, but the Team page's embedded leadership-role text (Founder and Chief Scientist; VP of Ecosystem) is still absent and records lack per-record crawl-observation dates
+  - date: 2026-07-15
+    evidence: Team, Mandate, and Terms coverage now passes, but the canonical Enterprise Fund page's portfolio-totaling-over-$100m claim remains absent from an exact source=sdf-org query
 ---
 
 ## Finding
