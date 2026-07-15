@@ -10,6 +10,7 @@ evidence:
   - Solo project 49, todo 831 and truth-maintenance scratchpad 567 independent corroboration matrices
   - eval/qa/reviewed/2026-07-09-improvements-evidence.md (durable redacted review of the 8-case post-vote P27 smoke: 0 correct / 3 partial / 5 wrong; every verdict manually reviewed)
   - upstream issue filed 2026-07-09: https://github.com/stellar/stellar-docs/issues/2574
+  - independent Docs-team audit 2026-07-14 reproduced the activation and release facts and found the P27 JavaScript SDK row still pinned to prerelease v16.0.0-rc.2 after stable v16.0.0/v16.0.1 releases: https://gist.githubusercontent.com/ElliotFriend/3b3641b929b4408a834b85bcb4e75449/raw/a90e6b453ee3505ef2525b4428eaa75752e3ae08/raven-audit-rebuttal.md
 recurrences:
   - date: 2026-07-13
     evidence: structured HTTP probe returned 200 and still rendered Protocol 27 as Testnet while retaining Protocol 26 as the Mainnet heading
@@ -69,3 +70,4 @@ Add a `Protocol 27 (Mainnet, July 8, 2026)` section (or update the existing P27 
 Testnet and Mainnet activation dates are explicit), populate the stable Rust SDK and CLI versions,
 and keep Testnet-vs-Mainnet support rows unambiguous. If the page intentionally tracks a curated
 support matrix rather than the newest patch release, say so and link the live GitHub release feeds.
+Sweep non-`TBD` rows for stale prerelease pins rather than copying the P27 Testnet table unchanged.

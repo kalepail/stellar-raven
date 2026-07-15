@@ -100,6 +100,15 @@ must state the affected surface and concrete defect without eval IDs, internal w
 a clipped transcript sentence. Put the smallest correction before optional context. Corpus/eval
 provenance belongs in compact evidence, not in the owner-facing ask.
 
+Before filing content/code drift, apply three cheap calibration checks:
+- distinguish the version where drift was observed from the version that introduced it; verify the
+  first bad release/commit when the timeline matters, and cite the live successor repo rather than an
+  archived monorepo;
+- run any allegedly broken snippet against the stated current dependency and name the actual failure
+  stage; fix independent failures in the same snippet before calling the recommendation complete; and
+- grep adjacent and repeated prose for the same claim so the smallest fix does not leave another page
+  or later paragraph contradictory. Keep optional editorial expansion separate from verified defects.
+
 The generated issue body must retain all five sections: `Finding`, `Evidence`, `Recommendation`,
 `Source Record`, and `Resolution Handoff`. `Source Record` links the exact public
 `improvements/...` file on `kalepail/stellar-raven` and, when committed, its immutable blob snapshot;

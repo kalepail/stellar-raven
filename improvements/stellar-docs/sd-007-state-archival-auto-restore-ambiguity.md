@@ -10,6 +10,8 @@ evidence:
   - stellar/stellar-core InvokeHostFunctionOpFrame.cpp and InvokeHostFunctionTests.cpp at d6f2546791774d0b2cd925b8a4026adf967a92a3
   - Solo project 49, todo 870 eval-review follow-up
   - upstream issue filed 2026-07-07: https://github.com/stellar/stellar-docs/issues/2568
+  - independent Docs-team audit 2026-07-14 confirmed the defect and found two opposite overstatements on state-archival.mdx plus the same overstatement in create-restoration-footprint-js.mdx; a consistent fix spans 4–5 edits across 3 files: https://gist.githubusercontent.com/ElliotFriend/3b3641b929b4408a834b85bcb4e75449/raw/a90e6b453ee3505ef2525b4428eaa75752e3ae08/raven-audit-rebuttal.md
+  - corrected fix scope posted and read back 2026-07-15: https://github.com/stellar/stellar-docs/issues/2568#issuecomment-4981955648
 recurrences:
   - date: 2026-07-08
     evidence: improvements probe re-hit; state-archival page still contains both "Contract Data Automatic Restoration" and the underqualified "will fail immediately" wording
@@ -47,6 +49,8 @@ immediately" before contract execution, without qualifying that this is only
 true when the entry is not declared for auto-restore. The storage-choice page
 also says Persistent entries can be restored using `RestoreFootprintOp` but
 does not mention the Protocol 23 auto-restore path.
+Later state-archival sections and the restoration-footprint JavaScript guide
+also overstate auto-restoration by omitting the restore-list requirement.
 
 ## Evidence
 
@@ -88,3 +92,5 @@ On the storage-choice page, update the Persistent-storage section to mention
 that Protocol 23+ `InvokeHostFunctionOp` can auto-restore archived
 Persistent/Instance entries when simulation/transaction construction includes
 the restore list, while `RestoreFootprintOp` remains the manual/rare fallback.
+Apply the same restore-list qualification to the later state-archival sections
+and `create-restoration-footprint-js.mdx` so the pages do not contradict the fix.

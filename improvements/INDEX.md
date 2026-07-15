@@ -50,13 +50,13 @@ Total findings: 77
 | sd-015 | The current glossary describes Starlight in present tense as Stellar's Layer 2                 | reported-upstream | 2026-07-10 | 0           |
 | sd-016 | Official network-capacity tables contain hand-maintained current scalars that                  | reported-upstream | 2026-07-10 | 0           |
 | sd-017 | Official Docs publish incompatible lifecycle labels for Horizon. Some surfaces                 | reported-upstream | 2026-07-10 | 0           |
-| sd-018 | The generic token-interface event documentation does not call out the current                  | reported-upstream | 2026-07-11 | 0           |
+| sd-018 | The generic token-interface event documentation does not clearly distinguish                   | reported-upstream | 2026-07-11 | 0           |
 | sd-019 | The JavaScript persistent-entry extension guide says a single                                  | reported-upstream | 2026-07-11 | 0           |
 | sd-020 | SAC documentation and derived guidance retain design-era XDR names and omit the                | reported-upstream | 2026-07-11 | 0           |
 | sd-021 | Current official P25/ZK documentation links the wrong CAP for BN254 and does                   | reported-upstream | 2026-07-11 | 1           |
 | sd-022 | Current introductory wording turns the default no-allocator configuration into                 | reported-upstream | 2026-07-11 | 0           |
 | sd-023 | The getEvents and getTransaction pages still present universal time-based                      | reported-upstream | 2026-07-11 | 0           |
-| sd-024 | The transaction-resource documentation retains older resource-field names and                  | reported-upstream | 2026-07-11 | 0           |
+| sd-024 | The transaction-resource documentation contains a runtime-broken JavaScript                    | reported-upstream | 2026-07-11 | 0           |
 | sd-025 | The migration guide retains pre-CAP-67 future-tense language for classic                       | reported-upstream | 2026-07-11 | 1           |
 | sd-026 | Current contract-build documentation still presents the standalone optimize                    | reported-upstream | 2026-07-11 | 0           |
 | sd-027 | Current Stellar developer documentation gives incompatible greenfield guidance                 | reported-upstream | 2026-07-11 | 0           |

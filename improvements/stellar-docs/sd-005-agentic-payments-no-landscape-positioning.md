@@ -10,6 +10,7 @@ evidence:
   - Solo project 49, todo 846
   - upstream issue filed 2026-07-07: https://github.com/stellar/stellar-docs/issues/2565
   - 2026-07-10 GT-12 primary plus blind review corrected the comparison taxonomy: x402 and MPP are general/external protocols with Stellar implementations; MPP includes charge as well as session/channel; AP2 x402 composition is optional; ACP is a beta commerce layer
+  - independent Docs-team audit 2026-07-14 confirmed the AP2/ACP gap and found the adjacent x402 attribution stale after formation of the x402 Foundation under the Linux Foundation: https://gist.githubusercontent.com/ElliotFriend/3b3641b929b4408a834b85bcb4e75449/raw/a90e6b453ee3505ef2525b4428eaa75752e3ae08/raven-audit-rebuttal.md
 recurrences:
   - date: 2026-07-09
     evidence: durable reviewed row `eval/qa/reviewed/2026-07-09-improvements-evidence.md` case `q-defi-agentic-payment-standards-compare` was partial with no wrong claims and one missing fact — it still could not ground AP2/ACP as general coordination standards from the catalog. The controlled Algolia harness now uses token-boundary matching for AP2, Agentic Commerce Protocol, and ACP; generic x402/MPP meetings and the negative mutation `SNAP2 upgrade notes` both miss.
@@ -34,6 +35,8 @@ report "not indexed"; the golden's landscape keyFact (AP2/ACP are
 general/coordination-layer standards, not Stellar settlement) was
 unreachable from grounded sources, and the partial verdict stands as a
 measurement of the corpus, not the agent.
+Separately, the x402 page still attributes the protocol to Coinbase Developer
+Platform rather than the current x402 Foundation under the Linux Foundation.
 
 ## Evidence
 
@@ -83,6 +86,8 @@ taxonomy rather than calling x402/MPP "Stellar standards":
 - AP2 is an emerging mandate/authorization layer whose x402 composition is
   optional, not a universal settlement route; and
 - ACP is a beta commerce/checkout interaction protocol, not a settlement rail.
+
+Update the adjacent x402 ownership attribution in the same pass.
 
 That compact subsection converts an unanswerable comparison into an indexed
 answer without implying that all four belong to one standards body or layer.
