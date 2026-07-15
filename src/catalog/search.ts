@@ -716,6 +716,14 @@ function deriveWiderCandidates(
   const add = (entry: CatalogEntry | undefined, basis: WiderCandidate["basis"]) => {
     if (!entry || selectedIds.has(entry.id)) return;
     if (opts.service !== undefined && entry.service !== opts.service) return;
+    const profile = entry.retrievalProfile;
+    // Same-lane broader-semantic edges mark narrower ops; let canonical anchor take lane.
+    if (profile?.recoverWith.some((edge) => {
+      const target = byId.get(edge.id);
+      return edge.relation === "broader-semantic" &&
+        target?.kind === "operation" &&
+        target.retrievalProfile?.lane === profile.lane;
+    })) return;
     const candidate = widerCandidateOf(entry, basis);
     if (!candidate || selectedLanes.has(candidate.lane)) return;
     selectedIds.add(candidate.id);

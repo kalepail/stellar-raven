@@ -138,6 +138,57 @@ describe("recoveryCandidates — advisory contingency graph", () => {
 });
 
 describe("searchCatalogPage — structural wider candidates", () => {
+  it("uses canonical Lumenloop lanes for the production-shaped Tomer Weller query", () => {
+    const page = searchCatalogPage(catalog, {
+      query: "Tomer Weller",
+      kind: "operation",
+      service: "lumenloop",
+      limit: 5
+    });
+    expect(page.hits.every((hit) => hit.tier === "backfill")).toBe(true);
+    expect(page.widerCandidates.map(({ id, basis }) => ({ id, basis }))).toEqual([
+      { id: "lumenloop.find_av_passages", basis: "page-broad-hit" },
+      { id: "lumenloop.search_content_semantic", basis: "catalog-anchor" }
+    ]);
+    expect(page.widerCandidates.map((candidate) => candidate.id)).not.toContain(
+      "lumenloop.find_content_about_project"
+    );
+    expect(page.widerCandidates.map((candidate) => candidate.id)).not.toContain(
+      "lumenloop.find_similar_scf_submissions"
+    );
+  });
+
+  it("never recommends entries with a same-lane broader-semantic edge", () => {
+    const byId = new Map(catalog.entries.map((entry) => [entry.id, entry]));
+    const pages = [
+      searchCatalogPage(catalog, {
+        query: "Tomer Weller",
+        kind: "operation",
+        service: "lumenloop",
+        limit: 5
+      }),
+      searchCatalogPage(catalog, { query: "Who is Justin Rice?", limit: 5 }),
+      searchCatalogPage(catalog, {
+        query: "zzzzqqqq zzqqzzqq",
+        kind: "operation"
+      })
+    ];
+
+    for (const page of pages) {
+      expect(page.hits.length === 0 || page.hits.every((hit) => hit.tier === "backfill")).toBe(true);
+      expect(page.widerCandidates.length).toBeGreaterThan(0);
+      for (const candidate of page.widerCandidates) {
+        const profile = byId.get(candidate.id)?.retrievalProfile;
+        expect(profile?.recoverWith.some((edge) => {
+          const target = byId.get(edge.id);
+          return edge.relation === "broader-semantic" &&
+            target?.kind === "operation" &&
+            target.retrievalProfile?.lane === profile.lane;
+        }), candidate.id).toBe(false);
+      }
+    }
+  });
+
   it("recommends semantic and research anchors for exact low-evidence person questions", () => {
     for (const query of [
       "Who is Justin Rice?",
@@ -194,11 +245,13 @@ describe("searchCatalogPage — structural wider candidates", () => {
     const frozenHits = searchCatalog(catalog, { query, kind: "operation", limit: 10 });
     expect(page.hits).toEqual(frozenHits);
     expect(page.hits.every((hit) => hit.tier === "backfill")).toBe(true);
-    expect(page.widerCandidates).toHaveLength(3);
-    expect(page.widerCandidates.every((candidate) =>
-      ["semantic", "research", "av", "corpus"].includes(candidate.lane)
-    )).toBe(true);
-    expect(page.widerCandidates.map((candidate) => candidate.id)).not.toContain("scout.explainRepo");
+    // Canonical broad recovery applies to every structurally poor page: a
+    // slug-scoped semantic page hit yields its lane to the catalog anchor.
+    expect(page.widerCandidates.map(({ id, basis }) => ({ id, basis }))).toEqual([
+      { id: "stellarDocs.search_anchor_sep_docs", basis: "page-broad-hit" },
+      { id: "scout.searchResearch", basis: "catalog-anchor" },
+      { id: "lumenloop.search_content_semantic", basis: "catalog-anchor" }
+    ]);
   });
 
   it("stays silent for gated, mixed, and skill-only pages and honors service filters", () => {
