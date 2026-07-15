@@ -1,7 +1,7 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "72d01bd508d368a75c2f18e01e731d002616c763b39f8aed63b92f01cac89cbb",
+  "corpusContentSha256": "fef31c4942bc3ede0617b3c3c7d6d48d1aa5fb42a9e624a68444b5557eee37ac",
   "counts": {
     "total": 490,
     "byCategory": {
@@ -2570,7 +2570,7 @@
           ],
           "rootCause": [
             "Eval-side routing affordances and a historical count were promoted into the answer instead of returning dated results.",
-            "improvements/stellar-light-scout/sls-040-builder-scf-tier-contract-data-split.md",
+            "improvements/resolved.json entry sls-040",
             "improvements/stellar-light-scout/sls-041-builder-skill-match-provenance.md",
             "eval-authoring",
             "solo://proj/49/scratchpad/super-corpus-rebuild--585"
@@ -2664,7 +2664,7 @@
           ],
           "rootCause": [
             "Desired/routed schema was promoted into factual gospel despite implementation and data disagreement.",
-            "improvements/stellar-light-scout/sls-040-builder-scf-tier-contract-data-split.md",
+            "improvements/resolved.json entry sls-040",
             "freshness-drift",
             "solo://proj/49/scratchpad/ci-and-drift-review--665"
           ]
@@ -36538,7 +36538,7 @@
             "Sibling sweep 2026-07-07 across kept QA cases containing `wasm32-unknown-unknown`, `target/wasm32-...`, `--source`, or stale bundled-skill notes: q-soroban-deploy-cli, q-sor-bindings-from-wasm-no-address, q-tool-cli-testnet-identity-howto needed active golden-answer canonicalization; q-sor-build-target-wasm32v1 and q-ti-cli-rust-windows-troubleshooting were already target-correct."
           ],
           "rootCause": [
-            "improvements/skills/sk-001-wasm-target-stale.md — fixed upstream and refreshed locally at stellar-dev-skill commit 3d75a157f6fe; the mirrored playbook now uses wasm32v1-none, no --global, and canonical --source-account examples.",
+            "improvements/resolved.json entry sk-001 — fixed upstream and refreshed locally at stellar-dev-skill commit 3d75a157f6fe; the mirrored playbook now uses wasm32v1-none, no --global, and canonical --source-account examples.",
             "Eval-side freshness/canonicalization drift: the deploy CLI golden answer lagged behind its own current notes and current CLI help by preserving an alias-focused example."
           ]
         },
@@ -43432,7 +43432,7 @@
           ],
           "rootCause": [
             "Eval-side canonicalization drift: the identity setup was current, but the follow-up contract signer example preserved the alias form.",
-            "improvements/skills/sk-001-wasm-target-stale.md — fixed upstream and refreshed locally at commit 3d75a157f6fe; current mirrored examples use wasm32v1-none and --source-account."
+            "improvements/resolved.json entry sk-001 — fixed upstream and refreshed locally at commit 3d75a157f6fe; current mirrored examples use wasm32v1-none and --source-account."
           ]
         },
         "origin": "raven-next q-tool-cli-testnet-identity-howto"

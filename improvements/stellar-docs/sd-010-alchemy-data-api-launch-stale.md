@@ -1,7 +1,7 @@
 ---
 id: sd-010
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-09
 evidence:
   - developers.stellar.org Indexers overview fetched 2026-07-09 still says Alchemy is "in talks" to add Stellar with a targeted launch in the first half of 2026
@@ -11,6 +11,7 @@ evidence:
   - resolving PR https://github.com/stellar/stellar-docs/pull/2573 merged 2026-07-14T17:45:48Z as 93ffcc76884d81c26f43cb2a2cc64e76627b6b9e after maintainer approval and green checks
   - 2026-07-14 live recheck: https://developers.stellar.org/docs/data/indexers renders Alchemy as live on Stellar with Stellar Data API transfer history, balances, and NFT holdings, and no longer contains the former “in talks” or first-half-2026 launch wording
   - independent Fable recheck 2026-07-14: the Docs Algolia record and Raven stellarDocs search still returned the pre-merge future-launch sentence after the rendered page updated; solo://proj/49/scratchpad/docs-and-site-improv--639#verification-and-closeout
+  - live recheck 2026-07-15T15:24Z: cache-busted rendered page and Raven stellarDocs search both returned the corrected live Data API wording; the exact former “in talks” and first-half-2026 phrases returned soft-empty with zero hits
 recurrences:
   - date: 2026-07-13
     evidence: structured HTTP probe returned 200 and still found both "now in talks to expand their service to Stellar" and the targeted first-half-2026 launch wording

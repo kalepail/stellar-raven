@@ -1,7 +1,7 @@
 ---
 id: sls-020
 service: stellar-light-scout
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-10
 evidence:
   - live Scout research query for the exact 2026-05-07 SDF HackerOne consolidation returned no matching transition record
@@ -10,6 +10,8 @@ evidence:
   - Solo scratchpad 575 GT-07 primary process 3223
   - GT-40 blind recurrence: exact current-policy research still missed the 2026-05-07 consolidation and June 29 reward matrix while stale $50K Soroban material remained retrievable
   - upstream issue filed 2026-07-13: https://github.com/Stellar-Light/stellar-scout/issues/10
+  - resolving PR merged 2026-07-14: https://github.com/Stellar-Light/stellarlight/pull/529
+  - live recheck 2026-07-15T15:22Z: the exact original transition query returned the 2026-05-07 security-program supersession record at rank 1 and the controlling HackerOne policy at rank 2, including the consolidated HackerOne program, deprecated general Immunefi program, and separate active OpenZeppelin carve-out
 ---
 
 ## Finding

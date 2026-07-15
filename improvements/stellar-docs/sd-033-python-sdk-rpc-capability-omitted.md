@@ -1,7 +1,7 @@
 ---
 id: sd-033
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-11
 upstreamTitle: Document Python SDK support for Stellar RPC
 evidence:
@@ -12,6 +12,9 @@ evidence:
   - current official Stellar event and transaction guides already use stellar_sdk.soroban_rpc Python APIs
   - Solo scratchpad 575 GT-55 primary candidate and author repro process 3397
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2600
+  - upstream PR merged 2026-07-14: https://github.com/stellar/stellar-docs/pull/2616
+  - upstream-ready handoff with deployed live evidence: https://github.com/kalepail/stellar-raven/issues/25
+  - live recheck 2026-07-15T14:40Z: cache-busted GET returned 200 and the Python section says "communicating with a Stellar Horizon server and Stellar RPC", lists an RPC networking API, and uses PyPy 3.11; response last-modified 2026-07-14T21:49:25Z
 ---
 
 ## Finding

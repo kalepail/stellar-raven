@@ -15,6 +15,8 @@ recurrences:
     evidence: GT-56 primary process 3394 and sealed blind process 3398 independently found that Ledger and Trezor must be typed as hardware wallet products while WalletConnect is a connectivity protocol/module, and that current custody/recovery claims require product-specific sources
   - date: 2026-07-14
     evidence: roster cleanup is live but productKind/platform availability remain absent; follow-up https://github.com/Stellar-Light/stellarlight/issues/519#issuecomment-4971408689
+  - date: 2026-07-15
+    evidence: exact type=Wallet now returns 65 deduplicated names, but 14 rows have null productKind and only 4 expose nonempty availability; residual posted and read back at https://github.com/Stellar-Light/stellarlight/issues/519#issuecomment-4982290425
 ---
 
 ## Finding

@@ -1,31 +1,26 @@
 import { execFileSync, spawnSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 
 describe("improvements resolution lifecycle", () => {
-  test("dry-run emits a durable receipt and immutable source without mutating", () => {
+  test("resolved receipt keeps immutable source auditable after active-file deletion", () => {
     const finding = "improvements/skills/sk-001-wasm-target-stale.md";
-    const output = execFileSync(
-      process.execPath,
-      [
-        "scripts/improvements-resolve.mjs",
-        "--file", finding,
-        "--resolved", "2026-07-14",
-        "--live-recheck", "2026-07-14 raw main uses wasm32v1-none and canonical flags",
-        "--review-evidence", "independent reviewer repeated the trigger",
-        "--references-reviewed",
-        "--upstream-commented",
-        "--dry-run",
-      ],
-      { cwd: ROOT, encoding: "utf8" },
-    );
+    const ledger = JSON.parse(readFileSync(path.join(ROOT, "improvements/resolved.json"), "utf8"));
+    const entry = ledger.entries.find((candidate: { id: string }) => candidate.id === "sk-001");
+    if (!entry) throw new Error("missing sk-001 resolution receipt");
 
-    expect(output).toContain('"id": "sk-001"');
-    expect(output).toMatch(/"sourceCommit": "[0-9a-f]{40}"/);
-    expect(output).toContain("--- suggested upstream resolution comment ---");
-    expect(output).toContain("ephemeral improvements lifecycle");
+    expect(existsSync(path.join(ROOT, finding))).toBe(false);
+    expect(entry.sourceCommit).toMatch(/^[0-9a-f]{40}$/);
+    expect(entry.sourceUrl).toBe(
+      `https://github.com/kalepail/stellar-raven/blob/${entry.sourceCommit}/${finding}`,
+    );
+    expect(execFileSync("git", ["show", `${entry.sourceCommit}:${finding}`], {
+      cwd: ROOT,
+      encoding: "utf8",
+    })).toContain("id: sk-001");
   });
 
   test("refuses to retire a finding before fixed-upstream", () => {

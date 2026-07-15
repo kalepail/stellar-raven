@@ -34,6 +34,26 @@
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/a4954b6a38f66de5ce4b28fc33535464df0818fb/improvements/stellar-docs/sd-006-crawler-strips-code-blocks.md"
     },
     {
+      "id": "sk-001",
+      "title": "The upstream stellar-dev/smart-contracts skill instructed the stale build",
+      "service": "skills",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-15",
+      "repo": "stellar/stellar-dev-skill",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-dev-skill/issues/44",
+        "https://github.com/stellar/stellar-dev-skill/pull/45"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-dev-skill/issues/44",
+        "https://github.com/stellar/stellar-dev-skill/pull/45"
+      ],
+      "liveRecheck": "2026-07-15: stellar-dev-skill main and deployed Raven skill returned wasm32v1-none=4, wasm32-unknown-unknown=0, --global=0, --source-account=2.",
+      "reviewEvidence": "Independent Solo reviewer process 3770 re-ran upstream source, deployed Raven skill, local mirror adjacency, GitHub state, checks, and repo-reference scan on 2026-07-15.",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/skills/sk-001-wasm-target-stale.md"
+    },
+    {
       "id": "sk-002",
       "title": "stellar-dev/smart-contracts/security.md:17 states self-reentrancy is",
       "service": "skills",
@@ -198,6 +218,24 @@
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-007-rfps-missing-round-number-dates.md"
     },
     {
+      "id": "sls-008",
+      "title": "The project directory carries two live, Lending-typed records that appear to be",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-15",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/289"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/pull/289"
+      ],
+      "liveRecheck": "2026-07-15: production Orbit and OrbitCDP searches return canonical orbitcdp only; old identity/opposite-answer defect is fixed. Remaining meta.counts mismatch is isolated in successor sls-056.",
+      "reviewEvidence": "Independent Solo reviewer process 3770 re-ran production identity and adjacent count triggers, inspected merged PR 289, confirmed successor sls-056, and scanned repo references on 2026-07-15.",
+      "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-008-orbit-finance-orbitcdp-duplicate-records.md"
+    },
+    {
       "id": "sls-009",
       "title": "searchProjects ranks authority/prominence above exact name match: the queries",
       "service": "stellar-light-scout",
@@ -214,6 +252,24 @@
       "reviewEvidence": "Independent Fable reviewer Solo 3654 re-derived upstream deploy and live trigger",
       "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-009-exact-name-search-outranked.md"
+    },
+    {
+      "id": "sls-010",
+      "title": "Builder-directory filtering is literal substring over free-text fields, which",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-03",
+      "resolved": "2026-07-15",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/2"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellar-scout/issues/2"
+      ],
+      "liveRecheck": "2026-07-15: production Latin America and LatAm each return the same 19 builders; Brazil plus payments returns 2 rows including Boleto Guardian via payments=boleto synonym.",
+      "reviewEvidence": "Independent Solo reviewer process 3770 re-ran regional and semantic triggers, inspected closed issue 2, and scanned repo references on 2026-07-15.",
+      "sourceCommit": "ab6277610b3199c602d23a42121e8dde449e2ae8",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/ab6277610b3199c602d23a42121e8dde449e2ae8/improvements/stellar-light-scout/sls-010-builder-directory-literal-filters.md"
     },
     {
       "id": "sls-011",
@@ -614,6 +670,26 @@
       "reviewEvidence": "Independent Fable reviewer Solo 3655 re-derived upstream deploy and live trigger",
       "sourceCommit": "29557089d9a315aeeff2ae9f5b01bf201e55aed1",
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/29557089d9a315aeeff2ae9f5b01bf201e55aed1/improvements/stellar-light-scout/sls-038-analyze-tvl-contract-mismatch.md"
+    },
+    {
+      "id": "sls-040",
+      "title": "Scout presents mutually incompatible builder contracts. Descriptions and the",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-15",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/521"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/521",
+        "https://github.com/Stellar-Light/stellarlight/pull/528",
+        "https://github.com/Stellar-Light/stellarlight/pull/540"
+      ],
+      "liveRecheck": "2026-07-15: production builders returns 118 rows with no scfTier field; scfTier=top returns HTTP 400 naming supported parameters; OpenAPI 1.7.26 exposes neither parameter nor property.",
+      "reviewEvidence": "Independent Solo reviewer process 3770 re-ran data, validation, and OpenAPI triggers; inspected issue 521 plus merged PRs 528 and 540; and scanned repo references on 2026-07-15.",
+      "sourceCommit": "f3a6289d651a4765bb337b0b3955e6380f54325b",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/f3a6289d651a4765bb337b0b3955e6380f54325b/improvements/stellar-light-scout/sls-040-builder-scf-tier-contract-data-split.md"
     },
     {
       "id": "sls-041",
