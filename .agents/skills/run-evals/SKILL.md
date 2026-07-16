@@ -153,9 +153,10 @@ window. The coordinator should own the Solo ledger and spawn isolated reviewers 
 - improvements filing/follow-up,
 - adversarial closeout review.
 
-Run generic Solo mechanics and model/effort selection through `solo-operator`. Each reviewer
-appends narrow evidence-backed verdict to scratchpad; coordinator reconciles and patches. Do not
-pass coordinator's expected answer to reviewers.
+Route generic Solo mechanics through global `fan-solo`; use `solo-orchestrate-agents` for reviewer
+fan-out and select model/effort explicitly per `AGENTS.md`. Each reviewer appends a narrow
+evidence-backed verdict to scratchpad; coordinator reconciles and patches. Do not pass the
+coordinator's expected answer to reviewers.
 
 ## Step 1 — preflight (always, free)
 

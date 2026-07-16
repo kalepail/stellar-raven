@@ -302,8 +302,9 @@ clean bump — spawn an **independent reviewer** to verify or refute the "safe t
 before committing. This mirrors the repo's independent-review rule in
 [`AGENTS.md` “Coordination”](../../../AGENTS.md#coordination).
 
-- Run generic Solo mechanics and model/effort selection through `solo-operator`. Spawn a
-  *different* agent with an explicit adversarial brief: do NOT
+- Route generic Solo mechanics through global `fan-solo`; use `solo-orchestrate-agents` for the
+  reviewer lane and select model/effort explicitly per `AGENTS.md`. Spawn a *different* agent with
+  an explicit adversarial brief: do NOT
   trust the maintainer's summary; re-derive the drift class from the actual `git diff`, re-run the
   guards and gate, check ADR-0003 exposure and secrets, and return a verdict with file:line
   evidence. Prefer different vendor from author. Put brief in Solo scratchpad and have reviewer

@@ -2,18 +2,18 @@
 
 Verified 2026-07-15 against Solo project 49, the installed CLI help/model catalogs, live Solo
 spawns, provider announcements/docs, and independent Artificial Analysis results. This is the
-availability, mechanics, and external-evidence record for repo-work fan-out. Active selection
-policy lives in `.agents/skills/solo-operator/references/model-routing.md`, linked from `AGENTS.md`;
-historical house ratings are not an operational routing surface.
+availability, mechanics, and external-evidence record for repo-work fan-out. `AGENTS.md` owns the
+repo's active model/effort policy; the global `fan-solo` family owns Solo workflow selection.
+Historical house ratings are not an operational routing surface.
 
 ## Callable Solo runtimes
 
 | Solo tool | Saved command | Default model | Explicit model syntax |
 |---|---|---|---|
-| Codex | `headroom wrap codex --no-proxy --yolo` | `gpt-5.6-sol` (host config: high; catalog default: low) | `-m <model>` |
-| Claude | `headroom wrap claude --no-proxy --1m --dangerously-skip-permissions` | account/runtime default | `--model <alias-or-id>` |
+| Codex | `codex --yolo` | `gpt-5.6-sol` (host config: high; catalog default: low) | `-m <model>` |
+| Claude | `claude --dangerously-skip-permissions` | account/runtime default | `--model <alias-or-id>` |
 | Grok | `grok --yolo` | `grok-4.5` | `-m <model>` |
-| OpenCode | `headroom wrap opencode --no-proxy --auto` | runtime/provider dependent | `-m <provider/model>` |
+| OpenCode | `opencode --auto` | runtime/provider dependent | `-m <provider/model>` |
 
 The saved commands already contain permission-bypass flags, but generic runtimes can still expose
 setup/trust prompts. Inspect
@@ -152,7 +152,7 @@ Solo's saved Claude command already includes `--dangerously-skip-permissions`.
 ## Evidence boundaries
 
 - GPT-5.6 Sol/Terra, Claude Fable/Opus, and Grok 4.5 are verified callable and covered by the
-  `solo-operator` model-routing reference. Luna is verified callable but intentionally remains
+  active routing policy in `AGENTS.md`. Luna is verified callable but intentionally remains
   evidence-only, not an active house lane. External benchmarks support interim roles; local
   gauntlets or Tyler's direct judgment would be required before reintroducing house
   cost/intelligence/taste scores.

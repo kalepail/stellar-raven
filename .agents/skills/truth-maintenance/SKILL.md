@@ -18,9 +18,9 @@ lane verdicts, evidence, follow-ups, and cleaned-up spawned work.
 
 ## Solo orchestration contract
 
-Run identity, ownership, fan-out admission, spawning, model/effort selection, timers, shared
-state, monitoring, integration, and cleanup through `solo-operator`. This skill adds only
-truth-maintenance lane structure.
+Start with global `fan-solo`, then use `solo-orchestrate-agents` for the multi-agent lead loop and
+the focused Solo skills it selects for spawning, state, monitoring, and cleanup. Select model and
+effort explicitly per `AGENTS.md`. This skill adds only truth-maintenance lane structure.
 
 Create or claim one Solo todo for the maintenance round and one scratchpad as the ledger.
 Use fixed headings so spawned agents can append without clobbering each other:

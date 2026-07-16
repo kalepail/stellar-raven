@@ -118,9 +118,10 @@ mandatory (a stranger must be able to re-walk the trail); "unverifiable" is an h
 useful verdict — never stretch weak evidence; when two agents disagree, run a targeted
 follow-up probe — never coin-flip, never average.
 
-Run generic Solo mechanics and model/effort selection through `solo-operator`. Lane-specific
-rule: create or reuse round scratchpad, assign one independent agent per claim cluster, and have
-workers append matrices directly. Author edits owned case files only after reconciling matrices.
+Route generic Solo mechanics through global `fan-solo`; use `solo-orchestrate-agents` for the
+verification lanes and select model/effort explicitly per `AGENTS.md`. Lane-specific rule: create
+or reuse round scratchpad, assign one independent agent per claim cluster, and have workers append
+matrices directly. Author edits owned case files only after reconciling matrices.
 For broad corpus-health or drift-refresh work, let `truth-maintenance` coordinate this lane
 alongside eval and improvements review.
 

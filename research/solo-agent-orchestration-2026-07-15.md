@@ -140,9 +140,10 @@ quality judgments before changing house roles.
 ## Instruction placement
 
 - `AGENTS.md`: short mandatory pointer, project binding, lifecycle ownership, completion gate.
-- `.agents/skills/solo-operator/SKILL.md`: triggered operational workflow.
-- Skill references: detailed Solo tool routing, model/effort policy, and grounded research-tool
-  selection.
+- Global `fan-solo` family: triggered router plus focused agent, process, state, and automation
+  workflows.
+- `research/agent-model-roster.md`: callable runtimes, exact launch mechanics, and dated external
+  evidence.
 - `research/`: dated evidence and rejected alternatives; never instruction layer.
 - `CLAUDE.md`: unchanged because it already imports canonical `AGENTS.md`.
 

@@ -31,10 +31,10 @@ in a networkless Dynamic Worker; host adapters own all service traffic, policy, 
 
 ## Coordination
 
-- Use the `solo-operator` skill for every Solo/Solo Docs task, process action, long-running agent,
-  cross-model fan-out, or grounded external research supporting a build decision. The bound Solo
-  project is currently 49; confirm scope with `whoami` and inspect `list_processes` before process
-  action.
+- Use the global `fan-solo` skill to route every Solo/Solo Docs task to the fewest focused Solo
+  skills. Use `solo-orchestrate-agents` for cross-model fan-out; use the focused process, agent,
+  todo, and scratchpad skills it selects for those surfaces. The bound Solo project is currently
+  49; confirm scope with `whoami` and inspect `list_processes` before process action.
 - **Solo process ownership is recursive:** an agent may spawn processes only as its own
   descendants and may stop, close, interrupt, restart, or otherwise lifecycle-manage only
   itself or descendants it spawned. Never lifecycle-manage a parent, sibling, unrelated process,
@@ -52,10 +52,13 @@ in a networkless Dynamic Worker; host adapters own all service traffic, policy, 
 
 ## Model routing for repo-work fan-out
 
-Use explicit model and effort through `solo-operator`; do not rely on runtime defaults. Active
-roles, launch mechanics, escalation, and evidence boundaries live in its
-[`model-routing` reference](.agents/skills/solo-operator/references/model-routing.md).
-Callable-runtime evidence remains in `research/agent-model-roster.md`; dated policy evidence is in
+Use `fan-solo` to select the focused workflow and `solo-orchestrate-agents` for multi-agent
+fan-out. State model and effort explicitly: Sol high for hard implementation/analysis, Terra high
+for routine implementation or bounded verification, Fable xhigh/high for product/API/taste or
+adversarial review, Opus high as the stable Claude fallback, and Grok high for vendor-diverse
+assumption attack. Reserve max for frontier work or a failed high-effort pass; treat ultra as a
+separate delegated topology. Callable-runtime evidence and launch mechanics live in
+`research/agent-model-roster.md`; dated policy evidence is in
 `research/solo-agent-orchestration-2026-07-15.md`. Eval answering and judge models remain separate
 measurement contracts controlled by `run-evals`.
 
@@ -88,9 +91,10 @@ measurement contracts controlled by `run-evals`.
 
 ## Task runbooks
 
-Use the matching repo skill when the task triggers it:
+Use the matching skill when the task triggers it:
 
-- `solo-operator` — operate Solo, coordinate cross-model agents, and manage durable shared state.
+- `fan-solo` — route broad or mixed Solo work to the fewest focused global Solo skills.
+- `solo-orchestrate-agents` — coordinate cross-model agents and integrate independent lanes.
 - `truth-maintenance` — coordinate a full live-drift/eval/golden/improvements maintenance pass.
 - `live-drift-resolution` — regenerate, classify, verify, and resolve live catalog drift.
 - `run-evals` — select instruments, review verdicts, triage causes, and file findings.
