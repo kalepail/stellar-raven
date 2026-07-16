@@ -25,11 +25,10 @@ which bypass; implement as simply as possible.
   (`OAUTH_KV` namespace), not JWKS/introspection. Props (`{tenantKey, subject, scopes, plan}`)
   flow to the handler. WorkOS tokens are dropped after the code exchange, never stored
   (their ADR-0016).
-- **Admin bypass** (only bypass they have): static `RAVEN_ADMIN_TOKEN` accepted as
-  `Authorization: Bearer` or `X-Raven-Admin-Token`, compared SHA-256 + `timingSafeEqual`;
-  match short-circuits the provider and calls the MCP handler directly with synthetic admin
-  props. No localhost bypass in prior art (we ADD one, per user directive — via an explicit
-  local-only var, not a hostname check).
+- **Admin bypass** (only bypass they have): one static bearer credential, compared as a
+  SHA-256 digest with `timingSafeEqual`; a match short-circuits the provider. No localhost
+  bypass in prior art (we ADD one, per user directive — via an explicit local-only var, not
+  a hostname check).
 - `-next` extras worth keeping: `resourceMetadata`/`scopesSupported` for connector discovery,
   `allowPlainPKCE: false`, and an alias rewrite for the path-suffixed
   `/.well-known/oauth-authorization-server/*` form some clients request.
@@ -40,7 +39,7 @@ Runtime reads exactly `WORKOS_CLIENT_ID` + `WORKOS_API_KEY`. Our `.env` keeps
 `WORKOS_{STAGING,PRODUCTION}_{CLIENT_ID,API_KEY}` as the operator sheet; staging vs production
 is chosen at deploy time by which value the operator loads into the single runtime secret pair
 (same pattern as prior art). Also needed: a server secret (hash pepper for subject/tenant
-derivation) and the admin token.
+derivation). Named API-key token digests live in `OAUTH_KV`, not Worker secrets.
 
 ## What we adopt for stellar-raven-codemode (simplest faithful shape)
 
@@ -49,8 +48,8 @@ derivation) and the admin token.
    consent + CSRF, modeled on `-next`'s wiring with `raven`'s rationale comments in mind).
 2. KV namespace `OAUTH_KV` — a NEW namespace for this project (the prior-art namespace
    `473fc625531d4687b0e353e069092afa` is shared by both old workers and dies with the teardown).
-3. Admin bypass: `MCP_ADMIN_TOKEN` secret, SHA-256 + timing-safe compare, accepted as
-   `Authorization: Bearer` or `X-MCP-Admin-Token`.
+3. Named API-key bypass: non-expiring `Authorization: Bearer <name>:<token>` credentials;
+   store only SHA-256 token digests under `raven:api-key:v1:<name>` in `OAUTH_KV`.
 4. Local bypass: `DEV_ALLOW_UNAUTHENTICATED=true` set ONLY in `.dev.vars` (never a deployed
    secret).
 
@@ -113,7 +112,7 @@ We instead run Cloudflare's documented "bring your own OAuth provider" pattern: 
 IS the AS, mints its own opaque KV-backed tokens, WorkOS is upstream IdP only and its tokens
 are dropped post-exchange. Trade-offs, eyes open:
 
-- Ours: opaque server-owned tokens (no JWKS/JWT surface), trivial admin/dev bypasses,
+- Ours: opaque server-owned tokens (no JWKS/JWT surface), small named-key/dev bypasses,
   mirrors Cloudflare upstream (memory rule: deviate only with conviction), no per-request
   WorkOS dependency at /mcp.
 - Theirs: deletes most of `src/auth/`, WorkOS absorbs future spec drift (CIMD, XAA/ID-JAG

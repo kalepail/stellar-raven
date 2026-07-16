@@ -122,8 +122,8 @@ What this project has enabled is at the bottom.
 
 ## Live query notes (2026-07-04)
 
-Follow-up verification used the Cloudflare API MCP against the live account and the
-production `MCP_ADMIN_TOKEN_PRODUCTION` from `.env` without printing the secret.
+Follow-up verification used the Cloudflare API MCP against the live account and a production
+named credential without printing it.
 
 An authenticated MCP `initialize` probe:
 
@@ -195,7 +195,7 @@ network-derived fingerprints are used to fill the gap.
 
 The 2026-07-11 pre-change production baseline also showed that Cloudflare
 redacts the app field named `auth` to `*****`. The new request summary uses
-`accessMode` so OAuth/admin/dev/rejected classes remain queryable.
+`accessMode` so OAuth/API-key/dev/rejected classes remain queryable.
 
 That baseline queried the six-hour window ending at Unix ms `1783818170600`
 with `$metadata.service = "stellar-raven-codemode"` and

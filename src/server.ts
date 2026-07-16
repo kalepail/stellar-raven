@@ -10,8 +10,8 @@
  * authorization server (opaque tokens in OAUTH_KV; /token, /register, and
  * the .well-known discovery docs come from the lib), with WorkOS AuthKit as
  * the upstream IdP behind /authorize + /callback (src/auth/workos.ts).
- * Two bypasses, checked BEFORE the provider (src/auth/gate.ts):
- *  1. admin — MCP_ADMIN_TOKEN secret via bearer/X-MCP-Admin-Token header;
+ * Two bypasses, checked BEFORE the provider:
+ *  1. named API key — bearer credentials backed by OAUTH_KV;
  *  2. local dev — DEV_ALLOW_UNAUTHENTICATED=true from `.dev.vars` only, AND
  *     only on a loopback hostname (a deployed var is inert on the public domain).
  */
@@ -23,11 +23,11 @@ import type { ExecuteRunner } from "./executor/run";
 import { modelBoundaryMaxTokensFromEnv } from "./policy/truncate";
 import {
   allowDevUnauthenticated,
-  isAdminAuthorized,
   isAuthServerMetadataAlias,
   oauthProviderOptions,
   rewritePath
 } from "./auth/gate";
+import { authenticateApiKey } from "./auth/api-keys";
 import { demoLoginRedirect } from "./auth/workos";
 import { verifyDemoCookie } from "./demo/auth";
 import { DEMO_PAGE_HEADERS, demoPage } from "./demo/page";
@@ -73,7 +73,7 @@ export const mcpHandler = {
     request: Request,
     env: Env,
     ctx: ExecutionContext,
-    opts: { devBypassFired?: boolean; authMode?: McpAuthMode } = {}
+    opts: { devBypassFired?: boolean; authMode?: McpAuthMode; apiKeyName?: string } = {}
   ): Promise<Response> {
     // instructions surfaces in the client's system prompt at initialize time
     // (per-session, unlike tool descriptions which models skim once) — the
@@ -84,6 +84,7 @@ export const mcpHandler = {
     const authProps = (ctx as ExecutionContext & { props?: unknown }).props;
     const requestTelemetry = await buildMcpRequestObservability({
       accessMode: authMode,
+      apiKeyName: opts.apiKeyName,
       props: authProps,
       rayId: request.headers.get("cf-ray"),
       serverSecret: env.MCP_SERVER_SECRET
@@ -196,8 +197,9 @@ export default {
 
     // Bypasses skip the provider entirely and hit the MCP handler directly.
     if (isMcpPath(url)) {
-      if (await isAdminAuthorized(request, env)) {
-        return mcpHandler.fetch(request, env, ctx, { authMode: "admin" });
+      const apiKeyName = await authenticateApiKey(request, env);
+      if (apiKeyName) {
+        return mcpHandler.fetch(request, env, ctx, { authMode: "api-key", apiKeyName });
       }
       if (allowDevUnauthenticated(env, url.hostname)) {
         return mcpHandler.fetch(request, env, ctx, { devBypassFired: true, authMode: "dev-bypass" });
@@ -221,7 +223,7 @@ export default {
     // /callback, 404) — belongs to the provider.
     const response = await oauthProvider.fetch(request, env, ctx);
     if (isMcpPath(url) && response.status === 401) {
-      // A failed admin-token check also lands here by design; never hash or
+      // A failed API-key check also lands here by design; never hash or
       // otherwise derive identity from a rejected bearer token.
       logEvent("mcp_request", {
         accessMode: "oauth-rejected",

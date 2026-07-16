@@ -168,7 +168,7 @@ export const WorkOSAuthHandler = {
     }
 
     return Response.json(
-      { error: "not found", hint: "MCP endpoint is POST /mcp (OAuth or admin token required)" },
+      { error: "not found", hint: "MCP endpoint is POST /mcp (OAuth or named API key required)" },
       { status: 404 }
     );
   }

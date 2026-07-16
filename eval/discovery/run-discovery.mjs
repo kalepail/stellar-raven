@@ -20,7 +20,7 @@ function normalizeUrl(url) {
 }
 
 function authHeaders() {
-  const token = process.env.RAVEN_MCP_BEARER_TOKEN || process.env.MCP_BEARER_TOKEN || process.env.MCP_ADMIN_TOKEN || process.env.RAVEN_ADMIN_TOKEN;
+  const token = process.env.RAVEN_MCP_BEARER_TOKEN;
   return token ? { authorization: `Bearer ${token}` } : {};
 }
 

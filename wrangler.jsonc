@@ -43,9 +43,9 @@
     // original ~6k-token behavior; raise only for measured truncation review.
     "EXECUTE_MODEL_BOUNDARY_MAX_TOKENS": "6000"
   },
-  // Token/client/grant storage for @cloudflare/workers-oauth-provider
-  // (research/auth-workos.md). The binding MUST be named OAUTH_KV — the
-  // library reads it by that name. Namespace pre-created for this project.
+  // Token/client/grant storage for @cloudflare/workers-oauth-provider plus
+  // named API-key digests under raven:api-key:v1:. The binding MUST be named
+  // OAUTH_KV — the OAuth library reads it by that name.
   "kv_namespaces": [
     {
       "binding": "OAUTH_KV",
@@ -97,7 +97,7 @@
   "upload_source_maps": true
   // NOTE: stateless server (PLAN §1) — deliberately no Durable Object
   // bindings/migrations. Secrets (LUMENLOOP_API_KEY, ALGOLIA_{APPLICATION_ID,API_KEY}_{DOCS,SITE},
-  // WORKOS_CLIENT_ID, WORKOS_API_KEY, MCP_ADMIN_TOKEN,
+  // WORKOS_CLIENT_ID, WORKOS_API_KEY,
   // MCP_SERVER_SECRET) go via `wrangler secret put` in prod and `.dev.vars`
   // locally. DEV_ALLOW_UNAUTHENTICATED lives ONLY in `.dev.vars` (auth
   // bypass for local dev) — never deploy it as a var or secret. Even if it

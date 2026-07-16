@@ -1,11 +1,10 @@
 /**
- * Auth gate — the two bypasses plus the OAuthProvider wiring options
+ * Auth gate — OAuthProvider wiring plus the local-dev bypass
  * (research/auth-workos.md).
  *
  * Everything at /mcp is WorkOS-backed OAuth EXCEPT:
- *  1. Admin token — `MCP_ADMIN_TOKEN` secret presented as
- *     `Authorization: Bearer` or `X-MCP-Admin-Token`, compared as SHA-256
- *     digests with a timing-safe equality check. Unset secret → bypass off.
+ *  1. Named API keys — `Authorization: Bearer <name>:<token>`, validated
+ *     against SHA-256 digests stored under an isolated OAUTH_KV prefix.
  *  2. Local dev — `DEV_ALLOW_UNAUTHENTICATED=true` AND the request hostname is
  *     local (localhost / 127.0.0.1 / ::1). wrangler dev serves on localhost so
  *     local dev keeps working; the local-host gate is a second factor so a
@@ -19,12 +18,11 @@
  */
 import type { OAuthProviderOptions } from "@cloudflare/workers-oauth-provider";
 import { WorkOSAuthHandler } from "./workos";
-import { timingSafeEqualBytes } from "./timing";
 
 // Re-export from the leaf module (src/auth/timing.ts) — existing importers
 // (tests) keep this path; demo code imports the leaf directly to avoid a
 // module cycle through workos.ts.
-export { timingSafeEqualBytes };
+export { timingSafeEqualBytes } from "./timing";
 
 const DAY_SECONDS = 24 * 60 * 60;
 /** Short-lived bearer token; compatible MCP clients refresh it automatically. */
@@ -73,25 +71,6 @@ export function oauthProviderOptions(
   };
 }
 
-/**
- * Admin bypass: does the request carry the MCP_ADMIN_TOKEN secret?
- * Accepts `Authorization: Bearer <token>` or `X-MCP-Admin-Token: <token>`.
- * Always false when the secret is unset (e.g. never-configured deploys).
- */
-export async function isAdminAuthorized(
-  request: Request,
-  env: Pick<Env, "MCP_ADMIN_TOKEN">
-): Promise<boolean> {
-  const configured: string | undefined = env.MCP_ADMIN_TOKEN;
-  if (!configured) return false;
-  const authorization = request.headers.get("authorization") ?? "";
-  const bearer = authorization.toLowerCase().startsWith("bearer ") ? authorization.slice(7).trim() : "";
-  const presented = bearer || request.headers.get("x-mcp-admin-token") || "";
-  if (!presented) return false;
-  const [expected, actual] = await Promise.all([sha256Bytes(configured), sha256Bytes(presented)]);
-  return timingSafeEqualBytes(expected, actual);
-}
-
 /** Loopback hostnames wrangler dev binds to (URL.hostname forms). */
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
 
@@ -107,10 +86,6 @@ export function allowDevUnauthenticated(
 ): boolean {
   if (env.DEV_ALLOW_UNAUTHENTICATED !== "true") return false;
   return LOCAL_HOSTS.has(hostname.toLowerCase());
-}
-
-async function sha256Bytes(value: string): Promise<Uint8Array> {
-  return new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value)));
 }
 
 /**

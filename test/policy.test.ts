@@ -109,25 +109,21 @@ describe("redaction", () => {
     expect(secrets).toEqual(["llmcp_secret_value_123"]);
   });
 
-  it("collects every current secret env name, and NOT the retired MCP_BEARER_TOKEN", () => {
+  it("collects every current host secret env name", () => {
     const collected = secretsFromEnv({
       LUMENLOOP_API_KEY: "lumen_key_abcdefgh",
       ALGOLIA_API_KEY_DOCS: "algolia_key_abcdefgh",
       ALGOLIA_API_KEY_SITE: "algolia_site_key_abcdefgh",
-      MCP_ADMIN_TOKEN: "admin_token_abcdefgh",
       MCP_SERVER_SECRET: "server_secret_abcdefgh",
-      WORKOS_API_KEY: "workos_key_abcdefgh",
-      MCP_BEARER_TOKEN: "bearer_should_be_ignored"
+      WORKOS_API_KEY: "workos_key_abcdefgh"
     });
     expect(collected).toEqual([
       "lumen_key_abcdefgh",
       "algolia_key_abcdefgh",
       "algolia_site_key_abcdefgh",
-      "admin_token_abcdefgh",
       "server_secret_abcdefgh",
       "workos_key_abcdefgh"
     ]);
-    expect(collected).not.toContain("bearer_should_be_ignored");
   });
 
   it("scrubs accidental key echoes anywhere in a structure", () => {

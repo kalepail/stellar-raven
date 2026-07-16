@@ -1,5 +1,5 @@
 /**
- * Leaf module — no imports — so both src/auth/gate.ts (admin token) and
+ * Leaf module — no imports — so both src/auth/api-keys.ts and
  * src/demo/auth.ts (demo-cookie MAC) can share the comparator without the
  * cycle workos.ts → demo/auth.ts → gate.ts → workos.ts that a gate.ts import
  * from demo code would create.

@@ -8,16 +8,32 @@
  * from wrangler.jsonc, so a route-assembly regression fails here instead of
  * shipping green.
  *
- * Auth values are the test-only fakes from test/smoke/vitest.config.ts.
+ * Auth values are test-only fakes stored in the local OAUTH_KV binding.
  * Requests to /mcp go through the FULL stack — McpServer construction,
- * tool registration, streamable HTTP — so the admin-bypass case doubles as
+ * tool registration, streamable HTTP — so the named-key case doubles as
  * an initialize smoke (server info + instructions present).
  */
-import { SELF } from "cloudflare:test";
-import { describe, expect, it } from "vitest";
+import { env, SELF } from "cloudflare:test";
+import { beforeAll, describe, expect, it } from "vitest";
 
 const PUBLIC = "https://raven.stellar.buzz";
 const LOCAL = "http://localhost";
+const TOKENS = {
+  admin: "a".repeat(43),
+  devrel: "d".repeat(43)
+};
+
+beforeAll(async () => {
+  for (const [name, token] of Object.entries(TOKENS)) {
+    const digest = new Uint8Array(
+      await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token))
+    );
+    await env.OAUTH_KV.put(
+      `raven:api-key:v1:${name}`,
+      [...digest].map((byte) => byte.toString(16).padStart(2, "0")).join("")
+    );
+  }
+});
 
 function initializeBody(): string {
   return JSON.stringify({
@@ -80,22 +96,32 @@ describe("/mcp auth dispatch", () => {
     expect(res.headers.get("www-authenticate")).toBeTruthy();
   });
 
-  it("a wrong admin token is NOT a bypass — falls through to the provider's 401", async () => {
+  it("a wrong named key is NOT a bypass — falls through to the provider's 401", async () => {
     const res = await postInitialize(`${PUBLIC}/mcp`, {
-      Authorization: "Bearer not-the-admin-token"
+      Authorization: `Bearer admin:${"x".repeat(43)}`
     });
     expect(res.status).toBe(401);
   });
 
-  it("the admin token reaches the real MCP server: initialize returns info + instructions", async () => {
-    const res = await postInitialize(`${PUBLIC}/mcp`, {
-      Authorization: "Bearer smoke-test-admin-token"
-    });
-    expect(res.status).toBe(200);
-    const init = await lastEventJson(res);
-    expect(init.result?.serverInfo?.name).toBe("stellar-raven-codemode");
-    // The workflow + envelope contract rides in via instructions.
-    expect(init.result?.instructions).toContain("r.data.projects");
+  it("admin and devrel keys reach the real MCP server", async () => {
+    for (const [name, token] of Object.entries(TOKENS)) {
+      const res = await postInitialize(`${PUBLIC}/mcp`, {
+        Authorization: `Bearer ${name}:${token}`
+      });
+      expect(res.status).toBe(200);
+      const init = await lastEventJson(res);
+      expect(init.result?.serverInfo?.name).toBe("stellar-raven-codemode");
+      expect(init.result?.instructions).toContain("r.data.projects");
+    }
+  });
+
+  it("rejects the old unprefixed bearer and custom header", async () => {
+    expect((await postInitialize(`${PUBLIC}/mcp`, {
+      Authorization: `Bearer ${TOKENS.admin}`
+    })).status).toBe(401);
+    expect((await postInitialize(`${PUBLIC}/mcp`, {
+      "X-MCP-Admin-Token": TOKENS.admin
+    })).status).toBe(401);
   });
 
   it("dev bypass honors DEV_ALLOW_UNAUTHENTICATED on localhost…", async () => {

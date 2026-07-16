@@ -1,7 +1,7 @@
 /**
  * Unit tests for the WorkOS-backed OAuth wiring (research/auth-workos.md):
  *
- *  - the two bypasses in src/auth/gate.ts (admin token, local-dev var);
+ *  - the named API-key and local-dev bypasses;
  *  - REAL workers-oauth-provider behavior built from oauthProviderOptions()
  *    around a stub /mcp handler (401 + WWW-Authenticate, discovery docs,
  *    the path-suffixed RFC 8414 alias) — `cloudflare:workers` is aliased to
@@ -21,12 +21,19 @@ import {
   CLIENT_REGISTRATION_TTL_SECONDS,
   REFRESH_TOKEN_TTL_SECONDS,
   allowDevUnauthenticated,
-  isAdminAuthorized,
   isAuthServerMetadataAlias,
   oauthProviderOptions,
   rewritePath,
   timingSafeEqualBytes
 } from "../src/auth/gate";
+import {
+  API_KEY_NAME_PATTERN,
+  API_KEY_PREFIX,
+  API_KEY_TOKEN_PATTERN,
+  apiKeyKvKey,
+  authenticateApiKey,
+  parseApiKeyCredential
+} from "../src/auth/api-keys";
 import {
   LOGIN_STATE_TTL_SECONDS,
   WorkOSAuthHandler,
@@ -64,7 +71,6 @@ function testEnv(overrides: Record<string, unknown> = {}): Env {
     WORKOS_CLIENT_ID: "client_test_123",
     WORKOS_API_KEY: "sk_test_dummy",
     MCP_SERVER_SECRET: "unit-test-pepper",
-    MCP_ADMIN_TOKEN: "unit-test-admin-token",
     ...overrides
   } as unknown as Env;
 }
@@ -119,42 +125,88 @@ afterEach(() => {
 });
 
 // ---------------------------------------------------------------------------
-// Bypass 1: admin token (SHA-256 + timing-safe compare)
+// Bypass 1: named API keys (KV digest + timing-safe compare)
 
-describe("isAdminAuthorized", () => {
-  const env = testEnv();
-
-  it("accepts a matching Authorization: Bearer token", async () => {
-    const request = new Request("https://mcp.test/mcp", {
-      headers: { authorization: "Bearer unit-test-admin-token" }
+describe("named API keys", () => {
+  const token = "a".repeat(43);
+  const request = (credential = `admin:${token}`) =>
+    new Request("https://mcp.test/mcp", {
+      headers: { authorization: `Bearer ${credential}` }
     });
-    expect(await isAdminAuthorized(request, env)).toBe(true);
+
+  async function digest(value: string): Promise<string> {
+    const bytes = new Uint8Array(
+      await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value))
+    );
+    return [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  }
+
+  it("validates names, tokens, credentials, and the isolated KV prefix", () => {
+    expect(API_KEY_PREFIX).toBe("raven:api-key:v1:");
+    expect(apiKeyKvKey("devrel")).toBe("raven:api-key:v1:devrel");
+    for (const name of ["a", "admin", "devrel-2", `a${"0".repeat(31)}`]) {
+      expect(API_KEY_NAME_PATTERN.test(name), name).toBe(true);
+    }
+    for (const name of ["", "Admin", "2admin", "admin_", `a${"0".repeat(32)}`]) {
+      expect(API_KEY_NAME_PATTERN.test(name), name).toBe(false);
+    }
+    expect(API_KEY_TOKEN_PATTERN.test(token)).toBe(true);
+    expect(API_KEY_TOKEN_PATTERN.test("a".repeat(42))).toBe(false);
+    expect(parseApiKeyCredential(request())).toEqual({ name: "admin", token });
+    expect(parseApiKeyCredential(new Request("https://mcp.test/mcp", {
+      headers: { authorization: `bearer devrel:${token}` }
+    }))).toEqual({ name: "devrel", token });
   });
 
-  it("accepts a matching X-MCP-Admin-Token header", async () => {
-    const request = new Request("https://mcp.test/mcp", {
-      headers: { "x-mcp-admin-token": "unit-test-admin-token" }
+  it("rejects malformed, unprefixed, and custom-header credentials before KV", async () => {
+    let reads = 0;
+    const env = testEnv({
+      OAUTH_KV: {
+        async get() {
+          reads++;
+          return null;
+        }
+      }
     });
-    expect(await isAdminAuthorized(request, env)).toBe(true);
+    for (const candidate of [
+      new Request("https://mcp.test/mcp"),
+      request(token),
+      request(`Admin:${token}`),
+      request(`admin:${token}:extra`),
+      new Request("https://mcp.test/mcp", { headers: { authorization: `Basic admin:${token}` } }),
+      new Request("https://mcp.test/mcp", { headers: { "x-mcp-admin-token": token } })
+    ]) {
+      expect(await authenticateApiKey(candidate, env)).toBeUndefined();
+    }
+    expect(reads).toBe(0);
   });
 
-  it("rejects a mismatched token", async () => {
-    const request = new Request("https://mcp.test/mcp", {
-      headers: { authorization: "Bearer wrong-token" }
+  it("matches a stored digest with exactly one KV read", async () => {
+    let reads = 0;
+    const env = testEnv({
+      OAUTH_KV: {
+        async get(key: string) {
+          reads++;
+          expect(key).toBe(apiKeyKvKey("admin"));
+          return digest(token);
+        }
+      }
     });
-    expect(await isAdminAuthorized(request, env)).toBe(false);
+    expect(await authenticateApiKey(request(), env)).toBe("admin");
+    expect(reads).toBe(1);
   });
 
-  it("rejects when no credential is presented", async () => {
-    expect(await isAdminAuthorized(new Request("https://mcp.test/mcp"), env)).toBe(false);
-  });
-
-  it("returns false when the secret is unset, even with a header", async () => {
-    const request = new Request("https://mcp.test/mcp", {
-      headers: { authorization: "Bearer unit-test-admin-token" }
-    });
-    expect(await isAdminAuthorized(request, testEnv({ MCP_ADMIN_TOKEN: undefined }))).toBe(false);
-    expect(await isAdminAuthorized(request, testEnv({ MCP_ADMIN_TOKEN: "" }))).toBe(false);
+  it("rejects missing, malformed, mismatched, and failed KV reads", async () => {
+    for (const get of [
+      async () => null,
+      async () => "not-a-digest",
+      async () => digest("b".repeat(43)),
+      async () => {
+        throw new Error("KV unavailable");
+      }
+    ]) {
+      expect(await authenticateApiKey(request(), testEnv({ OAUTH_KV: { get } }))).toBeUndefined();
+    }
   });
 
   it("timing-safe comparator: equal, unequal, and length-mismatched digests", () => {

@@ -43,8 +43,8 @@ export async function verifyDemoCookie(secret: string, cookieHeader: string | nu
   const encoded = value.slice(0, dot);
   const presentedMac = base64UrlDecode(value.slice(dot + 1));
   if (!presentedMac) return null;
-  // MAC-then-decode: both sides are fixed-length HMAC outputs, so the XOR-fold
-  // compare (same helper the admin-token gate uses) is constant-time here.
+  // MAC-then-decode: both sides are fixed-length HMAC outputs, so the shared
+  // digest comparator is constant-time here.
   const expectedMac = await hmacSha256(secret, encoded);
   if (!timingSafeEqualBytes(expectedMac, presentedMac)) return null;
 

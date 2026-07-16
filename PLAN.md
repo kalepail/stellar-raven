@@ -208,8 +208,9 @@ content cannot re-enter the public repo.
   everything at `/mcp` — the Worker is its own OAuth 2.1 authorization server via
   `@cloudflare/workers-oauth-provider` (opaque tokens in `OAUTH_KV`; WorkOS AuthKit is only the
   upstream IdP behind `/authorize` → `/callback`, its tokens dropped after the code exchange).
-  Two bypasses only: the `MCP_ADMIN_TOKEN` secret (SHA-256 + timing-safe compare) and
-  `DEV_ALLOW_UNAUTHENTICATED=true` from `.dev.vars` (never deployed). Connection guide:
+  Two bypasses only: named, non-expiring API keys whose SHA-256 token digests live under an
+  isolated `OAUTH_KV` prefix, and `DEV_ALLOW_UNAUTHENTICATED=true` from `.dev.vars` (never
+  deployed). Connection guide:
   README.md “Connect”.
 
 ## 5. Inventory refresh — keeping the catalog honest
@@ -232,7 +233,7 @@ research doc.
 
 ```
 src/server.ts            # Worker entry: createMcpHandler → search/execute
-src/auth/                # WorkOS OAuth 2.1 provider + admin-token / local-dev bypasses
+src/auth/                # WorkOS OAuth 2.1 provider + named-key / local-dev bypasses
 src/site.ts              # public site: landing, OAuth consent, robots.txt, sitemap.xml, JSON-LD, /og.png
 src/fonts.ts src/og.ts   # generated (npm run site:fonts / site:og) — embedded fonts + OG image
 src/mcp/                 # tool registration, descriptions (copy codemode's rules-block prompting)
@@ -318,7 +319,7 @@ wrangler `^4.107.0`, compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders` b
    and infrastructure authority roles; behavioral QA currently pairs contract and infrastructure
    design-stage cases with a known-step no-detour control. *(shipped, including the 2026-07-13
    controls; see `eval/EVALS.md`)*
-8. **Deploy + auth** — WorkOS-backed OAuth at `/mcp` with admin-token + local-dev bypasses;
+8. **Deploy + auth** — WorkOS-backed OAuth at `/mcp` with named-key + local-dev bypasses;
    deployed on the default route and alias. *(shipped)*
 
 Phases 2–3 are independently parallelizable after 1; 4–6 after 3.
@@ -329,6 +330,6 @@ Phases 2–3 are independently parallelizable after 1; 4–6 after 3.
 |---|---|---|
 | Docs search path | **Decided: direct Algolia REST** — dedicated key in hand (`.env` → Worker secrets `ALGOLIA_APPLICATION_ID_DOCS`/`ALGOLIA_API_KEY_DOCS`; the stellar.org site lane uses the `_SITE` pair); MCP as documented fallback | MCP-only (slower, protocol overhead) |
 | `request_research` (paid) | off at launch | on with budget gate from day one |
-| Server auth | **Decided: WorkOS OAuth** (`workers-oauth-provider` + AuthKit; admin/dev bypasses — §4, README.md) | plain bearer secret (retired placeholder) |
+| Server auth | **Decided: WorkOS OAuth** (`workers-oauth-provider` + AuthKit; named-key/dev bypasses — §4, README.md) | plain bearer secret (retired placeholder) |
 | Skills scope | **18 of 19 mirrored public skills exposed**; retired onboarding surfaces never emitted, and one composite skill is runnable via `codemode.skill.run` | re-expose an onboarding skill only after a transport-agnostic rewrite and a fresh ADR |
 | Statefulness | stateless `createMcpHandler` | `McpAgent` + CodemodeRuntime DO (approvals/audit) |

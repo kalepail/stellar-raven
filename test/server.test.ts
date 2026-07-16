@@ -13,6 +13,7 @@
  * and executor-providers.test.ts).
  */
 import { describe, expect, it, beforeAll, vi } from "vitest";
+import { createHash } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
@@ -145,7 +146,7 @@ describe("artifact owner resolution", () => {
     expect(resolveArtifactOwner(undefined, gateFired)).toBe("dev-local");
   });
 
-  it("admin-token bypass gets no owner", async () => {
+  it("API-key bypass gets no owner", async () => {
     const { resolveArtifactOwner } = await import("../src/server");
     expect(resolveArtifactOwner(undefined, false)).toBeUndefined();
   });
@@ -169,9 +170,23 @@ function workerContext(props?: Record<string, unknown>): ExecutionContext {
 }
 
 function serverEnv(overrides: Record<string, unknown> = {}): Env {
+  const tokens = {
+    admin: "a".repeat(43),
+    devrel: "d".repeat(43)
+  };
+  const store = new Map(
+    Object.entries(tokens).map(([name, token]) => [
+      `raven:api-key:v1:${name}`,
+      createHash("sha256").update(token).digest("hex")
+    ])
+  );
   return {
     MCP_SERVER_SECRET: "unit-test-server-secret",
-    MCP_ADMIN_TOKEN: "unit-test-admin-token",
+    OAUTH_KV: {
+      async get(key: string) {
+        return store.get(key) ?? null;
+      }
+    },
     ...overrides
   } as unknown as Env;
 }
@@ -211,22 +226,38 @@ describe("MCP request event contract", () => {
     spy.mockRestore();
   });
 
-  it("emits exactly one event for admin and dev-bypass requests", async () => {
+  it("emits exactly one attributed event for named API keys and dev-bypass requests", async () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
     const { default: worker } = await import("../src/server");
 
     await worker.fetch(
       new Request("https://mcp.test/mcp", {
-        headers: { authorization: "Bearer unit-test-admin-token" }
+        headers: { authorization: `Bearer admin:${"a".repeat(43)}` }
       }),
       serverEnv(),
       workerContext()
     );
     expect(mcpRequestEvents(spy)).toHaveLength(1);
     expect(mcpRequestEvents(spy)[0]).toMatchObject({
-      accessMode: "admin",
+      accessMode: "api-key",
+      apiKeyName: "admin",
       subjectHash: null,
       clientHash: null
+    });
+    expect(JSON.stringify(mcpRequestEvents(spy)[0])).not.toContain("a".repeat(43));
+
+    spy.mockClear();
+    await worker.fetch(
+      new Request("https://mcp.test/mcp", {
+        headers: { authorization: `Bearer devrel:${"d".repeat(43)}` }
+      }),
+      serverEnv(),
+      workerContext()
+    );
+    expect(mcpRequestEvents(spy)).toHaveLength(1);
+    expect(mcpRequestEvents(spy)[0]).toMatchObject({
+      accessMode: "api-key",
+      apiKeyName: "devrel"
     });
 
     spy.mockClear();
@@ -244,13 +275,13 @@ describe("MCP request event contract", () => {
     spy.mockRestore();
   });
 
-  it("logs rejected bearer traffic without identity keys and ignores OPTIONS preflight", async () => {
+  it("falls through to OAuth for rejected and legacy credentials without logging attempted names", async () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
     const { default: worker } = await import("../src/server");
 
     const rejected = await worker.fetch(
       new Request("https://mcp.test/mcp", {
-        headers: { authorization: "Bearer wrong-admin-token", "cf-ray": "reject123-IAD" }
+        headers: { authorization: `Bearer guessed:${"x".repeat(43)}`, "cf-ray": "reject123-IAD" }
       }),
       serverEnv(),
       workerContext()
@@ -266,6 +297,22 @@ describe("MCP request event contract", () => {
     });
     expect(event).not.toHaveProperty("subjectHash");
     expect(event).not.toHaveProperty("clientHash");
+    expect(JSON.stringify(event)).not.toContain("guessed");
+    expect(JSON.stringify(event)).not.toContain("x".repeat(43));
+
+    spy.mockClear();
+    for (const headers of [
+      new Headers({ authorization: `Bearer ${"a".repeat(43)}` }),
+      new Headers({ "x-mcp-admin-token": "a".repeat(43) })
+    ]) {
+      const legacy = await worker.fetch(
+        new Request("https://mcp.test/mcp", { headers }),
+        serverEnv(),
+        workerContext()
+      );
+      expect(legacy.status).toBe(401);
+    }
+    expect(mcpRequestEvents(spy)).toHaveLength(2);
 
     spy.mockClear();
     const preflight = await worker.fetch(

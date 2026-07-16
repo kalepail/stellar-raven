@@ -34,9 +34,6 @@ export default defineConfig({
       remoteBindings: false,
       miniflare: {
         bindings: {
-          // Test-only admin token so server dispatch tests can take the
-          // admin bypass without .dev.vars or a real secret.
-          MCP_ADMIN_TOKEN: "smoke-test-admin-token",
           // Fake key so the lumenloop adapter passes its config guard; the
           // only "upstream" it can reach is a test-local fetch stub.
           LUMENLOOP_API_KEY: "smoke-test-lumenloop-key",

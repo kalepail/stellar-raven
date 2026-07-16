@@ -13,8 +13,8 @@ const REPLACEMENT = "[REDACTED]";
 /**
  * Collect the redactable secret values from an env-like object. Every secret
  * the Worker holds is listed so an accidental upstream echo of ANY of them is
- * scrubbed before it reaches the sandbox/model (MCP_BEARER_TOKEN was retired
- * and is intentionally absent).
+ * scrubbed before it reaches the sandbox/model. Named API-key tokens are
+ * request data, never host environment values or sandbox inputs.
  *
  * The ALGOLIA_APPLICATION_ID_* names are DELIBERATELY absent: they are
  * semi-public app ids (appear in site payloads / hostnames by design), not
@@ -26,7 +26,6 @@ const SECRET_ENV_NAMES = [
   "LUMENLOOP_API_KEY",
   "ALGOLIA_API_KEY_DOCS",
   "ALGOLIA_API_KEY_SITE",
-  "MCP_ADMIN_TOKEN",
   "MCP_SERVER_SECRET",
   "WORKOS_API_KEY"
 ] as const;

@@ -52,7 +52,6 @@ const BIG_SECRET_RESULT_CODE = `async () => {
     rows: Array.from({ length: 2500 }, (_, i) => ({
       i,
       nested: { envSecret: "smoke-test-lumenloop-key" },
-      adminEcho: "smoke-test-admin-token",
       pad: "x".repeat(40)
     }))
   };
@@ -107,7 +106,6 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
     const stored = await env.ARTIFACTS.get(key);
     const storedText = (await stored?.text()) ?? "";
     expect(storedText).not.toContain("smoke-test-lumenloop-key");
-    expect(storedText).not.toContain("smoke-test-admin-token");
     expect(storedText).toContain("[REDACTED]");
   });
 
@@ -420,8 +418,7 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
       return {
         ok: r.ok,
         count: r.data.rows.length,
-        firstSecret: r.data.rows[0].nested.envSecret,
-        firstAdmin: r.data.rows[0].adminEcho
+        firstSecret: r.data.rows[0].nested.envSecret
       };
     }`, { artifactOwner: owner });
     expect(sameOwner.ok).toBe(true);
@@ -429,8 +426,7 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
       expect(JSON.parse(sameOwner.result)).toEqual({
         ok: true,
         count: 2500,
-        firstSecret: "[REDACTED]",
-        firstAdmin: "[REDACTED]"
+        firstSecret: "[REDACTED]"
       });
       expect(sameOwner.artifactReadCount).toBe(1);
       expect(sameOwner.artifactReadBytes).toBeGreaterThan(24_000);

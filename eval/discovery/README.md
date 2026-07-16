@@ -14,9 +14,9 @@ node eval/discovery/run-replay.mjs --url http://localhost:8787
 
 `run-discovery.mjs` retains its historical `http://localhost:8788` default; the new agent and
 replay runners default to the repository's Solo `dev` process at `http://localhost:8787`.
-Every `--url` may include or omit `/mcp`. For non-local targets, provide an auth token through
-one of `RAVEN_MCP_BEARER_TOKEN`, `MCP_BEARER_TOKEN`, `MCP_ADMIN_TOKEN`, or
-`RAVEN_ADMIN_TOKEN`; the runner sends it as a bearer token and never prints it.
+Every `--url` may include or omit `/mcp`. For non-local targets, provide the full named
+credential (`name:token`) through `RAVEN_MCP_BEARER_TOKEN`; the runner sends it as a bearer
+credential and never prints it.
 
 Results are written to `eval/discovery/results/<ISO-stamp>.json` and are local evidence, matching the existing eval results convention.
 

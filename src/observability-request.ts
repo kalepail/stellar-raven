@@ -1,9 +1,10 @@
 import { hashPrefix } from "./observability";
 
-export type McpAuthMode = "oauth" | "admin" | "dev-bypass";
+export type McpAuthMode = "oauth" | "api-key" | "dev-bypass";
 
 export type McpRequestObservability = {
   accessMode: McpAuthMode;
+  apiKeyName?: string;
   subjectHash: string | null;
   clientHash: string | null;
   rayId: string | null;
@@ -67,6 +68,7 @@ export async function telemetryClientHash(
 
 export async function buildMcpRequestObservability(input: {
   accessMode: McpAuthMode;
+  apiKeyName?: string;
   props?: unknown;
   rayId?: string | null;
   serverSecret?: string;
@@ -75,6 +77,7 @@ export async function buildMcpRequestObservability(input: {
   const clientId = authClientIdFromProps(input.props);
   return {
     accessMode: input.accessMode,
+    ...(input.apiKeyName ? { apiKeyName: input.apiKeyName } : {}),
     // Keep this identical to artifact ownerHash and playground subjectHash.
     subjectHash: subject ? await hashPrefix(subject) : null,
     clientHash: await telemetryClientHash(clientId, input.serverSecret),

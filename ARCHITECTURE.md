@@ -13,13 +13,13 @@ I/O is host-RPC stubs that hold the secrets and enforce the policy.
 ## 1. A `search` call, end to end
 
 Every request enters `src/server.ts` (`export default { fetch }` — the only Worker entry).
-For `/mcp` paths the auth gate runs in this order (both bypass checks live in
-`src/auth/gate.ts`):
+For `/mcp` paths the auth gate runs in this order:
 
-1. **Admin token** — `isAdminAuthorized`: `MCP_ADMIN_TOKEN` secret presented as
-   `Authorization: Bearer` or `X-MCP-Admin-Token`, compared as SHA-256 digests with a
-   timing-safe equality check (`crypto.subtle.timingSafeEqual` on Workers, branch-free XOR
-   fold under plain-Node tests). Unset secret → bypass off.
+1. **Named API key** — `authenticateApiKey` in `src/auth/api-keys.ts` accepts only
+   `Authorization: Bearer <name>:<token>`, validates lowercase names and 43-character
+   base64url tokens, then reads the SHA-256 token digest from
+   `raven:api-key:v1:<name>` in `OAUTH_KV` and compares it timing-safely. Unknown,
+   malformed, mismatched, or unavailable KV records fall through to OAuth.
 2. **Local-dev bypass** — `allowDevUnauthenticated`: requires `DEV_ALLOW_UNAUTHENTICATED`
    to be the exact string `"true"` **and** the request hostname to be loopback
    (`localhost` / `127.0.0.1` / `::1`). The hostname gate is a hard second factor: a var
@@ -87,7 +87,8 @@ known. Its `accessMode` avoids Cloudflare's automatic redaction of fields named 
 summaries carry a 16-hex `subjectHash` compatible with playground/artifact joins and,
 for grants issued after client attribution was added, a versioned secret-keyed `clientHash` derived
 from the OAuth client id stored in encrypted grant props. Older grants report a null client hash;
-admin/dev bypasses have null identity fields; rejected bearer requests omit identity fields. The
+named-key summaries carry `accessMode: "api-key"` plus the validated `apiKeyName`; API-key/dev
+bypasses have null OAuth identity fields, and rejected bearer requests omit identity fields. The
 summary also records a colo-stripped Ray ID and app request UUID. Child search/execute/op events and
 OTel spans join through Cloudflare request/Ray metadata instead of repeating high-cardinality user
 fields. Network/geo/TLS fields are never promoted into an app user fingerprint
@@ -366,7 +367,7 @@ inspect provenance without reading the payload.
 Production ownership is OAuth-only in v1. `src/server.ts` derives `artifactOwner` per tool
 call from `getMcpAuthContext()?.props.subject`, the peppered WorkOS subject set by the OAuth
 provider. The cached execute runner never captures that owner; it receives an
-`ExecuteCallContext` per call. Admin-token bypasses and `/playground` pass no owner: truncated
+`ExecuteCallContext` per call. API-key bypasses and `/playground` pass no owner: truncated
 results still get a source-basis block, but the artifact line is a generic
 unavailable/absent state and no R2 write is made. The loopback-only dev bypass is the one
 exception for local eval fidelity: it receives the fixed owner `dev-local` only from the
@@ -659,7 +660,7 @@ auth gates, schemas, the shared sandbox, and artifact caps are the main limits.
 | OAuth refresh/grant TTL | 90 days fixed from authorization; refresh-token rotation does not extend the window. | `src/auth/gate.ts` |
 | Dynamic client registration TTL | 365 days; client metadata is independent of user grants and token lifetimes. | `src/auth/gate.ts` |
 | WorkOS identity revalidation | WorkOS participates during browser authorization only. WorkOS session changes do not synchronously revoke an existing Raven grant, so the fixed 90-day grant bounds that propagation gap. | `src/auth/workos.ts`, `src/auth/gate.ts` |
-| Artifact availability | Truncated result artifacts are available for OAuth subjects and loopback local dev (`dev-local`), not admin bypasses and not demo. | `src/server.ts`, `src/artifacts/store.ts` |
+| Artifact availability | Truncated result artifacts are available for OAuth subjects and loopback local dev (`dev-local`), not API-key bypasses and not demo. | `src/server.ts`, `src/artifacts/store.ts` |
 | Artifact logical retention | 7 days; bucket lifecycle also expires objects after 7 days. | `src/artifacts/store.ts` |
 | Artifact stored body | Max 2 MiB. Larger truncated results still return source-basis advice, but no artifact is written. | `src/artifacts/store.ts` |
 | Artifact custom metadata | Max 8,192 bytes. | `src/artifacts/store.ts` |

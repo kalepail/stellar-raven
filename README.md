@@ -37,6 +37,20 @@ hands sign-in to WorkOS AuthKit; clients should discover and complete that flow 
 Access tokens last 1 hour, and compatible clients refresh them automatically within a fixed
 90-day authorization window before browser authorization is required again.
 
+Operators can manage non-expiring, full-access named credentials in production `OAUTH_KV`:
+
+```sh
+npm run mcp-key -- create admin
+npm run mcp-key -- rotate admin --out /tmp/stellar-raven-admin.credential
+npm run mcp-key -- revoke admin
+```
+
+Names match `[a-z][a-z0-9-]{0,31}`. Create and rotate emit the credential once after the
+remote write; `--out` writes it with mode `0600`. Send it as
+`Authorization: Bearer <name>:<token>`. Cloudflare KV changes can take 60 seconds or longer to
+propagate globally, so this is for infrequently changed internal keys, not immediate emergency
+revocation. See [Cloudflare KV consistency](https://developers.cloudflare.com/kv/concepts/how-kv-works).
+
 Operational auth details live in [ARCHITECTURE.md](./ARCHITECTURE.md) and
 [`research/auth-workos.md`](./research/auth-workos.md). Vulnerability reporting and researcher
 scope live in [SECURITY.md](./SECURITY.md).
