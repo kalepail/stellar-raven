@@ -191,7 +191,7 @@ describe("demo tools at the worker boundary", () => {
   it("projects clipped structural wider candidates without losing ids or output shape", async () => {
     const { search } = makeTools();
     const result = (await search.execute({
-      query: "Who is Justin Rice?"
+      query: "Who is Tyler van der Hoeven?"
     })) as {
       hits: Array<{ id: string }>;
       widerCandidates: Array<{
