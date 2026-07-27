@@ -10,7 +10,7 @@
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { RUNNERS } from "../src/skills/runners/index.ts";
 
@@ -85,6 +85,7 @@ function opRecords(openapi, service) {
         opId,
         summary: op.summary ?? "",
         description: op.description ?? "",
+        routing: op["x-routing"] ?? null,
         op
       });
     }
@@ -92,22 +93,9 @@ function opRecords(openapi, service) {
   return records;
 }
 
-function summarizeOpenapiInventory(path, service) {
-  if (!existsSync(join(ROOT, path))) return { touchedCatalogIds: new Set(), lines: [] };
-  const oldInv = readHeadJson(path);
-  const nextInv = readJson(path);
-  if (!oldInv) {
-    return {
-      touchedCatalogIds: new Set(),
-      lines: [`- ${path}: new inventory file; classify manually.`]
-    };
-  }
-  if (sameJson({ ...oldInv, fetchedAt: nextInv.fetchedAt }, nextInv)) {
-    return { touchedCatalogIds: new Set(), lines: [`- ${path}: unchanged ignoring fetchedAt.`] };
-  }
-
-  const oldOps = opRecords(oldInv.openapi, service);
-  const nextOps = opRecords(nextInv.openapi, service);
+export function classifyOpenapiOperations(oldOpenapi, nextOpenapi, service) {
+  const oldOps = opRecords(oldOpenapi, service);
+  const nextOps = opRecords(nextOpenapi, service);
   const added = [];
   const removed = [];
   const renamed = [];
@@ -127,7 +115,12 @@ function summarizeOpenapiInventory(path, service) {
       touchedCatalogIds.add(old.catalogId);
       touchedCatalogIds.add(next.catalogId);
     }
-    if (old.summary !== next.summary || old.description !== next.description) {
+    if (
+      old.opId !== next.opId ||
+      old.summary !== next.summary ||
+      old.description !== next.description ||
+      !sameJson(old.routing, next.routing)
+    ) {
       textChanged.push(`${next.catalogId} (${key})`);
       touchedCatalogIds.add(next.catalogId);
     } else if (!sameJson(old.op, next.op)) {
@@ -141,6 +134,25 @@ function summarizeOpenapiInventory(path, service) {
       touchedCatalogIds.add(old.catalogId);
     }
   }
+  return { added, removed, renamed, textChanged, schemaChanged, touchedCatalogIds };
+}
+
+function summarizeOpenapiInventory(path, service) {
+  if (!existsSync(join(ROOT, path))) return { touchedCatalogIds: new Set(), lines: [] };
+  const oldInv = readHeadJson(path);
+  const nextInv = readJson(path);
+  if (!oldInv) {
+    return {
+      touchedCatalogIds: new Set(),
+      lines: [`- ${path}: new inventory file; classify manually.`]
+    };
+  }
+  if (sameJson({ ...oldInv, fetchedAt: nextInv.fetchedAt }, nextInv)) {
+    return { touchedCatalogIds: new Set(), lines: [`- ${path}: unchanged ignoring fetchedAt.`] };
+  }
+
+  const { added, removed, renamed, textChanged, schemaChanged, touchedCatalogIds } =
+    classifyOpenapiOperations(oldInv.openapi, nextInv.openapi, service);
 
   const lines = [
     `- ${path}:`,
@@ -150,7 +162,7 @@ function summarizeOpenapiInventory(path, service) {
     bulletList(removed),
     `  - operationId changes on existing path/method: ${renamed.length}`,
     bulletList(renamed),
-    `  - routing text changes (operationId/summary/description): ${textChanged.length}`,
+    `  - routing text changes (operationId/summary/description/x-routing): ${textChanged.length}`,
     bulletList(textChanged),
     `  - schema/response-only operation changes: ${schemaChanged.length}`,
     bulletList(schemaChanged)
@@ -322,4 +334,4 @@ function main() {
   }
 }
 
-main();
+if (resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) main();

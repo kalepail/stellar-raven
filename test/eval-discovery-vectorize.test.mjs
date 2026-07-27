@@ -80,7 +80,7 @@ describe("pinned Vectorize frontier artifact", () => {
   it("matches every exposed catalog card and decodes fixed-width vectors", () => {
     const loaded = loadFrontierArtifact();
     const cards = buildCatalogCards();
-    expect(loaded.cards).toHaveLength(272);
+    expect(loaded.cards).toHaveLength(276);
     expect(loaded.artifact.cardSetSha256).toBe(cardSetHash(cards));
     expect(loaded.vectors).toHaveLength(cards.length);
     expect(loaded.vectors.every((vector) => vector.length === MODEL.dimensions)).toBe(true);

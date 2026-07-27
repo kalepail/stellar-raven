@@ -2,16 +2,16 @@
 
 # Stellar/Soroban ecosystem skills — index
 
-Mirror of **19 agent skills** across **4 sources** · synced 2026-07-15T12:23:39Z. Each skill lives under [`skills/<source>/<skill>/`](./skills/). Large SKILL.md files are best **grepped** for the section you need.
+Mirror of **19 agent skills** across **4 sources** · synced 2026-07-26T23:35:40Z. Each skill lives under [`skills/<source>/<skill>/`](./skills/). Large SKILL.md files are best **grepped** for the section you need.
 
 ## Sources (pinned)
 
 | Source | Origin | Pinned | Skills |
 | --- | --- | --- | --- |
 | `lumenloop` | [`lumenloop/lumenloop-skills`](https://github.com/lumenloop/lumenloop-skills) `skills/` | [`d92c56bda17a`](https://github.com/lumenloop/lumenloop-skills/tree/d92c56bda17ab702d3202335cfe814d64e70e191/skills) | 8 |
-| `openzeppelin-stellar` | [`OpenZeppelin/openzeppelin-skills`](https://github.com/OpenZeppelin/openzeppelin-skills) `skills/` | [`abf2a54fbf95`](https://github.com/OpenZeppelin/openzeppelin-skills/tree/abf2a54fbf9532090a72c045a263839aa0b8f480/skills) | 3 |
-| `stellar-dev` | [`stellar/stellar-dev-skill`](https://github.com/stellar/stellar-dev-skill) `skills/` | [`c2f3c0728c32`](https://github.com/stellar/stellar-dev-skill/tree/c2f3c0728c32044ed8b6d696767c3aed71b4e32d/skills) | 7 |
-| `stellar-light` | [`Stellar-Light/stellar-scout`](https://github.com/Stellar-Light/stellar-scout) (root) | [`7a5a27ada6ac`](https://github.com/Stellar-Light/stellar-scout/tree/7a5a27ada6acdec662e0285d449b061de64155b5) | 1 |
+| `openzeppelin-stellar` | [`OpenZeppelin/openzeppelin-skills`](https://github.com/OpenZeppelin/openzeppelin-skills) `skills/` | [`6f215af60eb6`](https://github.com/OpenZeppelin/openzeppelin-skills/tree/6f215af60eb60017ab1a933ce9d22a479cd42b26/skills) | 3 |
+| `stellar-dev` | [`stellar/stellar-dev-skill`](https://github.com/stellar/stellar-dev-skill) `skills/` | [`52baea1d8cb1`](https://github.com/stellar/stellar-dev-skill/tree/52baea1d8cb1aa9441004ce44b723f55cbc90901/skills) | 7 |
+| `stellar-light` | [`Stellar-Light/stellar-scout`](https://github.com/Stellar-Light/stellar-scout) (root) | [`f2659ff63cd8`](https://github.com/Stellar-Light/stellar-scout/tree/f2659ff63cd891d48f6adeb024de7753bd9efb9f) | 1 |
 
 _Every source is public GitHub, pinned to a full commit SHA (independently verifiable); each source's upstream LICENSE/NOTICE files are vendored alongside its skills (see `THIRD-PARTY-NOTICES.md` at the repo root)._
 
@@ -29,7 +29,7 @@ _Stellar-ecosystem analyst skills — survey/map a sector, profile a project, di
 | [`stellar-content-auditor`](./skills/lumenloop/stellar-content-auditor/) | `lumenloop` | 8 KB | Audit and enrich a draft (blog post, talking points, tweet, announcement) against the LumenLoop Stellar ecosystem data — resolve the projects you mention to their canonical names and X/@ handles, pull supporting facts and citations from indexed content, and flag wrong handles or unsupported claims. Use when the user shares draft copy about Stellar and wants project handles/names/facts checked, or asks to fact-check, enrich, or add citations and links to a post. |
 | [`stellar-builder-quickstart`](./skills/lumenloop/stellar-builder-quickstart/) | `lumenloop` | 12 KB | Go from a Stellar product idea to a build path: pick the right Stellar primitives, check ecosystem prior art via LumenLoop, and route to the relevant build skill (Soroban, SDK/dapp, assets, oracles). Use when the user wants to start building something on Stellar and needs orientation on approach and existing work. |
 | [`lumenloop-mcp-connect`](./skills/lumenloop/lumenloop-mcp-connect/) | `lumenloop` | 16 KB | Connect your AI assistant (Claude, ChatGPT, Gemini, Cursor, or any MCP client) to LumenLoop's free read-only Stellar ecosystem MCP at https://mcp.lumenloop.com and learn its 18 query tools. Use when the user wants to set up or troubleshoot the lumenloop connector, asks what Stellar ecosystem data is available, or needs to know which lumenloop skill fits a task. |
-| [`stellar-scout`](./skills/stellar-light/stellar-scout/) | `stellar-light` | 72 KB | Scouts the Stellar ecosystem before you build. Validates ideas against existing projects, matches open SCF-funded RFPs, drafts SCF pitches, finds audit firms, compares RFPs, recommends Soroban SDK skills, and cites primary sources (audits, SEPs, papers). Use whenever someone asks what to build on Stellar, vets an idea, preps an SCF grant application or hackathon entry, needs an auditor, or needs prior-art / security findings on a Soroban protocol. |
+| [`stellar-scout`](./skills/stellar-light/stellar-scout/) | `stellar-light` | 78 KB | Scouts the Stellar ecosystem before you build. Validates ideas against existing projects, matches open SCF-funded RFPs, drafts SCF pitches, finds audit firms, compares RFPs, recommends Soroban SDK skills, and cites primary sources (audits, SEPs, papers). Use whenever someone asks what to build on Stellar, vets an idea, preps an SCF grant application or hackathon entry, needs an auditor, or needs prior-art / security findings on a Soroban protocol. |
 
 ## Soroban & smart contracts
 
@@ -40,7 +40,7 @@ _Writing, securing, and upgrading Stellar smart contracts (SDF smart-contracts s
 | [`smart-contracts`](./skills/stellar-dev/smart-contracts/) | `stellar-dev` | 57 KB | Stellar smart contract development (Rust, soroban-sdk). Entry point with project setup, contract anatomy, and build/deploy workflow, routing to three companion files in this directory — development.md (storage/TTL, authorization, cross-contract calls, tokens, events, errors, upgrades, fees, troubleshooting), testing.md (unit, fuzz, property, fork, mutation, integration), and security.md (vulnerability classes, checklists, tooling, audits). Use when writing, testing, reviewing, securing, debugging, or shipping Stellar smart contracts, including anything the user calls "Soroban" — Soroban contracts, soroban-sdk, Soroban auth/storage/TTL errors, SEP-41 tokens, or SAC integration from contract code. |
 | [`setup-stellar-contracts`](./skills/openzeppelin-stellar/setup-stellar-contracts/) | `openzeppelin-stellar` | 4 KB | Set up a Stellar/Soroban smart contract project with OpenZeppelin Contracts for Stellar. Use when users need to: (1) install Stellar CLI and Rust toolchain for Soroban, (2) create a new Soroban project, (3) add OpenZeppelin Stellar dependencies to Cargo.toml, or (4) understand Soroban import conventions and contract patterns for OpenZeppelin. |
 | [`upgrade-stellar-contracts`](./skills/openzeppelin-stellar/upgrade-stellar-contracts/) | `openzeppelin-stellar` | 8 KB | Upgrade Stellar/Soroban smart contracts using OpenZeppelin's upgradeable module. Use when users need to: (1) make Soroban contracts upgradeable via native WASM replacement, (2) use Upgradeable or UpgradeableMigratable derive macros, (3) implement atomic upgrade-and-migrate patterns with an Upgrader contract, (4) ensure storage key compatibility across upgrades, or (5) test upgrade paths for Soroban contracts. |
-| [`develop-secure-contracts`](./skills/openzeppelin-stellar/develop-secure-contracts/) | `openzeppelin-stellar` | 13 KB | Develop secure smart contracts using OpenZeppelin Contracts libraries. Use when users need to integrate OpenZeppelin library components — including token standards (ERC20, ERC721, ERC1155), access control (Ownable, AccessControl, AccessManager), security primitives (Pausable, ReentrancyGuard), governance (Governor, timelocks), or accounts (multisig, account abstraction) — into existing or new contracts. Covers pattern discovery from library source, CLI contract generators, and library-first integration. Supports Solidity, Cairo, Stylus, and Stellar. |
+| [`develop-secure-contracts`](./skills/openzeppelin-stellar/develop-secure-contracts/) | `openzeppelin-stellar` | 14 KB | Develop secure smart contracts using OpenZeppelin Contracts libraries. Use when users need to integrate OpenZeppelin library components — including token standards (ERC20, ERC721, ERC1155), access control (Ownable, AccessControl, AccessManager), security primitives (Pausable, ReentrancyGuard), governance (Governor, timelocks), or accounts (multisig, account abstraction) — into existing or new contracts. Covers pattern discovery from library source, CLI contract generators, and library-first integration. Supports Solidity, Cairo, Stylus, Stellar, and Sui Move. |
 
 ## Stellar app dev & data
 
@@ -48,16 +48,16 @@ _SDF's developer skills for building on Stellar off-chain: dapps/wallets, chain 
 
 | Skill | Source | Size | What it does |
 | --- | --- | --- | --- |
-| [`dapp`](./skills/stellar-dev/dapp/) | `stellar-dev` | 20 KB | Stellar dApp / frontend development. Covers the JavaScript stellar-sdk (browser + Node.js), Freighter wallet, Stellar Wallets Kit (multi-wallet), Wallet Standard, smart accounts with passkeys, transaction building / signing / submission, smart contract invocation from the client, simulation, and error handling. Use when building a React/Next.js/Node.js app that talks to Stellar — classic operations or smart contracts. |
-| [`data`](./skills/stellar-dev/data/) | `stellar-dev` | 14 KB | Querying Stellar chain data via Stellar RPC (preferred) and Horizon (legacy). Covers RPC JSON-RPC methods, Horizon REST endpoints, streaming, pagination, historical queries, Hubble/Galexie for deep history, and the RPC/Horizon migration story. Use when reading balances, transactions, operations, ledgers, contract events, or building any indexer/analytics workflow. |
-| [`assets`](./skills/stellar-dev/assets/) | `stellar-dev` | 12 KB | Stellar Assets (classic) + trustlines + Stellar Asset Contract (SAC) bridge to smart contracts. Covers asset issuance, distribution, authorization flags, clawback, regulated assets, trustline management, and the SAC interop layer that exposes classic assets as SEP-41 contract tokens. Use when tokenizing real-world assets, issuing stablecoins, managing trustlines, or bridging classic assets to smart contracts. |
+| [`dapp`](./skills/stellar-dev/dapp/) | `stellar-dev` | 26 KB | Stellar dApp / frontend development. Covers the JavaScript stellar-sdk (browser + Node.js), Freighter wallet, Stellar Wallets Kit (multi-wallet), Wallet Standard, smart accounts with passkeys, transaction building / signing / submission, smart contract invocation from the client, simulation, and error handling. Use when building a React/Next.js/Node.js app that talks to Stellar — classic operations or smart contracts. |
+| [`data`](./skills/stellar-dev/data/) | `stellar-dev` | 15 KB | Querying Stellar chain data via Stellar RPC (preferred) and Horizon (legacy). Covers RPC JSON-RPC methods, Horizon REST endpoints, streaming, pagination, historical queries, Hubble/Galexie for deep history, and the RPC/Horizon migration story. Use when reading balances, transactions, operations, ledgers, contract events, or building any indexer/analytics workflow. |
+| [`assets`](./skills/stellar-dev/assets/) | `stellar-dev` | 13 KB | Stellar Assets (classic) + trustlines + Stellar Asset Contract (SAC) bridge to smart contracts. Covers asset issuance, distribution, authorization flags, clawback, regulated assets, trustline management, and the SAC interop layer that exposes classic assets as SEP-41 contract tokens. Use when tokenizing real-world assets, issuing stablecoins, managing trustlines, or bridging classic assets to smart contracts. |
 | [`agentic-payments`](./skills/stellar-dev/agentic-payments/) | `stellar-dev` | 27 KB | Agentic and machine-to-machine payments on Stellar. Covers x402 (HTTP 402 paid APIs via OZ Channels facilitator, fee-sponsored clients) and MPP (Machine Payments Protocol) in both Charge mode (per-request SAC) and Channel mode (off-chain commits, high-frequency). Defaults to USDC (SEP-41 SAC) on `stellar:testnet`/`stellar:pubnet` (CAIP-2). Use when selling a paid API to AI agents, building an x402 client, or designing a payment-channel architecture for high-frequency agent traffic. |
-| [`standards`](./skills/stellar-dev/standards/) | `stellar-dev` | 44 KB | Stellar standards, ecosystem, and reference. Covers SEPs (Stellar Ecosystem Proposals), CAPs (Core Advancement Proposals), and a quick map for picking the right standard for wallets, anchors, payments, deposits/withdrawals, federation, deep links, and KYC. Also bundles ecosystem references (DeFi protocols, dev tools, wallets, infra, community projects) and curated documentation links. Use when you need to know which SEP applies, or want a starting point for ecosystem integrations and official docs. |
+| [`standards`](./skills/stellar-dev/standards/) | `stellar-dev` | 41 KB | Stellar standards, ecosystem, and reference. Covers SEPs (Stellar Ecosystem Proposals), CAPs (Core Advancement Proposals), and a quick map for picking the right standard for wallets, anchors, payments, deposits/withdrawals, federation, deep links, and KYC. Also bundles ecosystem references (DeFi protocols, dev tools, wallets, infra, community projects), curated documentation links, and MCP servers (live tools such as Raven). Use when you need to know which SEP applies, or want a starting point for ecosystem integrations, official docs, or live MCP tooling. |
 | [`zk-proofs`](./skills/stellar-dev/zk-proofs/) | `stellar-dev` | 12 KB | Zero-knowledge proofs and privacy patterns on Stellar. Covers Groth16 verification in smart contracts via BLS12-381 host functions (CAP-0059, available), the BN254 + Poseidon proposals (CAP-0074/0075, status-sensitive), and concrete toolchain walkthroughs for Circom (on-chain verifiable today), Noir, and RISC Zero (attestation pattern until BN254 lands). Use when building privacy-preserving applications, ZK-verifier contracts, or wiring a proving toolchain to Stellar. |
 
 ## Ecosystem directory (stellarlight.xyz catalog snapshot)
 
-_The broader map of what exists across the Stellar agent-skill ecosystem — 30 entries from [`https://stellarlight.xyz/api/skills`](https://stellarlight.xyz/api/skills), fetched 2026-07-15T12:23:39Z. Only `skill-md` entries are downloadable SKILL.md skills; `mcp-server` / `sdk` / `cli` / `tool` entries are pointers to runtime tools, not skills. Not all are mirrored here._
+_The broader map of what exists across the Stellar agent-skill ecosystem — 42 entries from [`https://stellarlight.xyz/api/skills`](https://stellarlight.xyz/api/skills), fetched 2026-07-26T23:35:40Z. Only `skill-md` entries are downloadable SKILL.md skills; `mcp-server` / `sdk` / `cli` / `tool` entries are pointers to runtime tools, not skills. Not all are mirrored here._
 
 | Entry | Source | Kind |
 | --- | --- | --- |
@@ -74,7 +74,6 @@ _The broader map of what exists across the Stellar agent-skill ecosystem — 30 
 | `stellar-typescript-wallet-sdk` | `external` | `sdk` |
 | `stellar-wallets-kit` | `external` | `sdk` |
 | `lumenloop-builder-quickstart` | `lumenloop` | `skill-md` |
-| `lumenloop-content-auditor` | `lumenloop` | `skill-md` |
 | `lumenloop-ecosystem-digest` | `lumenloop` | `skill-md` |
 | `lumenloop-ecosystem-scout` | `lumenloop` | `skill-md` |
 | `lumenloop-integration-finder` | `lumenloop` | `skill-md` |
@@ -89,5 +88,18 @@ _The broader map of what exists across the Stellar agent-skill ecosystem — 30 
 | `smart-contracts` | `sdf` | `skill-md` |
 | `standards` | `sdf` | `skill-md` |
 | `zk-proofs` | `sdf` | `skill-md` |
+| `lumenloop-content-auditor` | `stellarlight` | `skill-md` |
+| `scf-budget-builder` | `stellarlight` | `skill-md` |
+| `scf-claim-verifier` | `stellarlight` | `skill-md` |
+| `scf-competitor-analyst` | `stellarlight` | `skill-md` |
+| `scf-fetch-external-doc` | `stellarlight` | `skill-md` |
+| `scf-interest-form-drafter` | `stellarlight` | `skill-md` |
+| `scf-live-context` | `stellarlight` | `skill-md` |
+| `scf-prescreen-checker` | `stellarlight` | `skill-md` |
+| `scf-referral-preparer` | `stellarlight` | `skill-md` |
+| `scf-reviewer` | `stellarlight` | `skill-md` |
+| `scf-round-reviewer` | `stellarlight` | `skill-md` |
+| `scf-submission-drafter` | `stellarlight` | `skill-md` |
+| `scf-tranche-reporter` | `stellarlight` | `skill-md` |
 | `stellar-scout` | `stellarlight` | `skill-md` |
 | `stellar-scout-mcp` | `stellarlight` | `mcp-server` |

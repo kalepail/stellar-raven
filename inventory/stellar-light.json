@@ -1,19 +1,26 @@
 {
-  "changelogEntryCount": 80,
+  "changelogEntryCount": 112,
   "changelogLatest": {
-    "date": "2026-07-14",
-    "detail": "Team-page extraction parses the embedded Sanity card blocks (fail-safe: if the structure changes the ingester's signature guard REFUSES the page rather than silently re-ingesting a role-less list); the leadership roles are now registered signatures. `observedAt` is stamped on every ingest run — re-written even when content is unchanged (metadata-only, no re-embed) — so it reflects last-observation, not last-change like Payload updatedAt. First lit on the sdf-org corpus.",
-    "summary": "searchResearch now answers SDF leadership-role questions and stamps crawl-observation dates. The Team page's per-member ROLES ('Founder and Chief Scientist', 'VP of Ecosystem') live only in the page's embedded card data — a plain <main> scrape yielded a role-less name list — so ingestion now recovers the Name→Role roster from that embedded data. Every research chunk also carries a new `observedAt` (crawl-observation date: when ingest last observed the content live at the source), distinct from `publishedAt` (the source's own stated date).",
+    "date": "2026-07-26",
+    "detail": "The last-resort empty state returned a flat \"none match these filters\" with nowhere to go — which reads as \"we don't know this\" even though for the real queries landing there we usually hold the answer on another surface: a surname is in the SDF people index, a one-word query is very often a project or a GitHub org. The empty state now always carries tryInstead naming /api/people, /api/projects/search and /api/repos/search with the reason each might hold it. Separately, a partial match against a curated builder name (a bare first name or surname) surfaces that person as a didYouMean CANDIDATE — named, not returned as a row, and explicitly not to be reported as the answer unless the caller confirms. Refusing to guess and refusing to help are different things; the resolver still refuses to resolve one token to one person.",
+    "summary": "builders: a no-match query now names where the answer actually lives instead of ending the conversation.",
     "surfaces": [
       "api"
     ],
-    "type": "added",
-    "version": "spec 1.7.26"
+    "type": "fixed"
   },
-  "fetchedAt": "2026-07-15T12:24:01.698Z",
+  "fetchedAt": "2026-07-26T23:41:43.419Z",
   "openapi": {
     "components": {
       "parameters": {
+        "fields": {
+          "description": "Comma-separated top-level field names to return per row (e.g. fields=name,slug,tvlUSD), shrinking the payload. Case-insensitive. Each row's identity keys (id/slug/fullName/githubUsername/url/source, where present) are always included; unknown names are ignored, not rejected. Applies only to the rows array — meta is unaffected. Nested objects are selected whole (no dot-paths).",
+          "in": "query",
+          "name": "fields",
+          "schema": {
+            "type": "string"
+          }
+        },
         "limit": {
           "description": "Max results per page. The default and cap VARY by endpoint (e.g. projects/search 20/100, builders 50/200, leaderboard 50/300, research 8/25). A value below 1 or above the cap is clamped, not rejected.",
           "in": "query",
@@ -43,6 +50,316 @@
         }
       },
       "schemas": {
+        "Audit": {
+          "description": "One security-audit report row from the /api/audits registry. Null semantics: projectSlug null = the audited codebase has no directory project (NOT 'unaudited'); findingsTotal/severityCounts null = not extracted, NOT zero.",
+          "properties": {
+            "auditor": {
+              "description": "Normalized auditor firm (canonical casing)",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "chunksIndexed": {
+              "description": "Full-text chunks serving this report via /api/research?source=audit",
+              "type": "integer"
+            },
+            "dateBasis": {
+              "description": "published = real date-stamp; portal-record = wall-clock portal timestamp (likely upload time) — not publication recency; null = pre-dateBasis row",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "findingsTotal": {
+              "description": "Populated when the auditor's report format parses deterministically AND round-trips its own stated count (OtterSec, Veridise, Certora, Code4rena, Hacken). null = not extracted, NOT zero.",
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "linkBasis": {
+              "description": "Provenance of the project link: name-exact | alias | unmatched (verified no-match); null = not yet triaged",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "observedAt": {
+              "description": "When our crawler last saw the report live",
+              "format": "date-time",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "projectName": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "projectSlug": {
+              "description": "Verified directory-project link; null = no directory project for this codebase (NOT 'unaudited')",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "protocol": {
+              "description": "Audited protocol/codebase name as published",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "publishedAt": {
+              "format": "date-time",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reportId": {
+              "description": "stellarsecurityportal.com report id (natural key)",
+              "type": "integer"
+            },
+            "reportUrl": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "severityCounts": {
+              "description": "{critical, high, medium, low, informational} counts, only for formats carrying per-finding severity that agrees with its finding-ID prefix (Certora tables, Code4rena tier headings). null = not extracted, NOT zero.",
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "title": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "Builder": {
+          "description": "A builder profile row from /api/builders. Profile text (bio/roleTitle) is builder-claimed, NOT verified experience; when the request had a q/skill filter, `match` and `codeEvidence` carry the match provenance (sls-041). Nullable profile fields are null (or empty-string) when unset — never a negative claim.",
+          "properties": {
+            "avatarUrl": {
+              "nullable": true,
+              "type": "string"
+            },
+            "bio": {
+              "nullable": true,
+              "type": "string"
+            },
+            "codeEvidence": {
+              "description": "Indexed repos owned by this builder's GitHub account that match the query — observable facts (language, last activity), kept SEPARATE from subjective profile text. [] = no direct code evidence in the index (a weaker match, not a disqualification); null without a q/skill filter.",
+              "items": {
+                "properties": {
+                  "fullName": {
+                    "type": "string"
+                  },
+                  "lastCommitAt": {
+                    "format": "date-time",
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "primaryLanguage": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "repoScore": {
+                    "type": "number"
+                  },
+                  "stars": {
+                    "type": "integer"
+                  },
+                  "url": {
+                    "nullable": true,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "nullable": true,
+              "type": "array"
+            },
+            "displayName": {
+              "description": "Display name; falls back to githubUsername when unset.",
+              "type": "string"
+            },
+            "githubUsername": {
+              "description": "Natural key; also the stellarlight.xyz/builders/{githubUsername} page slug.",
+              "type": "string"
+            },
+            "isFeatured": {
+              "type": "boolean"
+            },
+            "location": {
+              "description": "Free-text location as entered (e.g. 'Rio de Janeiro, RJ, Brasil') — the ?location= filter substring-matches this.",
+              "nullable": true,
+              "type": "string"
+            },
+            "match": {
+              "description": "WHY this row matched (null without a q/skill filter). Free-text profile evidence — treat bio/role text as claims, not verified experience.",
+              "nullable": true,
+              "properties": {
+                "basis": {
+                  "description": "'profile-text' = free-text hit over a Stellar Passport builder's profile/project prose. 'repo-owner' = a CODE-DERIVED row: the query is a GitHub login that owns indexed Stellar repos but has no Passport profile, so bio/roleTitle are null and the evidence is entirely in codeEvidence (P2 builders-by-name).",
+                  "enum": [
+                    "profile-text",
+                    "repo-owner"
+                  ],
+                  "type": "string"
+                },
+                "matchedFields": {
+                  "description": "Profile fields the query hit (bio, roleTitle, displayName, githubUsername, location, projects).",
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "matchedProjects": {
+                  "description": "Projects whose name/description matched the query.",
+                  "items": {
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "slug": {
+                        "nullable": true,
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "matchedTerms": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "description": "Per query token, the literal term that hit — a token can match via a synonym (e.g. 'payments' via 'remittance').",
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "projectCount": {
+              "description": "Length of `projects` — the builder's own synced entries, not an ecosystem-wide attribution count.",
+              "type": "integer"
+            },
+            "projects": {
+              "description": "Projects synced from the builder's Stellar Passport profile. Raw sync rows: keys are snake_case, and extra passthrough fields (id, website_url, demo_url, docs_url, contract_address, repos, heatmap…) may ride along.",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "short_description": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "roleTitle": {
+              "nullable": true,
+              "type": "string"
+            },
+            "twitterHandle": {
+              "description": "As entered by the builder — can be a bare handle OR a full profile URL; normalize before constructing links.",
+              "nullable": true,
+              "type": "string"
+            },
+            "url": {
+              "description": "Canonical builder profile page on stellarlight.xyz.",
+              "format": "uri",
+              "type": "string"
+            },
+            "websiteUrl": {
+              "nullable": true,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "Cluster": {
+          "description": "One category/type cluster from /api/clusters — crowdedness/whitespace over the active project directory. size is a directory TAXONOMY count (how many projects carry the tag), NOT a venue or competitor count (sls-035): the DEX cluster, e.g., includes aggregators and trading UIs alongside independent venues.",
+          "properties": {
+            "crowdedness": {
+              "description": "1-10 log-scaled crowding score: round(log2(size+1) + log2(scfFundedCount+1) + 0.5*log2(hackathonWinnerCount+1)), clamped to 1..10 — SCF funding and winners add a modifier, so a well-funded small cluster can outrank a huge unfunded one. Sort descending for 'most crowded', ascending for whitespace.",
+              "maximum": 10,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "dimension": {
+              "description": "Which taxonomy this cluster was computed over (echoes ?dimension=).",
+              "enum": [
+                "category",
+                "types"
+              ],
+              "type": "string"
+            },
+            "hackathonWinnerCount": {
+              "description": "Cluster projects with a top hackathon placement.",
+              "type": "integer"
+            },
+            "key": {
+              "description": "The cluster label — a category (dimension=category) or a types[] value (dimension=types), e.g. 'RWA'.",
+              "type": "string"
+            },
+            "sampleProjects": {
+              "description": "A few showcase projects, sorted by SCF funding + hackathon prize — a SAMPLE of the cluster, not its full membership (enumerate via searchProjects).",
+              "items": {
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "scfAwarded": {
+                    "type": "boolean"
+                  },
+                  "shortDescription": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "format": "uri",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "scfFundedCount": {
+              "description": "Cluster projects with an SCF award.",
+              "type": "integer"
+            },
+            "scfTotalUSD": {
+              "description": "Sum of known SCF award amounts across the cluster — an in-house reconstruction (per-award amounts aren't published for all rounds): comparable across clusters, not an official figure.",
+              "type": "number"
+            },
+            "size": {
+              "description": "Projects in the cluster — a taxonomy count (see component description).",
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
         "ErrorResponse": {
           "properties": {
             "details": {
@@ -101,6 +418,89 @@
           ],
           "type": "object"
         },
+        "Hackathon": {
+          "description": "One hackathon event row from /api/hackathons — merged from the curated collection and the live DoraHacks feed (`source` says which). prizePoolUSD/hackersCount are ABSENT when the source publishes none: unknown, never zero.",
+          "properties": {
+            "description": {
+              "description": "Event description (DoraHacks rows carry markdown).",
+              "nullable": true,
+              "type": "string"
+            },
+            "endDate": {
+              "format": "date",
+              "nullable": true,
+              "type": "string"
+            },
+            "externalUrl": {
+              "description": "The event's own page (the DoraHacks detail page for dorahacks rows). Null when the curated row has none.",
+              "nullable": true,
+              "type": "string"
+            },
+            "hackersCount": {
+              "description": "Registered hackers (DoraHacks). Absent when unknown; individual builder names are not available from the source.",
+              "type": "integer"
+            },
+            "id": {
+              "description": "'dorahacks-{id}' for DoraHacks rows; the curated collection id otherwise.",
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "organizer": {
+              "description": "Organizing org; slug is the ?organizer= filter value. Null when the source names none.",
+              "nullable": true,
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "prizePoolUSD": {
+              "description": "Total prize pool in USD. ABSENT when the source publishes none — unknown, not zero.",
+              "type": "number"
+            },
+            "slug": {
+              "description": "Event slug — the key /api/hackathons/{slug} (getHackathon) resolves.",
+              "type": "string"
+            },
+            "source": {
+              "description": "Which feed served this row — the ?source= filter vocabulary.",
+              "enum": [
+                "curated",
+                "dorahacks"
+              ],
+              "type": "string"
+            },
+            "startDate": {
+              "format": "date",
+              "nullable": true,
+              "type": "string"
+            },
+            "status": {
+              "description": "Derived from start/end vs now for DoraHacks rows; curated rows carry their stored status.",
+              "enum": [
+                "upcoming",
+                "active",
+                "completed"
+              ],
+              "type": "string"
+            },
+            "url": {
+              "description": "Canonical link: the DoraHacks detail page for dorahacks rows, stellarlight.xyz/hackathons/{slug} for curated rows.",
+              "format": "uri",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "HackathonDetailResponse": {
           "properties": {
             "hackathon": {
@@ -157,7 +557,7 @@
           "properties": {
             "hackathons": {
               "items": {
-                "type": "object"
+                "$ref": "#/components/schemas/Hackathon"
               },
               "type": "array"
             },
@@ -199,6 +599,93 @@
                   "type": "object"
                 }
               ]
+            }
+          },
+          "type": "object"
+        },
+        "LeaderboardProject": {
+          "description": "One ranked project row from /api/leaderboard. Every github.* number is as-of meta.dataAsOf (the repo-index rollup timestamp), NOT a live GitHub read — meta.metricDefinitions states what each metric IS (sls-036).",
+          "properties": {
+            "assetCode": {
+              "description": "Code of the project's issued on-chain asset (USDC, CETES, …), from stellar.expert. Null = no verified issued asset in our on-chain seed set.",
+              "nullable": true,
+              "type": "string"
+            },
+            "assetHolders": {
+              "description": "Trustline holder count of the issued asset. Null when untracked.",
+              "nullable": true,
+              "type": "number"
+            },
+            "assetSupply": {
+              "description": "Circulating supply of the issued asset in whole asset units (sort=supply orders by this). null = NOT TRACKED — never 'zero supply'; untracked issuers sort below every tracked one.",
+              "nullable": true,
+              "type": "number"
+            },
+            "category": {
+              "type": "string"
+            },
+            "github": {
+              "description": "Rollup across the project's INDEXED repos, as-of meta.dataAsOf.",
+              "properties": {
+                "lastActivityAt": {
+                  "description": "Latest default-branch commit (fallback: last push) across indexed repos. Null when no indexed repo has a known date.",
+                  "format": "date-time",
+                  "nullable": true,
+                  "type": "string"
+                },
+                "openIssuesTotal": {
+                  "description": "Sum of OPEN issues (EXCLUDES pull requests — will not match GitHub's REST open_issues_count). A backlog snapshot, not an activity or quality ranking.",
+                  "type": "integer"
+                },
+                "repoCount": {
+                  "description": "Indexed repos attributed to the project — our index's coverage, not the project's total GitHub footprint.",
+                  "type": "integer"
+                },
+                "totalStars": {
+                  "description": "Sum of stargazer counts across indexed repos.",
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "rank": {
+              "description": "1-based position under THIS response's sort/range/category/type scope — recomputed per request, not a stable global rank. Cite alongside the applied filters (meta.filters).",
+              "type": "integer"
+            },
+            "scfAwarded": {
+              "type": "boolean"
+            },
+            "shortDescription": {
+              "nullable": true,
+              "type": "string"
+            },
+            "slug": {
+              "description": "Directory slug — join key to searchProjects for the full profile.",
+              "type": "string"
+            },
+            "tvlAsOf": {
+              "description": "When tvlUSD was fetched from DefiLlama (dated-metrics rule). Null when untracked.",
+              "format": "date-time",
+              "nullable": true,
+              "type": "string"
+            },
+            "tvlUSD": {
+              "description": "DefiLlama-verified TVL in USD. null = NOT TRACKED on DefiLlama — never 'zero TVL'; most non-DeFi projects are legitimately untracked. Dated by tvlAsOf.",
+              "nullable": true,
+              "type": "number"
+            },
+            "types": {
+              "description": "Granular product-type tags — the same types[] taxonomy as project-search rows, echoed so a consumer can see WHY a row matched a ?type= filter (#524).",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
             }
           },
           "type": "object"
@@ -475,6 +962,34 @@
           },
           "type": "object"
         },
+        "Person": {
+          "description": "One SDF roster entry from /api/people: person, current role, section, and affiliation — quoted from stellar.org/foundation/team with provenance (sourceUrl + observedAt). Roster facts, not verified availability.",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "observedAt": {
+              "description": "Date this entry was last observed from the source (YYYY-MM-DD).",
+              "type": "string"
+            },
+            "org": {
+              "description": "Affiliation — 'Stellar Development Foundation' for leadership, the external org for board/advisors, '' when the role names none.",
+              "type": "string"
+            },
+            "role": {
+              "description": "Current role/title, e.g. 'VP of Ecosystem', 'CEO of Stripe'.",
+              "type": "string"
+            },
+            "section": {
+              "description": "Roster section: 'Leadership' | 'Board of directors' | 'Advisors'.",
+              "type": "string"
+            },
+            "sourceUrl": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "PopulationScope": {
           "description": "sls-048: the population a quantitative response aggregated, made answer-visible. Identical `id`s across responses (e.g. analyze vs clusters) mean the numbers are mechanically comparable; different `id`s are DIFFERENT populations — never merge/sum them without labeling the scopes. `truncated: true` means the result is a sample of the population, not a census. Null when the underlying fetch failed.",
           "nullable": true,
@@ -571,6 +1086,30 @@
                 }
               },
               "type": "object"
+            },
+            "audits": {
+              "description": "Security-audit rollup from the /api/audits registry (hand-verified projectSlug links): {count, auditors[] (normalized firm names), latestAt (YYYY-MM-DD of the newest report)}. null = no audit on record at our source — NOT a claim the project is unaudited (same absence semantics as /api/audits). Full report rows via /api/audits?project=<slug>; findings text via searchResearch with source=audit.",
+              "properties": {
+                "auditors": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "count": {
+                  "type": "integer"
+                },
+                "latestAt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "type": [
+                "object",
+                "null"
+              ]
             },
             "availability": {
               "description": "sls-033/#519: per-platform availability with as-of dates. null = not curated.",
@@ -735,7 +1274,7 @@
               "type": "object"
             },
             "lastActivityAt": {
-              "description": "Most recent commit across the project's own indexed repos — attach as the as-of date for 'is this project active?' answers. Null when no repo has a known commit date.",
+              "description": "Most recent commit across the project's own indexed repos — attach as the as-of date for 'is this project active?' answers. Null = no indexed repo with a known commit date (an INDEX gap — e.g. a closed-source product), never 'no activity'.",
               "format": "date-time",
               "nullable": true,
               "type": "string"
@@ -790,6 +1329,13 @@
             "name": {
               "type": "string"
             },
+            "onchain": {
+              "description": "On-chain metrics from stellar.expert for hand-verified contract/asset join keys. null = not tracked in our registry — NEVER 'no on-chain activity'. contracts[]: {address, label, events, subinvocations, storageEntries, createdAt, verifiedRepo} — events and subinvocations are LIFETIME counts (a contract users call directly at top level can show low subinvocations despite heavy use; read events alongside). Asset-issuer activity: assetHolders = accounts holding a balance TODAY (the active-address count); assetTrustlines = accounts that have EVER opened a trustline (reach, always >= assetHolders — do NOT read it as the active count); assetPayments = lifetime count of payment operations (the transaction-volume metric); assetTrades = lifetime trade count; assetPaymentsAmount = lifetime payment volume in WHOLE ASSET UNITS, not USD (a same-denomination count, not comparable across assets without a price); assetSupply = whole asset units. From the second weekly snapshot, delta fields activate: per-contract eventsDelta/subinvocationsDelta, assetHoldersDelta, assetPaymentsDelta, with prevAsOf + deltaDays defining the window — null deltas mean no prior snapshot yet, NOT zero activity. source + asOf date every payload.",
+              "type": [
+                "object",
+                "null"
+              ]
+            },
             "placementRank": {
               "description": "Numeric rank parsed from hackathonPlacement (1 = best), handling both digit ('1st Place') and word ('First Place') ordinals — or null when the source gives no ordinal (a flat 'Winners' bucket). winners[] is sorted by placementRank, so winners[0] is the 1st-place entry when the event has ranked placements; unranked winners (placementRank: null) sort last and their order is not significant. Sort/filter on placementRank instead of parsing the label.",
               "nullable": true,
@@ -803,6 +1349,27 @@
             "prominence": {
               "description": "Editorial ranking boost (0-100); higher = more canonical for its category.",
               "type": "number"
+            },
+            "publicGoods": {
+              "description": "SCF Public Goods Award recipient data: {awardRounds[] (e.g. 2025Q4 — CSV-confirmed rounds only, requested-amount tranches with Status=Awarded, not payout proof), evidenceUrl}. null = not a confirmed recipient at our source — NEVER 'not a public good'. Q2'26 outcomes live on Tansu and are excluded until readable.",
+              "properties": {
+                "awardRounds": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "evidenceUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "type": [
+                "object",
+                "null"
+              ]
             },
             "repos": {
               "description": "This project’s top indexed GitHub repos, surfaced inline (same shape as /api/repos/search items). Cite as the project’s code references.",
@@ -1030,9 +1597,55 @@
                 },
                 {
                   "properties": {
+                    "advisory": {
+                      "description": "Present when the page does NOT contain a keyword match for the query — either nothing was found at all, or `matchMode` is `semantic`, meaning every row is a vector neighbour rather than a match. In the semantic case the rows are still returned (a neighbour is occasionally the right answer for a conceptual query) but they must NOT be reported as the thing asked for: a query for a project name that lands here means we hold no project by that name. `suggestions[]` carries the endpoints that can still answer it (repo search for code-only entities, the research corpus for prose mentions).",
+                      "properties": {
+                        "suggestions": {
+                          "items": {
+                            "properties": {
+                              "action": {
+                                "type": "string"
+                              },
+                              "url": {
+                                "type": "string"
+                              },
+                              "why": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "summary": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
                     "anchorProfileBasis": {
                       "description": "Present only when the page carries anchor rows (sls-049): empty-field semantics for the anchorProfile join — empty capability arrays mean not-yet-profiled (see each profile's profileState), never a negative capability claim.",
                       "type": "string"
+                    },
+                    "didYouMean": {
+                      "description": "Present when the query as typed matched NOTHING and a fuzzy name lookup recovered exactly one project within a typo's distance — the results are for `to`, not for what was asked. Only fires for short (≤2 token) queries against names of 5+ characters, and only when a single candidate wins outright, so it never guesses between similar names and never touches 3–4 character asset tickers. Relay the correction to the user rather than presenting the rows as a match for the original spelling.",
+                      "properties": {
+                        "from": {
+                          "description": "The query as the caller typed it.",
+                          "type": "string"
+                        },
+                        "note": {
+                          "type": "string"
+                        },
+                        "slug": {
+                          "type": "string"
+                        },
+                        "to": {
+                          "description": "The project name actually searched.",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
                     },
                     "matchMode": {
                       "description": "Tier of match relaxation that produced these results. `semantic` means NO keyword tier matched — every row is a vector-similarity fallback guess (each tagged `via: \"semantic\"`, confidence capped at medium): verify relevance before relying on them.",
@@ -1299,6 +1912,333 @@
           ],
           "type": "object"
         },
+        "ResearchResult": {
+          "description": "One ranked research chunk from /api/research (best chunk per document).",
+          "properties": {
+            "auditor": {
+              "description": "Audit-source chunks only",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "chunkIndex": {
+              "type": "integer"
+            },
+            "confidence": {
+              "description": "0-1 trust signal: score, label (high/medium/low), relevance, freshness, authority, ageDays",
+              "type": "object"
+            },
+            "content": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "observedAt": {
+              "description": "When ingest last crawled the page live",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "protocol": {
+              "description": "Audit-source chunks only",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "publishedAt": {
+              "description": "The source's own stated date",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "score": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "section": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "severity": {
+              "description": "Audit-source chunks only; section-inferred and CHUNK-level (labels the matched chunk's section, not the report or a finding), 'unknown' for most PDF-derived chunks",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "source": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "Rfp": {
+          "description": "An RFP row from /api/rfps. rowType discriminates real briefs from the synthetic live-round row (sls-045) — count/render briefs by filtering rowType === 'rfp'.",
+          "properties": {
+            "authorName": {
+              "description": "Sponsor/author of the brief; 'Stellar Community Fund' on synthetic rows.",
+              "type": "string"
+            },
+            "category": {
+              "description": "Category slug — the ?category= filter vocabulary (an unrecognized filter value returns 400 with validCategories). 'scf' is carried by the synthetic live-round row.",
+              "type": "string"
+            },
+            "categoryLabel": {
+              "description": "Display label for category (e.g. 'DeFi').",
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "id": {
+              "description": "Brief slug (also the stellarlight.xyz/ideas/{id} page). Synthetic rows use 'scf-round-{n}'.",
+              "type": "string"
+            },
+            "quarter": {
+              "description": "Quarter slug (e.g. 'q1-2026') — the ?quarter= filter vocabulary. Synthetic rows carry the active quarter.",
+              "type": "string"
+            },
+            "quarterLabel": {
+              "description": "Display label ('Q1 2026'); 'Live round' on synthetic rows.",
+              "type": "string"
+            },
+            "rowType": {
+              "description": "'rfp' = a curated sponsor brief. 'scf-round' = a SYNTHETIC row representing the live SCF round's open submission window (served as a row so row-reading agents don't miss the open round). Synthetic rows are NOT briefs — count/render briefs by filtering rowType === 'rfp'.",
+              "enum": [
+                "rfp",
+                "scf-round"
+              ],
+              "type": "string"
+            },
+            "status": {
+              "description": "'open' = fundable in the current SCF quarter; 'closed' = a prior round, surfaced for context.",
+              "enum": [
+                "open",
+                "closed"
+              ],
+              "type": "string"
+            },
+            "synthetic": {
+              "description": "True only on synthetic scf-round rows — mirror of rowType.",
+              "type": "boolean"
+            },
+            "technicalRequirements": {
+              "description": "The sponsor's technical requirements text. Null when the brief carries none — and always null on synthetic scf-round rows.",
+              "nullable": true,
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "url": {
+              "description": "Brief page (stellarlight.xyz/ideas/{id}); the SCF awards page on synthetic scf-round rows.",
+              "format": "uri",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "Skill": {
+          "description": "One installable Stellar AI skill/tool from /api/skills — SDF's skills.stellar.org set, curated entries, and approved community submissions mapped onto one unified shape. Optional fields are OMITTED when not applicable (absent = not applicable, never null and never false).",
+          "properties": {
+            "argumentHint": {
+              "description": "SDF skills only — argument hint (e.g. '[payment task]'). Absent elsewhere.",
+              "type": "string"
+            },
+            "compatibility": {
+              "description": "Agent runtimes the skill is known to work in (e.g. 'Claude Code', 'Codex', 'Cursor').",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "description": {
+              "type": "string"
+            },
+            "docs": {
+              "description": "Docs URL. Absent on most rows.",
+              "type": "string"
+            },
+            "featured": {
+              "description": "Editorially featured. Absent (not false) on most rows.",
+              "type": "boolean"
+            },
+            "homepage": {
+              "type": "string"
+            },
+            "install": {
+              "description": "Primary install command (e.g. 'npx skills add stellar/{slug}'). Absent when the entry has no one-line install.",
+              "type": "string"
+            },
+            "installAlt": {
+              "description": "Alternate install commands for other agent runtimes — an ARRAY of {label, command} entries (label = the runtime, e.g. 'Codex'). Absent when only the primary install applies.",
+              "items": {
+                "properties": {
+                  "command": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "kind": {
+              "enum": [
+                "skill-md",
+                "mcp-server",
+                "sdk",
+                "cli",
+                "agent-kit",
+                "tool"
+              ],
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "rawUrl": {
+              "description": "Direct raw SKILL.md URL (SDF skills). Absent elsewhere.",
+              "type": "string"
+            },
+            "repository": {
+              "description": "Source repository URL. Absent when not published.",
+              "type": "string"
+            },
+            "slug": {
+              "description": "Skill slug — resolves via /api/skills/{name} (getSkill).",
+              "type": "string"
+            },
+            "source": {
+              "enum": [
+                "sdf",
+                "stellarlight",
+                "lumenloop",
+                "external",
+                "community"
+              ],
+              "type": "string"
+            },
+            "tagline": {
+              "description": "One-line summary. Absent on some rows.",
+              "type": "string"
+            },
+            "tags": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "targetUser": {
+              "description": "Intended audience tags (dev, founder, agent).",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "userInvocable": {
+              "description": "SDF skills only — whether the skill is user-invocable in skills.stellar.org's sense. Absent elsewhere.",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
+        "Stablecoin": {
+          "description": "One Stellar stablecoin from /api/stablecoins, proxied from the stablecoin snapshot service. marketCapUSD is the ONLY cross-row-comparable size metric; `supply` is raw units in the asset's own `peg`. null on any metric = not tracked, never 'zero'.",
+          "properties": {
+            "company": {
+              "nullable": true,
+              "type": "string"
+            },
+            "country": {
+              "nullable": true,
+              "type": "string"
+            },
+            "holders": {
+              "description": "Trustline holder count.",
+              "nullable": true,
+              "type": "number"
+            },
+            "issuer": {
+              "description": "Stellar issuer account (G…) — the universal join key.",
+              "nullable": true,
+              "type": "string"
+            },
+            "issuerDomain": {
+              "nullable": true,
+              "type": "string"
+            },
+            "marketCapUSD": {
+              "description": "Supply valued in USD (supply × USD price) — THE comparable ranking metric (default sort). Null = unpriced.",
+              "nullable": true,
+              "type": "number"
+            },
+            "name": {
+              "nullable": true,
+              "type": "string"
+            },
+            "peg": {
+              "description": "Fiat the asset tracks (USD, JPY, ARS, …). `supply` is in THIS unit — so raw supply is NOT comparable across rows with different pegs; use marketCapUSD.",
+              "nullable": true,
+              "type": "string"
+            },
+            "priceUSD": {
+              "description": "USD price of one unit (≈1 for USD pegs).",
+              "nullable": true,
+              "type": "number"
+            },
+            "supply": {
+              "description": "Circulating supply in whole asset units of its own peg — NOT USD, NOT comparable across pegs. Null = not reported.",
+              "nullable": true,
+              "type": "number"
+            },
+            "supplyChange7d": {
+              "description": "7-day supply change (display string, e.g. '-5.80%').",
+              "nullable": true,
+              "type": "string"
+            },
+            "ticker": {
+              "description": "Asset code (USDC, USDY, GYEN, …).",
+              "type": "string"
+            },
+            "updatedAt": {
+              "description": "When this snapshot row was refreshed (dated-metrics rule).",
+              "format": "date-time",
+              "nullable": true,
+              "type": "string"
+            },
+            "verified": {
+              "type": "boolean"
+            },
+            "volume24hUSD": {
+              "description": "24h transfer volume in USD.",
+              "nullable": true,
+              "type": "number"
+            },
+            "website": {
+              "nullable": true,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "StatusResponse": {
           "properties": {
             "apiVersion": {
@@ -1413,13 +2353,13 @@
       },
       "summary": "Agent-native data layer for the Stellar ecosystem — projects, builders, hackathons, SCF, audits, research.",
       "title": "Stellar Scout API",
-      "version": "1.7.26"
+      "version": "1.8.28"
     },
     "openapi": "3.1.0",
     "paths": {
       "/api/analyze": {
         "get": {
-          "description": "The cross-ecosystem macro rollup — totals no single-event tool answers: hackathon totals, SCF funding distributed (per-round + the Built/In-Progress/Abandoned funnel), per-category distribution, and the DeFi TVL rollup (DefiLlama-sourced, as-of dated, directory-scoped). Slice via `dimension=hackathons|categories|funding|tvl`. Not for per-category crowdedness/whitespace → use getClusters.",
+          "description": "The cross-ecosystem macro rollup — totals no single-event tool answers. Slice via `dimension=hackathons|categories|funding|tvl|gaps|developers`: hackathon + SCF-funding totals (per-round + Built/Abandoned funnel), per-category distribution, DeFi TVL (DefiLlama, dated), `gaps` (per-vertical whitespace — under-built/unproven/absent, for 'what should I build?'), and `developers` (current Electric Capital monthly-active-dev count + month/year trend, tenure, geography, peer scale). gaps + developers are SUPPLY/commit-side and as-of dated — never demand or a headcount.",
           "operationId": "analyzeEcosystem",
           "parameters": [
             {
@@ -1433,7 +2373,9 @@
                   "hackathons",
                   "categories",
                   "funding",
-                  "tvl"
+                  "tvl",
+                  "gaps",
+                  "developers"
                 ],
                 "type": "string"
               }
@@ -1567,7 +2509,11 @@
             "exampleQuestions": [
               "How much SCF funding has been distributed in total?",
               "What's the total prize money across all Stellar hackathons?",
-              "What's the total DeFi TVL on Stellar?"
+              "What's the total DeFi TVL on Stellar?",
+              "What should I build on Stellar / where are the gaps?",
+              "Which product verticals have no Live projects yet?",
+              "How many active developers are building on Stellar? (dimension=developers)",
+              "Is Stellar's developer base growing year over year?"
             ],
             "keywords": [
               "total",
@@ -1591,10 +2537,29 @@
               "tvl",
               "defi tvl",
               "defillama",
-              "top protocols by tvl"
+              "top protocols by tvl",
+              "gaps",
+              "whitespace",
+              "what should i build",
+              "underserved",
+              "under-built",
+              "missing",
+              "opportunity",
+              "which verticals are thin",
+              "no live projects",
+              "how many developers",
+              "active developers",
+              "developer count",
+              "monthly active developers",
+              "developer growth",
+              "developer trend",
+              "full-time developers",
+              "electric capital",
+              "devs building on stellar",
+              "how many devs"
             ],
             "notFor": [
-              "crowdedness or whitespace per category -> getClusters",
+              "per-category project COUNTS / crowdedness (raw distribution) -> getClusters; dimension=gaps is the richer whitespace view (proven/funded/absent)",
               "a ranked list of top/active projects -> getLeaderboard",
               "one specific hackathon's details -> getHackathon",
               "comparing two hackathons head-to-head -> compareHackathons"
@@ -1605,7 +2570,140 @@
               "total SCF funding distributed / mean award size",
               "how much prize money across all hackathons (totalEvents, prize pools, registered hackers — live from DoraHacks)",
               "how many projects get built vs abandoned after hackathons",
-              "total/top DeFi TVL on Stellar (DefiLlama-tracked protocols only — undercounts chain-wide TVL; as-of dated, never an exact to-the-dollar live figure)"
+              "total/top DeFi TVL on Stellar (DefiLlama-tracked protocols only — undercounts chain-wide TVL; as-of dated, never an exact to-the-dollar live figure)",
+              "what to build / where the whitespace is: dimension=gaps returns per-vertical coverage + which product types are under-built, built-but-unproven (nothing Live), or absent — SUPPLY-side, not demand",
+              "how many active developers build on Stellar / developer growth or trend / where they are: dimension=developers returns the current Electric Capital monthly-active-dev count (total + Stellar-exclusive), month/year deltas, full-time/part-time tenure, top countries, and peer-chain scale — commit-derived and as-of dated, not a headcount"
+            ]
+          }
+        }
+      },
+      "/api/audits": {
+        "get": {
+          "description": "One row per security-audit report from stellarsecurityportal.com — the structured, enumerable half of the audit corpus (full report text is chunk-served by searchResearch with source=audit). Rows carry a normalized auditor, publication date, and a hand-verified link to the directory project (`projectSlug`). Semantics: a project ABSENT here has no audit on record at our source — NOT a claim it is unaudited; `findingsTotal`/`severityCounts` null = not extracted, NOT zero. Unknown query params are rejected with 400, never silently ignored.",
+          "operationId": "listAudits",
+          "parameters": [
+            {
+              "description": "Directory project slug (exact), e.g. blend",
+              "in": "query",
+              "name": "project",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Auditor firm, case/homoglyph-insensitive exact match (e.g. OtterSec)",
+              "in": "query",
+              "name": "auditor",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Substring match on title / protocol / project name",
+              "in": "query",
+              "name": "q",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Only reports published on/after this date (YYYY-MM-DD)",
+              "in": "query",
+              "name": "since",
+              "schema": {
+                "format": "date",
+                "type": "string"
+              }
+            },
+            {
+              "description": "Max rows (default 100, max 100)",
+              "in": "query",
+              "name": "limit",
+              "schema": {
+                "default": 100,
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            {
+              "description": "Pagination offset",
+              "in": "query",
+              "name": "offset",
+              "schema": {
+                "default": 0,
+                "minimum": 0,
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "audits": {
+                        "items": {
+                          "$ref": "#/components/schemas/Audit"
+                        },
+                        "type": "array"
+                      },
+                      "meta": {
+                        "$ref": "#/components/schemas/Meta"
+                      }
+                    },
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Audit registry rows (meta.counts.total = corpus size; meta.counts.matched = after filters)"
+            },
+            "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Unknown parameter or invalid value (params are never silently ignored)"
+            }
+          },
+          "summary": "Enumerable registry of Stellar security-audit reports",
+          "tags": [
+            "Research"
+          ],
+          "x-routing": {
+            "exampleQuestions": [
+              "Which audit firms have reviewed Blend?",
+              "List the OtterSec audits of Stellar projects",
+              "What are the newest Soroban audits?"
+            ],
+            "keywords": [
+              "audit",
+              "audits",
+              "audit report",
+              "security audit",
+              "audited",
+              "auditor",
+              "ottersec",
+              "certora",
+              "code4rena",
+              "veridise",
+              "halborn",
+              "which projects are audited",
+              "audit history"
+            ],
+            "notFor": [
+              "what a specific audit FOUND (findings text, vulnerabilities discussed) -> searchResearch with source=audit",
+              "security incidents/exploits that happened in production -> searchResearch with source=incident"
+            ],
+            "purpose": "List/filter security-audit reports as structured rows: which audits exist, for which project, by which firm, when.",
+            "useWhen": [
+              "'list all audits for project X' / 'is X audited' (with the absence caveat)",
+              "'what has firm Y audited on Stellar'",
+              "enumerating or counting the audit corpus, newest-first audit activity"
             ]
           }
         }
@@ -1644,6 +2742,9 @@
             },
             {
               "$ref": "#/components/parameters/offset"
+            },
+            {
+              "$ref": "#/components/parameters/fields"
             }
           ],
           "responses": {
@@ -1654,85 +2755,7 @@
                     "properties": {
                       "builders": {
                         "items": {
-                          "description": "A builder profile row. When the request had a q/skill filter, `match` and `codeEvidence` carry the match provenance (sls-041).",
-                          "properties": {
-                            "codeEvidence": {
-                              "description": "Indexed repos owned by this builder's GitHub account that match the query — observable facts (language, last activity), kept SEPARATE from subjective profile text. [] = no direct code evidence in the index (a weaker match, not a disqualification); null without a q/skill filter.",
-                              "items": {
-                                "properties": {
-                                  "fullName": {
-                                    "type": "string"
-                                  },
-                                  "lastCommitAt": {
-                                    "format": "date-time",
-                                    "nullable": true,
-                                    "type": "string"
-                                  },
-                                  "primaryLanguage": {
-                                    "nullable": true,
-                                    "type": "string"
-                                  },
-                                  "repoScore": {
-                                    "type": "number"
-                                  },
-                                  "stars": {
-                                    "type": "integer"
-                                  },
-                                  "url": {
-                                    "nullable": true,
-                                    "type": "string"
-                                  }
-                                },
-                                "type": "object"
-                              },
-                              "nullable": true,
-                              "type": "array"
-                            },
-                            "match": {
-                              "description": "WHY this row matched (null without a q/skill filter). Free-text profile evidence — treat bio/role text as claims, not verified experience.",
-                              "nullable": true,
-                              "properties": {
-                                "basis": {
-                                  "enum": [
-                                    "profile-text"
-                                  ],
-                                  "type": "string"
-                                },
-                                "matchedFields": {
-                                  "description": "Profile fields the query hit (bio, roleTitle, displayName, githubUsername, location, projects).",
-                                  "items": {
-                                    "type": "string"
-                                  },
-                                  "type": "array"
-                                },
-                                "matchedProjects": {
-                                  "description": "Projects whose name/description matched the query.",
-                                  "items": {
-                                    "properties": {
-                                      "name": {
-                                        "type": "string"
-                                      },
-                                      "slug": {
-                                        "nullable": true,
-                                        "type": "string"
-                                      }
-                                    },
-                                    "type": "object"
-                                  },
-                                  "type": "array"
-                                },
-                                "matchedTerms": {
-                                  "additionalProperties": {
-                                    "type": "string"
-                                  },
-                                  "description": "Per query token, the literal term that hit — a token can match via a synonym (e.g. 'payments' via 'remittance').",
-                                  "type": "object"
-                                }
-                              },
-                              "type": "object"
-                            }
-                          },
-                          "type": "object"
+                          "$ref": "#/components/schemas/Builder"
                         },
                         "type": "array"
                       },
@@ -1961,7 +2984,7 @@
                     "properties": {
                       "clusters": {
                         "items": {
-                          "type": "object"
+                          "$ref": "#/components/schemas/Cluster"
                         },
                         "type": "array"
                       },
@@ -2208,9 +3231,108 @@
           }
         }
       },
+      "/api/hackathons/builds": {
+        "get": {
+          "description": "Topic search across every submission ('buidl') from all Stellar hackathons (DoraHacks) — the PROTOTYPE layer of prior art, most of which never becomes a directory project. Answers 'has anyone already built X at a hackathon?' with each build's name, description, event, placement/award, votes, and repo/demo links. `winnersOnly=1` = prize winners; `track` filters by track. Absence is a real whitespace signal, not proof it was never tried. For SHIPPED products in the directory → use searchProjects.",
+          "operationId": "searchHackathonBuilds",
+          "parameters": [
+            {
+              "description": "Topic to search build names + descriptions (prior-art lookup).",
+              "in": "query",
+              "name": "q",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Set to 1 to return only prize-winning builds.",
+              "in": "query",
+              "name": "winnersOnly",
+              "required": false,
+              "schema": {
+                "enum": [
+                  "1",
+                  "true"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "description": "Filter by hackathon track (substring match).",
+              "in": "query",
+              "name": "track",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Max builds (default 20, max 100).",
+              "in": "query",
+              "name": "limit",
+              "required": false,
+              "schema": {
+                "default": 20,
+                "maximum": 100,
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Matching hackathon builds"
+            }
+          },
+          "summary": "Search what was BUILT at Stellar hackathons (prior-art over prototypes)",
+          "tags": [
+            "Hackathons"
+          ],
+          "x-routing": {
+            "exampleQuestions": [
+              "Has anyone built a recurring payments protocol at a Stellar hackathon?",
+              "What prediction markets were built at Stellar hackathons?",
+              "Show me winning ZK privacy builds."
+            ],
+            "keywords": [
+              "hackathon builds",
+              "buidls",
+              "hackathon projects",
+              "prototypes",
+              "was this built at a hackathon",
+              "has anyone built",
+              "prior art",
+              "already built",
+              "hackathon submissions",
+              "winning projects",
+              "winning builds",
+              "hackathon winners by topic"
+            ],
+            "notFor": [
+              "shipped/live products in the directory -> searchProjects",
+              "one event's full detail/winners -> getHackathon",
+              "listing/comparing the events -> getHackathons / compareHackathons"
+            ],
+            "purpose": "Prior-art over hackathon PROTOTYPES — has this idea already been hacked together at a Stellar hackathon?",
+            "useWhen": [
+              "I want to build X — has anyone prototyped it at a Stellar hackathon?",
+              "what got built around <topic> at hackathons",
+              "which hackathon projects did <topic>",
+              "winning builds for <topic>"
+            ]
+          }
+        }
+      },
       "/api/hackathons/compare": {
         "get": {
-          "description": "Side-by-side comparison of 2–5 hackathons by slug — per-event snapshot (prize pool, submissions, winners, hackers, prize-per-winner) plus a `deltas` block flagging the spreads. Unresolved slugs return source:'not-found' without inflating counts. Requires ≥2 known slugs — resolve via getHackathons. Not for ecosystem-wide totals across ALL events → use analyzeEcosystem.",
+          "description": "Side-by-side comparison of 2–5 hackathons by slug — per-event snapshot (prize pool, submissions, winners, prize-per-winner, and cohort DURABILITY — stillActiveCount/liveCount/activeRatePct, how many of the event's projects are still alive today; curated events only) plus a `deltas` block flagging the spreads incl. the most durable cohort. Unresolved slugs return source:'not-found' without inflating counts. Requires ≥2 known slugs — resolve via getHackathons. Not for ecosystem-wide totals across ALL events → use analyzeEcosystem.",
           "operationId": "compareHackathons",
           "parameters": [
             {
@@ -2249,7 +3371,8 @@
           "x-routing": {
             "exampleQuestions": [
               "Was event A bigger than event B?",
-              "Compare the last two SDF hackathons on prize money"
+              "Compare the last two SDF hackathons on prize money",
+              "Which hackathon's projects are still active today?"
             ],
             "keywords": [
               "compare",
@@ -2261,7 +3384,13 @@
               "spread",
               "prize-per-winner",
               "registered hackers",
-              "submission count"
+              "submission count",
+              "still active",
+              "still alive",
+              "durability",
+              "survival rate",
+              "which projects survived",
+              "most durable cohort"
             ],
             "notFor": [
               "one event's deep detail/winners -> getHackathon",
@@ -2272,7 +3401,8 @@
             "useWhen": [
               "which Stellar hackathon should I enter",
               "how did [event A] compare to [event B] on prizes/turnout",
-              "was [A] or [B] bigger"
+              "was [A] or [B] bigger",
+              "which event's projects are still active/alive today (cohort durability — curated events only)"
             ]
           }
         }
@@ -2357,11 +3487,11 @@
       },
       "/api/leaderboard": {
         "get": {
-          "description": "Ranked list of active Stellar projects (`sort=activity|stars|issues` over a `range`; `category` filter; `format=csv`) with per-project GitHub rollups, plus an Electric Capital dev-count macro block. `meta.metricDefinitions` defines each served metric — activity = latest-commit recency (NOT commit volume); issues = open backlog (not activity). Ranks PROJECTS, not people → use getBuilders.",
+          "description": "Ranked list of active Stellar projects (`sort=activity|stars|issues|tvl` over a `range`; `category` filter; `format=csv`) with per-project GitHub rollups, plus an Electric Capital dev-count macro block. `meta.metricDefinitions` defines each served metric — activity = latest-commit recency (NOT commit volume); issues = open backlog (not activity); tvl = DefiLlama-verified TVL (null = untracked, never zero). Ranks PROJECTS, not people → use getBuilders.",
           "operationId": "getLeaderboard",
           "parameters": [
             {
-              "description": "Order the project leaderboard. An unrecognized value returns 400 with the valid list.",
+              "description": "Order the project leaderboard. An unrecognized value returns 400 with the valid list. sort=tvl orders by DefiLlama-verified tvlUSD; sort=supply orders by issued-asset circulating supply (assetSupply). For both, null = untracked → those rows sort last, never treated as 0.",
               "in": "query",
               "name": "sort",
               "schema": {
@@ -2369,7 +3499,9 @@
                 "enum": [
                   "activity",
                   "stars",
-                  "issues"
+                  "issues",
+                  "tvl",
+                  "supply"
                 ],
                 "type": "string"
               }
@@ -2458,6 +3590,39 @@
                   "schema": {
                     "properties": {
                       "ecosystem": {
+                        "description": "Electric Capital Developer Report snapshot — ecosystem-wide developer activity. Dated numbers: always cite asOf (they are NOT live). stellarOnlyDevs28d + multichainDevs28d sum to activeDevs28d; fullTimeDevs + partTimeDevs + oneTimeDevs is the same 28-day-active population split by EC tenure class.",
+                        "properties": {
+                          "activeDevs28d": {
+                            "description": "Developers with commit activity in the trailing 28 days.",
+                            "type": "integer"
+                          },
+                          "asOf": {
+                            "description": "Snapshot date of the EC dataset every number below is as-of.",
+                            "format": "date",
+                            "type": "string"
+                          },
+                          "commits28d": {
+                            "description": "Total commits in the trailing 28 days.",
+                            "type": "integer"
+                          },
+                          "fullTimeDevs": {
+                            "type": "integer"
+                          },
+                          "multichainDevs28d": {
+                            "description": "28-day active devs also active in other ecosystems.",
+                            "type": "integer"
+                          },
+                          "oneTimeDevs": {
+                            "type": "integer"
+                          },
+                          "partTimeDevs": {
+                            "type": "integer"
+                          },
+                          "stellarOnlyDevs28d": {
+                            "description": "28-day active devs committing ONLY in the Stellar ecosystem.",
+                            "type": "integer"
+                          }
+                        },
                         "type": "object"
                       },
                       "meta": {
@@ -2480,7 +3645,7 @@
                       },
                       "projects": {
                         "items": {
-                          "type": "object"
+                          "$ref": "#/components/schemas/LeaderboardProject"
                         },
                         "type": "array"
                       }
@@ -2501,6 +3666,7 @@
               "Which leaderboard projects have open issues?",
               "What are the most active Stellar projects in the last 30 days?",
               "How many active developers does Stellar have?",
+              "What's the biggest stablecoin on Stellar by supply?",
               "Export the top 100 Stellar projects as CSV"
             ],
             "keywords": [
@@ -2533,7 +3699,17 @@
               "full-time",
               "part-time",
               "multichain",
-              "repoCount"
+              "repoCount",
+              "tvl",
+              "total value locked",
+              "top defi",
+              "biggest protocols",
+              "supply",
+              "circulating supply",
+              "biggest stablecoin",
+              "largest stablecoin",
+              "asset supply",
+              "token holders"
             ],
             "notFor": [
               "category counts or crowded-vs-underbuilt whitespace -> getClusters",
@@ -2541,13 +3717,15 @@
               "a specific project's profile/funding/competitors -> searchProjects",
               "ranking individual developers (this ranks PROJECTS + an EC macro snapshot; it lists no named devs) -> getBuilders"
             ],
-            "purpose": "Ranked active-project leaderboard + Electric Capital ecosystem developer stats.",
+            "purpose": "Ranked active-project leaderboard + Electric Capital ecosystem developer stats. Population = EVERY Live/Development/Pre-Release project with its indexed-repo rollup (default range=all); absence from the top-N means ranked below N or no indexed repos — never a liveness verdict.",
             "useWhen": [
               "which projects have open issues / the biggest issue backlog",
               "repo health / maintenance / activity comparisons across projects",
               "who/what are the top/most-active Stellar projects",
               "most-starred projects; which projects shipped recently (last 30d)",
               "how many active Stellar devs / how does Stellar's dev activity look (EC 28-day active / Stellar-only / multichain splits)",
+              "top DeFi protocols by TVL (sort=tvl, e.g. with type=DEX,Lending) — DefiLlama-verified, dated per-row by tvlAsOf",
+              "biggest stablecoin / issued asset by circulating supply (sort=supply, pair with type=Stablecoin) — assetSupply + assetHolders from stellar.expert",
               "a CSV/Dune-style export of ranked projects (default top 50, max 300)"
             ]
           }
@@ -2630,6 +3808,9 @@
             },
             {
               "$ref": "#/components/parameters/limit"
+            },
+            {
+              "$ref": "#/components/parameters/fields"
             }
           ],
           "responses": {
@@ -3031,9 +4212,133 @@
           ]
         }
       },
+      "/api/people": {
+        "get": {
+          "description": "The Stellar Development Foundation org/people index — leadership, board of directors, and advisors (name → role → org), quoted from stellar.org/foundation/team with provenance. Use for 'who is <person>', 'what is <person>'s role at SDF', 'who leads <area>', 'who's on the SDF board'. Distinct from getBuilders (GitHub-contributor profiles) — an SDF VP or board member is NOT a 'builder'. Not for doc/spec authorship → use searchResearch.",
+          "operationId": "getPeople",
+          "parameters": [
+            {
+              "description": "Name / role / org text filter (e.g. 'justin rice', 'ecosystem', 'openai'). All tokens must match.",
+              "in": "query",
+              "name": "q",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Restrict to one roster section. Accepts 'Leadership', 'Board of directors', 'Advisors' (and aliases 'board'/'advisor').",
+              "in": "query",
+              "name": "section",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/components/parameters/limit"
+            },
+            {
+              "$ref": "#/components/parameters/offset"
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "meta": {
+                        "properties": {
+                          "matchBasis": {
+                            "description": "This is an org/people reference index, NOT a builder/contributor index — roster facts, not verified availability.",
+                            "type": "string"
+                          },
+                          "observedAt": {
+                            "description": "Date the roster was last observed from the source (YYYY-MM-DD).",
+                            "type": "string"
+                          },
+                          "sections": {
+                            "description": "Distinct roster sections present (Leadership, Board of directors, Advisors).",
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "source": {
+                            "description": "The roster page each row is quoted from (stellar.org/foundation/team).",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "people": {
+                        "items": {
+                          "$ref": "#/components/schemas/Person"
+                        },
+                        "type": "array"
+                      }
+                    },
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "SDF roster"
+            },
+            "400": {
+              "description": "Invalid section value, or an unsupported query parameter."
+            }
+          },
+          "summary": "SDF team / people index",
+          "tags": [
+            "Builders"
+          ],
+          "x-routing": {
+            "exampleQuestions": [
+              "Who is Justin Rice and what does he do at SDF?",
+              "Who is the SDF Chief Scientist?",
+              "Who's on the Stellar Development Foundation board of directors?"
+            ],
+            "keywords": [
+              "who is",
+              "role",
+              "title",
+              "leadership",
+              "executive",
+              "ceo",
+              "cto",
+              "cfo",
+              "chief",
+              "vp",
+              "vp of ecosystem",
+              "board",
+              "board of directors",
+              "director",
+              "advisor",
+              "advisors",
+              "sdf team",
+              "stellar development foundation team",
+              "founder",
+              "staff",
+              "person",
+              "people"
+            ],
+            "notFor": [
+              "a GitHub-contributor / builder to hire -> getBuilders",
+              "who authored a doc/spec/blog post -> searchResearch",
+              "a funded project/product or 'who built X (the company)' -> searchProjects"
+            ],
+            "purpose": "Look up a named person on the SDF roster (leadership / board / advisors) and their current role/affiliation.",
+            "useWhen": [
+              "who is <person> / what is <person>'s role at SDF",
+              "who leads ecosystem / product / engineering at the SDF",
+              "who sits on the SDF board of directors or advisory board",
+              "a named SDF staffer or leader that getBuilders (GitHub contributors) doesn't cover"
+            ]
+          }
+        }
+      },
       "/api/projects/search": {
         "get": {
-          "description": "Search the curated directory of Stellar projects/products — what has been BUILT, by whom, with SCF funding, lifecycle status, `builtBy`, links, and indexed repos inline. Answers 'who/what already exists for X' with directory records; the `type` filter gives exact product-type rosters. Not for docs, standards, or how-to/reference knowledge → use searchResearch.",
+          "description": "Search the curated directory of Stellar projects/products — what has been BUILT, by whom, with SCF funding, lifecycle status, `builtBy`, links, indexed repos, and verified on-chain metrics (`onchain`) inline. THE way to LOOK UP a specific project by its name (a named protocol/app/wallet/tool) AND to discover 'who/what already exists for X'; the `type` filter gives exact product-type rosters. Not for docs, standards, or how-to/reference knowledge → use searchResearch.",
           "operationId": "searchProjects",
           "parameters": [
             {
@@ -3096,7 +4401,7 @@
               }
             },
             {
-              "description": "Filter by lifecycle status (e.g. status=Inactive lists retired/defunct projects; status=Live restricts to operating ones). Unknown values return 400 with validStatuses.",
+              "description": "Filter by lifecycle status (e.g. status=Inactive lists retired/defunct projects; status=Live restricts to operating ones). Compose with scfAwarded for accountability/diligence — `?scfAwarded=1&status=Inactive` is the roster of SCF-funded projects that have since gone inactive, and `meta.counts.total` is how many. Unknown values return 400 with validStatuses.",
               "in": "query",
               "name": "status",
               "schema": {
@@ -3115,6 +4420,9 @@
             },
             {
               "$ref": "#/components/parameters/offset"
+            },
+            {
+              "$ref": "#/components/parameters/fields"
             }
           ],
           "responses": {
@@ -3129,7 +4437,7 @@
               "description": "Project search results"
             }
           },
-          "summary": "Search Stellar projects (prior art / competitor lookup)",
+          "summary": "Search Stellar projects — look up a project by name, or find prior art / competitors",
           "tags": [
             "Projects"
           ],
@@ -3139,7 +4447,8 @@
               "Has anyone built a ROSCA/susu app on Stellar?",
               "Is Etherfuse Stablebonds live and SCF-funded?",
               "Who built Soroswap?",
-              "Give me a market map of Stellar DeFi projects"
+              "Give me a market map of Stellar DeFi projects",
+              "Which SCF-funded projects have gone inactive? (?scfAwarded=1&status=Inactive)"
             ],
             "keywords": [
               "projects",
@@ -3151,7 +4460,20 @@
               "companies",
               "startups",
               "directory",
+              "look up a project by name",
+              "find a specific project",
+              "named project",
+              "project by name",
               "market map",
+              "on-chain activity",
+              "public goods",
+              "public goods award",
+              "onchain metrics",
+              "contract events",
+              "contract invocations",
+              "asset holders",
+              "circulating supply",
+              "tvl",
               "prior art",
               "competitors",
               "defi",
@@ -3195,7 +4517,8 @@
               "how-to / reference / docs questions (CLI usage, bindings, SEP or standards text, feasibility) -> searchResearch",
               "raw GitHub source repos ranked by code quality -> searchRepos",
               "editorial/analysis content about a product (articles, interviews, metrics commentary, deep dives) -> content platforms, not this directory",
-              "category counts or whitespace -> getClusters"
+              "category counts or whitespace -> getClusters",
+              "a TVL-complete DeFi rollup -> analyzeEcosystem dimension=tvl (the types taxonomy has no DeFi umbrella; RWA/Infrastructure-typed protocols like Spiko carry most Stellar TVL, so type=DEX+Lending rosters miss them)"
             ],
             "purpose": "Directory lookup of built Stellar projects/products — status, SCF funding, builder, links. Keyword+synonym ranked by prominence/verification/funding/Live status, semantic fallback when keyword hits are thin.",
             "useWhen": [
@@ -3203,7 +4526,8 @@
               "which projects exist / give me a directory or market map of a category (wallets, DeFi, NFT marketplaces, anchors and anchor infrastructure, explorers)",
               "DIRECTORY FACTS about a named product — status, funding, builder, links (e.g. Etherfuse Stablebonds USTRY/CETES, Soroswap)",
               "is there a mature X I could integrate / who is building Y / projects operating as anchors",
-              "list/enumerate/compare from the curated directory: which wallets exist and how they differ, main DeFi projects, perpetuals/derivatives DEXes, AMM/liquidity protocols and their yields"
+              "list/enumerate/compare from the curated directory: which wallets exist and how they differ, main DeFi projects, perpetuals/derivatives DEXes, AMM/liquidity protocols and their yields",
+              "ACCOUNTABILITY / DILIGENCE by composing structured filters — which SCF-funded projects went inactive (`?scfAwarded=1&status=Inactive`), which Live projects a category has (`?type=Wallet&status=Live`); the natural-language words 'inactive/defunct/abandoned/dead' do NOT route from `q`, they must be passed as `status=Inactive`. `meta.counts.total` answers the 'how many' form."
             ]
           }
         }
@@ -3465,6 +4789,9 @@
             },
             {
               "$ref": "#/components/parameters/offset"
+            },
+            {
+              "$ref": "#/components/parameters/fields"
             }
           ],
           "responses": {
@@ -3551,21 +4878,29 @@
       },
       "/api/research": {
         "get": {
-          "description": "Semantic search over the Stellar knowledge corpus — SDF blog, SCF Handbook, SEPs/standards, dev docs, papers, audits, incident reports. Returns cited text chunks with source, section, URL, confidence, and provenance dates (`publishedAt` = the source's own stated date; `observedAt` = when ingest last crawled the page; audits add auditor/severity). THE surface for 'how does X work', 'what does the SEP/spec/audit say', and how-to/feasibility questions. Not for products and their funding/status → use searchProjects.",
+          "description": "Semantic search over the Stellar knowledge corpus — SDF blog, SCF Handbook, SEPs/standards, dev docs, papers, audits, incident reports. Returns cited text chunks with source, section, URL, confidence, and provenance dates (`publishedAt` = the source's own stated date; `observedAt` = when ingest last crawled the page; audits add auditor/severity — filterable; report-level enumeration → listAudits). THE surface for 'how does X work', 'what does the SEP/spec/audit say', and how-to/feasibility questions. Not for products and their funding/status → use searchProjects.",
           "operationId": "searchResearch",
           "parameters": [
             {
-              "description": "Natural-language search query",
+              "description": "Natural-language search query. Required unless the `query` alias is supplied — requests with neither return 400.",
               "in": "query",
               "name": "q",
-              "required": true,
               "schema": {
                 "minLength": 2,
                 "type": "string"
               }
             },
             {
-              "description": "Optional source filter. Use 'audit' for security questions, 'incident' for exploit/post-mortem history, 'security-program' for bug-bounty / vulnerability-disclosure program status (which program is current, where to report), 'sdf-org' for SDF's canonical organizational pages (mandate, legal structure/terms, foundation, team, enterprise fund, quarterly-reports index), 'ec-developer-report' for ecosystem stats, 'paper' for foundational protocol questions.",
+              "description": "Alias of `q` (agents commonly send the term under this name; both are accepted, `q` wins when both are present).",
+              "in": "query",
+              "name": "query",
+              "schema": {
+                "minLength": 2,
+                "type": "string"
+              }
+            },
+            {
+              "description": "Optional source filter. Use 'audit' for security questions, 'incident' for exploit/post-mortem history, 'security-program' for bug-bounty / vulnerability-disclosure program status (which program is current, where to report), 'sdf-org' for SDF's canonical organizational pages (mandate, legal structure/terms, foundation, team, enterprise fund, quarterly-reports index), 'ec-developer-report' for ecosystem stats, 'paper' for foundational protocol questions, 'release' for stellar-core/CLI/SDK release notes (what shipped, when — protocol upgrade tags).",
               "in": "query",
               "name": "source",
               "schema": {
@@ -3583,7 +4918,40 @@
                   "incident",
                   "security-program",
                   "sdf-org",
-                  "ec-developer-report"
+                  "ec-developer-report",
+                  "release"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "description": "Audit-metadata filter: exact auditor firm (case/homoglyph-insensitive, e.g. OtterSec, Certora). Using any audit-metadata filter scopes RETRIEVAL to source=audit (an explicit contradictory source= is rejected with 400). For report-level enumeration prefer listAudits.",
+              "in": "query",
+              "name": "auditor",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Audit-metadata filter: audited protocol/codebase name (substring match). Narrows results to audit-source chunks.",
+              "in": "query",
+              "name": "protocol",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Audit-metadata filter, case-insensitive. CAVEAT: severity labels the MATCHED CHUNK's section (inferred from PDF-derived headings), not the report or a specific finding — an architecture chunk can carry 'high' while the findings table reads 'unknown' — do not treat a filtered result set as a complete list of findings at that severity. Unknown values are rejected with a 400.",
+              "in": "query",
+              "name": "severity",
+              "schema": {
+                "enum": [
+                  "critical",
+                  "high",
+                  "medium",
+                  "low",
+                  "informational",
+                  "unknown"
                 ],
                 "type": "string"
               }
@@ -3598,6 +4966,9 @@
                 "minimum": 1,
                 "type": "integer"
               }
+            },
+            {
+              "$ref": "#/components/parameters/fields"
             }
           ],
           "responses": {
@@ -3605,6 +4976,17 @@
               "content": {
                 "application/json": {
                   "schema": {
+                    "properties": {
+                      "meta": {
+                        "$ref": "#/components/schemas/Meta"
+                      },
+                      "results": {
+                        "items": {
+                          "$ref": "#/components/schemas/ResearchResult"
+                        },
+                        "type": "array"
+                      }
+                    },
                     "type": "object"
                   }
                 }
@@ -3688,6 +5070,10 @@
               "instawards",
               "liquidity award",
               "public goods award",
+              "security audit reports",
+              "audit findings",
+              "what did the audit find",
+              "vulnerabilities found",
               "eligibility",
               "review timeline",
               "prescreen",
@@ -3782,6 +5168,10 @@
                 "application/json": {
                   "schema": {
                     "properties": {
+                      "funding": {
+                        "description": "Funding-context sentence for the whole list: winners of OPEN RFPs are eligible for SCF grant funding in the current round; closed RFPs are past rounds, surfaced for context but no longer fundable.",
+                        "type": "string"
+                      },
                       "meta": {
                         "properties": {
                           "activeQuarter": {
@@ -3863,22 +5253,7 @@
                       },
                       "rfps": {
                         "items": {
-                          "description": "An RFP row. rowType discriminates real briefs from the synthetic live-round row (sls-045).",
-                          "properties": {
-                            "rowType": {
-                              "description": "'rfp' = a curated sponsor brief. 'scf-round' = a SYNTHETIC row representing the live SCF round's open submission window (served as a row so row-reading agents don't miss the open round). Synthetic rows are NOT briefs — count/render briefs by filtering rowType === 'rfp'.",
-                              "enum": [
-                                "rfp",
-                                "scf-round"
-                              ],
-                              "type": "string"
-                            },
-                            "synthetic": {
-                              "description": "True only on synthetic scf-round rows — mirror of rowType.",
-                              "type": "boolean"
-                            }
-                          },
-                          "type": "object"
+                          "$ref": "#/components/schemas/Rfp"
                         },
                         "type": "array"
                       }
@@ -3977,6 +5352,17 @@
               "content": {
                 "application/json": {
                   "schema": {
+                    "properties": {
+                      "meta": {
+                        "$ref": "#/components/schemas/Meta"
+                      },
+                      "skills": {
+                        "items": {
+                          "$ref": "#/components/schemas/Skill"
+                        },
+                        "type": "array"
+                      }
+                    },
                     "type": "object"
                   }
                 }
@@ -4091,6 +5477,121 @@
           }
         }
       },
+      "/api/stablecoins": {
+        "get": {
+          "description": "Every tracked Stellar stablecoin, ranked by USD market cap by default (sort=marketcap|supply|holders|volume; peg filter). Rows carry marketCapUSD (comparable), raw supply + its peg (NOT comparable across pegs — GYEN supply is yen, ARST is pesos), holders, price, issuer. Proxied live from the stablecoin snapshot service; null = not tracked, never zero.",
+          "operationId": "getStablecoins",
+          "parameters": [
+            {
+              "description": "Ranking order. marketcap (default, USD-comparable) | supply (raw peg units — comparable only within one peg) | holders | volume. Unrecognized values return 400.",
+              "in": "query",
+              "name": "sort",
+              "schema": {
+                "default": "marketcap",
+                "enum": [
+                  "marketcap",
+                  "supply",
+                  "holders",
+                  "volume"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "description": "Filter to one fiat peg (e.g. USD, EUR, JPY, ARS). Case-insensitive. Omit for all pegs.",
+              "in": "query",
+              "name": "peg",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Max rows (default 50, max 100).",
+              "in": "query",
+              "name": "limit",
+              "schema": {
+                "default": 50,
+                "maximum": 100,
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "meta": {
+                        "$ref": "#/components/schemas/Meta"
+                      },
+                      "stablecoins": {
+                        "items": {
+                          "$ref": "#/components/schemas/Stablecoin"
+                        },
+                        "type": "array"
+                      }
+                    },
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Ranked stablecoins"
+            },
+            "400": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              },
+              "description": "Invalid sort or unknown query param"
+            }
+          },
+          "summary": "Stellar stablecoins ranked by USD market cap",
+          "tags": [
+            "Ecosystem"
+          ],
+          "x-routing": {
+            "exampleQuestions": [
+              "What's the biggest stablecoin on Stellar?",
+              "Which stablecoin has the most holders?",
+              "List USD-pegged stablecoins by market cap",
+              "What's the total stablecoin market cap on Stellar?"
+            ],
+            "keywords": [
+              "stablecoin",
+              "stablecoins",
+              "biggest stablecoin",
+              "largest stablecoin",
+              "top stablecoin",
+              "market cap",
+              "circulating supply",
+              "usdc",
+              "usdy",
+              "ondo",
+              "pyusd",
+              "eurc",
+              "gyen",
+              "issuer",
+              "peg",
+              "holders"
+            ],
+            "notFor": [
+              "DeFi protocol TVL -> getLeaderboard sort=tvl",
+              "a stablecoin project's full profile/funding/repos -> searchProjects",
+              "non-stablecoin issued assets (governance/utility tokens) -> getLeaderboard sort=supply"
+            ],
+            "purpose": "Authoritative USD-comparable stablecoin ranking. Answers 'biggest stablecoin', 'largest issuer', 'total stablecoin market cap' with USD market cap — NOT raw supply, which is denominated in each asset's own peg and not comparable across rows.",
+            "useWhen": [
+              "the biggest / largest stablecoin on Stellar (by USD market cap)",
+              "top stablecoin issuers, total stablecoin market cap, or a stablecoin's supply/holders/peg",
+              "comparing stablecoins by size — use marketCapUSD, never raw supply across different pegs"
+            ]
+          }
+        }
+      },
       "/api/status": {
         "get": {
           "description": "Self-describe / health endpoint — service ok + versions, per-source freshness and counts (`sources[]`), recent usage, and an enumeration of every /api/* endpoint. Cheap, no params. Use to check how fresh/large the data is or to discover endpoints. Not for the data itself → call the matching search operation.",
@@ -4135,7 +5636,9 @@
               "builders count",
               "repos count",
               "ecosystemStats",
-              "sdfSkills"
+              "sdfSkills",
+              "researchDocs",
+              "partners count"
             ],
             "notFor": [
               "the actual project/repo/research data -> searchProjects / searchRepos / searchResearch",
@@ -4207,8 +5710,8 @@
       }
     ]
   },
-  "openapiVersion": "1.7.26",
-  "operationCount": 24,
+  "openapiVersion": "1.8.28",
+  "operationCount": 28,
   "service": "stellar-light",
   "source": {
     "auth": "none (keyless, read-only)",
@@ -4219,10 +5722,11 @@
     "status": "https://stellarlight.xyz/api/status"
   },
   "status": {
-    "apiVersion": "1.7.26",
+    "apiVersion": "1.8.28",
     "docs": "https://stellarlight.xyz/scout",
     "endpoints": [
       "/api/status",
+      "/api/audits",
       "/api/changelog",
       "/api/leaderboard",
       "/api/hackathons",
@@ -4231,6 +5735,7 @@
       "/api/analyze",
       "/api/clusters",
       "/api/builders",
+      "/api/people",
       "/api/projects/search",
       "/api/repos/search",
       "/api/repos/explain",
@@ -4251,46 +5756,34 @@
     "skill": "https://stellarlight.xyz/skills/stellar-scout.md",
     "sources": [
       {
-        "count": 961,
-        "lastUpdatedAt": "2026-07-15T05:30:29.636Z",
-        "name": "projects",
-        "populationId": "projects|status:all"
+        "name": "projects"
       },
       {
-        "count": 0,
-        "lastUpdatedAt": null,
-        "name": "hackathons",
-        "notes": "Curated DB collection only (may be 0). /api/hackathons additionally merges live DoraHacks-sourced events — see its meta.counts for the served total.",
-        "populationId": "hackathons|status:all"
+        "name": "hackathons"
       },
       {
-        "count": 118,
-        "lastUpdatedAt": "2026-07-15T06:00:36.749Z",
-        "name": "builders",
-        "notes": "Synced from Stellar Passport — small and growing dataset",
-        "populationId": "builders|status:all"
+        "name": "builders"
       },
       {
-        "count": 2481,
-        "lastUpdatedAt": "2026-07-15T05:31:25.847Z",
-        "name": "repos",
-        "notes": "Indexed-and-scored Stellar GitHub repos (powers /api/repos/search)",
-        "populationId": "repos|status:all"
+        "name": "repos"
       },
       {
-        "count": 1,
-        "lastUpdatedAt": "2026-07-14T16:11:05.451148+00:00",
-        "name": "ecosystemStats",
-        "notes": "Electric Capital snapshot, as of 2026-07-06"
+        "name": "audits"
       },
       {
-        "count": 9,
-        "lastUpdatedAt": null,
-        "name": "sdfSkills",
-        "notes": "Proxied from skills.stellar.org (server-cached 24h). Live freshness shown on the upstream site."
+        "name": "researchDocs"
+      },
+      {
+        "name": "partners"
+      },
+      {
+        "name": "ecosystemStats"
+      },
+      {
+        "name": "sdfSkills"
       }
     ],
     "version": "scout-1.0.0"
   },
-  "statusNote": "volatile fields (generatedAt, usage, dataSources counts/dates/notes) stripped by scripts/refresh-inventory.mjs"
+  "statusNote": "volatile fields (generatedAt, usage, sources/dataSources counts/dates/notes) stripped by scripts/refresh-inventory.mjs"
 }

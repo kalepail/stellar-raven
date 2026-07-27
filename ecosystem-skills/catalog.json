@@ -1,12 +1,12 @@
 {
   "source": "https://stellarlight.xyz/api/skills",
-  "fetched_at": "2026-07-15T12:23:39Z",
+  "fetched_at": "2026-07-26T23:35:40Z",
   "counts": {
-    "returned": 30,
+    "returned": 42,
     "bySource": {
       "sdf": 7,
-      "stellarlight": 2,
-      "lumenloop": 9,
+      "stellarlight": 15,
+      "lumenloop": 8,
       "external": 12,
       "community": 0
     }
@@ -151,16 +151,6 @@
       "homepage": "https://github.com/lumenloop/lumenloop-skills"
     },
     {
-      "name": "lumenloop-content-auditor",
-      "title": "LumenLoop: Content Auditor",
-      "source": "lumenloop",
-      "kind": "skill-md",
-      "tagline": "Audit a draft against the ecosystem — fix handles, add citations, flag bad claims.",
-      "install": "/plugin marketplace add lumenloop/lumenloop-skills",
-      "repository": "https://github.com/lumenloop/lumenloop-skills/tree/main/skills/stellar-content-auditor",
-      "homepage": "https://github.com/lumenloop/lumenloop-skills"
-    },
-    {
       "name": "lumenloop-ecosystem-digest",
       "title": "LumenLoop: Ecosystem Digest",
       "source": "lumenloop",
@@ -299,6 +289,136 @@
       "install": "npx skills add stellar/zk-proofs",
       "repository": null,
       "homepage": "https://skills.stellar.org/skills/zk-proofs/"
+    },
+    {
+      "name": "lumenloop-content-auditor",
+      "title": "LumenLoop: Content Auditor",
+      "source": "stellarlight",
+      "kind": "skill-md",
+      "tagline": "Audit a draft against the ecosystem — fix handles, add citations, flag bad claims.",
+      "install": "/plugin marketplace add lumenloop/lumenloop-skills",
+      "repository": "https://github.com/lumenloop/lumenloop-skills/tree/main/skills/stellar-content-auditor",
+      "homepage": "https://github.com/lumenloop/lumenloop-skills"
+    },
+    {
+      "name": "scf-budget-builder",
+      "title": "SCF Budget Builder",
+      "source": "stellarlight",
+      "kind": "skill-md",
+      "tagline": "Build bottom-up SCF budgets with rates, per-deliverable breakdowns, and tranche mapping.",
+      "install": "npx skills add Stellar-Light/awesome-stellar-community-fund",
+      "repository": "https://github.com/Stellar-Light/awesome-stellar-community-fund/tree/main/skills/scf-budget-builder",
+      "homepage": "https://github.com/Stellar-Light/awesome-stellar-community-fund"
+    },
+    {
+      "name": "scf-claim-verifier",
+      "title": "SCF Claim Verifier",
+      "source": "stellarlight",
+      "kind": "skill-md",
+      "tagline": "Check the claims in an SCF submission against live ecosystem data before you score it.",
+      "install": "npx skills add Stellar-Light/awesome-stellar-community-fund",
+      "repository": "https://github.com/Stellar-Light/awesome-stellar-community-fund/tree/main/skills/scf-claim-verifier",
+      "homepage": "https://github.com/Stellar-Light/awesome-stellar-community-fund"
+    },
+    {
+      "name": "scf-competitor-analyst",
+      "title": "SCF Competitor Analyst",
+      "source": "stellarlight",
+      "kind": "skill-md",
+      "tagline": "Research the competitive landscape and articulate your differentiation for SCF.",
+      "install": "npx skills add Stellar-Light/awesome-stellar-community-fund",
+      "repository": "https://github.com/Stellar-Light/awesome-stellar-community-fund/tree/main/skills/scf-competitor-analyst",
+      "homepage": "https://github.com/Stellar-Light/awesome-stellar-community-fund"
+    },
+    {
+      "name": "scf-fetch-external-doc",
+      "title": "SCF Fetch External Doc",
+      "source": "stellarlight",
+      "kind": "skill-md",
+      "tagline": "Fetch external docs linked in SCF submissions — Google Docs/Drive, GitHub, Notion, IPFS.",
+      "install": "npx skills add Stellar-Light/awesome-stellar-community-fund",
+      "repository": "https://github.com/Stellar-Light/awesome-stellar-community-fund/tree/main/skills/fetch-external-doc",
+      "homepage": "https://github.com/Stellar-Light/awesome-stellar-community-fund"
+    },
+    {
+      "name": "scf-interest-form-drafter",
+      "title": "SCF Interest Form Drafter",
+      "source": "stellarlight",
+      "kind": "skill-md",
+      "tagline": "Draft a strong SCF Interest Form to get invited to apply.",
+      "install": "npx skills add Stellar-Light/awesome-stellar-community-fund",
+      "repository": "https://github.com/Stellar-Light/awesome-stellar-community-fund/tree/main/skills/scf-interest-form-drafter",
+      "homepage": "https://github.com/Stellar-Light/awesome-stellar-community-fund"
+    },
+    {
+      "name": "scf-live-context",
+      "title": "SCF Live Context",
+      "source": "stellarlight",
+      "kind": "skill-md",
+      "tagline": "Resolve the current SCF round, deadline, and open RFPs before quoting any of them.",
+      "install": "npx skills add Stellar-Light/awesome-stellar-community-fund",
+      "repository": "https://github.com/Stellar-Light/awesome-stellar-community-fund/tree/main/skills/scf-live-context",
+      "homepage": "https://github.com/Stellar-Light/awesome-stellar-community-fund"
+    },
+    {
+      "name": "scf-prescreen-checker",
+      "title": "SCF Prescreen Checker",
+      "source": "stellarlight",
+      "kind": "skill-md",
+      "tagline": "Simulate the SCF team's manual prescreen (completeness + eligibility) before you submit.",
+      "install": "npx skills add Stellar-Light/awesome-stellar-community-fund",
+      "repository": "https://github.com/Stellar-Light/awesome-stellar-community-fund/tree/main/skills/scf-prescreen-checker",
+      "homepage": "https://github.com/Stellar-Light/awesome-stellar-community-fund"
+    },
+    {
+      "name": "scf-referral-preparer",
+      "title": "SCF Referral Preparer",
+      "source": "stellarlight",
+      "kind": "skill-md",
+      "tagline": "Prepare materials for an SCF referral from an approved Referrer.",
+      "install": "npx skills add Stellar-Light/awesome-stellar-community-fund",
+      "repository": "https://github.com/Stellar-Light/awesome-stellar-community-fund/tree/main/skills/scf-referral-preparer",
+      "homepage": "https://github.com/Stellar-Light/awesome-stellar-community-fund"
+    },
+    {
+      "name": "scf-reviewer",
+      "title": "SCF Reviewer",
+      "source": "stellarlight",
+      "kind": "skill-md",
+      "tagline": "Review a single SCF Build Award application with structured, calibrated scoring.",
+      "install": "npx skills add Stellar-Light/awesome-stellar-community-fund",
+      "repository": "https://github.com/Stellar-Light/awesome-stellar-community-fund/tree/main/skills/scf-reviewer",
+      "homepage": "https://github.com/Stellar-Light/awesome-stellar-community-fund"
+    },
+    {
+      "name": "scf-round-reviewer",
+      "title": "SCF Round Reviewer",
+      "source": "stellarlight",
+      "kind": "skill-md",
+      "tagline": "Review and rank an entire SCF round end-to-end from a CSV export.",
+      "install": "npx skills add Stellar-Light/awesome-stellar-community-fund",
+      "repository": "https://github.com/Stellar-Light/awesome-stellar-community-fund/tree/main/skills/scf-round-reviewer",
+      "homepage": "https://github.com/Stellar-Light/awesome-stellar-community-fund"
+    },
+    {
+      "name": "scf-submission-drafter",
+      "title": "SCF Submission Drafter",
+      "source": "stellarlight",
+      "kind": "skill-md",
+      "tagline": "Draft a complete SCF Build Award application interactively, section by section.",
+      "install": "npx skills add Stellar-Light/awesome-stellar-community-fund",
+      "repository": "https://github.com/Stellar-Light/awesome-stellar-community-fund/tree/main/skills/scf-submission-drafter",
+      "homepage": "https://github.com/Stellar-Light/awesome-stellar-community-fund"
+    },
+    {
+      "name": "scf-tranche-reporter",
+      "title": "SCF Tranche Reporter",
+      "source": "stellarlight",
+      "kind": "skill-md",
+      "tagline": "Write SCF tranche submission reports with deliverable evidence and completion docs.",
+      "install": "npx skills add Stellar-Light/awesome-stellar-community-fund",
+      "repository": "https://github.com/Stellar-Light/awesome-stellar-community-fund/tree/main/skills/scf-tranche-reporter",
+      "homepage": "https://github.com/Stellar-Light/awesome-stellar-community-fund"
     },
     {
       "name": "stellar-scout",

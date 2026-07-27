@@ -46,6 +46,7 @@ Run the full pipeline (same order the issue prints). Each step feeds the next:
 ```
 node scripts/refresh-inventory.mjs      # re-fetch live upstream → inventory/*.json
 node scripts/build-catalog.mjs          # inventory → catalog/manifest.json (+ exposure guards)
+npm run micro-map:build                  # catalog + workflow archetypes → src/mcp/micro-map.ts
 npm run spec:build                       # catalog → specs/super-spec.json (ships into sandbox)
 node eval/plan/build-op-classes.mjs     # catalog → eval/plan/op-classes.json (broad/detail/meta)
 ```
@@ -58,6 +59,7 @@ runtime skill bundle in the same pass:
 ./ecosystem-skills/update.sh
 npm run skills:bundle                    # ecosystem-skills mirror → src/skills/bundle.json
 node scripts/build-catalog.mjs
+npm run micro-map:build
 npm run spec:build
 node eval/plan/build-op-classes.mjs
 ```
@@ -132,7 +134,7 @@ into one of three classes **per service**:
 |---|---|---|
 | **Provenance/data** | `fetchedAt`, version strings, changelog entries, data-source counts, snapshot dates | Absorb as-is. No policy, no routing decision. |
 | **Operation surface** | An operation was **added, removed, or renamed** in `openapi.paths` (check the path/method set, NOT just `operationCount` — a rename holds the count constant) | **Policy decision** (Step 3) before commit. |
-| **Routing-relevant text** | An operation `summary`/`description`/`operationId` changed | **Routing-baseline decision** (Step 4) before commit. |
+| **Routing-relevant text** | An operation `summary`/`description`/`operationId`/`x-routing` changed | **Routing-baseline decision** (Step 4) before commit. |
 | **Runner-affecting** | ANY of the above touches an operation that a runnable-skill runner declares in its `ops` (schema/response-shape drift on such an op counts too — runners project those payloads) | **Runner re-verification** (Step 4b) before closing. This class stacks on top of the others, it never replaces them. |
 
 Runner-affecting is machine-checkable, never eyeballed — the runner registry
@@ -181,15 +183,21 @@ for (const [path, ops] of Object.entries(doc.openapi?.paths ?? {})) {
 diff -u "/tmp/${SERVICE}.surface.old" "/tmp/${SERVICE}.surface.new"
 # empty = no surface change
 
-# routing-relevant text — compare per-op operationId+summary+description old vs new:
+# routing-relevant text — compare per-op operationId+summary+description+x-routing old vs new:
 git show "HEAD:inventory/${SERVICE}.json" | node -e '
 const fs = require("fs");
 const doc = JSON.parse(fs.readFileSync(0, "utf8"));
 const methods = new Set(["get","post","put","patch","delete","options","head"]);
 const norm = v => String(v ?? "").replace(/\s+/g, " ").trim();
+const sortDeep = v => Array.isArray(v)
+  ? v.map(sortDeep)
+  : v && typeof v === "object"
+    ? Object.fromEntries(Object.keys(v).sort().map(k => [k, sortDeep(v[k])]))
+    : v;
+const stable = v => JSON.stringify(sortDeep(v ?? null));
 for (const [path, ops] of Object.entries(doc.openapi?.paths ?? {})) {
   for (const [method, op] of Object.entries(ops ?? {})) {
-    if (methods.has(method)) console.log(`${method.toUpperCase()} ${path} :: ${norm(op.operationId)} :: ${norm(op.summary)} :: ${norm(op.description)}`);
+    if (methods.has(method)) console.log(`${method.toUpperCase()} ${path} :: ${norm(op.operationId)} :: ${norm(op.summary)} :: ${norm(op.description)} :: ${stable(op["x-routing"])}`);
   }
 }
 ' | sort > "/tmp/${SERVICE}.text.old"
@@ -198,14 +206,20 @@ const fs = require("fs");
 const doc = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
 const methods = new Set(["get","post","put","patch","delete","options","head"]);
 const norm = v => String(v ?? "").replace(/\s+/g, " ").trim();
+const sortDeep = v => Array.isArray(v)
+  ? v.map(sortDeep)
+  : v && typeof v === "object"
+    ? Object.fromEntries(Object.keys(v).sort().map(k => [k, sortDeep(v[k])]))
+    : v;
+const stable = v => JSON.stringify(sortDeep(v ?? null));
 for (const [path, ops] of Object.entries(doc.openapi?.paths ?? {})) {
   for (const [method, op] of Object.entries(ops ?? {})) {
-    if (methods.has(method)) console.log(`${method.toUpperCase()} ${path} :: ${norm(op.operationId)} :: ${norm(op.summary)} :: ${norm(op.description)}`);
+    if (methods.has(method)) console.log(`${method.toUpperCase()} ${path} :: ${norm(op.operationId)} :: ${norm(op.summary)} :: ${norm(op.description)} :: ${stable(op["x-routing"])}`);
   }
 }
 ' "inventory/${SERVICE}.json" | sort > "/tmp/${SERVICE}.text.new"
 diff -u "/tmp/${SERVICE}.text.old" "/tmp/${SERVICE}.text.new"
-# empty diff = the "no operation-description changes" claim is TRUE at our ingest, not just upstream's word
+# empty diff = the "no routing-relevant text changes" claim is TRUE at our ingest, not just upstream's word
 ```
 
 ## Step 3 — operation surface changed → policy decision
@@ -229,7 +243,8 @@ issue means by "new/removed operations … may need policy (deny/metered) decisi
 
 ## Step 4 — routing-relevant text changed → baseline decision
 
-An operation description is lexical routing fuel. If a `summary`/`description`/`operationId`
+An operation description and `x-routing` block are lexical routing fuel. If a
+`summary`/`description`/`operationId`/`x-routing`
 changed, the routing gate may legitimately move:
 
 ```
@@ -239,7 +254,8 @@ npm run eval:compile && npm run eval:routing
 - The gate prints `GATE PASS — legacy <N> within band and skills lane at/above floor (baseline …)`
   or fails with the deltas. The baseline it compares against lives in `eval/gates.json`.
 - **Re-baseline ONLY when a routing-relevant text change is the cause and the movement is an
-  intended improvement** — e.g. a bump that genuinely reworded an operation `summary`/`description`.
+  intended improvement** — e.g. a bump that genuinely reworded an operation
+  `summary`/`description` or curated `x-routing`.
   Re-baselining is asserting "the new numbers are the new correct floor."
 - **Never re-baseline to make a red gate green for a pure-provenance/data bump.** If descriptions
   are byte-identical (Step 2 diff empty) the gate must pass against the *existing* baseline with

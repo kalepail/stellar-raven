@@ -19,7 +19,7 @@ ecosystem-skills/
 ├── INDEX.md         # AUTO-GENERATED themed catalog (name + description + source + size) + ecosystem directory
 ├── MANIFEST.json    # per-source pinned commit/ref + per-file path/size/sha + catalog summary
 ├── groups.json      # theme → skill-id mapping that drives INDEX.md grouping
-├── catalog.json     # full snapshot of the stellarlight.xyz/api/skills directory (~30 entries)
+├── catalog.json     # full snapshot of the stellarlight.xyz/api/skills directory (42 entries)
 ├── build-index.mjs  # regenerates INDEX.md from MANIFEST.json + groups.json
 ├── update.sh        # syncs every source, pins commits, rebuilds the index
 └── README.md
@@ -37,7 +37,7 @@ non-`skill-md` SDKs/MCP servers/CLIs that are *not* mirrored here).
 | `openzeppelin-stellar` | [`OpenZeppelin/openzeppelin-skills`](https://github.com/OpenZeppelin/openzeppelin-skills) `skills/` | 3 Stellar/Soroban contract skills (cherry-picked from a multi-chain repo) | `gh` raw download @ pinned commit |
 | `stellar-dev` | [`stellar/stellar-dev-skill`](https://github.com/stellar/stellar-dev-skill) `skills/` | 7 SDF developer skills (soroban, dapp, data, assets, agentic-payments, standards, zk-proofs) | `gh` raw download @ pinned commit |
 | `stellar-light` | [`Stellar-Light/stellar-scout`](https://github.com/Stellar-Light/stellar-scout) (root) | 1 ecosystem-analyst skill | `gh` raw download @ pinned commit |
-| _catalog_ | [`stellarlight.xyz/api/skills`](https://stellarlight.xyz/api/skills) | ~30-entry ecosystem directory (sdf / stellarlight / lumenloop / external) | `curl` snapshot → `catalog.json` (NOT downloaded as skills) |
+| _catalog_ | [`stellarlight.xyz/api/skills`](https://stellarlight.xyz/api/skills) | 42-entry ecosystem directory (sdf / stellarlight / lumenloop / external) | `curl` snapshot → `catalog.json` (NOT downloaded as skills) |
 
 Every source is **public** and every sync also vendors the source's upstream `LICENSE`/`NOTICE`
 files (same pinned commit) into `skills/<source>/` — see `THIRD-PARTY-NOTICES.md` at the repo

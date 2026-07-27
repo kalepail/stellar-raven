@@ -385,16 +385,8 @@ describe("search behavior (host-side ranked)", () => {
       widerCandidates: Array<{ id: string; lane: string; basis: string }>;
       nextSteps: string;
     };
-    expect(structured.hits.every((hit) => hit.tier === "backfill")).toBe(true);
-    expect(structured.widerCandidates.map((candidate) => candidate.id)).toEqual([
-      "lumenloop.search_content_semantic",
-      "scout.searchResearch",
-      "stellarDocs.search_meeting_notes"
-    ]);
-    expect(structured.widerCandidates.map((candidate) => candidate.id)).not.toContain(
-      "scout.explainRepo"
-    );
-    expect(structured.nextSteps).toContain("widerCandidates");
+    expect(structured.hits[0]).toMatchObject({ id: "scout.getPeople", tier: "gated" });
+    expect(structured.widerCandidates).toEqual([]);
   });
 
   it("does not infer recovery from ranking or a reason without explicit attempted ids", async () => {

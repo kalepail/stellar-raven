@@ -156,7 +156,7 @@ describe("build-catalog.mjs", () => {
       catalog.entries.filter((e) => e.service === "lumenloop" && e.kind === "skill-section")
     ).toHaveLength(0);
 
-    // Scout: 20 exposed of 24 upstream OpenAPI operations — the 3 write/
+    // Scout: 24 exposed of 28 upstream OpenAPI operations — the 3 write/
     // side-effecting endpoints (submitFeedback, submitPartnerListing,
     // partnerAssistant) are excluded at build time, plus getFeedbackSchema:
     // read-only, but a dead end whose only purpose is to shape the excluded
@@ -164,13 +164,21 @@ describe("build-catalog.mjs", () => {
     // scout.submitFeedback). matchPartners and partnerOnboard stay exposed —
     // their OpenAPI descriptions document pure AI ranking/extraction with no
     // persistence.
-    expect(count((e) => e.service === "scout" && e.kind === "operation")).toBe(20);
+    expect(count((e) => e.service === "scout" && e.kind === "operation")).toBe(24);
     expect(count((e) => e.id === "scout.submitFeedback")).toBe(0);
     expect(count((e) => e.id === "scout.getFeedbackSchema")).toBe(0);
     expect(count((e) => e.id === "scout.submitPartnerListing")).toBe(0);
     expect(count((e) => e.id === "scout.partnerAssistant")).toBe(0);
     expect(count((e) => e.id === "scout.matchPartners")).toBe(1);
     expect(count((e) => e.id === "scout.partnerOnboard")).toBe(1);
+    for (const id of [
+      "scout.listAudits",
+      "scout.searchHackathonBuilds",
+      "scout.getPeople",
+      "scout.getStablecoins"
+    ]) {
+      expect(count((e) => e.id === id), id).toBe(1);
+    }
 
     // Stellar Docs: 12 authored operations from specs/stellar-docs.json.
     const docs = catalog.entries.filter((e) => e.service === "stellarDocs");
@@ -195,7 +203,7 @@ describe("build-catalog.mjs", () => {
     expect(count((e) => e.id.includes("lumenloop-mcp-connect"))).toBe(0);
 
     // Grand total: everything in the manifest is exposed (ADR-0003).
-    expect(catalog.entries).toHaveLength(272);
+    expect(catalog.entries).toHaveLength(276);
   });
 
   it("carries exactly version/generatedAt/entries at the top level", () => {
@@ -283,8 +291,8 @@ describe("build-catalog.mjs", () => {
 describe("x-routing ingestion — routingKeywords field (scoring lever 7, issue #21)", () => {
   it("attaches routingKeywords to exactly the exposed scout ops that publish x-routing", () => {
     const withField = catalog.entries.filter((e) => (e.routingKeywords ?? []).length > 0);
-    // 17 upstream ops carry x-routing; partnerAssistant is build-excluded.
-    expect(withField).toHaveLength(16);
+    // 21 upstream ops carry x-routing; partnerAssistant is build-excluded.
+    expect(withField).toHaveLength(20);
     for (const entry of withField) {
       expect(entry.service, entry.id).toBe("scout");
       expect(entry.kind, entry.id).toBe("operation");
