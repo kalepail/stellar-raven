@@ -1,7 +1,7 @@
 ---
 id: sd-038
 service: stellar-docs
-status: verified
+status: reported-upstream
 discovered: 2026-07-27
 upstreamTitle: Update StellarAssetInterface event doc-comments to the CAP-67 shapes
 evidence:
@@ -11,6 +11,8 @@ evidence:
   - live read 2026-07-27 of docs/tokens/stellar-asset-contract.mdx on stellar/stellar-docs main - the page embeds a verbatim copy of the same StellarAssetInterface block, so it reproduces the identical stale shapes
   - calibration 2026-07-27 - TokenInterface transfer already documents the CAP-67 muxed data map, and TokenInterface mint/burn shapes are correct for the generic SEP-41 interface; the defect is confined to the SAC-specific StellarAssetInterface doc-comments
   - surfaced by docs maintainer triage on stellar/stellar-docs#2593 (ElliotFriend, 2026-07-21), which identified the SDK copy as the re-drift source for the docs-side fix
+  - upstream issue filed 2026-07-27: https://github.com/stellar/rs-soroban-sdk/issues/1955
+  - docs-side counterpart remains https://github.com/stellar/stellar-docs/issues/2593; the calibrated per-function scope was posted there 2026-07-27: https://github.com/stellar/stellar-docs/issues/2593#issuecomment-5091974420
 ---
 
 ## Finding

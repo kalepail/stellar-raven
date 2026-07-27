@@ -119,10 +119,6 @@
       "repo": "stellar/stellar-docs",
       "reason": "Docs content gap."
     },
-    "sd-007": {
-      "repo": "stellar/stellar-docs",
-      "reason": "Docs content ambiguity; in-charter per README."
-    },
     "sd-008": {
       "repo": "stellar/stellar-docs",
       "reason": "Official Software Versions content lags live Mainnet activation and stable release feeds."
@@ -131,33 +127,9 @@
       "repo": "stellar/stellar-docs",
       "reason": "Developer docs omit the canonical SEP-6 interactive-component deprecation status."
     },
-    "sd-011": {
-      "repo": "stellar/stellar-docs",
-      "reason": "Current SDEX documentation can lead readers to rely on unused offer lifecycle effects instead of transaction result XDR and current-state resources."
-    },
-    "sd-012": {
-      "repo": "stellar/stellar-docs",
-      "reason": "Official Lumens documentation retains older SDF wallet labels that conflict with the current mandate taxonomy and account mapping."
-    },
-    "sd-013": {
-      "repo": "stellar/stellar-docs",
-      "reason": "Account creation and merge docs omit sponsored zero-balance creation plus signer/sponsor merge asymmetry present in CAP-0033 and current Core."
-    },
     "sd-014": {
       "repo": "stellar/stellar-docs",
       "reason": "Ledger, transaction-set, result, archive, and SCP documentation lacks one explicit transaction-inclusion verification recipe and trust-boundary explanation."
-    },
-    "sd-015": {
-      "repo": "stellar/stellar-docs",
-      "reason": "The Starlight glossary lacks the archived/experimental lifecycle qualifier needed to prevent a historical prototype from being presented as maintained production L2 infrastructure."
-    },
-    "sd-016": {
-      "repo": "stellar/stellar-docs",
-      "reason": "Hand-maintained network capacity scalars differ from live CONFIG_SETTING and ledger fields; current tables need live-derived, dated values."
-    },
-    "sd-017": {
-      "repo": "stellar/stellar-docs",
-      "reason": "Official Docs disagree on whether Horizon is deprecated versus nearing EOL/not yet deprecated, despite continuing endpoint availability."
     },
     "sd-018": {
       "repo": "stellar/stellar-docs",
@@ -171,18 +143,6 @@
       "repo": "stellar/stellar-docs",
       "reason": "SAC docs retain obsolete XDR/executable terminology and omit executable-based identity, public name metadata, and mutable-admin boundaries."
     },
-    "sd-021": {
-      "repo": "stellar/stellar-docs",
-      "reason": "P25 BN254 links the wrong CAP and ZK docs blur host permutations, raw feature-gated SDK APIs, and high-level Poseidon hashing."
-    },
-    "sd-022": {
-      "repo": "stellar/stellar-docs",
-      "reason": "Introductory no_std wording makes the default no-allocator configuration sound like an absolute despite current SDK alloc support."
-    },
-    "sd-023": {
-      "repo": "stellar/stellar-docs",
-      "reason": "Static getEvents day-count retention guidance conflicts with current stellar-rpc configuration and live getHealth."
-    },
     "sd-024": {
       "repo": "stellar/stellar-docs",
       "reason": "Transaction-resource prose retains older field names and blurs validation/preflight/apply-time enforcement and transaction-vs-ledger limits."
@@ -191,29 +151,13 @@
       "repo": "stellar/stellar-docs",
       "reason": "The Horizon-to-RPC migration guide still describes CAP-67 unified asset events as near-future despite Protocol 23 finality and live Protocol 27."
     },
-    "sd-026": {
-      "repo": "stellar/stellar-docs",
-      "reason": "Contract-build docs still demonstrate the standalone optimize command even though CLI 27 deprecates it and optimizes builds by default."
-    },
     "sd-027": {
       "repo": "stellar/stellar-docs",
       "reason": "The current Relayer page says LaunchTube is discontinued while the published Guestbook passkey prerequisites still require a LaunchTube JWT without a legacy/migration warning."
     },
-    "sd-028": {
-      "repo": "stellar/stellar-docs",
-      "reason": "Official Horizon admin pages conflict on whether HISTORY_RETENTION_COUNT defaults to 0/unlimited or 518400, while v27.0.0 source resolves the executable default to 0."
-    },
     "sd-029": {
       "repo": "stellar/stellar-docs",
       "reason": "Current RPC operator docs omit the shipped v25.1+ BACKFILL startup path, prerequisites, and getLedgers-only direct datastore boundary."
-    },
-    "sd-030": {
-      "repo": "stellar/stellar-docs",
-      "reason": "Lab docs do not make plaintext Saved Keypairs localStorage and the self-hosted-versus-air-gap boundary prominent enough for secret-bearing workflows."
-    },
-    "sd-031": {
-      "repo": "stellar/stellar-docs",
-      "reason": "Current Lab/Quickstart docs and translations still teach the removed stellar network container start command."
     },
     "sd-032": {
       "repo": "stellar/stellar-docs",
@@ -257,10 +201,6 @@
     "sk-009": {
       "repo": "Stellar-Light/stellar-scout",
       "reason": "The finding concerns the upstream Scout skill API reference, not the live service implementation."
-    },
-    "sk-010": {
-      "repo": "stellar/stellar-dev-skill",
-      "reason": "The official dapp skill embeds the legacy Wallets Kit npm scope and v1 constructor/allowAllModules API instead of the current v2 JSR/static-init path."
     },
     "sk-011": {
       "repo": "stellar/stellar-dev-skill",

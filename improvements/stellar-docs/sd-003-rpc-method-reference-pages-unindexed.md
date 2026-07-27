@@ -23,6 +23,7 @@ recurrences:
     evidence: post-merge raw Algolia re-check — the Pagination page is crawled and `getTransactions`/default `50` appear, but the table's `1 to 200` range is absent from the method record; `getTransactions API reference limit` still ranks Horizon/noise ahead of the RPC structure page, and the generated method page remains outside the index
   - date: 2026-07-14
     evidence: fresh DocSearch recurrence; retained locally because the open issue showed no maintainer action and did not warrant a follow-up comment
+  - crawler-coordination reply posted and read back 2026-07-27 offering operator crawler evidence to the Algolia dashboard owner: https://github.com/stellar/stellar-docs/issues/2566#issuecomment-5091974189
 ---
 
 ## Finding

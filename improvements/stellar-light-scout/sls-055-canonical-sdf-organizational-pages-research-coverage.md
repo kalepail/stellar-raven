@@ -23,6 +23,7 @@ recurrences:
   - date: 2026-07-15
     evidence: Team, Mandate, and Terms coverage now passes, but the canonical Enterprise Fund page's portfolio-totaling-over-$100m claim remains absent from an exact source=sdf-org query
   - ref health 2026-07-27: https://github.com/Stellar-Light/stellarlight/issues/533 closed completed 2026-07-14 and the residual verification was posted after closure, so issue 533 no longer tracks the remaining gap; a consolidated successor issue carries it
+  - consolidated successor issue filed 2026-07-27 carrying this residual on an open thread: https://github.com/Stellar-Light/stellarlight/issues/742
 ---
 
 ## Finding

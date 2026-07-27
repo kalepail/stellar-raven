@@ -14,6 +14,7 @@ evidence:
   - independent Fable review in Solo scratchpad 639 re-ran the sources and identified the original tools/wallets claim as false while confirming these tutorial/translation residuals
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2609
   - narrowed residual posted and read back 2026-07-15: https://github.com/stellar/stellar-docs/issues/2609#issuecomment-4982273197
+  - premise correction acknowledged upstream 2026-07-27: https://github.com/stellar/stellar-docs/issues/2609#issuecomment-5091976739
 ---
 
 ## Finding

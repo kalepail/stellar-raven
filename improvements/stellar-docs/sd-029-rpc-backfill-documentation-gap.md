@@ -11,6 +11,7 @@ evidence:
   - narrow config and ingest source tests recorded in Solo scratchpad 575 GT-54 blind process 3386
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2602
   - scope correction 2026-07-27 accepting maintainer triage https://github.com/stellar/stellar-docs/issues/2602#issuecomment-5035732543: data-lake-integration.mdx already documents datastore serving and the getLedgers-only boundary, so the original framing overstated the gap; the undocumented surface is the BACKFILL flag itself plus the stale configuring.mdx sample config
+  - scope-narrowing reply posted and read back 2026-07-27: https://github.com/stellar/stellar-docs/issues/2602#issuecomment-5091976539
 ---
 
 ## Finding

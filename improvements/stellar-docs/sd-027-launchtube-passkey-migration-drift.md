@@ -10,6 +10,8 @@ evidence:
   - Solo scratchpad 575 GT-53 primary process 3372 and independent blind process 3378
   - 2026-07-14 combined review request on the then-green successor PR: https://github.com/stellar/stellar-docs/pull/2367#issuecomment-4971409358
   - ref health 2026-07-27: PR 2367 is a third-party branch (author AshFrancis), is now mergeable=CONFLICTING, and has had no activity since 2026-07-14, so the 2026-07-14 "CI is green" observation no longer holds and that PR is not a reliable tracker for this finding
+  - standalone upstream issue filed 2026-07-27 after PR 2367 stalled, covering this finding jointly with sd-034: https://github.com/stellar/stellar-docs/issues/2700
+  - PR-state follow-up posted and read back 2026-07-27: https://github.com/stellar/stellar-docs/pull/2367#issuecomment-5091971087
 ---
 
 ## Finding

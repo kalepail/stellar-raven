@@ -12,6 +12,8 @@ evidence:
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2593
   - independent Docs-team audit 2026-07-14 corrected the event shapes and history, identified muxed transfer/mint data maps, found existing transfer coverage, and traced stale generated comments to rs-soroban-sdk token.rs: https://gist.githubusercontent.com/ElliotFriend/3b3641b929b4408a834b85bcb4e75449/raw/a90e6b453ee3505ef2525b4428eaa75752e3ae08/raven-audit-rebuttal.md
   - corrected implementation scope posted and read back 2026-07-15: https://github.com/stellar/stellar-docs/issues/2593#issuecomment-4981955633
+  - maintainer triage accepted and corrections confirmed 2026-07-27: https://github.com/stellar/stellar-docs/issues/2593#issuecomment-5091974420
+  - SDK-side re-drift owner split into sd-038 and filed upstream 2026-07-27: https://github.com/stellar/rs-soroban-sdk/issues/1955
 ---
 
 ## Finding

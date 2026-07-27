@@ -34,6 +34,26 @@
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/a4954b6a38f66de5ce4b28fc33535464df0818fb/improvements/stellar-docs/sd-006-crawler-strips-code-blocks.md"
     },
     {
+      "id": "sd-007",
+      "title": "The state-archival docs now correctly describe Protocol 23 automatic",
+      "service": "stellar-docs",
+      "discovered": "2026-07-07",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2568",
+        "https://github.com/stellar/stellar-docs/pull/2620"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2568",
+        "https://github.com/stellar/stellar-docs/pull/2620"
+      ],
+      "liveRecheck": "2026-07-27 GET https://developers.stellar.org/docs/learn/fundamentals/contract-development/storage/state-archival - the page now carries a 'Contract Data Automatic Restoration' section citing Protocol 23 / CAP-0066, the simulation-populated restore list, and the manual-build caveat",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-007-state-archival-auto-restore-ambiguity.md"
+    },
+    {
       "id": "sd-010",
       "title": "The rendered Indexers page now describes Alchemy's live Stellar Data API accurately,",
       "service": "stellar-docs",
@@ -50,6 +70,266 @@
       "reviewEvidence": "Independent Solo reviewer process 3770 re-ran rendered-page and agent-visible search triggers, inspected merged approved PR 2573 and adjacent records, and scanned repo references on 2026-07-15.",
       "sourceCommit": "bb8731b3e09ac56fe0a2429e56beb583b84158b3",
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/bb8731b3e09ac56fe0a2429e56beb583b84158b3/improvements/stellar-docs/sd-010-alchemy-data-api-launch-stale.md"
+    },
+    {
+      "id": "sd-011",
+      "title": "The current Stellar documentation surface can lead a bot author to rely on",
+      "service": "stellar-docs",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2604",
+        "https://github.com/stellar/stellar-docs/pull/2642"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2604",
+        "https://github.com/stellar/stellar-docs/pull/2642"
+      ],
+      "liveRecheck": "2026-07-27 GET https://developers.stellar.org/docs/data/apis/horizon/api-reference/resources/effects/types - Offer Created, Offer Removed and Offer Updated all read 'Unused; not emitted', Trade remains active, and the Offer Lifecycle note routes to result_xdr (ManageOfferSuccessResult), List All Offers, and Retrieve an Offer's Trades",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-011-sdex-offer-effects-lifecycle-stale.md"
+    },
+    {
+      "id": "sd-012",
+      "title": "Official Stellar documentation and the current SDF mandate page expose different",
+      "service": "stellar-docs",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2610",
+        "https://github.com/stellar/stellar-docs/pull/2658"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2610",
+        "https://github.com/stellar/stellar-docs/pull/2658"
+      ],
+      "liveRecheck": "2026-07-27 GET https://developers.stellar.org/docs/learn/fundamentals/lumens - the mandate section lists SDF Development, Stellar Growth, Product & Innovation and Assets & Liquidity, and points at the mandate page and stellar.expert for live figures instead of fixed balances",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-012-mandate-wallet-label-drift.md"
+    },
+    {
+      "id": "sd-013",
+      "title": "The account lifecycle documentation presents the ordinary unsponsored path as",
+      "service": "stellar-docs",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2590",
+        "https://github.com/stellar/stellar-docs/pull/2657"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2590",
+        "https://github.com/stellar/stellar-docs/pull/2657"
+      ],
+      "liveRecheck": "2026-07-27 GET the account-merge result-codes page - op_is_sponsor is present covering both numSponsoring > 0 and an open same-transaction sponsorship, op_has_sub_entries reads 'non-signer subentries (trustlines, offers, or data entries)' with signers removed automatically, and the create-account guide documents the CAP-33 sponsored startingBalance of 0 path",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-013-account-creation-merge-sponsorship-semantics.md"
+    },
+    {
+      "id": "sd-015",
+      "title": "The current glossary describes Starlight in present tense as Stellar's Layer 2",
+      "service": "stellar-docs",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2591",
+        "https://github.com/stellar/stellar-docs/pull/2620"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2591",
+        "https://github.com/stellar/stellar-docs/pull/2620"
+      ],
+      "liveRecheck": "2026-07-27 GET https://developers.stellar.org/docs/learn/glossary - the Starlight entry reads 'An experimental layer 2 payment channel protocol ... The project is no longer maintained, and its repository has been archived since April 2024'",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-015-starlight-lifecycle-status.md"
+    },
+    {
+      "id": "sd-016",
+      "title": "Official network-capacity tables contain hand-maintained current scalars that",
+      "service": "stellar-docs",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2612",
+        "https://github.com/stellar/stellar-docs/pull/2619"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2612",
+        "https://github.com/stellar/stellar-docs/pull/2619"
+      ],
+      "liveRecheck": "2026-07-27 GET https://developers.stellar.org/docs/networks - 'Values as of July 2026. These limits are set by validator vote and can change over time' with a link to Stellar Lab's Network Limits page; the fees page reads 'as of July 2026, 1,000 non-smart-contract operations and 2,000 smart contract transactions'",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-016-live-network-limits-stale.md"
+    },
+    {
+      "id": "sd-017",
+      "title": "Official Docs publish incompatible lifecycle labels for Horizon. Some surfaces",
+      "service": "stellar-docs",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2592",
+        "https://github.com/stellar/stellar-docs/pull/2620"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2592",
+        "https://github.com/stellar/stellar-docs/pull/2620"
+      ],
+      "liveRecheck": "2026-07-27 GET https://developers.stellar.org/docs/data/apis and the Lab Horizon endpoint page - both carry the identical 'nearing end-of-life and will eventually be deprecated in favor of Stellar RPC and Portfolio APIs' wording, and no residual 'is deprecated' contradiction remains on /docs/data/apis/horizon or the Horizon-to-RPC migration guide",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-017-horizon-lifecycle-wording-conflict.md"
+    },
+    {
+      "id": "sd-021",
+      "title": "Current official P25/ZK documentation links the wrong CAP for BN254 and does",
+      "service": "stellar-docs",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2614",
+        "https://github.com/stellar/stellar-docs/pull/2619"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2614",
+        "https://github.com/stellar/stellar-docs/pull/2619"
+      ],
+      "liveRecheck": "2026-07-27 GET https://developers.stellar.org/docs/networks/software-versions - both Protocol 25 sections read 'BN254 Elliptic Curve Operations: CAP-74'; GET https://developers.stellar.org/docs/build/apps/zk - the Poseidon host functions are described as permutation primitives exposed through the CryptoHazmat interface behind the hazmat-crypto feature, with ready-made hashes pointed at rs-soroban-poseidon",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-021-p25-bn254-poseidon-source-links.md"
+    },
+    {
+      "id": "sd-022",
+      "title": "Current introductory wording turns the default no-allocator configuration into",
+      "service": "stellar-docs",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2594",
+        "https://github.com/stellar/stellar-docs/pull/2620"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2594",
+        "https://github.com/stellar/stellar-docs/pull/2620"
+      ],
+      "liveRecheck": "2026-07-27 GET https://developers.stellar.org/docs/build/smart-contracts/getting-started/hello-world - 'there is no allocator and no heap memory in Soroban contracts by default (the SDK does provide an opt-in allocator through its alloc feature - see the alloc example)'",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-022-no-std-allocator-wording.md"
+    },
+    {
+      "id": "sd-023",
+      "title": "The getEvents and getTransaction pages still present universal time-based",
+      "service": "stellar-docs",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2595",
+        "https://github.com/stellar/stellar-docs/pull/2656"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2595",
+        "https://github.com/stellar/stellar-docs/pull/2656"
+      ],
+      "liveRecheck": "2026-07-27 GET https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getEvents - 'a bounded, ledger-denominated history of recent transactions and events, configured by a single history-retention-window setting with a stock default of 120960 ledgers (about 7 days)' pointing at getHealth; the 24-hour default and separate 7-day cap wording is gone",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-023-rpc-event-retention-config-drift.md"
+    },
+    {
+      "id": "sd-026",
+      "title": "Current contract-build documentation still presents the standalone optimize",
+      "service": "stellar-docs",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2601",
+        "https://github.com/stellar/stellar-docs/pull/2618"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2601",
+        "https://github.com/stellar/stellar-docs/pull/2618"
+      ],
+      "liveRecheck": "2026-07-27 GET https://developers.stellar.org/docs/build/smart-contracts/getting-started/hello-world - 'The stellar contract build command optimizes the generated .wasm by default', with a note that the standalone stellar contract optimize command 'is now deprecated in favor of the (default) --optimize flag'",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-026-cli-optimize-command-drift.md"
+    },
+    {
+      "id": "sd-028",
+      "title": "Official Horizon administration pages disagree on the executable default for",
+      "service": "stellar-docs",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2599",
+        "https://github.com/stellar/stellar-docs/pull/2619"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2599",
+        "https://github.com/stellar/stellar-docs/pull/2619"
+      ],
+      "liveRecheck": "2026-07-27 GET the Horizon admin configuring and ingestion pages - both state 'By default (HISTORY_RETENTION_COUNT=0), Horizon retains all ingested history and never purges it' and present 518400 as a recommended ~30-day sliding window rather than the executable default",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-028-horizon-retention-default-wording-conflict.md"
+    },
+    {
+      "id": "sd-030",
+      "title": "Stellar Lab documentation does not make the Saved Keypairs storage and offline",
+      "service": "stellar-docs",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2605",
+        "https://github.com/stellar/stellar-docs/pull/2620"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2605",
+        "https://github.com/stellar/stellar-docs/pull/2620"
+      ],
+      "liveRecheck": "2026-07-27 GET https://developers.stellar.org/docs/tools/lab/saved/keypairs - 'Saved keypairs are obfuscated, but not encrypted - treat any secret key saved here as recoverable by anyone (or any script) with access to your browser', alongside the pre-September-2025 plain-text caveat and the Testnet/Futurenet-only guidance",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-030-lab-saved-keypairs-offline-boundary.md"
+    },
+    {
+      "id": "sd-031",
+      "title": "Current Stellar Docs still publish the removed",
+      "service": "stellar-docs",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2598",
+        "https://github.com/stellar/stellar-docs/pull/2618"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2598",
+        "https://github.com/stellar/stellar-docs/pull/2618"
+      ],
+      "liveRecheck": "2026-07-27 GET https://developers.stellar.org/docs/tools/lab/quickstart-with-lab - the command reads 'stellar container start testnet'; the retired 'stellar network container start' sequence no longer appears on the quickstart, container advanced-usage, or smart-contract setup pages",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-031-cli-container-command-drift.md"
     },
     {
       "id": "sd-033",
@@ -128,6 +408,24 @@
       "reviewEvidence": "Independent Fable reviewer Solo 3656 re-derived upstream deploy and live trigger",
       "sourceCommit": "9892897b92e41e4fdb8af2f8661abebcc7046029",
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/9892897b92e41e4fdb8af2f8661abebcc7046029/improvements/skills/sk-008-stellar-scout-api-reference-17-drift.md"
+    },
+    {
+      "id": "sk-010",
+      "title": "The official stellar/stellar-dev-skill dapp skill embedded a stale Stellar",
+      "service": "skills",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-27",
+      "repo": "stellar/stellar-dev-skill",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-dev-skill/issues/56"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-dev-skill/issues/56"
+      ],
+      "liveRecheck": "2026-07-27 read skills/dapp/SKILL.md on stellar/stellar-dev-skill main - it installs via 'npx jsr add @creit-tech/stellar-wallets-kit', uses static StellarWalletsKit.init({ modules: defaultModules() }) and authModal(), and carries a dated 'Migrating from v1?' note",
+      "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
+      "sourceCommit": "773857262d462506947a324b7437b8499f886287",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/skills/sk-010-wallets-kit-jsr-scope-dapp-skill.md"
     },
     {
       "id": "sls-001",

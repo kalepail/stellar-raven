@@ -10,6 +10,7 @@ evidence:
   - predecessor sls-008 confirms the Orbit/OrbitCDP identity conflict is fixed; this successor isolates the post-deduplication count contract
   - successor residual posted and read back 2026-07-15: https://github.com/Stellar-Light/stellarlight/pull/289#issuecomment-4982310089
   - ref health 2026-07-27: PR 289 merged 2026-07-05, ten days before this finding was discovered, so that comment is context on a closed artifact and never tracked this defect
+  - standalone upstream issue filed 2026-07-27, replacing the merged-PR comment as this finding's tracker: https://github.com/Stellar-Light/stellarlight/issues/741
 ---
 
 ## Finding

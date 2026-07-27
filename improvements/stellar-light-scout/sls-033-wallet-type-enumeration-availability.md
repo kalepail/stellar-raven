@@ -18,6 +18,7 @@ recurrences:
   - date: 2026-07-15
     evidence: exact type=Wallet now returns 65 deduplicated names, but 14 rows have null productKind and only 4 expose nonempty availability; residual posted and read back at https://github.com/Stellar-Light/stellarlight/issues/519#issuecomment-4982290425
   - ref health 2026-07-27: https://github.com/Stellar-Light/stellarlight/issues/519 closed completed 2026-07-14 and the residual verification was posted after closure, so issue 519 no longer tracks the remaining gap; a consolidated successor issue carries it
+  - consolidated successor issue filed 2026-07-27 carrying this residual on an open thread: https://github.com/Stellar-Light/stellarlight/issues/742
 ---
 
 ## Finding

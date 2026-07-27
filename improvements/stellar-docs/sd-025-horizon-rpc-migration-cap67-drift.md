@@ -1,7 +1,7 @@
 ---
 id: sd-025
 service: stellar-docs
-status: verified
+status: reported-upstream
 discovered: 2026-07-11
 upstreamTitle: Update the Horizon-to-RPC migration guide for shipped CAP-67 asset events
 evidence:
@@ -11,6 +11,7 @@ evidence:
   - live recheck 2026-07-27 of the Horizon-to-RPC migration page still renders "In the near future as a result of CAP-67 this method will be expanded to include events from non-contract operations", plus equivalence-table qualifiers "CAP-67 events when available" and "when expanded to cover all effects with CAP-67"
   - live Mainnet getNetwork 2026-07-27 returned protocolVersion 27, so the capability the page defers has been live since Protocol 23
   - ref health 2026-07-27 - the only prior durable reference was a comment on stellar/stellar-docs#1585, but that issue closed completed 2026-07-13T22:11Z and the follow-up was posted 2026-07-14T16:14Z; a comment on an already-closed issue never created a live tracker, so this finding is treated as unfiled
+  - upstream issue filed 2026-07-27: https://github.com/stellar/stellar-docs/issues/2699
 recurrences:
   - date: 2026-07-14
     evidence: independent Fable recheck confirmed the rendered migration page and stellar/stellar-docs main still say CAP-67 expansion is "in the near future"; issue 1585 fixed a different events page and has no response to the migration-page follow-up, so no additional comment was posted
