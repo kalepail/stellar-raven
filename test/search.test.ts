@@ -167,7 +167,6 @@ describe("searchCatalogPage — structural wider candidates", () => {
         service: "lumenloop",
         limit: 5
       }),
-      searchCatalogPage(catalog, { query: "Who is Justin Rice?", limit: 5 }),
       searchCatalogPage(catalog, {
         query: "zzzzqqqq zzqqzzqq",
         kind: "operation"
@@ -190,11 +189,7 @@ describe("searchCatalogPage — structural wider candidates", () => {
   });
 
   it("recommends semantic and research anchors for exact low-evidence person questions", () => {
-    for (const query of [
-      "Who is Justin Rice?",
-      "Who is Tyler van der Hoeven?",
-      "Who is Danel Jed McCaleb?"
-    ]) {
+    for (const query of ["Who is Tyler van der Hoeven?", "Who is Danel Jed McCaleb?"]) {
       const page = searchCatalogPage(catalog, { query, limit: 5 });
       expect(page.hits.every((hit) => hit.tier === "backfill"), query).toBe(true);
       expect(page.widerCandidates.map((candidate) => candidate.id), query).toEqual([
@@ -205,20 +200,14 @@ describe("searchCatalogPage — structural wider candidates", () => {
     }
   });
 
-  it("recommends broad page hits first on a Justin-like all-backfill page", () => {
+  it("routes a current SDF person query to the structured people directory", () => {
     const page = searchCatalogPage(catalog, {
       query: "justin rice history",
       kind: "operation",
       limit: 10
     });
-    expect(page.hits.every((hit) => hit.tier === "backfill")).toBe(true);
-    expect(page.widerCandidates.map((candidate) => candidate.id)).toEqual([
-      "lumenloop.search_content_semantic",
-      "scout.searchResearch",
-      "stellarDocs.search_meeting_notes"
-    ]);
-    expect(page.widerCandidates.every((candidate) => candidate.basis === "page-broad-hit")).toBe(true);
-    expect(page.widerCandidates.map((candidate) => candidate.id)).not.toContain("scout.explainRepo");
+    expect(page.hits[0]).toMatchObject({ id: "scout.getPeople", tier: "gated" });
+    expect(page.widerCandidates).toEqual([]);
   });
 
   it("uses deterministic manifest anchors for a zero-hit operation page", () => {
@@ -586,7 +575,7 @@ describe("searchCatalogPage — tier marker + total/truncated (todos 838/840)", 
     );
     // total counts searchable candidates only — 204 sections left search at
     // the 2026-07-13 A/B, so the candidate pool shrank from 272.
-    expect(page.total).toBe(68);
+    expect(page.total).toBe(72);
     expect(page.truncated).toBe(true);
   });
 
@@ -802,7 +791,7 @@ describe("search-hit signature compaction (todo 841)", () => {
     expect(hit.signature).toContain('codemode.describe("scout.searchProjects")');
     // …and the ~12.7KB rendered property tree is gone.
     expect(hit.signature).not.toContain("codeReferences?:");
-    expect(hit.signature!.length).toBeLessThan(2000);
+    expect(hit.signature!.length).toBeLessThan(3000);
   });
 
   it("only output blocks over the threshold are compacted; every other op's search signature is byte-identical", () => {
@@ -822,14 +811,21 @@ describe("search-hit signature compaction (todo 841)", () => {
         expect(compact, entry.id).toBe(full); // byte-identical below the line
       }
     }
-    // The threshold trims ONLY the measured monsters. Scout 1.7.21 expanded
-    // analyzeEcosystem past the line; pin the complete set so a later schema
+    // The threshold trims ONLY the measured monsters. Scout 1.8.28 expanded
+    // several shared response schemas past the line; pin the complete set so a later schema
     // refresh cannot silently widen compaction coverage.
     expect(compacted.sort()).toEqual([
       "scout.analyzeEcosystem",
       "scout.explainRepo",
+      "scout.getBuilders",
+      "scout.getClusters",
+      "scout.getHackathons",
+      "scout.getLeaderboard",
       "scout.getPartners",
       "scout.getRfps",
+      "scout.getStablecoins",
+      "scout.listAudits",
+      "scout.listSkills",
       "scout.searchProjects",
       "scout.searchRepos"
     ]);

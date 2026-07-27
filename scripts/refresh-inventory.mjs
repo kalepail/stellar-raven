@@ -2,6 +2,7 @@
 // refresh-inventory.mjs — regenerate the three service inventory snapshots under inventory/.
 //
 //   node scripts/refresh-inventory.mjs
+//   node scripts/refresh-inventory.mjs --service stellar-light
 //
 // Plain Node 20+ (global fetch, node:fs only — no deps). Reads .env at the repo
 // root for LUMENLOOP_API_KEY / ALGOLIA_{APPLICATION_ID,API_KEY}_{DOCS,SITE}.
@@ -294,10 +295,7 @@ async function refreshStellarLight() {
   // snapshot dates churn daily (e.g. the Electric Capital snapshot) — keep only
   // which corpora EXIST; freshness belongs to the live /api/status call, and
   // letting it into the inventory would page the drift check every day.
-  const { generatedAt: _g, usage: _u, ...statusSnapshot } = status;
-  if (Array.isArray(statusSnapshot.dataSources)) {
-    statusSnapshot.dataSources = statusSnapshot.dataSources.map(({ name }) => ({ name }));
-  }
+  const statusSnapshot = normalizeScoutStatus(status);
 
   writeInventory("stellar-light.json", {
     service: "stellar-light",
@@ -315,12 +313,22 @@ async function refreshStellarLight() {
     openapi,
     status: statusSnapshot,
     statusNote:
-      "volatile fields (generatedAt, usage, dataSources counts/dates/notes) stripped by scripts/refresh-inventory.mjs",
+      "volatile fields (generatedAt, usage, sources/dataSources counts/dates/notes) stripped by scripts/refresh-inventory.mjs",
     changelogLatest: (changelog.entries ?? [])[0] ?? null,
     changelogEntryCount: changelog.meta?.total ?? null,
   });
 
   return { operationCount };
+}
+
+export function normalizeScoutStatus(status) {
+  const { generatedAt: _g, usage: _u, ...statusSnapshot } = status;
+  for (const field of ["sources", "dataSources"]) {
+    if (Array.isArray(statusSnapshot[field])) {
+      statusSnapshot[field] = statusSnapshot[field].map(({ name }) => ({ name }));
+    }
+  }
+  return statusSnapshot;
 }
 
 // ---------------------------------------------------------------------------
@@ -411,20 +419,46 @@ async function refreshStellarDocs() {
 // ---------------------------------------------------------------------------
 // main
 // ---------------------------------------------------------------------------
-async function main() {
-  mkdirSync(INVENTORY_DIR, { recursive: true });
-  const [lumenloop, stellarLight, stellarDocs] = await Promise.all([
-    refreshLumenloop(),
-    refreshStellarLight(),
-    refreshStellarDocs(),
-  ]);
-  console.log(
-    `done: lumenloop ${lumenloop.toolCount} tools (${lumenloop.partnerToolCount} partner, hidden from /v1/tools) + ${lumenloop.skillCount} skills + openapi (${lumenloop.openapiOperationCount} ops); ` +
-      `stellar-light ${stellarLight.operationCount} ops; stellar-docs index settings + ${stellarDocs.pageTitleCount} page titles`,
-  );
+export function parseServiceArg(args) {
+  if (args.length === 0) return "all";
+  if (args.length !== 2 || args[0] !== "--service") {
+    throw new Error("usage: node scripts/refresh-inventory.mjs [--service lumenloop|stellar-light|stellar-docs]");
+  }
+  const service = args[1];
+  if (!["lumenloop", "stellar-light", "stellar-docs"].includes(service)) {
+    throw new Error(`unknown service "${service}" (expected lumenloop, stellar-light, or stellar-docs)`);
+  }
+  return service;
 }
 
-main().catch((err) => {
-  console.error(`refresh-inventory failed: ${err.message}`);
-  process.exit(1);
-});
+async function main() {
+  mkdirSync(INVENTORY_DIR, { recursive: true });
+  const service = parseServiceArg(process.argv.slice(2));
+  if (service === "lumenloop") {
+    const result = await refreshLumenloop();
+    console.log(`done: lumenloop ${result.toolCount} tools (${result.partnerToolCount} partner, hidden from /v1/tools) + ${result.skillCount} skills + openapi (${result.openapiOperationCount} ops)`);
+  } else if (service === "stellar-light") {
+    const result = await refreshStellarLight();
+    console.log(`done: stellar-light ${result.operationCount} ops`);
+  } else if (service === "stellar-docs") {
+    const result = await refreshStellarDocs();
+    console.log(`done: stellar-docs index settings + ${result.pageTitleCount} page titles`);
+  } else {
+    const [lumenloop, stellarLight, stellarDocs] = await Promise.all([
+      refreshLumenloop(),
+      refreshStellarLight(),
+      refreshStellarDocs(),
+    ]);
+    console.log(
+      `done: lumenloop ${lumenloop.toolCount} tools (${lumenloop.partnerToolCount} partner, hidden from /v1/tools) + ${lumenloop.skillCount} skills + openapi (${lumenloop.openapiOperationCount} ops); ` +
+        `stellar-light ${stellarLight.operationCount} ops; stellar-docs index settings + ${stellarDocs.pageTitleCount} page titles`,
+    );
+  }
+}
+
+if (resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    console.error(`refresh-inventory failed: ${err.message}`);
+    process.exit(1);
+  });
+}

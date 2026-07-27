@@ -6,7 +6,7 @@ directory. The LLM calling this MCP discovers capabilities via `search`, then au
 that `execute` runs inside a **Dynamic Worker isolate** with no network access; all real traffic
 goes through host-side, secret-holding, policy-enforcing adapters.
 
-Grounding research (live-verified across 2026-07-01…07-03; service specs refreshed daily by CI):
+Grounding research (initially live-verified across 2026-07-01…07-03; service specs refreshed daily by CI, latest 2026-07-26):
 
 - [`research/services/lumenloop.md`](./research/services/lumenloop.md) (current spec: [`inventory/lumenloop.json`](./inventory/lumenloop.json))
 - [`research/services/stellar-light.md`](./research/services/stellar-light.md) (current spec: [`inventory/stellar-light.json`](./inventory/stellar-light.json))
@@ -29,7 +29,7 @@ Grounding research (live-verified across 2026-07-01…07-03; service specs refre
      `/v1/changelog?since=`. Quirk: `/v1/tools` and `/v1/skills` hide partner items even with a
      partner key — inventory must union `/v1/me` + per-item detail fetches. Also serves 14 skills
      as zips via `/v1/skills`.
-   - **Stellar Light / Scout** — 23 paths / 24 ops (2026-07-02 partner-pipeline release), fully keyless, self-describing via
+   - **Stellar Light / Scout** — 27 paths / 28 ops (2026-07-26 Scout 1.8.28), fully keyless, self-describing via
      `/api/openapi.json`, `/api/status` (live counts + endpoint enumeration), `/api/changelog`.
      scout-mcp is a pure 1:1 wrapper → we integrate over HTTP directly.
    - **Stellar Docs** — integrate via **direct Algolia REST** (decided 2026-07-01), not the MCP.

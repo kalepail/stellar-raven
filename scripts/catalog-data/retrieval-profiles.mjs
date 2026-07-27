@@ -56,6 +56,21 @@ export const RETRIEVAL_PROFILES = {
     { id: "scout.searchResearch", relation: "cited-research", on: BROAD_MISS },
     { id: "lumenloop.find_av_passages", relation: "different-medium", on: CORROBORATE }
   ] },
+  "scout.getPeople": { lane: "directory", emptyScope: "operation", recoverWith: [
+    { id: "scout.getBuilders", relation: "structured-identity", on: BROAD_MISS },
+    { id: "scout.searchResearch", relation: "cited-research", on: BROAD_MISS },
+    { id: "lumenloop.search_content_semantic", relation: "broader-semantic", on: CORROBORATE }
+  ] },
+  "scout.listAudits": { lane: "directory", emptyScope: "operation", recoverWith: [
+    { id: "scout.searchResearch", relation: "cited-research", on: BROAD_MISS },
+    { id: "lumenloop.search_content_semantic", relation: "broader-semantic", on: CORROBORATE },
+    { id: "stellarDocs.search_docs", relation: "cross-family", on: CORROBORATE }
+  ] },
+  "scout.getStablecoins": { lane: "directory", emptyScope: "operation", recoverWith: [
+    { id: "scout.searchProjects", relation: "structured-identity", on: BROAD_MISS },
+    { id: "scout.searchResearch", relation: "cited-research", on: CORROBORATE },
+    { id: "lumenloop.search_content_semantic", relation: "broader-semantic", on: CORROBORATE }
+  ] },
   "scout.searchProjects": { lane: "directory", emptyScope: "operation", recoverWith: [
     { id: "lumenloop.search_content_semantic", relation: "broader-semantic", on: BROAD_MISS },
     { id: "scout.searchResearch", relation: "cited-research", on: CORROBORATE },
@@ -69,6 +84,11 @@ export const RETRIEVAL_PROFILES = {
   "scout.getHackathons": { lane: "directory", emptyScope: "operation", recoverWith: [
     { id: "lumenloop.search_content_semantic", relation: "broader-semantic", on: BROAD_MISS },
     { id: "scout.searchResearch", relation: "cited-research", on: CORROBORATE }
+  ] },
+  "scout.searchHackathonBuilds": { lane: "directory", emptyScope: "operation", recoverWith: [
+    { id: "scout.searchProjects", relation: "structured-identity", on: BROAD_MISS },
+    { id: "scout.searchResearch", relation: "cited-research", on: CORROBORATE },
+    { id: "lumenloop.search_content_semantic", relation: "broader-semantic", on: CORROBORATE }
   ] },
   "scout.getHackathon": { lane: "detail", emptyScope: "operation", recoverWith: [
     { id: "lumenloop.search_content_semantic", relation: "broader-semantic", on: BROAD_MISS },

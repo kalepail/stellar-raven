@@ -69,7 +69,7 @@ stellarDocs `backend` block **and measured corpus taxonomy**, skills mirror prov
   Lumenloop's embedded OpenAPI (account/billing: `/me*`, `/billing/topup`; discovery:
   `/changelog`, `/tools`, `/skills*`) are **not in the spec at all** (ADR-0003 dropped the
   "included for honesty but always denied" model — the spec describes only what code can call).
-- **scout (20 exposed of 24 upstream ops** — the write/side-effecting endpoints and the
+- **scout (24 exposed of 28 upstream ops** — the write/side-effecting endpoints and the
   feedback-schema dead end are excluded at build time**).** The embedded upstream OpenAPI carried
   near-verbatim:
   summary/description/tags/parameters/requestBody/responses unchanged, pathItem-level parameters

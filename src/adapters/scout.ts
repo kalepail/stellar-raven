@@ -32,7 +32,7 @@ import {
 
 const SERVICE = "scout";
 const SCOUT_MISS_HINT =
-  "Scope this miss to the requested Scout record. For an open-world identity or history question, make one broader pass: use scout.searchResearch for cited research/history, scout.searchProjects for project identity, or scout.getBuilders for directory membership; validate any semantic candidate before attribution.";
+  "Scope this miss to the requested Scout record. For an open-world identity or history question, make one broader pass: use scout.searchResearch for cited research/history, scout.searchProjects for project identity, scout.getPeople for SDF staff/leadership/board, or scout.getBuilders for ecosystem builder membership; validate any semantic candidate before attribution.";
 
 function fillPathTemplate(
   path: string,

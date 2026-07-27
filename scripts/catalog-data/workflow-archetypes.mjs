@@ -23,7 +23,7 @@ export const SERVICE_FAMILY_PURPOSES = [
     family: "scout",
     label: "Scout",
     line:
-      "Stellar Light/Scout ecosystem graph: projects, repos, builders, hackathons, leaderboards, research, skills, partners, clusters, changelog, and status.",
+      "Stellar Light/Scout ecosystem graph: projects, repos, builders, SDF people, hackathons and prior-art builds, audits, stablecoins, leaderboards, research, skills, partners, clusters, changelog, and status.",
     authority:
       "Primary for people, events, repos, partners, project discovery, and comparative ecosystem views; corroborate editorial/funding context with Lumenloop."
   },
@@ -46,7 +46,7 @@ export const SERVICE_FAMILY_PURPOSES = [
 ];
 
 export const FAMILY_LINE =
-  "Families: lumenloop=community/editorial projects, research, content, SCF/funding; use for what's-been-said/editorial/freshness skims; scout=live ecosystem graph: projects, repos, builders, hackathons, partners; stellarDocs=official protocol/SDK/CLI/contracts/RPC/anchor/wallet docs; skills=tested build/integration/security playbooks.";
+  "Families: lumenloop=community/editorial projects, research, content, SCF/funding; use for what's-been-said/editorial/freshness skims; scout=live ecosystem graph: projects, repos, people, hackathon builds, audits, stablecoins, partners; stellarDocs=official protocol/SDK/CLI/contracts/RPC/anchor/wallet docs; skills=tested build/integration/security playbooks.";
 
 export const AUTHORITY_RULES = [
   "Use the family that can actually ground the claim, then add a corroborating family when the question crosses source boundaries.",
@@ -131,6 +131,8 @@ export const WORKFLOW_ARCHETYPES = [
     steps: [
       { id: "scout.getHackathons", why: "enumerate hackathon/event records" },
       { id: "scout.getHackathon", why: "read one event with projects and participants" },
+      { id: "scout.searchHackathonBuilds", why: "search the cross-hackathon prior-art build index" },
+      { id: "scout.getPeople", why: "resolve SDF staff, leadership, and board identities" },
       { id: "scout.getBuilders", why: "resolve builder identities and profiles" },
       { id: "lumenloop.search_directory", why: "cross-check project identity and ecosystem context" },
       { id: "lumenloop.search_content_semantic", why: "broaden open-world identity or event history after a narrow directory miss" },
@@ -154,8 +156,9 @@ export const WORKFLOW_ARCHETYPES = [
     id: "incident-audit-claim",
     title: "Incident/audit claim",
     questionShape: "Did an incident, exploit, audit finding, or governance claim happen?",
-    families: ["lumenloop", "stellarDocs", "skills"],
+    families: ["scout", "lumenloop", "stellarDocs", "skills"],
     steps: [
+      { id: "scout.listAudits", why: "enumerate structured ecosystem audit records" },
       { id: "lumenloop.search_content_semantic", why: "find community reports or discussion" },
       { id: "lumenloop.find_av_passages", why: "locate cited spoken/video source passages when present" },
       { id: "stellarDocs.search_docs", why: "corroborate official technical or governance facts" },
@@ -168,6 +171,7 @@ export const WORKFLOW_ARCHETYPES = [
     questionShape: "Which/how many assets, anchors, rails, or partners cover a payment/tokenization flow, including exhaustive directory or coverage listings?",
     families: ["scout", "lumenloop", "stellarDocs", "skills"],
     steps: [
+      { id: "scout.getStablecoins", why: "start with the structured Stellar stablecoin directory" },
       { id: "scout.getPartners", why: "start with ecosystem partner and anchor directory coverage" },
       { id: "lumenloop.search_directory", why: "cross-check directory listings and project identity" },
       { id: "lumenloop.search_content_semantic", why: "pull editorial coverage and freshness context when listings are current or exhaustive" },

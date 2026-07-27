@@ -765,15 +765,8 @@ describe("codemode fns", () => {
       widerCandidates: Array<{ id: string; lane: string }>;
     };
     expect(result.ok).toBe(true);
-    expect(result.hits.every((hit) => hit.tier === "backfill")).toBe(true);
-    expect(result.widerCandidates.map((candidate) => candidate.id)).toEqual([
-      "lumenloop.search_content_semantic",
-      "scout.searchResearch",
-      "stellarDocs.search_meeting_notes"
-    ]);
-    expect(result.widerCandidates.map((candidate) => candidate.id)).not.toContain(
-      "scout.explainRepo"
-    );
+    expect(result.hits[0]).toMatchObject({ id: "scout.getPeople", tier: "gated" });
+    expect(result.widerCandidates).toEqual([]);
   });
 
   it("search requires explicit recoverFrom ids before returning recovery candidates", async () => {
@@ -1005,7 +998,7 @@ describe("codemode fns", () => {
     // Full output type: real property declarations, no compaction stub.
     expect(r.signature).toContain("type SearchProjectsOutput = {");
     expect(r.signature).toContain("codeReferences?:");
-    expect(r.signature).not.toContain("top-level field");
+    expect(r.signature).not.toMatch(/type SearchProjectsOutput = \{ \/\* \d+ top-level fields:/);
     expect(r.signature.length).toBeGreaterThan(10000);
     // Callable envelope line rides along, as in every rendered signature.
     expect(r.signature).toContain(

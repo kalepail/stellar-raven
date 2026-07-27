@@ -20,7 +20,7 @@ state. It uses the same Qwen3-Embedding-0.6B model family Cloudflare exposes as
   normalized 1,024-dimensional vectors; cosine/dot-product ranking.
 - Query instruction: `Given a Stellar ecosystem search query, retrieve the exposed operation
   routing card that can ground it`.
-- Cards: all 272 exposed manifest entries. Each card combines exact id/kind, source-family
+- Cards: all 276 exposed manifest entries. Each card combines exact id/kind, source-family
   purpose/authority, catalog description, and any generated workflow question shapes that
   reference it. No excluded operation or uncommitted partner detail enters the artifact.
 - Artifact: `artifacts/qwen3-embedding-0.6b-q8-c25a394.json`, with the catalog hash, per-card text

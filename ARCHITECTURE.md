@@ -298,7 +298,7 @@ Per call (`src/executor/run.ts`):
 3. **Sandbox globals** (`src/executor/providers.ts`, `buildSandbox`): one namespace global
    per service with one async fn per cataloged operation, named by the id's terminal
    segment (`lumenloop.search_directory(args)`, `scout.getStatus()`,
-   `stellarDocs.search_docs(args)`) — currently 18 + 20 + 12 fns — plus the `codemode`
+   `stellarDocs.search_docs(args)`) — currently 18 + 24 + 12 fns — plus the `codemode`
    discovery global (§5). Wrong names fail loudly through codemode's per-namespace Proxy
    ("Tool not found"); there is no fuzzy resolution. Providers are rebuilt per run so the
    skill-read advice flag is run-scoped; the expensive derivations (catalog view, resolved

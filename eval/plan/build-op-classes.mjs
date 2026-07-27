@@ -72,6 +72,8 @@ const OP_OVERRIDES = {
   "scout.getBuilders": "broad",
   "scout.getClusters": "broad",
   "scout.getLeaderboard": "broad",
+  "scout.getPeople": "broad",
+  "scout.getStablecoins": "broad",
   "scout.analyzeEcosystem": "broad",
   "lumenloop.get_related_projects": "broad",
   // vocab/enum/schema discovery → meta

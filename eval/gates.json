@@ -1,18 +1,18 @@
 {
   "$comment": "Mechanically-enforced gate baselines (see EVALS.md rules). run-routing.mjs prints a gate verdict on every run and exits 1 on breach when invoked with --gate (CI does). Re-baselining is an explicit act: update these numbers in the same commit as the change that moves them, with the decision recorded in Solo (EVALS.md rule 1). Counts are absolute hits, not percentages.",
   "gradingRule": "v3-manifest-exposed",
-  "baselinedAt": "2026-07-13T08:55:00Z",
-  "baselineResults": "routing-2026-07-13T08-54-21-839Z.json",
-  "note": "re-baselined 2026-07-13 on the skills-form arm-B ship (Solo scratchpad 608 P4; todo 890): the 204 skill-section entries carry searchable:false and leave search while whole-skill entries, section reads (skill.read + availableSections), and the runnable digest are unchanged. Decided by a pre-registered, adversarially pre-reviewed A/B: offline legacy strict 205/272/305 -> 209/285/316 with skills lane 18/23 at floor, extended and overlay improved, interloper capture 68->56 top-1 / 278->214 top-5; paid paired blocks (3x QA-30 per arm, counterbalanced) scored A 39C/42P/9W vs B 41C/42P/7W over 90 gradings with stable per-case wins 3-1 for B and a flat skills stratum (OpenZeppelin correct 6/6 via whole-skill discovery); guards: carried live-v2 ten (B zero wrongs across 3 runs) and 3x agent discovery (B >= A on every overall metric every run). The skills floor stays minTop1 18 (B hits exactly 18: q-skill-eco-scout-rwa-landscape moved off top-1 to top-3, the whole-skill entry still ranks). Prior baseline: routing-2026-07-12T21-12-46-662Z.json (Scout 1.7.16 drift + lever 7, issue #21).",
+  "baselinedAt": "2026-07-26T23:51:48Z",
+  "baselineResults": "routing-2026-07-26T23-51-48-789Z.json",
+  "note": "Re-baselined for Scout 1.8.28 operation/routing drift and the current ecosystem-skills mirrors. Four public read-only Scout collections were exposed (24 of 28 operations); existing upstream summaries and x-routing also changed. The prior committed legacy baseline was 209/285/316 (2026-07-13), which main's catalog no longer matched; measured pristine-main pre-change was 210/282/318, so this drift's actual legacy-strict effect is 210/282/318 -> 210/282/317 (one top-5 loss). Extended strict measured 93/110/117. The skills lane retained 23/23 top-3, top-5, and card@5; its top-1 floor moved 18 -> 17 because q-skill-builder-quickstart-remittance now ranks the newly sharpened Scout project/prior-art lookup first and the intended builder-quickstart skill second. That mixed query explicitly asks for prior art, the expected skill remains top-3/card@5, and weakening accurate Scout routing to preserve the old strict winner was rejected. No runner operation intersects this drift. Prior baseline: routing-2026-07-13T08-54-21-839Z.json (skills-form arm-B ship).",
   "legacy": {
     "n": 338,
-    "top1": 209,
-    "top3": 285,
-    "top5": 316,
+    "top1": 210,
+    "top3": 282,
+    "top5": 317,
     "bandPct": 1
   },
   "skills": {
     "n": 23,
-    "minTop1": 18
+    "minTop1": 17
   }
 }
