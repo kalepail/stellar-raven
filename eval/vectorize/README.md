@@ -23,9 +23,14 @@ state. It uses the same Qwen3-Embedding-0.6B model family Cloudflare exposes as
 - Cards: all 276 exposed manifest entries. Each card combines exact id/kind, source-family
   purpose/authority, catalog description, and any generated workflow question shapes that
   reference it. No excluded operation or uncommitted partner detail enters the artifact.
-- Artifact: `artifacts/qwen3-embedding-0.6b-q8-c25a394.json`, with the catalog hash, per-card text
-  hashes, card-set hash, model/runtime config, base64 little-endian float32 vectors, and vector
-  payload hash. Tests refuse card, model, or payload drift.
+- Artifact: `artifacts/qwen3-embedding-0.6b-q8-c25a394.json`, with per-card text hashes, card-set
+  hash, model/runtime config, base64 little-endian float32 vectors, and vector payload hash. Tests
+  refuse card, model, or payload drift. In the environment verified on 2026-07-27, the pinned q8
+  build was bit-reproducible. The pre-rebaseline vectors on `main` came from a divergent,
+  unrecoverable environment/model state (mean cosine about 0.90 versus the current build, with zero
+  identical vectors). `cardSetSha256` records input-card provenance and `vectorsSha256` records
+  output-vector provenance. An unexpected `vectorsSha256` change on rebuild is a red flag to
+  investigate the environment and model-cache state, not expected noise.
 - Policy: `semantic-rerank-lexical-top20-v1`. The shipped lexical scorer produces 20 candidates;
   the fixed semantic score reranks them, then returns the requested page. One global policy is
   used for every lane; there is no per-case or per-service tuning.

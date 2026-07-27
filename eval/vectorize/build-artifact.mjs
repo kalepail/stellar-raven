@@ -22,8 +22,7 @@ function encodeFloat32(vectors) {
 }
 
 async function main() {
-  const manifestRaw = readFileSync(path.join(REPO, "catalog", "manifest.json"), "utf8");
-  const manifest = JSON.parse(manifestRaw);
+  const manifest = JSON.parse(readFileSync(path.join(REPO, "catalog", "manifest.json"), "utf8"));
   const cards = buildCatalogCards(manifest);
   console.log(`embedding ${cards.length} exposed catalog routing cards with ${MODEL.id}@${MODEL.revision.slice(0, 12)} ${MODEL.dtype}`);
   const vectors = await embedDocuments(cards.map((card) => card.text));
@@ -31,14 +30,9 @@ async function main() {
   const artifact = {
     schemaVersion: 1,
     generatedAt: "2026-07-10",
-    purpose: "deterministic local reference artifact for the Cloudflare Vectorize frontier experiment",
+    purpose: "pinned local reference artifact for the Cloudflare Vectorize frontier experiment",
     model: MODEL,
     policy: POLICY,
-    catalog: {
-      generatedAt: manifest.generatedAt,
-      manifestSha256: sha256(manifestRaw),
-      entryCount: cards.length
-    },
     cards: cards.map((card) => ({
       id: card.id,
       service: card.service,
