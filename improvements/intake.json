@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "updated": "2026-07-14",
+  "updated": "2026-07-27",
   "notes": [
     "Verified with gh on 2026-07-13. Lumenloop API/content-pipeline issues belong in lumenloop/lumenloop-backend; directory-record corrections belong in lumenloop/stellar-ecosystem-db.",
     "Algolia ranking-only docs findings may not have a clear public intake even though developers.stellar.org content lives in stellar/stellar-docs."
@@ -43,28 +43,61 @@
     }
   },
   "findings": {
-    "sk-003": {
-      "repo": "stellar/stellar-dev-skill"
-    },
-    "sk-004": {
-      "repo": "lumenloop/lumenloop-skills"
-    },
-    "sk-005": {
-      "repo": "lumenloop/lumenloop-skills"
-    },
-    "sk-006": {
-      "repo": "stellar/stellar-dev-skill"
-    },
-    "sk-007": {
-      "repo": "lumenloop/lumenloop-skills"
-    },
-    "sk-009": {
-      "repo": "Stellar-Light/stellar-scout",
-      "reason": "The finding concerns the upstream Scout skill API reference, not the live service implementation."
-    },
     "ll-008": {
       "repo": "lumenloop/stellar-ecosystem-db",
       "reason": "Committed directory-record coverage and region correction."
+    },
+    "ll-013": {
+      "repo": "lumenloop/lumenloop-backend",
+      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
+    },
+    "ll-015": {
+      "repo": "lumenloop/lumenloop-backend",
+      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
+    },
+    "ll-016": {
+      "repo": "lumenloop/lumenloop-backend",
+      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
+    },
+    "ll-017": {
+      "repo": "lumenloop/lumenloop-backend",
+      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
+    },
+    "ll-018": {
+      "repo": "lumenloop/lumenloop-backend",
+      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
+    },
+    "ll-019": {
+      "repo": "lumenloop/lumenloop-backend",
+      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
+    },
+    "ll-020": {
+      "repo": "lumenloop/lumenloop-backend",
+      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
+    },
+    "ll-022": {
+      "repo": "lumenloop/lumenloop-backend",
+      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
+    },
+    "ll-023": {
+      "repo": "lumenloop/lumenloop-backend",
+      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
+    },
+    "ll-024": {
+      "repo": "lumenloop/lumenloop-backend",
+      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
+    },
+    "ll-025": {
+      "repo": "lumenloop/lumenloop-backend",
+      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
+    },
+    "ll-026": {
+      "repo": "lumenloop/lumenloop-backend",
+      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
+    },
+    "ll-027": {
+      "repo": "lumenloop/lumenloop-backend",
+      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
     },
     "sd-001": {
       "intake": "unclear",
@@ -102,42 +135,6 @@
       "repo": "stellar/stellar-docs",
       "reason": "Current SDEX documentation can lead readers to rely on unused offer lifecycle effects instead of transaction result XDR and current-state resources."
     },
-    "sls-023": {
-      "repo": "Stellar-Light/stellarlight",
-      "reason": "Broad RWA discovery exposes entity-level status without product-level Stellar deployment state, allowing planned DTCC work and unverified/tooling rows to be presented as live tokenized products."
-    },
-    "sls-024": {
-      "repo": "Stellar-Light/stellarlight",
-      "reason": "Project lifecycle labels do not expose source, as-of date, or entity-versus-deployment scope when current operator surfaces conflict."
-    },
-    "ll-013": {
-      "repo": "lumenloop/lumenloop-backend",
-      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
-    },
-    "sls-029": {
-      "repo": "Stellar-Light/stellarlight",
-      "reason": "Oracle discovery collapses provider, product family, network, contract evidence, and announcement status into one Live label."
-    },
-    "sls-033": {
-      "repo": "Stellar-Light/stellarlight",
-      "reason": "Wallet enumeration mixes records, products, aliases, and availability states, so exact wallet counts and platform claims are unsafe."
-    },
-    "sls-036": {
-      "repo": "Stellar-Light/stellarlight",
-      "reason": "Leaderboard activity semantics, source timestamps, and DeFi filters are insufficient to distinguish activity from commits, stars, issues, TVL, or usage."
-    },
-    "ll-015": {
-      "repo": "lumenloop/lumenloop-backend",
-      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
-    },
-    "sls-039": {
-      "repo": "Stellar-Light/stellarlight",
-      "reason": "Project TVL rows expose a point but no history/method URL or metric decomposition for current-versus-trend/peak/record questions."
-    },
-    "ll-016": {
-      "repo": "lumenloop/lumenloop-backend",
-      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
-    },
     "sd-012": {
       "repo": "stellar/stellar-docs",
       "reason": "Official Lumens documentation retains older SDF wallet labels that conflict with the current mandate taxonomy and account mapping."
@@ -162,14 +159,6 @@
       "repo": "stellar/stellar-docs",
       "reason": "Official Docs disagree on whether Horizon is deprecated versus nearing EOL/not yet deprecated, despite continuing endpoint availability."
     },
-    "ll-017": {
-      "repo": "lumenloop/lumenloop-backend",
-      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
-    },
-    "ll-018": {
-      "repo": "lumenloop/lumenloop-backend",
-      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
-    },
     "sd-018": {
       "repo": "stellar/stellar-docs",
       "reason": "Token-interface docs omit the current SAC/CAP-67 asset-appended event schema, leading direct SAC events to be misclassified as generic SEP-41."
@@ -177,10 +166,6 @@
     "sd-019": {
       "repo": "stellar/stellar-docs",
       "reason": "The TTL extension guide incorrectly says one ExtendFootprintTTLOp cannot cover multiple read-only footprint entries."
-    },
-    "ll-019": {
-      "repo": "lumenloop/lumenloop-backend",
-      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
     },
     "sd-020": {
       "repo": "stellar/stellar-docs",
@@ -242,45 +227,40 @@
       "repo": "stellar/stellar-docs",
       "reason": "The Wallets Kit docs reference the legacy dotted npm scope and stale API while the maintainer now prefers the v2 JSR scope and static initialization model."
     },
-    "sk-010": {
-      "repo": "stellar/stellar-dev-skill",
-      "reason": "The official dapp skill embeds the legacy Wallets Kit npm scope and v1 constructor/allowAllModules API instead of the current v2 JSR/static-init path."
-    },
     "sd-036": {
       "repo": "stellar/stellar-protocol",
       "reason": "CAP-0075's protocol-version and field-selector contradictions are owned by the normative stellar-protocol source, distinct from sd-021's Stellar Docs errors."
     },
-    "ll-020": {
-      "repo": "lumenloop/lumenloop-backend",
-      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
-    },
-    "ll-022": {
-      "repo": "lumenloop/lumenloop-backend",
-      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
-    },
-    "ll-023": {
-      "repo": "lumenloop/lumenloop-backend",
-      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
-    },
-    "ll-024": {
-      "repo": "lumenloop/lumenloop-backend",
-      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
-    },
-    "ll-025": {
-      "repo": "lumenloop/lumenloop-backend",
-      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
-    },
-    "ll-026": {
-      "repo": "lumenloop/lumenloop-backend",
-      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
-    },
-    "ll-027": {
-      "repo": "lumenloop/lumenloop-backend",
-      "reason": "Lumenloop API/content-pipeline owner confirmed 2026-07-13."
-    },
     "sd-037": {
       "repo": "stellar/stellar-protocol",
       "reason": "SLP proposal-family discoverability is rooted in the normative stellar-protocol limits/ source and needs canonical family metadata/cross-links."
+    },
+    "sd-038": {
+      "repo": "stellar/rs-soroban-sdk",
+      "reason": "The defective StellarAssetInterface event doc-comments live in the SDK source; the stellar-docs page embeds a verbatim copy, so the SDK is the re-drift owner."
+    },
+    "sk-003": {
+      "repo": "stellar/stellar-dev-skill"
+    },
+    "sk-004": {
+      "repo": "lumenloop/lumenloop-skills"
+    },
+    "sk-005": {
+      "repo": "lumenloop/lumenloop-skills"
+    },
+    "sk-006": {
+      "repo": "stellar/stellar-dev-skill"
+    },
+    "sk-007": {
+      "repo": "lumenloop/lumenloop-skills"
+    },
+    "sk-009": {
+      "repo": "Stellar-Light/stellar-scout",
+      "reason": "The finding concerns the upstream Scout skill API reference, not the live service implementation."
+    },
+    "sk-010": {
+      "repo": "stellar/stellar-dev-skill",
+      "reason": "The official dapp skill embeds the legacy Wallets Kit npm scope and v1 constructor/allowAllModules API instead of the current v2 JSR/static-init path."
     },
     "sk-011": {
       "repo": "stellar/stellar-dev-skill",
@@ -289,6 +269,30 @@
     "sk-012": {
       "repo": "stellar/stellar-dev-skill",
       "reason": "The served upstream agentic-payments skill needs current MPP Session terminology."
+    },
+    "sls-023": {
+      "repo": "Stellar-Light/stellarlight",
+      "reason": "Broad RWA discovery exposes entity-level status without product-level Stellar deployment state, allowing planned DTCC work and unverified/tooling rows to be presented as live tokenized products."
+    },
+    "sls-024": {
+      "repo": "Stellar-Light/stellarlight",
+      "reason": "Project lifecycle labels do not expose source, as-of date, or entity-versus-deployment scope when current operator surfaces conflict."
+    },
+    "sls-029": {
+      "repo": "Stellar-Light/stellarlight",
+      "reason": "Oracle discovery collapses provider, product family, network, contract evidence, and announcement status into one Live label."
+    },
+    "sls-033": {
+      "repo": "Stellar-Light/stellarlight",
+      "reason": "Wallet enumeration mixes records, products, aliases, and availability states, so exact wallet counts and platform claims are unsafe."
+    },
+    "sls-036": {
+      "repo": "Stellar-Light/stellarlight",
+      "reason": "Leaderboard activity semantics, source timestamps, and DeFi filters are insufficient to distinguish activity from commits, stars, issues, TVL, or usage."
+    },
+    "sls-039": {
+      "repo": "Stellar-Light/stellarlight",
+      "reason": "Project TVL rows expose a point but no history/method URL or metric decomposition for current-versus-trend/peak/record questions."
     },
     "sls-055": {
       "repo": "Stellar-Light/stellarlight",

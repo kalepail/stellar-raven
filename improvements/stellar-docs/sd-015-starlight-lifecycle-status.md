@@ -1,7 +1,7 @@
 ---
 id: sd-015
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-10
 upstreamTitle: Label Starlight as archived experimental prior art
 evidence:
@@ -10,6 +10,8 @@ evidence:
   - 2021/2022 SDF Starlight experiment posts
   - Solo scratchpad 575 GT-29 primary 3276 and independent blind 3278
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2591
+  - fixed upstream by https://github.com/stellar/stellar-docs/pull/2620 (merged 2026-07-16); issue https://github.com/stellar/stellar-docs/issues/2591 closed completed
+  - live recheck 2026-07-27: the glossary Starlight entry reads "An experimental layer 2 payment channel protocol ... The project is no longer maintained, and its repository has been archived since April 2024"
 ---
 
 ## Finding

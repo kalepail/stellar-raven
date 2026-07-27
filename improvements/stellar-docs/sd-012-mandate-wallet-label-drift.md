@@ -1,7 +1,7 @@
 ---
 id: sd-012
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-10
 upstreamTitle: Align Lumens mandate account labels with the current SDF mandate
 evidence:
@@ -10,6 +10,8 @@ evidence:
   - live recheck 2026-07-14: the mandate page names SDF Development, Stellar Growth, Product and Innovation, and Assets and Liquidity, while the Lumens page still presents Direct Development, Developer Support, Currency Support, and other older account labels as current
   - Solo scratchpad 575 GT-27 primary 3270 and blind 3272
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2610
+  - fixed upstream by https://github.com/stellar/stellar-docs/pull/2658 (merged 2026-07-22); issue https://github.com/stellar/stellar-docs/issues/2610 closed completed
+  - live recheck 2026-07-27: the Lumens page lists the four current mandate buckets (SDF Development, Stellar Growth, Product & Innovation, Assets & Liquidity) and points at the mandate page and stellar.expert for live figures instead of fixed balances
 ---
 
 ## Finding

@@ -22,6 +22,7 @@ recurrences:
     evidence: source=sdf-org now covers Mandate, Terms, Enterprise Fund, Team, Foundation, and report pages, but the Team page's embedded leadership-role text (Founder and Chief Scientist; VP of Ecosystem) is still absent and records lack per-record crawl-observation dates
   - date: 2026-07-15
     evidence: Team, Mandate, and Terms coverage now passes, but the canonical Enterprise Fund page's portfolio-totaling-over-$100m claim remains absent from an exact source=sdf-org query
+  - ref health 2026-07-27: https://github.com/Stellar-Light/stellarlight/issues/533 closed completed 2026-07-14 and the residual verification was posted after closure, so issue 533 no longer tracks the remaining gap; a consolidated successor issue carries it
 ---
 
 ## Finding

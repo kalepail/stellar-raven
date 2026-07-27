@@ -1,30 +1,64 @@
 ---
 id: sd-025
 service: stellar-docs
-status: reported-upstream
+status: verified
 discovered: 2026-07-11
-upstreamTitle: Update the migration guide for shipped CAP-67 asset events
+upstreamTitle: Update the Horizon-to-RPC migration guide for shipped CAP-67 asset events
 evidence:
   - Horizon-to-RPC migration guidance describes unified classic-asset events as near-future
   - CAP-0067 is Final for Protocol 23
   - Mainnet and Testnet report Protocol 27
-  - Solo scratchpad 575 GT-49 primary 3335 and blind 3341
-  - 2026-07-14 follow-up on the prior events-doc issue for the still-stale migration wording: https://github.com/stellar/stellar-docs/issues/1585#issuecomment-4971409187
+  - live recheck 2026-07-27 of the Horizon-to-RPC migration page still renders "In the near future as a result of CAP-67 this method will be expanded to include events from non-contract operations", plus equivalence-table qualifiers "CAP-67 events when available" and "when expanded to cover all effects with CAP-67"
+  - live Mainnet getNetwork 2026-07-27 returned protocolVersion 27, so the capability the page defers has been live since Protocol 23
+  - ref health 2026-07-27 - the only prior durable reference was a comment on stellar/stellar-docs#1585, but that issue closed completed 2026-07-13T22:11Z and the follow-up was posted 2026-07-14T16:14Z; a comment on an already-closed issue never created a live tracker, so this finding is treated as unfiled
 recurrences:
   - date: 2026-07-14
-    evidence: independent Fable recheck confirmed the rendered migration page and stellar/stellar-docs main still say CAP-67 expansion is "in the near future"; issue #1585 fixed a different events page and has no response to the migration-page follow-up, so no additional comment was posted
+    evidence: independent Fable recheck confirmed the rendered migration page and stellar/stellar-docs main still say CAP-67 expansion is "in the near future"; issue 1585 fixed a different events page and has no response to the migration-page follow-up, so no additional comment was posted
+  - date: 2026-07-27
+    evidence: still reproduces verbatim on the live page; escalated from a comment on a closed issue to a standalone filing
 ---
 
 ## Finding
 
-The migration guide retains pre-CAP-67 future-tense language for classic
-asset events even though Unified Asset Events shipped in Protocol 23 and the
-live networks are now on Protocol 27. The same page is frequently used as the
-authoritative endpoint-mapping source, so the stale warning propagates into
-migration plans and golden answers.
+The Horizon-to-RPC migration guide still describes CAP-67 unified asset events
+as future work, even though CAP-0067 is Final for Protocol 23 and the live
+networks report Protocol 27.
+
+The page's warning block reads: *"The method returns a stream of events that in
+the current protocol only include events from contracts. In the near future as
+a result of CAP-67 this method will be expanded to include events from
+non-contract operations."* Several rows in the endpoint-equivalence table carry
+matching hedges — "CAP-67 events **when available**" and "**when expanded** to
+cover all effects with CAP-67".
+
+Because this page is widely used as the authoritative endpoint-mapping source,
+a reader migrating today is told to plan around a capability they already have,
+and is steered toward the `getTransactions` meta-XDR workaround that the page
+itself frames as an interim measure.
+
+## Evidence
+
+Live re-check on 2026-07-27:
+
+- `https://developers.stellar.org/docs/data/apis/migrate-from-horizon-to-rpc`
+  still renders the "in the near future as a result of CAP-67" warning, and the
+  Payments, Effects, and Offers rows still carry `when available` and
+  `when expanded` qualifiers.
+- Live Mainnet `getNetwork` returned
+  `{"passphrase":"Public Global Stellar Network ; September 2015","protocolVersion":27}`.
+- CAP-0067 is Final and shipped in Protocol 23.
+
+This is distinct from `sd-018`, which owns the SAC and CAP-67 event *schema*
+documentation gap. This finding covers only the migration guide's tense and its
+interim-workaround framing.
 
 ## Recommendation
 
-Replace the future-tense warning with current CAP-67 behavior and explicitly
-separate unified event availability from Horizon resources that still lack a
-direct RPC equivalent.
+Replace the future-tense framing with present-tense guidance: `getEvents`
+returns unified asset events today. Drop the `when available` and
+`when expanded` qualifiers from the equivalence table. Either remove the
+`getTransactions` meta-XDR interim advice or relabel it explicitly as the
+pre-Protocol-23 historical path.
+
+If any effect classes genuinely remain uncovered by unified events, name those
+classes explicitly rather than gating the whole method on CAP-67.

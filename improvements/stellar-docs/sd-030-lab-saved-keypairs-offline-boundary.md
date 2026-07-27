@@ -1,7 +1,7 @@
 ---
 id: sd-030
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-11
 upstreamTitle: Disclose recoverable browser storage for Lab saved keypairs
 evidence:
@@ -13,6 +13,8 @@ evidence:
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2605
   - independent Docs-team audit 2026-07-14 corrected the current storage mechanism while confirming the secret remains recoverable and legacy plaintext persists: https://gist.githubusercontent.com/ElliotFriend/3b3641b929b4408a834b85bcb4e75449/raw/a90e6b453ee3505ef2525b4428eaa75752e3ae08/raven-audit-rebuttal.md
   - corrected storage-boundary evidence posted and read back 2026-07-15: https://github.com/stellar/stellar-docs/issues/2605#issuecomment-4981955585
+  - fixed upstream by https://github.com/stellar/stellar-docs/pull/2620 (merged 2026-07-16); issue https://github.com/stellar/stellar-docs/issues/2605 closed completed
+  - live recheck 2026-07-27: the Lab saved keypairs page states "Saved keypairs are obfuscated, but not encrypted - treat any secret key saved here as recoverable by anyone (or any script) with access to your browser", with the pre-September-2025 plain-text caveat, matching the corrected 2026-07-15 storage-boundary scope
 ---
 
 ## Finding

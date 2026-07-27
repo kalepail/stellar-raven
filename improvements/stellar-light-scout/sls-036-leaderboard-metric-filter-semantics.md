@@ -18,6 +18,7 @@ recurrences:
     evidence: definitions and dataAsOf are live but the requested type filter remains absent; follow-up https://github.com/Stellar-Light/stellarlight/issues/524#issuecomment-4971408859
   - date: 2026-07-15
     evidence: exact type filtering and issue-only semantics are live, but rows expose only repoCount rather than the included repository universe; residual posted and read back at https://github.com/Stellar-Light/stellarlight/issues/524#issuecomment-4982290659
+  - ref health 2026-07-27: https://github.com/Stellar-Light/stellarlight/issues/524 closed completed 2026-07-14 and the residual verification was posted after closure, so issue 524 no longer tracks the remaining gap; a consolidated successor issue carries it
 ---
 
 ## Finding

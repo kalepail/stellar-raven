@@ -1,7 +1,7 @@
 ---
 id: sd-007
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-07
 evidence:
   - developers.stellar.org state-archival page fetched 2026-07-07
@@ -31,6 +31,8 @@ probe:
     contains:
       - Contract Data Automatic Restoration
       - will fail immediately
+  - fixed upstream by https://github.com/stellar/stellar-docs/pull/2620 (merged 2026-07-16); issue https://github.com/stellar/stellar-docs/issues/2568 closed completed
+  - live recheck 2026-07-27: the state-archival page now carries a dedicated "Contract Data Automatic Restoration" section citing Protocol 23 / CAP-0066, describing the simulation-populated restore list and the manual-build (no simulation) caveat
 ---
 
 ## Finding

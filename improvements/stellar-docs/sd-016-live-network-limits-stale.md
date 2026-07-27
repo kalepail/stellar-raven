@@ -1,7 +1,7 @@
 ---
 id: sd-016
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-10
 upstreamTitle: Make network limit tables dated and source-linked
 evidence:
@@ -12,6 +12,8 @@ evidence:
   - Solo scratchpad 575 GT-32 primary 3281 and independent blind 3284
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2612
   - independent Docs-team audit 2026-07-14 reproduced the live values and found a third stale Testnet-operations value in docs/learn/glossary.mdx; it also confirmed the repo has no established as-of-date convention yet: https://gist.githubusercontent.com/ElliotFriend/3b3641b929b4408a834b85bcb4e75449/raw/a90e6b453ee3505ef2525b4428eaa75752e3ae08/raven-audit-rebuttal.md
+  - fixed upstream by https://github.com/stellar/stellar-docs/pull/2619 (merged 2026-07-16); issue https://github.com/stellar/stellar-docs/issues/2612 closed completed
+  - live recheck 2026-07-27: /docs/networks carries "Values as of July 2026 ... set by validator vote and can change over time" with a link to Stellar Lab's Network Limits page, and the fees page states "as of July 2026, 1,000 non-smart-contract operations and 2,000 smart contract transactions"
 ---
 
 ## Finding

@@ -1,7 +1,7 @@
 ---
 id: sd-011
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-10
 upstreamTitle: Clarify unused SDEX offer effects and authoritative result XDR
 evidence:
@@ -12,6 +12,8 @@ evidence:
   - Solo scratchpad 575 GT-17 primary process 3247 and independent blind process 3248
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2604
   - ElliotFriend triage 2026-07-15 confirmed the finding against current stellar/stellar-horizon and warned that effect type 7 is marked unused but is emitted, so the fix must stay scoped to types 30/31/32: https://github.com/stellar/stellar-docs/issues/2604#issuecomment-4981548398
+  - fixed upstream by https://github.com/stellar/stellar-docs/pull/2642 (merged 2026-07-22); issue https://github.com/stellar/stellar-docs/issues/2604 closed completed
+  - live recheck 2026-07-27: the Trading Effects table marks Offer Created, Offer Removed, and Offer Updated "Unused; not emitted" while Trade stays active, and the adjacent Offer Lifecycle note routes readers to result_xdr (ManageOfferSuccessResult), List All Offers, and Retrieve an Offer's Trades; effect type 7 was correctly left out of scope
 ---
 
 ## Finding

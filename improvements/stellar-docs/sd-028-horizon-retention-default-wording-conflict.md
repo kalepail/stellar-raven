@@ -1,7 +1,7 @@
 ---
 id: sd-028
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-11
 upstreamTitle: Correct the Horizon history retention default
 evidence:
@@ -10,6 +10,8 @@ evidence:
   - stellar-horizon v27.0.0 reaper source skips automatic history deletion when the count is 0
   - Solo scratchpad 575 GT-54 primary process 3383 and pre-read-locked blind process 3386
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2599
+  - fixed upstream by https://github.com/stellar/stellar-docs/pull/2619 (merged 2026-07-16); issue https://github.com/stellar/stellar-docs/issues/2599 closed completed
+  - live recheck 2026-07-27: both the Horizon configuring and ingestion admin pages state "By default (HISTORY_RETENTION_COUNT=0), Horizon retains all ingested history and never purges it" and present 518400 as a recommended ~30-day sliding window rather than the executable default
 ---
 
 ## Finding

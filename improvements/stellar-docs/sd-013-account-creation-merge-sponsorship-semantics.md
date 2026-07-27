@@ -1,7 +1,7 @@
 ---
 id: sd-013
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-10
 upstreamTitle: Document sponsored account creation and merge sponsorship blockers
 evidence:
@@ -10,6 +10,8 @@ evidence:
   - current stellar-core CreateAccountOpFrame and MergeOpFrame behavior
   - Solo scratchpad 575 GT-29 primary 3276 and independent blind 3278
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2590
+  - fixed upstream by https://github.com/stellar/stellar-docs/pull/2657 (merged 2026-07-22); issue https://github.com/stellar/stellar-docs/issues/2590 closed completed
+  - live recheck 2026-07-27: the account-merge result codes now include op_is_sponsor covering both numSponsoring > 0 and an open same-transaction sponsorship, and op_has_sub_entries reads "non-signer subentries (trustlines, offers, or data entries)" with signers removed automatically; the create-account guide documents the CAP-33 sponsored startingBalance of 0 path
 ---
 
 ## Finding

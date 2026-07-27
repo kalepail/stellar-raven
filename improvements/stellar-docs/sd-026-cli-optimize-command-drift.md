@@ -1,7 +1,7 @@
 ---
 id: sd-026
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-11
 upstreamTitle: Replace the deprecated stellar contract optimize workflow
 evidence:
@@ -11,6 +11,8 @@ evidence:
   - Solo scratchpad 575 GT-48 primary 3333 and blind 3342
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2601
   - independent Docs-team audit 2026-07-14 verified hello-world.mdx still claims a 64KB maximum while live Mainnet contract_max_size_bytes is 131072 (128KB): https://gist.githubusercontent.com/ElliotFriend/3b3641b929b4408a834b85bcb4e75449/raw/a90e6b453ee3505ef2525b4428eaa75752e3ae08/raven-audit-rebuttal.md
+  - fixed upstream by https://github.com/stellar/stellar-docs/pull/2618 (merged 2026-07-16); issue https://github.com/stellar/stellar-docs/issues/2601 closed completed
+  - live recheck 2026-07-27: the hello-world build section states "The stellar contract build command optimizes the generated .wasm by default" and carries a note that the standalone stellar contract optimize command "is now deprecated in favor of the (default) --optimize flag"
 ---
 
 ## Finding

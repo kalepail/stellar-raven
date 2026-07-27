@@ -1,7 +1,7 @@
 ---
 id: sd-031
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-11
 upstreamTitle: Fix the removed stellar network container command
 evidence:
@@ -11,6 +11,8 @@ evidence:
   - local Stellar CLI 27.0.0 rejected network container and exposed stellar container start NETWORK with local, testnet, futurenet, and pubnet
   - Solo scratchpad 575 GT-55 primary process 3392 and pre-read-sealed blind process 3393
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2598
+  - fixed upstream by https://github.com/stellar/stellar-docs/pull/2618 (merged 2026-07-16); issue https://github.com/stellar/stellar-docs/issues/2598 closed completed
+  - live recheck 2026-07-27: the Lab quickstart teaches "stellar container start testnet", and the retired "stellar network container start" sequence no longer appears on the quickstart, container advanced-usage, or smart-contract setup pages
 ---
 
 ## Finding

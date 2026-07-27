@@ -1,7 +1,7 @@
 ---
 id: sd-017
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-10
 upstreamTitle: Align Horizon lifecycle and deprecation wording
 evidence:
@@ -11,6 +11,8 @@ evidence:
   - Solo scratchpad 575 GT-32 primary 3281 and independent blind 3284
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2592
   - independent Docs-team audit 2026-07-14 found the most visible contradiction at docs/README.mdx, whose landing-page summary calls Horizon deprecated in the present tense: https://gist.githubusercontent.com/ElliotFriend/3b3641b929b4408a834b85bcb4e75449/raw/a90e6b453ee3505ef2525b4428eaa75752e3ae08/raven-audit-rebuttal.md
+  - fixed upstream by https://github.com/stellar/stellar-docs/pull/2620 (merged 2026-07-16); issue https://github.com/stellar/stellar-docs/issues/2592 closed completed
+  - live recheck 2026-07-27: /docs/data/apis and the Lab Horizon endpoint page carry the same wording ("nearing end-of-life and will eventually be deprecated in favor of Stellar RPC and Portfolio APIs"), and no residual "is deprecated" contradiction remains on /docs/data/apis/horizon or the Horizon-to-RPC migration guide
 ---
 
 ## Finding

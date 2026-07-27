@@ -10,15 +10,20 @@ evidence:
   - Solo scratchpad 575 GT-23 primary 3264 and blind 3267
   - upstream issue filed 2026-07-13: https://github.com/Stellar-Light/stellarlight/issues/522
   - upstream issue closed completed 2026-07-14 after exposing llamaSlugs, tvlMethodUrl, and methodology while explicitly leaving history at the provider
+  - body corrected 2026-07-27: the provider/method-URL half of the original finding shipped in spec 1.7.20 (PR https://github.com/Stellar-Light/stellarlight/pull/530); only the history and metric-decomposition ask remains declined
 ---
 
 ## Finding
 
-Scout's project-level `tvlUSD`/`tvlAsOf` point is useful but cannot answer a
-trend question or distinguish current, quarter start/end, quarter peak, and
-record. It also lacks an answer-visible provider/method URL sufficient to
-reconcile its point with concurrent external reads. Borrowed, pool/backstop,
-fees, and volume can be mistaken for additive TVL.
+Scout's project-level `tvlUSD`/`tvlAsOf` point cannot answer a trend question
+or distinguish current, quarter start/end, quarter peak, and record. Borrowed,
+pool/backstop, fees, and volume can be mistaken for additive TVL.
+
+The provenance half of this finding is **resolved**: spec 1.7.20 shipped
+`llamaSlugs[]`, `tvlMethodUrl`, and `tvlMethod`, so rows now carry an
+answer-visible provider/method URL. The owner accepted in-API history as out of
+scope, with the time series living on the provider page. That boundary is the
+declined residual recorded here.
 
 This extends the methodology problem in sls-031 and is distinct from sls-038's
 missing ecosystem-analyze TVL response: the project row exists, but its history
@@ -26,8 +31,9 @@ and metric decomposition do not.
 
 ## Recommendation
 
-Expose provider and methodology URL, inclusion set, refresh time, compact
-history or current/period-start/period-peak/record fields, and distinct metric
-classes for base TVL, borrowed, pool/backstop, fees, and volume. Add Blend and
-Soroswap regression fixtures that prevent metric addition and current/peak
-conflation.
+Provider/methodology URL and refresh time are live and need no further action.
+The remaining (declined) ask was compact history or
+current/period-start/period-peak/record fields, plus distinct metric classes for
+base TVL, borrowed, pool/backstop, fees, and volume. Consumer guidance routes
+trend, peak, and record questions to `tvlMethodUrl` instead. Revisit only if
+provider-hosted history stops being reachable from the row.

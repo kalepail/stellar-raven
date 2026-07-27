@@ -1,7 +1,7 @@
 ---
 id: sd-021
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-11
 upstreamTitle: Fix the Protocol 25 BN254 CAP link and Poseidon API distinctions
 evidence:
@@ -17,6 +17,8 @@ evidence:
 recurrences:
   - date: 2026-07-11
     evidence: H2 independently reproduced the stale P25 BN254/Poseidon status language and the resulting incorrect advice to wait for BN254 before using Noir or RISC Zero toolchains.
+  - fixed upstream by https://github.com/stellar/stellar-docs/pull/2619 (merged 2026-07-16); issue https://github.com/stellar/stellar-docs/issues/2614 closed completed
+  - live recheck 2026-07-27: both Protocol 25 sections of the Software Versions page read "BN254 Elliptic Curve Operations: CAP-74", and /docs/build/apps/zk states the Poseidon host functions expose permutation primitives through the CryptoHazmat interface behind the hazmat-crypto feature, pointing ready-made hashes at rs-soroban-poseidon
 ---
 
 ## Finding

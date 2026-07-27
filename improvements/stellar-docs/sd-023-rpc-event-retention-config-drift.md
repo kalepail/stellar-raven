@@ -1,7 +1,7 @@
 ---
 id: sd-023
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-11
 upstreamTitle: Replace stale RPC transaction and event retention guidance
 evidence:
@@ -11,6 +11,8 @@ evidence:
   - Solo scratchpad 575 GT-46 blind 3329
   - live recheck 2026-07-14: getEvents still says a 24-hour default; getTransaction still names the retired transaction-retention-window setting and recommends a seven-day cap; current source uses one positive history-retention-window in ledgers with a stock 120960-ledger default
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2595
+  - fixed upstream by https://github.com/stellar/stellar-docs/pull/2656 (merged 2026-07-21); issue https://github.com/stellar/stellar-docs/issues/2595 closed completed
+  - live recheck 2026-07-27: the getEvents page describes "a bounded, ledger-denominated history of recent transactions and events, configured by a single history-retention-window setting with a stock default of 120960 ledgers (about 7 days)" and points at getHealth; the old 24-hour default and separate 7-day cap wording is gone
 ---
 
 ## Finding

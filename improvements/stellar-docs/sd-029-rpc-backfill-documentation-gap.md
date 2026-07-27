@@ -10,13 +10,13 @@ evidence:
   - stellar-rpc v27.1.1 service.go and backfill.go synchronously materialize an approximate trailing window before normal ingestion
   - narrow config and ingest source tests recorded in Solo scratchpad 575 GT-54 blind process 3386
   - upstream issue filed 2026-07-14: https://github.com/stellar/stellar-docs/issues/2602
+  - scope correction 2026-07-27 accepting maintainer triage https://github.com/stellar/stellar-docs/issues/2602#issuecomment-5035732543: data-lake-integration.mdx already documents datastore serving and the getLedgers-only boundary, so the original framing overstated the gap; the undocumented surface is the BACKFILL flag itself plus the stale configuring.mdx sample config
 ---
 
 ## Finding
 
 Current Stellar RPC administration content does not document the shipped
-`BACKFILL` path well enough to distinguish it from retention and direct
-data-lake serving. Since v25.1, RPC can synchronously materialize approximately
+`BACKFILL` flag at all, and the `configuring.mdx` sample config predates it. Since v25.1, RPC can synchronously materialize approximately
 its configured trailing window from a compatible datastore before normal live
 ingestion, but the operator-facing pages still leave readers with the older
 retention-only model.
@@ -28,7 +28,9 @@ The missing boundary is safety-relevant:
 - fresh ordinary RPC startup begins at the current history-archive tip, so
   increasing retention alone does not restore older rows;
 - direct datastore fallback without materialization remains
-  `getLedgers`-only, while transaction/event methods read local tables;
+  `getLedgers`-only, while transaction/event methods read local tables — this
+  boundary is already documented in `data-lake-integration.mdx`, so it is
+  context here rather than part of the gap;
 - datastore/checkpoint gaps and existing local state constrain what can be
   materialized, so exact coverage should not be promised.
 
@@ -51,8 +53,10 @@ operator prose alone. This is distinct from sd-023, which owns stale
 Add a versioned RPC startup/recovery section that:
 
 1. lists the three current defaults;
-2. contrasts ordinary fresh startup, a larger future retention window, direct
-   `getLedgers` datastore serving, and `BACKFILL` materialization;
+2. contrasts ordinary fresh startup, a larger future retention window, and
+   `BACKFILL` materialization, cross-linking the existing
+   `data-lake-integration.mdx` treatment of direct `getLedgers` datastore
+   serving rather than restating it;
 3. states datastore, serve-flag, local-state, gap and checkpoint prerequisites;
 4. explains which methods remain local-table-backed;
 5. labels release-note storage/duration figures as dated examples rather than
