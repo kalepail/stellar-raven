@@ -11,6 +11,9 @@ evidence:
   - live re-check 2026-07-09: authenticated partner-tier GET /v1/tools returned all 21 available tools, including list_my_research, request_research, and research_result; GET /v1/me independently reported tools.available=21 and tools.visible=21
   - anonymous control 2026-07-09: unauthenticated GET /v1/tools returned the intended 18 public tools, confirming tier-aware visibility rather than the former authenticated-list omission
   - 2026-07-14 follow-up after the regression stopped reproducing, requesting deployed fix context: https://github.com/lumenloop/lumenloop-backend/issues/42#issuecomment-4971409286
+  - live re-check 2026-07-27: authenticated partner-tier GET /v1/tools returned 21 rows including list_my_research, request_research, and research_result; same-key GET /v1/me reported tools.available=21 and tools.visible=21
+  - anonymous control 2026-07-27: unauthenticated GET /v1/tools returned 18 public tools and omitted the three account-scoped tools
+  - 2026-07-27 follow-up: https://github.com/lumenloop/lumenloop-backend/issues/42#issuecomment-5092399001
 recurrences:
   - date: 2026-07-14
     evidence: same-key authenticated /v1/tools=18 versus /v1/me available=21 and visible=21; regression reported at https://github.com/lumenloop/lumenloop-backend/issues/42
@@ -18,24 +21,26 @@ recurrences:
 
 ## Finding
 
-Partner items are again hidden from `/v1/tools` for a partner-tier caller, so a
-complete authorized tool listing requires a union with `/v1/me`. The defect was
-live-fixed on 2026-07-09 but recurred by 2026-07-14: authenticated and anonymous
-listings both return 18 tools while partner `/v1/me` reports 21 visible tools.
+The 2026-07-14 partner-listing regression stopped reproducing later that day and
+remained absent on 2026-07-27: authenticated `/v1/tools` and `/v1/me` both show
+21 available tools, while the anonymous listing correctly shows 18 public tools.
+Keep this finding `reported-upstream` until upstream links the deployed fix and
+closes #42. Retirement needs that resolution because the defect flapped within a
+single day on 2026-07-14.
 
 ## Evidence
 
-The 2026-07-09 live control used the same partner credential for both endpoints.
-`GET /v1/tools` returned 21 named rows including all three account-scoped tools,
-and `/v1/me` reported `available: 21` / `visible: 21`. An anonymous request
-returned 18 and omitted those three names, proving the service now applies the
-expected tier-aware distinction. The same-key 2026-07-14 re-check regressed:
-authenticated `/v1/tools` returned 18 rows and omitted all three account-scoped
-names while `/v1/me` still reported 21 available/visible tools. Issue #42 records
-the current reproduction and requested regression guard.
+The 2026-07-09 control returned 21 partner-visible rows from `/v1/tools`, matching
+`/v1/me` (`available: 21`, `visible: 21`); the anonymous control returned the 18
+public rows. The same-key 2026-07-14 re-check briefly regressed to 18 authenticated
+rows while `/v1/me` still reported 21, but the later 2026-07-14 follow-up no longer
+reproduced it. On 2026-07-27, authenticated `/v1/tools` again returned all 21 rows
+and `/v1/me` again reported 21 available/visible tools; the anonymous control stayed
+at 18. The 2026-07-27 upstream comment records that recheck. Issue #42 remains open
+without a linked deployed-fix reference.
 
 ## Recommendation
 
-Keep the authenticated listing and `/v1/me` counts consistent. Consumers may
-retain the count cross-check as a drift guard, but no two-endpoint union is now
-needed to discover partner-tier tool names.
+Keep the authenticated listing and `/v1/me` counts consistent, and link the deployed
+fix before closing #42. Consumers may retain the count cross-check as a drift guard;
+no two-endpoint union is currently needed to discover partner-tier tool names.
