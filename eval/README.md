@@ -930,12 +930,15 @@ OpenZeppelin, stellar-dev, and stellar-light skills moved in the same drift
 window. Raven exposes all four collections under ADR-0003 and keeps the four
 existing feedback/partner write surfaces excluded.
 
-The routing gate moved from 209/285/316 to **210/282/317** legacy strict. The
-skills lane moved from 18 to **17** top-1 while retaining 23/23 top-3, top-5,
-and card@5: the mixed `q-skill-builder-quickstart-remittance` question now
-ranks Scout project/prior-art lookup first and the intended builder-quickstart
-skill second. Because the query explicitly asks which prior art exists, this
-is an intended routing improvement, not a skill disappearance; weakening the
-accurate Scout route solely to preserve the old strict winner was rejected.
+The prior committed legacy baseline was 209/285/316 (2026-07-13), which main's
+catalog no longer matched; measured pristine-main pre-change was 210/282/318,
+so this drift's actual legacy-strict effect is **210/282/318 → 210/282/317**
+(one top-5 loss). The skills lane moved from 18 to **17** top-1 while retaining
+23/23 top-3, top-5, and card@5: the mixed
+`q-skill-builder-quickstart-remittance` question now ranks Scout
+project/prior-art lookup first and the intended builder-quickstart skill second.
+Because the query explicitly asks which prior art exists, this is an intended
+routing improvement, not a skill disappearance; weakening the accurate Scout
+route solely to preserve the old strict winner was rejected.
 The authoritative baseline and full rationale are in `eval/gates.json`, with
 result `routing-2026-07-26T23-51-48-789Z.json`.
