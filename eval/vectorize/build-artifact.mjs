@@ -33,10 +33,6 @@ async function main() {
     purpose: "pinned local reference artifact for the Cloudflare Vectorize frontier experiment",
     model: MODEL,
     policy: POLICY,
-    catalog: {
-      generatedAt: manifest.generatedAt,
-      entryCount: cards.length
-    },
     cards: cards.map((card) => ({
       id: card.id,
       service: card.service,
