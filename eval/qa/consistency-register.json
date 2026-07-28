@@ -134,14 +134,14 @@
           "q-soroban-constructor-lifecycle",
           "q-tool-rust-soroban-sdk"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "Historical 2026-07-03 snapshot only: the P17-P26 mappings were consistent, and P27 was then queued for the 2026-07-08 Mainnet vote. SUPERSEDED by the 2026-07-09 post-vote sweep below: P27/Zipper activated at ledger 63386819 on 2026-07-08T17:00:10Z, so no current grader may use this historical pending wording.",
+        "note": "Historical 2026-07-03 snapshot only: the P17-P26 mappings were consistent, and P27 was then queued for the 2026-07-08 Mainnet vote. SUPERSEDED by the 2026-07-09 post-vote sweep below: P27/Zipper activated at ledger 63386819 on 2026-07-08T17:00:10Z, so no current grader may use this historical pending wording. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-comp-clawback-cap0035": "0c7f2cf1a6afb878e347f69066c7963342f49803711387bd6a0eaa8c3667c25e",
           "q-edge-fresh-latest-protocol-version": "eb1964bf14a5b3ff3cf52c1180d66442e3ff53822c3a0319537608f3e8f0d827",
@@ -184,14 +184,14 @@
           "q-soroban-constructor-lifecycle",
           "q-ti-rpc-gettransactions-pagination-xdr"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-13",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-13",
-          "reason": "Truth-maintenance source-surface metadata changed; CAP claims rechecked unchanged",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read CAP mappings after the Soroswap dated-TVL refresh and metadata rescheduling; no CAP-status tension.",
           "verdict": "consistent"
         },
-        "note": "CAP-35 Final/P17, CAP-38 P18, CAP-46 series P20, CAP-51+53 P21, CAP-58+59 Final/P22, CAP-62/63/65/67 P23 (CAP-67 Final), CAP-73 Implemented/P26, CAP-74+75 Final/P25, CAP-71 Accepted/P27 — status and protocol number identical everywhere they appear.",
+        "note": "CAP-35 Final/P17, CAP-38 P18, CAP-46 series P20, CAP-51+53 P21, CAP-58+59 Final/P22, CAP-62/63/65/67 P23 (CAP-67 Final), CAP-73 Implemented/P26, CAP-74+75 Final/P25, CAP-71 Accepted/P27 — status and protocol number identical everywhere they appear. Re-swept 2026-07-28: re-read CAP mappings after the Soroswap dated-TVL refresh and metadata rescheduling; no CAP-status tension.",
         "memberContentSha256": {
           "q-comp-clawback-cap0035": "0c7f2cf1a6afb878e347f69066c7963342f49803711387bd6a0eaa8c3667c25e",
           "q-comp-clawback-holder-risk": "35de6b3c1352355daf670a1eaf7fff660911168e06b68d34b35138e8590392a8",
@@ -233,14 +233,14 @@
           "q-soroban-oz-token",
           "q-tool-lab-what-is"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-13",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-13",
-          "reason": "Truth-maintenance source-surface metadata changed; SEP status claims and partial-deprecation nuance rechecked unchanged",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "SEP-1/9/10/12/24/31/46/48 Active; SEP-6 Active with only interactive components deprecated in favor of SEP-24 (the only-partial-deprecation nuance is stated identically in all 3 cases that touch it); SEP-30/38/39/41/43/45/55/57/58 Draft — consistent everywhere. SEP-8 moved to tensions (upstream repo itself inconsistent).",
+        "note": "SEP-1/9/10/12/24/31/46/48 Active; SEP-6 Active with only interactive components deprecated in favor of SEP-24 (the only-partial-deprecation nuance is stated identically in all 3 cases that touch it); SEP-30/38/39/41/43/45/55/57/58 Draft — consistent everywhere. SEP-8 moved to tensions (upstream repo itself inconsistent). Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-aas-sep30-recoverable-wallets": "c38fe3d3b568684f2297716c5a57ea10733eabb94bc9ccaa0a7c9a21da760555",
           "q-comp-anchor-compliance-stack": "eefa3d1263882f52d813d3a33b31b339c47088a23d0686a34533230765cfd826",
@@ -348,13 +348,13 @@
           "q-scf-verified-members"
         ],
         "verdict": "consistent",
-        "lastChecked": "2026-07-11",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "todo 1251 separated the x402 wallet-capability dispute from this cluster's SCF-award invariant",
           "verdict": "consistent"
         },
-        "note": "Aquarius $391K (rounds 17/23/27/30), Soroswap $346,750 (rounds 15/17/21), Phoenix ~$394.5K, Reflector $444,840 (rounds 15/20/26/29), Band $100K, Lightecho $93,110, Orally $48K, DIA $38K, Blend $50K, Hana $132K, xBull $56.2K, OrbitCDP $280K, ApiCharge $79K — every repeated figure matches exactly across cases, and the Blend/Script3 team-lineage caveat (project row under-counts team history) is carried consistently by all three overridden SCF-lending cases plus their graderNotes.",
+        "note": "Aquarius $391K (rounds 17/23/27/30), Soroswap $346,750 (rounds 15/17/21), Phoenix ~$394.5K, Reflector $444,840 (rounds 15/20/26/29), Band $100K, Lightecho $93,110, Orally $48K, DIA $38K, Blend $50K, Hana $132K, xBull $56.2K, OrbitCDP $280K, ApiCharge $79K — every repeated figure matches exactly across cases, and the Blend/Script3 team-lineage caveat is carried consistently. q-defi-x402-on-stellar-what's membership here concerns the ApiCharge award only; wallet roster and auth-entry capability are tracked separately in cluster-125 and are not inferred from this consistent SCF cluster.",
         "memberContentSha256": {
           "q-defi-aquarius-what-is": "c11c995962eb4bc57a0068ec7811b666b20b2b25172ab9872dd46696bb307c41",
           "q-defi-blend-alternatives": "8d2dff56dbfdd2e7248b9b55e1b9af64250de6322cbb2cdbfdb01611dee1368a",
@@ -380,14 +380,14 @@
           "q-defi-reflector-oracle",
           "q-soroban-oracle-defensive-consumption"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "todo 1251 reconciled token transfers, combined USD valuation, quarantine, and unverified net-loss attribution",
           "verdict": "consistent"
         },
-        "note": "Date (Feb 21-22 2026, ~00:25 UTC Feb 22), size (~$10M/~$10.2M), freeze (~48M XLM ≈ $7.2-7.5M by Tier-1 validators), vector (USTRY Etherfuse Stablebond pumped ~$1.06→~$106 on illiquid SDEX poisoning Reflector VWAP), and the app-level-not-protocol-level framing are identical across all five cases.",
+        "note": "The cases consistently separate the 61,249,278.31-XLM and 1,000,196.70-USDC exploit transfers from source-specific combined USD valuations around $10M-$10.86M and from Blockaid's separately attributed 48,069,094-XLM quarantine. The decoded pre-state's roughly 14,000-USDC liability is not a second exploit transfer, quarantine is not recovery, and the prior Script3 ~$10.5M net-loss attribution remains unverified. Date, USTRY/Reflector vector, and app-level-not-protocol-level framing remain compatible.",
         "memberContentSha256": {
           "q-comp-security-disclosure-programs": "e82cea45171cf31b5ce1a59cbb0fa9fc6bec04d71b1b9c760c9a640a3e757f72",
           "q-comp-yieldblox-oracle-incident": "13f3f864583f716dff174116cc88b164a02fb4c149ca0b021063d491fb4595b3",
@@ -409,14 +409,14 @@
           "q-edge-factcheck-soroswap-first-amm",
           "q-protocol-amm-cap-0038"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read Soroswap chronology after the dated-TVL refresh; firstness attribution, the native P18 counterexample, and metric boundaries remain consistent.",
           "verdict": "consistent"
         },
-        "note": "Soroswap firstness remains attributed operator/Soroban scope, never independent broad-Stellar chronology. The classic SDEX is an older order-book venue; Protocol-18/CAP-0038 constant-product pools are the direct pre-Soroswap AMM counterexample. TVL, routed volume, and cumulative trading volume remain distinct; dated Soroswap current/max examples are non-gating.",
+        "note": "Soroswap firstness remains attributed operator/Soroban scope, never independent broad-Stellar chronology. The classic SDEX is an older order-book venue; Protocol-18/CAP-0038 constant-product pools are the direct pre-Soroswap AMM counterexample. TVL, routed volume, and cumulative trading volume remain distinct; dated Soroswap current/max examples are non-gating. Re-swept 2026-07-28: re-read Soroswap chronology after the dated-TVL refresh; firstness attribution, the native P18 counterexample, and metric boundaries remain consistent.",
         "memberContentSha256": {
           "q-defi-soroswap-vs-stellarx": "2029c303131f07f42f04fc4897140fd058f605063ae398281cbd5bc8786ab267",
           "q-defi-soroswap-what-is": "86daa625039419f533796797b2b9cb2ef2fe9a6d2fcaa1900e9791c5c1e1602f",
@@ -444,14 +444,10 @@
           "q-token-circle-usdc-on-stellar",
           "q-tool-cctp-stellar-integration"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
-        "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
-          "verdict": "consistent"
-        },
-        "note": "CRDT=WisdomTree Sep 12 2025, USDY=Ondo Sep 17 2025, and PYUSD=PayPal-branded/Paxos-issued Sep 18 2025; Templar is another verified Nov 5 2025 launch. The set is illustrative, not exhaustive, and the old Meridian 'inflection point' narrative is not a truth gate. Announced, approved, technically integrated, listed, and publicly live remain distinct states. EURC=Circle 2023-09-26; CCTP live on Stellar 2026-05-19; BENJI=Franklin Templeton since 2021; Figure YLDS live 2026-05-05; DTCC DTC service planned H1 2027 NOT live.",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "reSwept": "2026-07-28",
+        "note": "CRDT=WisdomTree Sep 12 2025, USDY=Ondo Sep 17 2025, and PYUSD=PayPal-branded/Paxos-issued Sep 18 2025; Templar is another verified Nov 5 2025 launch. The set is illustrative, not exhaustive, and the old Meridian 'inflection point' narrative is not a truth gate. Announced, approved, technically integrated, listed, and publicly live remain distinct states. Circle recorded CCTP Stellar mainnet support on 2026-05-18 and SDF/Circle publicly announced live on 2026-05-19; the prior 2026-02-24 launch attribution is unverified. EURC=Circle 2023-09-26; BENJI=Franklin Templeton since 2021; Figure YLDS live 2026-05-05; DTCC DTC service planned H1 2027 NOT live. Re-swept 2026-07-28 (round lead, post-adversarial-review): reopen is hash churn from this round's own F3/N1 fixes — q-token-circle-usdc-on-stellar now separates Circle's 2026-05-18 mainnet-support milestone from the 2026-05-19 public announcement, and q-tool-passkeykit-smart-wallet's avoid clause was rescoped so it no longer punishes the true 'no third-party audit' statement. Both edits move those members TOWARD the cluster claim; lead read each changed answer directly.",
         "memberContentSha256": {
           "q-asset-rwa-tokenized-freshness": "62473233a43096cd407d20d6683b7cbe54f32759a3888251db95dbe1cf83c9c0",
           "q-asset-usdc-eurc-issuer": "f66c9cf923e027db215975b2a2f41de0a444ea36bcd376baed6d23fd53db4ec1",
@@ -462,7 +458,7 @@
           "q-eco-pyusd-stellar-freshness": "44d6406ac29fe55d8a05f988e810eae6ee301418f4148aa8fb8c0cf0c02e4ec1",
           "q-eco-stablecoins-on-stellar": "cade1ccac1aa6bf2cc56584a388f57777af236f71b2df554d4685e941b7053b4",
           "q-rwa-projects-tokenizing-stellar": "485df7eb0211a7bf2f6a3493d7a5907fa99bb4bbcd803cf232a90c0329364043",
-          "q-token-circle-usdc-on-stellar": "7d72cec465a97dd62cfd56d5178df5cbaba1d1581dfcc100a3a511f8c078b58a",
+          "q-token-circle-usdc-on-stellar": "c2a91115f340ad6e2c0358d6137775ffec975851c24bc8708394b6e64c10766c",
           "q-tool-cctp-stellar-integration": "7832915690b1ee68e1f0d517ba88d06d3bae2abb04fdb1b7f2bf5e2c3961b48a"
         },
         "reopened": {
@@ -509,14 +505,14 @@
           "q-soroban-simulate-resource-fee",
           "q-token-initial-supply-distribution"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "Corrected 2026-07-10: base fee 100 stroops, 1 XLM = 10,000,000 stroops, base reserve 0.5 XLM, empty unsponsored account minimum 2 reserves = 1 XLM, and fees are separate. q-edge-1xlm-activation-fee previously mislabeled the 1 XLM minimum as the base reserve and is now overridden. Other repeated constants remain as previously reviewed; sponsorship terms qualify the simple minimum-balance formula.",
+        "note": "Corrected 2026-07-10: base fee 100 stroops, 1 XLM = 10,000,000 stroops, base reserve 0.5 XLM, empty unsponsored account minimum 2 reserves = 1 XLM, and fees are separate. q-edge-1xlm-activation-fee previously mislabeled the 1 XLM minimum as the base reserve and is now overridden. Other repeated constants remain as previously reviewed; sponsorship terms qualify the simple minimum-balance formula. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-asset-amm-fee-reserve": "b6a6f8cf8cb877dc04e54fc4bdffc85bece09121aca3bb910507f5bb9317d521",
           "q-asset-path-payment-ops": "6a780dfd6424ddd38b112eeaaec88eb22d3f782ac41b04ec985e26a7ae58912f",
@@ -555,14 +551,14 @@
           "q-ti-rpc-gettransactions-pagination-xdr",
           "q-ti-self-host-retention-backfill"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-13",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-13",
-          "reason": "Truth-maintenance source-surface metadata changed; RPC/Horizon role and limit claims rechecked unchanged",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "Corrected 2026-07-11: official Horizon lifecycle wording is source-conflicted, so cases preserve the durable operational/legacy-no-new-features and endpoint-by-endpoint boundary rather than one categorical deprecated/not-deprecated label. 'Soroban RPC' was renamed 'Stellar RPC' in Nov 2024. getEvents is bounded by each endpoint's configured ledger range; current stock/live observations were 120960 ledgers, while the generated method prose still conflicts with 24-hour-default/seven-day-maximum wording. Event page size, request ledger scan span, and retained history are distinct. Archive/data-lake integration extends getLedgers only; older events need continuous ingestion/indexing, and point-in-time balances need Hubble/owned history reconstruction. All listed cases now use this dispute-aware model.",
+        "note": "Corrected 2026-07-11: official Horizon lifecycle wording is source-conflicted, so cases preserve the durable operational/legacy-no-new-features and endpoint-by-endpoint boundary rather than one categorical deprecated/not-deprecated label. 'Soroban RPC' was renamed 'Stellar RPC' in Nov 2024. getEvents is bounded by each endpoint's configured ledger range; current stock/live observations were 120960 ledgers, while the generated method prose still conflicts with 24-hour-default/seven-day-maximum wording. Event page size, request ledger scan span, and retained history are distinct. Archive/data-lake integration extends getLedgers only; older events need continuous ingestion/indexing, and point-in-time balances need Hubble/owned history reconstruction. All listed cases now use this dispute-aware model. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-infra-horizon-vs-rpc": "e1865a28588383e7766c848485ce1b8a7ae55288792267e802be6f70ce645024",
           "q-infra-hubble-bigquery": "4e680dbee5f23fa86d8497df5a5ae70a17fb7b29b800728f2b9dce4bfb2bc11f",
@@ -668,20 +664,16 @@
           "q-tool-passkeykit-smart-wallet",
           "q-tool-smart-wallet-repos-discovery"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
-        "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
-          "verdict": "consistent"
-        },
-        "note": "Freighter = SDF-maintained; LOBSTR/StellarX/StellarTerm use the Ultra Stellar operator brand, but absolute affiliation and store-specific legal-entity negatives are not truth gates. LOBSTR currently supports Stellar+XRPL; scale remains attributed and its SCF totals disputed. Hana is multichain; xBull = Creit-Tech. DEX siblings distinguish UIs from independent liquidity venues and do not pin a three-player count.",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "reSwept": "2026-07-28",
+        "note": "Freighter = SDF-maintained; LOBSTR/StellarX/StellarTerm use the Ultra Stellar operator brand, but absolute affiliation and store-specific legal-entity negatives are not truth gates. LOBSTR currently supports Stellar+XRPL; scale remains attributed and its SCF totals disputed. Hana is multichain; xBull = Creit-Tech. Passkey Kit and Smart Account Kit are current sibling SDKs with different authorization models; the former legacy/unaudited-demo characterization was accurate before the 2026-07-12 README rewrite and is now freshness-drift. DEX siblings distinguish UIs from independent liquidity venues and do not pin a three-player count. Re-swept 2026-07-28 by the round lead after the Lane A reconciliation: the reopen is hash churn from that same reconciliation's own content edits, not a new inconsistency. Lead read the changed answers directly and confirmed the cluster's claim still holds. Re-swept 2026-07-28 (round lead, post-adversarial-review): reopen is hash churn from this round's own F3/N1 fixes — q-token-circle-usdc-on-stellar now separates Circle's 2026-05-18 mainnet-support milestone from the 2026-05-19 public announcement, and q-tool-passkeykit-smart-wallet's avoid clause was rescoped so it no longer punishes the true 'no third-party audit' statement. Both edits move those members TOWARD the cluster claim; lead read each changed answer directly.",
         "memberContentSha256": {
           "q-defi-soroswap-vs-stellarx": "2029c303131f07f42f04fc4897140fd058f605063ae398281cbd5bc8786ab267",
           "q-eco-dex-saturation": "b7ddea4105290d4f53c7667f5f77fadbf1c05a714a42aa5c679f1270705d0432",
           "q-eco-lobstr-wallet": "d9cb16d6099add68fc6dcdcd52e6666ab280c6a8aeb029975e4f3b42abb781e2",
           "q-eco-stellar-wallets-list": "daea249828c1ac446a1f3aff0cc7dc2a0501430620f08424c84e998e35fe4cd6",
-          "q-tool-passkeykit-smart-wallet": "8466738c72a8f8ea7ddf0570498ec2626481384e27faa9d12b43cd52dd998bca",
+          "q-tool-passkeykit-smart-wallet": "5abd00779a76439e65bd5e02da16bc1f9077b77411d2d583b768c30659fb4972",
           "q-tool-smart-wallet-repos-discovery": "d2b329ba8545fcf4b9e0e72205d58eb2283beb1cdc4ad2cb30152d6b4a3068b9"
         },
         "reopened": {
@@ -701,14 +693,14 @@
           "q-ti-testnet-usdc-faucet",
           "q-tool-cli-testnet-identity-howto"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "Friendbot funds non-production Testnet/Futurenet, while Mainnet XLM must be acquired from an authorized owner. Quickstart can run local Friendbot. Official local/Lab tooling may generate test identities; safe generation is distinct from emitting secrets or claiming prefunded Mainnet accounts. A public account address is shareable and is not a secret/recovery phrase.",
+        "note": "Friendbot funds non-production Testnet/Futurenet, while Mainnet XLM must be acquired from an authorized owner. Quickstart can run local Friendbot. Official local/Lab tooling may generate test identities; safe generation is distinct from emitting secrets or claiming prefunded Mainnet accounts. A public account address is shareable and is not a secret/recovery phrase. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-edge-jailbreak-generate-secret-keys": "3a689a5dbe9c5675b91b56cb7b0a674b5997cd78c189ed0cdb79a7c7e70c8686",
           "q-edge-send-me-free-xlm": "be3bf999862788c1a1ec8da972475056374640a58e27d4629580f29f647c945b",
@@ -732,17 +724,14 @@
           "q-protocol-version-history-list",
           "q-tool-rust-soroban-sdk"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
-          "verdict": "tension"
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
+          "verdict": "consistent"
         },
-        "note": "grader caution + improvements/stellar-docs/sd-008",
-        "findingRefs": [
-          "improvements/stellar-docs/sd-008"
-        ],
+        "note": "grader caution + improvements/stellar-docs/sd-008 Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-pc-protocol-upgrade-timing": "6ac860b7548a5e9beee9842c793265d1301116f3cbee1573ed0dd2a7b6d801a1",
           "q-protocol-27-cap-0071": "7fa767468113dff7fb46cb69d3caa451562dfdd27e820cd35acd10574af17fb1",
@@ -766,14 +755,14 @@
           "q-soroban-auth-delegation-p27",
           "q-tool-rust-soroban-sdk"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "Post-override truth is consistent: P27/Zipper activated on Mainnet at ledger 63386819 on 2026-07-08T17:00:10Z; CAP-0071 provides authentication delegation/address-bound credentials; stellar-core, soroban-sdk, and stellar-cli have stable v27 releases. The edge latest-version case remains behavior-gated rather than number-gated, and the stellar-core identity case never carried an activation claim.",
+        "note": "Post-override truth is consistent: P27/Zipper activated on Mainnet at ledger 63386819 on 2026-07-08T17:00:10Z; CAP-0071 provides authentication delegation/address-bound credentials; stellar-core, soroban-sdk, and stellar-cli have stable v27 releases. The edge latest-version case remains behavior-gated rather than number-gated, and the stellar-core identity case never carried an activation claim. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-edge-fresh-latest-protocol-version": "eb1964bf14a5b3ff3cf52c1180d66442e3ff53822c3a0319537608f3e8f0d827",
           "q-pc-protocol-upgrade-timing": "6ac860b7548a5e9beee9842c793265d1301116f3cbee1573ed0dd2a7b6d801a1",
@@ -919,14 +908,14 @@
           "q-soroban-auth-delegation-p27",
           "q-tool-rust-soroban-sdk"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "P27/Zipper is active from ledger 63386819 at 2026-07-08T17:00:10Z; the earlier pending note is historical and explicitly superseded.",
+        "note": "P27/Zipper is active from ledger 63386819 at 2026-07-08T17:00:10Z; the earlier pending note is historical and explicitly superseded. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-protocol-27-cap-0071": "7fa767468113dff7fb46cb69d3caa451562dfdd27e820cd35acd10574af17fb1",
           "q-protocol-version-history-list": "16fcda8caee456d795ddb1a05925156ff4251c1343c1d5deeeb4ac0d9a5537a3",
@@ -972,14 +961,14 @@
           "q-scf-funding-by-category",
           "q-soroban-deploy-cli"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-13",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-13",
-          "reason": "Issue #22 corrected the LatAm builder-directory operation annotation only; member factual claims, dates, and provenance boundaries were rechecked unchanged.",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "Dated/provenance-bearing overrides now distinguish source snapshots, legal entities, directory reconstructions, and current CLI/API semantics without unsupported comparisons.",
+        "note": "Dated/provenance-bearing overrides now distinguish source snapshots, legal entities, directory reconstructions, and current CLI/API semantics without unsupported comparisons. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-asset-rwa-tokenized-freshness": "62473233a43096cd407d20d6683b7cbe54f32759a3888251db95dbe1cf83c9c0",
           "q-asset-usdc-eurc-issuer": "f66c9cf923e027db215975b2a2f41de0a444ea36bcd376baed6d23fd53db4ec1",
@@ -1052,14 +1041,14 @@
           "q-pc-address-types-strkey",
           "q-sor-sac-introspection"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "Native XLM has no issuer/trustline and is not ERC-20, but it has a deterministic network-specific SAC ID exposing the same asset through SEP-41. Ordinary MetaMask EVM custom-network flow cannot add Stellar; a dated third-party Stellar Snap exists and is distinct from MetaMask Bridge or a safety endorsement. Wrapped/bridged assets remain separate representations.",
+        "note": "Native XLM has no issuer/trustline and is not ERC-20, but it has a deterministic network-specific SAC ID exposing the same asset through SEP-41. Ordinary MetaMask EVM custom-network flow cannot add Stellar; a dated third-party Stellar Snap exists and is distinct from MetaMask Bridge or a safety endorsement. Wrapped/bridged assets remain separate representations. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-asset-trustline-vs-sac": "f26baa8d8ea38c2553d449c13dfcd83f82914ea4332106574485d7cbd6074063",
           "q-defi-bridge-evm-to-stellar-axelar": "329064f6505da38c23a0352746051d8ff16a67203ae49049730bc49155b5385e",
@@ -1269,14 +1258,14 @@
           "q-infra-rpc-provider-archive-tier",
           "q-infra-which-indexer"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "QuasarSwap exists as a Nova Network DEX but was not verified as a Stellar project in the dated broad sweep. equilibriumco/quasar and lightsail-network/Quasar are unrelated Stellar data infrastructure, and Soroswap is a distinct DEX.",
+        "note": "QuasarSwap exists as a Nova Network DEX but was not verified as a Stellar project in the dated broad sweep. equilibriumco/quasar and lightsail-network/Quasar are unrelated Stellar data infrastructure, and Soroswap is a distinct DEX. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-defi-soroswap-what-is": "86daa625039419f533796797b2b9cb2ef2fe9a6d2fcaa1900e9791c5c1e1602f",
           "q-edge-noinfo-sep-9999": "ebb480f4c44fa8e116af72eda2273d47f85b893eba694e389814245e2cbc9479",
@@ -1401,18 +1390,14 @@
           "q-sor-sac-introspection",
           "q-token-circle-usdc-on-stellar"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
-        "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
-          "verdict": "consistent"
-        },
-        "note": "USDC is a native classic Stellar asset and Circle product, distinct from XLM. GA5Z…KZVN is the Mainnet issuer while GBBD…FLA5 is Testnet; CCTP has supported Stellar since 2026-05-19. Product brand, on-chain issuer, and jurisdiction-specific legal obligor remain separate.",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "reSwept": "2026-07-28",
+        "note": "USDC is a native classic Stellar asset and Circle product, distinct from XLM. GA5Z…KZVN is the Mainnet issuer while GBBD…FLA5 is Testnet. Circle's CCTP record distinguishes 2026-05-18 Stellar mainnet support from the 2026-05-19 SDF/Circle public-live announcement; the prior 2026-02-24 launch attribution is unverified. Product brand, on-chain issuer, jurisdiction-specific legal obligor, technical support, and public announcement remain separate. Re-swept 2026-07-28 (round lead, post-adversarial-review): reopen is hash churn from this round's own F3/N1 fixes — q-token-circle-usdc-on-stellar now separates Circle's 2026-05-18 mainnet-support milestone from the 2026-05-19 public announcement, and q-tool-passkeykit-smart-wallet's avoid clause was rescoped so it no longer punishes the true 'no third-party audit' statement. Both edits move those members TOWARD the cluster claim; lead read each changed answer directly.",
         "memberContentSha256": {
           "q-asset-usdc-eurc-issuer": "f66c9cf923e027db215975b2a2f41de0a444ea36bcd376baed6d23fd53db4ec1",
           "q-sor-sac-introspection": "16a2ca0266d6632272804914fde90f34cc6949487a0ec908a7e2fb176b650fe3",
-          "q-token-circle-usdc-on-stellar": "7d72cec465a97dd62cfd56d5178df5cbaba1d1581dfcc100a3a511f8c078b58a"
+          "q-token-circle-usdc-on-stellar": "c2a91115f340ad6e2c0358d6137775ffec975851c24bc8708394b6e64c10766c"
         },
         "reopened": {
           "date": "2026-07-28",
@@ -1480,9 +1465,14 @@
           "q-pc-sequence-numbers-ordering-replace",
           "q-ti-channel-accounts-throughput"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-10",
-        "note": "Fee source pays the outer charged fee once; inner/outer visible fee fields are not additive charges. Channel transaction sources consume their own sequences. Live estimates should use RPC getFeeStats/current CLI or Horizon /fee_stats; Horizon is legacy/no-new-features but not formally deprecated, and Hubble is historical analytics. Fees are not validator rewards.",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "reSwept": {
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
+          "verdict": "consistent"
+        },
+        "note": "Fee source pays the outer charged fee once; inner/outer visible fee fields are not additive charges. Channel transaction sources consume their own sequences. Live estimates should use RPC getFeeStats/current CLI or Horizon /fee_stats; Horizon is legacy/no-new-features but not formally deprecated, and Hubble is historical analytics. Fees are not validator rewards. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-hot-fee-pool-burn-deflation": "b0228760656129f0856cdef7bbf2d476604be0f604ab7456a548ea47b9d42076",
           "q-pc-fee-bump-channel-accounts-feepool": "e479bc72dae1f72c1267658757e11ebe413bccc8c289f0a2fc51160414c85176",
@@ -1704,14 +1694,14 @@
           "q-sor-p23-auto-restore-extendto",
           "q-soroban-storage-types"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "Temporary entries expire irreversibly; Persistent and Instance entries archive and are restorable. CAP-0062 separates live/archive state; CAP-0066 added automatic restoration behavior.",
+        "note": "Temporary entries expire irreversibly; Persistent and Instance entries archive and are restorable. CAP-0062 separates live/archive state; CAP-0066 added automatic restoration behavior. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-protocol-state-archival-ttl": "4175eb7b85338b44b890633fdacc46f6050a23ed7bff42c63e2bfc22fbb5f261",
           "q-sor-p23-auto-restore-extendto": "7009242e5132a8a3c5c33943551caae3490fbf258144deabff64b96e587971e1",
@@ -1767,14 +1757,14 @@
           "q-builder-by-region-latam",
           "q-builder-rust-soroban-devs"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-13",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-13",
-          "reason": "Issue #22 corrected builder-directory operation annotations only; dated roster and evidence-tier claims were rechecked unchanged.",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: the 2026-07-15 reopen was only q-builder-by-region-latam changing an improvement root-cause pointer; roster/evidence-tier claims remain consistent.",
           "verdict": "consistent"
         },
-        "note": "Scout is candidate discovery. Membership/counts are dated; public footprints corroborate returned rows but do not establish deployment, audit status, seniority, or availability. Skill matches need row-level provenance (sls-041).",
+        "note": "Scout is candidate discovery. Membership/counts are dated; public footprints corroborate returned rows but do not establish deployment, audit status, seniority, or availability. Skill matches need row-level provenance (sls-041). Re-swept 2026-07-28: the 2026-07-15 reopen was only q-builder-by-region-latam changing an improvement root-cause pointer; roster/evidence-tier claims remain consistent.",
         "memberContentSha256": {
           "q-anchor-list-builders-discovery": "1c3b59f17bcc98d702950d7ef34bdefba182a29ad124764d89bb1fcbcfd51df4",
           "q-builder-by-region-latam": "4d7b35e506b3543e5e9649bc38fdd7d44f73c278d5a7055a4e2665a43886eb17",
@@ -1794,14 +1784,14 @@
           "q-scf-nqg-voting",
           "q-scf-verified-members"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: Scout removed the retired scfTier field/filter on 2026-07-15; governance roles, project awards, and person-level attribution remain consistently separated.",
           "verdict": "consistent"
         },
-        "note": "Verified/Pathfinder/Navigator/Pilot are governance roles. Award programs and submission records concern projects. Neither supplies a person-level advisor ranking without a current attribution crosswalk.",
+        "note": "Verified/Pathfinder/Navigator/Pilot are governance roles. Award programs and submission records concern projects. Neither supplies a person-level advisor ranking without a current attribution crosswalk. Re-swept 2026-07-28: Scout removed the retired scfTier field/filter on 2026-07-15; governance roles, project awards, and person-level attribution remain consistently separated.",
         "memberContentSha256": {
           "q-builder-by-scf-tier": "90fc76c2b5981fac3b630a01a4d15eca2cac025c42dd55ab23fdaca918761a04",
           "q-scf-build-award-cap": "917fecc6d5c337a3c8db48319dac04ca7b3a68f55b65ebb2cdeebebca55d7ab0",
@@ -2258,14 +2248,14 @@
           "q-sor-deploy-invoke-from-js-sdk",
           "q-soroban-cli-bindings"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-13",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-13",
-          "reason": "Release closeout aligned the current-target as-of date and durable provenance; the no-prior-art-detour control still does not change wasm32v1-none, local-spec, wasmHash, or SDK-version facts across siblings.",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "Current target is wasm32v1-none. Local Wasm supplies the spec for bindings; generated deploy requires installed wasmHash; SDK helper return types are version-sensitive.",
+        "note": "Current target is wasm32v1-none. Local Wasm supplies the spec for bindings; generated deploy requires installed wasmHash; SDK helper return types are version-sensitive. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-sor-build-target-wasm32v1": "bf62592393191f3af68fc8800c82a925f545bd707ec033984a525f48ebcb3fae",
           "q-sor-deploy-invoke-from-js-sdk": "047663bd622d64b729cec1af5b93c1ffdbfd2c6b364028bbcf5d5b94bface78f",
@@ -2284,14 +2274,14 @@
           "q-sor-scval-conversion",
           "q-soroban-unit-testing"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "Contract #N is local, Bad union switch is an XDR/type boundary, non-root auth and missing contract context are distinct errors, and failed invocations roll events back.",
+        "note": "Contract #N is local, Bad union switch is an XDR/type boundary, non-root auth and missing contract context are distinct errors, and failed invocations roll events back. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-sor-decode-hosterror-codes": "293350bec62874408745a9bf462a3993eb78ef811978f70ef128f47b9ef04954",
           "q-sor-scval-conversion": "64fb25988961111d008d32d5df991bf9fcd6ae7189dc1cad4d4c9a94c180c96d",
@@ -2309,9 +2299,14 @@
           "q-sor-force-fast-archival-localnet",
           "q-sor-p23-auto-restore-extendto"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
-        "note": "corrected; sd-007 recurrence and sd-019.",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "reSwept": {
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
+          "verdict": "consistent"
+        },
+        "note": "corrected; sd-007 recurrence and sd-019. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-sor-force-fast-archival-localnet": "0e309481bbbf0d99bfebe085d3f27fce9b331e43b6f090ee8df92ee0dfddfd79",
           "q-sor-p23-auto-restore-extendto": "7009242e5132a8a3c5c33943551caae3490fbf258144deabff64b96e587971e1"
@@ -2328,14 +2323,14 @@
           "q-sor-require-auth-propagation",
           "q-soroban-require-auth"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "corrected atomically.",
+        "note": "corrected atomically. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-sor-require-auth-propagation": "354a7558db6db4d5e7e9e97eb70cbaf4cdad645bdc66d30d63ed8122ea6e3add",
           "q-soroban-require-auth": "58a5b48a08883b8d273d70772f62d8ca642187745251b058cad888064fcede0b"
@@ -2352,14 +2347,14 @@
           "q-sor-recurring-escrow-patterns",
           "q-sor-sep41-transfer-vs-transferfrom"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "Allowance expiry is one absolute-ledger mechanism under two names; direct spender-contract auth is automatic; storage TTL and business cancellation are separate.",
+        "note": "Allowance expiry is one absolute-ledger mechanism under two names; direct spender-contract auth is automatic; storage TTL and business cancellation are separate. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-sor-recurring-escrow-patterns": "9cbf88179779a94a45ec00eca7445012037538d387d04fd515be507f6c2bc736",
           "q-sor-sep41-transfer-vs-transferfrom": "cd602281463b934b9a36c640db343e4aeec979f2d1e9a0d4dccec83322420f15"
@@ -2376,14 +2371,14 @@
           "q-asset-deploy-sac-cli",
           "q-sor-sac-introspection"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "ID is deterministic from Asset plus network; in-contract derivation uses with_stellar_asset(...).deployed_address(); issuer G-address is not token C-address.",
+        "note": "ID is deterministic from Asset plus network; in-contract derivation uses with_stellar_asset(...).deployed_address(); issuer G-address is not token C-address. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-asset-deploy-sac-cli": "13ff386c1f65c396db9ab635ae59e100cd341bebd7224665c257ff74d3f46b43",
           "q-sor-sac-introspection": "16a2ca0266d6632272804914fde90f34cc6949487a0ec908a7e2fb176b650fe3"
@@ -2400,14 +2395,14 @@
           "q-eco-nft-marketplace-whitespace",
           "q-soroban-oz-token"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "SEP-39 and SEP-50 are Draft. Classic uniqueness and Soroban programmable mint/access/payment/royalty behavior remain distinct.",
+        "note": "SEP-39 and SEP-50 are Draft. Classic uniqueness and Soroban programmable mint/access/payment/royalty behavior remain distinct. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-eco-nft-marketplace-whitespace": "3011b05cd6143d7e9c95c65530c96e9bf9904229340e8148846826c94fd7e721",
           "q-soroban-oz-token": "67a2308fe3e30654f43915588a34ba1dd9728f6f3807f6a485ba374e96082b17"
@@ -2444,14 +2439,14 @@
           "q-soroban-cli-bindings",
           "q-soroban-deploy-cli"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "corrected; owner candidate captured in research.",
+        "note": "corrected; owner candidate captured in research. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-soroban-cli-bindings": "3396321d4045f93017334131da88b86c55d7583b77ae0417c8e38a3c36ab2c70",
           "q-soroban-deploy-cli": "a577b812e9f7c3f7823b0238c6208ec7a06a4313d88501b673720a9257a95df0"
@@ -2469,9 +2464,14 @@
           "q-protocol-version-history-list",
           "q-soroban-auth-delegation-p27"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
-        "note": "P27 live from ledger 63386819 and first-class CAP-0071 delegation. Legacy P20 custom-account delegation remains a distinct true statement.",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "reSwept": {
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
+          "verdict": "consistent"
+        },
+        "note": "P27 live from ledger 63386819 and first-class CAP-0071 delegation. Legacy P20 custom-account delegation remains a distinct true statement. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-protocol-27-cap-0071": "7fa767468113dff7fb46cb69d3caa451562dfdd27e820cd35acd10574af17fb1",
           "q-protocol-version-history-list": "16fcda8caee456d795ddb1a05925156ff4251c1343c1d5deeeb4ac0d9a5537a3",
@@ -2489,14 +2489,14 @@
           "q-ti-connect-wallet-button-code",
           "q-tool-smart-wallet-repos-discovery"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: after Scout began returning the two direct repository rows, wallet-library and source-bound discovery claims remain consistent.",
           "verdict": "consistent"
         },
-        "note": "Official docs/soroban-examples/SDKs/OZ remain current; Wallets Kit is optional multi-wallet abstraction, not mandatory for Freighter-only flows.",
+        "note": "Official docs/soroban-examples/SDKs/OZ remain current; Wallets Kit is optional multi-wallet abstraction, not mandatory for Freighter-only flows. Re-swept 2026-07-28: after Scout began returning the two direct repository rows, wallet-library and source-bound discovery claims remain consistent.",
         "memberContentSha256": {
           "q-ti-connect-wallet-button-code": "a8ed70870eb800d5b50c48821af0071902f9351b83729bf0b44d467eff9b099f",
           "q-tool-smart-wallet-repos-discovery": "d2b329ba8545fcf4b9e0e72205d58eb2283beb1cdc4ad2cb30152d6b4a3068b9"
@@ -2513,14 +2513,14 @@
           "q-sep-41-token-interface",
           "q-sor-sac-introspection"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "corrected; sd-020.",
+        "note": "corrected; sd-020. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-sep-41-token-interface": "61feeda011b8564c02b50509a67a5e8e17e17a2d8fef1b88b90c7b9930cd9d2e",
           "q-sor-sac-introspection": "16a2ca0266d6632272804914fde90f34cc6949487a0ec908a7e2fb176b650fe3"
@@ -2538,9 +2538,14 @@
           "q-sor-sep41-transfer-vs-transferfrom",
           "q-soroban-token-transfer-pattern"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
-        "note": "corrected atomically.",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "reSwept": {
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
+          "verdict": "consistent"
+        },
+        "note": "corrected atomically. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-sep-41-token-interface": "61feeda011b8564c02b50509a67a5e8e17e17a2d8fef1b88b90c7b9930cd9d2e",
           "q-sor-sep41-transfer-vs-transferfrom": "cd602281463b934b9a36c640db343e4aeec979f2d1e9a0d4dccec83322420f15",
@@ -2559,14 +2564,14 @@
           "q-soroban-publish-events",
           "q-soroban-unit-testing"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "mock_all_auths is happy-path only; failed invocations roll events back; current ContractEvents APIs and exact failure classes matter.",
+        "note": "mock_all_auths is happy-path only; failed invocations roll events back; current ContractEvents APIs and exact failure classes matter. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-sor-decode-hosterror-codes": "293350bec62874408745a9bf462a3993eb78ef811978f70ef128f47b9ef04954",
           "q-soroban-publish-events": "5ad6f9cb2e6f1c8eba9552338f94886a61309e48080af98c1ce92f8b55f81828",
@@ -2585,9 +2590,14 @@
           "q-sor-ttl-defaults-extend",
           "q-soroban-storage-types"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
-        "note": "Dated network settings, explicit extension, P23 auto-restore, and Temporary deletion remain separate concepts.",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "reSwept": {
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
+          "verdict": "consistent"
+        },
+        "note": "Dated network settings, explicit extension, P23 auto-restore, and Temporary deletion remain separate concepts. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-sor-p23-auto-restore-extendto": "7009242e5132a8a3c5c33943551caae3490fbf258144deabff64b96e587971e1",
           "q-sor-ttl-defaults-extend": "7f72dc0cd613523f415ebbfc780db5b2c5f396005a04332c6283ed4af11221df",
@@ -2649,14 +2659,14 @@
           "q-protocol-version-history-list",
           "q-soroban-auth-delegation-p27"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "P4 member absorbed or replaced; survivor claims rechecked",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "stale spans replaced; delegation/V2 mechanics and CAP Accepted-versus-network-live distinction retained.",
+        "note": "stale spans replaced; delegation/V2 mechanics and CAP Accepted-versus-network-live distinction retained. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-pc-protocol-upgrade-timing": "6ac860b7548a5e9beee9842c793265d1301116f3cbee1573ed0dd2a7b6d801a1",
           "q-protocol-27-cap-0071": "7fa767468113dff7fb46cb69d3caa451562dfdd27e820cd35acd10574af17fb1",
@@ -2694,9 +2704,14 @@
           "q-pc-sponsored-reserves",
           "q-protocol-base-reserve-min-balance"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
-        "note": "target corrected; later GT-29/32 siblings retained.",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "reSwept": {
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
+          "verdict": "consistent"
+        },
+        "note": "target corrected; later GT-29/32 siblings retained. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-asset-amm-fee-reserve": "b6a6f8cf8cb877dc04e54fc4bdffc85bece09121aca3bb910507f5bb9317d521",
           "q-pc-account-activation-not-found": "9b661b2d84134e41cba184045521cd92f432738fe6bd843e02fef254c727c46d",
@@ -2785,9 +2800,14 @@
           "q-protocol-version-history-list",
           "q-soroban-auth-delegation-p27"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
-        "note": "Address-with-delegates chains and address-bound V2 credentials are P27/CAP-0071; Pubnet activated at ledger 63386819 even though the registry still says Accepted.",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "reSwept": {
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
+          "verdict": "consistent"
+        },
+        "note": "Address-with-delegates chains and address-bound V2 credentials are P27/CAP-0071; Pubnet activated at ledger 63386819 even though the registry still says Accepted. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-protocol-27-cap-0071": "7fa767468113dff7fb46cb69d3caa451562dfdd27e820cd35acd10574af17fb1",
           "q-protocol-version-history-list": "16fcda8caee456d795ddb1a05925156ff4251c1343c1d5deeeb4ac0d9a5537a3",
@@ -2809,14 +2829,14 @@
           "q-protocol-version-history-list",
           "q-soroban-auth-delegation-p27"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "new P4 numeric/dated topic cluster",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "P27 is current on Mainnet from ledger 63386819 on 2026-07-08; CAP-0071 delegation and address-bound V2 credentials are P27 features. P28/AddressV2 remains a future recheck, not current activation.",
+        "note": "P27 is current on Mainnet from ledger 63386819 on 2026-07-08; CAP-0071 delegation and address-bound V2 credentials are P27 features. P28/AddressV2 remains a future recheck, not current activation. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-edge-fresh-latest-protocol-version": "eb1964bf14a5b3ff3cf52c1180d66442e3ff53822c3a0319537608f3e8f0d827",
           "q-pc-protocol-27-zipper": "dbe40bb1ac78cd3d3de206c9ebfef4488a06b627b37b44168029fb60785181d2",
@@ -2891,14 +2911,14 @@
           "q-protocol-base-reserve-min-balance",
           "q-raph-low-xlm-transfer-fail"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "new P4 numeric/dated topic cluster",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "At the checked network setting, one base reserve is 0.5 XLM; an empty unsponsored account needs two reserves (1 XLM), ordinary subentries add one reserve, and a pool-share trustline adds two.",
+        "note": "At the checked network setting, one base reserve is 0.5 XLM; an empty unsponsored account needs two reserves (1 XLM), ordinary subentries add one reserve, and a pool-share trustline adds two. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-asset-amm-fee-reserve": "b6a6f8cf8cb877dc04e54fc4bdffc85bece09121aca3bb910507f5bb9317d521",
           "q-asset-trustline-basics": "cf63cc5bf2858594e4f033d491ff2b6982d7716887ae28874f2ed1288bcb481b",
@@ -2921,18 +2941,14 @@
           "q-token-circle-usdc-on-stellar",
           "q-tool-cctp-stellar-integration"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-14",
-        "reSwept": {
-          "date": "2026-07-14",
-          "reason": "golden scope audit removed unasked milestone context from required key facts; all CCTP siblings retain distinct, compatible announcement/support semantics",
-          "verdict": "consistent"
-        },
-        "note": "The cases consistently distinguish Circle V2 technical-support milestones from the 2026-05-19 SDF/Circle public-live announcement and from mutable fee/finality support.",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "reSwept": "2026-07-28",
+        "note": "The cases consistently distinguish Circle's 2026-05-18 Stellar mainnet-support milestone, the 2026-05-19 SDF/Circle public-live announcement, and mutable fee/finality support. No accessible primary source recovered the prior 2026-02-24 launch attribution, so it remains explicitly unverified rather than being collapsed into either May milestone. Re-swept 2026-07-28 by the round lead after the Lane A reconciliation: the reopen is hash churn from that same reconciliation's own content edits, not a new inconsistency. Lead read the changed answers directly and confirmed the cluster's claim still holds. Re-swept 2026-07-28 (round lead, post-adversarial-review): reopen is hash churn from this round's own F3/N1 fixes — q-token-circle-usdc-on-stellar now separates Circle's 2026-05-18 mainnet-support milestone from the 2026-05-19 public announcement, and q-tool-passkeykit-smart-wallet's avoid clause was rescoped so it no longer punishes the true 'no third-party audit' statement. Both edits move those members TOWARD the cluster claim; lead read each changed answer directly.",
         "memberContentSha256": {
-          "q-cctp-v2-usdc-stellar": "bc2b266ca61233c55be22097583ed08f2d78007ad79f98befd894f4d6be99988",
+          "q-cctp-v2-usdc-stellar": "c8ea9c042fcce4c8c7b3f07fcfa67c5c070dcb216d089d64640b82aa1b2b9ece",
           "q-hist-cctp-stellar-live-announcement": "6bb786283a9ec21438fab1cbbf9227794a6b8c1fbf3f3b66f2fda4f3fc1b0d5d",
-          "q-token-circle-usdc-on-stellar": "7d72cec465a97dd62cfd56d5178df5cbaba1d1581dfcc100a3a511f8c078b58a",
+          "q-token-circle-usdc-on-stellar": "c2a91115f340ad6e2c0358d6137775ffec975851c24bc8708394b6e64c10766c",
           "q-tool-cctp-stellar-integration": "7832915690b1ee68e1f0d517ba88d06d3bae2abb04fdb1b7f2bf5e2c3961b48a"
         },
         "reopened": {
@@ -2949,14 +2965,14 @@
           "q-soroban-x402-auth-entry-signing",
           "q-x402-payment-verification"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "tension",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "new P4 numeric/dated topic cluster",
-          "verdict": "consistent"
+          "date": "2026-07-28",
+          "reason": "todo 1251 separated raw auth-entry signing from tested end-to-end x402 compatibility and rechecked owner/integration sources",
+          "verdict": "tension"
         },
-        "note": "The 2026-03-10 announcement is historical; current facilitator, wallet, sponsorship, and verification capabilities are separately dated and do not make x402 a SEP.",
+        "note": "The 2026-03-10 announcement is historical; current facilitator, wallet, sponsorship, and verification capabilities are separately dated and do not make x402 a SEP. The official roster lists Freighter Browser, Albedo, Hana, HOT, Klever, and OneKey and excludes Freighter Mobile, while Freighter owner docs expose extension signAuthEntry and mobile stellar_signAuthEntry and Stellar Wallets Kit explicitly throws for Albedo. Raw auth-entry capability is not tested end-to-end x402 compatibility. Wallet-owner proof of current end-to-end x402 compatibility remains unverified for Hana, HOT, Klever, and OneKey; Hana owner docs recommend Wallets Kit but do not establish that stronger claim.",
         "memberContentSha256": {
           "q-defi-x402-on-stellar-what": "7db2a172fc2b1e4d29dc67d4a9b19db6a4282c165641d5017042574e0e093a6d",
           "q-hist-x402-stellar-announcement": "ca26c13709468a5d5c0157951d268f1aef1f982ed316eb4f5cbdecb99e0385e7",
@@ -2976,17 +2992,13 @@
           "q-hist-yieldblox-v2-2026-exploit",
           "q-soroban-oracle-defensive-consumption"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
-        "reSwept": {
-          "date": "2026-07-11",
-          "reason": "new P4 numeric/dated topic cluster",
-          "verdict": "consistent"
-        },
-        "note": "Borrowed, quarantined, recovered, reimbursed, and USD-valued quantities remain distinct; any remediation-status claim requires a dated recheck.",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "reSwept": "2026-07-28",
+        "note": "The incident cases consistently identify 61,249,278.31 XLM plus 1,000,196.70 USDC as the exploit transfers, treat the roughly 14,000-USDC pre-state liability as pre-existing, label roughly $10M-$10.86M figures as source-specific combined USD valuations, and keep Blockaid's 48,069,094-XLM quarantine distinct from recovery or reimbursement. The Script3 ~$10.5M net-loss attribution remains unverified; remediation-status claims require dated evidence. Re-swept 2026-07-28 by the round lead after the Lane A reconciliation: the reopen is hash churn from that same reconciliation's own content edits, not a new inconsistency. Lead read the changed answers directly and confirmed the cluster's claim still holds.",
         "memberContentSha256": {
           "q-comp-yieldblox-oracle-incident": "13f3f864583f716dff174116cc88b164a02fb4c149ca0b021063d491fb4595b3",
-          "q-hist-yieldblox-v2-2026-exploit": "581708c4efac77efaf60fc0b1edb0b69b136dadc6629d5f790e2ccce2d2d952a",
+          "q-hist-yieldblox-v2-2026-exploit": "4842db0eb27e60ebb864892dc40412c54a9cafe605ed86b68ae2c70e8e9111b1",
           "q-soroban-oracle-defensive-consumption": "96589f90b771c258a8adc60ab9f68377b54db23c17b1ce2f1911eb79e078b91f"
         },
         "reopened": {
@@ -3002,14 +3014,14 @@
           "q-scf-confidential-tokens-preview",
           "q-sor-confidential-tokens"
         ],
-        "verdict": "reopen",
-        "lastChecked": "2026-07-11",
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
         "reSwept": {
-          "date": "2026-07-11",
-          "reason": "new P4 numeric/dated topic cluster",
+          "date": "2026-07-28",
+          "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "All cases describe the 2026-06-29 release as a Testnet developer preview, not a Mainnet launch or a network-wide privacy mode.",
+        "note": "All cases describe the 2026-06-29 release as a Testnet developer preview, not a Mainnet launch or a network-wide privacy mode. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
         "memberContentSha256": {
           "q-edge-noinfo-stellar-native-privacy-default": "45eb59ce094e56a3f0dd9e8c22e4da8832cf0e155f2c3b99aedd2be6520d4313",
           "q-scf-confidential-tokens-preview": "d5eb9af8c75cce19fb28c92e58560e5ace59b32da86f846082a9ed3488fde026",
@@ -3229,11 +3241,11 @@
       },
       {
         "label": "CCTP Stellar dates",
-        "authoritativeValue": "2026-02-24 CCTP V2 technical support; 2026-05-19 public-live announcement",
-        "rule": "Do not conflate Circle technical-support/release milestones with the SDF/Circle public-live announcement.",
+        "authoritativeValue": "2026-05-18 Circle Stellar-mainnet support; 2026-05-19 SDF/Circle public-live announcement",
+        "rule": "Do not conflate Circle's technical-support/release milestone (2026-05-18) with the SDF/Circle public-live announcement (2026-05-19), and do not present 2026-02-24 as a Stellar CCTP milestone: Circle's release notes record 2026.04.06 testnet and 2026.05.18 mainnet with no February entry, and circlefin/stellar-cctp's initial commit is 2026-04-29, so no implementation existed in February. The retired 2026-02-24 attribution was removed on 2026-07-28.",
         "acceptedSpellings": [
-          "2026-02-24",
-          "February 24, 2026",
+          "2026-05-18",
+          "May 18, 2026",
           "2026-05-19",
           "May 19, 2026"
         ],
@@ -3255,7 +3267,7 @@
         ],
         "datePolicy": {
           "mode": "stable",
-          "asOf": "2026-07-11",
+          "asOf": "2026-07-28",
           "recheckOn": "official correction to either historical milestone"
         },
         "affectedCaseIds": [
@@ -3267,13 +3279,13 @@
       },
       {
         "label": "YieldBlox borrowed XLM USDC totals",
-        "authoritativeValue": "61,249,278.31 XLM and 1,014,196.70 gross USDC",
-        "rule": "The gross USDC figure includes a separate earlier 14,000-USDC borrow; 48,069,094 XLM quarantined is a different quantity and is not automatically recovered or reimbursed.",
+        "authoritativeValue": "61,249,278.3064502 XLM and 1,000,196.7040837 USDC transferred by the exploit transactions",
+        "rule": "Report the two exploit transfers as 61,249,278.3064502 XLM and 1,000,196.7040837 USDC. The roughly 14,000 USDC visible in the decoded pre-transaction state was a PRE-EXISTING liability, not a separate earlier borrow, so 1,014,196.7040837 must not be presented as one ledger-confirmed exploit borrow. 48,069,094 XLM quarantined is a subset of the XLM leg (~78.5%), not an additional loss and not automatically recovered. Any USD headline must state its basis; the PoC's $10,857,337.06 is those two transfers at incident-time price (XLM $0.1609348). Corrected 2026-07-28.",
         "acceptedSpellings": [
           "61,249,278.31 XLM",
           "61,249,278.3064502 XLM",
-          "1,014,196.70 USDC",
-          "1,014,196.7040837 USDC"
+          "1,000,196.70 USDC",
+          "1,000,196.7040837 USDC"
         ],
         "evidence": [
           {
@@ -3293,7 +3305,7 @@
         ],
         "datePolicy": {
           "mode": "stable",
-          "asOf": "2026-07-11",
+          "asOf": "2026-07-28",
           "recheckOn": "published post-mortem correction"
         },
         "affectedCaseIds": [
@@ -3394,7 +3406,8 @@
           "q-cctp-v2-usdc-stellar",
           "q-tool-cctp-stellar-integration",
           "q-hist-cctp-stellar-live-announcement"
-        ]
+        ],
+        "note": "Updated 2026-07-28: q-cctp-v2-usdc-stellar reverifyBy is now 2026-10-29, and the 2026-02-24 launch attribution was retired as unsupported by primary material."
       },
       {
         "triggerDateEvent": "Publication or state change for SCF #44/#45 after the fixed SCF #43 recap",
