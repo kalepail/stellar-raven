@@ -62,6 +62,11 @@ export function updateRegister(register, hashes, { seed = false, date = new Date
   let changed = false;
   const reopened = [];
   const missingCases = [];
+  for (const entry of clusterList(register)) {
+    if (typeof entry.reSwept === "string") {
+      throw new Error(`${entryLabel(entry)}: reSwept must be an object, not a string`);
+    }
+  }
   const entries = [
     ...clusterList(register).map((entry) => [entry, clusterMembers(entry)]),
     ...(register.numericInvariants?.entries ?? []).map((entry) => [entry, entry.affectedCaseIds ?? []]),

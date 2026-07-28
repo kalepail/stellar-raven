@@ -481,6 +481,7 @@ describe("search behavior (host-side ranked)", () => {
     };
     expect(structured.hits).toEqual([]);
     expect(structured.widerCandidates.length).toBeGreaterThan(0);
+    expect(structured.nextSteps).toMatch(/no hits/i);
     expect(structured.nextSteps).toContain(
       "No gated operation matched either; run one bounded broad pass over the advisory widerCandidates before retrying, and still do not conclude absence."
     );
