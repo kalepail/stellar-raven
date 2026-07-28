@@ -1,7 +1,7 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "8c48f1fd1bf7d77f8a79ab023115aa96bbf5b9d40c7d6ea448e05a2dd01ea50a",
+  "corpusContentSha256": "a70e8dfc2a588dc2153445cc76237212249d571b2d0e36e688737022b50d968f",
   "counts": {
     "total": 490,
     "byCategory": {
@@ -4676,15 +4676,17 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "On **February 22, 2026**, after setup beginning late February 21, an attacker manipulated the thin USTRY/USDC Stellar DEX market from roughly $1.06 to about $106. Reflector Pulse's five-minute volume-weighted market feed published the manipulated value in two fresh rounds, which passed the YieldBlox pool's adjacent-round max_dev=10 check. The community-managed YieldBlox Blend V2 pool then accepted the value as collateral. No compromise of Reflector contracts, Blend core, Etherfuse's issuer contract, Stellar consensus, or Stellar core was established; the failure chain was market quality, feed methodology, and pool/oracle-consumer configuration and exposure.\n\nThe ledger-confirmed gross borrows were **61,249,278.3064502 XLM** and **1,014,196.7040837 USDC** (14,000 USDC first, then 1,000,196.7040837). Do not turn those token quantities into a single settled dollar loss. Script3 later estimated about **$10.5M net loss**; Blockaid, BlockSec, Rekt, and other reports use different dated valuations and definitions. Preserve each label and source rather than averaging them.\n\nAbout **48M XLM** was quarantined through coordinated validator transaction filtering; Blockaid attributes 48,069,094 XLM. Quarantine means identified accounts could not originate accepted transactions—it is not repayment, a rollback, or recovered funds. Script3 completed direct supplier remediation on **February 27** and backstop remediation on **March 20**, with documented small-value/nonexistent-account handling and liquidated-user exclusions. The reviewed evidence does not prove attacker-held funds were returned.\n\nDesign lessons are layered: timestamp checks remain necessary but were not causal here because the poisoned values were fresh; require independent value/NAV bounds, market-depth and active-trader minimums, robust multi-window aggregation, longer clean baselines, per-asset supply/borrow/value caps, isolation and circuit breakers, pool-ice and migration paths, and first-anomaly monitoring. A TWAP/VWAP may be one layer, but the incident does not prove that TWAP alone would have prevented the drain.",
+        "answer": "On **February 22, 2026**, after setup beginning late February 21, an attacker manipulated the thin USTRY/USDC Stellar DEX market from roughly $1.06 to about $106. Reflector Pulse's five-minute volume-weighted market feed published the manipulated value in two fresh rounds, which passed the YieldBlox pool's adjacent-round max_dev=10 check. The community-managed YieldBlox Blend V2 pool then accepted the value as collateral. No compromise of Reflector contracts, Blend core, Etherfuse's issuer contract, Stellar consensus, or Stellar core was established; the failure chain was market quality, feed methodology, and pool/oracle-consumer configuration and exposure.\n\nThe two exploit transactions transferred **61,249,278.3064502 XLM** and **1,000,196.7040837 USDC**. A decoded pre-transaction state shows an existing roughly 14,000 USDC liability; the reviewed live sources did not establish that amount as a separate exploit borrow, so do not add it to the exploit transfer as a single **1,014,196.7040837 USDC** gross-borrow claim. Do not turn the token quantities into a settled dollar loss: the PoC values them at about **$10.86M** at incident-time prices, while Blockaid, BlockSec and other reports use different dated valuations and definitions. The prior claim that Script3 later estimated about **$10.5M net loss** could not be confirmed from accessible primary material and is not retained as verified.\n\nAbout **48M XLM** was quarantined through coordinated validator transaction filtering; Blockaid attributes 48,069,094 XLM. Quarantine means identified accounts could not originate accepted transactions—it is not repayment, a rollback, or recovered funds. Script3's remediation repository and dated notices show direct supplier remediation on **February 27** and backstop remediation on **March 20**, with small-value/nonexistent-account handling and liquidated-user exclusions. The reviewed evidence does not prove attacker-held funds were returned.\n\nDesign lessons are layered: timestamp checks remain necessary but were not causal here because the poisoned values were fresh; require independent value/NAV bounds, market-depth and active-trader minimums, robust multi-window aggregation, longer clean baselines, per-asset supply/borrow/value caps, isolation and circuit breakers, pool-ice and migration paths, and first-anomaly monitoring. A TWAP/VWAP may be one layer, but the incident does not prove that TWAP alone would have prevented the drain.",
         "keyFacts": [
           "Dates the completed drain to 2026-02-22 and identifies the YieldBlox community Blend V2 pool, manipulated USTRY SDEX market, Reflector five-minute VWAP, and pool-consumer boundary.",
-          "States exact gross borrows: 61,249,278.3064502 XLM plus 1,014,196.7040837 USDC, while keeping dollar loss/default/valuation figures source-specific.",
+          "States the two exploit transfers as 61,249,278.3064502 XLM plus 1,000,196.7040837 USDC, distinguishes an existing roughly 14,000 USDC liability, and keeps loss/valuation figures source-specific.",
           "Distinguishes about 48M XLM validator quarantine from recovery and records February 27 supplier and March 20 backstop remediation with exclusions.",
           "Explains that fresh poisoned values passed; staleness was not causal and TWAP alone is not a proven cure."
         ],
         "avoid": [
           "Do NOT average gross borrow, dated valuation, net loss, defaults, quarantine, compensation, and recovery into one range.",
+          "Do NOT add the pre-transaction roughly 14,000 USDC liability to the exploit transfer and call 1,014,196.7040837 USDC one ledger-confirmed exploit borrow.",
+          "Do NOT repeat the unconfirmed Script3 $10.5M net-loss attribution without accessible primary evidence.",
           "Do NOT call quarantined funds recovered or assert attacker repayment without primary/on-chain proof.",
           "Do NOT say the incident happened in May, was merely attempted, or was contained before significant loss.",
           "Do NOT claim Reflector, Blend core, Etherfuse, or Stellar protocol was compromised.",
@@ -4699,122 +4701,165 @@
       },
       "truth": {
         "domain": "mixed",
-        "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-08-01",
+        "status": "mixed",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-10-08",
         "sources": [
           {
-            "class": "D",
-            "ref": "https://x.com/i/article/2029281732231344128",
-            "note": "class inferred at migration"
+            "class": "B",
+            "ref": "https://github.com/DK27ss/YieldBlox-10M-PoC"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/yieldblox/oracle-aggregator"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/script3/yieldblox-incident-remediation"
+          },
+          {
+            "class": "A",
+            "ref": "https://x.com/script3official/status/2027462360294953200"
+          },
+          {
+            "class": "A",
+            "ref": "https://x.com/script3official/status/2035066332887023761"
           },
           {
             "class": "D",
-            "ref": "https://github.com/yieldblox/oracle-aggregator",
-            "note": "class inferred at migration"
+            "ref": "https://www.blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack"
           },
           {
             "class": "D",
-            "ref": "https://github.com/script3/yieldblox-incident-remediation",
-            "note": "class inferred at migration"
+            "ref": "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain"
           },
           {
-            "class": "D",
-            "ref": "https://www.blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack",
-            "note": "class inferred at migration"
+            "class": "F",
+            "ref": "https://stellar.expert/explorer/public/tx/ae721cacee382bdecac8d2c47286ecd42cb4711f658bb2aec7cba60dc64a31ff"
           },
           {
-            "class": "D",
-            "ref": "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://protos.com/yieldblox-lending-pool-hit-by-10m-hack-on-stellar/",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://reflector.network/docs/interface",
-            "note": "class inferred at migration"
+            "class": "F",
+            "ref": "https://stellar.expert/explorer/public/tx/3e81a3f7b6e17cc22d0a1f33e9dcf90e5664b125b9e61f108b8d2f082f2d4657"
           }
         ],
         "corroboration": [
           {
-            "claim": "The completed drain occurred on 2026-02-22, not in May and not merely as an attempted/contained attack",
+            "claim": "The completed drain occurred on 2026-02-22 through thin-market USTRY price manipulation that produced fresh poisoned oracle rounds accepted by the YieldBlox pool.",
             "verdict": "confirmed",
             "evidence": [
               {
-                "class": "A",
-                "ref": "A: Script3/YieldBlox notices and full postmortem",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "class": "B",
+                "ref": "https://github.com/DK27ss/YieldBlox-10M-PoC",
+                "observedAt": "2026-07-28"
+              },
+              {
+                "class": "D",
+                "ref": "https://www.blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack",
+                "observedAt": "2026-07-28"
+              },
+              {
+                "class": "D",
+                "ref": "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain",
+                "observedAt": "2026-07-28"
+              }
+            ]
+          },
+          {
+            "claim": "The two exploit transactions transferred 61,249,278.3064502 XLM and 1,000,196.7040837 USDC.",
+            "verdict": "confirmed",
+            "evidence": [
+              {
+                "class": "F",
+                "ref": "https://stellar.expert/explorer/public/tx/ae721cacee382bdecac8d2c47286ecd42cb4711f658bb2aec7cba60dc64a31ff",
+                "observedAt": "2026-07-28"
+              },
+              {
+                "class": "F",
+                "ref": "https://stellar.expert/explorer/public/tx/3e81a3f7b6e17cc22d0a1f33e9dcf90e5664b125b9e61f108b8d2f082f2d4657",
+                "observedAt": "2026-07-28"
               },
               {
                 "class": "B",
-                "ref": "B/F: representative Horizon transactions and verified adapter/remediation repositories",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "F",
-                "ref": "B/F: representative Horizon transactions and verified adapter/remediation repositories",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/DK27ss/YieldBlox-10M-PoC",
+                "observedAt": "2026-07-28"
               },
               {
                 "class": "D",
-                "ref": "D: independent Blockaid, BlockSec, Protos, and Rekt incident reporting",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain",
+                "observedAt": "2026-07-28"
               }
             ]
           },
           {
-            "claim": "Gross borrows were 61,249,278.3064502 XLM and 1,014,196.7040837 USDC",
-            "verdict": "confirmed",
-            "evidence": [
-              {
-                "class": "F",
-                "ref": "F: ledger-confirmed borrow transactions",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "A",
-                "ref": "A: operator postmortem",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "D",
-                "ref": "D: independent technical reports corroborate the rounded values",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              }
-            ]
-          },
-          {
-            "claim": "About 48M XLM quarantined by validator filtering was recovered attacker money",
+            "claim": "The pre-transaction roughly 14,000 USDC liability was a separate exploit borrow that should be added to the exploit transfer as 1,014,196.7040837 USDC.",
             "verdict": "contradicted",
             "evidence": [
               {
-                "class": "A",
-                "ref": "A: Script3 describes validator-layer immobilization and separate remediation",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "D",
-                "ref": "D: Blockaid attributes 48,069,094 XLM to coordinated transaction filtering",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "class": "B",
+                "ref": "https://github.com/DK27ss/YieldBlox-10M-PoC",
+                "observedAt": "2026-07-28",
+                "note": "Decoded pre-state shows the roughly 14,000 USDC liability already existed; the exploit call amount is 10001967040837 in seven-decimal units."
               },
               {
                 "class": "F",
-                "ref": "F: balances remain visible; no reviewed transfer proves attacker repayment",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://stellar.expert/explorer/public/tx/ae721cacee382bdecac8d2c47286ecd42cb4711f658bb2aec7cba60dc64a31ff",
+                "observedAt": "2026-07-28"
+              }
+            ]
+          },
+          {
+            "claim": "Script3 later estimated about $10.5M net loss.",
+            "verdict": "unverifiable",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://x.com/i/article/2029281732231344128",
+                "observedAt": "2026-07-28",
+                "note": "The operator article was not accessible through the reviewed live fetches, and no accessible Script3 repository or notice recovered this exact net-loss attribution."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/script3/yieldblox-incident-remediation",
+                "observedAt": "2026-07-28",
+                "note": "Remediation data and execution logs do not establish the claimed $10.5M net-loss estimate."
+              }
+            ]
+          },
+          {
+            "claim": "About 48M XLM quarantined by validator filtering was recovered attacker money.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "D",
+                "ref": "https://www.blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack",
+                "observedAt": "2026-07-28"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/script3/yieldblox-incident-remediation",
+                "observedAt": "2026-07-28",
+                "note": "Separate supplier and backstop remediation records do not establish attacker repayment."
+              }
+            ]
+          },
+          {
+            "claim": "Script3 completed direct supplier remediation on 2026-02-27 and backstop remediation on 2026-03-20 with the stated handling and exclusions.",
+            "verdict": "confirmed",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://x.com/script3official/status/2027462360294953200",
+                "observedAt": "2026-07-28"
+              },
+              {
+                "class": "A",
+                "ref": "https://x.com/script3official/status/2035066332887023761",
+                "observedAt": "2026-07-28"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/script3/yieldblox-incident-remediation",
+                "observedAt": "2026-07-28"
               }
             ]
           },
@@ -4824,39 +4869,36 @@
             "evidence": [
               {
                 "class": "B",
-                "ref": "B: verified oracle adapter used a five-minute VWAP and fresh two-round deviation check",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/DK27ss/YieldBlox-10M-PoC",
+                "observedAt": "2026-07-28"
               },
               {
-                "class": "A",
-                "ref": "A: operator postmortem says poisoned fresh rounds passed max_dev=10",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "class": "B",
+                "ref": "https://github.com/yieldblox/oracle-aggregator",
+                "observedAt": "2026-07-28"
               },
               {
                 "class": "D",
-                "ref": "D: independent reviews point to thin market depth, single-root pricing, exposure, and monitoring failures",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://www.blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack",
+                "observedAt": "2026-07-28"
               }
-            ],
-            "note": "Legacy verdict: unsupported."
+            ]
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited incident answer collapsed a February completed drain into approximate May-era headlines, averaged unlike loss/valuation/default figures, treated validator quarantine as recovery, froze an early remediation promise, and implied staleness/TWAP lessons that the causal record does not support.",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane C — security/incident/disputed re-verification",
           "evidence": [
-            "Solo scratchpad 575 GT-09 primary process 3226 and blind process 3235",
-            "Both independent reconstructions agree on the February timeline, exact token quantities, quarantine/remediation distinction, and core-component boundary",
+            "Production scout.searchResearch(source=\"incident\", query=\"YieldBlox Reflector oracle manipulation\") returned a current incident synthesis anchored to Blockaid; direct Blockaid and BlockSec reports independently confirmed the event date, mechanism and rounded transfers.",
+            "The PoC's decoded transaction calls give 1,000,196.7040837 USDC and 61,249,278.3064502 XLM; its pre-state separately shows the roughly 14,000 USDC liability.",
+            "Script3's remediation repository and dated notices confirm the two remediation dates and handling, but the reviewed live sources did not prove attacker repayment or recover the prior Script3 $10.5M net-loss attribution.",
             "improvements/stellar-light-scout/sls-022-yieldblox-incident-fact-model.md",
-            "improvements/lumenloop/ll-011-yieldblox-incident-unit-status-errors.md"
+            "improvements/lumenloop/ll-011-yieldblox-incident-unit-status-errors.md",
+            "solo://proj/49/todo/2026-07-28-reconcile-lane-c--1251"
           ],
           "rootCause": [
-            "Secondary headlines collapsed asset quantities, dated valuations, operator net loss, defaults, quarantine, remediation, and recovery.",
-            "Publication date was mistaken for event date.",
-            "Generic oracle controls were promoted into false incident-specific causal claims."
+            "Eval-authoring flaw: the prior golden added a pre-existing liability to the exploit call amount and promoted an inaccessible operator net-loss attribution to verified fact; todo 1251 tracks the cross-case repair.",
+            "Different reports still use different incident-time valuations, quarantine and remediation labels, so the case remains mixed rather than forcing one loss/recovery number."
           ]
         },
         "origin": "raven-next q-comp-yieldblox-oracle-incident"
@@ -12264,7 +12306,7 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "The draft contains two false-or-unsupported claims:\n\n- **'Soroswap is Stellar's first AMM' — false in the broad Stellar sense.** The classic SDEX is an older order-book venue, and the direct AMM counterexample is Stellar's protocol-native constant-product liquidity pools, activated with **CAP-0038 / Protocol 18 on 2021-11-03**. Soroswap's 'first DEX/aggregator' or 'first AMM on Soroban' wording remains attributed operator marketing unless independent chronology supports it.\n- **'just passed $1B in TVL' — false within the identified live Soroswap-AMM series and unsupported more broadly.** At a **2026-07-10** DefiLlama probe, that series was about **$1.23M current** and its recorded maximum was below **$10M**. Those examples are volatile and non-gating; other routed-volume or private metrics must be named separately and cumulative trading volume is not TVL.\n\nA safe correction is: Soroswap is a Soroban AMM and aggregation/API stack, not Stellar's first AMM, and no dated source checked supports $1B TVL.",
+        "answer": "The draft contains two false-or-unsupported claims:\n\n- **'Soroswap is Stellar's first AMM' — false in the broad Stellar sense.** The classic SDEX is an older order-book venue, and the direct AMM counterexample is Stellar's protocol-native constant-product liquidity pools, activated with **CAP-0038 / Protocol 18 on 2021-11-03**. Soroswap's 'first DEX/aggregator' or 'first AMM on Soroban' wording remains attributed operator marketing unless independent chronology supports it.\n- **'just passed $1B in TVL' — false within the identified live Soroswap-AMM series and unsupported more broadly.** At a **2026-07-28** DefiLlama probe, that series was about **$1.20M current** and its recorded maximum was below **$10M**. Those examples are volatile and non-gating; other routed-volume or private metrics must be named separately and cumulative trading volume is not TVL.\n\nA safe correction is: Soroswap is a Soroban AMM and aggregation/API stack, not Stellar's first AMM, and no dated source checked supports $1B TVL.",
         "keyFacts": [
           "Corrects the first-AMM claim using SDEX and CAP-0038/Protocol-18 chronology.",
           "Attributes Soroswap's first-aggregator wording and rejects the unsourced $1B TVL claim."
@@ -12284,8 +12326,8 @@
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-10",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-08-13",
         "sources": [
           {
             "class": "A",
@@ -12364,16 +12406,15 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 5B numeric corroboration backfill",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane A Scout roster re-verification (solo://proj/49/scratchpad/todo-1248-lane-a-sco--727).",
           "evidence": [
-            "https://github.com/soroswap/docs",
-            "https://api.llama.fi/protocol/soroswap",
-            "solo://proj/49/scratchpad/super-corpus-rebuild--585",
-            "Sibling consistency sweep: checked the affected numeric/SEP/CAP mappings against related P4 5B cases and consistency-register members."
+            "A/B: https://github.com/stellar/stellar-protocol/blob/master/core/cap-0038.md and https://stellar.org/blog/developers/protocol-18-upgrade-guide confirm Protocol 18/CAP-0038 AMM chronology before Soroswap.",
+            "D/F: https://api.llama.fi/protocol/soroswap on 2026-07-28 returned current TVL $1,197,418 and maximum $9,799,848; neither supports $1B, and TVL remains distinct from routed/cumulative volume.",
+            "Sibling sweep: q-protocol-amm-cap-0038 and q-defi-soroswap-what-is agree on native Protocol-18 AMM versus Soroswap's Soroban product layer."
           ],
           "rootCause": [
-            "eval-authoring"
+            "freshness-drift"
           ]
         },
         "origin": "raven-next q-edge-factcheck-soroswap-first-amm"
@@ -37737,7 +37778,7 @@
         "scout.searchRepos"
       ],
       "golden": {
-        "answer": "As of **2026-07-11**, check the live advisory feeds rather than treating this list as permanent. The current three published items are: CVE-2026-24889 / GHSA-96xm for `soroban-sdk` (fixed in 25.0.2, 23.5.1, 22.0.9); CVE-2026-26267 / GHSA-4chv for `soroban-sdk-macros` (fixed in 25.1.1, 23.5.2, 22.0.10); and CVE-2026-32322 / GHSA-x2hw for `soroban-sdk` (fixed in 25.3.0, 23.5.3, 22.0.11). Prefer the latest supported SDK major—v27 is current at this date—or a patched supported branch, then recompile/review affected deployed code. Impact conditions differ; do not describe every advisory as unconditional.",
+        "answer": "As of **2026-07-28**, check the live advisory feeds rather than treating this list as permanent. The current three repository advisories are: CVE-2026-24889 / GHSA-96xm-fv9w-pf3f for `soroban-sdk` (fixed in 25.0.2, 23.5.1, 22.0.9); CVE-2026-26267 / GHSA-4chv-4c6w-w254 for `soroban-sdk-macros` (fixed in 25.1.1, 23.5.2, 22.0.10); and CVE-2026-32322 / GHSA-x2hw-px52-wp4m for `soroban-sdk` (fixed in 25.3.0, 23.5.3, 22.0.11). Prefer the latest supported SDK major—check the repository releases live rather than trusting any pinned version here—or a patched supported branch, then recompile/review affected deployed code. Impact conditions differ; do not describe every advisory as unconditional.",
         "keyFacts": [
           "Names all three dated CVE/GHSA/package mappings and patched branch releases.",
           "Requires live re-checking and upgrade/recompile review."
@@ -37756,59 +37797,87 @@
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-08-13",
         "sources": [
           {
             "class": "B",
-            "ref": "https://github.com/stellar/rs-soroban-sdk/security/advisories",
-            "note": "class inferred at migration"
+            "ref": "https://github.com/stellar/rs-soroban-sdk/security/advisories/GHSA-96xm-fv9w-pf3f"
           },
           {
             "class": "B",
-            "ref": "https://github.com/stellar/rs-soroban-sdk/releases",
-            "note": "class inferred at migration"
+            "ref": "https://github.com/stellar/rs-soroban-sdk/security/advisories/GHSA-4chv-4c6w-w254"
           },
           {
             "class": "B",
-            "ref": "https://docs.rs/soroban-sdk/latest/soroban_sdk/",
-            "note": "class inferred at migration"
+            "ref": "https://github.com/stellar/rs-soroban-sdk/security/advisories/GHSA-x2hw-px52-wp4m"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/rs-soroban-sdk/releases/tag/v27.0.2"
+          },
+          {
+            "class": "D",
+            "ref": "https://nvd.nist.gov/vuln/detail/CVE-2026-24889"
+          },
+          {
+            "class": "D",
+            "ref": "https://nvd.nist.gov/vuln/detail/CVE-2026-26267"
+          },
+          {
+            "class": "D",
+            "ref": "https://nvd.nist.gov/vuln/detail/CVE-2026-32322"
           }
         ],
         "corroboration": [
           {
-            "claim": "As of 2026-07-11, the current published advisories are CVE-2026-24889/GHSA-96xm (soroban-sdk), CVE-2026-26267/GHSA-4chv (soroban-sdk-macros), and CVE-2026-32322/GHSA-x2hw (soroban-sdk), with patched 22/23/25 branch releases.",
+            "claim": "As of 2026-07-28, the rs-soroban-sdk repository publishes exactly three advisories: CVE-2026-24889/GHSA-96xm for soroban-sdk, CVE-2026-26267/GHSA-4chv for soroban-sdk-macros, and CVE-2026-32322/GHSA-x2hw for soroban-sdk, with the stated patched 22/23/25 branch releases.",
             "verdict": "confirmed",
             "evidence": [
               {
                 "class": "B",
-                "ref": "B: GitHub Security Advisories and release API",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/stellar/rs-soroban-sdk/security/advisories/GHSA-96xm-fv9w-pf3f",
+                "observedAt": "2026-07-28"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/rs-soroban-sdk/security/advisories/GHSA-4chv-4c6w-w254",
+                "observedAt": "2026-07-28"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/rs-soroban-sdk/security/advisories/GHSA-x2hw-px52-wp4m",
+                "observedAt": "2026-07-28"
               },
               {
                 "class": "D",
-                "ref": "D: NVD/OSV independent mappings",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://nvd.nist.gov/vuln/detail/CVE-2026-24889",
+                "observedAt": "2026-07-28"
               },
               {
-                "class": "A",
-                "ref": "A: docs.rs current support policy",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "class": "D",
+                "ref": "https://nvd.nist.gov/vuln/detail/CVE-2026-26267",
+                "observedAt": "2026-07-28"
+              },
+              {
+                "class": "D",
+                "ref": "https://nvd.nist.gov/vuln/detail/CVE-2026-32322",
+                "observedAt": "2026-07-28"
               }
             ]
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited list found the three current advisories but lacked a dated CVE/GHSA-to-package/patch mapping and could be read as permanent.",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane C — security/incident/disputed re-verification",
           "evidence": [
-            "Solo scratchpad 575 GT-47 primary 3327 and blind 3334 independently matched the three advisories, packages, and patched branches."
+            "GitHub's canonical repository-advisory API returned exactly GHSA-96xm-fv9w-pf3f, GHSA-4chv-4c6w-w254 and GHSA-x2hw-px52-wp4m with the package and patched-version mappings stated above.",
+            "A recursive search of the RustSec advisory-db repository found no matching soroban/GHSA/CVE entry in that repository scope on 2026-07-28; this is not evidence that no other advisory source exists.",
+            "The repository release API returned v27.0.3 (published 2026-07-28T07:39:46Z) as the latest release when re-checked during adversarial review; the earlier v27.0.2 reading was already stale when stamped, so the answer no longer pins a current version at all."
           ],
           "rootCause": [
-            "Plain security-release freshness drift and an under-specified package/scope mapping."
+            "Scheduled security-advisory freshness re-verification found no new repository advisory, but refreshed the current release and replaced migrated source labels with canonical advisory URLs.",
+            "Adversarial review: a single-source currency claim was stamped confirmed while already stale. Removed the pinned-current-version form rather than re-pinning a value that rots between re-verifications."
           ]
         },
         "origin": "raven-next q-soroban-sdk-cve"
@@ -38682,7 +38751,7 @@
         "stellarDocs.search_soroban_contract_docs"
       ],
       "golden": {
-        "answer": "Stellar smart contracts execute deterministic WebAssembly. The supported/default toolchain is Rust with `soroban-sdk`, compiled to `wasm32v1-none`; Wasm is the execution format, not a claim that every source language is equally supported. Contract code is `#![no_std]`, `std` and floating point are unavailable, and host-backed SDK types are preferred. Guest allocation is off by default but the SDK `alloc` feature or a custom allocator can enable allocation at CPU/code-size cost. Do not pin 64 KiB as the code limit: as of 2026-07-11 Mainnet and Testnet configure 131072 bytes (128 KiB), and the setting is network-controlled.",
+        "answer": "Stellar smart contracts execute deterministic WebAssembly. The supported/default toolchain is Rust with `soroban-sdk`, compiled to `wasm32v1-none`; Wasm is the execution format, not a claim that every source language is equally supported. Contract code is `#![no_std]`, `std` and floating point are unavailable, and host-backed SDK types are preferred. Guest allocation is off by default but the SDK `alloc` feature or a custom allocator can enable allocation at CPU/code-size cost. Do not pin 64 KiB as the code limit: as of 2026-07-28 Mainnet and Testnet configure 131072 bytes (128 KiB), and the setting is network-controlled.",
         "keyFacts": [
           "Explains Rust/soroban-sdk to wasm32v1-none no_std execution and optional allocation.",
           "Separates the live network-configured code cap from stale 64 KiB/data-entry values."
@@ -38701,8 +38770,8 @@
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2027-04-15",
         "sources": [
           {
             "class": "A",
@@ -38722,39 +38791,41 @@
         ],
         "corroboration": [
           {
-            "claim": "Soroban contracts are generally authored in Rust/soroban-sdk and compile to wasm32v1-none no_std Wasm; alloc can be enabled, and current Mainnet/Testnet contract code cap is 131072 bytes rather than 64 KiB.",
+            "claim": "Soroban contracts are authored in Rust/soroban-sdk and new contracts use wasm32v1-none no_std Wasm; guest allocation can be enabled, and Mainnet/Testnet contract code cap is 131072 bytes rather than 64 KiB as of 2026-07-28.",
             "verdict": "confirmed",
             "evidence": [
               {
                 "class": "A",
-                "ref": "A: current Rust dialect/resource docs",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/rust-dialect",
+                "observedAt": "2026-07-28",
+                "note": "The served page says contract development is Rust, recommends #[no_std], requires wasm32v1-none for new contracts, and says guest allocation is discouraged rather than prohibited."
               },
               {
                 "class": "B",
-                "ref": "B: SDK alloc/build source and Core config enforcement",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/stellar/rs-soroban-sdk/blob/main/soroban-sdk/src/alloc/mod.rs",
+                "observedAt": "2026-07-28",
+                "note": "Current SDK source says the alloc feature is disabled by default and documents both its allocator and custom allocators."
               },
               {
                 "class": "F",
-                "ref": "F: live network settings on Mainnet/Testnet",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "F: `stellar 27.0.0 network settings --no-cache -n mainnet|testnet --output json-formatted`",
+                "observedAt": "2026-07-28",
+                "note": "Both production network reads returned contract_max_size_bytes=131072 and contract_data_entry_size_bytes=65536."
               }
             ]
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited answer froze a 64 KiB code figure and claimed allocation was impossible. Current networks configure a 128 KiB contract-code cap, and SDK allocation is optional even though contracts remain no_std and floating point is unsupported.",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane B Docs technical re-verification",
           "evidence": [
-            "Solo scratchpad 575 GT-48 blind 3342 overturned primary 3333's no-change decision; sd-022 and sd-016 own the upstream wording/live-limit drift."
+            "Production stellar-raven: stellarDocs.search_soroban_contract_docs({query:'Rust dialect wasm32v1 none no_std allocation floating point',hitsPerPage:10,includeContent:true}) and stellarDocs.get_doc_page_sections({path:'/docs/learn/fundamentals/contract-development/rust-dialect',includeContent:true}) — Rust/no_std/wasm32v1-none and allocation wording returned.",
+            "Canonical SDK source: https://github.com/stellar/rs-soroban-sdk/blob/main/soroban-sdk/src/alloc/mod.rs — alloc feature disabled by default; custom allocator supported.",
+            "Empirical free reads: stellar 27.0.0 network settings --no-cache -n mainnet|testnet --output json-formatted both returned contract_max_size_bytes=131072 and contract_data_entry_size_bytes=65536.",
+            "Sibling sweep: q-sor-build-target-wasm32v1, q-soroban-deploy-cli, and q-tool-rust-soroban-sdk use wasm32v1-none and do not contradict this result."
           ],
           "rootCause": [
-            "improvements/stellar-docs/sd-022-no-std-allocator-wording.md",
-            "improvements/stellar-docs/sd-016-live-network-limits-stale.md"
+            "freshness-recheck"
           ]
         },
         "origin": "raven-next q-soroban-wasm-language"
@@ -38768,7 +38839,7 @@
         "stellarDocs.search_soroban_contract_docs"
       ],
       "golden": {
-        "answer": "As of **2026-07-11**, Mainnet and Testnet report `contract_max_size_bytes=131072`—**128 KiB**—for uploaded contract Wasm. The separate `contract_data_entry_size_bytes=65536` value is not the code cap. These are network settings, so inspect the target network with Stellar Lab or `stellar network settings` instead of treating either number as permanent. Current Stellar CLI builds optimize by default; `--optimize` is accepted but redundant, `--optimize=false` disables it, and the standalone `stellar contract optimize` command is deprecated. Reduce dependencies/features and split logic across contracts when needed.",
+        "answer": "As of **2026-07-28**, Mainnet and Testnet report `contract_max_size_bytes=131072`—**128 KiB**—for uploaded contract Wasm. The separate `contract_data_entry_size_bytes=65536` value is not the code cap. These are network settings, so inspect the target network with Stellar Lab or `stellar network settings` instead of treating either number as permanent. Current Stellar CLI builds optimize by default; `--optimize` is accepted but redundant, `--optimize=false` disables it, and the standalone `stellar contract optimize` command is deprecated. Reduce dependencies/features and split logic across contracts when needed.",
         "keyFacts": [
           "Reports the dated 128-KiB code cap and distinguishes the 64-KiB contract-data setting.",
           "Explains current default-on build optimization and deprecated standalone command."
@@ -38787,8 +38858,8 @@
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-11-05",
         "sources": [
           {
             "class": "A",
@@ -38808,39 +38879,41 @@
         ],
         "corroboration": [
           {
-            "claim": "As of 2026-07-11 Mainnet/Testnet contract_max_size_bytes is 131072 while contract_data_entry_size_bytes is 65536; CLI 27 build optimization is enabled by default and standalone contract optimize is deprecated.",
+            "claim": "As of 2026-07-28 Mainnet/Testnet contract_max_size_bytes is 131072 while contract_data_entry_size_bytes is 65536; CLI 27 build optimization is enabled by default and standalone contract optimize is deprecated.",
             "verdict": "confirmed",
             "evidence": [
               {
                 "class": "A",
-                "ref": "A: current resource/CLI docs",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://developers.stellar.org/docs/learn/fundamentals/fees-resource-limits-metering",
+                "observedAt": "2026-07-28",
+                "note": "The served resource-limits page identifies limits as network settings; the exact active values came from the network reads below."
               },
               {
                 "class": "B",
-                "ref": "B: Core config enforcement and CLI source/help",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/stellar/stellar-cli/blob/main/cmd/soroban-cli/src/commands/contract/build.rs",
+                "observedAt": "2026-07-28",
+                "note": "Current source sets build optimization's default to true."
               },
               {
                 "class": "F",
-                "ref": "F: live network settings and local CLI 27 help",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "F: `stellar 27.0.0 network settings --no-cache -n mainnet|testnet`; `stellar contract build --help`; `stellar contract optimize --help`",
+                "observedAt": "2026-07-28",
+                "note": "Both networks returned 131072/65536; build help says optimize defaults true; optimize help begins 'Deprecated, use build --optimize.'"
               }
             ]
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited size answer treated 64 KiB as the contract-code cap and missed current CLI optimization behavior. Live P27 settings separate 131072-byte code from 65536-byte contract-data entries.",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane B Docs technical re-verification",
           "evidence": [
-            "Solo scratchpad 575 GT-48 primary 3333 and blind 3342; blind materially corrected the primary's limit interpretation."
+            "Production stellar-raven: stellarDocs.search_protocol_concepts_docs({query:'contract_max_size_bytes contract_data_entry_size_bytes network settings resource limits',hitsPerPage:10,includeContent:true}) and stellarDocs.get_doc_page_sections({path:'/docs/learn/fundamentals/fees-resource-limits-metering',includeContent:true}) — resource settings pages returned.",
+            "Empirical free reads: stellar 27.0.0 network settings --no-cache -n mainnet|testnet --output json-formatted both returned contract_max_size_bytes=131072 and contract_data_entry_size_bytes=65536.",
+            "Empirical CLI surface: stellar contract build --help reports --optimize default true; stellar contract optimize --help reports 'Deprecated, use build --optimize.'",
+            "Sibling sweep: q-soroban-wasm-language and q-soroban-deploy-cli distinguish wasm32v1-none/current build behavior and do not retain a 64 KiB Wasm cap."
           ],
           "rootCause": [
-            "improvements/stellar-docs/sd-016-live-network-limits-stale.md",
-            "improvements/stellar-docs/sd-026-cli-optimize-command-drift.md"
+            "freshness-recheck"
           ]
         },
         "origin": "raven-next q-soroban-wasm-size-limit"
@@ -38853,16 +38926,18 @@
         "skills.stellar-dev.agentic-payments"
       ],
       "golden": {
-        "answer": "In Stellar x402, the payer wallet signs the required **Soroban authorization entries**, not the facilitator's entire settlement transaction. The facilitator reconstructs the transaction with its source account, sponsors fees, verifies/simulates the authorization, signs, submits, and the client retries the paid request. As of **2026-07-11**, official docs list Freighter Browser Extension, Albedo, Hana, HOT, Klever, and OneKey; Freighter Mobile is unsupported. The hosted provider is **Build on Stellar Relayer with the OpenZeppelin x402 Plugin**, backed by OpenZeppelin Channels; that hosted setup requires a bearer API key. Do not imply that x402 itself, the payer wallet, or every facilitator intrinsically requires an API key. Coinbase remains Testnet-only in the official roster; use any compatible SEP-41 token, with USDC the default example.",
+        "answer": "In Stellar x402, the payer wallet signs the required **Soroban authorization entries**, not the facilitator's entire settlement transaction. The facilitator reconstructs the transaction with its source account, sponsors fees, verifies/simulates the authorization, signs, submits, and the client retries the paid request.\n\nAs of **2026-07-28**, the official Stellar x402 page lists Freighter Browser Extension, Albedo, Hana, HOT, Klever, and OneKey and says Freighter Mobile is unsupported, but that roster is **disputed** by implementation evidence. Freighter's owner documentation exposes `signAuthEntry` for the extension and `stellar_signAuthEntry` for mobile over direct WalletConnect, while Stellar Wallets Kit explicitly throws that Albedo does not support `signAuthEntry`. Wallets Kit contains auth-entry adapters for Hana, HOT, Klever, and OneKey, but this review did not find wallet-owner documentation proving each wallet's current end-to-end x402 compatibility. Separate raw auth-entry capability from a tested x402 integration and test the exact wallet/transport; do not present the official roster as independently verified.\n\nThe hosted provider is **Build on Stellar Relayer with the OpenZeppelin x402 Plugin**, backed by OpenZeppelin Channels; that hosted setup requires a bearer API key. Do not imply that x402 itself, the payer wallet, or every facilitator intrinsically requires an API key. Coinbase remains Testnet-only in the official roster; use any compatible SEP-41 token, with USDC the default example.",
         "keyFacts": [
           "Separates payer auth-entry signing from facilitator transaction sponsorship/submission.",
-          "Dates wallet/provider/network coverage and narrows API-key requirements to the hosted setup."
+          "Marks the official wallet roster disputed, distinguishes raw auth-entry support from end-to-end x402 compatibility, and identifies the specific Freighter/Albedo evidence conflict.",
+          "Dates provider/network coverage and narrows API-key requirements to the hosted setup."
         ],
         "avoid": [
           "Do NOT say the payer signs the facilitator's full settlement transaction.",
+          "Do NOT repeat the official wallet roster as independently verified or equate a Wallets Kit adapter with wallet-owner proof.",
           "Do NOT generalize one hosted API-key requirement or provider network coverage to the x402 protocol."
         ],
-        "notes": "Freshness:true — wallet/facilitator support is moving. Re-verified 2026-06-22 against developers.stellar.org/docs/build/agentic-payments/x402: wallets = Freighter (browser ext), Albedo, Hana, HOT, Klever, OneKey; Freighter Mobile NOT supported; facilitators = Coinbase (testnet) + OpenZeppelin Relayer (testnet+mainnet). List may change — keep medium confidence.\nAlso good if the answer: Flow: server returns HTTP 402 with payment requirements → wallet signs the Soroban auth entry → facilitator verifies and settles → request is retried/completed.\nGolden cites: At least one primary developers.stellar.org agentic-payments / x402 docs page.\nGT-48 CORRECTION 2026-07-11: current provider label is Build on Stellar Relayer with OZ plugin/Channels; API-key scope is hosted-provider-specific."
+        "notes": "Freshness:true — wallet/facilitator support is moving. 2026-07-28 re-verification found that the official Stellar x402 roster conflicts with Freighter owner documentation and the current Stellar Wallets Kit Albedo module. Grade the stable payment flow and honest disclosure of roster uncertainty, not rote repetition of the official list.\nAlso good if the answer: Flow: server returns HTTP 402 with payment requirements → wallet signs the Soroban auth entry → facilitator verifies and settles → request is retried/completed.\nGolden cites: The Stellar x402 page plus wallet-owner docs/source for any wallet-specific claim.\nGT-48 CORRECTION 2026-07-11: current provider label is Build on Stellar Relayer with OZ plugin/Channels; API-key scope is hosted-provider-specific."
       },
       "tags": {
         "category": "soroban",
@@ -38871,60 +38946,122 @@
       },
       "truth": {
         "domain": "real-world",
-        "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-08-01",
+        "status": "disputed",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-08-20",
         "sources": [
           {
             "class": "A",
-            "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402",
-            "note": "class inferred at migration"
+            "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402"
           },
           {
-            "class": "D",
-            "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer-plugins",
-            "note": "class inferred at migration"
+            "class": "A",
+            "ref": "https://docs.freighter.app/extension-freighter-api/signing"
           },
           {
-            "class": "D",
-            "ref": "https://github.com/coinbase/x402",
-            "note": "class inferred at migration"
+            "class": "B",
+            "ref": "https://github.com/stellar/freighter-developer-docs/blob/main/mobile/signing.md"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit/blob/main/src/sdk/modules/albedo.module.ts"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit/tree/main/src/sdk/modules"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/relayer-plugin-x402-facilitator"
           }
         ],
         "corroboration": [
           {
-            "claim": "Current official x402 flow has payer wallets sign Soroban auth entries while the facilitator rebuilds/sponsors/verifies/signs/submits; the Build on Stellar hosted relayer uses an OpenZeppelin x402 plugin backed by Channels and requires its bearer API key, while API keys are not intrinsic to x402 or every facilitator.",
+            "claim": "The payer signs Soroban auth entries while the facilitator rebuilds, sponsors, verifies, signs and submits the settlement transaction.",
             "verdict": "confirmed",
             "evidence": [
               {
                 "class": "A",
-                "ref": "A: current Stellar x402 docs",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402",
+                "observedAt": "2026-07-28"
               },
               {
                 "class": "B",
-                "ref": "B: current OpenZeppelin/Build on Stellar plugin/source",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/OpenZeppelin/relayer-plugin-x402-facilitator",
+                "observedAt": "2026-07-28"
+              }
+            ]
+          },
+          {
+            "claim": "Freighter Browser, Albedo, Hana, HOT, Klever and OneKey support the auth-entry signing x402 needs, while Freighter Mobile does not.",
+            "verdict": "disputed",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402",
+                "observedAt": "2026-07-28",
+                "note": "Lists the six browser wallets and marks Freighter Mobile unsupported."
               },
               {
-                "class": "D",
-                "ref": "D: independent current-wallet/provider sweep",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "class": "A",
+                "ref": "https://docs.freighter.app/extension-freighter-api/signing",
+                "observedAt": "2026-07-28",
+                "note": "Wallet-owner documentation confirms extension signAuthEntry."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/stellar/freighter-developer-docs/blob/main/mobile/signing.md",
+                "observedAt": "2026-07-28",
+                "note": "Wallet-owner repository documents mobile stellar_signAuthEntry over direct WalletConnect."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit/blob/main/src/sdk/modules/albedo.module.ts",
+                "observedAt": "2026-07-28",
+                "note": "Current integration source explicitly throws that Albedo does not support signAuthEntry."
+              }
+            ]
+          },
+          {
+            "claim": "Hana, HOT, Klever and OneKey have Wallets Kit auth-entry adapters, but current wallet-owner evidence establishes each wallet's end-to-end x402 compatibility.",
+            "verdict": "unverifiable",
+            "evidence": [
+              {
+                "class": "B",
+                "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit/tree/main/src/sdk/modules",
+                "observedAt": "2026-07-28",
+                "note": "The adapters implement signAuthEntry calls, but no wallet-owner documentation confirming all four wallets' current x402 compatibility was found in this review."
+              }
+            ]
+          },
+          {
+            "claim": "The Build on Stellar hosted relayer uses the OpenZeppelin x402 plugin/Channels and requires its bearer API key; API keys are not intrinsic to x402 or every facilitator.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402",
+                "observedAt": "2026-07-28"
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/OpenZeppelin/relayer-plugin-x402-facilitator",
+                "observedAt": "2026-07-28"
               }
             ]
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The core auth-entry flow was right but facilitator naming, hosted API-key scope, and current wallet/network roster were freshness-sensitive and partially stale.",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane C — security/incident/disputed re-verification",
           "evidence": [
-            "Solo scratchpad 575 GT-48 primary 3333 and blind 3342; independent agreement with blind provider/API-key narrowing."
+            "Production stellarDocs.search_wallet_dapp_docs and the live stellar-dev agentic-payments skill returned the official six-wallet roster and Freighter Mobile exclusion.",
+            "Freighter's extension docs and mobile owner repository confirm raw auth-entry methods; Stellar Wallets Kit's current Albedo module directly contradicts the official Albedo roster entry.",
+            "Wallets Kit implements Hana/HOT/Klever/OneKey adapters, but no wallet-owner source proving every wallet's current end-to-end x402 compatibility was found.",
+            "solo://proj/49/todo/2026-07-28-reconcile-lane-c--1251"
           ],
           "rootCause": [
-            "Plain hosted-provider/wallet/network freshness drift."
+            "Eval-authoring flaw and upstream documentation conflict: the prior golden treated one ecosystem roster as wallet-owner verification and conflated raw auth-entry capability with end-to-end x402 support; todo 1251 tracks reconciliation."
           ]
         },
         "origin": "raven-next q-soroban-x402-auth-entry-signing"
@@ -39639,8 +39776,8 @@
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2027-04-08",
         "sources": [
           {
             "class": "A",
@@ -39670,15 +39807,15 @@
             "evidence": [
               {
                 "class": "A",
-                "ref": "A: liquidity-pool, Hubble, indexer, and migration documentation",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://developers.stellar.org/docs/data/analytics/hubble/analyst-guide/queries-for-horizon-like-data",
+                "observedAt": "2026-07-28",
+                "note": "The served Hubble guide supplies Horizon/RPC-like historical queries, including liquidity-pool and trade queries."
               },
               {
                 "class": "C",
-                "ref": "C: read-only pool/trade data-shape probes",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/stellar/stellar-horizon/blob/main/internal/ingest/processors/trades_processor.go",
+                "observedAt": "2026-07-28",
+                "note": "Current Horizon source records successful trades and links liquidity-pool trades to pool IDs and reserves; it does not define an explorer's market methodology."
               }
             ]
           },
@@ -39688,30 +39825,31 @@
             "evidence": [
               {
                 "class": "A",
-                "ref": "A: conflicting official API/stack/migration surfaces",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://developers.stellar.org/docs/data/apis/migrate-from-horizon-to-rpc",
+                "observedAt": "2026-07-28",
+                "note": "The served endpoint mapping preserves resource-specific boundaries, including liquidity-pool trade mapping; it does not make one product's methodology canonical."
               },
               {
                 "class": "F",
-                "ref": "F: GT-49 independent reconciliation reused by GT-51",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "stellarDocs.search_rpc_horizon_data_docs({query:'Hubble historical data Horizon RPC indexers liquidity pools trades',hitsPerPage:10,includeContent:true})",
+                "observedAt": "2026-07-28",
+                "note": "Production Docs index returns Hubble historical pool/trade queries and the Horizon-to-RPC endpoint mapping; wording remains source-specific."
               }
             ],
             "note": "Legacy verdict: confirmed-with-source-conflict."
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The formulas were sound, but the inherited answer marked product/schema/current-history choices non-fresh and repeated an uncontested Horizon lifecycle polarity despite the already-verified official-docs conflict.",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane B Docs technical re-verification",
           "evidence": [
-            "Solo scratchpad 575 GT-51 processes 3353/3360 independently retained the methodology and required freshness/source-boundary repair.",
-            "The blind lane resolved the ambiguous slug after reading the actual question: this is the verb 'compute'; the unrelated issuer-qualified COMPUTE asset is excluded from the golden."
+            "Production stellar-raven: stellarDocs.search_rpc_horizon_data_docs({query:'Hubble historical data Horizon RPC indexers liquidity pools trades',hitsPerPage:10,includeContent:true}) and stellarDocs.get_doc_page_sections({path:'/docs/data/analytics/hubble/analyst-guide/queries-for-horizon-like-data',includeContent:true}) — Hubble offers historical Horizon/RPC-like pool and trade queries.",
+            "Production stellar-raven: stellarDocs.get_doc_page_sections({path:'/docs/data/apis/migrate-from-horizon-to-rpc',includeContent:true}) — resource-by-resource API mappings retained; no single explorer-market methodology is canonical.",
+            "Canonical Horizon source: https://github.com/stellar/stellar-horizon/blob/main/internal/ingest/processors/trades_processor.go — only successful trades are processed and liquidity-pool trades carry pool/reserve data.",
+            "Sibling sweep: q-protocol-amm-cap-0038 and q-ti-historical-pointintime-balances agree that Classic liquidity pools are protocol pools and history/analytics need a bounded source/methodology."
           ],
           "rootCause": [
-            "improvements/stellar-docs/sd-017-horizon-lifecycle-wording-conflict.md",
-            "Eval-side freshness omission for product-matching methodology and data cadence."
+            "freshness-recheck"
           ]
         },
         "origin": "raven-next q-ti-compute-token-lp-market-data"
@@ -41389,11 +41527,11 @@
         "stellarDocs.search_wallet_dapp_docs"
       ],
       "golden": {
-        "answer": "For a full-stack Stellar smart-contract dApp, install the separate Scaffold Stellar plugin and initialize a project:\n\n`cargo install --locked stellar-scaffold-cli`\n`stellar scaffold init <project>`\n\n`cargo binstall stellar-scaffold-cli` is the project's faster documented alternative when available. The plugin generates/coordinates Rust contracts, TypeScript clients/bindings, frontend templates, environment configuration, and build/watch workflows. Inspect the generated package scripts rather than assuming `npm start` and `npm run dev` are interchangeable. Local-network workflows require their documented Docker/local prerequisites.\n\nFor only a Rust contract workspace/sample contract, use `stellar contract init <project-path> --name <contract-name>` instead; that is not the full-stack scaffold. The current official template source included React and Svelte choices as of **2026-07-11**, and `stellar-scaffold-cli` was **0.0.25** on crates.io on that date. Both the crate version, template roster, repository redirects, and exact subcommands/scripts are volatile. Community `owner/repo[#ref]` templates are third-party code and should be reviewed/pinned before execution. `stellar-registry-cli` is optional for registry publishing/deployment, not required merely to scaffold.",
+        "answer": "For a full-stack Stellar smart-contract dApp, install the separate Scaffold Stellar plugin and initialize a project:\n\n`cargo install --locked stellar-scaffold-cli`\n`stellar scaffold init <project>`\n\n`cargo binstall stellar-scaffold-cli` is the project's faster documented alternative when available. The plugin generates/coordinates Rust contracts, TypeScript clients/bindings, frontend templates, environment configuration, and build/watch workflows. Inspect the generated package scripts rather than assuming `npm start` and `npm run dev` are interchangeable. Local-network workflows require their documented Docker/local prerequisites.\n\nFor only a Rust contract workspace/sample contract, use `stellar contract init <project-path> --name <contract-name>` instead; that is not the full-stack scaffold. The current official template source includes React and Svelte choices as of **2026-07-28**, and `stellar-scaffold-cli` is **0.0.26** on crates.io on that date. Both the crate version, template roster, repository redirects, and exact subcommands/scripts are volatile. Community `owner/repo[#ref]` templates are third-party code and should be reviewed/pinned before execution. `stellar-registry-cli` is optional for registry publishing/deployment, not required merely to scaffold.",
         "keyFacts": [
           "Gives the separately installed stellar-scaffold-cli and stellar scaffold init command shape.",
           "Defines Scaffold Stellar as full-stack contracts/clients/frontend/environment tooling and distinguishes stellar contract init as contract-only.",
-          "Dates the 0.0.25 registry and React/Svelte template examples to 2026-07-11 rather than making them permanent requirements.",
+          "Dates the 0.0.26 registry and React/Svelte template examples to 2026-07-28 rather than making them permanent requirements.",
           "Requires checking generated scripts/prerequisites and treats community templates as supply-chain inputs."
         ],
         "avoid": [
@@ -41412,8 +41550,8 @@
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-10-22",
         "sources": [
           {
             "class": "A",
@@ -41473,35 +41611,35 @@
             ]
           },
           {
-            "claim": "Dates the 0.0.25 registry and React/Svelte template examples to 2026-07-11 rather than making them permanent requirements.",
+            "claim": "As of 2026-07-28, crates.io publishes stellar-scaffold-cli 0.0.26 and the official UI source has React and Svelte template directories; neither is permanent guidance.",
             "verdict": "confirmed-as-of",
             "evidence": [
               {
                 "class": "A",
                 "ref": "https://developers.stellar.org/docs/tools/scaffold-stellar",
-                "observedAt": "2026-07-11",
-                "note": "Official documentation confirms Scaffold Stellar and its supported templates/workflow."
+                "observedAt": "2026-07-28",
+                "note": "Production Docs page confirms separate installation, `stellar scaffold init`, build/watch, environments.toml, and Docker prerequisites."
               },
               {
                 "class": "B",
                 "ref": "https://github.com/stellar-scaffold/cli/blob/main/crates/stellar-scaffold-cli/Cargo.toml",
-                "observedAt": "2026-07-11",
-                "note": "Fetched source manifest exists and records stellar-scaffold-cli version 0.0.25."
+                "observedAt": "2026-07-28",
+                "note": "Current source manifest declares stellar-scaffold-cli version 0.0.26; the UI repository exposes templates/react and templates/svelte."
               }
             ]
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 5B numeric corroboration backfill",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane B Docs technical re-verification",
           "evidence": [
-            "https://developers.stellar.org/docs/tools/scaffold-stellar",
-            "https://github.com/stellar-scaffold/cli/blob/main/crates/stellar-scaffold-cli/Cargo.toml",
-            "solo://proj/49/scratchpad/super-corpus-rebuild--585",
-            "Sibling consistency sweep: checked the affected numeric/SEP/CAP mappings against related P4 5B cases and consistency-register members."
+            "Production stellar-raven: stellarDocs.search_sdk_cli_tools_docs({query:'Scaffold Stellar stellar scaffold init environments.toml bindings local network',hitsPerPage:10,includeContent:true}) and stellarDocs.get_doc_page_sections({path:'/docs/tools/scaffold-stellar',includeContent:true}) — current page returns separate CLI installs, `stellar scaffold init`, build/watch, environments.toml, and Docker/local prerequisites.",
+            "Canonical source: https://github.com/stellar-scaffold/cli/blob/main/crates/stellar-scaffold-cli/src/commands/mod.rs — current subcommands include init, build, generate, upgrade, update-env, watch, and clean; https://github.com/stellar-scaffold/cli/blob/main/crates/stellar-scaffold-cli/Cargo.toml declares 0.0.26.",
+            "Registry: cargo search stellar-scaffold-cli --limit 3 and https://crates.io/api/v1/crates/stellar-scaffold-cli returned max_version=0.0.26, published 2026-07-23T20:11:45Z; 0.0.25 was published 2026-07-07.",
+            "Sibling sweep: q-soroban-deploy-cli and q-sor-build-target-wasm32v1 retain the narrower `stellar contract init`/build flow; no case conflates it with the full-stack plugin."
           ],
           "rootCause": [
-            "eval-authoring"
+            "freshness-drift"
           ]
         },
         "origin": "raven-next q-ti-scaffold-stellar"
@@ -42997,7 +43135,7 @@
         "stellarDocs.search_wallet_dapp_docs"
       ],
       "golden": {
-        "answer": "CCTP V2 has supported **native Circle USDC** on Stellar since 2026-05-19. Stellar uses Circle **domain 27** on Mainnet and Testnet; that is a CCTP domain, not a Stellar network ID. Select deployments by network/passphrase and recheck Circle's current reference. As of **2026-07-11**, Mainnet used TokenMessengerMinter `CAE2G5Z77UP7GYPYGFOWFGW7C7J6I4YP2AFGSADRKQY62SYUFLPNFTXL`, MessageTransmitter `CACMENFFJPJMSDAJQLX4R7K3SFZIW2LJSE3R2UMLGSWHFHS353FVXAZV`, CctpForwarder `CBZL2IH7F6BIDAA3WBNXYKIXSATJGMSW7K5P5MJ6STX5RXN47TZJDF5T` and USDC SAC `CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75`; Testnet used `CDNG7HXAPBWICI2E3AUBP3YZWZELJLYSB6F5CC7WLDTLTHVM74SLRTHP`, `CBJ6MTCKKZG73PMDZCJMSFRD7DQEMI4FKDH7CGDSV4W6FHCRBCQAVVJY`, `CA66Q2WFBND6V4UEB7RD4SAXSVIWMD6RA4X3U32ELVFGXV5PJK4T4VSZ` and `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA`. These addresses are dated, not permanent gates.\n\n**Outbound from Stellar:** approve the correct network's USDC **SAC** and call TokenMessengerMinter `deposit_for_burn` or `deposit_for_burn_with_hook` with the destination domain and local seven-decimal `i128` `amount`/`max_fee`. Poll Iris `/v2/messages/27` by the burn transaction hash, then submit the message/attestation on the destination. Classic Circle USDC and its deterministic SAC are the same underlying asset exposed through trustline versus contract storage—not wrapped variants. Stellar calls use 7 decimal places while CCTP messages use 6: outbound normalization truncates the seventh-decimal dust and leaves it with the sender; inbound canonical units multiply by 10. Use integer/BigInt arithmetic, never float or the term stroops for token units.\n\n**Inbound to Stellar:** burn on the source chain to destination domain 27. Set **both** `mintRecipient` and `destinationCaller` to the correct Stellar **CctpForwarder** raw contract payload, and encode the actual recipient's full G/M/C StrKey in the versioned hook. Hook v0 uses 24 zero/reserved bytes, a 4-byte big-endian version, a 4-byte big-endian recipient length, UTF-8 StrKey, then optional bytes. Poll Iris with the actual **source** domain, then call `mint_and_forward`; the mint and forward are atomic. Wrong recipient/caller/hook values can strand funds. Circle's managed **Forwarding Service** is a different product from the on-chain CctpForwarder.\n\nTwo current Circle conflicts must be disclosed. The Stellar→Arc quickstart passes threshold **1000** and labels it Fast, while Circle's supported-chain/finality/fee matrices mark Stellar-as-source Fast **N/A** or omit it. Do not pin support either way; use Standard threshold **2000** for Stellar-originated transfers until Circle reconciles the docs. Finalized/unfinalized receive handlers allow Stellar to receive eligible messages from Fast-capable sources, but do not prove Stellar-source Fast support. Circle's rendered Stellar contracts reference spells `handle_receive_finalized_message`/`handle_receive_unfinalized_message`, while official source and deployed interfaces use `handle_recv_finalized_message`/`handle_recv_unfinalized_message`; call the deployed `handle_recv_*` interface.",
+        "answer": "SDF and Circle publicly announced CCTP V2 live for **native Circle USDC** on Stellar on 2026-05-19; treat earlier deployment/technical milestones separately rather than calling every date the launch. Stellar uses Circle **domain 27** on Mainnet and Testnet; that is a CCTP domain, not a Stellar network ID. Select deployments by network/passphrase and recheck Circle's current reference. As of **2026-07-28**, Mainnet used TokenMessengerMinter `CAE2G5Z77UP7GYPYGFOWFGW7C7J6I4YP2AFGSADRKQY62SYUFLPNFTXL`, MessageTransmitter `CACMENFFJPJMSDAJQLX4R7K3SFZIW2LJSE3R2UMLGSWHFHS353FVXAZV`, CctpForwarder `CBZL2IH7F6BIDAA3WBNXYKIXSATJGMSW7K5P5MJ6STX5RXN47TZJDF5T` and USDC SAC `CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75`; Testnet used `CDNG7HXAPBWICI2E3AUBP3YZWZELJLYSB6F5CC7WLDTLTHVM74SLRTHP`, `CBJ6MTCKKZG73PMDZCJMSFRD7DQEMI4FKDH7CGDSV4W6FHCRBCQAVVJY`, `CA66Q2WFBND6V4UEB7RD4SAXSVIWMD6RA4X3U32ELVFGXV5PJK4T4VSZ` and `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA`. These addresses are dated, not permanent gates.\n\n**Outbound from Stellar:** approve the correct network's USDC **SAC** and call TokenMessengerMinter `deposit_for_burn` or `deposit_for_burn_with_hook` with the destination domain and local seven-decimal `i128` `amount`/`max_fee`. Poll Iris `/v2/messages/27` by the burn transaction hash, then submit the message/attestation on the destination. Classic Circle USDC and its deterministic SAC are the same underlying asset exposed through trustline versus contract storage—not wrapped variants. Stellar calls use 7 decimal places while CCTP messages use 6: outbound normalization truncates the seventh-decimal dust and leaves it with the sender; inbound canonical units multiply by 10. Use integer/BigInt arithmetic, never float or the term stroops for token units.\n\n**Inbound to Stellar:** burn on the source chain to destination domain 27. Set **both** `mintRecipient` and `destinationCaller` to the correct Stellar **CctpForwarder** raw contract payload, and encode the actual recipient's full G/M/C StrKey in the versioned hook. Hook v0 uses 24 zero/reserved bytes, a 4-byte big-endian version, a 4-byte big-endian recipient length, UTF-8 StrKey, then optional bytes. Poll Iris with the actual **source** domain, then call `mint_and_forward`; the mint and forward are atomic. Wrong recipient/caller/hook values can strand funds. Circle's managed **Forwarding Service** is a different product from the on-chain CctpForwarder.\n\nTwo current Circle conflicts must be disclosed. The Stellar→Arc quickstart passes threshold **1000** and labels it Fast, while Circle's supported-chain/finality/fee matrices mark Stellar-as-source Fast **N/A** or omit it. Do not pin support either way; use Standard threshold **2000** for Stellar-originated transfers until Circle reconciles the docs. Finalized/unfinalized receive handlers allow Stellar to receive eligible messages from Fast-capable sources, but do not prove Stellar-source Fast support. Circle's rendered Stellar contracts reference spells `handle_receive_finalized_message`/`handle_receive_unfinalized_message`, while official source and deployed interfaces use `handle_recv_finalized_message`/`handle_recv_unfinalized_message`; call the deployed `handle_recv_*` interface.",
         "keyFacts": [
           "States CCTP V2/native USDC, Circle domain 27 and network-specific dated deployments.",
           "Explains classic USDC and its deterministic SAC are the same asset and uses the SAC for contract burn/approval.",
@@ -43016,7 +43154,7 @@
           "Do NOT pin Fast support/fees, copy threshold 1000 without the conflict, or infer Stellar-source Fast from receive handlers.",
           "Do NOT call docs handle_receive_* against the deployed interface or freeze addresses/fees/finality without an as-of date."
         ],
-        "notes": "GT-54 CORRECTION 2026-07-11: remove the stale 23-chain gate. Require V2/domain 27, dated deployment/SAC identity, source-domain Iris flow, forwarding-hook safety, 7↔6 decimal handling, explicit Stellar-source Fast dispute, and docs handle_receive_* versus deployed handle_recv_* conflict."
+        "notes": "GT-54 CORRECTION 2026-07-11: remove the stale 23-chain gate. Require V2/domain 27, dated deployment/SAC identity, source-domain Iris flow, forwarding-hook safety, 7↔6 decimal handling, explicit Stellar-source Fast dispute, and docs handle_receive_* versus deployed handle_recv_* conflict.\nRe-verified 2026-07-28: the two Circle conflicts persist. The 2026-05-19 date is specifically the public-live announcement; do not collapse it with earlier deployment/technical milestones."
       },
       "tags": {
         "category": "tooling-infra",
@@ -43026,88 +43164,72 @@
       "truth": {
         "domain": "mixed",
         "status": "disputed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-08-27",
         "sources": [
           {
-            "class": "D",
-            "ref": "https://developers.circle.com/cctp/references/stellar",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://developers.circle.com/cctp/references/stellar-contracts",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://developers.circle.com/cctp/references/technical-guide",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://developers.circle.com/cctp/concepts/supported-chains-and-domains",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://developers.circle.com/cctp/concepts/finality-and-block-confirmations",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://developers.circle.com/cctp/concepts/fees",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://developers.circle.com/cctp/quickstarts/transfer-usdc-stellar-arc",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://developers.circle.com/api-reference/cctp/all/get-messages-v2",
-            "note": "class inferred at migration"
-          },
-          {
-            "class": "D",
-            "ref": "https://developers.circle.com/stablecoins/usdc-contract-addresses",
-            "note": "class inferred at migration"
+            "class": "A",
+            "ref": "https://developers.circle.com/cctp/references/stellar"
           },
           {
             "class": "A",
-            "ref": "https://developers.stellar.org/docs/tokens/cross-chain-transfers",
-            "note": "class inferred at migration"
+            "ref": "https://developers.circle.com/cctp/references/stellar-contracts"
           },
           {
             "class": "A",
-            "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract",
-            "note": "class inferred at migration"
+            "ref": "https://developers.circle.com/cctp/references/technical-guide"
           },
           {
             "class": "A",
-            "ref": "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar",
-            "note": "class inferred at migration"
+            "ref": "https://developers.circle.com/cctp/concepts/supported-chains-and-domains"
           },
           {
-            "class": "D",
-            "ref": "https://github.com/circlefin/stellar-cctp/blob/45746f2c803198bc6cd586475eb3c925f12bb488/contracts/token-messenger-minter-v2/src/contract.rs",
-            "note": "class inferred at migration"
+            "class": "A",
+            "ref": "https://developers.circle.com/cctp/concepts/finality-and-block-confirmations"
           },
           {
-            "class": "D",
-            "ref": "https://github.com/circlefin/stellar-cctp/blob/45746f2c803198bc6cd586475eb3c925f12bb488/contracts/token-messenger-minter-v2/src/deposit.rs",
-            "note": "class inferred at migration"
+            "class": "A",
+            "ref": "https://developers.circle.com/cctp/concepts/fees"
           },
           {
-            "class": "D",
-            "ref": "https://github.com/circlefin/stellar-cctp/blob/45746f2c803198bc6cd586475eb3c925f12bb488/contracts/token-messenger-minter-v2/src/receive.rs",
-            "note": "class inferred at migration"
+            "class": "A",
+            "ref": "https://developers.circle.com/cctp/quickstarts/transfer-usdc-stellar-arc"
           },
           {
-            "class": "D",
-            "ref": "https://github.com/circlefin/stellar-cctp/blob/45746f2c803198bc6cd586475eb3c925f12bb488/contracts/cctp-forwarder/src/contract.rs",
-            "note": "class inferred at migration"
+            "class": "A",
+            "ref": "https://developers.circle.com/api-reference/cctp/all/get-messages-v2"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.circle.com/stablecoins/usdc-contract-addresses"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/tokens/cross-chain-transfers"
+          },
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/tokens/stellar-asset-contract"
+          },
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/circlefin/stellar-cctp/blob/45746f2c803198bc6cd586475eb3c925f12bb488/contracts/token-messenger-minter-v2/src/contract.rs"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/circlefin/stellar-cctp/blob/45746f2c803198bc6cd586475eb3c925f12bb488/contracts/token-messenger-minter-v2/src/deposit.rs"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/circlefin/stellar-cctp/blob/45746f2c803198bc6cd586475eb3c925f12bb488/contracts/token-messenger-minter-v2/src/receive.rs"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/circlefin/stellar-cctp/blob/45746f2c803198bc6cd586475eb3c925f12bb488/contracts/cctp-forwarder/src/contract.rs"
           }
         ],
         "corroboration": [
@@ -43117,30 +43239,43 @@
             "evidence": [
               {
                 "class": "A",
-                "ref": "A: official Circle Stellar/reference/technical-guide and Stellar CCTP/SAC documentation",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://developers.circle.com/cctp/references/stellar",
+                "observedAt": "2026-07-28"
+              },
+              {
+                "class": "A",
+                "ref": "https://developers.stellar.org/docs/tokens/cross-chain-transfers",
+                "observedAt": "2026-07-28"
               },
               {
                 "class": "B",
-                "ref": "B: pinned circlefin/stellar-cctp TokenMessengerMinter, receive and CctpForwarder source",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "C",
-                "ref": "C/F: read-only deployed contract interfaces, SAC derivation and Iris/public endpoint checks",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/circlefin/stellar-cctp/blob/45746f2c803198bc6cd586475eb3c925f12bb488/contracts/cctp-forwarder/src/contract.rs",
+                "observedAt": "2026-07-28"
               },
               {
                 "class": "F",
-                "ref": "C/F: read-only deployed contract interfaces, SAC derivation and Iris/public endpoint checks",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "Stellar CLI v27 public-RPC SAC derivation for Circle USDC on Mainnet and Testnet",
+                "observedAt": "2026-07-28",
+                "note": "Derived CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75 and CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA."
               }
-            ],
-            "note": "Legacy verdict: confirmed-as-of-2026-07-11."
+            ]
+          },
+          {
+            "claim": "SDF and Circle publicly announced CCTP live on Stellar on 2026-05-19; this public milestone should not be collapsed with earlier deployment or technical-support dates.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar",
+                "observedAt": "2026-07-28"
+              },
+              {
+                "class": "D",
+                "ref": "improvements/lumenloop/ll-022-cctp-milestone-provenance.md",
+                "observedAt": "2026-07-28",
+                "note": "Existing provenance finding distinguishes the May 19 public announcement from earlier technical milestones."
+              }
+            ]
           },
           {
             "claim": "Stellar-as-source Fast support is inconsistent across official Circle surfaces",
@@ -43148,18 +43283,29 @@
             "evidence": [
               {
                 "class": "A",
-                "ref": "A: Stellar→Arc quickstart labels threshold 1000 Fast, while supported-chain/finality/fee matrices mark Stellar source Fast N/A or omit it",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://developers.circle.com/cctp/quickstarts/transfer-usdc-stellar-arc",
+                "observedAt": "2026-07-28",
+                "note": "Passes threshold 1000 and labels the path Fast."
+              },
+              {
+                "class": "A",
+                "ref": "https://developers.circle.com/cctp/concepts/supported-chains-and-domains",
+                "observedAt": "2026-07-28",
+                "note": "Marks Stellar-source Fast as N/A."
+              },
+              {
+                "class": "A",
+                "ref": "https://developers.circle.com/cctp/concepts/fees",
+                "observedAt": "2026-07-28",
+                "note": "Omits a Stellar-source Fast fee."
               },
               {
                 "class": "B",
-                "ref": "B: contract source supports threshold/finalized-unfinalized mechanics but does not resolve Circle service-route eligibility",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/circlefin/stellar-cctp/blob/45746f2c803198bc6cd586475eb3c925f12bb488/contracts/token-messenger-minter-v2/src/receive.rs",
+                "observedAt": "2026-07-28",
+                "note": "Receive-side finalized/unfinalized mechanics do not resolve Circle's service-route eligibility."
               }
-            ],
-            "note": "Legacy verdict: disputed; never pin either polarity."
+            ]
           },
           {
             "claim": "Circle's Stellar contracts page says handle_receive_* while official source and deployed interfaces use handle_recv_*",
@@ -43167,42 +43313,39 @@
             "evidence": [
               {
                 "class": "A",
-                "ref": "A: official Circle rendered reference",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://developers.circle.com/cctp/references/stellar-contracts",
+                "observedAt": "2026-07-28",
+                "note": "Rendered reference still uses handle_receive_*."
               },
               {
                 "class": "B",
-                "ref": "B: pinned official contract source",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              },
-              {
-                "class": "C",
-                "ref": "C/F: read-only deployed interface inspection",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/circlefin/stellar-cctp/blob/45746f2c803198bc6cd586475eb3c925f12bb488/contracts/token-messenger-minter-v2/src/contract.rs",
+                "observedAt": "2026-07-28",
+                "note": "Official source uses handle_recv_*."
               },
               {
                 "class": "F",
-                "ref": "C/F: read-only deployed interface inspection",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "Read-only deployed TokenMessengerMinter interface inspection",
+                "observedAt": "2026-07-28",
+                "note": "The deployed interface uses handle_recv_*."
               }
-            ],
-            "note": "Legacy verdict: contradicted-doc-nomenclature."
+            ]
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited launch-only answer froze a 23-chain headline and omitted CCTP V2 domain/deployment identity, SAC/classic-asset equivalence, forwarding safety, Iris source-domain mapping and decimal normalization. GT-54 also found two official Circle conflicts that must remain explicit rather than flattened.",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane C — security/incident/disputed re-verification",
           "evidence": [
-            "Solo scratchpad 575, GT-54 primary 3383 and blind 3386 independently confirmed native burn-attest-mint and current precision; blind helper 3389 was losslessly harvested before seal with both Circle conflicts.",
-            "KV gt54/blind-lock/process-3386 records the final Fast dispute, handler contradiction and exact full-replacement action after seal-before-primary chronology.",
-            "Sibling sweep checked canonical Circle USDC/issuer/SAC, Axelar/Allbridge routes and CCTP launch-date cases. sls-032 is adjacent route representation, not a duplicate of Circle documentation conflicts."
+            "Production stellarDocs searches recovered the official Stellar CCTP integration page but delegated deployment/support specifics to Circle; direct Circle pages and circlefin/stellar-cctp source were therefore checked.",
+            "Circle's current reference retains domain 27 and the stated Mainnet/Testnet deployments; Stellar CLI v27 public-RPC derivation reproduced both stated USDC SACs.",
+            "Circle's quickstart-versus-matrix Fast conflict and rendered handle_receive_* versus source/deployed handle_recv_* conflict both remain on 2026-07-28.",
+            "Todo 1232's zero-gated-hit behavior is a separate own-repo retrievability/routing problem; it does not resolve or invalidate these factual Circle-source conflicts.",
+            "solo://proj/49/todo/2026-07-28-reconcile-lane-c--1251"
           ],
           "rootCause": [
-            "Eval-side launch-era freshness and integration incompleteness; Circle-owned documentation conflicts are recorded in research/audits/2026-07-11-gt54-tooling-retention-lab-cctp.md because the four-service improvements pipeline has no honest Circle intake collection."
+            "The golden remains disputed because official Circle surfaces still conflict on Stellar-source Fast support and handler naming; this is a factual-source dispute, not a grading convenience.",
+            "The zero-hit behavior from todo 1232 is retrievability drift in this repository's search/routing surface and must not be papered over by rewriting the factual golden.",
+            "A separate eval-authoring milestone inconsistency remains in q-cctp-v2-usdc-stellar and is tracked by todo 1251; this lane only clarifies the May 19 public-announcement milestone."
           ]
         },
         "origin": "raven-next q-tool-cctp-stellar-integration"
@@ -43217,7 +43360,7 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Use the live Scout skills catalog and report **returned rows**, not its enums as a frozen roster. `scout.listSkills({})` advertises valid kind filters `skill-md`, `mcp-server`, `sdk`, `cli`, `agent-kit`, and `tool`, and valid source filters `sdf`, `stellarlight`, `lumenloop`, `external`, and `community`. Those values describe what the API accepts; they do **not** promise that every category has a current entry.\n\nFor each row actually returned, give its name/slug, kind, source/owner, install or configuration command, repository/docs URL, scope, and maturity/security caveat. Re-run filtered calls for the requested kinds and preserve an empty array honestly. At **2026-07-11T07:17:34Z**, `agent-kit` and `community` were valid filters but returned zero rows; that is an illustrative stamp, not a durable absence claim. Verify install commands against each current repository/package README and distinguish SDF-owned from community tooling.",
+        "answer": "Use the live Scout skills catalog and report **returned rows**, not its enums as a frozen roster. `scout.listSkills({})` advertises valid kind filters `skill-md`, `mcp-server`, `sdk`, `cli`, `agent-kit`, and `tool`, and valid source filters `sdf`, `stellarlight`, `lumenloop`, `external`, and `community`. Those values describe what the API accepts; they do **not** promise that every category has a current entry.\n\nFor each row actually returned, give its name/slug, kind, source/owner, install or configuration command, repository/docs URL, scope, and maturity/security caveat. Re-run filtered calls for the requested kinds and preserve an empty array honestly. Verify install commands against each current repository/package README and distinguish SDF-owned from community tooling.",
         "keyFacts": [
           "Uses Scout's broad live skills catalog and returns concrete current rows across requested tooling kinds.",
           "Separates valid filter enums from populated rows and treats empty categories as valid current results.",
@@ -43238,8 +43381,8 @@
       "truth": {
         "domain": "corpus-grounded",
         "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-08-06",
         "sources": [
           {
             "class": "C",
@@ -43318,15 +43461,15 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited answer treated Scout's valid kind/source enum values as if every category currently contained rows and marked a live inventory static. Empty filters are valid data, not evidence that the enum is unsupported.",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane A Scout roster re-verification (solo://proj/49/scratchpad/todo-1248-lane-a-sco--727).",
           "evidence": [
-            "Live author probe returned 30 total rows, validKinds skill-md/mcp-server/sdk/cli/agent-kit/tool, validSources sdf/stellarlight/lumenloop/external/community, and zero rows for kind=agent-kit and source=community at the recorded stamp.",
-            "GT-55 primary 3392 and sealed blind 3393 agreed that enum support and current row membership must be separated.",
-            "Sibling sweep retained q-tool-mcp-servers-skills-discovery as the narrow mcp-server filter lane and q-tool-skill-detail as per-row detail."
+            "C: scout.listSkills({}) at 2026-07-28T14:05Z returned 42 rows and the six kind/five source enums; filtered kind=agent-kit returned 0 rows and source=community was 0 in the response counts.",
+            "B: sampled returned tooling against https://github.com/stellar/stellar-cli and https://github.com/Stellar-Light/scout-mcp; Scout's install metadata remains row-level, not enum-derived.",
+            "Sibling sweep: q-tool-mcp-servers-skills-discovery remains the narrow MCP filter lane; q-tool-skill-detail-install is the exact-detail lane."
           ],
           "rootCause": [
-            "Eval-side enum-versus-membership conflation plus a false static freshness tag; the live payload itself exposes the distinction."
+            "freshness-recheck"
           ]
         },
         "origin": "raven-next q-tool-cli-skills-discovery"
@@ -44054,8 +44197,8 @@
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-08-06",
         "sources": [
           {
             "class": "C",
@@ -44150,16 +44293,15 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited answer froze a candidate roster, allowed repoScore/stars/activity to stand in for maintenance quality, and marked live repository discovery static. Current Scout results have alias false negatives and semantic noise, so rows require direct role verification.",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane A Scout roster re-verification (solo://proj/49/scratchpad/todo-1248-lane-a-sco--727).",
           "evidence": [
-            "At 2026-07-11T07:17:33Z, Scout exact search for subquery/stellar-subql-starter returned zero, while the direct repository remained public and non-archived; recurrence recorded in sls-025.",
-            "A broad indexer/events query returned 359 candidates including irrelevant smart contracts, proving semantic rank alone is not a role check.",
-            "GT-55 primary 3392 removed the brittle roster; sealed blind 3393 sharpened role labels, current activity/maturity checks, RPC retention, and the no-repoScore-quality inference."
+            "C: scout.searchRepos indexer and role/alias probes at 2026-07-28T14:05Z returned stellar-ledger-data-indexer, stellar-galexie, go-stellar-sdk, stellar-etl, and SubQuery rows; broad Soroban-events search returned 420 candidates, including adjacent contracts.",
+            "A/B: https://github.com/stellar/stellar-ledger-data-indexer, https://github.com/stellar/stellar-galexie, and the Stellar Galexie/indexing docs confirm distinct indexer, exporter, SDK, and ETL roles.",
+            "Sibling sweep: q-tool-sdk-repos-discovery shares the no-static-roster/no-repoScore-quality boundary; no owned sibling contradicts it."
           ],
           "rootCause": [
-            "improvements/stellar-light-scout/sls-025-agent-standard-alias-recall.md",
-            "Eval-side discovery-result overreach: a live rank and illustrative candidates were promoted into a durable quality/roster claim."
+            "freshness-recheck"
           ]
         },
         "origin": "raven-next q-tool-indexer-repos-discovery"
@@ -44339,7 +44481,7 @@
         "scout.searchRepos"
       ],
       "golden": {
-        "answer": "Re-run **`scout.getLeaderboard({ sort: \"issues\", range: \"all\", limit: ... })`**, whose upstream route is **`/api/leaderboard`**, and report the response's `generatedAt`, filters/range/category, rank, project, Scout-labelled `openIssuesTotal`, `repoCount`, and `lastActivityAt`. This is an answer-time snapshot; do not reuse a stored ordering.\n\nFor illustration only, the **2026-07-11T07:17:34.351Z** Scout snapshot began Noir 619, Drips 162, Stellar CLI 141, Solar Wallet 131, and OpenGrants 94. Those names/counts are not durable grading requirements. They are cached project rollups over Scout's included repository universe, not a timeless issue-only GitHub census. If corroborating against GitHub, map the exact included repositories and use `is:issue is:open`; repository `open_issues_count` includes pull requests. Disclose cache/scope mismatches and do not average unlike project, organization, and repository counts.\n\nOpen-issue volume is a **backlog-size signal**, not proof of current maintenance activity, code quality, popularity, or need for help. Use `lastActivityAt` or a separately defined activity metric for activity, and keep `issues`, `stars`, and `activity` as distinct leaderboard sorts.",
+        "answer": "Re-run **`scout.getLeaderboard({ sort: \"issues\", range: \"all\", limit: ... })`**, whose upstream route is **`/api/leaderboard`**, and report the response's `generatedAt`, filters/range/category, rank, project, Scout-labelled `openIssuesTotal`, `repoCount`, and `lastActivityAt`. This is an answer-time snapshot; do not reuse a stored ordering.\n\nThe returned rows are cached project rollups over Scout's included repository universe, not a timeless issue-only GitHub census. If corroborating against GitHub, map the exact included repositories and use `is:issue is:open`; repository `open_issues_count` includes pull requests. Disclose cache/scope mismatches and do not average unlike project, organization, and repository counts.\n\nOpen-issue volume is a **backlog-size signal**, not proof of current maintenance activity, code quality, popularity, or need for help. Use `lastActivityAt` or a separately defined activity metric for activity, and keep `issues`, `stars`, and `activity` as distinct leaderboard sorts.",
         "keyFacts": [
           "Uses `/api/leaderboard`/`scout.getLeaderboard` with `sort=issues` and reports generatedAt plus filter/range/category scope.",
           "Returns rank and Scout openIssuesTotal with repoCount/lastActivityAt while treating values as a current cached project rollup.",
@@ -44362,8 +44504,8 @@
       "truth": {
         "domain": "corpus-grounded",
         "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-08-06",
         "sources": [
           {
             "class": "C",
@@ -44438,16 +44580,15 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited behavioral caution was sound, but it cited the repo-search route instead of `/api/leaderboard`, used weekly freshness for a 'right now' ranking, and did not make generatedAt, project/repository scope, GitHub issue-only semantics, or backlog-versus-activity explicit.",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane A Scout roster re-verification (solo://proj/49/scratchpad/todo-1248-lane-a-sco--727).",
           "evidence": [
-            "Live author probe at 2026-07-11T07:17:34.351Z returned `sort=issues`, `range=all`, rank/openIssuesTotal/repoCount/lastActivityAt, and a separate repository source timestamp from /api/status.",
-            "Scout and contemporaneous GitHub issue-only counts differed for sampled leaders; the correction preserves the disagreement rather than averaging unlike scopes.",
-            "GT-55 primary 3392 kept the weekly behavioral golden; sealed blind 3393 independently required the route, answer-time stamp, scope/cache, issue-only, and backlog-not-activity corrections. The recurrence is recorded in sls-036."
+            "C: scout.getLeaderboard({sort:'issues',range:'all',limit:10}) at 2026-07-28T14:05Z returned /api/leaderboard metadata, generatedAt/dataAsOf, project rank, github.openIssuesTotal, repoCount, lastActivityAt, and metricDefinitions.",
+            "D: Scout's metricDefinitions says issues are GraphQL open issues excluding pull requests; GitHub's https://docs.github.com/en/rest/repos/repos#get-a-repository documents that repository open_issues_count includes pull requests.",
+            "Sibling sweep: q-tool-developer-leaderboard-live and q-gap-leaderboard-project-not-builder retain the project-scope and metric-separation boundary."
           ],
           "rootCause": [
-            "improvements/stellar-light-scout/sls-036-leaderboard-metric-filter-semantics.md",
-            "Eval-side route and freshness provenance drift: repo search and leaderboard semantics were conflated."
+            "freshness-recheck"
           ]
         },
         "origin": "raven-next q-tool-leaderboard-open-issues"
@@ -45067,8 +45208,8 @@
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-08-06",
         "sources": [
           {
             "class": "C",
@@ -45136,14 +45277,15 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited discovery answer froze repository examples, star counts, ordering, and a repoScore quality interpretation. Live search rows and repository topology change, and official documentation does not transfer SDF ownership to community SDKs.",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane A Scout roster re-verification (solo://proj/49/scratchpad/todo-1248-lane-a-sco--727).",
           "evidence": [
-            "Solo scratchpad 575 GT-56 primary process 3394 and sealed blind process 3398 independently removed static top/star claims and required returned-row, direct-URL, role, maintainer, and activity provenance.",
-            "Sibling sweep checked q-tool-indexer-repos-discovery plus the official-list and language-specific SDK cases; all treat repoScore/stars/rank as navigation rather than quality proof."
+            "C: Scout SDK/client/XDR probes at 2026-07-28T14:05Z returned current rows including stellar/js-stellar-sdk, stellar/rs-soroban-sdk, stellar/go-stellar-sdk, stellar/stellar-xdr, and stellar/rs-stellar-xdr with changing rank/activity metadata.",
+            "B/A: direct repository URLs and https://developers.stellar.org/docs/tools/sdks/client-sdks corroborate identity and role; they do not turn Scout score/rank into a quality or ownership proof.",
+            "Sibling sweep: q-tool-indexer-repos-discovery uses the same no-static-roster/no-repoScore-quality rule."
           ],
           "rootCause": [
-            "Eval-side live-discovery overreach: one Scout result and star snapshot became a timeless ranking and ownership claim."
+            "freshness-recheck"
           ]
         },
         "origin": "raven-next q-tool-sdk-repos-discovery"
@@ -45280,20 +45422,20 @@
         "scout.listSkills"
       ],
       "golden": {
-        "answer": "For a **known exact skill name**, call the live single-item detail operation directly—for this request, `getSkill({ name: \"soroban\" })` or the equivalent exact detail call. Use list/search first only when the requested identity is unknown, misspelled, ambiguous, or must be discovered. Preserve a soft-empty/error honestly rather than guessing a slug.\n\nReturn the complete current detail: source and owner, exact slug/kind, version/commit or generated-at provenance, full **SKILL.md**, every referenced supporting file needed to follow it, what it covers, dependencies and embedded package/tool versions, install commands for the user's actual agent host, restart/discovery steps, license and manual-review status, and any network, write, payment, secret, or executable side effects. Official Stellar skills currently have seven source slugs and host-specific install routes; community inclusion is not SDF endorsement. Inspect before installing or executing, and verify stale embedded dependencies against their owners.",
+        "answer": "Treat **\"soroban\" as a request topic, not a guaranteed current exact slug**. Resolve it against the live SDF skill list first; if the exact `getSkill({ name: \"soroban\" })` call is a soft-empty, say so and use the current row whose coverage explicitly includes Soroban. Once the exact current slug is known, call its single-item detail operation directly. Do not guess a slug or pretend a source-relative miss is an open-world absence.\n\nReturn the complete current detail: source and owner, exact slug/kind, version/commit or generated-at provenance, full **SKILL.md**, every referenced supporting file needed to follow it, what it covers, dependencies and embedded package/tool versions, install commands for the user's actual agent host, restart/discovery steps, license and manual-review status, and any network, write, payment, secret, or executable side effects. Use host-specific install routes; community inclusion is not SDF endorsement. Inspect before installing or executing, and verify stale embedded dependencies against their owners.",
         "keyFacts": [
-          "Permits direct exact getSkill/detail lookup for a known skill name and reserves list/search for unknown or ambiguous identity.",
+          "Resolves the topic against the live catalog when its exact current slug is unknown, then uses direct getSkill/detail lookup for the resolved exact name.",
           "Returns full SKILL.md plus required supporting files, source/owner, version/commit, coverage, dependencies, and provenance.",
           "Uses host-specific install/restart/discovery steps rather than a universal invented command.",
           "Requires manual review and network/write/payment/secret/side-effect inspection, especially for community skills."
         ],
         "avoid": [
-          "Do NOT require a catalog call before every exact named detail request.",
+          "Do NOT assume a topical or retired name is a current exact slug, or require a catalog call after the exact current name is known.",
           "Do NOT fabricate an install command, metadata, dependency, supporting file, or coverage absent from the detail/source.",
           "Do NOT call a community skill SDF-endorsed or claim official skill text is fully reviewed when its source says manual review remains.",
           "Do NOT install or execute unreviewed skill content or ignore stale versions embedded in its instructions."
         ],
-        "notes": "GT-56 ROUTING CORRECTION 2026-07-11: direct exact getSkill/detail lookup is valid for a known name; list/search first only for unknown or ambiguous identity. Grade full SKILL.md/supporting files, provenance, dependencies, manual review, side effects, and host-specific install—not a mandatory two-step ritual."
+        "notes": "Todo 1248 correction 2026-07-28: `soroban` is no longer a current Scout skill slug. Grade live topic-to-slug resolution, then exact detail retrieval and the full provenance/safety review—not a stale alias or a mandatory catalog call after resolution."
       },
       "tags": {
         "category": "tooling-infra",
@@ -45303,8 +45445,8 @@
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-08-13",
         "sources": [
           {
             "class": "C",
@@ -45334,54 +45476,52 @@
         ],
         "corroboration": [
           {
-            "claim": "A direct exact getSkill/detail request for the known soroban skill returns the full detail record without a preceding catalog call; list/search is needed only for unknown or ambiguous identity.",
+            "claim": "The topic name soroban is not a current exact Scout slug; current topic resolution leads to Smart Contracts, whose detail explicitly covers Soroban.",
             "verdict": "confirmed-as-of",
             "evidence": [
               {
                 "class": "C",
-                "ref": "C: live direct Scout getSkill name=soroban probe on 2026-07-11",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "scout.getSkill({name:'soroban'}) → 404 soft-empty; scout.listSkills({source:'sdf'}) and scout.getSkill({name:'smart-contracts'})",
+                "observedAt": "2026-07-28",
+                "note": "The returned Smart Contracts SKILL.md says it applies to anything the user calls Soroban."
               },
               {
                 "class": "B",
-                "ref": "B: exact source repository and SKILL.md identity",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/stellar/stellar-dev-skill/tree/main/skills/smart-contracts",
+                "observedAt": "2026-07-28",
+                "note": "Current canonical repository directory agrees on the smart-contracts slug."
               }
-            ],
-            "note": "Legacy verdict: confirmed-at-answer-time."
+            ]
           },
           {
-            "claim": "A safe install answer must include the full SKILL.md dependency graph, provenance/review state, host-specific commands, and side-effect/secret/network inspection.",
+            "claim": "A safe install answer must include the complete retrieved skill, its supporting files, provenance, host-specific commands, and side-effect/secret/network inspection.",
             "verdict": "confirmed",
             "evidence": [
               {
-                "class": "A",
-                "ref": "A: current Stellar building-with-AI and skills pages",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "class": "C",
+                "ref": "scout.getSkill({name:'smart-contracts'})",
+                "observedAt": "2026-07-28",
+                "note": "Returned the current full SKILL.md and named development.md, testing.md, and security.md."
               },
               {
                 "class": "B",
-                "ref": "B: stellar/stellar-dev-skill repository, supporting files, and manual-review notice",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/stellar/stellar-dev-skill",
+                "observedAt": "2026-07-28",
+                "note": "Canonical source repository exposes the same skill layout."
               }
             ]
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited answer incorrectly made list-first resolution mandatory even though the live detail operation accepts a known exact skill name directly. It also under-specified supporting files, dependency provenance, manual review, side effects, and host-specific installation.",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane A Scout roster re-verification (solo://proj/49/scratchpad/todo-1248-lane-a-sco--727).",
           "evidence": [
-            "Solo scratchpad 575 GT-56 primary process 3394 directly reproduced getSkill(name=soroban); sealed blind process 3398 independently rejected mandatory list-first routing and expanded the install/provenance requirements.",
-            "Sibling sweep checked q-tool-cli-skills-discovery and q-tool-mcp-servers-skills-discovery; list/search remains discovery for unknown candidates, while this case owns one known exact detail.",
-            "The official dapp skill's embedded Wallets Kit dependency drift is tracked owner-correctly in improvements/skills/sk-010-wallets-kit-jsr-scope-dapp-skill.md."
+            "C: scout.getSkill({name:'soroban'}) now returned 404 soft-empty, while scout.listSkills({source:'sdf'}) and scout.getSkill({name:'smart-contracts'}) returned the current Smart Contracts detail whose text explicitly covers anything called Soroban.",
+            "B: https://github.com/stellar/stellar-dev-skill lists smart-contracts among the seven current skill directories and was pushed 2026-07-27; its source agrees with Scout.",
+            "Sibling sweep: q-gap-scout-get-skill-detail remains valid for a known exact slug; q-tool-cli-skills-discovery owns broad catalog discovery."
           ],
           "rootCause": [
-            "Eval-side routing drift: a discovery-then-detail pattern was promoted into a universal prerequisite despite exact-name detail support.",
-            "improvements/skills/sk-010-wallets-kit-jsr-scope-dapp-skill.md"
+            "freshness-drift"
           ]
         },
         "origin": "raven-next q-tool-skill-detail-install"
@@ -45395,20 +45535,20 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Run the **live Scout repository search** with exact owner/name and broader smart-account/passkey vocabulary, then report only the rows actually returned, with `generatedAt`/as-of, exact URL, role, owner, activity/archive state, and maturity/audit caveat. At the GT-56 check on **2026-07-11**, exact `passkey-kit` and `smart-account-kit` searches returned zero; say that honestly, broaden the query, and never turn the zero into repository absence.\n\nFor direct current verification outside the Scout rows, label the source boundary explicitly: **`kalepail/smart-account-kit`** is the current TypeScript integration SDK; **`OpenZeppelin/stellar-contracts` account packages** are the underlying account framework; **`kalepail/passkey-kit`** is the legacy, explicitly unaudited demo predecessor. Direct links may supplement a current Scout result, but must not be attributed to Scout if absent from its response. Repository/indexer discovery neither proves control nor supplies signer recovery, and an audit claim applies only to the exact artifact/release reviewed.",
+        "answer": "Run the **live Scout repository search** with exact owner/name and broader smart-account/passkey vocabulary, then report only the rows actually returned, with `generatedAt`/as-of, exact URL, role, owner, activity/archive state, and maturity/audit caveat. Preserve an exact zero honestly and broaden the query, but never turn either a zero or a returned row into an open-world repository or quality claim.\n\nFor direct current verification outside the Scout rows, label the source boundary explicitly: **`kalepail/smart-account-kit`** is a TypeScript integration SDK for OpenZeppelin Stellar smart accounts; **`OpenZeppelin/stellar-contracts` account packages** are the underlying account framework; and **`kalepail/passkey-kit`** is a separate passkey-wallet SDK with a different authorization model and its own security caveats. Direct links may supplement a current Scout result, but must not be attributed to Scout if absent from its response. Repository/indexer discovery neither proves control nor supplies signer recovery, and an audit claim applies only to the exact artifact/release reviewed.",
         "keyFacts": [
           "Returns only observed live Scout rows and dates the response.",
-          "States that exact passkey-kit/smart-account-kit zero results are retrieval results, not proof of absence, and broadens vocabulary.",
-          "Labels direct Smart Account Kit, OpenZeppelin account contracts, and legacy Passkey Kit verification separately from Scout.",
+          "Treats either exact zeroes or returned rows as source-scoped retrieval results, not open-world proof, and broadens vocabulary.",
+          "Labels direct Smart Account Kit, OpenZeppelin account contracts, and separate Passkey Kit verification separately from Scout.",
           "Distinguishes current versus legacy purpose and keeps discovery separate from audit, authorization, custody, and recovery."
         ],
         "avoid": [
           "Do NOT claim Scout surfaced a repository it did not return or treat an exact zero result as repository absence.",
           "Do NOT freeze repoScore/order or infer maintenance, security, audit scope, or production readiness from search rank.",
-          "Do NOT recommend legacy Passkey Kit without its unaudited/no-real-value warning.",
+          "Do NOT collapse Passkey Kit and Smart Account Kit into one authorization or audit claim, or omit their source-specific security caveats.",
           "Do NOT call repository or indexer discovery proof of account control or a recovery mechanism."
         ],
-        "notes": "GT-56 LIVE-RETRIEVAL CORRECTION 2026-07-11: exact Scout searches for passkey-kit and smart-account-kit returned zero while direct repositories existed. Grade only observed Scout rows; label direct GitHub supplements separately, treat zero as no absence proof, and preserve current Smart Account Kit/OZ versus legacy unaudited Passkey Kit."
+        "notes": "Todo 1248 correction 2026-07-28: current exact Scout searches return both repositories, so the golden grades source-bound live discovery rather than a pinned zero. Keep Smart Account Kit, OpenZeppelin accounts, and the separate Passkey Kit model/verification boundaries explicit."
       },
       "tags": {
         "category": "tooling-infra",
@@ -45418,8 +45558,8 @@
       "truth": {
         "domain": "mixed",
         "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-08-01",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-08-13",
         "sources": [
           {
             "class": "C",
@@ -45449,54 +45589,52 @@
         ],
         "corroboration": [
           {
-            "claim": "Exact Scout repository searches for passkey-kit and smart-account-kit returned zero on 2026-07-11; zero was a retrieval miss, not proof the repositories were absent.",
+            "claim": "Current exact Scout searches return both Kalepail repositories; returned rows and zeroes alike are source-scoped retrieval results rather than open-world proof.",
             "verdict": "confirmed-as-of",
             "evidence": [
               {
                 "class": "C",
-                "ref": "C: live exact Scout repository probes",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "scout.searchRepos({q:'smart-account-kit'}) and scout.searchRepos({q:'passkey-kit'})",
+                "observedAt": "2026-07-28",
+                "note": "Both probes returned their exact Kalepail repository rows; broader queries produced additional candidates."
               },
               {
                 "class": "B",
-                "ref": "B: direct public GitHub repositories and current source activity",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/kalepail/smart-account-kit and https://github.com/kalepail/passkey-kit",
+                "observedAt": "2026-07-28",
+                "note": "Canonical repositories establish the direct-source boundary separately from Scout."
               }
-            ],
-            "note": "Legacy verdict: confirmed-at-answer-time."
+            ]
           },
           {
-            "claim": "Smart Account Kit and OpenZeppelin account contracts are current direct learning targets, while Passkey Kit is a legacy unaudited predecessor; audit scope and control cannot be inferred from discovery.",
+            "claim": "Smart Account Kit, OpenZeppelin accounts, and Passkey Kit have distinct authorization/security boundaries; discovery alone proves neither control nor audit scope.",
             "verdict": "confirmed",
             "evidence": [
               {
                 "class": "B",
-                "ref": "B: current Smart Account Kit, Passkey Kit, and OpenZeppelin account sources",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/kalepail/smart-account-kit, https://github.com/kalepail/passkey-kit, and https://github.com/OpenZeppelin/stellar-contracts",
+                "observedAt": "2026-07-28",
+                "note": "READMEs describe different authorization models, caveats, and the OpenZeppelin accounts framework."
               },
               {
-                "class": "D",
-                "ref": "A-product: OpenZeppelin smart-account documentation",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "class": "A",
+                "ref": "https://developers.stellar.org/docs/build/guides/contract-accounts/smart-wallets",
+                "observedAt": "2026-07-28",
+                "note": "Official Smart Wallet guidance treats passkey/account implementation details as source-specific."
               }
             ]
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "Golden-truth sweep import — The inherited answer falsely claimed Scout surfaced the Kalepail Passkey Kit and Smart Account Kit repositories. Exact live searches returned zero, while direct repositories proved existence; the answer also needed current successor, audit-scope, and discovery-versus-control boundaries.",
+          "date": "2026-07-28",
+          "by": "Todo 1248 Lane A Scout roster re-verification (solo://proj/49/scratchpad/todo-1248-lane-a-sco--727).",
           "evidence": [
-            "Solo scratchpad 575 GT-56 primary process 3394 reproduced zero exact Scout rows and direct repository existence; sealed blind process 3398 independently classified this as an sls-025 alias-recall recurrence.",
-            "Sibling sweep checked q-tool-passkeykit-smart-wallet, q-tool-passkey-wallet-recovery, and q-infra-secp256r1-passkeys; no discovery result is treated as audit, authorization, custody, or recovery proof.",
-            "Recurrence appended to improvements/stellar-light-scout/sls-025-agent-standard-alias-recall.md; no smart-wallet-only duplicate was created."
+            "C: scout.searchRepos({q:'smart-account-kit'}) and ({q:'passkey-kit'}) at 2026-07-28T14:05Z both returned the exact Kalepail repositories; broad smart-account/passkey queries returned additional candidates.",
+            "B: current READMEs at https://github.com/kalepail/smart-account-kit and https://github.com/kalepail/passkey-kit show distinct authorization models and security caveats; https://github.com/OpenZeppelin/stellar-contracts identifies its accounts package as the framework.",
+            "Sibling sweep found q-tool-passkeykit-smart-wallet still describes Passkey Kit as legacy/unaudited, which conflicts with its current README; this lane does not edit that sibling. q-tool-passkey-wallet-recovery remains consistent that discovery does not authorize recovery."
           ],
           "rootCause": [
-            "improvements/stellar-light-scout/sls-025-agent-standard-alias-recall.md",
-            "Eval-side source-attribution error: directly verified repositories were presented as if the live Scout response had returned them."
+            "freshness-drift"
           ]
         },
         "origin": "raven-next q-tool-smart-wallet-repos-discovery"

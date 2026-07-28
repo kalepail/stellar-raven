@@ -7,11 +7,11 @@
     "stellarDocs.search_wallet_dapp_docs"
   ],
   "golden": {
-    "answer": "For a full-stack Stellar smart-contract dApp, install the separate Scaffold Stellar plugin and initialize a project:\n\n`cargo install --locked stellar-scaffold-cli`\n`stellar scaffold init <project>`\n\n`cargo binstall stellar-scaffold-cli` is the project's faster documented alternative when available. The plugin generates/coordinates Rust contracts, TypeScript clients/bindings, frontend templates, environment configuration, and build/watch workflows. Inspect the generated package scripts rather than assuming `npm start` and `npm run dev` are interchangeable. Local-network workflows require their documented Docker/local prerequisites.\n\nFor only a Rust contract workspace/sample contract, use `stellar contract init <project-path> --name <contract-name>` instead; that is not the full-stack scaffold. The current official template source included React and Svelte choices as of **2026-07-11**, and `stellar-scaffold-cli` was **0.0.25** on crates.io on that date. Both the crate version, template roster, repository redirects, and exact subcommands/scripts are volatile. Community `owner/repo[#ref]` templates are third-party code and should be reviewed/pinned before execution. `stellar-registry-cli` is optional for registry publishing/deployment, not required merely to scaffold.",
+    "answer": "For a full-stack Stellar smart-contract dApp, install the separate Scaffold Stellar plugin and initialize a project:\n\n`cargo install --locked stellar-scaffold-cli`\n`stellar scaffold init <project>`\n\n`cargo binstall stellar-scaffold-cli` is the project's faster documented alternative when available. The plugin generates/coordinates Rust contracts, TypeScript clients/bindings, frontend templates, environment configuration, and build/watch workflows. Inspect the generated package scripts rather than assuming `npm start` and `npm run dev` are interchangeable. Local-network workflows require their documented Docker/local prerequisites.\n\nFor only a Rust contract workspace/sample contract, use `stellar contract init <project-path> --name <contract-name>` instead; that is not the full-stack scaffold. The current official template source includes React and Svelte choices as of **2026-07-28**, and `stellar-scaffold-cli` is **0.0.26** on crates.io on that date. Both the crate version, template roster, repository redirects, and exact subcommands/scripts are volatile. Community `owner/repo[#ref]` templates are third-party code and should be reviewed/pinned before execution. `stellar-registry-cli` is optional for registry publishing/deployment, not required merely to scaffold.",
     "keyFacts": [
       "Gives the separately installed stellar-scaffold-cli and stellar scaffold init command shape.",
       "Defines Scaffold Stellar as full-stack contracts/clients/frontend/environment tooling and distinguishes stellar contract init as contract-only.",
-      "Dates the 0.0.25 registry and React/Svelte template examples to 2026-07-11 rather than making them permanent requirements.",
+      "Dates the 0.0.26 registry and React/Svelte template examples to 2026-07-28 rather than making them permanent requirements.",
       "Requires checking generated scripts/prerequisites and treats community templates as supply-chain inputs."
     ],
     "avoid": [
@@ -30,8 +30,8 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
-    "reverifyBy": "2026-08-01",
+    "asOf": "2026-07-28",
+    "reverifyBy": "2026-10-22",
     "sources": [
       {
         "class": "A",
@@ -91,35 +91,35 @@
         ]
       },
       {
-        "claim": "Dates the 0.0.25 registry and React/Svelte template examples to 2026-07-11 rather than making them permanent requirements.",
+        "claim": "As of 2026-07-28, crates.io publishes stellar-scaffold-cli 0.0.26 and the official UI source has React and Svelte template directories; neither is permanent guidance.",
         "verdict": "confirmed-as-of",
         "evidence": [
           {
             "class": "A",
             "ref": "https://developers.stellar.org/docs/tools/scaffold-stellar",
-            "observedAt": "2026-07-11",
-            "note": "Official documentation confirms Scaffold Stellar and its supported templates/workflow."
+            "observedAt": "2026-07-28",
+            "note": "Production Docs page confirms separate installation, `stellar scaffold init`, build/watch, environments.toml, and Docker prerequisites."
           },
           {
             "class": "B",
             "ref": "https://github.com/stellar-scaffold/cli/blob/main/crates/stellar-scaffold-cli/Cargo.toml",
-            "observedAt": "2026-07-11",
-            "note": "Fetched source manifest exists and records stellar-scaffold-cli version 0.0.25."
+            "observedAt": "2026-07-28",
+            "note": "Current source manifest declares stellar-scaffold-cli version 0.0.26; the UI repository exposes templates/react and templates/svelte."
           }
         ]
       }
     ],
     "verified": {
-      "date": "2026-07-11",
-      "by": "P4 5B numeric corroboration backfill",
+      "date": "2026-07-28",
+      "by": "Todo 1248 Lane B Docs technical re-verification",
       "evidence": [
-        "https://developers.stellar.org/docs/tools/scaffold-stellar",
-        "https://github.com/stellar-scaffold/cli/blob/main/crates/stellar-scaffold-cli/Cargo.toml",
-        "solo://proj/49/scratchpad/super-corpus-rebuild--585",
-        "Sibling consistency sweep: checked the affected numeric/SEP/CAP mappings against related P4 5B cases and consistency-register members."
+        "Production stellar-raven: stellarDocs.search_sdk_cli_tools_docs({query:'Scaffold Stellar stellar scaffold init environments.toml bindings local network',hitsPerPage:10,includeContent:true}) and stellarDocs.get_doc_page_sections({path:'/docs/tools/scaffold-stellar',includeContent:true}) — current page returns separate CLI installs, `stellar scaffold init`, build/watch, environments.toml, and Docker/local prerequisites.",
+        "Canonical source: https://github.com/stellar-scaffold/cli/blob/main/crates/stellar-scaffold-cli/src/commands/mod.rs — current subcommands include init, build, generate, upgrade, update-env, watch, and clean; https://github.com/stellar-scaffold/cli/blob/main/crates/stellar-scaffold-cli/Cargo.toml declares 0.0.26.",
+        "Registry: cargo search stellar-scaffold-cli --limit 3 and https://crates.io/api/v1/crates/stellar-scaffold-cli returned max_version=0.0.26, published 2026-07-23T20:11:45Z; 0.0.25 was published 2026-07-07.",
+        "Sibling sweep: q-soroban-deploy-cli and q-sor-build-target-wasm32v1 retain the narrower `stellar contract init`/build flow; no case conflates it with the full-stack plugin."
       ],
       "rootCause": [
-        "eval-authoring"
+        "freshness-drift"
       ]
     },
     "origin": "raven-next q-ti-scaffold-stellar"

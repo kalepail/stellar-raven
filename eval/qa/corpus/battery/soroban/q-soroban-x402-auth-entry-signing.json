@@ -5,16 +5,18 @@
     "skills.stellar-dev.agentic-payments"
   ],
   "golden": {
-    "answer": "In Stellar x402, the payer wallet signs the required **Soroban authorization entries**, not the facilitator's entire settlement transaction. The facilitator reconstructs the transaction with its source account, sponsors fees, verifies/simulates the authorization, signs, submits, and the client retries the paid request. As of **2026-07-11**, official docs list Freighter Browser Extension, Albedo, Hana, HOT, Klever, and OneKey; Freighter Mobile is unsupported. The hosted provider is **Build on Stellar Relayer with the OpenZeppelin x402 Plugin**, backed by OpenZeppelin Channels; that hosted setup requires a bearer API key. Do not imply that x402 itself, the payer wallet, or every facilitator intrinsically requires an API key. Coinbase remains Testnet-only in the official roster; use any compatible SEP-41 token, with USDC the default example.",
+    "answer": "In Stellar x402, the payer wallet signs the required **Soroban authorization entries**, not the facilitator's entire settlement transaction. The facilitator reconstructs the transaction with its source account, sponsors fees, verifies/simulates the authorization, signs, submits, and the client retries the paid request.\n\nAs of **2026-07-28**, the official Stellar x402 page lists Freighter Browser Extension, Albedo, Hana, HOT, Klever, and OneKey and says Freighter Mobile is unsupported, but that roster is **disputed** by implementation evidence. Freighter's owner documentation exposes `signAuthEntry` for the extension and `stellar_signAuthEntry` for mobile over direct WalletConnect, while Stellar Wallets Kit explicitly throws that Albedo does not support `signAuthEntry`. Wallets Kit contains auth-entry adapters for Hana, HOT, Klever, and OneKey, but this review did not find wallet-owner documentation proving each wallet's current end-to-end x402 compatibility. Separate raw auth-entry capability from a tested x402 integration and test the exact wallet/transport; do not present the official roster as independently verified.\n\nThe hosted provider is **Build on Stellar Relayer with the OpenZeppelin x402 Plugin**, backed by OpenZeppelin Channels; that hosted setup requires a bearer API key. Do not imply that x402 itself, the payer wallet, or every facilitator intrinsically requires an API key. Coinbase remains Testnet-only in the official roster; use any compatible SEP-41 token, with USDC the default example.",
     "keyFacts": [
       "Separates payer auth-entry signing from facilitator transaction sponsorship/submission.",
-      "Dates wallet/provider/network coverage and narrows API-key requirements to the hosted setup."
+      "Marks the official wallet roster disputed, distinguishes raw auth-entry support from end-to-end x402 compatibility, and identifies the specific Freighter/Albedo evidence conflict.",
+      "Dates provider/network coverage and narrows API-key requirements to the hosted setup."
     ],
     "avoid": [
       "Do NOT say the payer signs the facilitator's full settlement transaction.",
+      "Do NOT repeat the official wallet roster as independently verified or equate a Wallets Kit adapter with wallet-owner proof.",
       "Do NOT generalize one hosted API-key requirement or provider network coverage to the x402 protocol."
     ],
-    "notes": "Freshness:true — wallet/facilitator support is moving. Re-verified 2026-06-22 against developers.stellar.org/docs/build/agentic-payments/x402: wallets = Freighter (browser ext), Albedo, Hana, HOT, Klever, OneKey; Freighter Mobile NOT supported; facilitators = Coinbase (testnet) + OpenZeppelin Relayer (testnet+mainnet). List may change — keep medium confidence.\nAlso good if the answer: Flow: server returns HTTP 402 with payment requirements → wallet signs the Soroban auth entry → facilitator verifies and settles → request is retried/completed.\nGolden cites: At least one primary developers.stellar.org agentic-payments / x402 docs page.\nGT-48 CORRECTION 2026-07-11: current provider label is Build on Stellar Relayer with OZ plugin/Channels; API-key scope is hosted-provider-specific."
+    "notes": "Freshness:true — wallet/facilitator support is moving. 2026-07-28 re-verification found that the official Stellar x402 roster conflicts with Freighter owner documentation and the current Stellar Wallets Kit Albedo module. Grade the stable payment flow and honest disclosure of roster uncertainty, not rote repetition of the official list.\nAlso good if the answer: Flow: server returns HTTP 402 with payment requirements → wallet signs the Soroban auth entry → facilitator verifies and settles → request is retried/completed.\nGolden cites: The Stellar x402 page plus wallet-owner docs/source for any wallet-specific claim.\nGT-48 CORRECTION 2026-07-11: current provider label is Build on Stellar Relayer with OZ plugin/Channels; API-key scope is hosted-provider-specific."
   },
   "tags": {
     "category": "soroban",
@@ -23,60 +25,122 @@
   },
   "truth": {
     "domain": "real-world",
-    "status": "confirmed",
-    "asOf": "2026-07-11",
-    "reverifyBy": "2026-08-01",
+    "status": "disputed",
+    "asOf": "2026-07-28",
+    "reverifyBy": "2026-08-20",
     "sources": [
       {
         "class": "A",
-        "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402",
-        "note": "class inferred at migration"
+        "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402"
       },
       {
-        "class": "D",
-        "ref": "https://github.com/OpenZeppelin/openzeppelin-relayer-plugins",
-        "note": "class inferred at migration"
+        "class": "A",
+        "ref": "https://docs.freighter.app/extension-freighter-api/signing"
       },
       {
-        "class": "D",
-        "ref": "https://github.com/coinbase/x402",
-        "note": "class inferred at migration"
+        "class": "B",
+        "ref": "https://github.com/stellar/freighter-developer-docs/blob/main/mobile/signing.md"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit/blob/main/src/sdk/modules/albedo.module.ts"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit/tree/main/src/sdk/modules"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/OpenZeppelin/relayer-plugin-x402-facilitator"
       }
     ],
     "corroboration": [
       {
-        "claim": "Current official x402 flow has payer wallets sign Soroban auth entries while the facilitator rebuilds/sponsors/verifies/signs/submits; the Build on Stellar hosted relayer uses an OpenZeppelin x402 plugin backed by Channels and requires its bearer API key, while API keys are not intrinsic to x402 or every facilitator.",
+        "claim": "The payer signs Soroban auth entries while the facilitator rebuilds, sponsors, verifies, signs and submits the settlement transaction.",
         "verdict": "confirmed",
         "evidence": [
           {
             "class": "A",
-            "ref": "A: current Stellar x402 docs",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402",
+            "observedAt": "2026-07-28"
           },
           {
             "class": "B",
-            "ref": "B: current OpenZeppelin/Build on Stellar plugin/source",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "https://github.com/OpenZeppelin/relayer-plugin-x402-facilitator",
+            "observedAt": "2026-07-28"
+          }
+        ]
+      },
+      {
+        "claim": "Freighter Browser, Albedo, Hana, HOT, Klever and OneKey support the auth-entry signing x402 needs, while Freighter Mobile does not.",
+        "verdict": "disputed",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402",
+            "observedAt": "2026-07-28",
+            "note": "Lists the six browser wallets and marks Freighter Mobile unsupported."
           },
           {
-            "class": "D",
-            "ref": "D: independent current-wallet/provider sweep",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "class": "A",
+            "ref": "https://docs.freighter.app/extension-freighter-api/signing",
+            "observedAt": "2026-07-28",
+            "note": "Wallet-owner documentation confirms extension signAuthEntry."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/stellar/freighter-developer-docs/blob/main/mobile/signing.md",
+            "observedAt": "2026-07-28",
+            "note": "Wallet-owner repository documents mobile stellar_signAuthEntry over direct WalletConnect."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit/blob/main/src/sdk/modules/albedo.module.ts",
+            "observedAt": "2026-07-28",
+            "note": "Current integration source explicitly throws that Albedo does not support signAuthEntry."
+          }
+        ]
+      },
+      {
+        "claim": "Hana, HOT, Klever and OneKey have Wallets Kit auth-entry adapters, but current wallet-owner evidence establishes each wallet's end-to-end x402 compatibility.",
+        "verdict": "unverifiable",
+        "evidence": [
+          {
+            "class": "B",
+            "ref": "https://github.com/Creit-Tech/Stellar-Wallets-Kit/tree/main/src/sdk/modules",
+            "observedAt": "2026-07-28",
+            "note": "The adapters implement signAuthEntry calls, but no wallet-owner documentation confirming all four wallets' current x402 compatibility was found in this review."
+          }
+        ]
+      },
+      {
+        "claim": "The Build on Stellar hosted relayer uses the OpenZeppelin x402 plugin/Channels and requires its bearer API key; API keys are not intrinsic to x402 or every facilitator.",
+        "verdict": "confirmed-as-of",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.stellar.org/docs/build/agentic-payments/x402",
+            "observedAt": "2026-07-28"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/relayer-plugin-x402-facilitator",
+            "observedAt": "2026-07-28"
           }
         ]
       }
     ],
     "verified": {
-      "date": "2026-07-11",
-      "by": "Golden-truth sweep import — The core auth-entry flow was right but facilitator naming, hosted API-key scope, and current wallet/network roster were freshness-sensitive and partially stale.",
+      "date": "2026-07-28",
+      "by": "Todo 1248 Lane C — security/incident/disputed re-verification",
       "evidence": [
-        "Solo scratchpad 575 GT-48 primary 3333 and blind 3342; independent agreement with blind provider/API-key narrowing."
+        "Production stellarDocs.search_wallet_dapp_docs and the live stellar-dev agentic-payments skill returned the official six-wallet roster and Freighter Mobile exclusion.",
+        "Freighter's extension docs and mobile owner repository confirm raw auth-entry methods; Stellar Wallets Kit's current Albedo module directly contradicts the official Albedo roster entry.",
+        "Wallets Kit implements Hana/HOT/Klever/OneKey adapters, but no wallet-owner source proving every wallet's current end-to-end x402 compatibility was found.",
+        "solo://proj/49/todo/2026-07-28-reconcile-lane-c--1251"
       ],
       "rootCause": [
-        "Plain hosted-provider/wallet/network freshness drift."
+        "Eval-authoring flaw and upstream documentation conflict: the prior golden treated one ecosystem roster as wallet-owner verification and conflated raw auth-entry capability with end-to-end x402 support; todo 1251 tracks reconciliation."
       ]
     },
     "origin": "raven-next q-soroban-x402-auth-entry-signing"

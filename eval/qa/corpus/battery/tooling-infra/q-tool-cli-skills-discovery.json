@@ -7,7 +7,7 @@
     "scout.searchResearch"
   ],
   "golden": {
-    "answer": "Use the live Scout skills catalog and report **returned rows**, not its enums as a frozen roster. `scout.listSkills({})` advertises valid kind filters `skill-md`, `mcp-server`, `sdk`, `cli`, `agent-kit`, and `tool`, and valid source filters `sdf`, `stellarlight`, `lumenloop`, `external`, and `community`. Those values describe what the API accepts; they do **not** promise that every category has a current entry.\n\nFor each row actually returned, give its name/slug, kind, source/owner, install or configuration command, repository/docs URL, scope, and maturity/security caveat. Re-run filtered calls for the requested kinds and preserve an empty array honestly. At **2026-07-11T07:17:34Z**, `agent-kit` and `community` were valid filters but returned zero rows; that is an illustrative stamp, not a durable absence claim. Verify install commands against each current repository/package README and distinguish SDF-owned from community tooling.",
+    "answer": "Use the live Scout skills catalog and report **returned rows**, not its enums as a frozen roster. `scout.listSkills({})` advertises valid kind filters `skill-md`, `mcp-server`, `sdk`, `cli`, `agent-kit`, and `tool`, and valid source filters `sdf`, `stellarlight`, `lumenloop`, `external`, and `community`. Those values describe what the API accepts; they do **not** promise that every category has a current entry.\n\nFor each row actually returned, give its name/slug, kind, source/owner, install or configuration command, repository/docs URL, scope, and maturity/security caveat. Re-run filtered calls for the requested kinds and preserve an empty array honestly. Verify install commands against each current repository/package README and distinguish SDF-owned from community tooling.",
     "keyFacts": [
       "Uses Scout's broad live skills catalog and returns concrete current rows across requested tooling kinds.",
       "Separates valid filter enums from populated rows and treats empty categories as valid current results.",
@@ -28,8 +28,8 @@
   "truth": {
     "domain": "corpus-grounded",
     "status": "confirmed",
-    "asOf": "2026-07-11",
-    "reverifyBy": "2026-08-01",
+    "asOf": "2026-07-28",
+    "reverifyBy": "2026-08-06",
     "sources": [
       {
         "class": "C",
@@ -108,15 +108,15 @@
       }
     ],
     "verified": {
-      "date": "2026-07-11",
-      "by": "Golden-truth sweep import — The inherited answer treated Scout's valid kind/source enum values as if every category currently contained rows and marked a live inventory static. Empty filters are valid data, not evidence that the enum is unsupported.",
+      "date": "2026-07-28",
+      "by": "Todo 1248 Lane A Scout roster re-verification (solo://proj/49/scratchpad/todo-1248-lane-a-sco--727).",
       "evidence": [
-        "Live author probe returned 30 total rows, validKinds skill-md/mcp-server/sdk/cli/agent-kit/tool, validSources sdf/stellarlight/lumenloop/external/community, and zero rows for kind=agent-kit and source=community at the recorded stamp.",
-        "GT-55 primary 3392 and sealed blind 3393 agreed that enum support and current row membership must be separated.",
-        "Sibling sweep retained q-tool-mcp-servers-skills-discovery as the narrow mcp-server filter lane and q-tool-skill-detail as per-row detail."
+        "C: scout.listSkills({}) at 2026-07-28T14:05Z returned 42 rows and the six kind/five source enums; filtered kind=agent-kit returned 0 rows and source=community was 0 in the response counts.",
+        "B: sampled returned tooling against https://github.com/stellar/stellar-cli and https://github.com/Stellar-Light/scout-mcp; Scout's install metadata remains row-level, not enum-derived.",
+        "Sibling sweep: q-tool-mcp-servers-skills-discovery remains the narrow MCP filter lane; q-tool-skill-detail-install is the exact-detail lane."
       ],
       "rootCause": [
-        "Eval-side enum-versus-membership conflation plus a false static freshness tag; the live payload itself exposes the distinction."
+        "freshness-recheck"
       ]
     },
     "origin": "raven-next q-tool-cli-skills-discovery"

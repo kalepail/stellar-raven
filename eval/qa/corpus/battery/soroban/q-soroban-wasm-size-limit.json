@@ -6,7 +6,7 @@
     "stellarDocs.search_soroban_contract_docs"
   ],
   "golden": {
-    "answer": "As of **2026-07-11**, Mainnet and Testnet report `contract_max_size_bytes=131072`—**128 KiB**—for uploaded contract Wasm. The separate `contract_data_entry_size_bytes=65536` value is not the code cap. These are network settings, so inspect the target network with Stellar Lab or `stellar network settings` instead of treating either number as permanent. Current Stellar CLI builds optimize by default; `--optimize` is accepted but redundant, `--optimize=false` disables it, and the standalone `stellar contract optimize` command is deprecated. Reduce dependencies/features and split logic across contracts when needed.",
+    "answer": "As of **2026-07-28**, Mainnet and Testnet report `contract_max_size_bytes=131072`—**128 KiB**—for uploaded contract Wasm. The separate `contract_data_entry_size_bytes=65536` value is not the code cap. These are network settings, so inspect the target network with Stellar Lab or `stellar network settings` instead of treating either number as permanent. Current Stellar CLI builds optimize by default; `--optimize` is accepted but redundant, `--optimize=false` disables it, and the standalone `stellar contract optimize` command is deprecated. Reduce dependencies/features and split logic across contracts when needed.",
     "keyFacts": [
       "Reports the dated 128-KiB code cap and distinguishes the 64-KiB contract-data setting.",
       "Explains current default-on build optimization and deprecated standalone command."
@@ -25,8 +25,8 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
-    "reverifyBy": "2026-08-01",
+    "asOf": "2026-07-28",
+    "reverifyBy": "2026-11-05",
     "sources": [
       {
         "class": "A",
@@ -46,39 +46,41 @@
     ],
     "corroboration": [
       {
-        "claim": "As of 2026-07-11 Mainnet/Testnet contract_max_size_bytes is 131072 while contract_data_entry_size_bytes is 65536; CLI 27 build optimization is enabled by default and standalone contract optimize is deprecated.",
+        "claim": "As of 2026-07-28 Mainnet/Testnet contract_max_size_bytes is 131072 while contract_data_entry_size_bytes is 65536; CLI 27 build optimization is enabled by default and standalone contract optimize is deprecated.",
         "verdict": "confirmed",
         "evidence": [
           {
             "class": "A",
-            "ref": "A: current resource/CLI docs",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "https://developers.stellar.org/docs/learn/fundamentals/fees-resource-limits-metering",
+            "observedAt": "2026-07-28",
+            "note": "The served resource-limits page identifies limits as network settings; the exact active values came from the network reads below."
           },
           {
             "class": "B",
-            "ref": "B: Core config enforcement and CLI source/help",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "https://github.com/stellar/stellar-cli/blob/main/cmd/soroban-cli/src/commands/contract/build.rs",
+            "observedAt": "2026-07-28",
+            "note": "Current source sets build optimization's default to true."
           },
           {
             "class": "F",
-            "ref": "F: live network settings and local CLI 27 help",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "F: `stellar 27.0.0 network settings --no-cache -n mainnet|testnet`; `stellar contract build --help`; `stellar contract optimize --help`",
+            "observedAt": "2026-07-28",
+            "note": "Both networks returned 131072/65536; build help says optimize defaults true; optimize help begins 'Deprecated, use build --optimize.'"
           }
         ]
       }
     ],
     "verified": {
-      "date": "2026-07-11",
-      "by": "Golden-truth sweep import — The inherited size answer treated 64 KiB as the contract-code cap and missed current CLI optimization behavior. Live P27 settings separate 131072-byte code from 65536-byte contract-data entries.",
+      "date": "2026-07-28",
+      "by": "Todo 1248 Lane B Docs technical re-verification",
       "evidence": [
-        "Solo scratchpad 575 GT-48 primary 3333 and blind 3342; blind materially corrected the primary's limit interpretation."
+        "Production stellar-raven: stellarDocs.search_protocol_concepts_docs({query:'contract_max_size_bytes contract_data_entry_size_bytes network settings resource limits',hitsPerPage:10,includeContent:true}) and stellarDocs.get_doc_page_sections({path:'/docs/learn/fundamentals/fees-resource-limits-metering',includeContent:true}) — resource settings pages returned.",
+        "Empirical free reads: stellar 27.0.0 network settings --no-cache -n mainnet|testnet --output json-formatted both returned contract_max_size_bytes=131072 and contract_data_entry_size_bytes=65536.",
+        "Empirical CLI surface: stellar contract build --help reports --optimize default true; stellar contract optimize --help reports 'Deprecated, use build --optimize.'",
+        "Sibling sweep: q-soroban-wasm-language and q-soroban-deploy-cli distinguish wasm32v1-none/current build behavior and do not retain a 64 KiB Wasm cap."
       ],
       "rootCause": [
-        "improvements/stellar-docs/sd-016-live-network-limits-stale.md",
-        "improvements/stellar-docs/sd-026-cli-optimize-command-drift.md"
+        "freshness-recheck"
       ]
     },
     "origin": "raven-next q-soroban-wasm-size-limit"

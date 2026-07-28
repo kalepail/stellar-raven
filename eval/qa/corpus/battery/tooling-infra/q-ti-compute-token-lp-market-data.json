@@ -29,8 +29,8 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
-    "reverifyBy": "2026-08-01",
+    "asOf": "2026-07-28",
+    "reverifyBy": "2027-04-08",
     "sources": [
       {
         "class": "A",
@@ -60,15 +60,15 @@
         "evidence": [
           {
             "class": "A",
-            "ref": "A: liquidity-pool, Hubble, indexer, and migration documentation",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "https://developers.stellar.org/docs/data/analytics/hubble/analyst-guide/queries-for-horizon-like-data",
+            "observedAt": "2026-07-28",
+            "note": "The served Hubble guide supplies Horizon/RPC-like historical queries, including liquidity-pool and trade queries."
           },
           {
             "class": "C",
-            "ref": "C: read-only pool/trade data-shape probes",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "https://github.com/stellar/stellar-horizon/blob/main/internal/ingest/processors/trades_processor.go",
+            "observedAt": "2026-07-28",
+            "note": "Current Horizon source records successful trades and links liquidity-pool trades to pool IDs and reserves; it does not define an explorer's market methodology."
           }
         ]
       },
@@ -78,30 +78,31 @@
         "evidence": [
           {
             "class": "A",
-            "ref": "A: conflicting official API/stack/migration surfaces",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "https://developers.stellar.org/docs/data/apis/migrate-from-horizon-to-rpc",
+            "observedAt": "2026-07-28",
+            "note": "The served endpoint mapping preserves resource-specific boundaries, including liquidity-pool trade mapping; it does not make one product's methodology canonical."
           },
           {
             "class": "F",
-            "ref": "F: GT-49 independent reconciliation reused by GT-51",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "stellarDocs.search_rpc_horizon_data_docs({query:'Hubble historical data Horizon RPC indexers liquidity pools trades',hitsPerPage:10,includeContent:true})",
+            "observedAt": "2026-07-28",
+            "note": "Production Docs index returns Hubble historical pool/trade queries and the Horizon-to-RPC endpoint mapping; wording remains source-specific."
           }
         ],
         "note": "Legacy verdict: confirmed-with-source-conflict."
       }
     ],
     "verified": {
-      "date": "2026-07-11",
-      "by": "Golden-truth sweep import — The formulas were sound, but the inherited answer marked product/schema/current-history choices non-fresh and repeated an uncontested Horizon lifecycle polarity despite the already-verified official-docs conflict.",
+      "date": "2026-07-28",
+      "by": "Todo 1248 Lane B Docs technical re-verification",
       "evidence": [
-        "Solo scratchpad 575 GT-51 processes 3353/3360 independently retained the methodology and required freshness/source-boundary repair.",
-        "The blind lane resolved the ambiguous slug after reading the actual question: this is the verb 'compute'; the unrelated issuer-qualified COMPUTE asset is excluded from the golden."
+        "Production stellar-raven: stellarDocs.search_rpc_horizon_data_docs({query:'Hubble historical data Horizon RPC indexers liquidity pools trades',hitsPerPage:10,includeContent:true}) and stellarDocs.get_doc_page_sections({path:'/docs/data/analytics/hubble/analyst-guide/queries-for-horizon-like-data',includeContent:true}) — Hubble offers historical Horizon/RPC-like pool and trade queries.",
+        "Production stellar-raven: stellarDocs.get_doc_page_sections({path:'/docs/data/apis/migrate-from-horizon-to-rpc',includeContent:true}) — resource-by-resource API mappings retained; no single explorer-market methodology is canonical.",
+        "Canonical Horizon source: https://github.com/stellar/stellar-horizon/blob/main/internal/ingest/processors/trades_processor.go — only successful trades are processed and liquidity-pool trades carry pool/reserve data.",
+        "Sibling sweep: q-protocol-amm-cap-0038 and q-ti-historical-pointintime-balances agree that Classic liquidity pools are protocol pools and history/analytics need a bounded source/methodology."
       ],
       "rootCause": [
-        "improvements/stellar-docs/sd-017-horizon-lifecycle-wording-conflict.md",
-        "Eval-side freshness omission for product-matching methodology and data cadence."
+        "freshness-recheck"
       ]
     },
     "origin": "raven-next q-ti-compute-token-lp-market-data"
