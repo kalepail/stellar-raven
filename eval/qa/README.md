@@ -168,6 +168,26 @@ with rootCause. The stale queue is owned by the
 [`truth-maintenance`](../../.agents/skills/truth-maintenance/SKILL.md) skill; authors set
 `reverifyBy` quarter-granular and staggered so the queue drips instead of cliffing.
 
+For the former 2026-10-01 cohort, sort first by `truth.status !== "confirmed"`, then by a
+currentness match in the question/key facts, then by id. The currentness test is
+**word-boundary anchored** — `/\b(?:current|as of|version|release|scheduled|status|roster|provider|playlist|active|mainnet|draft|final|latest|dated|date|live on|still underway)\b/i`
+applied to `question` plus `golden.keyFacts` joined. The anchoring is load-bearing, not
+decoration: without `\b`, `version` matches "conversion", `active` matches "interactive", and
+`date` matches "update", which changes the tier for 28 corpus cases and makes the schedule
+irreproducible. Starting Thursday 2026-10-01, place each case on the Thursday of the next
+Monday–Sunday week with capacity after already-scheduled cases, capped at four cases per week;
+skip full weeks. This sends unconfirmed and live/version/roster/program claims first while stable
+protocol and safety facts follow, without creating a new weekly cliff.
+
+Known limitation of the currentness tier: it matches the *word* "version", not version literals,
+and has no inflection tolerance ("releases" and "Dates" do not match). Five late-scheduled cases
+pin a version or protocol literal; three are Protocol-N facts that are defensibly stable, but
+`q-tool-passkeykit-smart-wallet` (Smart Account Kit 0.4.2 / OZ v0.7.2) and
+`q-ti-self-host-retention-backfill` (RPC v27.1.1 / Horizon v27.0.0) land 2027-03-18, roughly 20
+months after their `asOf`. Recorded rather than special-cased: re-shuffling the cohort for two
+cases would trade a reproducible rule for a hand-tuned one. Pull those two forward at the next
+verification pass if they matter.
+
 ## Judging rubric and score comparability
 
 `judge.mjs` grades factual agreement with the golden answer + keyFacts, one headless
