@@ -196,7 +196,7 @@ export function prepareDemoStep({
       : "No execute budget appears to remain; qualify the unsupported or incomplete claim, or abstain.";
 
   if (usesRecoveryHint && budget) {
-    budget.recoveryAdviceConsumed = true;
+    budget.recoveryAdviceDelivered = true;
     budget.latestRecoveryHint = null;
   }
 

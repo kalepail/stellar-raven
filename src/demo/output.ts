@@ -43,9 +43,22 @@ export type DemoInputTelemetry = {
   userMessages: number;
   subjectHash: string;
 };
+export type DemoProviderErrorTelemetry = {
+  providerErrorName: string;
+  providerErrorStatus: number | null;
+  providerErrorReason: string | null;
+  providerErrorProvider: string;
+  providerErrorModel: string;
+  providerErrorAttempt: number;
+  providerErrorMessagePreview: string | null;
+};
+export type DemoTerminalProviderErrorTelemetry = DemoProviderErrorTelemetry & {
+  providerErrorTerminal: boolean;
+};
 
 const DEMO_FINAL_PREVIEW_CHARS = 180;
 const DEMO_INPUT_PREVIEW_CHARS = 180;
+const DEMO_PROVIDER_ERROR_PREVIEW_CHARS = 300;
 
 export function isMeaningfulDemoOutput(frame: DemoFrame): boolean {
   switch (frame.type) {
@@ -122,6 +135,81 @@ export async function demoInputTelemetry(
     userMessages: messages.filter((message) => message.role === "user").length,
     subjectHash: await hashPrefix(subject)
   };
+}
+
+export function demoProviderErrorTelemetry(
+  error: unknown,
+  message: string,
+  model: string,
+  attempt: number
+): DemoProviderErrorTelemetry {
+  const errorRecord =
+    typeof error === "object" && error !== null
+      ? (error as { name?: unknown; reason?: unknown })
+      : undefined;
+  const name = typeof errorRecord?.name === "string" ? errorRecord.name : typeof error;
+  const reason = errorRecord?.reason;
+  const sanitizedMessage = sanitizeDemoPreviewText(message);
+  return {
+    providerErrorName: preview(sanitizeDemoPreviewText(name), 80),
+    providerErrorStatus: providerErrorStatus(error),
+    providerErrorReason:
+      typeof reason === "string" ? preview(sanitizeDemoPreviewText(reason), 80) : null,
+    providerErrorProvider: preview(
+      sanitizeDemoPreviewText(model.startsWith("@") ? "workers-ai" : (model.split("/", 1)[0] || "unknown")),
+      80
+    ),
+    providerErrorModel: preview(sanitizeDemoPreviewText(model), 160),
+    providerErrorAttempt: attempt,
+    providerErrorMessagePreview:
+      sanitizedMessage.length > 0 ? preview(sanitizedMessage, DEMO_PROVIDER_ERROR_PREVIEW_CHARS) : null
+  };
+}
+
+export function demoTerminalProviderErrorTelemetry(
+  telemetry: DemoProviderErrorTelemetry | undefined,
+  stopReasonClass: DemoStopReasonClass,
+  hadFinalText: boolean,
+  turnAborted: boolean
+): DemoTerminalProviderErrorTelemetry | undefined {
+  if (!telemetry || (stopReasonClass !== "provider-error" && hadFinalText)) return undefined;
+  return {
+    ...telemetry,
+    providerErrorTerminal: !turnAborted && stopReasonClass !== "aborted"
+  };
+}
+
+function providerErrorStatus(error: unknown): number | null {
+  const seen = new Set<object>();
+  let inspected = 0;
+  const visit = (current: unknown): number | null => {
+    if (typeof current !== "object" || current === null || seen.has(current) || inspected >= 6) {
+      return null;
+    }
+    seen.add(current);
+    inspected += 1;
+    const record = current as {
+      statusCode?: unknown;
+      lastError?: unknown;
+      errors?: unknown;
+      cause?: unknown;
+    };
+    if (
+      typeof record.statusCode === "number" &&
+      Number.isInteger(record.statusCode) &&
+      record.statusCode >= 100 &&
+      record.statusCode <= 599
+    ) {
+      return record.statusCode;
+    }
+    for (const nested of Array.isArray(record.errors) ? record.errors.slice(0, 3) : []) {
+      const status = visit(nested);
+      if (status !== null) return status;
+    }
+    return visit(record.lastError) ?? visit(record.cause);
+  };
+  // One retry wrapper, three attempts, and two nested cause wrappers.
+  return visit(error);
 }
 
 function classifyDemoStopReason(finishReason: string, hadFinalText: boolean): DemoStopReasonClass {

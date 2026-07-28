@@ -111,7 +111,7 @@ describe("prepareDemoStep", () => {
     expect(prepared?.system).toContain("question is closed-world, stop at that scope");
     expect(prepared?.system).toContain("lumenloop.search_content_semantic");
     expect(prepared?.system).toContain("remaining execute budget (2)");
-    expect(budget.recoveryAdviceConsumed).toBe(true);
+    expect(budget.recoveryAdviceDelivered).toBe(true);
     expect(budget.latestRecoveryHint).toBeNull();
     expect(prepareDemoStep({ steps: [], stepNumber: 3, budget })).toBeUndefined();
   });
@@ -137,7 +137,7 @@ describe("prepareDemoStep", () => {
     expect(first?.system).toContain("successful broad operation class(es)");
     expect(first?.system).toContain("did not inspect or judge their rows");
     expect(first?.system).toContain("at most one bounded uncalled alternative");
-    expect(budget.recoveryAdviceConsumed).toBe(true);
+    expect(budget.recoveryAdviceDelivered).toBe(true);
     expect(prepareDemoStep({ steps: [], stepNumber: 3, budget })).toBeUndefined();
 
     budget.latestOperationTotal = 1;

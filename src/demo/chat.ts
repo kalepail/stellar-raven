@@ -54,8 +54,11 @@ import {
 import {
   demoInputTelemetry,
   demoFinalTextTelemetry,
+  demoProviderErrorTelemetry,
+  demoTerminalProviderErrorTelemetry,
   isMeaningfulDemoOutput,
   sumDemoUsage,
+  type DemoProviderErrorTelemetry,
   type DemoUsage
 } from "./output.ts";
 import { DEMO_SYSTEM_PROMPT } from "./prompt.ts";
@@ -227,6 +230,7 @@ async function runTurn(
   const inputTelemetry = await demoInputTelemetry(messages, subject);
   let selectedModel = demoModels[0]?.model ?? "unknown";
   const attemptedModels: string[] = [];
+  let lastProviderError: DemoProviderErrorTelemetry | undefined;
   logEvent("demo-chat-start", {
     auth: subject === DEV_SUBJECT ? "dev-bypass" : "cookie",
     model: selectedModel,
@@ -333,7 +337,13 @@ async function runTurn(
               break;
             case "error":
               finishReason = "error";
-              if (!emittedUsefulOutput && index < demoModels.length - 1) throw new Error(errorText(part.error));
+              lastProviderError = demoProviderErrorTelemetry(
+                part.error,
+                errorText(part.error),
+                config.model,
+                index + 1
+              );
+              if (!emittedUsefulOutput && index < demoModels.length - 1) throw part.error;
               attemptEmit({ type: "error", message: errorText(part.error) });
               break;
             case "finish":
@@ -364,18 +374,36 @@ async function runTurn(
         fallbackToNextModel("model stream ended before useful output");
       } catch (error) {
         finishReason = "exception";
+        lastProviderError = demoProviderErrorTelemetry(
+          error,
+          errorText(error),
+          config.model,
+          index + 1
+        );
         if (abortSignal.aborted && !emittedUsefulOutput) throw error;
         if (emittedUsefulOutput || index === demoModels.length - 1) throw error;
-        fallbackToNextModel(errorText(error));
+        fallbackToNextModel(lastProviderError.providerErrorMessagePreview ?? "provider error");
       }
     }
   } catch (e) {
     // fullStream only throws for stream-stopping failures (network, provider).
     finishReason = "exception";
+    lastProviderError ??= demoProviderErrorTelemetry(
+      e,
+      errorText(e),
+      selectedModel,
+      attemptedModels.length
+    );
     emit({ type: "error", message: errorText(e) });
   } finally {
     const usage = sumDemoUsage(usageReports);
     const finalTelemetry = demoFinalTextTelemetry(finalText, finishReason);
+    const terminalProviderError = demoTerminalProviderErrorTelemetry(
+      lastProviderError,
+      finalTelemetry.stopReasonClass,
+      finalTelemetry.hadFinalText,
+      abortSignal.aborted
+    );
     logEvent("demo-chat", {
       auth: subject === DEV_SUBJECT ? "dev-bypass" : "cookie",
       model: selectedModel,
@@ -404,6 +432,7 @@ async function runTurn(
       steps,
       finishReason,
       ...finalTelemetry,
+      ...terminalProviderError,
       searchCalls: toolBudget.searchCalls,
       searchTruncatedCalls: toolBudget.searchTruncatedCalls,
       executeCalls: toolBudget.executeCalls,
