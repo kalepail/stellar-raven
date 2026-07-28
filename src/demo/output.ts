@@ -183,6 +183,8 @@ function providerErrorStatus(error: unknown): number | null {
   const seen = new Set<object>();
   let inspected = 0;
   const queue: unknown[] = [error];
+  // Six inspections cover one retry wrapper, three attempts, and two nested cause wrappers.
+  // A status >=3 levels deep below a wide shallow level is deliberately unreachable within this wrapper-shaped budget.
   for (let index = 0; index < queue.length && inspected < 6; index += 1) {
     const current = queue[index];
     if (typeof current !== "object" || current === null || seen.has(current)) continue;
@@ -208,7 +210,6 @@ function providerErrorStatus(error: unknown): number | null {
       record.cause
     );
   }
-  // One retry wrapper, three attempts, and two nested cause wrappers.
   return null;
 }
 

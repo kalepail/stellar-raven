@@ -1,4 +1,6 @@
-import { readFileSync } from "node:fs";
+import { execFileSync, spawnSync } from "node:child_process";
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -14,6 +16,7 @@ import {
 import { updateRegister } from "../eval/qa/register-helper.mjs";
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), "fixtures", "qa-corpus");
+const LINT_CLI = join(dirname(fileURLToPath(import.meta.url)), "..", "eval", "qa", "lint-corpus.mjs");
 const load = (name) => JSON.parse(readFileSync(join(FIXTURES, name), "utf8"));
 
 describe("QA corpus lint lanes", () => {
@@ -163,6 +166,12 @@ describe("QA corpus lint lanes", () => {
     expect(register.clusters[0].verdict).toBe("reopen");
   });
 
+  it("rejects legacy string reSwept markers", () => {
+    expect(() => updateRegister({
+      clusters: [{ id: "storage", members: [], reSwept: "2026-07-28" }]
+    }, new Map())).toThrow(/storage: reSwept must be an object/);
+  });
+
   it("checks date-trap case ids and quoted reverifyBy dates", () => {
     const register = {
       dateContingentTraps: {
@@ -214,5 +223,67 @@ describe("QA corpus lint lanes", () => {
     expect(isPullRequestCI({ CI: "true", GITHUB_EVENT_NAME: "pull_request" })).toBe(true);
     expect(isPullRequestCI({ CI: "true", GITHUB_BASE_REF: "main" })).toBe(true);
     expect(isPullRequestCI({})).toBe(false);
+  });
+
+  it("resolves PR and push gospel bases and skips zero-SHA new refs", () => {
+    const repo = mkdtempSync(join(tmpdir(), "qa-gospel-base-"));
+    try {
+      const corpusDir = join(repo, "eval", "qa", "corpus", "battery");
+      const ledgerPath = join(repo, "eval", "qa", "corpus", "migration-ledger.json");
+      const manifestPath = join(repo, "catalog", "manifest.json");
+      mkdirSync(corpusDir, { recursive: true });
+      mkdirSync(dirname(manifestPath), { recursive: true });
+      const kase = load("gospel-before.json");
+      kase.truth.origin = "authored fixture";
+      writeFileSync(join(corpusDir, "case.json"), `${JSON.stringify(kase, null, 2)}\n`);
+      writeFileSync(ledgerPath, '{"entries":[]}\n');
+      writeFileSync(manifestPath, `${JSON.stringify(load("manifest.json"), null, 2)}\n`);
+      execFileSync("git", ["init", "-q"], { cwd: repo });
+      execFileSync("git", ["config", "user.email", "qa@example.test"], { cwd: repo });
+      execFileSync("git", ["config", "user.name", "QA Fixture"], { cwd: repo });
+      execFileSync("git", ["add", "."], { cwd: repo });
+      execFileSync("git", ["-c", "commit.gpgsign=false", "commit", "-qm", "base"], { cwd: repo });
+      const base = execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo, encoding: "utf8" }).trim();
+
+      kase.question = "How is persistent contract storage described?";
+      writeFileSync(join(corpusDir, "case.json"), `${JSON.stringify(kase, null, 2)}\n`);
+      const args = [
+        LINT_CLI,
+        "--corpus", "eval/qa/corpus/battery",
+        "--manifest", "catalog/manifest.json",
+        "--ledger", "eval/qa/corpus/migration-ledger.json"
+      ];
+      const run = (name, payload) => {
+        const eventPath = join(repo, `${name}.json`);
+        writeFileSync(eventPath, JSON.stringify(payload));
+        const result = spawnSync(process.execPath, args, {
+          cwd: repo,
+          encoding: "utf8",
+          env: {
+            ...process.env,
+            QA_REPO_ROOT: repo,
+            CI: "true",
+            GITHUB_EVENT_NAME: name,
+            GITHUB_EVENT_PATH: eventPath,
+            GITHUB_BASE_REF: "",
+            GITHUB_BASE_SHA: ""
+          }
+        });
+        return { status: result.status, output: `${result.stdout}${result.stderr}` };
+      };
+
+      for (const result of [
+        run("pull_request", { pull_request: { base: { sha: base } } }),
+        run("push", { before: base })
+      ]) {
+        expect(result.status).toBe(1);
+        expect(result.output).toMatch(/\[gospel\].*judge-facing gospel changed/);
+      }
+      const newRef = run("push", { before: "0".repeat(40) });
+      expect(newRef.status).toBe(0);
+      expect(newRef.output).toContain("NOTE gospel lane skipped: no --since ref");
+    } finally {
+      rmSync(repo, { recursive: true, force: true });
+    }
   });
 });

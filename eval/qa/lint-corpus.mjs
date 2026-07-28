@@ -10,13 +10,15 @@
  */
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, realpathSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { assertNoNonExposedRefs } from "../../scripts/build-catalog.mjs";
 import { QA_CATEGORIES, QA_SERVICES } from "./lib.mjs";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const ROOT = process.env.QA_REPO_ROOT
+  ? realpathSync(process.env.QA_REPO_ROOT)
+  : path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const DEFAULTS = {
   corpusDir: path.join(ROOT, "eval/qa/corpus/battery"),
   manifestPath: path.join(ROOT, "catalog/manifest.json"),
