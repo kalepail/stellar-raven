@@ -218,6 +218,40 @@ unsourced contradiction is not.
   entered sample-30. Compare aggregate headline runs across the 484→490 boundary only on an
   explicit common-id set, or disclose that sample membership changed.
 
+## 2026-07-27 stale-gap re-measurement (checkpoint, not a re-baseline)
+
+Run after a 16-day measurement gap to answer "what is answer quality today?" — not an A/B of any
+change. Clean committed HEAD `dbee852ebc755cc815d8c50dd50d86ec4a10ce92`, passed as
+`--server-revision`; the working tree was stashed and asserted empty before and after every paid
+lane. `QA_AGENT_PROMPT_APPEND` unset. `claude-sonnet-5` answering and judging, v2.4/p3 — the
+measurement tuple is unchanged. Sample file `25af52f9…c81c`, ids `8dddeddb…de96`, corpus content
+digest `fef31c49…37ac`. Run in six ≤5-case `--ids` shards for budget checkpointing; the shard union
+was asserted byte-identical to the pinned sample order.
+
+| lane | raw | stamps |
+| --- | --- | --- |
+| headline sample-30 | **10C / 17P / 3W / 0E** | `2026-07-27T21-34-19`, `22-32-31`, `22-36-20`, `22-39-50`, `22-43-14`, `22-50-16` (all `-variantA.json`) |
+| canonical live-data v3 (15) | **11C / 4P / 0W / 0E** | `2026-07-27T23-05-03-variantA.json` |
+| plan regrade (offline) | 28/30 requiredCovered (93%), mean onPlanRatio 0.93–1.00 | `*.plan.json` alongside each shard |
+
+Total agent cost $21.88. Routing gate PASS, unchanged from the committed baseline.
+
+**Reading: no detectable movement.** The 2026-07-11 baseline of record was 8C/18P/4W and its
+same-day checkpoint six hours later was 12C/14P/4W; this run lands between them. On the strict
+24-id unchanged-golden slice (ids sha256 `6aca0406…3482`, excluding
+`q-sor-build-target-wasm32v1`, whose golden changed after the baseline) there were 6 flips, of
+which `q-pc-muxed-accounts` flipped `partial → correct` when re-judged on identical saved input —
+confirmed judge variance. Real movement is therefore **5/24 = 20.8%, below the committed 23.3%
+any-flip noise floor**. Re-judge artifacts: `2026-07-27T23-06-14`, `23-07-00`, `23-07-34`,
+`23-08-25-rejudge.json`.
+
+Triage outcome (round record: Solo scratchpads 715/717/718): 3 wrongs → 1 judge artifact
+(`q-defi-defindex-honest`) and 2 upstream findings (`sls-058`, `sd-039`). 17 partials → **zero**
+upstream findings: 11 of 17 missed facts that live probes returned on the first hit, so they are an
+answering-agent retrieval pattern, not a service gap (own-repo Solo todo 1231). Single-case gaps —
+Lumenloop's Meridian 2026 event record, the raw JS ScVal/BytesN boundary, and Lab signer-UI
+documentation — are recorded monitor-only, below the 2-unrelated-cases acting bar.
+
 ## Current baseline of record
 
 The 2026-07-11 post-rebuild baseline is recorded in

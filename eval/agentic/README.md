@@ -207,3 +207,85 @@ contains none of the interleave-recovered extended cases. Docs held at 100% acro
 medium recovered to 90/100; lumenloop medium rose from July 6's 12.5% to 50% and low from 12.5% to
 50% — recorded as observational, not causally attributed. Full round context and the QA/routing
 lanes are in `eval/qa/reviewed/2026-07-11-tier-interleave-round.md`.
+
+## Results — 2026-07-28 (stale-gap round checkpoint; run `wf_ef07a0b9-25f`, local-only)
+
+Run as the agentic lane of the 2026-07-27 QA round (Solo scratchpad 715). Clean committed HEAD
+`dbee852ebc755cc815d8c50dd50d86ec4a10ce92` with `src`/`test` stashed and asserted empty; dev server
+restarted and readiness proven by a real MCP `initialize` returning 200. Harness-hardcoded `sonnet`
+alias at low and medium, 30 cases x 2 efforts = **60 jobs, one attempt each, no retries**.
+Completeness verified before reading: **60 done / 0 error / 0 skipped / 0 empty**. 2,705,631
+subagent tokens, 208 tool uses, 83s. Sample `3f8ac620...d15fe`, ids `91ca1752...5dd6`, workflow
+`71b787b6...c67d`; slim case hash `6f810545...4002`, byte-identical to the 2026-07-11 baseline, so
+per-row comparison is valid.
+
+| effort | scope | baseline 2026-07-11 | 2026-07-28 | delta |
+| --- | --- | --- | --- | --- |
+| low | overall primary | 21/30 (70.0%) | 20/30 (66.7%) | -3.3 |
+| low | stellarDocs | 12/12 (100%) | 12/12 (100%) | 0.0 |
+| low | scout | 5/10 (50%) | 7/10 (70%) | **+20.0** |
+| low | lumenloop | 4/8 (50%) | 1/8 (12.5%) | **-37.5** |
+| medium | overall primary | 25/30 (83.3%) | 20/30 (66.7%) | **-16.6** |
+| medium | stellarDocs | 12/12 (100%) | 11/12 (91.7%) | -8.3 |
+| medium | scout | 9/10 (90%) | 7/10 (70%) | -20.0 |
+| medium | lumenloop | 4/8 (50%) | 2/8 (25%) | -25.0 |
+
+8 primary losses, 2 gains, net -6. **Mechanism: Scout is capturing Lumenloop's entity-identity
+lookups.** 12 of 13 misrouted lumenloop cases now pick a `scout.*` operation. Concentrated in
+"what is X" project-identity questions: `q-defi-soroswap-what-is` moved
+`lumenloop.search_directory` / `get_project` -> `scout.searchProjects` at BOTH efforts,
+`q-defi-aquarius-what-is` moved to `stellarDocs.search_docs`, `q-defi-comet-content` to
+`scout.searchResearch`. Medium also stopped beating low (both 66.7%), where the baseline had medium
+clearly ahead.
+
+Likely cause, **not proven**: `42be531` (absorb Scout 1.8.28) sharpened Scout project/prior-art
+descriptions. The `eval/gates.json` note for that same re-baseline already documented this class of
+movement in the routing lane and accepted it as more accurate Scout routing; its agentic cost was
+not measured then. This run is that measurement.
+
+**Instrument disagreement worth recording:** the routing gate PASSED unchanged on this same HEAD
+while this lane moved -16.6pp at medium, and the QA headline showed no movement at all. The gate
+scores the lexical scorer's top-N; this lane scores what an agent actually picks.
+
+Reading limits, binding on any follow-up: comparison is **observational across a composite
+21-commit interval, never causal**. This instrument has **no committed variance estimate** — one
+sample per id x effort, no retries — so a repeat run is required before treating -16.6pp as real
+rather than as instrument noise. Own-repo follow-up is Solo todo 1232; no per-question tuning.
+
+### Variance re-run — 2026-07-28 (`wf_336f3b63-94a`, local-only)
+
+Second sample at identical config, same clean HEAD `dbee852e`, ~10 minutes after
+`wf_ef07a0b9-25f`, run specifically to separate mechanism from instrument noise.
+
+**The re-run is INCOMPLETE: 58 done / 2 error / 0 skipped.** Both failures were
+`API Error: Connection closed mid-response` — infrastructure, not routing — on
+`low:q-scf-v7-changes` and `medium:q-scf-exhaustive-funding-report`. Per the lane's
+completeness rule this **forbids reading run 2 as an aggregate or as a baseline delta**: its
+denominators silently shrank to n=29 overall and n=9 for scout. Its raw numbers (low 21/29, medium
+20/29) are recorded only to show what was discarded and must not be compared to a 30-denominated
+run.
+
+What the re-run *does* license is a **paired per-row comparison on the 58 id×effort pairs both runs
+completed** — the first variance estimate this instrument has ever had:
+
+> **Run-to-run primary-hit flip rate: 5/58 = 8.6%** on identical configuration and revision.
+
+Flips: `q-scf-liquidity-award-amount|medium` (miss→hit), `q-defi-aquarius-what-is|medium`
+(hit→miss), `q-defi-comet-content|low`, `q-defi-soroswap-what-is|low`,
+`q-defi-soroswap-what-is|medium` (all miss→hit). **Four of five are lumenloop cases.**
+
+Corrected reading of the 2026-07-28 checkpoint above:
+
+| claim | status after the re-run |
+| --- | --- |
+| lumenloop low −37.5pp (4/8 → 1/8) | **substantially noise.** Run 2 gave 3/8; honest range is −12.5 to −37.5pp |
+| lumenloop medium −25pp (4/8 → 2/8) | **reproduces exactly** (2/8 in both runs) |
+| stellarDocs medium 12/12 → 11/12 | **reproduces** — `q-tool-cctp-stellar-integration` is a stable loss, not a draw |
+| stellarDocs low 12/12 | **stable across both runs** |
+| scout medium 9/10 → 7/10 | reproduces directionally (7/9 in run 2) |
+| "`q-defi-soroswap-what-is` shows Scout capturing Lumenloop entity lookups" | **withdrawn as a flagship example** — it flipped to a hit at both efforts in run 2 |
+
+The lumenloop lane is n=8. A single case is 12.5pp, so two noisy cases swing it 25pp — larger than
+most effects anyone would want to read from it. **Do not draw per-service conclusions from the
+lumenloop lane on one run.** The stable, twice-observed findings are: medium no longer beats low,
+lumenloop medium sits at 2/8, and one stellarDocs medium case is genuinely lost.
