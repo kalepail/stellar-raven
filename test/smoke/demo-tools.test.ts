@@ -218,6 +218,27 @@ describe("demo tools at the worker boundary", () => {
     expect(semantic?.outputKeys).toEqual(["counts", "items", "meta"]);
     expect(semantic?.outputItemKeys?.items).toContain("dateField");
     expect(result.nextSteps).toContain("widerCandidates");
+    expect(result.hits.length).toBeGreaterThan(0);
+    expect(result.nextSteps).toContain("prefer the leading hit");
+  });
+
+  it("leads zero-hit wider-candidate pages with bounded broad recovery", async () => {
+    const { search } = makeTools();
+    const result = (await search.execute({
+      query: "zzzzqqqq zzqqzzqq",
+      kind: "operation"
+    })) as {
+      hits: unknown[];
+      widerCandidates: unknown[];
+      nextSteps: string;
+    };
+
+    expect(result.hits).toEqual([]);
+    expect(result.widerCandidates.length).toBeGreaterThan(0);
+    expect(result.nextSteps).toContain(
+      "No gated operation matched either; run one bounded broad pass over the advisory widerCandidates before retrying, and still do not conclude absence."
+    );
+    expect(result.nextSteps).not.toContain("prefer the leading hit");
   });
 
   it("records truncated-search turn count and the shared bounded event fields", async () => {
@@ -587,6 +608,8 @@ describe("demo tools at the worker boundary", () => {
     expect(event).toHaveProperty("code");
     expect(event).toHaveProperty("resultPreview");
     expect(event).toHaveProperty("error", null);
+    expect(event).toHaveProperty("recoveryAdviceDelivered");
+    expect(event).not.toHaveProperty("recoveryAdviceConsumed");
     expect(String(event?.resultPreview).length).toBeLessThanOrEqual(320);
   });
 });

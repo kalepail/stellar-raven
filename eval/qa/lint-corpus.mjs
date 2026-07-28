@@ -238,8 +238,9 @@ export function lintDateContingentTraps(cases, register = {}) {
     for (const id of trap.caseIds ?? []) {
       if (!byId.has(id)) findings.push(finding("error", "date-trap", id, "date-contingent trap references missing case"));
     }
-    for (const field of ["disposition", "triggerDateEvent"]) {
-      for (const match of String(trap[field] ?? "").matchAll(REVERIFY_BY_REFERENCE_RE)) {
+    for (const [field, value] of Object.entries(trap)) {
+      if (typeof value !== "string") continue;
+      for (const match of value.matchAll(REVERIFY_BY_REFERENCE_RE)) {
         const [, id, quotedDate] = match;
         const kase = byId.get(id);
         if (!kase) {

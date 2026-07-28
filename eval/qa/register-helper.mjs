@@ -77,6 +77,7 @@ export function updateRegister(register, hashes, { seed = false, date = new Date
       const hash = hashes.get(id);
       if (!hash) {
         missingCases.push({ entry: entryLabel(entry), id });
+        if (typeof previous[id] === "string") next[id] = previous[id];
         continue;
       }
       next[id] = hash;

@@ -389,6 +389,28 @@ describe("search behavior (host-side ranked)", () => {
     expect(structured.widerCandidates).toEqual([]);
   });
 
+  it("keeps hit-aware guidance on all-backfill pages with wider candidates", async () => {
+    const result = await client.callTool({
+      name: "search",
+      arguments: {
+        query: "Tomer Weller",
+        kind: "operation",
+        service: "lumenloop",
+        limit: 5
+      }
+    });
+    expect(result.isError).toBeFalsy();
+    const structured = result.structuredContent as {
+      hits: Array<{ tier: string }>;
+      widerCandidates: unknown[];
+      nextSteps: string;
+    };
+    expect(structured.hits.length).toBeGreaterThan(0);
+    expect(structured.hits.every((hit) => hit.tier === "backfill")).toBe(true);
+    expect(structured.widerCandidates.length).toBeGreaterThan(0);
+    expect(structured.nextSteps).toContain("prefer the leading hit");
+  });
+
   it("does not infer recovery from ranking or a reason without explicit attempted ids", async () => {
     const baseline = await client.callTool({
       name: "search",
@@ -454,10 +476,15 @@ describe("search behavior (host-side ranked)", () => {
     expect(result.isError).toBeFalsy();
     const structured = result.structuredContent as {
       hits: unknown[];
+      widerCandidates: unknown[];
       nextSteps: string;
     };
     expect(structured.hits).toEqual([]);
-    expect(structured.nextSteps).toMatch(/no hits/i);
+    expect(structured.widerCandidates.length).toBeGreaterThan(0);
+    expect(structured.nextSteps).toContain(
+      "No gated operation matched either; run one bounded broad pass over the advisory widerCandidates before retrying, and still do not conclude absence."
+    );
+    expect(structured.nextSteps).not.toContain("prefer the leading hit");
   });
 
   it("rejects an invalid kind value", async () => {

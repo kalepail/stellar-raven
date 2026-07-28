@@ -222,6 +222,33 @@ describe("demoProviderErrorTelemetry", () => {
       .toMatchObject({ providerErrorStatus: 401 });
   });
 
+  it("finds a shallow retry status before a deep statusless first branch exhausts the bound", () => {
+    const deepStatusless = {
+      cause: { cause: { cause: { cause: { cause: new Error("deep") } } } }
+    };
+    const error = {
+      errors: [deepStatusless, { statusCode: 429 }]
+    };
+
+    expect(demoProviderErrorTelemetry(error, "retry failed", "openai/gpt-5.4", 1))
+      .toMatchObject({ providerErrorStatus: 429 });
+  });
+
+  it("reaches a status exposed only through lastError", () => {
+    const error = { lastError: { statusCode: 503 } };
+
+    expect(demoProviderErrorTelemetry(error, "retry failed", "openai/gpt-5.4", 1))
+      .toMatchObject({ providerErrorStatus: 503 });
+  });
+
+  it("terminates on cyclic provider error wrappers", () => {
+    const error: { cause?: unknown } = {};
+    error.cause = error;
+
+    expect(demoProviderErrorTelemetry(error, "retry failed", "openai/gpt-5.4", 1))
+      .toMatchObject({ providerErrorStatus: null });
+  });
+
   it("emits provider diagnostics for unanswered failures and marks aborts non-provider-terminal", () => {
     const telemetry = demoProviderErrorTelemetry(new Error("failed"), "failed", "openai/gpt-5.4", 1);
 

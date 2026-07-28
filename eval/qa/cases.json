@@ -1,7 +1,7 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "4e43741c215de1777d1e47864013fa02c7186411014076a53aee5f66229faec2",
+  "corpusContentSha256": "406deacc444ec78fb6a4ee76478798e7df1595954bd87974bcfc2f2e5bb9babc",
   "counts": {
     "total": 490,
     "byCategory": {
@@ -44743,7 +44743,7 @@
         ],
         "corroboration": [
           {
-            "claim": "Live oracle results expose repository and code-quality evidence.",
+            "claim": "Live oracle results expose repository ranking and code-scan evidence.",
             "verdict": "confirmed",
             "evidence": [
               {
@@ -44795,7 +44795,8 @@
             "catalog/manifest.json#scout.searchRepos",
             "https://github.com/reflector-network/reflector-contract",
             "Todo 1256 corpus lane (2026-07-28, F5): the golden told the grader to compare repoScore and pick the “best” oracle code references without saying what that ordering is evidence of, while cluster-131's members forbid inferring correctness, security, audit scope, maintenance, or production readiness from repoScore. The wording now states that the repoScore ordering is the index's answer-time navigation/ranking signal and scopes the superlative to it. Internal-consistency repair — no new external source consulted; the case now joins cluster-131.",
-            "Upstream schema evidence (inventory/stellar-light.json, searchRepos repoScore description; ADV-1 reconciliation 2026-07-28): repoScore is Scout's own composite 'Quality grade (0-100) = freshness + traction + hackathon/SCF/builder authority — Lead with high-score repos'. Its formula contains no correctness, security-audit, maintenance, or production-readiness input, so the golden's boundary — order candidates by it, never infer those attributes from it — restates the served contract's scope rather than contradicting the schema's quality-grade label."
+            "Upstream schema evidence (inventory/stellar-light.json, searchRepos repoScore description; ADV-1 reconciliation 2026-07-28): repoScore is Scout's own composite 'Quality grade (0-100) = freshness + traction + hackathon/SCF/builder authority — Lead with high-score repos'. Its formula contains no correctness, security-audit, maintenance, or production-readiness input, so the golden's boundary — order candidates by it, never infer those attributes from it — restates the served contract's scope rather than contradicting the schema's quality-grade label.",
+            "24h four-reviewer audit (2026-07-28, G-GT-1): the corroboration claim wording was aligned with the repoScore boundary shipped the same day — ranking/scan signals rather than the blanket word quality; the claim meaning and its evidence are unchanged."
           ],
           "rootCause": [
             "eval-authoring",
@@ -44865,7 +44866,7 @@
             ]
           },
           {
-            "claim": "Repository quality signals are distinct from popularity.",
+            "claim": "Repository ranking and scan signals are distinct from popularity.",
             "verdict": "confirmed",
             "evidence": [
               {
@@ -44901,7 +44902,8 @@
             "catalog/manifest.json#scout.searchRepos",
             "https://github.com/kalepail/soroban-passkey",
             "Todo 1256 corpus lane (2026-07-28, F5): the golden told the grader to compare repoScore and pick the “strongest” passkey/smart-wallet repositories without saying what that ordering is evidence of, while cluster-131's members forbid inferring correctness, security, audit scope, maintenance, or production readiness from repoScore. The wording now states that the repoScore ordering is the index's answer-time navigation/ranking signal and scopes the superlative to it. Internal-consistency repair — no new external source consulted; the case now joins cluster-131.",
-            "Upstream schema evidence (inventory/stellar-light.json, searchRepos repoScore description; ADV-1 reconciliation 2026-07-28): repoScore is Scout's own composite 'Quality grade (0-100) = freshness + traction + hackathon/SCF/builder authority — Lead with high-score repos'. Its formula contains no correctness, security-audit, maintenance, or production-readiness input, so the golden's boundary — order candidates by it, never infer those attributes from it — restates the served contract's scope rather than contradicting the schema's quality-grade label."
+            "Upstream schema evidence (inventory/stellar-light.json, searchRepos repoScore description; ADV-1 reconciliation 2026-07-28): repoScore is Scout's own composite 'Quality grade (0-100) = freshness + traction + hackathon/SCF/builder authority — Lead with high-score repos'. Its formula contains no correctness, security-audit, maintenance, or production-readiness input, so the golden's boundary — order candidates by it, never infer those attributes from it — restates the served contract's scope rather than contradicting the schema's quality-grade label.",
+            "24h four-reviewer audit (2026-07-28, G-GT-1): the corroboration claim wording was aligned with the repoScore boundary shipped the same day — ranking/scan signals rather than the blanket word quality; the claim meaning and its evidence are unchanged."
           ],
           "rootCause": [
             "eval-authoring",
