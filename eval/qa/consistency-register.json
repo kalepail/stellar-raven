@@ -3111,15 +3111,25 @@
         "members": [
           "q-tool-indexer-repos-discovery",
           "q-tool-sdk-repos-discovery",
-          "q-tool-smart-wallet-repos-discovery"
+          "q-tool-smart-wallet-repos-discovery",
+          "q-tool-passkey-repo-live",
+          "q-tool-oracle-repo-live",
+          "q-tool-zk-repo-live"
         ],
         "verdict": "consistent",
         "lastChecked": "2026-07-28",
-        "note": "All three grade the same scout.searchRepos discovery contract: return only rows actually observed with the response generatedAt/as-of, give each row its exact owner/name URL, role, maintainer tier, archive state, and dated activity, label any directly verified repository added outside the Scout result as an external supplement rather than attributing it to Scout, treat an exact zero as a source-scoped miss rather than open-world absence, and never infer correctness, security, audit scope, maintenance, ownership, or production readiness from repoScore, stars, or semantic rank. Verified 2026-07-28 (todo 1253 Lane B) by reading all three cases in full: the rule is stated in each answer and each avoid list with no divergence; the sdk and indexer cases already name each other in their 2026-07-28 sibling sweeps, and the smart-wallet case carries the identical rule while being clustered only on unrelated wallet-product and canonical-source claims. Adjacent unclustered cases q-tool-passkey-repo-live, q-tool-oracle-repo-live, and q-tool-zk-repo-live were reviewed and deliberately EXCLUDED: they instruct the grader to rank 'strongest' repositories by repoScore, which is in tension with this cluster's rule and is recorded as a separate follow-up finding (F5).",
+        "note": "All six members are mutually compatible on one boundary, and each grades the subset its own golden states: repository rows come from the live index at answer time (no static roster), and repoScore never establishes properties outside its freshness/traction/authority formula — correctness, security, audit scope, maintenance, production readiness (no member grades every property; e.g. the indexer and sdk discovery cases do not grade the audit-scope non-inference and the smart-wallet case does not grade the correctness one, but no member permits any inference the others forbid). The three DISCOVERY-TABLE members (q-tool-indexer-repos-discovery, q-tool-sdk-repos-discovery, q-tool-smart-wallet-repos-discovery) additionally grade the richer per-row contract — response generatedAt/as-of, exact owner/name URL, role, maintainer tier, archive state, dated activity, external-supplement labelling, exact-zero source scoping, and extending the non-inference rule to ownership and to stars/semantic rank — which the three REPO-LIVE members (q-tool-passkey-repo-live, q-tool-oracle-repo-live, q-tool-zk-repo-live) do not grade; the repo-live members instead grade explicit repoScore comparison/sort with superlatives scoped to the checked rows, plus their own signal separations (codeVerified is scan evidence not a security audit; hackathonWinner stays index-relative absent exact event evidence). Verified 2026-07-28 (todo 1253 Lane B for the discovery trio; todo 1256 F5 for the repo-live trio, each read in full). 2026-07-28 adversarial review (ADV-2, two passes) corrected this note: earlier revisions attributed the full discovery-table contract, the ownership clause, and the stars/semantic-rank scope to all six members; membership asserts only the all-six rule above. Re-swept 2026-07-28 (ADV-1 reconciliation): hash churn from scoping the repo-live members blanket quality-verdict wording to the specific non-inferences and adding upstream-schema evidence plus durable rootCause pointers; the edits move the members further toward this cluster rule.",
         "memberContentSha256": {
           "q-tool-indexer-repos-discovery": "6a9a805425fd5a93dfae0cce9b0aba796b666c097b1fa8532b35bfddb50ee1cb",
+          "q-tool-oracle-repo-live": "d0a1c77e60e78141148ba288ba43a970dc4e303c05a6b6b357ae3b906ef64d35",
+          "q-tool-passkey-repo-live": "fa1366e11bba448f3bb76a410d0ea9c20801480bda252057d1df236f91df5522",
           "q-tool-sdk-repos-discovery": "108f1a96ba785319b504854d6b4ffb29ea8f220affcad7e6fc5f494e9bc7eb87",
-          "q-tool-smart-wallet-repos-discovery": "d2b329ba8545fcf4b9e0e72205d58eb2283beb1cdc4ad2cb30152d6b4a3068b9"
+          "q-tool-smart-wallet-repos-discovery": "d2b329ba8545fcf4b9e0e72205d58eb2283beb1cdc4ad2cb30152d6b4a3068b9",
+          "q-tool-zk-repo-live": "266eff3a9c057b4656d1239b2dd98878ab9c16394bf0f56f8946f4e26d16f063"
+        },
+        "reopened": {
+          "date": "2026-07-28",
+          "reason": "member-content-changed"
         }
       },
       {
@@ -3151,12 +3161,14 @@
         "members": [
           "q-gap-leaderboard-project-not-builder",
           "q-tool-developer-leaderboard-live",
-          "q-tool-leaderboard-open-issues"
+          "q-tool-leaderboard-open-issues",
+          "q-eco-most-active-defi-projects"
         ],
         "verdict": "consistent",
         "lastChecked": "2026-07-28",
-        "note": "All three assert the same scout.getLeaderboard contract: it ranks PROJECTS (with aggregate developer metrics) and is not a people directory — getBuilders answers person-level questions; every answer must carry an explicit sort/range and the response generatedAt/scope rather than reusing a stored ordering; and the sorts are distinct measurements, so open-issue volume is a backlog signal and never activity, quality, popularity, or a stand-in for stars, activity, or repoScore. Verified 2026-07-28 (todo 1253 Lane B) by reading all three in full; no member contradicts another. q-eco-most-active-defi-projects was reviewed as a fourth candidate and EXCLUDED: its grader notes still say 'Scout ranks repos by repoScore', which its own avoid clause forbids — recorded as a separate follow-up finding (F6).",
+        "note": "All four members are mutually consistent on the scout.getLeaderboard contract; the invariant graded by EVERY member is the project-vs-person boundary — the leaderboard ranks PROJECTS (with aggregate developer metrics) and is not a people directory; getBuilders answers person-level questions. Member-level grading beyond that boundary: q-tool-leaderboard-open-issues grades the metric separations (open-issue volume is a backlog signal, never activity/quality/popularity or a stand-in for stars/activity/repoScore) plus an explicit sort/range and response generatedAt/scope; q-tool-developer-leaderboard-live grades an explicit current sort/range and generatedAt without the detailed issues/stars/TVL distinctions; q-eco-most-active-defi-projects requires a visible as-of date, an explicit activity basis (activity is meta.metricDefinitions latest-commit recency, not commit volume and not repoScore, which is a repo-level scout.searchRepos signal), and a DeFi inclusion rule, satisfiable from live directory or research evidence rather than the leaderboard alone; q-gap-leaderboard-project-not-builder grades only the shared boundary. Verified 2026-07-28 (todo 1253 Lane B for the original trio; todo 1256 F6 for q-eco-most-active-defi-projects after its metric-conflation note was corrected to the served schema — catalog/manifest.json scout.getLeaderboard metricDefinitions). 2026-07-28 adversarial review (ADV-3, two passes) corrected this note: earlier revisions attributed sort/range/generatedAt, metric semantics, and the no-stored-ordering rule to every member; the opening now distinguishes cluster-wide compatibility from member-level grading.",
         "memberContentSha256": {
+          "q-eco-most-active-defi-projects": "9e28de74b4d7d72aaed87f7af97ecadfd8219cab95806818f88ba0e0d73fab97",
           "q-gap-leaderboard-project-not-builder": "941d05d5bed43a0957dba2bf116b099a84c8b7fac47245798d2e3e5e3499c584",
           "q-tool-developer-leaderboard-live": "638b62d50f869f281dca14ff6875120b981c6c90e862b5b247314466b2e9fa1a",
           "q-tool-leaderboard-open-issues": "dce6f985a87f75023cc2b67d0a598bc5f3a02edd7904425567108f70501b49d3"
