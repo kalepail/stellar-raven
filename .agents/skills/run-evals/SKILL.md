@@ -186,6 +186,10 @@ npm run eval:selftest           # grader math sanity + live-contract pins — no
 npm run eval:compile            # corpus → eval/routing-cases.json (deterministic)
 npm run eval:qa:compile         # only if running QA; always emits cases.json + sample.json
 npm run eval:qa:lint -- --stale # owned-corpus lint lanes + the stale-gospel gate (CI runs this)
+# Editing judge-facing gospel (answer/keyFacts/avoid/notes)? Add --since <base-ref>.
+# Without it the diff-based gospel gate ("changed without changing truth.verified")
+# SILENTLY SKIPS locally while CI resolves the push base and enforces it — a clean
+# local lint is vacuous for that lane (bit the 2026-07-28 round post-merge).
 npm run eval:qa:selftest        # only if judging — scored fixtures + promptSha256 pins
 ```
 
