@@ -179,6 +179,12 @@ Monday–Sunday week with capacity after already-scheduled cases, capped at four
 skip full weeks. This sends unconfirmed and live/version/roster/program claims first while stable
 protocol and safety facts follow, without creating a new weekly cliff.
 
+Capacity caveat, recorded 2026-07-28: the four-per-week cap governs NEW allocations and is
+applied after already-scheduled cases; it is not a corpus-wide invariant. Pre-existing
+non-Thursday dates already put several Q4-2026 weeks at 5-7. When a volatile case must be
+re-verified soon, a short interval beats cap purity - placing it in Q4 at week-total five is
+the correct trade against pushing it to 2027 to keep a number tidy.
+
 Known limitation of the currentness tier: it matches the *word* "version", not version literals,
 and has no inflection tolerance ("releases" and "Dates" do not match). Five late-scheduled cases
 pin a version or protocol literal; three are Protocol-N facts that are defensibly stable, but

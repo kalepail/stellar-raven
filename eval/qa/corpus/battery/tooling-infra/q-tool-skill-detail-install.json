@@ -6,20 +6,20 @@
     "scout.listSkills"
   ],
   "golden": {
-    "answer": "For a **known exact skill name**, call the live single-item detail operation directly—for this request, `getSkill({ name: \"soroban\" })` or the equivalent exact detail call. Use list/search first only when the requested identity is unknown, misspelled, ambiguous, or must be discovered. Preserve a soft-empty/error honestly rather than guessing a slug.\n\nReturn the complete current detail: source and owner, exact slug/kind, version/commit or generated-at provenance, full **SKILL.md**, every referenced supporting file needed to follow it, what it covers, dependencies and embedded package/tool versions, install commands for the user's actual agent host, restart/discovery steps, license and manual-review status, and any network, write, payment, secret, or executable side effects. Official Stellar skills currently have seven source slugs and host-specific install routes; community inclusion is not SDF endorsement. Inspect before installing or executing, and verify stale embedded dependencies against their owners.",
+    "answer": "Treat **\"soroban\" as a request topic, not a guaranteed current exact slug**. Resolve it against the live SDF skill list first; if the exact `getSkill({ name: \"soroban\" })` call is a soft-empty, say so and use the current row whose coverage explicitly includes Soroban. Once the exact current slug is known, call its single-item detail operation directly. Do not guess a slug or pretend a source-relative miss is an open-world absence.\n\nReturn the complete current detail: source and owner, exact slug/kind, version/commit or generated-at provenance, full **SKILL.md**, every referenced supporting file needed to follow it, what it covers, dependencies and embedded package/tool versions, install commands for the user's actual agent host, restart/discovery steps, license and manual-review status, and any network, write, payment, secret, or executable side effects. Use host-specific install routes; community inclusion is not SDF endorsement. Inspect before installing or executing, and verify stale embedded dependencies against their owners.",
     "keyFacts": [
-      "Permits direct exact getSkill/detail lookup for a known skill name and reserves list/search for unknown or ambiguous identity.",
+      "Resolves the topic against the live catalog when its exact current slug is unknown, then uses direct getSkill/detail lookup for the resolved exact name.",
       "Returns full SKILL.md plus required supporting files, source/owner, version/commit, coverage, dependencies, and provenance.",
       "Uses host-specific install/restart/discovery steps rather than a universal invented command.",
       "Requires manual review and network/write/payment/secret/side-effect inspection, especially for community skills."
     ],
     "avoid": [
-      "Do NOT require a catalog call before every exact named detail request.",
+      "Do NOT assume a topical or retired name is a current exact slug, or require a catalog call after the exact current name is known.",
       "Do NOT fabricate an install command, metadata, dependency, supporting file, or coverage absent from the detail/source.",
       "Do NOT call a community skill SDF-endorsed or claim official skill text is fully reviewed when its source says manual review remains.",
       "Do NOT install or execute unreviewed skill content or ignore stale versions embedded in its instructions."
     ],
-    "notes": "GT-56 ROUTING CORRECTION 2026-07-11: direct exact getSkill/detail lookup is valid for a known name; list/search first only for unknown or ambiguous identity. Grade full SKILL.md/supporting files, provenance, dependencies, manual review, side effects, and host-specific install—not a mandatory two-step ritual."
+    "notes": "Todo 1248 correction 2026-07-28: `soroban` is no longer a current Scout skill slug. Grade live topic-to-slug resolution, then exact detail retrieval and the full provenance/safety review—not a stale alias or a mandatory catalog call after resolution."
   },
   "tags": {
     "category": "tooling-infra",
@@ -29,8 +29,8 @@
   "truth": {
     "domain": "mixed",
     "status": "confirmed",
-    "asOf": "2026-07-11",
-    "reverifyBy": "2026-08-01",
+    "asOf": "2026-07-28",
+    "reverifyBy": "2026-08-13",
     "sources": [
       {
         "class": "C",
@@ -60,54 +60,52 @@
     ],
     "corroboration": [
       {
-        "claim": "A direct exact getSkill/detail request for the known soroban skill returns the full detail record without a preceding catalog call; list/search is needed only for unknown or ambiguous identity.",
+        "claim": "The topic name soroban is not a current exact Scout slug; current topic resolution leads to Smart Contracts, whose detail explicitly covers Soroban.",
         "verdict": "confirmed-as-of",
         "evidence": [
           {
             "class": "C",
-            "ref": "C: live direct Scout getSkill name=soroban probe on 2026-07-11",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "scout.getSkill({name:'soroban'}) → 404 soft-empty; scout.listSkills({source:'sdf'}) and scout.getSkill({name:'smart-contracts'})",
+            "observedAt": "2026-07-28",
+            "note": "The returned Smart Contracts SKILL.md says it applies to anything the user calls Soroban."
           },
           {
             "class": "B",
-            "ref": "B: exact source repository and SKILL.md identity",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "https://github.com/stellar/stellar-dev-skill/tree/main/skills/smart-contracts",
+            "observedAt": "2026-07-28",
+            "note": "Current canonical repository directory agrees on the smart-contracts slug."
           }
-        ],
-        "note": "Legacy verdict: confirmed-at-answer-time."
+        ]
       },
       {
-        "claim": "A safe install answer must include the full SKILL.md dependency graph, provenance/review state, host-specific commands, and side-effect/secret/network inspection.",
+        "claim": "A safe install answer must include the complete retrieved skill, its supporting files, provenance, host-specific commands, and side-effect/secret/network inspection.",
         "verdict": "confirmed",
         "evidence": [
           {
-            "class": "A",
-            "ref": "A: current Stellar building-with-AI and skills pages",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "class": "C",
+            "ref": "scout.getSkill({name:'smart-contracts'})",
+            "observedAt": "2026-07-28",
+            "note": "Returned the current full SKILL.md and named development.md, testing.md, and security.md."
           },
           {
             "class": "B",
-            "ref": "B: stellar/stellar-dev-skill repository, supporting files, and manual-review notice",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "https://github.com/stellar/stellar-dev-skill",
+            "observedAt": "2026-07-28",
+            "note": "Canonical source repository exposes the same skill layout."
           }
         ]
       }
     ],
     "verified": {
-      "date": "2026-07-11",
-      "by": "Golden-truth sweep import — The inherited answer incorrectly made list-first resolution mandatory even though the live detail operation accepts a known exact skill name directly. It also under-specified supporting files, dependency provenance, manual review, side effects, and host-specific installation.",
+      "date": "2026-07-28",
+      "by": "Todo 1248 Lane A Scout roster re-verification (solo://proj/49/scratchpad/todo-1248-lane-a-sco--727).",
       "evidence": [
-        "Solo scratchpad 575 GT-56 primary process 3394 directly reproduced getSkill(name=soroban); sealed blind process 3398 independently rejected mandatory list-first routing and expanded the install/provenance requirements.",
-        "Sibling sweep checked q-tool-cli-skills-discovery and q-tool-mcp-servers-skills-discovery; list/search remains discovery for unknown candidates, while this case owns one known exact detail.",
-        "The official dapp skill's embedded Wallets Kit dependency drift is tracked owner-correctly in improvements/skills/sk-010-wallets-kit-jsr-scope-dapp-skill.md."
+        "C: scout.getSkill({name:'soroban'}) now returned 404 soft-empty, while scout.listSkills({source:'sdf'}) and scout.getSkill({name:'smart-contracts'}) returned the current Smart Contracts detail whose text explicitly covers anything called Soroban.",
+        "B: https://github.com/stellar/stellar-dev-skill lists smart-contracts among the seven current skill directories and was pushed 2026-07-27; its source agrees with Scout.",
+        "Sibling sweep: q-gap-scout-get-skill-detail remains valid for a known exact slug; q-tool-cli-skills-discovery owns broad catalog discovery."
       ],
       "rootCause": [
-        "Eval-side routing drift: a discovery-then-detail pattern was promoted into a universal prerequisite despite exact-name detail support.",
-        "improvements/skills/sk-010-wallets-kit-jsr-scope-dapp-skill.md"
+        "freshness-drift"
       ]
     },
     "origin": "raven-next q-tool-skill-detail-install"

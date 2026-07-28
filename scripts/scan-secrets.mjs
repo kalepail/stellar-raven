@@ -37,6 +37,7 @@
  */
 import { execFileSync } from "node:child_process";
 import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
 
 const ROOT = execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" }).trim();
 
@@ -238,9 +239,14 @@ function tryGitleaks(mode) {
   } catch {
     return null;
   }
+  // Use the repo config so gitleaks honours the same generated-file allowlist
+  // the custom layers already apply (see IGNORE_GLOBS). Without it the two
+  // scanners disagree and gitleaks blocks on known-public content hashes.
+  const configPath = join(ROOT, ".gitleaks.toml");
+  const configArgs = existsSync(configPath) ? ["--config", configPath] : [];
   const args = mode === "staged"
-    ? ["git", "--staged", "--redact"]
-    : ["git", "--redact", "--log-opts=-1 HEAD"];
+    ? ["git", "--staged", "--redact", ...configArgs]
+    : ["git", "--redact", "--log-opts=-1 HEAD", ...configArgs];
   try {
     execFileSync("gitleaks", args, { cwd: ROOT, stdio: "inherit" });
     return true; // clean

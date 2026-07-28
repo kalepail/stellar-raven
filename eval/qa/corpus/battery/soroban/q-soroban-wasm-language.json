@@ -5,7 +5,7 @@
     "stellarDocs.search_soroban_contract_docs"
   ],
   "golden": {
-    "answer": "Stellar smart contracts execute deterministic WebAssembly. The supported/default toolchain is Rust with `soroban-sdk`, compiled to `wasm32v1-none`; Wasm is the execution format, not a claim that every source language is equally supported. Contract code is `#![no_std]`, `std` and floating point are unavailable, and host-backed SDK types are preferred. Guest allocation is off by default but the SDK `alloc` feature or a custom allocator can enable allocation at CPU/code-size cost. Do not pin 64 KiB as the code limit: as of 2026-07-11 Mainnet and Testnet configure 131072 bytes (128 KiB), and the setting is network-controlled.",
+    "answer": "Stellar smart contracts execute deterministic WebAssembly. The supported/default toolchain is Rust with `soroban-sdk`, compiled to `wasm32v1-none`; Wasm is the execution format, not a claim that every source language is equally supported. Contract code is `#![no_std]`, `std` and floating point are unavailable, and host-backed SDK types are preferred. Guest allocation is off by default but the SDK `alloc` feature or a custom allocator can enable allocation at CPU/code-size cost. Do not pin 64 KiB as the code limit: as of 2026-07-28 Mainnet and Testnet configure 131072 bytes (128 KiB), and the setting is network-controlled.",
     "keyFacts": [
       "Explains Rust/soroban-sdk to wasm32v1-none no_std execution and optional allocation.",
       "Separates the live network-configured code cap from stale 64 KiB/data-entry values."
@@ -24,8 +24,8 @@
   "truth": {
     "domain": "real-world",
     "status": "confirmed",
-    "asOf": "2026-07-11",
-    "reverifyBy": "2026-08-01",
+    "asOf": "2026-07-28",
+    "reverifyBy": "2027-04-15",
     "sources": [
       {
         "class": "A",
@@ -45,39 +45,41 @@
     ],
     "corroboration": [
       {
-        "claim": "Soroban contracts are generally authored in Rust/soroban-sdk and compile to wasm32v1-none no_std Wasm; alloc can be enabled, and current Mainnet/Testnet contract code cap is 131072 bytes rather than 64 KiB.",
+        "claim": "Soroban contracts are authored in Rust/soroban-sdk and new contracts use wasm32v1-none no_std Wasm; guest allocation can be enabled, and Mainnet/Testnet contract code cap is 131072 bytes rather than 64 KiB as of 2026-07-28.",
         "verdict": "confirmed",
         "evidence": [
           {
             "class": "A",
-            "ref": "A: current Rust dialect/resource docs",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "https://developers.stellar.org/docs/learn/fundamentals/contract-development/rust-dialect",
+            "observedAt": "2026-07-28",
+            "note": "The served page says contract development is Rust, recommends #[no_std], requires wasm32v1-none for new contracts, and says guest allocation is discouraged rather than prohibited."
           },
           {
             "class": "B",
-            "ref": "B: SDK alloc/build source and Core config enforcement",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "https://github.com/stellar/rs-soroban-sdk/blob/main/soroban-sdk/src/alloc/mod.rs",
+            "observedAt": "2026-07-28",
+            "note": "Current SDK source says the alloc feature is disabled by default and documents both its allocator and custom allocators."
           },
           {
             "class": "F",
-            "ref": "F: live network settings on Mainnet/Testnet",
-            "observedAt": "2026-07-11",
-            "note": "verbatim legacy evidence descriptor imported at migration"
+            "ref": "F: `stellar 27.0.0 network settings --no-cache -n mainnet|testnet --output json-formatted`",
+            "observedAt": "2026-07-28",
+            "note": "Both production network reads returned contract_max_size_bytes=131072 and contract_data_entry_size_bytes=65536."
           }
         ]
       }
     ],
     "verified": {
-      "date": "2026-07-11",
-      "by": "Golden-truth sweep import — The inherited answer froze a 64 KiB code figure and claimed allocation was impossible. Current networks configure a 128 KiB contract-code cap, and SDK allocation is optional even though contracts remain no_std and floating point is unsupported.",
+      "date": "2026-07-28",
+      "by": "Todo 1248 Lane B Docs technical re-verification",
       "evidence": [
-        "Solo scratchpad 575 GT-48 blind 3342 overturned primary 3333's no-change decision; sd-022 and sd-016 own the upstream wording/live-limit drift."
+        "Production stellar-raven: stellarDocs.search_soroban_contract_docs({query:'Rust dialect wasm32v1 none no_std allocation floating point',hitsPerPage:10,includeContent:true}) and stellarDocs.get_doc_page_sections({path:'/docs/learn/fundamentals/contract-development/rust-dialect',includeContent:true}) — Rust/no_std/wasm32v1-none and allocation wording returned.",
+        "Canonical SDK source: https://github.com/stellar/rs-soroban-sdk/blob/main/soroban-sdk/src/alloc/mod.rs — alloc feature disabled by default; custom allocator supported.",
+        "Empirical free reads: stellar 27.0.0 network settings --no-cache -n mainnet|testnet --output json-formatted both returned contract_max_size_bytes=131072 and contract_data_entry_size_bytes=65536.",
+        "Sibling sweep: q-sor-build-target-wasm32v1, q-soroban-deploy-cli, and q-tool-rust-soroban-sdk use wasm32v1-none and do not contradict this result."
       ],
       "rootCause": [
-        "improvements/stellar-docs/sd-022-no-std-allocator-wording.md",
-        "improvements/stellar-docs/sd-016-live-network-limits-stale.md"
+        "freshness-recheck"
       ]
     },
     "origin": "raven-next q-soroban-wasm-language"
