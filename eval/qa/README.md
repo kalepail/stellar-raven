@@ -304,6 +304,35 @@ the eval instrument, not a service change. Single-case gaps —
 Lumenloop's Meridian 2026 event record, the raw JS ScVal/BytesN boundary, and Lab signer-UI
 documentation — are recorded monitor-only, below the 2-unrelated-cases acting bar.
 
+## 2026-07-28 verification checkpoint (paired vs 07-27; not a re-baseline)
+
+Purpose: verify the day's cumulative service changes (canonical-URL collector fix + dedup,
+zero-gated/zero-hit `nextSteps` copy, provider-error telemetry) caused no end-to-end
+regression. Pre-registered brief with adversarial pre-spend gate (three revisions before
+LAUNCH-OK); two-phase spend enforcement (`--no-judge` collection → 30/30-row + agent-cost
+checkpoint → judge); runner revision `a77ccb0` (demo-only diff from the brief's `94c1ad8`
+pin — MCP surface identical); v2.4/p3, sonnet-5 both roles.
+
+| lane | verdicts | results stamp |
+|---|---|---|
+| headline sample-30 | **10C / 16P / 4W / 0E** | `2026-07-28T22-52-45-variantA.json` |
+
+Paired n=30 vs the six 07-27 sample shards: 5 flips (16.7%), 2 up / 3 down — inside the
+23.3% noise floor's variance bound (~7 expected; the floor bounds, it is not a
+significance threshold). Two of the down-flips retracted on re-judge (judge variance;
+artifact `2026-07-28T23-17-20-rejudge.json`); the two up-flips were not re-judged, so no
+gain is claimed. The 4 wrongs: 2 are the stable known-upstream defects reproducing
+exactly (`sls-058`/stellarlight#744 Fluxity aggregate; `sd-039`/stellar-docs#2707 Relayer
+conflation — both wrong in baseline too), 1 retracted on re-judge, 1 stable single-case
+answer-craft slip (`q-sor-scval-conversion`: "bigint or number" for i128 against the
+avoid's unsafe-JS-number trap; monitor-only). Attribution readback found no wrong or
+down-flip involving truncated-URL evidence or zero-hit/all-backfill steering
+(execute-visible; search bodies are not stored — hedge recorded). **Verdict: no
+end-to-end harm from the day's changes; no measured gain claimed; checkpoint shape
+matches 07-27.** Independent adversarial review of these conclusions (recomputed tables,
+transition matrix, transcript audit): CONCLUSIONS-OK after three packaging revisions.
+Tooling gaps found (judge-stored mode, judge-cost stamping): Solo todo 1261.
+
 ## Current baseline of record
 
 The 2026-07-11 post-rebuild baseline is recorded in
