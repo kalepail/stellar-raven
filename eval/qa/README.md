@@ -247,8 +247,19 @@ any-flip noise floor**. Re-judge artifacts: `2026-07-27T23-06-14`, `23-07-00`, `
 
 Triage outcome (round record: Solo scratchpads 715/717/718): 3 wrongs → 1 judge artifact
 (`q-defi-defindex-honest`) and 2 upstream findings (`sls-058`, `sd-039`). 17 partials → **zero**
-upstream findings: 11 of 17 missed facts that live probes returned on the first hit, so they are an
-answering-agent retrieval pattern, not a service gap (own-repo Solo todo 1231). Single-case gaps —
+upstream findings. **Correction, 2026-07-28:** this section originally read "11 of 17 missed facts
+that live probes returned on the first hit, so they are an answering-agent retrieval pattern." A
+prose-surface inventory and its independent adversarial review both overturned that. The failure is
+NOT a clean retrieval stop-short: several cases fetched the missed fact and lost it in synthesis,
+while the lane that first said "predominantly synthesis" was itself wrong on 2 of the 4 cases when
+the transcripts were checked. The `EVIDENCE CHECKPOINT` did fire in 19 of 21 partial transcripts,
+but that proves delivery rather than coverage — it instructs a wider pass only for open-world
+identity/history questions, and these were scoped technical ones, so the applicable
+clause-completeness guidance was never present to be read past. What all three passes agree on: no
+production prose or mechanism change is justified, a server-side answer-completeness guard cannot
+exist (the final answer never crosses the MCP boundary), and the single true retrieval miss stays
+red under anti-overfitting. Rescoped in Solo todo 1231; the next step is a clause-coverage A/B on
+the eval instrument, not a service change. Single-case gaps —
 Lumenloop's Meridian 2026 event record, the raw JS ScVal/BytesN boundary, and Lab signer-UI
 documentation — are recorded monitor-only, below the 2-unrelated-cases acting bar.
 
