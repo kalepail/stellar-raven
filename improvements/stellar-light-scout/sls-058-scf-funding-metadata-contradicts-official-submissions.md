@@ -1,7 +1,7 @@
 ---
 id: sls-058
 service: stellar-light-scout
-status: verified
+status: reported-upstream
 discovered: 2026-07-27
 upstreamTitle: Reconcile project SCF funding metadata against official submission records
 evidence:
@@ -11,39 +11,50 @@ evidence:
   - 2026-07-27 live production scout.searchProjects({ query "Fluxity", limit 5 }) returned scfAwarded true, scfTotalAwardedUSD 82750, scfAmountStatus "disclosed", scfAwardedRounds [21]
   - 2026-07-27 live production lumenloop.get_scf_submissions({ name "Fluxity" }) returned SCF #21, budget 68000, award_type "Legacy v5.0 Community Award", official submission recDXtqYuR8g9FMXt
   - independently re-executed by the round lead after the triage lane reported it; both contradictions reproduced
+  - 2026-07-28 adversarial review added a third case: live scout.searchProjects({ query "WageLink" }) returned scfAwarded false / null / [] against an official SCF #24 award of 50000; re-verified by the lead the same day
+  - 2026-07-28 Fluxity claim narrowed after review: scfCountBasis documents scfTotalAwardedUSD as an in-house reconstruction, so the defect is the missing reconciling basis, not an asserted wrong number
+  - filed upstream 2026-07-28 as a new issue cross-referencing closed #511 (the linkage class survived that fix): https://github.com/Stellar-Light/stellarlight/issues/744
 ---
 
 ## Finding
 
-Scout's structured SCF funding fields contradict the official SCF submission
-records for at least two projects, in opposite directions.
+Scout's structured SCF funding fields disagree with the official SCF submission
+records. There are two distinct defects, and they need separating.
 
-`sstream` is reported as never SCF-funded (`scfAwarded: false`,
-`scfTotalAwardedUSD: null`, `scfAwardedRounds: []`). The official submission
-record shows it won SCF #16 with a budget of `36000`.
+**Defect 1 — award-linkage false negatives (the strong claim).** `sstream` is
+reported as never SCF-funded (`scfAwarded: false`, `scfTotalAwardedUSD: null`,
+`scfAwardedRounds: []`), while the official submission record shows it won
+SCF #16 with a budget of `36000`. `wagelink` fails identically against an
+official SCF #24 award of `50000`. These are flat contradictions with no
+interpretation that reconciles them.
 
-`fluxity` is reported with `scfTotalAwardedUSD: 82750` and
-`scfAmountStatus: "disclosed"` for round 21. The official SCF #21 submission
-record for the same project carries a budget of `68000`, a `14750` difference.
+**Defect 2 — an unreconcilable aggregate (the weaker, narrower claim).**
+`fluxity` reports `scfTotalAwardedUSD: 82750` with `scfAmountStatus:
+"disclosed"` and `scfAwardedRounds: [21]`, while its only linked submission is
+SCF #21 at `68000`. Scout's own `scfCountBasis` states that
+`scfTotalAwardedUSD` is an in-house reconstruction that can legitimately differ
+from SDF's submission-based counters, so **this is not asserted to be a wrong
+number.** The defect is that no exposed field reconciles the two, while the
+adjacent `scfAwardedRounds: [21]` invites a consumer to read the aggregate as
+that round's award.
 
 These are machine-readable fields on the primary discovery surface. An agent
-that trusts them states false funding facts without any way to detect the
-error from Scout alone — which is exactly what happened in the eval case cited
-above, where both funding assertions in the answer were wrong and both came
-directly from these fields.
+that trusts them states false funding facts with no way to detect the error
+from Scout alone — which is what happened in the eval case cited above.
 
-The two rows fail differently, which matters for diagnosis: one is a missing
-award linkage, the other is a project-level aggregate presented in a field an
-agent reads as the round award. A fix that only reconciles totals would leave
-the `sstream` case broken.
+The two defects need different fixes: the first is a missing linkage, the
+second is a missing basis/label. Repairing totals alone would leave `sstream`
+and `wagelink` broken.
 
 ## Evidence
 
-All probes are free production operations observed 2026-07-27.
+All probes are free production operations; sstream/fluxity observed 2026-07-27 and
+re-confirmed 2026-07-28, wagelink observed 2026-07-28.
 
 | project | Scout structured fields | official SCF submission record |
 | --- | --- | --- |
 | `sstream` | `scfAwarded: false`, `scfTotalAwardedUSD: null`, `scfAwardedRounds: []` | SCF #16, budget `36000`, Legacy v4.0 Award, `recnfJhEt3t2QogUI` |
+| `wagelink` | `scfAwarded: false`, `scfTotalAwardedUSD: null`, `scfAwardedRounds: []` | SCF #24, budget `50000`, Legacy v5.0 Activation Award |
 | `fluxity` | `scfAwarded: true`, `scfTotalAwardedUSD: 82750`, `scfAmountStatus: "disclosed"`, `scfAwardedRounds: [21]` | SCF #21, budget `68000`, Legacy v5.0 Community Award, `recDXtqYuR8g9FMXt` |
 
 Reproduction:
@@ -51,15 +62,24 @@ Reproduction:
 ```js
 await scout.searchProjects({ query: "SStream", limit: 5 });
 await lumenloop.get_scf_submissions({ name: "SStream" });
+await scout.searchProjects({ query: "WageLink", limit: 5 });
+await lumenloop.get_scf_submissions({ name: "WageLink" });
 await scout.searchProjects({ query: "Fluxity", limit: 5 });
 await lumenloop.get_scf_submissions({ name: "Fluxity" });
 ```
 
-Prevalence: 2 of 2 named project-funding assertions checked in the failing eval
-case were wrong because of these fields. Both projects were reached through
-ordinary prior-art discovery, not adversarial selection. Broader prevalence
-across the project corpus was not measured and is the first thing worth
+Prevalence: 2 of 2 named project-funding assertions in the failing eval case
+were wrong because of these fields; a third project (`wagelink`) was checked
+independently during adversarial review and shows the same linkage false
+negative. So the linkage defect is 2 of 3 projects checked. Projects were
+reached through ordinary discovery, not adversarial selection. Broader
+prevalence across the corpus was not measured and is the first thing worth
 checking upstream.
+
+`wagelink` matters for a second reason: it is named in the evidence of
+Stellar-Light/stellarlight#511, which was closed as fixed. That fix verified
+the awarded records, which by construction cannot surface a project whose
+award linkage is missing entirely. The linkage class therefore survived it.
 
 ## Recommendation
 

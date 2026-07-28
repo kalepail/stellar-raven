@@ -1,7 +1,7 @@
 ---
 id: sd-039
 service: stellar-docs
-status: verified
+status: reported-upstream
 discovered: 2026-07-27
 upstreamTitle: Separate the self-hosted OpenZeppelin Relayer from the managed Stellar Channels service in Tools docs
 evidence:
@@ -10,6 +10,7 @@ evidence:
   - 2026-07-27 live production scout.searchRepos({ query "openzeppelin relayer", limit 100 }) returned the canonical OpenZeppelin/openzeppelin-relayer Rust repository, indexed activity 2026-07-14
   - 2026-07-27 live production scout.explainRepo against that repo reported a self-hosted AGPL-3.0 service run via Cargo or Docker Compose with operator-owned .env/config.json, and an operator-controlled and operator-funded Stellar fee account
   - 2026-07-27 live production scout.searchResearch returned /docs/build/agentic-payments/x402, which already states the x402 plugin uses the Relayer framework and leverages managed Channels underneath
+  - filed upstream 2026-07-28: https://github.com/stellar/stellar-docs/issues/2707
 ---
 
 ## Finding
