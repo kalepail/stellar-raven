@@ -245,6 +245,44 @@ Privacy-sensitive fields already present in platform logs:
 - `$workers.event.request.headers.x-real-ip`
 - precise geo, TLS, and client-fingerprint-like metadata
 
+## Measurement Traps
+
+Each of these produced a confidently wrong conclusion in a real investigation
+(2026-07-27 production health review). They are silent: the query succeeds, the
+number looks plausible, and nothing signals the error.
+
+- **Do not sum request counts without filtering `$metadata.type`.** App JSON log
+  rows (`cf-worker`) inherit their invocation's status, so grouping every row by
+  `$workers.event.response.status` counts logging volume, not requests. A 7-day
+  total of ~36k collapsed to ~15k once filtered to `cf-worker-event`. Filter to
+  the invocation type before quoting any request total or rate.
+- **`search`/`demo-search` `truncated` is catalog pagination, not byte
+  truncation.** It means `total > hits.length` — more catalog entries matched
+  than the page returned (`src/catalog/search.ts`). It says nothing about the
+  model-boundary byte cut. A "94% truncated" figure read this way is a category
+  error and cannot justify any payload-size conclusion. Execute-result byte
+  truncation is `demo-execute.resultTruncated` / the `--- SOURCE BASIS ---`
+  block.
+- **`recoveryAdviceDelivered` is a host delivery latch, not model compliance.**
+  It is set when the checkpoint becomes visible in the tool result, not when the
+  model acts on it. Never infer model behavior from it. (Renamed from
+  `recoveryAdviceConsumed` for exactly this reason.)
+- **`evidenceState` on a `demo-step` is per-step.** The final answering step
+  makes no tool calls, so `evidenceState: "none"` there is structural and does
+  NOT mean the turn lacked evidence — earlier steps hold it.
+- **`sourceBasis` (and its `canonicalUrlCount`) exists only on truncated
+  execute results.** It is computed from the full pre-truncation value, so a
+  zero count can never demonstrate that truncation dropped something.
+- **ABR sampling is not an iid sample of the filtered set.** `abr_level` is 1
+  for windows of about 12h or less and 10 for wider ones; concatenating windows
+  at different levels biases any ratio computed across them. Query in equal,
+  narrow windows when a ratio matters, and report the level observed.
+- **Check the shape before matching.** `rows[].transcript` is an array of
+  objects; `transcript.includes("...")` is element equality and always returns
+  false. `verdict` is an object whose label is `verdict.score`, so comparing
+  verdicts directly compares object identity and reports 100% change. Both
+  mistakes fail silently and look like findings.
+
 ## Decision Heuristic
 
 - Request-level debugging: Ray ID is enough.

@@ -111,6 +111,27 @@ pre-spend review has actually caught (dated evidence:
 
 A missed plan review blocks launch; it never retroactively invalidates data already collected.
 
+**Cost estimates come from stored runs, never from the per-case figure in a README.** Read
+`meta.totalAgentCostUsd` out of `eval/qa/results/*.json` and quote the observed range and median
+for the same lane and denominator. The 2026-07-27 round's brief estimated a sample-30 at $6–21
+from the documented per-case range; nine stored Sonnet-5/Sonnet-5 sample-30 runs actually cost
+$17.98–$23.08 (median $21.80), so the estimate excluded most real runs and its maximum sat below
+the observed maximum. Live-15 runs cost $8.57–$10.25.
+
+**Check that a budget flag is actually wired before claiming it enforces anything.**
+`run-qa.mjs` accepts no cost cap and totals spend only after every case finishes; passing
+`--max-budget-usd` to it is silently ignored, and `judgeCase` takes no budget option. Enforce
+either by wiring the option through `runAgent`/`judgeCase`/`re-judge.mjs`, or — to keep a pinned
+clean checkout — with an out-of-tree `claude` wrapper first on PATH that injects
+`--max-budget-usd` by output-format (`stream-json` = answering, `json` = judge). Record the
+wrapper hash and the real CLI path/version either way.
+
+**Incomplete lanes are incomplete, not smaller.** Harnesses that catch per-job failures and filter
+them out (`eval/agentic/workflow-agentic-routing.js`) shrink the denominator silently, so
+percentages still look clean. Assert the expected job count before reading any result; a short run
+forbids an aggregate or baseline delta, though a paired per-row comparison on the jobs that did
+complete remains valid and is often the cheapest variance estimate available.
+
 ### Additional pre-registration for source-addition lanes
 
 Adding a new source family changes both evidence access and routing competition. Before spending on
