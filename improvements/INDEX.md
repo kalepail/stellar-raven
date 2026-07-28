@@ -31,7 +31,7 @@ Total findings: 67
 | sls-056 | Scout project search applies canonical deduplication to the returned projects       | reported-upstream | 2026-07-15 | 0           |
 | sls-057 | Scout's people-discovery surface does not currently provide a route to              | proposed          | 2026-07-27 | 0           |
 | sls-058 | Scout's structured SCF funding fields disagree with the official SCF submission     | reported-upstream | 2026-07-27 | 0           |
-| sls-059 | The Scout OpenAPI's get-one-skill operation still advertises the retired            | verified          | 2026-07-28 | 0           |
+| sls-059 | The Scout OpenAPI's get-one-skill operation still advertises the retired            | reported-upstream | 2026-07-28 | 0           |
 
 ## stellar-docs
 

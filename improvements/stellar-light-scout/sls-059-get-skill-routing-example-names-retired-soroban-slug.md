@@ -1,15 +1,17 @@
 ---
 id: sls-059
 service: stellar-light-scout
-status: verified
+status: reported-upstream
 discovered: 2026-07-28
 upstreamTitle: Get-one-skill routing example and keywords still name the retired 'soroban' slug
 evidence:
   - 2026-07-28 live production scout.getSkill({ name "soroban" }) returned 404 "unknown skill: soroban" (served as a soft-empty miss with a discover-the-slug hint)
   - 2026-07-28 live production scout.listSkills({ source "sdf" }) returned exactly seven SDF skills — agentic-payments, assets, dapp, data, smart-contracts, standards, zk-proofs — with no 'soroban' entry and each row carrying its install command (smart-contracts installs via "npx skills add stellar/smart-contracts"); generatedAt 2026-07-28T20:52:37Z
   - inventory/stellar-light.json (synced upstream OpenAPI): the get-one-skill operation carries three exact-slug 'soroban' references — x-routing exampleQuestions "How do I install the soroban skill?", x-routing keyword "soroban skill", and the path-parameter description "Skill slug (e.g. 'soroban', ...)"
+  - filed upstream 2026-07-28: https://github.com/Stellar-Light/stellarlight/issues/746
   - 2026-07-28 adversarial review (ADV-4) tightened this finding's scope before filing: exact-slug references separated from topical 'Soroban' vocabulary, and the successor claim softened to what the probes established
   - discovered during the 2026-07-28 consistency-register clustering pass (Solo todo 1253 Lane B observation, promoted via todo 1256); the eval corpus itself was corrected the same day (q-gap-scout-list-skill-directory now date-scopes the retired slug)
+  - upstream issue filed 2026-07-28: https://github.com/Stellar-Light/stellarlight/issues/746
 ---
 
 ## Finding
