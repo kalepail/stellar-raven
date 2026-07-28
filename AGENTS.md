@@ -22,6 +22,8 @@ in a networkless Dynamic Worker; host adapters own all service traffic, policy, 
 
 - Install reproducibly: `npm ci`.
 - Baseline validation for code changes: `npm run typecheck`, `npm test`, and `npm run build`.
+  `npm test` excludes `test/smoke/**`; add `npm run test:smoke` when touching `src/executor` or
+  `src/demo` — it is the only local lane covering those paths (CI always runs it).
 - Run the narrowest relevant eval or maintenance command in addition to the baseline; the selected
   skill defines the exact gate for eval, drift, golden-truth, improvements, and observability work.
 - Scan before committing: `npm run secrets:scan -- --tree`.
