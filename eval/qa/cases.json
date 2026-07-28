@@ -1,7 +1,7 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "28f962718173db07257810de7f099b01905a4d53c983e5bcc421092c76518eb9",
+  "corpusContentSha256": "7eaede5ea4787d0bbdd441b29a44bf16329566350d7128c20e4ee1b469b8321d",
   "counts": {
     "total": 490,
     "byCategory": {
@@ -4939,7 +4939,8 @@
             "Script3's remediation repository and dated notices confirm the two remediation dates and handling, but the reviewed live sources did not prove attacker repayment or recover the prior Script3 $10.5M net-loss attribution.",
             "improvements/stellar-light-scout/sls-022-yieldblox-incident-fact-model.md",
             "improvements/lumenloop/ll-011-yieldblox-incident-unit-status-errors.md",
-            "solo://proj/49/todo/2026-07-28-reconcile-lane-c--1251"
+            "solo://proj/49/todo/2026-07-28-reconcile-lane-c--1251",
+            "24h-commit adversarial review (todo 1254, 2026-07-28): golden.notes still asserted 'Script3 to compensate depositors' as settled while the verified answer treats depositor compensation and recovery as unverified; the note now records Script3's announced remediation/backstop process with compensation and recovery explicitly unverified. Internal-consistency repair only — no new external source consulted."
           ],
           "rootCause": [
             "Eval-authoring flaw: the prior golden added a pre-existing liability to the exploit call amount and promoted an inaccessible operator net-loss attribution to verified fact; todo 1251 tracks the cross-case repair.",
@@ -43127,7 +43128,8 @@
           "by": "Golden-truth sweep import — Native USDC and CCTP facts are correct, but bare 'Circle-issued' is product shorthand rather than one timeless global legal issuer, and vendor/on-chain provenance should distinguish Mainnet from Testnet.",
           "evidence": [
             "Solo scratchpad 575 GT-28 primary 3274 and blind 3275; independent Mainnet/Testnet conflict resolution.",
-            "Adversarial review of todo 1251 (2026-07-28): this sibling collapsed Circle's 2026-05-18 mainnet-support milestone into the 2026-05-19 announcement, contradicting the distinction its own consistency clusters (015/052/124) assert. Circle release notes record 2026.05.18 mainnet support; SDF/Circle announced 2026-05-19."
+            "Adversarial review of todo 1251 (2026-07-28): this sibling collapsed Circle's 2026-05-18 mainnet-support milestone into the 2026-05-19 announcement, contradicting the distinction its own consistency clusters (015/052/124) assert. Circle release notes record 2026.05.18 mainnet support; SDF/Circle announced 2026-05-19.",
+            "24h-commit adversarial review (todo 1254, 2026-07-28): three independent reviewers found golden.notes and one truth.corroboration claim still carried the collapsed 'went live 2026-05-19' wording that this case's own must-avoid forbids and that judge prompts render as GRADER NOTES; both were rewritten to the two-milestone (2026-05-18 mainnet support / 2026-05-19 public announcement) form already verified for the answer. Internal-consistency repair only — no new external source consulted."
           ],
           "rootCause": [
             "Eval-side product-brand, on-chain issuer account, and jurisdictional legal-obligor conflation.",

@@ -223,7 +223,8 @@
         "Script3's remediation repository and dated notices confirm the two remediation dates and handling, but the reviewed live sources did not prove attacker repayment or recover the prior Script3 $10.5M net-loss attribution.",
         "improvements/stellar-light-scout/sls-022-yieldblox-incident-fact-model.md",
         "improvements/lumenloop/ll-011-yieldblox-incident-unit-status-errors.md",
-        "solo://proj/49/todo/2026-07-28-reconcile-lane-c--1251"
+        "solo://proj/49/todo/2026-07-28-reconcile-lane-c--1251",
+        "24h-commit adversarial review (todo 1254, 2026-07-28): golden.notes still asserted 'Script3 to compensate depositors' as settled while the verified answer treats depositor compensation and recovery as unverified; the note now records Script3's announced remediation/backstop process with compensation and recovery explicitly unverified. Internal-consistency repair only — no new external source consulted."
       ],
       "rootCause": [
         "Eval-authoring flaw: the prior golden added a pre-existing liability to the exploit call amount and promoted an inaccessible operator net-loss attribution to verified fact; todo 1251 tracks the cross-case repair.",
