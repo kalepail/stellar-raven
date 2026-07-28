@@ -78,6 +78,7 @@ const NUMERIC_RE = /(?:\$\s*\d|\b\d+(?:\.\d+)?\s*(?:%|bps?|ms|seconds?|minutes?|
 const NEGATIVE_RE = /\b(?:no|none|not|never|without|cannot|can't|doesn't|isn't|aren't|unavailable|absent)\b/i;
 const LIVE_CONTRACT_VERSION_RE = /-v(\d+)$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const REVERIFY_BY_REFERENCE_RE = /\b(q-[a-z0-9-]+)\s+reverifyBy\s+(\d{4}-\d{2}-\d{2})\b/g;
 const SOURCE_CLASSES = new Set(["A", "B", "C", "D", "E", "F"]);
 const FRESHNESS = new Set(["stable", "scheduled", "live"]);
 const TRAPS = new Set([
@@ -224,6 +225,28 @@ export function lintNumericInvariants(cases, register = {}) {
       }
       if (accepted.length > 0 && !accepted.some((value) => text.includes(value))) {
         findings.push(finding("warn", "numeric", id, `fuzzy review: no authoritative spelling for ${label} found (${accepted.join(" | ")})`));
+      }
+    }
+  }
+  return findings;
+}
+
+export function lintDateContingentTraps(cases, register = {}) {
+  const findings = [];
+  const byId = new Map(cases.map((kase) => [kase.id, kase]));
+  for (const trap of entriesOf(register.dateContingentTraps)) {
+    for (const id of trap.caseIds ?? []) {
+      if (!byId.has(id)) findings.push(finding("error", "date-trap", id, "date-contingent trap references missing case"));
+    }
+    for (const field of ["disposition", "triggerDateEvent"]) {
+      for (const match of String(trap[field] ?? "").matchAll(REVERIFY_BY_REFERENCE_RE)) {
+        const [, id, quotedDate] = match;
+        const kase = byId.get(id);
+        if (!kase) {
+          findings.push(finding("error", "date-trap", id, `${field} reverifyBy reference names missing case`));
+        } else if (kase.truth?.reverifyBy !== quotedDate) {
+          findings.push(finding("error", "date-trap", id, `${field} reverifyBy ${quotedDate} does not match truth.reverifyBy ${kase.truth?.reverifyBy ?? "(missing)"}`));
+        }
       }
     }
   }
@@ -686,6 +709,7 @@ export function runLint({ cases, manifest, register = {}, ledger, previousCases,
   const findings = [
     ...lintSurface(cases, manifest),
     ...lintNumericInvariants(cases, register),
+    ...lintDateContingentTraps(cases, register),
     ...lintAvoidPhrases(cases),
     ...lintCorroboration(cases, register),
     ...lintLedger(cases, ledger, enforceFloors)

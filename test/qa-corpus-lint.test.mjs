@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
   isPullRequestCI,
   lintCorroboration,
+  lintDateContingentTraps,
   lintGospelChanges,
   lintStale,
   lintSurface
@@ -109,14 +110,61 @@ describe("QA corpus lint lanes", () => {
     expect(findings.map((item) => item.message).join("\n")).toMatch(/ADR-0003 leak/);
   });
 
-  it("seeds missing register hashes without reopening, then reopens known changes", () => {
-    const register = { clusters: [{ id: "storage", members: ["q-fixture-gospel"], verdict: "consistent" }] };
+  it("seeds all register hashes without reopening, then reopens known changes", () => {
+    const register = {
+      clusters: [{ id: "storage", members: ["q-fixture-gospel"], verdict: "consistent" }],
+      numericInvariants: {
+        entries: [{ label: "numeric", affectedCaseIds: ["q-fixture-gospel"], verdict: "consistent" }]
+      },
+      dateContingentTraps: {
+        entries: [{ triggerDateEvent: "date", caseIds: ["q-fixture-gospel"], verdict: "consistent" }]
+      }
+    };
     const seeded = updateRegister(register, new Map([["q-fixture-gospel", "aaa"]]), { seed: true, date: "2026-07-11" });
     expect(seeded.reopened).toEqual([]);
     expect(register.clusters[0].memberContentSha256).toEqual({ "q-fixture-gospel": "aaa" });
+    expect(register.numericInvariants.entries[0].memberContentSha256).toEqual({ "q-fixture-gospel": "aaa" });
+    expect(register.dateContingentTraps.entries[0].memberContentSha256).toEqual({ "q-fixture-gospel": "aaa" });
     const changed = updateRegister(register, new Map([["q-fixture-gospel", "bbb"]]), { date: "2026-07-12" });
-    expect(changed.reopened).toEqual(["storage"]);
-    expect(register.clusters[0].verdict).toBe("reopen");
+    expect(changed.reopened).toEqual(["date", "numeric", "storage"]);
+    for (const entry of [
+      register.clusters[0],
+      register.numericInvariants.entries[0],
+      register.dateContingentTraps.entries[0]
+    ]) expect(entry.verdict).toBe("reopen");
+  });
+
+  it("reports missing registered case ids as sorted warnings without throwing", () => {
+    const register = {
+      clusters: [{ id: "storage", members: ["q-fixture-vanished"], verdict: "consistent" }],
+      dateContingentTraps: {
+        entries: [{ triggerDateEvent: "date", caseIds: ["q-fixture-also-gone"], verdict: "consistent" }]
+      }
+    };
+    const result = updateRegister(register, new Map(), { date: "2026-07-28" });
+    expect(result.missingCases).toEqual([
+      { entry: expect.stringContaining("date"), id: "q-fixture-also-gone" },
+      { entry: expect.stringContaining("storage"), id: "q-fixture-vanished" }
+    ]);
+  });
+
+  it("checks date-trap case ids and quoted reverifyBy dates", () => {
+    const register = {
+      dateContingentTraps: {
+        entries: [{
+          triggerDateEvent: "q-fixture-live reverifyBy 2026-08-01",
+          disposition: "q-fixture-live reverifyBy 2026-08-02",
+          caseIds: ["q-fixture-live", "q-fixture-missing"]
+        }]
+      }
+    };
+    const findings = lintDateContingentTraps([
+      { id: "q-fixture-live", truth: { reverifyBy: "2026-08-01" } }
+    ], register);
+    expect(findings).toEqual(expect.arrayContaining([
+      expect.objectContaining({ level: "error", lane: "date-trap", id: "q-fixture-missing", message: expect.stringContaining("missing case") }),
+      expect.objectContaining({ level: "error", lane: "date-trap", id: "q-fixture-live", message: expect.stringContaining("does not match") })
+    ]));
   });
 
   // Regression: the gospel gate must fail-closed only for PRs. A push to a

@@ -12,12 +12,41 @@ const VERDICT = {
   type: 'object',
   properties: {
     queriesUsed: { type: 'array', items: { type: 'string' } },
+    searchCalls: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          query: { type: 'string' },
+          limit: { type: 'number' },
+          hits: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: { type: 'string' },
+                tier: { type: 'string' },
+                score: { type: 'number' },
+              },
+              required: ['id', 'tier', 'score'],
+              additionalProperties: false,
+            },
+          },
+          total: { type: 'number' },
+          truncated: { type: 'boolean' },
+          zeroGated: { type: 'boolean' },
+          widerCandidateIds: { type: 'array', items: { type: 'string' } },
+        },
+        required: ['query', 'limit', 'hits', 'total', 'truncated', 'zeroGated', 'widerCandidateIds'],
+        additionalProperties: false,
+      },
+    },
     primaryToolId: { type: 'string' },
     primaryService: { type: 'string', enum: ['lumenloop', 'scout', 'stellarDocs', 'skills', 'none'] },
     alternateToolIds: { type: 'array', items: { type: 'string' } },
     reasoning: { type: 'string' },
   },
-  required: ['queriesUsed', 'primaryToolId', 'primaryService', 'reasoning'],
+  required: ['queriesUsed', 'searchCalls', 'primaryToolId', 'primaryService', 'reasoning'],
   additionalProperties: false,
 }
 
@@ -28,9 +57,9 @@ A user asked: "${c.question}"
 
 Discover which tools exist by calling the server's search tool with curl via Bash. Exact command (replace QUERY; keep the quoting):
 curl -s http://localhost:${port}/mcp -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search","arguments":{"query":"QUERY","limit":8}}}'
-The response is an SSE frame: take the line starting with "data: ", parse it as JSON, then parse result.content[0].text as JSON to get {hits:[{id,service,kind,score,description,signature}]}.
+The response is an SSE frame: take the line starting with "data: ", parse it as JSON, then parse result.content[0].text as JSON to get {hits:[{id,service,kind,tier,score,description,signature}],total,truncated,widerCandidates:[{id,...}]}.
 
-Rules: 1-3 search calls total, different query phrasings allowed. Pick the ONE tool id you would actually invoke to answer the user (prefer kind "operation" when an operation can answer; a skill/skill-section only if reference reading is genuinely the right answer). Then report via structured output: queriesUsed, primaryToolId (an exact id from the hits), primaryService (the service of that tool), alternateToolIds (0-3 backups), reasoning (1-2 sentences). Do not answer the user's question itself.`
+Rules: 1-3 search calls total, different query phrasings allowed. For every call, record a searchCalls entry with its query, limit, hits in returned order as {id,tier,score}, total, truncated, zeroGated (true when no returned hit has tier "gated"), and widerCandidateIds. Pick the ONE tool id you would actually invoke to answer the user (prefer kind "operation" when an operation can answer; a skill/skill-section only if reference reading is genuinely the right answer). Then report via structured output: queriesUsed, searchCalls, primaryToolId (an exact id from the hits), primaryService (the service of that tool), alternateToolIds (0-3 backups), reasoning (1-2 sentences). Do not answer the user's question itself.`
 }
 
 phase('Ask')
@@ -48,7 +77,23 @@ const results = await parallel(jobs.map(({ c, effort }) => () =>
     model: 'sonnet',
     effort,
     schema: VERDICT,
-  }).then(v => ({ caseId: c.id, question: c.question, expected: c.expected_service, effort, verdict: v }))
+  }).then(v => {
+    // zeroGated is derived here, never trusted from the agent: the first live run
+    // showed agents mislabeling it in both directions on 3 of 13 pages.
+    const searchCalls = v.searchCalls.map(call => ({
+      ...call,
+      zeroGated: !call.hits.some(hit => hit.tier === 'gated'),
+    }))
+    return {
+      caseId: c.id,
+      question: c.question,
+      expected: c.expected_service,
+      effort,
+      verdict: v,
+      searchCalls,
+      primaryInHits: searchCalls.some(call => call.hits.some(hit => hit.id === v.primaryToolId)),
+    }
+  })
     .catch(() => null)
 ))
 

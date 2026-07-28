@@ -123,7 +123,7 @@ npm run eval:qa:lint -- --coverage         # + per-op/skill/category floor repor
 npm run eval:qa:lint -- --enforce-floors   # coverage floors as errors (P4-close gate)
 npm run eval:qa:lint -- --since <ref>      # + gospel-change guard vs that ref (auto merge-base in CI)
 
-# Consistency-register member hashes: stamp/auto-reopen clusters whose case files changed
+# Consistency-register member hashes: stamp/auto-reopen entries whose case files changed
 npm run eval:qa:register                   # --seed to baseline, --check for CI-style dry run
 
 # Run the battery (boot the server first; see below)
@@ -132,6 +132,9 @@ node eval/qa/run-qa.mjs --cases eval/qa/corpus/live/live-cases.json --port 8788
 node eval/qa/run-qa.mjs --cases eval/qa/corpus/live/live-digest-supplement-cases.json --port 8788
 npm run eval:plan -- eval/qa/results/<stamp>-variantA.json    # plan regrade, offline
 ```
+
+Register hashes cover cluster members, numeric-invariant `affectedCaseIds`, and date-trap
+`caseIds`; lint also checks any case `reverifyBy` date quoted in date-trap prose.
 
 Server for live lanes: reuse the Solo `dev` process when it exists; otherwise
 `npx wrangler dev --port 8788 --host localhost` — `--host localhost` is REQUIRED (custom-domain

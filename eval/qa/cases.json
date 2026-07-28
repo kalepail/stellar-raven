@@ -1,7 +1,7 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "7eaede5ea4787d0bbdd441b29a44bf16329566350d7128c20e4ee1b469b8321d",
+  "corpusContentSha256": "329271549847b8e1023f7687c23d5d66576cb1bd6d07b90f53a615b2890fdbfb",
   "counts": {
     "total": 490,
     "byCategory": {
@@ -15508,15 +15508,15 @@
         "scout.listSkills"
       ],
       "golden": {
-        "answer": "After identifying the slug, call `scout.getSkill({name: 'agentic-payments'})`. The observed result contained metadata plus full `skill.content`; unknown names are an operation error with a hint to list skills. Prefer bundled `codemode.skill.read` for sectioned, pinned build playbooks when that is the requested surface.",
+        "answer": "After identifying the slug, call `scout.getSkill({name: 'agentic-payments'})`. The observed result contained metadata plus full `skill.content`; an unknown name comes back as a soft-empty miss with a hint to discover the current slug via listSkills first — a source-scoped miss, not evidence the skill does not exist. Prefer bundled `codemode.skill.read` for sectioned, pinned build playbooks when that is the requested surface.",
         "keyFacts": [
           "Uses `getSkill` for one known slug and full content.",
           "Uses `listSkills` first for discovery when the name is unknown."
         ],
         "avoid": [
-          "Do NOT assume a missing skill is a soft-empty directory result or that all directory entries are mirrored bundled skills."
+          "Do NOT treat a getSkill miss as open-world absence of the skill, and do NOT assume all directory entries are mirrored bundled skills."
         ],
-        "notes": "N1 live contract probe 2026-07-11: Succeeded for agentic-payments and returned `skill.content` with metadata; catalog contract documents unknown-name guidance."
+        "notes": "N1 live contract probe 2026-07-11: Succeeded for agentic-payments and returned `skill.content` with metadata; catalog contract documents unknown-name guidance.\nCORRECTION 2026-07-28 (todo 1253 Lane B, F2): the exposed adapter maps an unknown-slug 404 to kind 'soft-empty' with a discover-the-slug hint (the Scout adapter source, 404 branch); the earlier 'operation error' classification contradicted both the served contract and sibling q-tool-skill-detail-install, so one grader rewarded and another punished the same true statement."
       },
       "tags": {
         "category": "tooling-infra",
@@ -15559,10 +15559,12 @@
           "evidence": [
             "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
             "catalog/manifest.json#scout.getSkill",
-            "inventory/stellar-light.json"
+            "inventory/stellar-light.json",
+            "Todo 1253 Lane B review (2026-07-28, F2): the Scout adapter source (src/adapters) maps a 404 unknown detail slug to kind 'soft-empty' (verified by reading the adapter's 404 branch), and the 2026-07-28-verified sibling q-tool-skill-detail-install records getSkill({name:'soroban'}) as a soft-empty; this case's 'operation error' classification was corrected to the served soft-empty contract."
           ],
           "rootCause": [
-            "solo://project/49/scratchpad/p4/n1-gapops"
+            "solo://project/49/scratchpad/p4/n1-gapops",
+            "Eval-authoring flaw: graded the served soft-empty contract as an operation error, contradicting the adapter and the sibling case."
           ]
         },
         "origin": "authored 2026-07 (gap-ops)"
@@ -15575,7 +15577,7 @@
         "scout.listSkills"
       ],
       "golden": {
-        "answer": "Use `scout.listSkills` to browse the live installable directory, optionally filtering by source or kind. The observed SDF-filtered result returned seven entries with slug, install command, source, kind, homepage/raw URL, and compatibility. Then use `getSkill` for one named entry.",
+        "answer": "Use `scout.listSkills` to browse the live installable directory, optionally filtering by source or kind. The observed SDF-filtered result (a dated 2026-07-11 probe) returned seven entries with slug, install command, source, kind, homepage/raw URL, and compatibility; treat the count and slugs as an observation with its date. Then use `getSkill` for one named entry.",
         "keyFacts": [
           "Uses `listSkills` for discovery and `getSkill` for one known skill.",
           "Treats the directory as live metadata, not proof that every entry is a bundled skill."
@@ -15583,7 +15585,7 @@
         "avoid": [
           "Do NOT use `listSkills` as though it returns the full instructions for every skill."
         ],
-        "notes": "N1 live contract probe 2026-07-11: Succeeded with a source=sdf filter and returned seven skill-directory entries including Soroban."
+        "notes": "N1 live contract probe 2026-07-11: Succeeded with a source=sdf filter and returned seven skill-directory entries — a DATED 2026-07-11 snapshot: that roster included a 'soroban' entry, a slug the 2026-07-28 re-verification found retired in favour of 'smart-contracts'. Treat the count and slugs as an observation with its date, never a current guarantee."
       },
       "tags": {
         "category": "soroban",
@@ -15626,7 +15628,8 @@
           "evidence": [
             "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
             "catalog/manifest.json#scout.listSkills",
-            "inventory/stellar-light.json"
+            "inventory/stellar-light.json",
+            "Todo 1253 Lane B review (2026-07-28, F3): the notes named the retired 'soroban' slug as an undated roster fact; date-scoped to the 2026-07-11 probe with the 2026-07-28 'smart-contracts' retirement recorded. Internal-consistency repair — the underlying probe observation is unchanged."
           ],
           "rootCause": [
             "solo://project/49/scratchpad/p4/n1-gapops"
@@ -38943,7 +38946,7 @@
           "Do NOT call 64 KiB the current contract-code limit or a universal ledger-entry limit.",
           "Do NOT teach standalone contract optimize as the preferred current workflow."
         ],
-        "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections. The 24KB EVM limit (EIP-170) is the cross-chain confusion trap. VERIFIED: the per-ledger-entry size limit is 64 KB (a network config setting) — this caps the contract-code (Wasm) entry and instance storage. It is tunable by validator vote, so the rubric gates on the durable fact (~64 KB ledger-entry cap, config-set) rather than a hard byte constant; kept medium because the exact byte value can drift.\nAlso good if the answer: Building with optimization (`stellar contract build --optimize`, wasm-opt) reduces binary size. | Spec/dead-code shaking and `#![no_std]` keep the binary small.\nGolden cites: A developers.stellar.org page on contract limits / build optimization.\nGT-48 CORRECTION 2026-07-11: live network setting controls; code and data-entry caps are distinct."
+        "notes": "2026-06-29: removed duplicated Why-these-cards/Edge sections. The 24KB EVM limit (EIP-170) is the cross-chain confusion trap. VERIFIED 2026-07-28: the contract-code cap and the contract-data-entry cap are DISTINCT network settings — contract_max_size_bytes=131072 (128 KiB) caps uploaded contract code, and contract_data_entry_size_bytes=65536 (64 KiB) caps a contract-data entry; both are validator-tunable, so the rubric gates on the distinction and the live-read requirement rather than any byte constant; kept medium because the exact byte values can drift.\nAlso good if the answer: Building with optimization (`stellar contract build --optimize`, wasm-opt) reduces binary size. | Spec/dead-code shaking and `#![no_std]` keep the binary small.\nGolden cites: A developers.stellar.org page on contract limits / build optimization.\nGT-48 CORRECTION 2026-07-11: live network setting controls; code and data-entry caps are distinct."
       },
       "tags": {
         "category": "soroban",
@@ -39005,7 +39008,8 @@
             "Production stellar-raven: stellarDocs.search_protocol_concepts_docs({query:'contract_max_size_bytes contract_data_entry_size_bytes network settings resource limits',hitsPerPage:10,includeContent:true}) and stellarDocs.get_doc_page_sections({path:'/docs/learn/fundamentals/fees-resource-limits-metering',includeContent:true}) — resource settings pages returned.",
             "Empirical free reads: stellar 27.0.0 network settings --no-cache -n mainnet|testnet --output json-formatted both returned contract_max_size_bytes=131072 and contract_data_entry_size_bytes=65536.",
             "Empirical CLI surface: stellar contract build --help reports --optimize default true; stellar contract optimize --help reports 'Deprecated, use build --optimize.'",
-            "Sibling sweep: q-soroban-wasm-language and q-soroban-deploy-cli distinguish wasm32v1-none/current build behavior and do not retain a 64 KiB Wasm cap."
+            "Sibling sweep: q-soroban-wasm-language and q-soroban-deploy-cli distinguish wasm32v1-none/current build behavior and do not retain a 64 KiB Wasm cap.",
+            "Todo 1253 Lane B review (2026-07-28, F1): the grader notes still instructed the rubric to gate on '~64 KB ledger-entry cap' as the contract-code cap, which this case's own avoid clause and the sibling q-soroban-wasm-language forbid; the sentence now states the two distinct settings the verified answer asserts. Internal-consistency repair — no new external source consulted."
           ],
           "rootCause": [
             "freshness-recheck"
@@ -43470,7 +43474,7 @@
           "Do NOT fabricate tools or install commands, call every listed tool SDF-official, or hide maturity/security caveats.",
           "Do NOT freeze counts, membership, or empty categories without an answer-time generatedAt/as-of stamp."
         ],
-        "notes": "2026-06-29 differentiation vs q-tool-mcp-servers-skills-discovery: this file owns the BROAD multi-kind catalog sweep (skill-md/mcp-server/sdk/cli/agent-kit/tool); mcp-discovery owns the NARROW kind=mcp-server filter. Scout /api/skills returns those kinds across sources [sdf, stellarlight, lumenloop, external, community]. Fabrication is the trap.\nAlso good if the answer: Spans the FULL multi-kind catalog (skill-md, mcp-server, sdk, cli, agent-kit, tool) rather than scoping to a single kind such as MCP servers only. | Distinguishes tooling-catalog discovery from a conceptual docs lookup.\nGolden cites: Scout skills catalog (stellarlight.xyz/api/skills) results.\nGT-55 CORRECTION 2026-07-11: grade the broad multi-kind live-catalog behavior, but never require one row per valid enum. Require current returned entries and honest empty categories with generatedAt/as-of context; narrow MCP-only discovery remains a sibling case."
+        "notes": "2026-06-29 differentiation vs the routing-corpus lane q-tool-mcp-servers-skills-discovery (routing eval only — NOT an owned battery case): this file owns the BROAD multi-kind catalog sweep (skill-md/mcp-server/sdk/cli/agent-kit/tool); mcp-discovery owns the NARROW kind=mcp-server filter. Scout /api/skills returns those kinds across sources [sdf, stellarlight, lumenloop, external, community]. Fabrication is the trap.\nAlso good if the answer: Spans the FULL multi-kind catalog (skill-md, mcp-server, sdk, cli, agent-kit, tool) rather than scoping to a single kind such as MCP servers only. | Distinguishes tooling-catalog discovery from a conceptual docs lookup.\nGolden cites: Scout skills catalog (stellarlight.xyz/api/skills) results.\nGT-55 CORRECTION 2026-07-11: grade the broad multi-kind live-catalog behavior, but never require one row per valid enum. Require current returned entries and honest empty categories with generatedAt/as-of context; narrow MCP-only discovery remains a sibling case."
       },
       "tags": {
         "category": "tooling-infra",
@@ -43565,7 +43569,8 @@
           "evidence": [
             "C: scout.listSkills({}) at 2026-07-28T14:05Z returned 42 rows and the six kind/five source enums; filtered kind=agent-kit returned 0 rows and source=community was 0 in the response counts.",
             "B: sampled returned tooling against https://github.com/stellar/stellar-cli and https://github.com/Stellar-Light/scout-mcp; Scout's install metadata remains row-level, not enum-derived.",
-            "Sibling sweep: q-tool-mcp-servers-skills-discovery remains the narrow MCP filter lane; q-tool-skill-detail-install is the exact-detail lane."
+            "Sibling sweep: q-tool-mcp-servers-skills-discovery (routing corpus, not an owned battery case) remains the narrow MCP filter lane; q-tool-skill-detail-install is the exact-detail lane.",
+            "Todo 1253 Lane B review (2026-07-28, F4): the sibling-sweep reference is to a routing-corpus id with no owned-battery counterpart; re-scoped explicitly so the sweep is verifiable against the corpus it actually names."
           ],
           "rootCause": [
             "freshness-recheck"

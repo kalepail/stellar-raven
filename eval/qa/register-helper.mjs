@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * Stamp consistency-register cluster members with their owned case-file
- * hashes. A changed known hash reopens the cluster; a missing historical hash
- * is seeded without blocking or reopening it.
+ * Stamp consistency-register entries with their owned case-file hashes.
+ * A changed known hash reopens the entry; a missing historical hash is seeded
+ * without blocking or reopening it.
  */
 import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -53,36 +53,46 @@ function clusterList(register) {
   return clusters;
 }
 
+function entryLabel(entry) {
+  return entry.id ?? entry.name ?? entry.cluster ?? entry.label ?? entry.triggerDateEvent
+    ?? entry.cases?.join(",") ?? "unnamed";
+}
+
 export function updateRegister(register, hashes, { seed = false, date = new Date().toISOString().slice(0, 10) } = {}) {
   let changed = false;
   const reopened = [];
   const missingCases = [];
-  for (const cluster of clusterList(register)) {
-    const previous = cluster.memberContentSha256 && typeof cluster.memberContentSha256 === "object"
-      ? cluster.memberContentSha256
+  const entries = [
+    ...clusterList(register).map((entry) => [entry, clusterMembers(entry)]),
+    ...(register.numericInvariants?.entries ?? []).map((entry) => [entry, entry.affectedCaseIds ?? []]),
+    ...(register.dateContingentTraps?.entries ?? []).map((entry) => [entry, entry.caseIds ?? []])
+  ];
+  for (const [entry, memberIds] of entries) {
+    const previous = entry.memberContentSha256 && typeof entry.memberContentSha256 === "object"
+      ? entry.memberContentSha256
       : {};
     const next = {};
     let knownHashChanged = false;
-    for (const id of [...clusterMembers(cluster)].sort()) {
+    for (const id of [...memberIds].sort()) {
       const hash = hashes.get(id);
       if (!hash) {
-        missingCases.push({ cluster: cluster.id ?? cluster.name ?? cluster.cluster ?? cluster.cases?.join(",") ?? "unnamed", id });
+        missingCases.push({ entry: entryLabel(entry), id });
         continue;
       }
       next[id] = hash;
       if (typeof previous[id] === "string" && previous[id] !== hash) knownHashChanged = true;
     }
     if (JSON.stringify(previous) !== JSON.stringify(next)) {
-      cluster.memberContentSha256 = next;
+      entry.memberContentSha256 = next;
       changed = true;
     }
     // Seed mode and absent historical member hashes establish the baseline;
-    // only a changed hash that was actually recorded can reopen a cluster.
+    // only a changed hash that was actually recorded can reopen an entry.
     if (!seed && knownHashChanged) {
-      const label = cluster.id ?? cluster.name ?? cluster.cluster ?? cluster.cases?.join(",") ?? "unnamed";
-      if (cluster.verdict !== "reopen") { cluster.verdict = "reopen"; changed = true; }
+      const label = entryLabel(entry);
+      if (entry.verdict !== "reopen") { entry.verdict = "reopen"; changed = true; }
       const marker = { date, reason: "member-content-changed" };
-      if (JSON.stringify(cluster.reopened) !== JSON.stringify(marker)) { cluster.reopened = marker; changed = true; }
+      if (JSON.stringify(entry.reopened) !== JSON.stringify(marker)) { entry.reopened = marker; changed = true; }
       reopened.push(label);
     }
   }
@@ -90,7 +100,7 @@ export function updateRegister(register, hashes, { seed = false, date = new Date
   // when migration has not populated them yet.
   if (register.numericInvariants === undefined) { register.numericInvariants = { entries: [] }; changed = true; }
   if (register.dateContingentTraps === undefined) { register.dateContingentTraps = { entries: [] }; changed = true; }
-  return { register, changed, reopened: reopened.sort(), missingCases: missingCases.sort((a, b) => a.cluster.localeCompare(b.cluster) || a.id.localeCompare(b.id)) };
+  return { register, changed, reopened: reopened.sort(), missingCases: missingCases.sort((a, b) => a.entry.localeCompare(b.entry) || a.id.localeCompare(b.id)) };
 }
 
 function parseArgs(argv) {
@@ -114,7 +124,7 @@ function main() {
   const register = JSON.parse(readFileSync(registerPath, "utf8"));
   const result = updateRegister(register, caseFileHashes(corpusDir), { seed: options.seed, date: options.date });
   for (const item of result.missingCases) {
-    console.warn(`[register-helper] WARN ${item.cluster}: missing case ${item.id}; historical missing hashes never block`);
+    console.warn(`[register-helper] WARN ${item.entry}: missing case ${item.id}; historical missing hashes never block`);
   }
   for (const id of result.reopened) console.log(`[register-helper] REOPEN ${id}: member content changed`);
   if (options.check) {

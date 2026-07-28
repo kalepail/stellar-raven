@@ -444,7 +444,7 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
           : "No hits. Try the other candidate family, vary vocabulary (entity name first, then capability phrase), or drop the `kind`/`service` filters. Do not conclude the capability is missing from one empty result.";
       const nextSteps =
         widerCandidates.length > 0
-          ? `${baseNextSteps} This page has no gated operation match; prioritize the advisory widerCandidates in one bounded broad pass if the open-world question remains unanswered.`
+          ? `${baseNextSteps} This page has no gated operation match, so the ranked hits are lexical-only candidates; prefer the leading hit that fits the question, and if none does, run one bounded broad pass over the advisory widerCandidates.`
           : baseNextSteps;
       return respond({ hits, total, truncated, recovery, widerCandidates, nextSteps }, page);
     }
