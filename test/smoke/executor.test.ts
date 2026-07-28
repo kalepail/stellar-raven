@@ -163,13 +163,37 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
       const shared = { url: "https://deep.example.test/canonical" };
       return { a: { b: { c: { d: { e: shared } } } }, links: shared, padding: "x".repeat(30000) };
     }`);
+    // First reached through a URL-keyed chain whose url leaf sits past the
+    // depth cap; the shallow alias must still surface it (a urlLeaf=true visit
+    // may not permanently mark the node as exhausted).
+    const urlKeyedDepthAlias = await run(`async () => {
+      const shared = { url: "https://deep-url-keyed.example.test/canonical" };
+      return { a: { b: { c: { d: { links: shared } } } }, links: shared, padding: "x".repeat(30000) };
+    }`);
 
     expect(arrayAlias.ok).toBe(true);
     expect(depthAlias.ok).toBe(true);
+    expect(urlKeyedDepthAlias.ok).toBe(true);
     if (!arrayAlias.ok) throw new Error(arrayAlias.error);
     if (!depthAlias.ok) throw new Error(depthAlias.error);
+    if (!urlKeyedDepthAlias.ok) throw new Error(urlKeyedDepthAlias.error);
     expect(arrayAlias.sourceBasis?.canonicalUrls).toEqual(["https://canonical.example.test/a"]);
     expect(depthAlias.sourceBasis?.canonicalUrls).toEqual(["https://deep.example.test/canonical"]);
+    expect(urlKeyedDepthAlias.sourceBasis?.canonicalUrls).toEqual([
+      "https://deep-url-keyed.example.test/canonical"
+    ]);
+  });
+
+  it("keeps restoreUrl-style keys while still excluding store links", async () => {
+    const outcome = await run(`async () => ({
+      restoreUrl: "https://restore.example.test/backup",
+      appStoreLink: "https://store.example.test/app",
+      padding: "x".repeat(30000)
+    })`);
+
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) throw new Error(outcome.error);
+    expect(outcome.sourceBasis?.canonicalUrls).toEqual(["https://restore.example.test/backup"]);
   });
 
   it("preserves root string/array URL collection and the depth-five traversal cap", async () => {

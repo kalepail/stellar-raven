@@ -244,6 +244,10 @@ function tryGitleaks(mode) {
   // scanners disagree and gitleaks blocks on known-public content hashes.
   const configPath = join(ROOT, ".gitleaks.toml");
   const configArgs = existsSync(configPath) ? ["--config", configPath] : [];
+  // Tree mode's full-tree coverage comes from the custom layers above; the
+  // gitleaks backstop scans only the last commit. `gitleaks dir` would widen
+  // it but drags in untracked files — including .env, whose real secrets must
+  // never reach a scanner report — so the narrower git-mode invocation stays.
   const args = mode === "staged"
     ? ["git", "--staged", "--redact", ...configArgs]
     : ["git", "--redact", "--log-opts=-1 HEAD", ...configArgs];

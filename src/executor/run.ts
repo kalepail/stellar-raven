@@ -226,7 +226,13 @@ function serializedResult(value: unknown): { body: string; mime: ArtifactMime } 
 
 function collectCanonicalUrlCandidates(value: unknown): string[] {
   const out: string[] = [];
-  const seen = new Map<object, boolean>();
+  // Best visit so far per object: shallowest depth seen at all, and shallowest
+  // seen on a URL-keyed path. A revisit is skipped only when a prior visit
+  // dominates it, so a shallow alias reached after a depth-cut traversal (or a
+  // URL-keyed alias after a non-URL one) still descends. Depths only shrink,
+  // so each node is visited at most ~2× the depth cap; replays may duplicate
+  // raw URLs and sanitizeCanonicalUrls dedupes them before its 5-URL cap.
+  const seen = new Map<object, { anyDepth: number; urlDepth: number }>();
   const visit = (v: unknown, depth: number, urlLeaf = true) => {
     if (out.length >= 20 || depth > 5) return;
     if (typeof v === "string") {
@@ -234,11 +240,12 @@ function collectCanonicalUrlCandidates(value: unknown): string[] {
       return;
     }
     if (v === null || typeof v !== "object") return;
-    // A URL-keyed visit cut off at depth 5 can still block a later shallow alias.
-    // The false→true replay may duplicate raw URLs; sanitizeCanonicalUrls dedupes them.
-    // Revisit the replay if the manifest URL cap rises or that dedupe is removed.
-    if (seen.has(v) && (seen.get(v) || !urlLeaf)) return;
-    seen.set(v, urlLeaf);
+    const prev = seen.get(v);
+    if (prev && (urlLeaf ? prev.urlDepth : prev.anyDepth) <= depth) return;
+    seen.set(v, {
+      anyDepth: Math.min(prev?.anyDepth ?? Infinity, depth),
+      urlDepth: urlLeaf ? Math.min(prev?.urlDepth ?? Infinity, depth) : (prev?.urlDepth ?? Infinity)
+    });
     if (Array.isArray(v)) {
       for (const item of v.slice(0, 50)) visit(item, depth + 1, urlLeaf);
       return;
@@ -249,7 +256,7 @@ function collectCanonicalUrlCandidates(value: unknown): string[] {
         item,
         depth + 1,
         /url|uri|link|website|repo/i.test(key) &&
-          !/logo|avatar|icon|image|thumb|banner|store/i.test(key)
+          !/logo|avatar|icon|image|thumb|banner|(?<!re)store/i.test(key)
       );
     }
   };

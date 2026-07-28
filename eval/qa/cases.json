@@ -1,7 +1,7 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "9c7403b683140eca1d0b6d6ad4b5bce0001a82d8ab79e4a7735d5edb5ef7c80a",
+  "corpusContentSha256": "28f962718173db07257810de7f099b01905a4d53c983e5bcc421092c76518eb9",
   "counts": {
     "total": 490,
     "byCategory": {
@@ -3317,7 +3317,7 @@
             ]
           },
           {
-            "claim": "The 2026-07-11 fee probe found Fast/Standard 0/0 for 27→0 and 1 bp/0 for 0→27; callers must re-query /v2/burn/USDC/fees.",
+            "claim": "Circle documents per-route Fast/Standard CCTP fees and the /v2/burn/USDC/fees endpoint to query them; the specific 2026-07-11 readings (0/0 for 27→0, 1 bp/0 for 0→27) are a dated probe observation recorded in the golden, and callers must re-query.",
             "verdict": "confirmed-as-of",
             "evidence": [
               {
@@ -4737,7 +4737,7 @@
           "Do NOT claim Reflector, Blend core, Etherfuse, or Stellar protocol was compromised.",
           "Do NOT claim staleness caused this event or that TWAP/VWAP alone would have prevented it."
         ],
-        "notes": "2026-06-29 reviewed; rubric correctly gates on the approximate-range/reconcile discipline, not one exact figure. Freshness:true; figures approximate. RECONCILED across dated sources (2026-02): loss ~$10.2M (range to ~$10.86M; some say $10.8M); ~48,069,094 XLM (~$7.2M–$7.5M) frozen by Tier-1 validators ~Feb 22; date Feb 21–22 (~00:25 UTC Feb 22). Vector: USTRY (Etherfuse US-Treasury Stablebond) pumped ~$1.06→~$106 on illiquid SDEX, poisoning Reflector's VWAP feed; attacker borrowed ~61.25M XLM + ~1M USDC. Pool-operator/oracle config failure, NOT a Blend V2 core or Stellar-protocol flaw; Script3 to compensate depositors. Don't gate on one exact $.\nAlso good if the answer: Ties USTRY (an Etherfuse US-Treasury Stablebond) priced on illiquid SDEX into the Reflector VWAP oracle as the manipulation vector; attacker borrowed ~61M XLM + ~1M USDC. | Frames it as a pool-operator/oracle-config failure, NOT a Blend V2 core-contract or Stellar-protocol flaw.\nGolden cites: A dated Scout / news source for the incident and the loss/recovery figures.\nCORRECTION 2026-07-10 (GT-09 processes 3226/3235): require separate labels for token borrow, dated gross valuation, operator net loss, defaults, validator quarantine, remediation, and recovery. About 48M quarantined is safe; the exact Blockaid number must stay attributed. Recovery remains unverified. Staleness was not causal; never promise TWAP alone."
+        "notes": "2026-06-29 reviewed; rubric correctly gates on the approximate-range/reconcile discipline, not one exact figure. Freshness:true; figures approximate. RECONCILED across dated sources (2026-02): loss ~$10.2M (range to ~$10.86M; some say $10.8M); ~48,069,094 XLM (~$7.2M–$7.5M) frozen by Tier-1 validators ~Feb 22; date Feb 21–22 (~00:25 UTC Feb 22). Vector: USTRY (Etherfuse US-Treasury Stablebond) pumped ~$1.06→~$106 on illiquid SDEX, poisoning Reflector's VWAP feed; attacker borrowed ~61.25M XLM + ~1M USDC. Pool-operator/oracle config failure, NOT a Blend V2 core or Stellar-protocol flaw; Script3 announced a remediation/backstop process, but depositor compensation and recovery of attacker-held funds remain unverified — do not reward a confident \"depositors were made whole\" claim. Don't gate on one exact $.\nAlso good if the answer: Ties USTRY (an Etherfuse US-Treasury Stablebond) priced on illiquid SDEX into the Reflector VWAP oracle as the manipulation vector; attacker borrowed ~61M XLM + ~1M USDC. | Frames it as a pool-operator/oracle-config failure, NOT a Blend V2 core-contract or Stellar-protocol flaw.\nGolden cites: A dated Scout / news source for the incident and the loss/recovery figures.\nCORRECTION 2026-07-10 (GT-09 processes 3226/3235): require separate labels for token borrow, dated gross valuation, operator net loss, defaults, validator quarantine, remediation, and recovery. About 48M quarantined is safe; the exact Blockaid number must stay attributed. Recovery remains unverified. Staleness was not causal; never promise TWAP alone."
       },
       "tags": {
         "category": "compliance-rwa-payments",
@@ -37908,7 +37908,7 @@
           },
           {
             "class": "B",
-            "ref": "https://github.com/stellar/rs-soroban-sdk/releases/tag/v27.0.2"
+            "ref": "https://github.com/stellar/rs-soroban-sdk/releases"
           },
           {
             "class": "D",
@@ -43070,7 +43070,7 @@
           "Do NOT infer legal issuer solely from product branding or an on-chain account domain.",
           "Do NOT collapse Circle's 2026-05-18 Stellar-mainnet-support milestone into the 2026-05-19 public-live announcement, or present either as the sole CCTP-on-Stellar date."
         ],
-        "notes": "GT-28 CORRECTION 2026-07-10: USDC is native on Stellar; GA5Z…KZVN is Mainnet and GBBD…FLA5 is Testnet. CCTP went live 2026-05-19. Circle product brand, on-chain issuer, and jurisdictional legal entity are distinct.\nGT-28 independently confirmed by processes 3274/3275."
+        "notes": "GT-28 CORRECTION 2026-07-10: USDC is native on Stellar; GA5Z…KZVN is Mainnet and GBBD…FLA5 is Testnet. CCTP on Stellar has two distinct milestones — Circle's release notes record Stellar mainnet support on 2026-05-18 and the SDF/Circle public-live announcement followed on 2026-05-19; do not collapse them or present either as the sole date. Circle product brand, on-chain issuer, and jurisdictional legal entity are distinct.\nGT-28 independently confirmed by processes 3274/3275."
       },
       "tags": {
         "category": "history-org-tokenomics",
@@ -43104,7 +43104,7 @@
         ],
         "corroboration": [
           {
-            "claim": "USDC is native on Stellar; Mainnet issuer is GA5Z…KZVN, CCTP launched 2026-05-19, and the applicable Circle legal issuer depends on jurisdiction/current terms.",
+            "claim": "USDC is native on Stellar; Mainnet issuer is GA5Z…KZVN, CCTP reached Stellar-mainnet support 2026-05-18 with the public-live announcement 2026-05-19, and the applicable Circle legal issuer depends on jurisdiction/current terms.",
             "verdict": "confirmed-as-of",
             "evidence": [
               {

@@ -164,7 +164,7 @@
         ]
       },
       {
-        "claim": "The 2026-07-11 fee probe found Fast/Standard 0/0 for 27→0 and 1 bp/0 for 0→27; callers must re-query /v2/burn/USDC/fees.",
+        "claim": "Circle documents per-route Fast/Standard CCTP fees and the /v2/burn/USDC/fees endpoint to query them; the specific 2026-07-11 readings (0/0 for 27→0, 1 bp/0 for 0→27) are a dated probe observation recorded in the golden, and callers must re-query.",
         "verdict": "confirmed-as-of",
         "evidence": [
           {

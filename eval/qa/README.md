@@ -187,12 +187,12 @@ the correct trade against pushing it to 2027 to keep a number tidy.
 
 Known limitation of the currentness tier: it matches the *word* "version", not version literals,
 and has no inflection tolerance ("releases" and "Dates" do not match). Five late-scheduled cases
-pin a version or protocol literal; three are Protocol-N facts that are defensibly stable, but
-`q-tool-passkeykit-smart-wallet` (Smart Account Kit 0.4.2 / OZ v0.7.2) and
-`q-ti-self-host-retention-backfill` (RPC v27.1.1 / Horizon v27.0.0) land 2027-03-18, roughly 20
-months after their `asOf`. Recorded rather than special-cased: re-shuffling the cohort for two
-cases would trade a reproducible rule for a hand-tuned one. Pull those two forward at the next
-verification pass if they matter.
+pinned a version or protocol literal; three are Protocol-N facts that are defensibly stable.
+`q-tool-passkeykit-smart-wallet` was pulled forward by the 2026-07-28 re-verification round
+(now `reverifyBy` 2026-08-27), leaving `q-ti-self-host-retention-backfill` (RPC v27.1.1 /
+Horizon v27.0.0) at 2027-03-18 — about eight months after its 2026-07-11 `asOf`. Recorded rather
+than special-cased: re-shuffling the cohort for one case would trade a reproducible rule for a
+hand-tuned one. Pull it forward at the next verification pass if it matters.
 
 ## Judging rubric and score comparability
 
