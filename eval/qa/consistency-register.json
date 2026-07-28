@@ -378,6 +378,7 @@
           "q-comp-yieldblox-oracle-incident",
           "q-defi-etherfuse-stablebonds",
           "q-defi-reflector-oracle",
+          "q-hist-yieldblox-v2-2026-exploit",
           "q-soroban-oracle-defensive-consumption"
         ],
         "verdict": "consistent",
@@ -387,12 +388,13 @@
           "reason": "todo 1251 reconciled token transfers, combined USD valuation, quarantine, and unverified net-loss attribution",
           "verdict": "consistent"
         },
-        "note": "The cases consistently separate the 61,249,278.31-XLM and 1,000,196.70-USDC exploit transfers from source-specific combined USD valuations around $10M-$10.86M and from Blockaid's separately attributed 48,069,094-XLM quarantine. The decoded pre-state's roughly 14,000-USDC liability is not a second exploit transfer, quarantine is not recovery, and the prior Script3 ~$10.5M net-loss attribution remains unverified. Date, USTRY/Reflector vector, and app-level-not-protocol-level framing remain compatible. Re-swept 2026-07-28 (round lead, 24h-commit adversarial-review fixes): reopen is hash churn from this round's own contradiction-removing edits — q-comp-yieldblox-oracle-incident notes no longer assert Script3 depositor compensation as settled; remediation-vs-recovery discipline is now uniform with the answer and siblings. Edits move members toward the cluster claim; lead read each changed field directly. Re-swept 2026-07-28: hash churn from appending the todo-1254 record to truth.verified.evidence on the affected member(s) — the CI gospel gate requires verified to move with judge-facing edits; no judge-facing content changed in that append.",
+        "note": "The cases consistently separate the 61,249,278.31-XLM and 1,000,196.70-USDC exploit transfers from source-specific combined USD valuations around $10M-$10.86M and from Blockaid's separately attributed 48,069,094-XLM quarantine. The decoded pre-state's roughly 14,000-USDC liability is not a second exploit transfer, quarantine is not recovery, and the prior Script3 ~$10.5M net-loss attribution remains unverified. Date, USTRY/Reflector vector, and app-level-not-protocol-level framing remain compatible. Re-swept 2026-07-28 (round lead, 24h-commit adversarial-review fixes): reopen is hash churn from this round's own contradiction-removing edits — q-comp-yieldblox-oracle-incident notes no longer assert Script3 depositor compensation as settled; remediation-vs-recovery discipline is now uniform with the answer and siblings. Edits move members toward the cluster claim; lead read each changed field directly. Re-swept 2026-07-28: hash churn from appending the todo-1254 record to truth.verified.evidence on the affected member(s) — the CI gospel gate requires verified to move with judge-facing edits; no judge-facing content changed in that append. Added 2026-07-28 (todo 1253 Lane B, G8): q-hist-yieldblox-v2-2026-exploit joins as the primary bearer of this cluster's claims. Without it, an edit to the corpus's main incident case reopened cluster-126 and the YieldBlox numericInvariant but never this cluster, leaving the date, USTRY/Reflector vector, and app-level-not-protocol-level framing claims with no reopen path. Verified today: its transfer figures, quarantine-is-not-recovery discipline, combined-USD-valuation framing, pre-existing ~14,000-USDC liability, and unverifiable Script3 ~$10.5M attribution match this cluster's note exactly. cluster-126 is now a strict membership subset: kept deliberately — 126 states the quantity invariant, this cluster states the incident framing.",
         "memberContentSha256": {
           "q-comp-security-disclosure-programs": "e82cea45171cf31b5ce1a59cbb0fa9fc6bec04d71b1b9c760c9a640a3e757f72",
           "q-comp-yieldblox-oracle-incident": "20c07b717ed3154a2a658435cb76d302dd131e79af408d1d315198f7d52971ad",
           "q-defi-etherfuse-stablebonds": "3ce3dcee9a8e9cb1a9993c814ab15f3d5f8d129db9dd982c10bb9a5ede03d5dc",
           "q-defi-reflector-oracle": "5d5110fe6e94db172516a5d248c7a1a0560c521232da27a2cba39c04b63af4f9",
+          "q-hist-yieldblox-v2-2026-exploit": "4842db0eb27e60ebb864892dc40412c54a9cafe605ed86b68ae2c70e8e9111b1",
           "q-soroban-oracle-defensive-consumption": "96589f90b771c258a8adc60ab9f68377b54db23c17b1ce2f1911eb79e078b91f"
         },
         "reopened": {
@@ -546,6 +548,7 @@
           "q-infra-which-indexer",
           "q-soroban-event-indexing-design",
           "q-soroban-publish-events",
+          "q-ti-compute-token-lp-market-data",
           "q-ti-enumerate-holders-airdrop",
           "q-ti-historical-pointintime-balances",
           "q-ti-rpc-gettransactions-pagination-xdr",
@@ -558,7 +561,7 @@
           "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "Corrected 2026-07-11: official Horizon lifecycle wording is source-conflicted, so cases preserve the durable operational/legacy-no-new-features and endpoint-by-endpoint boundary rather than one categorical deprecated/not-deprecated label. 'Soroban RPC' was renamed 'Stellar RPC' in Nov 2024. getEvents is bounded by each endpoint's configured ledger range; current stock/live observations were 120960 ledgers, while the generated method prose still conflicts with 24-hour-default/seven-day-maximum wording. Event page size, request ledger scan span, and retained history are distinct. Archive/data-lake integration extends getLedgers only; older events need continuous ingestion/indexing, and point-in-time balances need Hubble/owned history reconstruction. All listed cases now use this dispute-aware model. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
+        "note": "Corrected 2026-07-11: official Horizon lifecycle wording is source-conflicted, so cases preserve the durable operational/legacy-no-new-features and endpoint-by-endpoint boundary rather than one categorical deprecated/not-deprecated label. 'Soroban RPC' was renamed 'Stellar RPC' in Nov 2024. getEvents is bounded by each endpoint's configured ledger range; current stock/live observations were 120960 ledgers, while the generated method prose still conflicts with 24-hour-default/seven-day-maximum wording. Event page size, request ledger scan span, and retained history are distinct. Archive/data-lake integration extends getLedgers only; older events need continuous ingestion/indexing, and point-in-time balances need Hubble/owned history reconstruction. All listed cases now use this dispute-aware model. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed. Added 2026-07-28 (todo 1253 Lane B): q-ti-compute-token-lp-market-data joins this cluster because it asserts the same three claims — official Horizon lifecycle wording is source-conflicted so answers state the endpoint-by-endpoint boundary rather than one categorical label, RPC is not an unbounded historical index, and Hubble is historical SQL rather than a guaranteed real-time feed. Verified today against q-infra-horizon-vs-rpc, q-infra-hubble-bigquery, q-infra-which-indexer, and q-ti-historical-pointintime-balances: no contradiction; the new member adds only the market-metric methodology layer (explicit identity/quote/window/fee/price basis, Classic SDEX pools distinct from Soroban AMM contracts) on top of the shared data-source boundaries.",
         "memberContentSha256": {
           "q-infra-horizon-vs-rpc": "e1865a28588383e7766c848485ce1b8a7ae55288792267e802be6f70ce645024",
           "q-infra-hubble-bigquery": "4e680dbee5f23fa86d8497df5a5ae70a17fb7b29b800728f2b9dce4bfb2bc11f",
@@ -567,6 +570,7 @@
           "q-infra-which-indexer": "ce3a02b43a9d5036c7813ae624bfe05928b9344dd68d6208bed51f308d608218",
           "q-soroban-event-indexing-design": "ed85d1c5711a1eb21249ad0e8fa647bfe6453a1e8e3e4bcf7458756e749a7e06",
           "q-soroban-publish-events": "5ad6f9cb2e6f1c8eba9552338f94886a61309e48080af98c1ce92f8b55f81828",
+          "q-ti-compute-token-lp-market-data": "d9c154a09344dede26fd2e59a7a5fd62e9448e440b204d5f0fe59b87f1327d3d",
           "q-ti-enumerate-holders-airdrop": "0d3769a35dd3fc69290e4df4e54930b6fddfb582ef1ca7dfb247140dd84603a6",
           "q-ti-historical-pointintime-balances": "4e46b1cba6ee581630f428a44bb306bf5c01c34823b08a43344886c26f513194",
           "q-ti-rpc-gettransactions-pagination-xdr": "f850792c240b69efc83e0a9dab8f56ec45b890eca9f6d3689a1f43ae9b8a5105",
@@ -2246,7 +2250,8 @@
         "members": [
           "q-sor-build-target-wasm32v1",
           "q-sor-deploy-invoke-from-js-sdk",
-          "q-soroban-cli-bindings"
+          "q-soroban-cli-bindings",
+          "q-ti-scaffold-stellar"
         ],
         "verdict": "consistent",
         "lastChecked": "2026-07-28",
@@ -2255,11 +2260,12 @@
           "reason": "2026-07-28 reopened-cluster sweep: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
           "verdict": "consistent"
         },
-        "note": "Current target is wasm32v1-none. Local Wasm supplies the spec for bindings; generated deploy requires installed wasmHash; SDK helper return types are version-sensitive. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed.",
+        "note": "Current target is wasm32v1-none. Local Wasm supplies the spec for bindings; generated deploy requires installed wasmHash; SDK helper return types are version-sensitive. Re-swept 2026-07-28: re-read all member claims after reverifyBy-only hash churn; no substantive claim changed. Added 2026-07-28 (todo 1253 Lane B): q-ti-scaffold-stellar joins because it asserts where this flow's boundary lies — Scaffold Stellar is a separately installed plugin (cargo install stellar-scaffold-cli, stellar scaffold init) that generates contracts, TypeScript clients/bindings, frontend, and environment config, and is NOT bundled with a core Stellar CLI install nor equivalent to 'stellar contract init'. Verified today against q-soroban-cli-bindings, q-sor-build-target-wasm32v1, and q-soroban-deploy-cli: no case conflates the plugin with the core CLI, and no case claims the plugin replaces 'stellar contract bindings'. Alternative considered and rejected: a standalone scaffold-versus-core-CLI cluster, which would duplicate this one's membership without adding a distinct claim.",
         "memberContentSha256": {
           "q-sor-build-target-wasm32v1": "bf62592393191f3af68fc8800c82a925f545bd707ec033984a525f48ebcb3fae",
           "q-sor-deploy-invoke-from-js-sdk": "047663bd622d64b729cec1af5b93c1ffdbfd2c6b364028bbcf5d5b94bface78f",
-          "q-soroban-cli-bindings": "3396321d4045f93017334131da88b86c55d7583b77ae0417c8e38a3c36ab2c70"
+          "q-soroban-cli-bindings": "3396321d4045f93017334131da88b86c55d7583b77ae0417c8e38a3c36ab2c70",
+          "q-ti-scaffold-stellar": "3362dd21b8e8f6950d3fb8c0f4d3dae3204e56658eb177fcd16d43daf44c24ec"
         },
         "reopened": {
           "date": "2026-07-28",
@@ -3083,6 +3089,78 @@
           "q-soroban-greenfield-escrow-prior-art-preflight": "20155c422e305d2cc50b0057bf754d7e7a81d80c4e59163128adf78d8fc909ba",
           "q-tool-greenfield-indexer-prior-art-preflight": "60e5e2b975858b67aad3005a51dd3eac5f667971052418a926979eb00934b2cc"
         }
+      },
+      {
+        "id": "cluster-130",
+        "label": "Contract Wasm code cap versus contract-data-entry cap (network settings)",
+        "members": [
+          "q-soroban-wasm-language",
+          "q-soroban-wasm-size-limit"
+        ],
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "note": "Both cases assert the same live network settings: contract_max_size_bytes=131072 (128 KiB) is the uploaded-contract-code cap and contract_data_entry_size_bytes=65536 (64 KiB) is a separate data-entry setting, both validator-configurable rather than constants, and neither may be pinned as a permanent byte constant. Verified 2026-07-28 (todo 1253 Lane B) by reading both answers, keyFacts, avoid clauses, and grader notes end to end; the stale 64 KB code-cap wording in q-soroban-wasm-size-limit's notes was corrected in the same change (F1).",
+        "memberContentSha256": {
+          "q-soroban-wasm-language": "bc56bd660ee1d188b300ca0afea5f3c8e02b3cb61f194574cb25d87325582f58",
+          "q-soroban-wasm-size-limit": "93b7d40cf1084cdc6b5609e3eab6732feb63821c3efb04041bce35f949bbbc42"
+        }
+      },
+      {
+        "id": "cluster-131",
+        "label": "Scout repository discovery: answer-time rows, no static roster, repoScore is navigation",
+        "members": [
+          "q-tool-indexer-repos-discovery",
+          "q-tool-sdk-repos-discovery",
+          "q-tool-smart-wallet-repos-discovery"
+        ],
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "note": "All three grade the same scout.searchRepos discovery contract: return only rows actually observed with the response generatedAt/as-of, give each row its exact owner/name URL, role, maintainer tier, archive state, and dated activity, label any directly verified repository added outside the Scout result as an external supplement rather than attributing it to Scout, treat an exact zero as a source-scoped miss rather than open-world absence, and never infer correctness, security, audit scope, maintenance, ownership, or production readiness from repoScore, stars, or semantic rank. Verified 2026-07-28 (todo 1253 Lane B) by reading all three cases in full: the rule is stated in each answer and each avoid list with no divergence; the sdk and indexer cases already name each other in their 2026-07-28 sibling sweeps, and the smart-wallet case carries the identical rule while being clustered only on unrelated wallet-product and canonical-source claims. Adjacent unclustered cases q-tool-passkey-repo-live, q-tool-oracle-repo-live, and q-tool-zk-repo-live were reviewed and deliberately EXCLUDED: they instruct the grader to rank 'strongest' repositories by repoScore, which is in tension with this cluster's rule and is recorded as a separate follow-up finding (F5).",
+        "memberContentSha256": {
+          "q-tool-indexer-repos-discovery": "6a9a805425fd5a93dfae0cce9b0aba796b666c097b1fa8532b35bfddb50ee1cb",
+          "q-tool-sdk-repos-discovery": "108f1a96ba785319b504854d6b4ffb29ea8f220affcad7e6fc5f494e9bc7eb87",
+          "q-tool-smart-wallet-repos-discovery": "d2b329ba8545fcf4b9e0e72205d58eb2283beb1cdc4ad2cb30152d6b4a3068b9"
+        }
+      },
+      {
+        "id": "cluster-132",
+        "label": "Scout skills catalog: filter enums, populated rows, miss semantics, and exact-slug resolution",
+        "members": [
+          "q-gap-scout-get-skill-detail",
+          "q-gap-scout-list-skill-directory",
+          "q-tool-cli-skills-discovery",
+          "q-tool-skill-detail-install"
+        ],
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "note": "All four cases grade one scout.listSkills/scout.getSkill surface and are mutually compatible on it — the full filter-enum/as-of contract is owned by q-tool-cli-skills-discovery (with q-tool-skill-detail-install owning exact-slug miss semantics), while the two gap-lane cases assert the miss-semantics and discovery subset without contradicting the rest: the advertised kind and source enums describe accepted filters and never promise a populated row per category; an empty category is an honest current result rather than permanent absence; rows must be reported with an answer-time generatedAt/as-of plus row-level install, owner, and maturity provenance; a topical name must be resolved against the live catalog before an exact-slug detail call rather than guessed; and a getSkill call with a non-current slug is a SOFT-EMPTY source-scoped miss (src/adapters/scout.ts maps the 404 to kind 'soft-empty'), never an operation error and never open-world absence. Verified 2026-07-28 (todo 1253 Lane B, extended by the lead): Lane B initially recorded the two gap-lane cases as a TENSION cluster because q-gap-scout-get-skill-detail graded the miss as an operation error and q-gap-scout-list-skill-directory named the retired 'soroban' slug undated; both were corrected in the same change (F2, F3) against the served adapter contract and the 2026-07-28 slug re-verification, after which all four members were re-read and agree with no divergence. Re-swept 2026-07-28: hash churn from rewording the adapter-source reference in q-gap-scout-get-skill-detail to satisfy the ADR-0003 leak lint; no claim changed. Re-swept 2026-07-28: hash churn from the C1 date-scoping of q-gap-scout-list-skill-directory (answer and corroboration now carry the 2026-07-11 snapshot date and the smart-contracts slug retirement); the edit strengthens the dated-observation discipline, no claim changed.",
+        "memberContentSha256": {
+          "q-gap-scout-get-skill-detail": "84024b1a71caf4c230deb864e4bfd42d9c0d73cbdecad580cd0d6106e237ba0d",
+          "q-gap-scout-list-skill-directory": "2c05a2c447c889a3cb6f0d6693afdb150a9cb3cd43fce8ab024bc212e3c1d599",
+          "q-tool-cli-skills-discovery": "614374974b486b40f6bb2a2dd636220337de549c9511a98662a24cef01fc4dff",
+          "q-tool-skill-detail-install": "0685645027b5087c99333eac46b1b7b0fed7016e977ebfc0fb19b9262c34c5f8"
+        },
+        "reopened": {
+          "date": "2026-07-28",
+          "reason": "member-content-changed"
+        }
+      },
+      {
+        "id": "cluster-134",
+        "label": "Scout leaderboard ranks projects, is a dated snapshot, and keeps its metrics distinct",
+        "members": [
+          "q-gap-leaderboard-project-not-builder",
+          "q-tool-developer-leaderboard-live",
+          "q-tool-leaderboard-open-issues"
+        ],
+        "verdict": "consistent",
+        "lastChecked": "2026-07-28",
+        "note": "All three assert the same scout.getLeaderboard contract: it ranks PROJECTS (with aggregate developer metrics) and is not a people directory — getBuilders answers person-level questions; every answer must carry an explicit sort/range and the response generatedAt/scope rather than reusing a stored ordering; and the sorts are distinct measurements, so open-issue volume is a backlog signal and never activity, quality, popularity, or a stand-in for stars, activity, or repoScore. Verified 2026-07-28 (todo 1253 Lane B) by reading all three in full; no member contradicts another. q-eco-most-active-defi-projects was reviewed as a fourth candidate and EXCLUDED: its grader notes still say 'Scout ranks repos by repoScore', which its own avoid clause forbids — recorded as a separate follow-up finding (F6).",
+        "memberContentSha256": {
+          "q-gap-leaderboard-project-not-builder": "941d05d5bed43a0957dba2bf116b099a84c8b7fac47245798d2e3e5e3499c584",
+          "q-tool-developer-leaderboard-live": "638b62d50f869f281dca14ff6875120b981c6c90e862b5b247314466b2e9fa1a",
+          "q-tool-leaderboard-open-issues": "dce6f985a87f75023cc2b67d0a598bc5f3a02edd7904425567108f70501b49d3"
+        }
       }
     ]
   },
@@ -3124,7 +3202,12 @@
           "q-edge-scf-v7-centralization-myths",
           "q-scf-build-award-cap",
           "q-scf-current-round"
-        ]
+        ],
+        "memberContentSha256": {
+          "q-edge-scf-v7-centralization-myths": "82fd53acdbb9e5198d8a35ea43bb2188672afbb2d51b0cf8945d7f633ed5ebf5",
+          "q-scf-build-award-cap": "917fecc6d5c337a3c8db48319dac04ca7b3a68f55b65ebb2cdeebebca55d7ab0",
+          "q-scf-current-round": "e922bcecca92caf5228927dad8456fda093514cc8f9ab856e555d206e97f7dcb"
+        }
       },
       {
         "label": "base reserve",
@@ -3162,7 +3245,13 @@
           "q-edge-1xlm-activation-fee",
           "q-protocol-base-reserve-min-balance",
           "q-raph-low-xlm-transfer-fail"
-        ]
+        ],
+        "memberContentSha256": {
+          "q-asset-trustline-basics": "cf63cc5bf2858594e4f033d491ff2b6982d7716887ae28874f2ed1288bcb481b",
+          "q-edge-1xlm-activation-fee": "e11bf06d657c1649e7f65faab3714e42c003fd47a22fe591cc589ff1cf063635",
+          "q-protocol-base-reserve-min-balance": "72815e61a551a67e8b43a1ebbf18fb402fe0aed9e36044c5f34ca93ac6573b48",
+          "q-raph-low-xlm-transfer-fail": "8a823e31b0e9b69ff1975a8719dfb13922907e7c7cd3d0b9c174bfd1da0d2ce7"
+        }
       },
       {
         "label": "Protocol 27 Mainnet version",
@@ -3202,7 +3291,14 @@
           "q-pc-protocol-upgrade-timing",
           "q-protocol-27-cap-0071",
           "q-soroban-auth-delegation-p27"
-        ]
+        ],
+        "memberContentSha256": {
+          "q-edge-fresh-latest-protocol-version": "eb1964bf14a5b3ff3cf52c1180d66442e3ff53822c3a0319537608f3e8f0d827",
+          "q-pc-protocol-27-zipper": "dbe40bb1ac78cd3d3de206c9ebfef4488a06b627b37b44168029fb60785181d2",
+          "q-pc-protocol-upgrade-timing": "6ac860b7548a5e9beee9842c793265d1301116f3cbee1573ed0dd2a7b6d801a1",
+          "q-protocol-27-cap-0071": "7fa767468113dff7fb46cb69d3caa451562dfdd27e820cd35acd10574af17fb1",
+          "q-soroban-auth-delegation-p27": "524de606abd96d28a102ff4fac12efb8a45e191ae102b70a27d99231d82c05f9"
+        }
       },
       {
         "label": "SCF #43 official total",
@@ -3237,7 +3333,10 @@
         },
         "affectedCaseIds": [
           "q-scf-round-43-results"
-        ]
+        ],
+        "memberContentSha256": {
+          "q-scf-round-43-results": "93ac5cb3d49199eea2ee2a442cebcc37e06873e8a0d28a7136604888a7020690"
+        }
       },
       {
         "label": "CCTP Stellar dates",
@@ -3275,7 +3374,13 @@
           "q-hist-cctp-stellar-live-announcement",
           "q-token-circle-usdc-on-stellar",
           "q-tool-cctp-stellar-integration"
-        ]
+        ],
+        "memberContentSha256": {
+          "q-cctp-v2-usdc-stellar": "ca0f59432c1e8de9718cdb9dd7bac3b276be5059d37f0225575b4f007d021d2e",
+          "q-hist-cctp-stellar-live-announcement": "6bb786283a9ec21438fab1cbbf9227794a6b8c1fbf3f3b66f2fda4f3fc1b0d5d",
+          "q-token-circle-usdc-on-stellar": "9dde11c6f861287c9565810f1b8d5c3cd48e50a415d6c8e73a17311be0b71520",
+          "q-tool-cctp-stellar-integration": "7832915690b1ee68e1f0d517ba88d06d3bae2abb04fdb1b7f2bf5e2c3961b48a"
+        }
       },
       {
         "label": "YieldBlox borrowed XLM USDC totals",
@@ -3311,7 +3416,11 @@
         "affectedCaseIds": [
           "q-comp-yieldblox-oracle-incident",
           "q-hist-yieldblox-v2-2026-exploit"
-        ]
+        ],
+        "memberContentSha256": {
+          "q-comp-yieldblox-oracle-incident": "20c07b717ed3154a2a658435cb76d302dd131e79af408d1d315198f7d52971ad",
+          "q-hist-yieldblox-v2-2026-exploit": "4842db0eb27e60ebb864892dc40412c54a9cafe605ed86b68ae2c70e8e9111b1"
+        }
       },
       {
         "label": "SCF Submission",
@@ -3346,7 +3455,11 @@
         "affectedCaseIds": [
           "q-edge-scf-v7-centralization-myths",
           "q-scf-current-round"
-        ]
+        ],
+        "memberContentSha256": {
+          "q-edge-scf-v7-centralization-myths": "82fd53acdbb9e5198d8a35ea43bb2188672afbb2d51b0cf8945d7f633ed5ebf5",
+          "q-scf-current-round": "e922bcecca92caf5228927dad8456fda093514cc8f9ab856e555d206e97f7dcb"
+        }
       },
       {
         "label": "Stellar base fee floor",
@@ -3380,7 +3493,11 @@
         "affectedCaseIds": [
           "q-edge-1xlm-activation-fee",
           "q-pc-practical-fee-setting"
-        ]
+        ],
+        "memberContentSha256": {
+          "q-edge-1xlm-activation-fee": "e11bf06d657c1649e7f65faab3714e42c003fd47a22fe591cc589ff1cf063635",
+          "q-pc-practical-fee-setting": "7f1fb22b99c229c9d3552a758f015ae50593744f4097e64468aa51c4949aef80"
+        }
       }
     ]
   },
@@ -3396,7 +3513,13 @@
           "q-pc-protocol-27-zipper",
           "q-protocol-27-cap-0071",
           "q-protocol-version-history-list"
-        ]
+        ],
+        "memberContentSha256": {
+          "q-edge-fresh-latest-protocol-version": "eb1964bf14a5b3ff3cf52c1180d66442e3ff53822c3a0319537608f3e8f0d827",
+          "q-pc-protocol-27-zipper": "dbe40bb1ac78cd3d3de206c9ebfef4488a06b627b37b44168029fb60785181d2",
+          "q-protocol-27-cap-0071": "7fa767468113dff7fb46cb69d3caa451562dfdd27e820cd35acd10574af17fb1",
+          "q-protocol-version-history-list": "16fcda8caee456d795ddb1a05925156ff4251c1343c1d5deeeb4ac0d9a5537a3"
+        }
       },
       {
         "triggerDateEvent": "2026-08-27 or any earlier Circle CCTP V2 fee/finality/support update",
@@ -3407,7 +3530,12 @@
           "q-tool-cctp-stellar-integration",
           "q-hist-cctp-stellar-live-announcement"
         ],
-        "note": "Updated 2026-07-28: the 2026-02-24 launch attribution was retired as unsupported by primary material."
+        "note": "Updated 2026-07-28: the 2026-02-24 launch attribution was retired as unsupported by primary material.",
+        "memberContentSha256": {
+          "q-cctp-v2-usdc-stellar": "ca0f59432c1e8de9718cdb9dd7bac3b276be5059d37f0225575b4f007d021d2e",
+          "q-hist-cctp-stellar-live-announcement": "6bb786283a9ec21438fab1cbbf9227794a6b8c1fbf3f3b66f2fda4f3fc1b0d5d",
+          "q-tool-cctp-stellar-integration": "7832915690b1ee68e1f0d517ba88d06d3bae2abb04fdb1b7f2bf5e2c3961b48a"
+        }
       },
       {
         "triggerDateEvent": "Publication or state change for SCF #44/#45 after the fixed SCF #43 recap",
@@ -3417,7 +3545,12 @@
           "q-scf-round-43-results",
           "q-scf-current-round",
           "q-scf-total-distributed"
-        ]
+        ],
+        "memberContentSha256": {
+          "q-scf-current-round": "e922bcecca92caf5228927dad8456fda093514cc8f9ab856e555d206e97f7dcb",
+          "q-scf-round-43-results": "93ac5cb3d49199eea2ee2a442cebcc37e06873e8a0d28a7136604888a7020690",
+          "q-scf-total-distributed": "d23156d29517c533c1f5ce836e15d119deaa5838a3a119b6cae62b99c0d35b7d"
+        }
       },
       {
         "triggerDateEvent": "2026-10-08 YieldBlox/Reflector remediation recheck or publication of a final post-mortem/reimbursement decision",
@@ -3427,7 +3560,12 @@
           "q-comp-yieldblox-oracle-incident",
           "q-hist-yieldblox-v2-2026-exploit",
           "q-soroban-oracle-defensive-consumption"
-        ]
+        ],
+        "memberContentSha256": {
+          "q-comp-yieldblox-oracle-incident": "20c07b717ed3154a2a658435cb76d302dd131e79af408d1d315198f7d52971ad",
+          "q-hist-yieldblox-v2-2026-exploit": "4842db0eb27e60ebb864892dc40412c54a9cafe605ed86b68ae2c70e8e9111b1",
+          "q-soroban-oracle-defensive-consumption": "96589f90b771c258a8adc60ab9f68377b54db23c17b1ce2f1911eb79e078b91f"
+        }
       },
       {
         "triggerDateEvent": "2026-09-01/2026-11-19 review or any Confidential Tokens Mainnet approval/launch",
@@ -3437,7 +3575,12 @@
           "q-edge-noinfo-stellar-native-privacy-default",
           "q-scf-confidential-tokens-preview",
           "q-sor-confidential-tokens"
-        ]
+        ],
+        "memberContentSha256": {
+          "q-edge-noinfo-stellar-native-privacy-default": "45eb59ce094e56a3f0dd9e8c22e4da8832cf0e155f2c3b99aedd2be6520d4313",
+          "q-scf-confidential-tokens-preview": "d5eb9af8c75cce19fb28c92e58560e5ace59b32da86f846082a9ed3488fde026",
+          "q-sor-confidential-tokens": "9c83a6d23252e30d4aeaa8b5988cce33d3ef4f652f26eb1b151ff91c76d6500b"
+        }
       },
       {
         "triggerDateEvent": "2026-10-08 pre-event check and Meridian 2026 on 2026-10-28/2026-10-29",
@@ -3445,7 +3588,10 @@
         "disposition": "open — Lisbon, October 28–29, 2026 as of 2026-07-11; q-hist-meridian-2026-corrected-venue reverifyBy 2026-10-08.",
         "caseIds": [
           "q-hist-meridian-2026-corrected-venue"
-        ]
+        ],
+        "memberContentSha256": {
+          "q-hist-meridian-2026-corrected-venue": "5064b9515d3faecb09f5be7a7c82399ab46b8c78f90ff70e8ced19e206661339"
+        }
       }
     ]
   }
