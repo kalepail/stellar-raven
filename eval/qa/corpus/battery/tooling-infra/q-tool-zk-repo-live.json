@@ -1,1 +1,96 @@
-{"id":"q-tool-zk-repo-live","question":"What are the strongest current Stellar ZK reference repositories, and which returned entries have verified hackathon or deployable-code evidence?","surface":["scout.searchRepos"],"golden":{"answer":"Filter live searchRepos rows for Stellar relevance, explicitly sort checked rows by repoScore, and paginate before a global superlative or scope the result to the checked page. Treat hackathonWinner as an index-relative marker unless exact event evidence corroborates it, and clarify that codeVerified is scan evidence rather than a security audit.","keyFacts":["Filters for Stellar relevance and explicitly sorts checked rows by repoScore.","Paginates before a global claim or scopes it to the checked page.","Keeps hackathonWinner index-relative without exact event evidence and treats codeVerified as scan—not audit—evidence."],"avoid":["Treats X-Ray Games or any other archived result as an eternal winner."]},"tags":{"category":"tooling-infra","service":"scout","freshness":"live"},"truth":{"domain":"mixed","status":"confirmed","asOf":"2026-07-11","sources":[{"class":"C","ref":"https://stellarlight.xyz/api/repos/search?q=zero-knowledge"},{"class":"B","ref":"catalog/manifest.json#scout.searchRepos"}],"corroboration":[{"claim":"Current ZK repository results carry distinct ranking and verification fields.","verdict":"confirmed","evidence":[{"class":"C","ref":"https://stellarlight.xyz/api/repos/search?q=zero-knowledge","observedAt":"2026-07-11"},{"class":"B","ref":"catalog/manifest.json#scout.searchRepos","observedAt":"2026-07-11"}]},{"claim":"Hackathon resources link concrete Stellar verifier implementations.","verdict":"confirmed","evidence":[{"class":"C","ref":"https://stellarlight.xyz/api/repos/search?q=zero-knowledge","observedAt":"2026-07-11"}]},{"claim":"One archived ZK repository remains permanently top-ranked.","verdict":"contradicted","evidence":[{"class":"C","ref":"https://stellarlight.xyz/api/repos/search?q=zero-knowledge","observedAt":"2026-07-11"}]}],"verified":{"date":"2026-07-11","by":"P4 H1 primary (Solo 3414) + blind reconciliation (Solo 3420)","evidence":["solo://proj/49/process/3414","solo://proj/49/process/3420","catalog/manifest.json#scout.searchRepos"],"rootCause":["eval-authoring"]},"origin":"boxy sl-code-zk-xray-games-top"}}
+{
+  "id": "q-tool-zk-repo-live",
+  "question": "What are the strongest current Stellar ZK reference repositories, and which returned entries have verified hackathon or deployable-code evidence?",
+  "surface": [
+    "scout.searchRepos"
+  ],
+  "golden": {
+    "answer": "Filter live searchRepos rows for Stellar relevance, explicitly sort checked rows by repoScore, and paginate before a global superlative or scope the result to the checked page. repoScore is the index's own answer-time ranking signal: it orders candidate rows for inspection and never establishes correctness, security, audit scope, maintenance, or production readiness, so “strongest” means highest-ranked among the checked rows, not an assessment of correctness, security, or production readiness. Treat hackathonWinner as an index-relative marker unless exact event evidence corroborates it, and clarify that codeVerified is scan evidence rather than a security audit.",
+    "keyFacts": [
+      "Filters for Stellar relevance and explicitly sorts checked rows by repoScore.",
+      "Paginates before a global claim or scopes it to the checked page.",
+      "Keeps hackathonWinner index-relative without exact event evidence, treats codeVerified as scan—not audit—evidence, and treats the repoScore sort as ranking/navigation, never as evidence of correctness, security, or production readiness."
+    ],
+    "avoid": [
+      "Treats X-Ray Games or any other archived result as an eternal winner.",
+      "Reads the repoScore sort as a correctness, security, maintenance, or production-readiness ranking."
+    ]
+  },
+  "tags": {
+    "category": "tooling-infra",
+    "service": "scout",
+    "freshness": "live"
+  },
+  "truth": {
+    "domain": "mixed",
+    "status": "confirmed",
+    "asOf": "2026-07-11",
+    "sources": [
+      {
+        "class": "C",
+        "ref": "https://stellarlight.xyz/api/repos/search?q=zero-knowledge"
+      },
+      {
+        "class": "B",
+        "ref": "catalog/manifest.json#scout.searchRepos"
+      }
+    ],
+    "corroboration": [
+      {
+        "claim": "Current ZK repository results carry distinct ranking and verification fields.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "https://stellarlight.xyz/api/repos/search?q=zero-knowledge",
+            "observedAt": "2026-07-11"
+          },
+          {
+            "class": "B",
+            "ref": "catalog/manifest.json#scout.searchRepos",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "Hackathon resources link concrete Stellar verifier implementations.",
+        "verdict": "confirmed",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "https://stellarlight.xyz/api/repos/search?q=zero-knowledge",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      },
+      {
+        "claim": "One archived ZK repository remains permanently top-ranked.",
+        "verdict": "contradicted",
+        "evidence": [
+          {
+            "class": "C",
+            "ref": "https://stellarlight.xyz/api/repos/search?q=zero-knowledge",
+            "observedAt": "2026-07-11"
+          }
+        ]
+      }
+    ],
+    "verified": {
+      "date": "2026-07-28",
+      "by": "P4 H1 primary (Solo 3414) + blind reconciliation (Solo 3420) + todo 1256 corpus lane (F5) consistency alignment 2026-07-28",
+      "evidence": [
+        "solo://proj/49/process/3414",
+        "solo://proj/49/process/3420",
+        "catalog/manifest.json#scout.searchRepos",
+        "Todo 1256 corpus lane (2026-07-28, F5): the golden told the grader to sort by repoScore and pick the “strongest” ZK reference repositories without saying what that ordering is evidence of, while cluster-131's members forbid inferring correctness, security, audit scope, maintenance, or production readiness from repoScore. The wording now states that the repoScore ordering is the index's answer-time navigation/ranking signal and scopes the superlative to it. Internal-consistency repair — no new external source consulted; the case now joins cluster-131.",
+        "Upstream schema evidence (inventory/stellar-light.json, searchRepos repoScore description; ADV-1 reconciliation 2026-07-28): repoScore is Scout's own composite 'Quality grade (0-100) = freshness + traction + hackathon/SCF/builder authority — Lead with high-score repos'. Its formula contains no correctness, security-audit, maintenance, or production-readiness input, so the golden's boundary — order candidates by it, never infer those attributes from it — restates the served contract's scope rather than contradicting the schema's quality-grade label."
+      ],
+      "rootCause": [
+        "eval-authoring",
+        "The golden's repoScore comparison instruction did not say what the ordering does and does not establish, leaving open a reading where 'strongest = highest repoScore' counts as proof of correctness, security, or production readiness — attributes outside the score's freshness/traction/authority formula.",
+        "Tracked at solo://proj/49/todo/corpus-follow-ups-fr--1256 (todo 1256, F5) with the adversarial-review reconciliation in the same todo's comments."
+      ]
+    },
+    "origin": "boxy sl-code-zk-xray-games-top"
+  }
+}

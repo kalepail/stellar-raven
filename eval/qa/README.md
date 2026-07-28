@@ -136,6 +136,14 @@ npm run eval:plan -- eval/qa/results/<stamp>-variantA.json    # plan regrade, of
 Register hashes cover cluster members, numeric-invariant `affectedCaseIds`, and date-trap
 `caseIds`; lint also checks any case `reverifyBy` date quoted in date-trap prose.
 
+Coverage as of 2026-07-28: the 133 clusters name 252 of 490 cases (51%; 253 counting the
+numeric-invariant and date-trap `caseIds`), so **auto-reopen is blind to the other 238 cases** —
+a contradiction introduced in an unclustered case changes no stamped hash and reopens nothing.
+Cluster coverage is therefore a standing extension job, not a finished one: each contradiction
+sweep should cluster more of the remainder, weighted toward the strata where breaks concentrate —
+freshness-sensitive cases (141 of the 238 unclustered are `live`/`scheduled`) and numeric,
+version, or date claims, which drift between sweeps while `stable` conceptual cases mostly do not.
+
 Server for live lanes: reuse the Solo `dev` process when it exists; otherwise
 `npx wrangler dev --port 8788 --host localhost` — `--host localhost` is REQUIRED (custom-domain
 routes otherwise rewrite request.url and every request 401s).

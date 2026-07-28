@@ -1,7 +1,7 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "329271549847b8e1023f7687c23d5d66576cb1bd6d07b90f53a615b2890fdbfb",
+  "corpusContentSha256": "4e43741c215de1777d1e47864013fa02c7186411014076a53aee5f66229faec2",
   "counts": {
     "total": 490,
     "byCategory": {
@@ -10820,7 +10820,7 @@
           "Do NOT call a ranking 'DeFi' without a visible inclusion rule.",
           "Do NOT present the observed live result set as a complete or permanent roster; explicitly historical facts remain historical."
         ],
-        "notes": "Most-active/top projects → scout_leaderboard. FRESHNESS-flagged ranking (weekly). Scout ranks repos by repoScore (freshness + traction + hackathon/SCF/builder authority); recent commit activity shows live DeFi repos (e.g. blend-sdk-js / blend-ui committed Jun 19 2026; reflector connectors May 2026). The ranking is a moving snapshot — reward flagging that + tool-sourced metrics over a fixed list. 2026-06-29 reviewed: confirmed scout_leaderboard card exists (CARDS.md) and all DeFi names cited (Soroswap, Aquarius, Blend, Reflector, Phoenix) resolve as Live on Scout directory. Confidence kept medium (ranking shifts).\nAlso good if the answer: Surfaces DeFi-relevant projects (e.g. Soroswap, Aquarius, Blend, Reflector, Phoenix) where they rank.\nGolden cites: The leaderboard/ranking source with a freshness caveat.\nGT-19 CORRECTION 2026-07-10: exact metric/query/filter/asOf are the gate. Scout activity, GitHub commits, stars, issues, TVL, and usage are not interchangeable."
+        "notes": "Most-active/top projects → scout_leaderboard. FRESHNESS-flagged ranking (weekly). Leaderboard sort=activity is defined by the served meta.metricDefinitions as latest-commit recency (NOT commit volume), with issues (open backlog), stars, and tvl as separate sorts; repoScore is a different, repo-level scout.searchRepos ranking signal and is not the leaderboard's activity metric. Recent commit activity shows live DeFi repos (e.g. blend-sdk-js / blend-ui committed Jun 19 2026; reflector connectors May 2026). The ranking is a moving snapshot — reward flagging that + tool-sourced metrics over a fixed list. 2026-06-29 reviewed: confirmed scout_leaderboard card exists (CARDS.md) and all DeFi names cited (Soroswap, Aquarius, Blend, Reflector, Phoenix) resolve as Live on Scout directory. Confidence kept medium (ranking shifts).\nAlso good if the answer: Surfaces DeFi-relevant projects (e.g. Soroswap, Aquarius, Blend, Reflector, Phoenix) where they rank.\nGolden cites: The leaderboard/ranking source with a freshness caveat.\nGT-19 CORRECTION 2026-07-10: exact metric/query/filter/asOf are the gate. Scout activity, GitHub commits, stars, issues, TVL, and usage are not interchangeable."
       },
       "tags": {
         "category": "defi-ecosystem",
@@ -10859,18 +10859,20 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 conversions rework after independent Fable copy/quality review",
+          "date": "2026-07-28",
+          "by": "P4 conversions rework after independent Fable copy/quality review + todo 1256 corpus lane (F6) notes reconciliation 2026-07-28",
           "evidence": [
             "Solo scratchpad 575 GT-19 primary 3254 and blind 3258; reviewers obtained different rosters from different reasonable DeFi filters.",
             "2026-07-11 localhost:8787 search→execute probe observed: the live DeFi directory query returned 39 matches and showed DeFindex as live with a separately dated project TVL observation.",
             "Independent Fable review: /private/tmp/claude-501/-Users-kalepail-Desktop-stellar-raven-codemode/228cd755-2832-4a13-8e47-9a25e851db2a/scratchpad/p4/conversions-copy-review.md",
-            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585",
+            "Todo 1256 corpus lane (2026-07-28, F6): the grader notes asserted 'Scout ranks repos by repoScore', which this case's own avoid clause forbids absent returned-schema evidence. catalog/manifest.json#scout.getLeaderboard and specs/super-spec.json state that meta.metricDefinitions defines activity as latest-commit recency (not commit volume), with issues/stars/tvl as separate sorts, and repoScore as a repo-level scout.searchRepos signal; the sentence now says that. Internal-consistency repair against the served schema — no new live probe."
           ],
           "rootCause": [
             "Metric conflation and an undefined category filter turned a live leaderboard into a fixed fact.",
             "eval-authoring",
-            "solo://proj/49/scratchpad/super-corpus-rebuild--585"
+            "solo://proj/49/scratchpad/super-corpus-rebuild--585",
+            "Grader notes retained a pre-GT-19 metric-conflation sentence (repoScore as the leaderboard's activity ranking) that the case's own avoid clause forbids."
           ]
         },
         "origin": "raven-next q-eco-most-active-defi-projects"
@@ -44705,14 +44707,15 @@
         "scout.searchRepos"
       ],
       "golden": {
-        "answer": "Filter live searchRepos results for relevant oracle repositories, explicitly compare repoScore, and paginate before a global superlative or say “among the returned page.” Cite repository URLs and separate codeVerified/codeDepth, deployability, SDK status, and scan date; codeVerified is index scan evidence, not a security audit.",
+        "answer": "Filter live searchRepos results for relevant oracle repositories, explicitly compare repoScore, and paginate before a global superlative or say “among the returned page.” repoScore is the index's own answer-time ranking signal: it orders candidate rows for inspection and never establishes correctness, security, audit scope, maintenance, or production readiness, so a “best reference” claim is scoped to that ordering over the checked rows and rests on the cited repository evidence. Cite repository URLs and separate codeVerified/codeDepth, deployability, SDK status, and scan date; codeVerified is index scan evidence, not a security audit.",
         "keyFacts": [
           "Filters for relevance and explicitly compares repoScore rather than trusting response order.",
           "Paginates before a global claim or scopes the conclusion to the checked page.",
-          "Keeps codeVerified/deployability/version signals distinct and does not treat them as a security audit."
+          "Keeps codeVerified/deployability/version signals distinct, uses repoScore only to rank and navigate candidates, and does not treat any of them as a security audit or as proof of correctness, maintenance, or production readiness."
         ],
         "avoid": [
-          "Recommends a deprecated repository solely because it led an archived three-row result."
+          "Recommends a deprecated repository solely because it led an archived three-row result.",
+          "Presents a high repoScore as evidence of correctness, security, maintenance, or production readiness."
         ]
       },
       "tags": {
@@ -44784,16 +44787,20 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 H1 primary (Solo 3414) + blind reconciliation (Solo 3420)",
+          "date": "2026-07-28",
+          "by": "P4 H1 primary (Solo 3414) + blind reconciliation (Solo 3420) + todo 1256 corpus lane (F5) consistency alignment 2026-07-28",
           "evidence": [
             "solo://proj/49/process/3414",
             "solo://proj/49/process/3420",
             "catalog/manifest.json#scout.searchRepos",
-            "https://github.com/reflector-network/reflector-contract"
+            "https://github.com/reflector-network/reflector-contract",
+            "Todo 1256 corpus lane (2026-07-28, F5): the golden told the grader to compare repoScore and pick the “best” oracle code references without saying what that ordering is evidence of, while cluster-131's members forbid inferring correctness, security, audit scope, maintenance, or production readiness from repoScore. The wording now states that the repoScore ordering is the index's answer-time navigation/ranking signal and scopes the superlative to it. Internal-consistency repair — no new external source consulted; the case now joins cluster-131.",
+            "Upstream schema evidence (inventory/stellar-light.json, searchRepos repoScore description; ADV-1 reconciliation 2026-07-28): repoScore is Scout's own composite 'Quality grade (0-100) = freshness + traction + hackathon/SCF/builder authority — Lead with high-score repos'. Its formula contains no correctness, security-audit, maintenance, or production-readiness input, so the golden's boundary — order candidates by it, never infer those attributes from it — restates the served contract's scope rather than contradicting the schema's quality-grade label."
           ],
           "rootCause": [
-            "eval-authoring"
+            "eval-authoring",
+            "The golden's repoScore comparison instruction did not say what the ordering does and does not establish, leaving open a reading where 'strongest = highest repoScore' counts as proof of correctness, security, or production readiness — attributes outside the score's freshness/traction/authority formula.",
+            "Tracked at solo://proj/49/todo/corpus-follow-ups-fr--1256 (todo 1256, F5) with the adversarial-review reconciliation in the same todo's comments."
           ]
         },
         "origin": "boxy sl-code-soroban-oracle-least-bad"
@@ -44806,14 +44813,15 @@
         "scout.searchRepos"
       ],
       "golden": {
-        "answer": "Filter current passkey-relevant searchRepos rows, explicitly compare repoScore, and paginate before a global superlative or say “among the checked results.” Cite repository URLs and keep codeVerified/deployability/version evidence distinct; none alone proves production or security quality.",
+        "answer": "Filter current passkey-relevant searchRepos rows, explicitly compare repoScore, and paginate before a global superlative or say “among the checked results.” repoScore is the index's own answer-time ranking signal: it orders candidate rows for inspection and never establishes correctness, security, audit scope, maintenance, or production readiness, so a “strongest reference” claim is scoped to that ordering over the checked rows and rests on the cited repository evidence. Cite repository URLs and keep codeVerified/deployability/version evidence distinct; none alone proves production or security quality.",
         "keyFacts": [
           "Filters relevant current rows and explicitly compares scores rather than trusting response order.",
           "Paginates or scopes the superlative to checked results.",
-          "Does not infer production or security quality from deployability, score, or codeVerified alone."
+          "Uses repoScore only to order and navigate candidates, and does not infer correctness, security, audit scope, maintenance, or production readiness from repoScore, deployability, or codeVerified."
         ],
         "avoid": [
-          "Declares a permanently best passkey repository from the archived corpus."
+          "Declares a permanently best passkey repository from the archived corpus.",
+          "Presents the repoScore ordering as evidence of correctness, security, audit scope, maintenance, or production readiness."
         ]
       },
       "tags": {
@@ -44885,16 +44893,20 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 H1 primary (Solo 3414) + blind reconciliation (Solo 3420)",
+          "date": "2026-07-28",
+          "by": "P4 H1 primary (Solo 3414) + blind reconciliation (Solo 3420) + todo 1256 corpus lane (F5) consistency alignment 2026-07-28",
           "evidence": [
             "solo://proj/49/process/3414",
             "solo://proj/49/process/3420",
             "catalog/manifest.json#scout.searchRepos",
-            "https://github.com/kalepail/soroban-passkey"
+            "https://github.com/kalepail/soroban-passkey",
+            "Todo 1256 corpus lane (2026-07-28, F5): the golden told the grader to compare repoScore and pick the “strongest” passkey/smart-wallet repositories without saying what that ordering is evidence of, while cluster-131's members forbid inferring correctness, security, audit scope, maintenance, or production readiness from repoScore. The wording now states that the repoScore ordering is the index's answer-time navigation/ranking signal and scopes the superlative to it. Internal-consistency repair — no new external source consulted; the case now joins cluster-131.",
+            "Upstream schema evidence (inventory/stellar-light.json, searchRepos repoScore description; ADV-1 reconciliation 2026-07-28): repoScore is Scout's own composite 'Quality grade (0-100) = freshness + traction + hackathon/SCF/builder authority — Lead with high-score repos'. Its formula contains no correctness, security-audit, maintenance, or production-readiness input, so the golden's boundary — order candidates by it, never infer those attributes from it — restates the served contract's scope rather than contradicting the schema's quality-grade label."
           ],
           "rootCause": [
-            "eval-authoring"
+            "eval-authoring",
+            "The golden's repoScore comparison instruction did not say what the ordering does and does not establish, leaving open a reading where 'strongest = highest repoScore' counts as proof of correctness, security, or production readiness — attributes outside the score's freshness/traction/authority formula.",
+            "Tracked at solo://proj/49/todo/corpus-follow-ups-fr--1256 (todo 1256, F5) with the adversarial-review reconciliation in the same todo's comments."
           ]
         },
         "origin": "boxy sl-code-passkey-wallet-top-repo"
@@ -46191,14 +46203,15 @@
         "scout.searchRepos"
       ],
       "golden": {
-        "answer": "Filter live searchRepos rows for Stellar relevance, explicitly sort checked rows by repoScore, and paginate before a global superlative or scope the result to the checked page. Treat hackathonWinner as an index-relative marker unless exact event evidence corroborates it, and clarify that codeVerified is scan evidence rather than a security audit.",
+        "answer": "Filter live searchRepos rows for Stellar relevance, explicitly sort checked rows by repoScore, and paginate before a global superlative or scope the result to the checked page. repoScore is the index's own answer-time ranking signal: it orders candidate rows for inspection and never establishes correctness, security, audit scope, maintenance, or production readiness, so “strongest” means highest-ranked among the checked rows, not an assessment of correctness, security, or production readiness. Treat hackathonWinner as an index-relative marker unless exact event evidence corroborates it, and clarify that codeVerified is scan evidence rather than a security audit.",
         "keyFacts": [
           "Filters for Stellar relevance and explicitly sorts checked rows by repoScore.",
           "Paginates before a global claim or scopes it to the checked page.",
-          "Keeps hackathonWinner index-relative without exact event evidence and treats codeVerified as scan—not audit—evidence."
+          "Keeps hackathonWinner index-relative without exact event evidence, treats codeVerified as scan—not audit—evidence, and treats the repoScore sort as ranking/navigation, never as evidence of correctness, security, or production readiness."
         ],
         "avoid": [
-          "Treats X-Ray Games or any other archived result as an eternal winner."
+          "Treats X-Ray Games or any other archived result as an eternal winner.",
+          "Reads the repoScore sort as a correctness, security, maintenance, or production-readiness ranking."
         ]
       },
       "tags": {
@@ -46261,15 +46274,19 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 H1 primary (Solo 3414) + blind reconciliation (Solo 3420)",
+          "date": "2026-07-28",
+          "by": "P4 H1 primary (Solo 3414) + blind reconciliation (Solo 3420) + todo 1256 corpus lane (F5) consistency alignment 2026-07-28",
           "evidence": [
             "solo://proj/49/process/3414",
             "solo://proj/49/process/3420",
-            "catalog/manifest.json#scout.searchRepos"
+            "catalog/manifest.json#scout.searchRepos",
+            "Todo 1256 corpus lane (2026-07-28, F5): the golden told the grader to sort by repoScore and pick the “strongest” ZK reference repositories without saying what that ordering is evidence of, while cluster-131's members forbid inferring correctness, security, audit scope, maintenance, or production readiness from repoScore. The wording now states that the repoScore ordering is the index's answer-time navigation/ranking signal and scopes the superlative to it. Internal-consistency repair — no new external source consulted; the case now joins cluster-131.",
+            "Upstream schema evidence (inventory/stellar-light.json, searchRepos repoScore description; ADV-1 reconciliation 2026-07-28): repoScore is Scout's own composite 'Quality grade (0-100) = freshness + traction + hackathon/SCF/builder authority — Lead with high-score repos'. Its formula contains no correctness, security-audit, maintenance, or production-readiness input, so the golden's boundary — order candidates by it, never infer those attributes from it — restates the served contract's scope rather than contradicting the schema's quality-grade label."
           ],
           "rootCause": [
-            "eval-authoring"
+            "eval-authoring",
+            "The golden's repoScore comparison instruction did not say what the ordering does and does not establish, leaving open a reading where 'strongest = highest repoScore' counts as proof of correctness, security, or production readiness — attributes outside the score's freshness/traction/authority formula.",
+            "Tracked at solo://proj/49/todo/corpus-follow-ups-fr--1256 (todo 1256, F5) with the adversarial-review reconciliation in the same todo's comments."
           ]
         },
         "origin": "boxy sl-code-zk-xray-games-top"
