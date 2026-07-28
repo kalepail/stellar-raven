@@ -1,7 +1,7 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "a70e8dfc2a588dc2153445cc76237212249d571b2d0e36e688737022b50d968f",
+  "corpusContentSha256": "9c7403b683140eca1d0b6d6ad4b5bce0001a82d8ab79e4a7735d5edb5ef7c80a",
   "counts": {
     "total": 490,
     "byCategory": {
@@ -3160,9 +3160,9 @@
         "stellarDocs.search_docs"
       ],
       "golden": {
-        "answer": "Circle launched CCTP V2 on Stellar on 2026-02-24 as domain 27. It burns native USDC on the source and mints native USDC on the destination. For Stellar G-, M-, or C-address recipients, use Circle's CctpForwarder path; a wrong mintRecipient or destinationCaller can strand funds. Stellar USDC uses 7 decimals while CCTP messages use 6, so the seventh outbound decimal remains on Stellar. On 2026-07-11, Circle's fee endpoint returned Fast/Standard 0/0 for domain 27→0 and 1 bp/0 for 0→27; re-query /v2/burn/USDC/fees. Circle transfer fees are separate from network resources, relayer, integrator, and any swap charges.",
+        "answer": "Circle's release notes record **Stellar mainnet support on 2026-05-18**, and SDF and Circle publicly announced CCTP live on Stellar on **2026-05-19**. The earlier **2026-02-24** date previously called the launch was not recoverable from accessible primary material, so do not collapse it with either confirmed May milestone. Stellar is CCTP domain 27. CCTP burns native USDC on the source and mints native USDC on the destination. For Stellar G-, M-, or C-address recipients, use Circle's CctpForwarder path; a wrong mintRecipient or destinationCaller can strand funds. Stellar USDC uses 7 decimals while CCTP messages use 6, so the seventh outbound decimal remains on Stellar. On 2026-07-11, Circle's fee endpoint returned Fast/Standard 0/0 for domain 27→0 and 1 bp/0 for 0→27; re-query /v2/burn/USDC/fees. Circle transfer fees are separate from network resources, relayer, integrator, and any swap charges.",
         "keyFacts": [
-          "CCTP V2 launched on Stellar on 2026-02-24 as domain 27 and uses burn, attestation, and mint for native USDC.",
+          "Separates Circle's 2026-05-18 Stellar-mainnet-support milestone from the 2026-05-19 SDF/Circle public-live announcement; the prior 2026-02-24 launch attribution is unverified.",
           "Use Circle's CctpForwarder for Stellar G-, M-, or C-address recipients; incorrect mintRecipient or destinationCaller values can strand funds.",
           "Stellar USDC has 7 decimals while CCTP messages use 6; the seventh outbound decimal remains on Stellar.",
           "The 2026-07-11 fee probe found Fast/Standard 0/0 for 27→0 and 1 bp/0 for 0→27; callers must re-query /v2/burn/USDC/fees.",
@@ -3170,9 +3170,10 @@
         ],
         "avoid": [
           "CCTP locks USDC and issues a wrapped Stellar token.",
-          "Every CCTP route is permanently fee-free and exactly 1:1 after all costs."
+          "Every CCTP route is permanently fee-free and exactly 1:1 after all costs.",
+          "Do NOT call 2026-02-24 the Stellar launch without accessible primary evidence or merge technical support and public announcement into one date."
         ],
-        "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+        "notes": "Milestone provenance was rechecked on 2026-07-28: Circle's technical-support record is 2026-05-18 and SDF/Circle's public-live announcement is 2026-05-19. The prior 2026-02-24 launch attribution was not recovered from accessible primary material and is not a truth gate. Fee observations remain explicitly dated 2026-07-11; grade later sourced changes leniently."
       },
       "tags": {
         "category": "compliance-rwa-payments",
@@ -3181,9 +3182,9 @@
       },
       "truth": {
         "domain": "real-world",
-        "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2026-11-01",
+        "status": "mixed",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-10-29",
         "sources": [
           {
             "class": "A",
@@ -3198,34 +3199,68 @@
             "ref": "https://developers.circle.com/cctp/stellar-cctp-forwarder"
           },
           {
+            "class": "A",
+            "ref": "https://developers.circle.com/release-notes/cctp-2026"
+          },
+          {
+            "class": "A",
+            "ref": "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar"
+          },
+          {
             "class": "B",
             "ref": "https://github.com/circlefin/stablecoin-evm"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/circlefin/stellar-cctp"
           }
         ],
         "corroboration": [
           {
-            "claim": "CCTP V2 launched on Stellar on 2026-02-24 as domain 27 and uses burn, attestation, and mint for native USDC.",
+            "claim": "Circle recorded Stellar mainnet support on 2026-05-18, and SDF/Circle publicly announced CCTP live on Stellar on 2026-05-19.",
             "verdict": "confirmed-as-of",
             "evidence": [
               {
                 "class": "A",
-                "ref": "https://developers.circle.com/cctp",
-                "observedAt": "2026-07-11"
+                "ref": "https://developers.circle.com/release-notes/cctp-2026",
+                "observedAt": "2026-07-28",
+                "note": "Circle's release note labels 2026.05.18 'Added support for Stellar mainnet.'"
               },
               {
                 "class": "A",
-                "ref": "https://developers.circle.com/cctp/fees-and-finality",
-                "observedAt": "2026-07-11"
-              },
-              {
-                "class": "A",
-                "ref": "https://developers.circle.com/cctp/stellar-cctp-forwarder",
-                "observedAt": "2026-07-11"
+                "ref": "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar",
+                "observedAt": "2026-07-28",
+                "note": "SDF's public-live announcement is dated 2026-05-19."
               },
               {
                 "class": "B",
-                "ref": "https://github.com/circlefin/stablecoin-evm",
-                "observedAt": "2026-07-11"
+                "ref": "https://github.com/circlefin/stellar-cctp",
+                "observedAt": "2026-07-28",
+                "note": "Circle's canonical Stellar implementation repository corroborates the V2/domain-27 implementation boundary."
+              }
+            ]
+          },
+          {
+            "claim": "CCTP V2 launched on Stellar on 2026-02-24.",
+            "verdict": "unverifiable",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://developers.circle.com/release-notes/cctp-2026",
+                "observedAt": "2026-07-28",
+                "note": "The reviewed Circle release notes establish 2026-05-18 mainnet support and do not identify a 2026-02-24 Stellar milestone."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/circlefin/stellar-cctp",
+                "observedAt": "2026-07-28",
+                "note": "The accessible canonical implementation history did not recover the claimed February launch provenance."
+              },
+              {
+                "class": "D",
+                "ref": "https://developers.circle.com/cctp/release-notes",
+                "observedAt": "2026-07-28",
+                "note": "An explicit exact-date web sweep found May launch/support sources but no primary source assigning a Stellar milestone to 2026-02-24."
               }
             ]
           },
@@ -3387,13 +3422,23 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 H2 primary+blind (Solo 3411/3412)",
+          "date": "2026-07-28",
+          "by": "Todo 1251 Lane A — sibling contradictions (solo://proj/49/scratchpad/todo-1251-lane-a-sib--731)",
           "evidence": [
+            "Production stellarDocs.search_docs recovered the current CCTP-on-Stellar documentation boundary and delegated deployment/support provenance to Circle.",
+            "https://developers.circle.com/release-notes/cctp-2026",
+            "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar",
+            "https://x.com/circle/status/2056767949445472739",
+            "https://github.com/circlefin/stellar-cctp",
             "https://developers.circle.com/cctp",
             "https://developers.circle.com/cctp/fees-and-finality",
             "https://developers.circle.com/cctp/stellar-cctp-forwarder",
-            "https://github.com/circlefin/stablecoin-evm"
+            "https://github.com/circlefin/stablecoin-evm",
+            "improvements/lumenloop/ll-022-cctp-milestone-provenance.md",
+            "Sibling sweep: q-tool-cctp-stellar-integration, q-hist-cctp-stellar-live-announcement, and q-token-circle-usdc-on-stellar now use compatible milestone-specific language rather than one collapsed launch date."
+          ],
+          "rootCause": [
+            "Eval-authoring flaw: the case promoted an unsupported 2026-02-24 date to 'launch' and collapsed it with later technical-support and public-announcement milestones."
           ]
         },
         "origin": "kaan cctp-usdc-stellar-crosschain"
@@ -16709,19 +16754,21 @@
         "lumenloop.search_documents"
       ],
       "golden": {
-        "answer": "On February 22, 2026, an attacker manipulated the thin USTRY/USDC market used by Reflector's price feed, inflated USTRY collateral value, and borrowed from the YieldBlox V2 Blend pool. The two headline on-chain borrow transfers were 61,249,278.31 XLM and 1,000,196.70 USDC; a separate earlier 14,000-USDC borrow makes the gross USDC total about 1,014,196.70, while SLP-0006 rounds the incident figures to about 61.3M XLM and 1.01M USDC. Blockaid reports 48,069,094 XLM quarantined, which is a different quantity and does not mean recovered or reimbursed. Sources value the incident from about $10.2M to $10.97M depending on the XLM price and valuation basis, so no single exact USD loss is pinned. This is the 2026 V2 oracle-manipulation incident, not the separate 2022 YieldBlox hack.",
+        "answer": "On February 22, 2026, an attacker manipulated the thin USTRY/USDC market used by Reflector's price feed, inflated USTRY collateral value, and borrowed from the YieldBlox V2 Blend pool. The two exploit transactions transferred 61,249,278.31 XLM and 1,000,196.70 USDC. The decoded pre-transaction state already contained a roughly 14,000-USDC liability, so it must not be added to the transfer and presented as one 1,014,196.70-USDC exploit borrow. The roughly $10M headline describes the combined dollar valuation of the XLM and USDC drain, not a USDC quantity: Script3 reported about $10M, Blockaid about $10.2M, and the transaction PoC computed $10,857,337.06 at its incident-time XLM price. Blockaid separately reports 48,069,094 XLM quarantined, which is a subset of the XLM leg and does not mean recovered or reimbursed. No single exact USD loss is pinned, and the prior Script3 attribution of about $10.5M net loss remains unverified from accessible primary material. This is the 2026 V2 oracle-manipulation incident, not the separate 2022 YieldBlox hack.",
         "keyFacts": [
           "The incident occurred on February 22, 2026 and involved manipulation of the USTRY price feed used by the YieldBlox V2 Blend pool.",
           "Headline borrowed transfers: 61,249,278.31 XLM and 1,000,196.70 USDC; separately, 48,069,094 XLM was quarantined.",
-          "USD valuations are disputed and valuation-dependent, with sourced estimates spanning about $10.2M–$10.97M."
+          "The roughly $10M headline is a source-specific combined USD valuation of the XLM and USDC drain, not a USDC transfer amount; 48,069,094 XLM is the separately reported quarantined subset."
         ],
         "avoid": [
           "Do NOT say only 48,069,094 XLM was borrowed; that is the separately reported quarantined amount.",
+          "Do NOT add the pre-existing roughly 14,000-USDC liability to the exploit transfer and call 1,014,196.70 USDC one ledger-confirmed exploit borrow.",
+          "Do NOT treat the roughly $10M combined USD valuation as a USDC quantity or repeat the unverified Script3 $10.5M net-loss attribution.",
           "Do NOT conflate the February 2026 V2 oracle incident with the 2022 YieldBlox exploit.",
           "Do NOT pin one exact USD loss without attributing its price basis and source.",
           "Do NOT equate quarantined or frozen XLM with recovered, returned, or reimbursed funds."
         ],
-        "notes": "The token quantities are exact on-chain/source figures. A separate earlier 14,000-USDC borrow explains the sibling incident case's approximately 1,014,196.70-USDC gross total; this case preserves the blind-reviewed 1,000,196.70-USDC headline transfer. Sources disagree on USD valuation; do not penalize a sourced estimate within roughly $10.2M–$10.97M when its valuation basis is clear, and never treat one USD figure as invariant."
+        "notes": "The token quantities and dollar valuations answer different questions. The exploit call transferred 1,000,196.7040837 USDC; the roughly 14,000-USDC liability was already present in decoded pre-state. Script3's roughly $10M, Blockaid's roughly $10.2M, and the PoC's $10,857,337.06 are combined USD valuations of the XLM and USDC legs under different bases. The accessible primary record did not recover the prior Script3 ~$10.5M net-loss attribution. Do not penalize a sourced valuation whose basis is clear, and never treat one USD figure as a token invariant."
       },
       "tags": {
         "category": "history-org-tokenomics",
@@ -16741,6 +16788,10 @@
             "ref": "https://x.com/in_reflector/status/2025700358626877576"
           },
           {
+            "class": "A",
+            "ref": "https://x.com/script3official/status/2025403423840141450"
+          },
+          {
             "class": "D",
             "ref": "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain"
           },
@@ -16752,6 +16803,10 @@
           {
             "class": "B",
             "ref": "https://github.com/DK27ss/YieldBlox-10M-PoC"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/script3/yieldblox-incident-remediation"
           },
           {
             "class": "D",
@@ -16815,6 +16870,23 @@
             ]
           },
           {
+            "claim": "The roughly 14,000-USDC liability visible before the transaction was a separate exploit borrow that should be added to the 1,000,196.7040837-USDC transfer.",
+            "verdict": "contradicted",
+            "evidence": [
+              {
+                "class": "B",
+                "ref": "https://github.com/DK27ss/YieldBlox-10M-PoC",
+                "observedAt": "2026-07-28",
+                "note": "The decoded pre-state already contains the roughly 14,000-USDC liability; the exploit call amount is 10001967040837 in seven-decimal units."
+              },
+              {
+                "class": "F",
+                "ref": "https://stellar.expert/explorer/public/tx/ae721cacee382bdecac8d2c47286ecd42cb4711f658bb2aec7cba60dc64a31ff",
+                "observedAt": "2026-07-28"
+              }
+            ]
+          },
+          {
             "claim": "Exactly 48,069,094 XLM was quarantined; quarantined does not mean recovered or reimbursed.",
             "verdict": "confirmed-as-of",
             "evidence": [
@@ -16832,25 +16904,31 @@
             ]
           },
           {
-            "claim": "USD valuations are disputed and valuation-dependent, with sourced estimates spanning about $10.2M–$10.97M; no source-independent exact USD incident total is established.",
+            "claim": "The roughly $10M headline is a combined USD valuation of the XLM and USDC drain, not a USDC quantity; the exact valuation remains source- and price-basis-dependent.",
             "verdict": "disputed",
             "evidence": [
               {
                 "class": "A",
+                "ref": "https://x.com/script3official/status/2025403423840141450",
+                "observedAt": "2026-07-28",
+                "note": "The pool operator reported roughly $10M lost in a mixture of USDC and XLM."
+              },
+              {
+                "class": "A",
                 "ref": "https://blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack",
-                "observedAt": "2026-07-11",
-                "note": "Reports about $10.2M."
+                "observedAt": "2026-07-28",
+                "note": "Reports about $10.2M worth of XLM and USDC."
               },
               {
                 "class": "D",
                 "ref": "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain",
-                "observedAt": "2026-07-11",
+                "observedAt": "2026-07-28",
                 "note": "Reports $10M+ and leg valuations totaling about $10.85M."
               },
               {
                 "class": "B",
                 "ref": "https://github.com/DK27ss/YieldBlox-10M-PoC",
-                "observedAt": "2026-07-11",
+                "observedAt": "2026-07-28",
                 "note": "Computes $10,857,337.06 at the exploit-oracle XLM price."
               },
               {
@@ -16860,31 +16938,47 @@
                 "note": "Reports $10.97M."
               }
             ]
+          },
+          {
+            "claim": "Script3 later estimated about $10.5M net loss.",
+            "verdict": "unverifiable",
+            "evidence": [
+              {
+                "class": "A",
+                "ref": "https://x.com/i/article/2029281732231344128",
+                "observedAt": "2026-07-28",
+                "note": "The operator article was not accessible through the reviewed live fetches."
+              },
+              {
+                "class": "B",
+                "ref": "https://github.com/script3/yieldblox-incident-remediation",
+                "observedAt": "2026-07-28",
+                "note": "The accessible remediation data and execution records do not establish this exact net-loss attribution."
+              }
+            ]
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 N2 primary+blind (Solo 3417/3423)",
+          "date": "2026-07-28",
+          "by": "Todo 1251 Lane A — sibling contradictions (solo://proj/49/scratchpad/todo-1251-lane-a-sib--731)",
           "evidence": [
-            "solo://proj/49/process/3417",
-            "solo://proj/49/process/3423",
-            "scratchpad/p4/n2-events-blind/reconciliation.md",
+            "Production scout.searchResearch(source=\"incident\") and lumenloop.search_content_semantic surfaced the Blockaid incident report; direct sources were then rechecked.",
             "https://github.com/stellar/stellar-protocol/blob/master/limits/slp-0006.md",
-            "https://x.com/in_reflector/status/2025700358626877576",
+            "https://x.com/script3official/status/2025403423840141450",
             "https://blocksec.com/blog/yieldblox-dao-incident-on-stellar-oracle-misconfiguration-enabled-a-10m-drain",
             "https://blockaid.io/blog/73-quarantined-how-blockaid-and-stellar-validators-contained-a-10m-price-manipulation-attack",
             "https://github.com/DK27ss/YieldBlox-10M-PoC",
-            "https://rekt.news/yieldblox-rekt",
+            "https://github.com/script3/yieldblox-incident-remediation",
             "https://stellar.expert/explorer/public/tx/ae721cacee382bdecac8d2c47286ecd42cb4711f658bb2aec7cba60dc64a31ff",
             "https://stellar.expert/explorer/public/tx/3e81a3f7b6e17cc22d0a1f33e9dcf90e5664b125b9e61f108b8d2f082f2d4657",
-            "Sibling sweep: q-comp-yieldblox-oracle-incident reconciled as gross total (includes a separate earlier 14,000-USDC borrow), not a contradiction."
+            "Sibling sweep: q-comp-yieldblox-oracle-incident, q-comp-security-disclosure-programs, q-defi-etherfuse-stablebonds, q-defi-reflector-oracle, and q-soroban-oracle-defensive-consumption now consistently separate token transfers, combined USD valuation, quarantine, remediation, and recovery."
           ],
           "rootCause": [
-            "eval-authoring"
+            "Eval-authoring flaw: the historical case misread a pre-existing liability as a separate exploit borrow and failed to state that the roughly $10M headline values both token legs."
           ]
         },
         "origin": "authored 2026-07 (2026-events)",
-        "asOf": "2026-07-11"
+        "asOf": "2026-07-28"
       }
     },
     {
@@ -42966,14 +43060,15 @@
         "scout.searchResearch"
       ],
       "golden": {
-        "answer": "Yes. **USDC is Circle's product and a native classic Stellar asset**, not wrapped USDC and not XLM. Stellar Mainnet uses issuer **GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN**; the GBBD…FLA5 address seen in examples is Testnet, not Mainnet. **CCTP has supported Stellar since 2026-05-19.** “Circle-issued” is appropriate product shorthand, but legal-issuer precision depends on current terms and jurisdiction: Circle's non-EEA terms name Circle Internet Financial, LLC, while applicable EEA disclosures involve Circle Internet Financial Europe SAS. Distinguish product brand, on-chain issuer account, and legal obligor.",
+        "answer": "Yes. **USDC is Circle's product and a native classic Stellar asset**, not wrapped USDC and not XLM. Stellar Mainnet uses issuer **GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN**; the GBBD…FLA5 address seen in examples is Testnet, not Mainnet. **Circle's release notes record Stellar mainnet support on 2026-05-18; SDF and Circle publicly announced CCTP live on Stellar on 2026-05-19 — keep the two milestones distinct.** “Circle-issued” is appropriate product shorthand, but legal-issuer precision depends on current terms and jurisdiction: Circle's non-EEA terms name Circle Internet Financial, LLC, while applicable EEA disclosures involve Circle Internet Financial Europe SAS. Distinguish product brand, on-chain issuer account, and legal obligor.",
         "keyFacts": [
           "Identifies USDC as native on Stellar and distinct from XLM/wrapped assets.",
           "Uses the official Mainnet issuer, dates CCTP availability, and qualifies jurisdiction-specific legal entities."
         ],
         "avoid": [
           "Do NOT use the Testnet issuer as Mainnet, call USDC wrapped/XLM, or freeze one Circle legal entity globally.",
-          "Do NOT infer legal issuer solely from product branding or an on-chain account domain."
+          "Do NOT infer legal issuer solely from product branding or an on-chain account domain.",
+          "Do NOT collapse Circle's 2026-05-18 Stellar-mainnet-support milestone into the 2026-05-19 public-live announcement, or present either as the sole CCTP-on-Stellar date."
         ],
         "notes": "GT-28 CORRECTION 2026-07-10: USDC is native on Stellar; GA5Z…KZVN is Mainnet and GBBD…FLA5 is Testnet. CCTP went live 2026-05-19. Circle product brand, on-chain issuer, and jurisdictional legal entity are distinct.\nGT-28 independently confirmed by processes 3274/3275."
       },
@@ -43028,13 +43123,15 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
+          "date": "2026-07-28",
           "by": "Golden-truth sweep import — Native USDC and CCTP facts are correct, but bare 'Circle-issued' is product shorthand rather than one timeless global legal issuer, and vendor/on-chain provenance should distinguish Mainnet from Testnet.",
           "evidence": [
-            "Solo scratchpad 575 GT-28 primary 3274 and blind 3275; independent Mainnet/Testnet conflict resolution."
+            "Solo scratchpad 575 GT-28 primary 3274 and blind 3275; independent Mainnet/Testnet conflict resolution.",
+            "Adversarial review of todo 1251 (2026-07-28): this sibling collapsed Circle's 2026-05-18 mainnet-support milestone into the 2026-05-19 announcement, contradicting the distinction its own consistency clusters (015/052/124) assert. Circle release notes record 2026.05.18 mainnet support; SDF/Circle announced 2026-05-19."
           ],
           "rootCause": [
-            "Eval-side product-brand, on-chain issuer account, and jurisdictional legal-obligor conflation."
+            "Eval-side product-brand, on-chain issuer account, and jurisdictional legal-obligor conflation.",
+            "Sibling drift: the milestone distinction was restored in q-cctp-v2-usdc-stellar but not propagated to this member of the same clusters."
           ]
         },
         "origin": "raven-next q-token-circle-usdc-on-stellar"
@@ -44925,20 +45022,21 @@
         "stellarDocs.search_wallet_dapp_docs"
       ],
       "golden": {
-        "answer": "For a new project, use **`smart-account-kit`** with the relevant **OpenZeppelin Stellar smart-account contracts**, then pin and inspect the exact SDK, verifier, signer, context-rule, and policy contract versions you deploy. As of **2026-07-11**, npm showed Smart Account Kit **0.4.2**; OpenZeppelin `stellar-contracts` stable release **v0.7.2** was observed on **2026-06-09**. The kit supports WebAuthn/passkey and delegated or external signer flows plus context rules and policy-based authorization, but exact verifier and policy capabilities belong to the selected releases.\n\nTreat **`passkey-kit`** as the legacy predecessor. Its current README directs greenfield users to Smart Account Kit and explicitly labels the code **unaudited demo material** that should not secure real value. Do not infer that Smart Account Kit itself is SDF-maintained or that every application component inherits an OpenZeppelin audit. A separate G-account or relayer may submit and pay, but authorization remains in the C-account's `__check_auth` path and selected signer/verifier/policy contracts.",
+        "answer": "Choose between the two currently maintained SDKs by authorization model, then pin and inspect the exact releases and contracts you deploy. **`passkey-kit`** provides its own Stellar smart-wallet contract and a flat multi-signer `Signatures` model for WebAuthn/passkey, Ed25519, and policy signers. Its current README says to review the contract and SDK before holding meaningful value and read the caveats; it no longer presents the project as legacy unaudited demo material. **`smart-account-kit`** is the sibling SDK for the OpenZeppelin Stellar smart-account contracts and uses a different context-rule, auth-digest, signer, and policy model. The two are not drop-in compatible, so pick the model that fits the application rather than treating one as a universal successor.\n\nAudit and review claims remain component- and release-specific. OpenZeppelin contract review does not automatically cover either SDK, relayers, indexers, frontends, policies, deployment configuration, or application code. A separate G-account or relayer may submit and pay, but authorization remains in the selected C-account's `__check_auth` path and signer/policy contracts.",
         "keyFacts": [
-          "Routes greenfield work to smart-account-kit plus the relevant OpenZeppelin Stellar account contracts.",
-          "Dates Smart Account Kit 0.4.2 and OpenZeppelin stellar-contracts v0.7.2 to their observed releases.",
-          "Preserves Passkey Kit's legacy, unaudited-demo, no-real-value warning.",
-          "Ties signer/verifier/context/policy behavior and audit claims to exact selected versions and separates relaying from authorization."
+          "Presents Passkey Kit and Smart Account Kit as currently maintained but different, non-drop-in authorization models.",
+          "Explains Passkey Kit's flat multi-signer model versus Smart Account Kit's OpenZeppelin context-rule/auth-digest/policy model.",
+          "Uses Passkey Kit's current review-and-caveats warning rather than the stale legacy/unaudited-demo wording.",
+          "Ties behavior and audit claims to exact selected releases/components and separates relaying from authorization."
         ],
         "avoid": [
-          "Do NOT present Passkey Kit as the safe greenfield default or omit its unaudited/no-real-value warning.",
+          "Do NOT characterise Passkey Kit as legacy, superseded, or demo-only material, and do NOT say the README directs readers to Smart Account Kit instead; that composite framing was removed on 2026-07-12. Noting that it carries no third-party audit is accurate and must NOT be penalised — the current README still asks readers to review the contract and SDK themselves before holding meaningful value.",
+          "Do NOT present either kit as the universal greenfield default without matching its authorization model to the application.",
           "Do NOT say both kits expose identical primitives or APIs across versions.",
           "Do NOT imply that an OpenZeppelin contract audit covers Smart Account Kit, the relayer, indexer, frontend, policies, and deployment configuration as one inherited guarantee.",
           "Do NOT confuse transaction submission or fee sponsorship with smart-account authorization, or call Smart Account Kit SDF-maintained."
         ],
-        "notes": "GT-56 SAFETY/FRESHNESS CORRECTION 2026-07-11: Smart Account Kit 0.4.2 plus exact selected OpenZeppelin account contracts is the greenfield route. Passkey Kit is legacy, explicitly unaudited demo material, and warns against real-value use. Do not assume identical primitives or inherited full-stack audit coverage."
+        "notes": "Freshness correction 2026-07-28: the 2026-07-11 characterization was accurate for the then-current README, which called Passkey Kit a legacy precursor and unaudited demo material. Commit c6e46dab3ac1 rewrote the README on 2026-07-12; the current project is maintained and presents Passkey Kit and Smart Account Kit as sibling SDKs with different authorization models. Root cause is freshness-drift, not an original authoring flaw. Do not assume identical primitives or inherited full-stack audit coverage."
       },
       "tags": {
         "category": "tooling-infra",
@@ -44948,110 +45046,115 @@
       "truth": {
         "domain": "real-world",
         "status": "confirmed",
-        "asOf": "2026-07-11",
-        "reverifyBy": "2027-03-18",
+        "asOf": "2026-07-28",
+        "reverifyBy": "2026-08-27",
         "sources": [
           {
-            "class": "D",
-            "ref": "https://github.com/kalepail/passkey-kit",
-            "note": "class inferred at migration"
+            "class": "B",
+            "ref": "https://github.com/kalepail/passkey-kit"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/kalepail/smart-account-kit"
           },
           {
             "class": "D",
-            "ref": "https://github.com/kalepail/smart-account-kit",
-            "note": "class inferred at migration"
+            "ref": "https://www.npmjs.com/package/smart-account-kit"
           },
           {
-            "class": "D",
-            "ref": "https://www.npmjs.com/package/smart-account-kit",
-            "note": "class inferred at migration"
+            "class": "A",
+            "ref": "https://docs.openzeppelin.com/stellar-contracts/accounts/smart-account"
           },
           {
-            "class": "D",
-            "ref": "https://docs.openzeppelin.com/stellar-contracts/accounts/smart-account",
-            "note": "class inferred at migration"
+            "class": "B",
+            "ref": "https://github.com/OpenZeppelin/stellar-contracts/releases/tag/v0.7.2"
           },
           {
-            "class": "D",
-            "ref": "https://github.com/OpenZeppelin/stellar-contracts/releases/tag/v0.7.2",
-            "note": "class inferred at migration"
+            "class": "B",
+            "ref": "https://github.com/kalepail/passkey-kit/commit/c7483e71f5fd153b95ba9da1772c17298b3cf198"
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/kalepail/passkey-kit/commit/c6e46dab3ac123fabb5ecf1e80e9a043c86ae526"
           }
         ],
         "corroboration": [
           {
-            "claim": "Passkey Kit is the legacy predecessor and its current repository warns that it is unaudited demo material not suitable for securing real value.",
-            "verdict": "confirmed",
+            "claim": "Passkey Kit is currently maintained and its README presents Smart Account Kit as a sibling with a different authorization model, not as its universal replacement.",
+            "verdict": "confirmed-as-of",
             "evidence": [
               {
                 "class": "B",
-                "ref": "B: current kalepail/passkey-kit README",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/kalepail/passkey-kit",
+                "observedAt": "2026-07-28",
+                "note": "Current README documents the maintained SDK, flat Signatures model, review caveat, and sibling relationship."
               },
               {
-                "class": "D",
-                "ref": "registry: current passkey-kit package metadata",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "class": "C",
+                "ref": "scout.searchRepos({q:'passkey-kit smart-account-kit'})",
+                "observedAt": "2026-07-28",
+                "note": "Production Scout returned both active, unarchived canonical repositories with July 2026 activity."
               }
             ]
           },
           {
-            "claim": "Greenfield work should use Smart Account Kit with the selected OpenZeppelin Stellar account contracts, while signer/verifier/context/policy behavior and audit scope must be tied to exact releases.",
-            "verdict": "confirmed-as-of",
+            "claim": "Passkey Kit's flat multi-signer authorization and Smart Account Kit's OpenZeppelin context-rule/auth-digest/policy authorization are distinct and not drop-in compatible; audit scope remains component-specific.",
+            "verdict": "confirmed",
             "evidence": [
               {
                 "class": "B",
-                "ref": "B: kalepail/smart-account-kit 0.4.2 source/package",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
+                "ref": "https://github.com/kalepail/passkey-kit and https://github.com/kalepail/smart-account-kit",
+                "observedAt": "2026-07-28",
+                "note": "The canonical READMEs describe the two different SDK and authorization models."
               },
-              {
-                "class": "D",
-                "ref": "A-product/B: OpenZeppelin account documentation and stellar-contracts v0.7.2 release",
-                "observedAt": "2026-07-11",
-                "note": "verbatim legacy evidence descriptor imported at migration"
-              }
-            ],
-            "note": "Legacy verdict: confirmed-as-of-2026-07-11."
-          },
-          {
-            "claim": "Dates Smart Account Kit 0.4.2 and OpenZeppelin stellar-contracts v0.7.2 to their observed releases.",
-            "verdict": "confirmed-as-of",
-            "evidence": [
               {
                 "class": "A",
                 "ref": "https://docs.openzeppelin.com/stellar-contracts/accounts/smart-account",
-                "observedAt": "2026-07-11",
-                "note": "Official OpenZeppelin documentation corroborates the Stellar smart-account contract family."
+                "observedAt": "2026-07-28",
+                "note": "OpenZeppelin documents the smart-account contract framework underlying Smart Account Kit."
+              }
+            ]
+          },
+          {
+            "claim": "The legacy/unaudited-demo characterization was present on 2026-07-11 and was removed by the 2026-07-12 README rewrite.",
+            "verdict": "confirmed-as-of",
+            "evidence": [
+              {
+                "class": "B",
+                "ref": "https://github.com/kalepail/passkey-kit/commit/c7483e71f5fd153b95ba9da1772c17298b3cf198",
+                "observedAt": "2026-07-28",
+                "note": "The prior README snapshot contains the legacy precursor and unaudited demo-material wording."
               },
               {
                 "class": "B",
-                "ref": "https://raw.githubusercontent.com/kalepail/smart-account-kit/main/package.json",
-                "observedAt": "2026-07-11",
-                "note": "Fetched package source records Smart Account Kit version 0.4.2."
+                "ref": "https://github.com/kalepail/passkey-kit/commit/c6e46dab3ac123fabb5ecf1e80e9a043c86ae526",
+                "observedAt": "2026-07-28",
+                "note": "The 2026-07-12 README rewrite introduced the current maintained-project positioning and review caveat."
               },
               {
-                "class": "B",
-                "ref": "https://github.com/OpenZeppelin/stellar-contracts/releases/tag/v0.7.2",
-                "observedAt": "2026-07-11",
-                "note": "Fetched source release page records OpenZeppelin stellar-contracts v0.7.2."
+                "class": "C",
+                "ref": "scout.searchRepos({q:'passkey-kit smart-account-kit'})",
+                "observedAt": "2026-07-28",
+                "note": "The production repository index corroborates the current active state after the rewrite."
               }
             ]
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 5B numeric corroboration backfill",
+          "date": "2026-07-28",
+          "by": "Todo 1251 Lane A — sibling contradictions (solo://proj/49/scratchpad/todo-1251-lane-a-sib--731)",
           "evidence": [
+            "Production scout.searchRepos({q:'passkey-kit smart-account-kit'}) returned both canonical repositories as active and unarchived with July 2026 activity.",
+            "https://github.com/kalepail/passkey-kit",
+            "https://github.com/kalepail/smart-account-kit",
             "https://docs.openzeppelin.com/stellar-contracts/accounts/smart-account",
-            "https://raw.githubusercontent.com/kalepail/smart-account-kit/main/package.json",
-            "https://github.com/OpenZeppelin/stellar-contracts/releases/tag/v0.7.2",
-            "solo://proj/49/scratchpad/super-corpus-rebuild--585",
-            "Sibling consistency sweep: checked the affected numeric/SEP/CAP mappings against related P4 5B cases and consistency-register members."
+            "https://github.com/kalepail/passkey-kit/commit/c7483e71f5fd153b95ba9da1772c17298b3cf198",
+            "https://github.com/kalepail/passkey-kit/commit/c6e46dab3ac123fabb5ecf1e80e9a043c86ae526",
+            "Sibling sweep: q-tool-smart-wallet-repos-discovery already describes the projects as separate current repositories with source-specific caveats; the other cluster-022 wallet/operator cases do not assert the stale Passkey Kit characterization.",
+            "Adversarial review 2026-07-28: the prior avoid clause could punish a TRUE statement — both the pre-rewrite and current READMEs decline to claim a third-party audit. Trap rescoped to the composite legacy/demo/superseded characterization only."
           ],
           "rootCause": [
-            "eval-authoring"
+            "freshness-drift"
           ]
         },
         "origin": "raven-next q-tool-passkeykit-smart-wallet"

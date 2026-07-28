@@ -7,9 +7,9 @@
     "stellarDocs.search_docs"
   ],
   "golden": {
-    "answer": "Circle launched CCTP V2 on Stellar on 2026-02-24 as domain 27. It burns native USDC on the source and mints native USDC on the destination. For Stellar G-, M-, or C-address recipients, use Circle's CctpForwarder path; a wrong mintRecipient or destinationCaller can strand funds. Stellar USDC uses 7 decimals while CCTP messages use 6, so the seventh outbound decimal remains on Stellar. On 2026-07-11, Circle's fee endpoint returned Fast/Standard 0/0 for domain 27→0 and 1 bp/0 for 0→27; re-query /v2/burn/USDC/fees. Circle transfer fees are separate from network resources, relayer, integrator, and any swap charges.",
+    "answer": "Circle's release notes record **Stellar mainnet support on 2026-05-18**, and SDF and Circle publicly announced CCTP live on Stellar on **2026-05-19**. The earlier **2026-02-24** date previously called the launch was not recoverable from accessible primary material, so do not collapse it with either confirmed May milestone. Stellar is CCTP domain 27. CCTP burns native USDC on the source and mints native USDC on the destination. For Stellar G-, M-, or C-address recipients, use Circle's CctpForwarder path; a wrong mintRecipient or destinationCaller can strand funds. Stellar USDC uses 7 decimals while CCTP messages use 6, so the seventh outbound decimal remains on Stellar. On 2026-07-11, Circle's fee endpoint returned Fast/Standard 0/0 for domain 27→0 and 1 bp/0 for 0→27; re-query /v2/burn/USDC/fees. Circle transfer fees are separate from network resources, relayer, integrator, and any swap charges.",
     "keyFacts": [
-      "CCTP V2 launched on Stellar on 2026-02-24 as domain 27 and uses burn, attestation, and mint for native USDC.",
+      "Separates Circle's 2026-05-18 Stellar-mainnet-support milestone from the 2026-05-19 SDF/Circle public-live announcement; the prior 2026-02-24 launch attribution is unverified.",
       "Use Circle's CctpForwarder for Stellar G-, M-, or C-address recipients; incorrect mintRecipient or destinationCaller values can strand funds.",
       "Stellar USDC has 7 decimals while CCTP messages use 6; the seventh outbound decimal remains on Stellar.",
       "The 2026-07-11 fee probe found Fast/Standard 0/0 for 27→0 and 1 bp/0 for 0→27; callers must re-query /v2/burn/USDC/fees.",
@@ -17,9 +17,10 @@
     ],
     "avoid": [
       "CCTP locks USDC and issues a wrapped Stellar token.",
-      "Every CCTP route is permanently fee-free and exactly 1:1 after all costs."
+      "Every CCTP route is permanently fee-free and exactly 1:1 after all costs.",
+      "Do NOT call 2026-02-24 the Stellar launch without accessible primary evidence or merge technical support and public announcement into one date."
     ],
-    "notes": "Status-sensitive details are stated as of 2026-07-11; grade later sourced changes leniently and require dated primary evidence."
+    "notes": "Milestone provenance was rechecked on 2026-07-28: Circle's technical-support record is 2026-05-18 and SDF/Circle's public-live announcement is 2026-05-19. The prior 2026-02-24 launch attribution was not recovered from accessible primary material and is not a truth gate. Fee observations remain explicitly dated 2026-07-11; grade later sourced changes leniently."
   },
   "tags": {
     "category": "compliance-rwa-payments",
@@ -28,9 +29,9 @@
   },
   "truth": {
     "domain": "real-world",
-    "status": "confirmed",
-    "asOf": "2026-07-11",
-    "reverifyBy": "2026-11-01",
+    "status": "mixed",
+    "asOf": "2026-07-28",
+    "reverifyBy": "2026-10-29",
     "sources": [
       {
         "class": "A",
@@ -45,34 +46,68 @@
         "ref": "https://developers.circle.com/cctp/stellar-cctp-forwarder"
       },
       {
+        "class": "A",
+        "ref": "https://developers.circle.com/release-notes/cctp-2026"
+      },
+      {
+        "class": "A",
+        "ref": "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar"
+      },
+      {
         "class": "B",
         "ref": "https://github.com/circlefin/stablecoin-evm"
+      },
+      {
+        "class": "B",
+        "ref": "https://github.com/circlefin/stellar-cctp"
       }
     ],
     "corroboration": [
       {
-        "claim": "CCTP V2 launched on Stellar on 2026-02-24 as domain 27 and uses burn, attestation, and mint for native USDC.",
+        "claim": "Circle recorded Stellar mainnet support on 2026-05-18, and SDF/Circle publicly announced CCTP live on Stellar on 2026-05-19.",
         "verdict": "confirmed-as-of",
         "evidence": [
           {
             "class": "A",
-            "ref": "https://developers.circle.com/cctp",
-            "observedAt": "2026-07-11"
+            "ref": "https://developers.circle.com/release-notes/cctp-2026",
+            "observedAt": "2026-07-28",
+            "note": "Circle's release note labels 2026.05.18 'Added support for Stellar mainnet.'"
           },
           {
             "class": "A",
-            "ref": "https://developers.circle.com/cctp/fees-and-finality",
-            "observedAt": "2026-07-11"
-          },
-          {
-            "class": "A",
-            "ref": "https://developers.circle.com/cctp/stellar-cctp-forwarder",
-            "observedAt": "2026-07-11"
+            "ref": "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar",
+            "observedAt": "2026-07-28",
+            "note": "SDF's public-live announcement is dated 2026-05-19."
           },
           {
             "class": "B",
-            "ref": "https://github.com/circlefin/stablecoin-evm",
-            "observedAt": "2026-07-11"
+            "ref": "https://github.com/circlefin/stellar-cctp",
+            "observedAt": "2026-07-28",
+            "note": "Circle's canonical Stellar implementation repository corroborates the V2/domain-27 implementation boundary."
+          }
+        ]
+      },
+      {
+        "claim": "CCTP V2 launched on Stellar on 2026-02-24.",
+        "verdict": "unverifiable",
+        "evidence": [
+          {
+            "class": "A",
+            "ref": "https://developers.circle.com/release-notes/cctp-2026",
+            "observedAt": "2026-07-28",
+            "note": "The reviewed Circle release notes establish 2026-05-18 mainnet support and do not identify a 2026-02-24 Stellar milestone."
+          },
+          {
+            "class": "B",
+            "ref": "https://github.com/circlefin/stellar-cctp",
+            "observedAt": "2026-07-28",
+            "note": "The accessible canonical implementation history did not recover the claimed February launch provenance."
+          },
+          {
+            "class": "D",
+            "ref": "https://developers.circle.com/cctp/release-notes",
+            "observedAt": "2026-07-28",
+            "note": "An explicit exact-date web sweep found May launch/support sources but no primary source assigning a Stellar milestone to 2026-02-24."
           }
         ]
       },
@@ -234,13 +269,23 @@
       }
     ],
     "verified": {
-      "date": "2026-07-11",
-      "by": "P4 H2 primary+blind (Solo 3411/3412)",
+      "date": "2026-07-28",
+      "by": "Todo 1251 Lane A — sibling contradictions (solo://proj/49/scratchpad/todo-1251-lane-a-sib--731)",
       "evidence": [
+        "Production stellarDocs.search_docs recovered the current CCTP-on-Stellar documentation boundary and delegated deployment/support provenance to Circle.",
+        "https://developers.circle.com/release-notes/cctp-2026",
+        "https://stellar.org/blog/foundation-news/circle-cctp-is-live-on-stellar",
+        "https://x.com/circle/status/2056767949445472739",
+        "https://github.com/circlefin/stellar-cctp",
         "https://developers.circle.com/cctp",
         "https://developers.circle.com/cctp/fees-and-finality",
         "https://developers.circle.com/cctp/stellar-cctp-forwarder",
-        "https://github.com/circlefin/stablecoin-evm"
+        "https://github.com/circlefin/stablecoin-evm",
+        "improvements/lumenloop/ll-022-cctp-milestone-provenance.md",
+        "Sibling sweep: q-tool-cctp-stellar-integration, q-hist-cctp-stellar-live-announcement, and q-token-circle-usdc-on-stellar now use compatible milestone-specific language rather than one collapsed launch date."
+      ],
+      "rootCause": [
+        "Eval-authoring flaw: the case promoted an unsupported 2026-02-24 date to 'launch' and collapsed it with later technical-support and public-announcement milestones."
       ]
     },
     "origin": "kaan cctp-usdc-stellar-crosschain"
