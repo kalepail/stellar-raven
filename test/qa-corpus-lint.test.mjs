@@ -7,6 +7,7 @@ import {
   lintCorroboration,
   lintDateContingentTraps,
   lintGospelChanges,
+  runLint,
   lintStale,
   lintSurface
 } from "../eval/qa/lint-corpus.mjs";
@@ -148,6 +149,20 @@ describe("QA corpus lint lanes", () => {
     ]);
   });
 
+  it("retains a missing member hash so a changed reappearance reopens", () => {
+    const register = {
+      clusters: [{ id: "storage", members: ["q-fixture-gospel"], verdict: "consistent" }]
+    };
+    updateRegister(register, new Map([["q-fixture-gospel", "aaa"]]), { seed: true, date: "2026-07-27" });
+    const missing = updateRegister(register, new Map(), { date: "2026-07-28" });
+    expect(missing.missingCases).toEqual([{ entry: "storage", id: "q-fixture-gospel" }]);
+    expect(register.clusters[0].memberContentSha256).toEqual({ "q-fixture-gospel": "aaa" });
+
+    const returned = updateRegister(register, new Map([["q-fixture-gospel", "bbb"]]), { date: "2026-07-29" });
+    expect(returned.reopened).toEqual(["storage"]);
+    expect(register.clusters[0].verdict).toBe("reopen");
+  });
+
   it("checks date-trap case ids and quoted reverifyBy dates", () => {
     const register = {
       dateContingentTraps: {
@@ -164,6 +179,30 @@ describe("QA corpus lint lanes", () => {
     expect(findings).toEqual(expect.arrayContaining([
       expect.objectContaining({ level: "error", lane: "date-trap", id: "q-fixture-missing", message: expect.stringContaining("missing case") }),
       expect.objectContaining({ level: "error", lane: "date-trap", id: "q-fixture-live", message: expect.stringContaining("does not match") })
+    ]));
+  });
+
+  it("checks quoted reverifyBy dates in every string-valued date-trap field", () => {
+    const kase = load("gospel-before.json");
+    kase.truth.reverifyBy = "2026-08-01";
+    const register = {
+      dateContingentTraps: {
+        entries: [{
+          caseIds: [kase.id],
+          requiredRecheck: `${kase.id} reverifyBy 2026-08-02`,
+          note: `${kase.id} reverifyBy 2026-08-03`
+        }]
+      }
+    };
+    const direct = lintDateContingentTraps([kase], register);
+    expect(direct).toEqual(expect.arrayContaining([
+      expect.objectContaining({ lane: "date-trap", id: kase.id, message: expect.stringContaining("requiredRecheck") }),
+      expect.objectContaining({ lane: "date-trap", id: kase.id, message: expect.stringContaining("note") })
+    ]));
+    const throughRunLint = runLint({ cases: [kase], manifest: load("manifest.json"), register });
+    expect(throughRunLint).toEqual(expect.arrayContaining([
+      expect.objectContaining({ lane: "date-trap", id: kase.id, message: expect.stringContaining("requiredRecheck") }),
+      expect.objectContaining({ lane: "date-trap", id: kase.id, message: expect.stringContaining("note") })
     ]));
   });
 

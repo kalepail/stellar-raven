@@ -78,8 +78,9 @@ tested surface, and current managed-service provider health was not verifiable
 ## Recommendation
 
 For the Stellar Docs owner, cheapest fix first: rename or restructure the
-managed-service page so "OpenZeppelin Relayer" and "OpenZeppelin Channels" are
-two named concepts rather than aliases, and remove the "also known as" framing
+managed-service page so "OpenZeppelin Relayer" and the managed Stellar
+Channels offering are two named concepts rather than aliases, and remove the
+"also known as" framing
 from both Tools pages.
 
 Then add a short comparison table covering the axes that actually differ: who

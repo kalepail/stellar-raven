@@ -17,10 +17,12 @@ right tool for a golden question.
   `wrangler dev` server; must return structured `{queriesUsed, primaryToolId, primaryService,
   alternateToolIds, reasoning}`.
 - Each row also preserves every search call as `searchCalls`: query, limit, ordered hit
-  `{id, tier, score}` tuples, `total`, `truncated`, `zeroGated`, and advisory
-  `widerCandidateIds`—no descriptions or other payload content. `zeroGated` is derived by the
-  harness from the captured hit tiers (the first live run showed agents mislabeling their own
-  reported flag in both directions on 3 of 13 pages).
+  `{id, tier, score}` tuples, `total`, `truncated`, `zeroGated` (true when the page returned no
+  gated-tier hit), and advisory `widerCandidateIds` (ids from the page's widerCandidates block —
+  the search response's broad-operation advisory)—no descriptions or other payload content.
+  `zeroGated` is derived by the harness from the captured hit tiers (in the first
+  transcript-instrumented run — the 13 pages captured across the six targeted-A/B rows below —
+  agents mislabeled their own reported flag in both directions on 3 pages).
 - `primaryInHits` is true when the primary id appears in any captured page's ranked hits; false
   marks an off-page primary pick, whether advisory-driven or hallucinated.
 - Grades: **primary** = primary tool's service matches the label; **any** = primary or an
@@ -302,17 +304,35 @@ lumenloop medium sits at 2/8, and one stellarDocs medium case is genuinely lost.
 The todo-1232 mechanism (zero-gated pages' nextSteps copy steering primary-tool choice to
 widerCandidates) led to a general prompt-surface change: the zero-gated suffix now leads with
 ranked-hit authority and scopes the advisory to genuine recovery. Measured on the affected case
-(`q-tool-cctp-stellar-integration`) with the transcript-instrumented harness, new copy only:
+(`q-tool-cctp-stellar-integration`, expected stellarDocs) with the transcript-instrumented
+harness, **new copy only** — the old-copy baseline is this case's rows in the two full
+2026-07-28 runs above (one observation per run per effort), NOT a matched arm, and the raw run
+artifact is local-only per the results-dir convention, so the committed evidence is this table:
 
-| effort | result (3 repeats) | old-copy baseline |
-| --- | --- | --- |
-| low | 2/3 hit — the one miss picked `lumenloop.search_content_semantic` where it ranked **#1 on-page** for a news-phrased query (defensible ranking, not advisory-driven) | stable hit |
-| medium | 1/3 hit — one miss followed the advisory **off-page** across two genuinely zero-gated pages (`primaryInHits=false`), one miss picked semantic on-page | 0/2 hit, both advisory-driven |
+| repeat | effort | primary pick | service hit? | primaryInHits |
+| --- | --- | --- | --- | --- |
+| 1 | low | lumenloop.search_content_semantic | miss | true (ranked #1 on-page for a news-phrased query) |
+| 1 | medium | lumenloop.search_content_semantic | miss | **false — advisory-followed off-page across two zero-gated pages** |
+| 2 | low | stellarDocs.search_asset_token_docs | hit | true |
+| 2 | medium | lumenloop.search_content_semantic | miss | true |
+| 3 | low | stellarDocs.search_asset_token_docs | hit | true |
+| 3 | medium | stellarDocs.search_protocol_concepts_docs | hit | true |
 
-Honest reading: **no measurable win at n=3** — the copy change is design-grounded (ranked-hit
-authority, advisory scoped) and shows no harm signal, but advisory-following off-page still
-occurs, so wording alone does not fully resolve the recovery-vs-tool-choice collision. The
-structural option (suppressing/downgrading widerCandidates when strong backfill hits exist)
-remains unproposed and would need its own measured round. `primaryInHits` caught the off-page
-pick exactly as designed; `zeroGated` proved unreliable as an agent-reported field and is now
-derived by the harness from captured hit tiers.
+Honest reading, scoped to what n=3 supports: **no measurable win** (medium 1/3 vs 0/2 baseline
+is not significant; low 2/3 vs a previously stable hit is not an improvement), and **no
+advisory-attributed harm observed in the low repeats** — the one low miss picked a hit that
+legitimately ranked #1 on its page for a news-phrased query, which is a ranking outcome, not
+the advisory mechanism. That causal attribution is a judgment call, and the low aggregate did
+not improve; n=3 cannot support a global no-harm product claim. One medium repeat still
+followed the advisory off-page, so wording alone does not fully resolve the
+recovery-vs-tool-choice collision. The structural option (suppressing/downgrading
+widerCandidates when strong backfill hits exist) remains unproposed and would need its own
+measured round. `primaryInHits` caught the off-page pick exactly as designed; `zeroGated`
+proved unreliable as an agent-reported field and is now derived by the harness from captured
+hit tiers.
+
+**Transcript trust boundary:** `searchCalls` pages are transcribed by the evaluated agent from
+its own curl output — the harness derives `zeroGated`/`primaryInHits` from that transcription
+but does not intercept the HTTP exchange, so a mistranscribed or omitted page propagates into
+those flags. Treat them as strong-but-not-tamper-proof evidence; harness-owned capture is a
+recorded follow-up.

@@ -182,10 +182,10 @@ export function demoTerminalProviderErrorTelemetry(
 function providerErrorStatus(error: unknown): number | null {
   const seen = new Set<object>();
   let inspected = 0;
-  const visit = (current: unknown): number | null => {
-    if (typeof current !== "object" || current === null || seen.has(current) || inspected >= 6) {
-      return null;
-    }
+  const queue: unknown[] = [error];
+  for (let index = 0; index < queue.length && inspected < 6; index += 1) {
+    const current = queue[index];
+    if (typeof current !== "object" || current === null || seen.has(current)) continue;
     seen.add(current);
     inspected += 1;
     const record = current as {
@@ -202,14 +202,14 @@ function providerErrorStatus(error: unknown): number | null {
     ) {
       return record.statusCode;
     }
-    for (const nested of Array.isArray(record.errors) ? record.errors.slice(0, 3) : []) {
-      const status = visit(nested);
-      if (status !== null) return status;
-    }
-    return visit(record.lastError) ?? visit(record.cause);
-  };
+    queue.push(
+      ...(Array.isArray(record.errors) ? record.errors.slice(0, 3) : []),
+      record.lastError,
+      record.cause
+    );
+  }
   // One retry wrapper, three attempts, and two nested cause wrappers.
-  return visit(error);
+  return null;
 }
 
 function classifyDemoStopReason(finishReason: string, hadFinalText: boolean): DemoStopReasonClass {

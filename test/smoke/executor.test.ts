@@ -129,6 +129,28 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
     ]);
   });
 
+  it("does not let repeated raw URLs starve later distinct canonical fields", async () => {
+    const outcome = await run(`async () => ({
+      repeated: Array.from({ length: 20 }, () => ({ url: "https://repeat.example.test/item" })),
+      sourceUrl: "https://source.example.test/report",
+      docsUrl: "https://docs.example.test/guide",
+      repoUrl: "https://github.com/stellar/stellar-core",
+      websiteUrl: "https://website.example.test",
+      padding: "x".repeat(30000)
+    })`);
+
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) throw new Error(outcome.error);
+    expect(outcome.truncated).toBe(true);
+    expect(outcome.sourceBasis?.canonicalUrls).toEqual([
+      "https://repeat.example.test/item",
+      "https://source.example.test/report",
+      "https://docs.example.test/guide",
+      "https://github.com/stellar/stellar-core",
+      "https://website.example.test/"
+    ]);
+  });
+
   it("excludes decorative/store URLs before the five-URL manifest cap", async () => {
     const outcome = await run(`async () => ({
       projects: [
@@ -184,16 +206,23 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
     ]);
   });
 
-  it("keeps restoreUrl-style keys while still excluding store links", async () => {
+  it("keeps firestore, restore, and URI fields while excluding store and thumbnail links", async () => {
     const outcome = await run(`async () => ({
+      firestoreUrl: "https://firestore.example.test/document",
       restoreUrl: "https://restore.example.test/backup",
       appStoreLink: "https://store.example.test/app",
+      uri: "https://uri.example.test/resource",
+      thumbnailUrl: "https://cdn.example.test/thumb.png",
       padding: "x".repeat(30000)
     })`);
 
     expect(outcome.ok).toBe(true);
     if (!outcome.ok) throw new Error(outcome.error);
-    expect(outcome.sourceBasis?.canonicalUrls).toEqual(["https://restore.example.test/backup"]);
+    expect(outcome.sourceBasis?.canonicalUrls).toEqual([
+      "https://firestore.example.test/document",
+      "https://restore.example.test/backup",
+      "https://uri.example.test/resource"
+    ]);
   });
 
   it("preserves root string/array URL collection and the depth-five traversal cap", async () => {

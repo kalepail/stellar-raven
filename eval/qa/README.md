@@ -32,7 +32,7 @@ Categories (= directory names = `tags.category`): `protocol-core`, `soroban`, `t
 `assets-anchors-seps`, `defi-ecosystem`, `scf-grants-builders`, `compliance-rwa-payments`,
 `history-org-tokenomics`, `retail-consumer`, `edge-behavior`.
 
-Lanes never merge: the main battery, the canonical live-10, and the opt-in digest-supplement-2
+Lanes never merge: the main battery, the canonical live lane (the 15-case live-data-canonical-v3 contract; historically named live-10 before the 2026-07-12 expansion), and the opt-in digest-supplement-2
 are separate scopes with separate denominators (`eval/EVALS.md`). The live contracts are frozen
 whole-file contracts — `eval/self-test.mjs` asserts contract name, ordered membership, and
 `caseContentDigest`; changing live case content requires a version bump and digest update.
@@ -134,7 +134,10 @@ npm run eval:plan -- eval/qa/results/<stamp>-variantA.json    # plan regrade, of
 ```
 
 Register hashes cover cluster members, numeric-invariant `affectedCaseIds`, and date-trap
-`caseIds`; lint also checks any case `reverifyBy` date quoted in date-trap prose.
+`caseIds` ("date trap" = an entry in the register's `dateContingentTraps` section — a known
+time-bomb paired with its cases' `reverifyBy` schedules); CI runs `eval:qa:register -- --check`
+to enforce them, and lint checks every string-valued date-trap field for any quoted case
+`reverifyBy` date.
 
 Coverage as of 2026-07-28: the 133 clusters name 252 of 490 cases (51%; 253 counting the
 numeric-invariant and date-trap `caseIds`), so **auto-reopen is blind to the other 238 cases** —
@@ -179,7 +182,8 @@ with rootCause. The stale queue is owned by the
 [`truth-maintenance`](../../.agents/skills/truth-maintenance/SKILL.md) skill; authors set
 `reverifyBy` quarter-granular and staggered so the queue drips instead of cliffing.
 
-For the former 2026-10-01 cohort, sort first by `truth.status !== "confirmed"`, then by a
+For the former 2026-10-01 cohort (76 cases originally shared `reverifyBy: 2026-10-01` — the
+cliff the 2026-07-28 stagger dissolved), sort first by `truth.status !== "confirmed"`, then by a
 currentness match in the question/key facts, then by id. The currentness test is
 **word-boundary anchored** — `/\b(?:current|as of|version|release|scheduled|status|roster|provider|playlist|active|mainnet|draft|final|latest|dated|date|live on|still underway)\b/i`
 applied to `question` plus `golden.keyFacts` joined. The anchoring is load-bearing, not
@@ -305,7 +309,7 @@ documentation — are recorded monitor-only, below the 2-unrelated-cases acting 
 The 2026-07-11 post-rebuild baseline is recorded in
 [`reviewed/2026-07-super-corpus-baseline.md`](./reviewed/2026-07-super-corpus-baseline.md).
 It ran the designed deterministic headline sample-30 plus the separately denominated canonical
-live-10 and digest-2 contracts with `claude-sonnet-5` answering and judging under v2.4/p3.
+live (live-data-canonical-v3, then 10-case) and digest-2 contracts with `claude-sonnet-5` answering and judging under v2.4/p3.
 Results stamps: `2026-07-11T15-36-44-variantA.json`,
 `2026-07-11T15-50-19-variantA.json`, and `2026-07-11T15-52-51-variantA.json`.
 Raw results were 8C/18P/4W, 8C/2P/0W, and 2C/0P/0W respectively; live review calibrated the
@@ -314,7 +318,7 @@ canonical lane to 9C/1P/0W. Results JSONs remain local-only evidence.
 The most recent checkpoint against this baseline is the 2026-07-11 tier-interleave round
 ([`reviewed/2026-07-11-tier-interleave-round.md`](./reviewed/2026-07-11-tier-interleave-round.md),
 stamps `2026-07-11T21-44-47-variantA.json` headline, `2026-07-11T21-55-31-variantA.json` canonical
-live-10, `2026-07-11T21-59-10-variantA.json` digest-2; same v2.4/p3 + `claude-sonnet-5` contract and
+live lane (then 10-case), `2026-07-11T21-59-10-variantA.json` digest-2; same v2.4/p3 + `claude-sonnet-5` contract and
 the same 30 sample ids). Raw were 12C/14P/4W, 10C/0P/0W, and 0C/2P/0W; reviewed (re-judging every
 flip) were 12C/14P/4W, 10C, and 2C — 5 confirmed stable gains and 2 confirmed regressions vs the
 baseline headline. The super-corpus baseline above remains the baseline of record; the tier-interleave

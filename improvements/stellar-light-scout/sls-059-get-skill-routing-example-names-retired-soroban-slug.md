@@ -11,7 +11,6 @@ evidence:
   - filed upstream 2026-07-28: https://github.com/Stellar-Light/stellarlight/issues/746
   - 2026-07-28 adversarial review (ADV-4) tightened this finding's scope before filing: exact-slug references separated from topical 'Soroban' vocabulary, and the successor claim softened to what the probes established
   - discovered during the 2026-07-28 consistency-register clustering pass (Solo todo 1253 Lane B observation, promoted via todo 1256); the eval corpus itself was corrected the same day (q-gap-scout-list-skill-directory now date-scopes the retired slug)
-  - upstream issue filed 2026-07-28: https://github.com/Stellar-Light/stellarlight/issues/746
 ---
 
 ## Finding

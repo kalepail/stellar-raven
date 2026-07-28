@@ -226,17 +226,22 @@ function serializedResult(value: unknown): { body: string; mime: ArtifactMime } 
 
 function collectCanonicalUrlCandidates(value: unknown): string[] {
   const out: string[] = [];
+  const urls = new Set<string>();
   // Best visit so far per object: shallowest depth seen at all, and shallowest
   // seen on a URL-keyed path. A revisit is skipped only when a prior visit
   // dominates it, so a shallow alias reached after a depth-cut traversal (or a
   // URL-keyed alias after a non-URL one) still descends. Depths only shrink,
-  // so each node is visited at most ~2× the depth cap; replays may duplicate
-  // raw URLs and sanitizeCanonicalUrls dedupes them before its 5-URL cap.
+  // so each node is visited at most ~2× the depth cap. Raw candidates are
+  // deduped here so repeats cannot exhaust the 20-URL traversal bound;
+  // sanitizeCanonicalUrls still dedupes after normalization before its 5-URL cap.
   const seen = new Map<object, { anyDepth: number; urlDepth: number }>();
   const visit = (v: unknown, depth: number, urlLeaf = true) => {
     if (out.length >= 20 || depth > 5) return;
     if (typeof v === "string") {
-      if (urlLeaf && v.includes("https://")) out.push(v);
+      if (urlLeaf && v.includes("https://") && !urls.has(v)) {
+        urls.add(v);
+        out.push(v);
+      }
       return;
     }
     if (v === null || typeof v !== "object") return;

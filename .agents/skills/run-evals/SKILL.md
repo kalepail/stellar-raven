@@ -188,8 +188,8 @@ npm run eval:qa:compile         # only if running QA; always emits cases.json + 
 npm run eval:qa:lint -- --stale # owned-corpus lint lanes + the stale-gospel gate (CI runs this)
 # Editing judge-facing gospel (answer/keyFacts/avoid/notes)? Add --since <base-ref>.
 # Without it the diff-based gospel gate ("changed without changing truth.verified")
-# SILENTLY SKIPS locally while CI resolves the push base and enforces it — a clean
-# local lint is vacuous for that lane (bit the 2026-07-28 round post-merge).
+# SKIPS locally (a NOTE line only) while CI resolves the push base and enforces it — a clean
+# local lint is vacuous for that lane — a merged round has been bitten by this.
 npm run eval:qa:selftest        # only if judging — scored fixtures + promptSha256 pins
 ```
 
@@ -413,7 +413,7 @@ the proposed owner must actually undertake to expose the fact.
 ---
 id: <collection>-NNN
 service: lumenloop | stellar-light-scout | stellar-docs | skills
-status: proposed | verified | reported-upstream | fixed-upstream
+status: proposed | verified | reported-upstream | declined-upstream | fixed-upstream
 discovered: YYYY-MM-DD
 evidence:
   - eval results-file stamp(s)
