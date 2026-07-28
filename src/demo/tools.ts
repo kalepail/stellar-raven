@@ -466,14 +466,14 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
       let visibleRecoveryHint: EvidenceRecoveryHint | null = null;
       if (recoveryHint) {
         budget.recoveryHintedExecutes += 1;
-        if (!budget.recoveryAdviceConsumed && budget.latestRecoveryHint === null) {
+        if (!budget.recoveryAdviceDelivered && budget.latestRecoveryHint === null) {
           budget.latestRecoveryHint = recoveryHint;
           visibleRecoveryHint = recoveryHint;
           // The standalone checkpoint is already model-visible in this tool
           // result, so reserve the turn's single hint cycle immediately. The
           // next prepareStep may restate this same pending hint, but no later
           // execute may surface a second cycle.
-          budget.recoveryAdviceConsumed = true;
+          budget.recoveryAdviceDelivered = true;
         } else {
           budget.recoveryAdviceSuppressed += 1;
           // A later execute supersedes the pending "latest execute" note.
@@ -518,7 +518,7 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
         evidenceOutcome: evidenceOutcome(outcome),
         recoveryHint,
         recoveryAdviceVisible: visibleRecoveryHint !== null,
-        recoveryAdviceConsumed: budget.recoveryAdviceConsumed,
+        recoveryAdviceDelivered: budget.recoveryAdviceDelivered,
         recoveryAdviceSuppressed: budget.recoveryAdviceSuppressed,
         sourceBasis: outcome.ok ? sourceBasisSignals(outcome.sourceBasis) : null
       });

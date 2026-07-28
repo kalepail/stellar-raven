@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { APICallError, RetryError } from "ai";
 import {
   demoInputTelemetry,
   demoFinalTextTelemetry,
+  demoProviderErrorTelemetry,
+  demoTerminalProviderErrorTelemetry,
   isMeaningfulDemoOutput,
   sumDemoUsage
 } from "../src/demo/output";
@@ -154,5 +157,82 @@ describe("demoInputTelemetry", () => {
     expect(telemetry.latestUserPreview).toContain("[redacted-stellar-secret]");
     expect(telemetry.latestUserPreview).not.toContain("ada@example.com");
     expect(telemetry.latestUserPreview).not.toContain(fakeStellarSeed);
+  });
+});
+
+describe("demoProviderErrorTelemetry", () => {
+  it("extracts a nested AI SDK retry status while keeping only flat scrubbed diagnostics", () => {
+    const sampleBearer = "abcdef1234567890";
+    const apiError = new APICallError({
+      message: `429 from provider Authorization: Bearer ${sampleBearer} ${"x".repeat(400)}`,
+      url: "https://api.openai.com/v1/responses",
+      requestBodyValues: {},
+      statusCode: 429,
+      responseBody: `raw body ${sampleBearer}`,
+      responseHeaders: { authorization: `Bearer ${sampleBearer}` }
+    });
+    const retryError = new RetryError({
+      message: `Failed after 3 attempts. Last error: ${apiError.message}`,
+      reason: "maxRetriesExceeded",
+      errors: [new Error("first attempt"), new Error("wrapped", { cause: apiError })]
+    });
+
+    const telemetry = demoProviderErrorTelemetry(
+      retryError,
+      retryError.message,
+      "openai/gpt-5.4-mini",
+      2
+    );
+
+    expect(telemetry).toMatchObject({
+      providerErrorName: "AI_RetryError",
+      providerErrorStatus: 429,
+      providerErrorReason: "maxRetriesExceeded",
+      providerErrorProvider: "openai",
+      providerErrorModel: "openai/gpt-5.4-mini",
+      providerErrorAttempt: 2
+    });
+    expect(telemetry.providerErrorMessagePreview).toContain("Bearer [redacted-secret]");
+    expect(telemetry.providerErrorMessagePreview?.length).toBeLessThan(340);
+    expect(JSON.stringify(telemetry)).not.toContain(sampleBearer);
+    expect(JSON.stringify(telemetry)).not.toContain("raw body");
+    expect(Object.values(telemetry).every((value) => value === null || typeof value !== "object")).toBe(true);
+  });
+
+  it("takes the first HTTP status from a mixed AI SDK retry sequence", () => {
+    const unauthorized = new APICallError({
+      message: "unauthorized",
+      url: "https://api.openai.com/v1/responses",
+      requestBodyValues: {},
+      statusCode: 401
+    });
+    const rateLimited = new APICallError({
+      message: "rate limited",
+      url: "https://api.openai.com/v1/responses",
+      requestBodyValues: {},
+      statusCode: 429
+    });
+    const retryError = new RetryError({
+      message: "mixed retry failures",
+      reason: "maxRetriesExceeded",
+      errors: [unauthorized, rateLimited, new TypeError("fetch failed")]
+    });
+
+    expect(demoProviderErrorTelemetry(retryError, retryError.message, "openai/gpt-5.4", 1))
+      .toMatchObject({ providerErrorStatus: 401 });
+  });
+
+  it("emits provider diagnostics for unanswered failures and marks aborts non-provider-terminal", () => {
+    const telemetry = demoProviderErrorTelemetry(new Error("failed"), "failed", "openai/gpt-5.4", 1);
+
+    expect(demoTerminalProviderErrorTelemetry(telemetry, "complete", true, false)).toBeUndefined();
+    expect(demoTerminalProviderErrorTelemetry(telemetry, "provider-error", true, false))
+      .toMatchObject({ providerErrorTerminal: true });
+    expect(demoTerminalProviderErrorTelemetry(telemetry, "missing-final-text", false, false))
+      .toMatchObject({ providerErrorTerminal: true });
+    expect(demoTerminalProviderErrorTelemetry(telemetry, "fallback", false, false))
+      .toMatchObject({ providerErrorTerminal: true });
+    expect(demoTerminalProviderErrorTelemetry(telemetry, "aborted", false, true))
+      .toMatchObject({ providerErrorTerminal: false });
   });
 });

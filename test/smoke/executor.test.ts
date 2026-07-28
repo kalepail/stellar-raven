@@ -22,6 +22,9 @@ import fxListDocs from "../fixtures/skill-runners/lumenloop.list_documents.ts";
 // it (injected at runtime by workers-oauth-provider), but the runners never
 // touch it and the test env legitimately lacks it.
 const run = createExecuteRunner(env as unknown as Env);
+const runWithSmallBoundary = createExecuteRunner(env as unknown as Env, {
+  modelBoundaryMaxTokens: 1000
+});
 
 function uniqueOwner(label: string): string {
   return `smoke-owner-${label}-${crypto.randomUUID()}`;
@@ -107,6 +110,91 @@ describe("execute runner (real Dynamic Worker isolate)", () => {
     const storedText = (await stored?.text()) ?? "";
     expect(storedText).not.toContain("smoke-test-lumenloop-key");
     expect(storedText).toContain("[REDACTED]");
+  });
+
+  it("collects canonical URLs through nested ordinary containers without treating prose as canonical", async () => {
+    const outcome = await run(`async () => ({
+      research: [{ url: "https://research.example.test/item?tracking=1#section" }],
+      docs: [{ url: "https://docs.example.test/guide" }],
+      summary: "https://prose.example.test/not-a-canonical-field",
+      padding: "x".repeat(30000)
+    })`);
+
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) throw new Error(outcome.error);
+    expect(outcome.truncated).toBe(true);
+    expect(outcome.sourceBasis?.canonicalUrls).toEqual([
+      "https://research.example.test/item",
+      "https://docs.example.test/guide"
+    ]);
+  });
+
+  it("excludes decorative/store URLs before the five-URL manifest cap", async () => {
+    const outcome = await run(`async () => ({
+      projects: [
+        { logoUrl: "https://cdn.example.test/logo-1.png", storeUrl: "https://store.example.test/1", url: "https://project-1.example.test" },
+        { avatarUrl: "https://cdn.example.test/avatar-2.png", imageUrl: "https://cdn.example.test/image-2.png", url: "https://project-2.example.test" },
+        { iconUrl: "https://cdn.example.test/icon-3.png", bannerUrl: "https://cdn.example.test/banner-3.png", url: "https://project-3.example.test" }
+      ],
+      repoUrl: "https://github.com/stellar/stellar-core",
+      docsUrl: "https://docs.example.test/guide",
+      sourceUrl: "https://source.example.test/report",
+      websiteUrl: "https://website.example.test",
+      padding: "x".repeat(30000)
+    })`);
+
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) throw new Error(outcome.error);
+    expect(outcome.sourceBasis?.canonicalUrls).toEqual([
+      "https://project-1.example.test/",
+      "https://project-2.example.test/",
+      "https://project-3.example.test/",
+      "https://github.com/stellar/stellar-core",
+      "https://docs.example.test/guide"
+    ]);
+  });
+
+  it("upgrades shared references from non-URL to URL-bearing paths without dropping depth-cut aliases", async () => {
+    const arrayAlias = await run(`async () => {
+      const shared = ["https://canonical.example.test/a"];
+      return { debug: shared, links: shared, padding: "x".repeat(30000) };
+    }`);
+    const depthAlias = await run(`async () => {
+      const shared = { url: "https://deep.example.test/canonical" };
+      return { a: { b: { c: { d: { e: shared } } } }, links: shared, padding: "x".repeat(30000) };
+    }`);
+
+    expect(arrayAlias.ok).toBe(true);
+    expect(depthAlias.ok).toBe(true);
+    if (!arrayAlias.ok) throw new Error(arrayAlias.error);
+    if (!depthAlias.ok) throw new Error(depthAlias.error);
+    expect(arrayAlias.sourceBasis?.canonicalUrls).toEqual(["https://canonical.example.test/a"]);
+    expect(depthAlias.sourceBasis?.canonicalUrls).toEqual(["https://deep.example.test/canonical"]);
+  });
+
+  it("preserves root string/array URL collection and the depth-five traversal cap", async () => {
+    const rootArray = await runWithSmallBoundary(
+      `async () => ["https://root-array.example.test/a", "x".repeat(5000)]`
+    );
+    const rootString = await runWithSmallBoundary(
+      `async () => "https://root-string.example.test/" + "x".repeat(5000)`
+    );
+    const depthSix = await runWithSmallBoundary(`async () => ({
+      a: { b: { c: { d: { e: { url: "https://too-deep.example.test/a" } } } } },
+      padding: "x".repeat(5000)
+    })`);
+
+    expect(rootArray.ok).toBe(true);
+    expect(rootString.ok).toBe(true);
+    expect(depthSix.ok).toBe(true);
+    if (!rootArray.ok) throw new Error(rootArray.error);
+    if (!rootString.ok) throw new Error(rootString.error);
+    if (!depthSix.ok) throw new Error(depthSix.error);
+    expect(rootArray.sourceBasis?.canonicalUrls).toEqual(["https://root-array.example.test/a"]);
+    expect(rootString.sourceBasis?.canonicalUrls?.[0]).toBe(
+      `https://root-string.example.test/${"x".repeat(5000)}`
+    );
+    expect(depthSix.sourceBasis?.canonicalUrls).toEqual([]);
   });
 
   it("does not write artifacts for non-truncated results, log truncation, or thrown errors", async () => {

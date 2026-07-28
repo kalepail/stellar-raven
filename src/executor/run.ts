@@ -226,22 +226,31 @@ function serializedResult(value: unknown): { body: string; mime: ArtifactMime } 
 
 function collectCanonicalUrlCandidates(value: unknown): string[] {
   const out: string[] = [];
-  const seen = new Set<unknown>();
-  const visit = (v: unknown, depth: number) => {
+  const seen = new Map<object, boolean>();
+  const visit = (v: unknown, depth: number, urlLeaf = true) => {
     if (out.length >= 20 || depth > 5) return;
     if (typeof v === "string") {
-      if (v.includes("https://")) out.push(v);
+      if (urlLeaf && v.includes("https://")) out.push(v);
       return;
     }
-    if (v === null || typeof v !== "object" || seen.has(v)) return;
-    seen.add(v);
+    if (v === null || typeof v !== "object") return;
+    // A URL-keyed visit cut off at depth 5 can still block a later shallow alias.
+    // The false→true replay may duplicate raw URLs; sanitizeCanonicalUrls dedupes them.
+    // Revisit the replay if the manifest URL cap rises or that dedupe is removed.
+    if (seen.has(v) && (seen.get(v) || !urlLeaf)) return;
+    seen.set(v, urlLeaf);
     if (Array.isArray(v)) {
-      for (const item of v.slice(0, 50)) visit(item, depth + 1);
+      for (const item of v.slice(0, 50)) visit(item, depth + 1, urlLeaf);
       return;
     }
     for (const [key, item] of Object.entries(v as Record<string, unknown>)) {
       if (out.length >= 20) break;
-      if (/url|uri|link|website|repo/i.test(key)) visit(item, depth + 1);
+      visit(
+        item,
+        depth + 1,
+        /url|uri|link|website|repo/i.test(key) &&
+          !/logo|avatar|icon|image|thumb|banner|store/i.test(key)
+      );
     }
   };
   visit(value, 0);

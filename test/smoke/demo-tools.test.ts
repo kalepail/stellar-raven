@@ -495,7 +495,7 @@ describe("demo tools at the worker boundary", () => {
     expect(ordinary).toContain("--- CANDIDATE EVIDENCE ---");
     expect(ordinary).toContain("These rows are candidates, not identity or absence proof");
     expect(ordinary).toContain("--- EVIDENCE CHECKPOINT ---");
-    expect(budget.recoveryAdviceConsumed).toBe(true);
+    expect(budget.recoveryAdviceDelivered).toBe(true);
 
     const failed = (await execute.execute({
       code: `async () => {
@@ -522,7 +522,7 @@ describe("demo tools at the worker boundary", () => {
     expect(build).not.toContain("--- EVIDENCE CHECKPOINT ---");
     expect(budgetReport()).toMatchObject({
       recoveryHintedExecutes: 2,
-      recoveryAdviceConsumed: true,
+      recoveryAdviceDelivered: true,
       recoveryAdviceSuppressed: 1
     });
   });

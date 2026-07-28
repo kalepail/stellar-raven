@@ -69,7 +69,7 @@ describe("createDemoToolBudget", () => {
       operationError: 0,
       operationSoftEmpty: 0,
       recoveryHintedExecutes: 0,
-      recoveryAdviceConsumed: false,
+      recoveryAdviceDelivered: false,
       recoveryAdviceSuppressed: 0,
       latestOperationTotal: 0,
       latestOperationOk: 0,
