@@ -68,8 +68,14 @@ closed-world stopping rule; a later search cannot erase already-grounded execute
 The retired page URLs `/demo` and `/demo/` return a permanent redirect to `/playground`.
 No legacy login or chat subroutes exist under that prefix.
 
-Each authorized request gets a **fresh, stateless `McpServer`** served over streamable HTTP
-by `createMcpHandler` (from `agents/mcp`) — no Durable Objects, no session state. Tool
+Each authorized request gets a **fresh, stateless `McpServer`** (MCP SDK 2.0,
+`@modelcontextprotocol/server`) served over streamable HTTP by `createMcpHandler` (from
+`agents/mcp`) — no Durable Objects, no session state. The handler serves both wire eras:
+the 2026-07-28 revision (`server/discover` negotiation, pinned end-to-end by
+`test/smoke/mcp-modern-client.test.ts`) and the 2025 `initialize` lifecycle via its built-in
+stateless legacy fallback. Custom domains skip the SDK's Host allowlist (Cloudflare routing
+is the authority) and requests without an Origin header — every non-browser MCP client —
+pass Origin validation, so no allowlist configuration is required. Tool
 registration and all model-facing prose live in `src/mcp/tools.ts`; the initialize-time
 `SERVER_INSTRUCTIONS` (workflow + envelope contract + generated source-family micro-map)
 ride along because clients surface them in the system prompt, where they outlive per-tool

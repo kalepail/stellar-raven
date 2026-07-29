@@ -125,7 +125,10 @@ describe("/mcp auth dispatch", () => {
   });
 
   it("dev bypass honors DEV_ALLOW_UNAUTHENTICATED on localhost…", async () => {
-    const res = await postInitialize(`${LOCAL}/mcp`);
+    // SELF.fetch sends no Host header; the SDK's localhost DNS-rebinding
+    // check (2.0 stateless handler) rejects host-less requests, so set the
+    // header a real HTTP client always sends.
+    const res = await postInitialize(`${LOCAL}/mcp`, { Host: "localhost" });
     expect(res.status).toBe(200);
     const init = await lastEventJson(res);
     expect(init.result?.serverInfo?.name).toBe("stellar-raven-codemode");

@@ -25,7 +25,7 @@
  * research/super-spec-design.md §5.
  */
 import { z } from "zod";
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpServer } from "@modelcontextprotocol/server";
 import {
   searchCatalogPage,
   catalogServices,
@@ -343,8 +343,8 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
     SEARCH_TOOL_NAME,
     {
       description: SEARCH_DESCRIPTION,
-      inputSchema: rankedSearchInputSchema,
-      outputSchema: rankedSearchOutputSchema
+      inputSchema: z.object(rankedSearchInputSchema),
+      outputSchema: z.object(rankedSearchOutputSchema)
     },
     async (args) => {
       const queryHash = await hashPrefix(args.query);
@@ -456,7 +456,7 @@ export function registerTools(server: McpServer, options: RegisterToolsOptions =
     EXECUTE_TOOL_NAME,
     {
       description: EXECUTE_DESCRIPTION,
-      inputSchema: executeInputSchema
+      inputSchema: z.object(executeInputSchema)
     },
     async (args) => {
       const runExecute = options.runExecute;

@@ -254,9 +254,11 @@ test/                    # vitest offline suites (adapters, server, super-spec, 
 eval/                    # routing eval + qa/ (execute Q→A battery) + agentic/ + plan/
 ```
 
-Pins: `@cloudflare/codemode` exact `0.4.2` (vendor `search.ts`/`describe.ts`/`normalize.ts`/
-`json-schema-types.ts` if churn bites), `@modelcontextprotocol/sdk ^1.29.0`, `zod ^4.4.3`,
-wrangler `^4.107.0`, compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders` binding `LOADER`.
+Pins: `@cloudflare/codemode` exact `0.5.1` (vendor `search.ts`/`describe.ts`/`normalize.ts`/
+`json-schema-types.ts` if churn bites), `@modelcontextprotocol/sdk` exact `1.30.0` (matches the
+`agents` exact peer; `@modelcontextprotocol/{server,client}` 2.0 arrive as `agents` peers),
+`zod ^4.4.3`, wrangler `^4.107.0`, compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders`
+binding `LOADER`.
 
 ## 7. Phased build
 

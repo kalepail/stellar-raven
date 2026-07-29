@@ -17,7 +17,7 @@
  */
 import OAuthProvider from "@cloudflare/workers-oauth-provider";
 import { createMcpHandler } from "agents/mcp";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/server";
 import { registerTools, SERVER_INSTRUCTIONS } from "./mcp/tools";
 import type { ExecuteRunner } from "./executor/run";
 import { modelBoundaryMaxTokensFromEnv } from "./policy/truncate";
@@ -101,7 +101,7 @@ export const mcpHandler = {
       modelBoundaryMaxTokens: modelBoundaryMaxTokensFromEnv(env as unknown as Record<string, unknown>)
     });
     try {
-      const response = await createMcpHandler(server, { route: "/mcp" })(request, env, ctx);
+      const response = await createMcpHandler(() => server, { route: "/mcp" })(request, env, ctx);
       logEvent("mcp_request", {
         ...requestTelemetry,
         requestId,

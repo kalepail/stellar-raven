@@ -14,9 +14,9 @@
  */
 import { describe, expect, it, beforeAll, vi } from "vitest";
 import { createHash } from "node:crypto";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
+import { McpServer } from "@modelcontextprotocol/server";
+import { Client } from "@modelcontextprotocol/client";
+import { InMemoryTransport } from "@modelcontextprotocol/server";
 import { registerTools, SEARCH_KINDS, type RegisterToolsOptions } from "../src/mcp/tools";
 import { allowDevUnauthenticated } from "../src/auth/gate";
 
