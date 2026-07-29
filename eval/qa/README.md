@@ -231,11 +231,14 @@ unsourced contradiction is not.
   changelog in the `judge.mjs` header). Compare stored rows only when that tuple and
   prompt/pack-hash semantics match — otherwise re-judge the saved `rows[].answer` under the
   target tuple first (cheap; feed back through `judgeCase` with the row's transcript).
-- A `--no-judge` capture has no source judge tuple or verdict. Its first judging is not an
-  identical-input re-judge, so record it as such and require the explicit
-  `re-judge.mjs --ids <ids> --allow-non-identical` acknowledgement; the resulting artifact marks
-  `initialJudging: true` and is not variance evidence. It cannot be mixed with already judged
-  rows or used with `--flips-vs`.
+- A `--no-judge` capture has no source judge tuple or verdict. Its first judging goes through
+  `run-qa.mjs --judge-stored <results>` (2026-07-29, Solo todo 1261): judges every unjudged row
+  in place, stamps the judge tuple, per-row + meta judge costs, and a `meta.judgeStored`
+  provenance block, and refuses drifted case snapshots, non-reproducing evidence packs, and
+  judge-tuple mixing. First-judging is still not an identical-input re-judge — never variance
+  evidence. The `re-judge.mjs --ids --allow-non-identical` path remains only as the loudly
+  labeled side-artifact escape hatch when the snapshot no longer reproduces; it cannot be mixed
+  with already judged rows or used with `--flips-vs`.
 - **A rubric bump is required** for any change to grading semantics: judge prompt text, score
   meanings, avoid/freshness/trap handling. A pack bump is required for evidence-pack
   serialization/selection changes. Cosmetic refactors that keep `buildJudgePrompt` output
@@ -332,6 +335,50 @@ end-to-end harm from the day's changes; no measured gain claimed; checkpoint sha
 matches 07-27.** Independent adversarial review of these conclusions (recomputed tables,
 transition matrix, transcript audit): CONCLUSIONS-OK after three packaging revisions.
 Tooling gaps found (judge-stored mode, judge-cost stamping): Solo todo 1261.
+
+## 2026-07-29 clause-coverage A/B: cancelled at the free-audit gate (todo 1231; no spend)
+
+Todo 1231's recorded next step was a clause-coverage A/B via `QA_AGENT_PROMPT_APPEND` (arm B
+adds a decompose-and-cover instruction to the answering prompt; eval-instrument only, never
+production prose). The pre-registered brief (Solo scratchpad 737) went through the mandatory
+adversarial pre-spend review (Opus arm, 16 findings, verdict LAUNCH-WITH-FIXES), whose first
+blocking gate was a **free offline audit fixing the gainable denominator** before any paid
+token: classify the 16 baseline partials (`2026-07-28T22-52-45-variantA.json`, joined with
+goldens) into coverage-gainable vs not, cancel if fewer than 6 are gainable.
+
+**The audit landed at 1–4 of 16 gainable — the round was cancelled with $0 spent.** Per-row
+classification (transcript keyword probes + spot-reads, recorded in scratchpad 737):
+
+- **Framing discipline, untargeted by clause coverage (~6 rows):** missing as-of dating
+  (`q-crp-become-an-anchor-licensing`, `q-crp-remittance-founder-advisory`,
+  `q-sor-build-target-wasm32v1`), honest-disagreement presentation (`q-defi-defindex-honest`),
+  distinction-drawing (`q-protocol-27-cap-0071`, `q-gap-builders-person-empty`).
+- **Domain completeness never retrieved (~4 rows):** the missing fact is not an asked clause
+  and was absent from the transcript (`q-aas-list-token-on-exchanges-aggregators`,
+  `q-jutsu-what-is-a-memo`, `q-scf-current-round`, `q-raph-offramp-xlm-usdc` — the last
+  answered with zero tool calls).
+- **Upstream/coverage rows the treatment cannot touch (2):** `q-hist-meridian-2026-corrected-venue`
+  (Lumenloop event-record gap, monitor-only above), `q-agent-identity-erc8004-stellar` — the
+  candidate **explicitly and correctly declined** to state ERC-8004's provisions because no
+  tested surface indexes them; the treatment's "say plainly your sources did not return it" is
+  exactly what it already did, and it still graded partial.
+- **Retrieved-and-dropped, the treatment's actual target (fragments in ≤4 rows):**
+  `q-edge-1xlm-activation-fee` (trap; pre-excluded from any gain numerator),
+  `q-scf-sdf-bug-bounty`, `q-soroban-no-std-constraints`, `q-pc-muxed-accounts` (the
+  documented judge-variance row) — each with additional unrecoverable facts, so none clearly
+  flips even under perfect treatment behavior.
+
+The review had independently shown the brief's original bank threshold (net ≥ +3 paired flips)
+fires on pure judge noise roughly one round in five, and that banking a prompt append forks the
+measurement contract (all stored baselines and the 23.3% floor are unmodified-prompt artifacts)
+while drifting the headline toward measuring answer craft instead of the MCP. With ≤4 gainable
+rows, even a perfect treatment cannot clear a noise-safe threshold — underpowered by
+construction. **Measured answer for todo 1231: the sample's partial mass is answer-framing
+discipline and domain-completeness, not clause coverage; no instrument change is banked; no
+production change was ever in scope.** Durable side-products landed instead:
+`meta.promptAppend` {sha256, chars} is now stamped by `run-qa.mjs` so any future prompt-append
+arm is auditable from the artifact alone, and `--judge-stored` gained crash-safe per-row
+persistence plus re-attemptable judge-side error verdicts (review findings 3 and 10).
 
 ## Current baseline of record
 

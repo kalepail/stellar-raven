@@ -339,13 +339,26 @@ export async function judgeStoredResults(
     );
   }
 
-  const unjudged = results.rows.filter((row) => typeof row.verdict?.score !== "string");
+  // "error" verdicts on rows WITH an answer are judge-side failures (CLI
+  // crash / unparseable output) — re-attemptable, or they'd poison the file
+  // forever. Empty-answer error verdicts are collection facts and stay.
+  const unjudged = results.rows.filter(
+    (row) =>
+      typeof row.verdict?.score !== "string" ||
+      (row.verdict.score === "error" && Boolean(row.answer))
+  );
   if (unjudged.length === 0) {
     throw new Error("--judge-stored: every row already has a verdict — nothing to judge");
   }
   log(
     `judge-stored: ${resultsPath} · ${unjudged.length}/${results.rows.length} unjudged row(s) · judge ${judgeModel}`
   );
+
+  // Stamp the judge tuple BEFORE the first paid call so a crash-resume with a
+  // different model trips the mixing guard instead of silently mixing tuples.
+  meta.judgeModel = judgeModel;
+  meta.judgeRubric = JUDGE_RUBRIC;
+  results.meta = meta;
 
   for (const [i, row] of unjudged.entries()) {
     log(`[${i + 1}/${unjudged.length}] ${row.id} …`);
@@ -369,6 +382,9 @@ export async function judgeStoredResults(
         { ...kase, candidateAnswer: row.answer, transcript: row.transcript, transcriptEvidence },
         { model: judgeModel }
       );
+      // Persist after every judged row: a crash on row N keeps rows 1..N-1's
+      // paid verdicts on disk (the run resumes as judge-all-unjudged).
+      writeFileSync(resultsPath, JSON.stringify(results, null, 2) + "\n");
     } else {
       // Mirror the inline no-answer verdict exactly.
       row.verdict = {
@@ -383,8 +399,6 @@ export async function judgeStoredResults(
     }
   }
 
-  meta.judgeModel = judgeModel;
-  meta.judgeRubric = JUDGE_RUBRIC;
   meta.totalJudgeCostUsd = results.rows.reduce((s, r) => s + (r.verdict?.costUsd ?? 0), 0);
   meta.totalCostUsd = results.rows.reduce(
     (s, r) => s + (r.agent?.costUsd ?? 0) + (r.verdict?.costUsd ?? 0),
@@ -556,6 +570,15 @@ async function main() {
           startedAt,
           finishedAt: new Date().toISOString(),
           caseCount: rows.length,
+          // Prompt-append experiments (QA_AGENT_PROMPT_APPEND) are invisible on
+          // the wire without this: stamp exactly what the answering prompt
+          // carried so arms are auditable from the artifact alone.
+          promptAppend: process.env.QA_AGENT_PROMPT_APPEND?.trim()
+            ? {
+                sha256: sha256(process.env.QA_AGENT_PROMPT_APPEND.trim()),
+                chars: process.env.QA_AGENT_PROMPT_APPEND.trim().length
+              }
+            : null,
           inputSnapshot: {
             casesSha256: sha256(JSON.stringify(cases)),
             caseIdsSha256: sha256(JSON.stringify(cases.map((c) => c.id))),

@@ -175,6 +175,33 @@ describe("run-qa --judge-stored", () => {
     }
   });
 
+  it("re-attempts judge-side error verdicts on answered rows, but not empty-answer errors", async () => {
+    const root = mkdtempSync(join(tmpdir(), "qa-judge-stored-"));
+    try {
+      const { resultsPath } = writeFixture(root);
+      const results = JSON.parse(readFileSync(resultsPath, "utf8"));
+      // Simulate a completed judge phase where the answered row's judge CLI
+      // failed (score error despite an answer) — must be re-attemptable.
+      results.meta.judgeModel = "stub-judge";
+      results.meta.judgeRubric = JUDGE_RUBRIC;
+      results.rows[0].verdict = { score: "error", missingFacts: [], wrongClaims: [], rationale: "judge CLI failed: exit 1", rubric: JUDGE_RUBRIC, packVersion: PACK_VERSION, promptSha256: null };
+      results.rows[1].verdict = { score: "error", missingFacts: [], wrongClaims: [], rationale: "agent timed out", rubric: JUDGE_RUBRIC, packVersion: PACK_VERSION, promptSha256: null };
+      writeFileSync(resultsPath, JSON.stringify(results, null, 2));
+
+      const calls = [];
+      const out = await judgeStoredResults(resultsPath, { judgeModel: "stub-judge", judge: stubJudge(calls), log: () => {} });
+      // Only the answered row is re-judged; the empty-answer error is a
+      // collection fact and stays untouched.
+      expect(calls.map((c) => c.id)).toEqual(["q-fixture-answered"]);
+      expect(out.judgedCount).toBe(1);
+      const written = JSON.parse(readFileSync(resultsPath, "utf8"));
+      expect(written.rows[0].verdict.score).toBe("correct");
+      expect(written.rows[1].verdict.rationale).toBe("agent timed out");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it("refuses a drifted case snapshot", async () => {
     const root = mkdtempSync(join(tmpdir(), "qa-judge-stored-"));
     try {
