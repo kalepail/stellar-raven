@@ -26,6 +26,30 @@ describe("improvements issue filing template", () => {
     expect(output).not.toMatch(/^# sd-019:/m);
   });
 
+  test("opens with a visible automation disclaimer and durable marker", () => {
+    const finding = "improvements/stellar-docs/sd-019-extend-footprint-multiple-entry-wording.md";
+    const output = execFileSync(
+      process.execPath,
+      [
+        "scripts/improvements-file-issue.mjs",
+        "--file",
+        finding,
+        "--repo",
+        "stellar/stellar-docs",
+        "--dry-run",
+      ],
+      { cwd: ROOT, encoding: "utf8" },
+    );
+
+    const marker = "<!-- generated-by-stellar-raven -->";
+    const notice =
+      "Generated automatically by Stellar Raven to flag a possible documentation or ecosystem-data gap. Please review before relying on it. Findings may be incomplete or incorrect.";
+    expect(output).toContain(marker);
+    expect(output).toContain(`> **Automated notice:** ${notice}`);
+    expect(output.indexOf(marker)).toBeLessThan(output.indexOf("## Finding"));
+    expect(output.indexOf("Automated notice")).toBeLessThan(output.indexOf("## Finding"));
+  });
+
   test("omits an immutable snapshot when no matching committed blob exists", () => {
     const dir = mkdtempSync(path.join(tmpdir(), "improvement-template-test-"));
     try {
