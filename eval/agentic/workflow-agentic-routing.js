@@ -50,13 +50,13 @@ const VERDICT = {
   additionalProperties: false,
 }
 
-function prompt(c) {
+function prompt(c, effort) {
   return `You are an AI agent connected to an MCP server that unifies Stellar-ecosystem tools (services: lumenloop = Stellar content/directory/research platform; scout = Stellar Light project/repo/builder/partner data; stellarDocs = official Stellar developer docs search; skills = reference playbooks/guides).
 
 A user asked: "${c.question}"
 
-Discover which tools exist by calling the server's search tool with curl via Bash. Exact command (replace QUERY; keep the quoting):
-curl -s http://localhost:${port}/mcp -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search","arguments":{"query":"QUERY","limit":8}}}'
+Discover which tools exist by calling the server's search tool with curl via Bash. Exact command (replace QUERY only; keep the quoting and every header EXACTLY as written — the X-Eval-Agent header is required for the run to count):
+curl -s http://localhost:${port}/mcp -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -H 'X-Eval-Agent: ${c.id}:${effort}' -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"search","arguments":{"query":"QUERY","limit":8}}}'
 The response is an SSE frame: take the line starting with "data: ", parse it as JSON, then parse result.content[0].text as JSON to get {hits:[{id,service,kind,tier,score,description,signature}],total,truncated,widerCandidates:[{id,...}]}.
 
 Rules: 1-3 search calls total, different query phrasings allowed. For every call, record a searchCalls entry with its query, limit, hits in returned order as {id,tier,score}, total, truncated, zeroGated (true when no returned hit has tier "gated"), and widerCandidateIds. Pick the ONE tool id you would actually invoke to answer the user (prefer kind "operation" when an operation can answer; a skill/skill-section only if reference reading is genuinely the right answer). Then report via structured output: queriesUsed, searchCalls, primaryToolId (an exact id from the hits), primaryService (the service of that tool), alternateToolIds (0-3 backups), reasoning (1-2 sentences). Do not answer the user's question itself.`
@@ -72,7 +72,7 @@ for (const c of cases) {
 log(`${jobs.length} agent runs (${cases.length} cases x low/medium)`)
 
 const results = await parallel(jobs.map(({ c, effort }) => () =>
-  agent(prompt(c), {
+  agent(prompt(c, effort), {
     label: `${effort}:${c.id}`,
     model: 'sonnet',
     effort,

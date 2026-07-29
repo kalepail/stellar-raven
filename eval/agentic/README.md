@@ -149,11 +149,18 @@ lifting lumenloop any-hit to 87.5%/75% and medium primary to 37.5%; the boundary
 1. `npx wrangler dev --port 8788 --host localhost` (any port; `--host localhost` is required —
    without it wrangler presents request.url as the custom-domain host and the
    `DEV_ALLOW_UNAUTHENTICATED` loopback gate 401s everything)
-2. Invoke the Workflow tool with `eval/agentic/workflow-agentic-routing.js` and args
-   `{"port": 8788, "cases": [...]}` where cases come from `sample.json`
-   (`node -e` slim mapping: id/question/expected_service).
-3. Save the returned `{summary, rows}` under `results/` (git-ignored) and update the
-   summary tables in this README — the README is the committed record, not the JSON.
+2. Start the harness-owned capture proxy in front of it:
+   `node eval/agentic/capture-proxy.mjs --upstream http://localhost:8788 --port 8789 --out eval/agentic/results/capture-<stamp>.jsonl`
+3. Invoke the Workflow tool with `eval/agentic/workflow-agentic-routing.js` and args
+   `{"port": 8789, "cases": [...]}` — the PROXY port, so every agent exchange is captured —
+   where cases come from `sample.json` (`node -e` slim mapping: id/question/expected_service).
+4. Save the returned `{summary, rows}` under `results/` (git-ignored), then reconcile the
+   transcripts against the wire before reading any mechanism forensics:
+   `node eval/agentic/reconcile-capture.mjs --capture <capture.jsonl> --results <results.json>`
+   — non-zero exit means at least one row's reported `searchCalls` did not match the captured
+   exchanges (fabricated, mistranscribed, or omitted page) and that row's transcript-derived
+   fields must be treated as rejected. Update the summary tables in this README — the README is
+   the committed record, not the JSON.
 
 ## Results — 2026-07-06 (post-round-5 checkpoint; run `wf_b5be4d53-41f`, local-only)
 
@@ -331,8 +338,13 @@ measured round. `primaryInHits` caught the off-page pick exactly as designed; `z
 proved unreliable as an agent-reported field and is now derived by the harness from captured
 hit tiers.
 
-**Transcript trust boundary:** `searchCalls` pages are transcribed by the evaluated agent from
-its own curl output — the harness derives `zeroGated`/`primaryInHits` from that transcription
-but does not intercept the HTTP exchange, so a mistranscribed or omitted page propagates into
-those flags. Treat them as strong-but-not-tamper-proof evidence; harness-owned capture is a
-recorded follow-up.
+**Transcript trust boundary (closed 2026-07-29):** `searchCalls` pages are transcribed by the
+evaluated agent from its own curl output — the harness derives `zeroGated`/`primaryInHits` from
+that transcription. Since 2026-07-29 the runbook closes the loop with harness-owned capture:
+`capture-proxy.mjs` sits in front of `wrangler dev` and logs every exchange (keyed by the
+mandatory `X-Eval-Agent: <caseId>:<effort>` curl header) to a JSONL file the evaluated agent
+never touches, and `reconcile-capture.mjs` rejects any row whose reported `searchCalls` do not
+reproduce the wire (fabricated, mistranscribed, or omitted pages; a stripped marker rejects the
+row wholesale). Runs made without the proxy — including everything before 2026-07-29 — remain
+strong-but-not-tamper-proof evidence. Grading (`primaryService` vs label) is unaffected either
+way.

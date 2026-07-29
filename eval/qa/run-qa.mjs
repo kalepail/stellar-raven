@@ -48,14 +48,23 @@
  *   --server-revision  git revision of the checkout running the already-bound
  *                      Wrangler process (recorded for reproducibility)
  *   --no-judge         collect answers only (judge later)
+ *   --judge-stored F   two-phase mode, phase 2: judge a saved --no-judge
+ *                      results file IN PLACE (no server, no agent). Judges
+ *                      every row without a verdict, stamps per-row judge cost,
+ *                      summary, and meta cost totals into the SAME file.
+ *                      Refuses if the case snapshot or judge tuple no longer
+ *                      matches the recorded one (re-collect instead; the
+ *                      loudly-labeled escape hatch stays re-judge.mjs).
  */
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdtempSync, readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { QA_DIR, loadCases, stratifiedSample, summarize, formatSummaryTable } from "./lib.mjs";
 import { buildTranscriptEvidence, judgeCase, JUDGE_MODEL, JUDGE_RUBRIC } from "./judge.mjs";
+import { verifySourceCases } from "./re-judge.mjs";
 import { PACK_VERSION } from "./evidence-pack.mjs";
 import {
   PLAIN_SERVER_INSTRUCTIONS,
@@ -286,12 +295,128 @@ async function preflight(port, { surface, searchTool, plainSurface }) {
   };
 }
 
+/**
+ * Two-phase mode, phase 2: judge every unjudged row of a saved results file
+ * and write the judged file back IN PLACE (same path, same shape run-qa
+ * writes when judging inline). Guards mirror re-judge.mjs: the recorded case
+ * snapshot must still reproduce from meta.casesPath, the evidence-pack
+ * builder must reproduce each row's collection-time pack hash, and a
+ * partially judged file must be resumed with the same judge tuple. There is
+ * deliberately no override flag — a drifted snapshot means re-collect (or use
+ * re-judge.mjs --allow-non-identical for a loudly-labeled side artifact).
+ *
+ * `judge` is injectable for tests only; production callers use the default.
+ */
+export async function judgeStoredResults(
+  resultsPath,
+  { judgeModel = JUDGE_MODEL, judge = judgeCase, log = console.log } = {}
+) {
+  const sourceText = readFileSync(resultsPath, "utf8");
+  const results = JSON.parse(sourceText);
+  if (!Array.isArray(results?.rows) || results.rows.length === 0) {
+    throw new Error("--judge-stored: results file has no rows[]");
+  }
+  const meta = results.meta ?? {};
+  if (meta.packVersion !== PACK_VERSION) {
+    throw new Error(
+      `--judge-stored: results were collected with evidence pack ${meta.packVersion}, current is ${PACK_VERSION} — re-collect, or re-judge.mjs --allow-non-identical for a side artifact`
+    );
+  }
+  if (meta.judgeModel != null && meta.judgeModel !== judgeModel) {
+    throw new Error(
+      `--judge-stored: file already carries verdicts from judge model ${meta.judgeModel}; refusing to mix in ${judgeModel}`
+    );
+  }
+  if (meta.judgeRubric != null && meta.judgeRubric !== JUDGE_RUBRIC) {
+    throw new Error(
+      `--judge-stored: file already carries verdicts under rubric ${meta.judgeRubric}, current is ${JUDGE_RUBRIC} — use re-judge.mjs for cross-rubric work`
+    );
+  }
+  const identity = verifySourceCases(results, resultsPath);
+  if (!identity.guard.matches) {
+    throw new Error(
+      `--judge-stored: case input snapshot differs (expected ${identity.guard.expectedCasesSha256}, got ${identity.guard.actualCasesSha256}; missing ids: ${identity.guard.missingCaseIds.join(", ") || "none"}) — the golden corpus moved since collection; re-collect`
+    );
+  }
+
+  const unjudged = results.rows.filter((row) => typeof row.verdict?.score !== "string");
+  if (unjudged.length === 0) {
+    throw new Error("--judge-stored: every row already has a verdict — nothing to judge");
+  }
+  log(
+    `judge-stored: ${resultsPath} · ${unjudged.length}/${results.rows.length} unjudged row(s) · judge ${judgeModel}`
+  );
+
+  for (const [i, row] of unjudged.entries()) {
+    log(`[${i + 1}/${unjudged.length}] ${row.id} …`);
+    const kase = identity.caseById.get(row.id);
+    if (row.answer) {
+      if (!Array.isArray(row.transcript)) {
+        throw new Error(`--judge-stored: row ${row.id} has no saved transcript array`);
+      }
+      const transcriptEvidence = buildTranscriptEvidence({
+        ...kase,
+        candidateAnswer: row.answer,
+        transcript: row.transcript
+      });
+      const packSha = transcriptEvidence ? sha256(transcriptEvidence) : null;
+      if (row.evidencePack?.sha256 && packSha !== row.evidencePack.sha256) {
+        throw new Error(
+          `--judge-stored: row ${row.id} evidence pack no longer reproduces its collection-time hash — the pack builder changed since collection; re-collect`
+        );
+      }
+      row.verdict = await judge(
+        { ...kase, candidateAnswer: row.answer, transcript: row.transcript, transcriptEvidence },
+        { model: judgeModel }
+      );
+    } else {
+      // Mirror the inline no-answer verdict exactly.
+      row.verdict = {
+        score: "error",
+        missingFacts: [],
+        wrongClaims: [],
+        rationale: row.agent?.error ?? "empty answer",
+        rubric: JUDGE_RUBRIC,
+        packVersion: PACK_VERSION,
+        promptSha256: null
+      };
+    }
+  }
+
+  meta.judgeModel = judgeModel;
+  meta.judgeRubric = JUDGE_RUBRIC;
+  meta.totalJudgeCostUsd = results.rows.reduce((s, r) => s + (r.verdict?.costUsd ?? 0), 0);
+  meta.totalCostUsd = results.rows.reduce(
+    (s, r) => s + (r.agent?.costUsd ?? 0) + (r.verdict?.costUsd ?? 0),
+    0
+  );
+  meta.judgeStored = {
+    judgedAt: new Date().toISOString(),
+    sourceResultsSha256: sha256(sourceText),
+    judgedIds: unjudged.map((row) => row.id),
+    toolVersion: "run-qa/judge-stored-v1"
+  };
+  results.meta = meta;
+  results.summary = summarize(results.rows);
+  writeFileSync(resultsPath, JSON.stringify(results, null, 2) + "\n");
+  return { judgedCount: unjudged.length, summary: results.summary, outPath: resultsPath };
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const argVal = (flag) => {
     const i = args.indexOf(flag);
     return i !== -1 ? args[i + 1] : undefined;
   };
+  const judgeStoredPath = argVal("--judge-stored");
+  if (judgeStoredPath) {
+    if (args.includes("--no-judge")) throw new Error("--judge-stored and --no-judge are contradictory");
+    const { summary } = await judgeStoredResults(path.resolve(process.cwd(), judgeStoredPath), {
+      judgeModel: argVal("--judge-model") ?? JUDGE_MODEL
+    });
+    console.log("\n" + formatSummaryTable(summary));
+    return;
+  }
   const variant = (argVal("--variant") ?? "A").toUpperCase();
   if (!(variant in VARIANT_TOOL)) throw new Error(`--variant must be A or B, got ${variant}`);
   const searchTool = argVal("--search-tool") ?? VARIANT_TOOL[variant];
@@ -457,4 +582,7 @@ async function main() {
   }
 }
 
-await main();
+const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (isMain) {
+  await main();
+}

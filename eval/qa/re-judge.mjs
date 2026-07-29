@@ -14,7 +14,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { buildTranscriptEvidence, JUDGE_MODEL, JUDGE_RUBRIC, judgeCase } from "./judge.mjs";
 import { PACK_VERSION } from "./evidence-pack.mjs";
 import {
@@ -110,7 +110,7 @@ function parseArgs(argv) {
   return { resultsPath: positional[0], ids, flipsVs, judgeModel, allowNonIdentical, allowEmpty, dryRun };
 }
 
-function verifySourceCases(results, sourceResultsPath) {
+export function verifySourceCases(results, sourceResultsPath) {
   const casesPath = results?.meta?.casesPath;
   const expectedCasesSha256 = results?.meta?.inputSnapshot?.casesSha256;
   if (typeof casesPath !== "string" || !casesPath) fail("source results meta.casesPath is required for the identity guard");
@@ -152,7 +152,7 @@ function verifySourceCases(results, sourceResultsPath) {
   };
 }
 
-function tupleGuard(results, judgeModel) {
+export function tupleGuard(results, judgeModel) {
   const versionedPlayground = results?.meta?.artifactContract === PLAYGROUND_ARTIFACT_CONTRACT;
   const source = versionedPlayground
     ? {
@@ -327,7 +327,10 @@ async function main() {
   console.log(`wrote ${outPath}`);
 }
 
-main().catch((error) => {
-  console.error(`re-judge: ${error.message}`);
-  process.exitCode = 1;
-});
+const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (isMain) {
+  main().catch((error) => {
+    console.error(`re-judge: ${error.message}`);
+    process.exitCode = 1;
+  });
+}
