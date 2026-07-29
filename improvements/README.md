@@ -99,8 +99,9 @@ Known channels (issue access confirmed 2026-07-09):
   <https://github.com/lumenloop/lumenloop-skills>. Record the exact issue URL in the finding.
 
 Use `npm run improvements:file -- --file improvements/<collection>/<finding>.md --dry-run` to
-review the resolved owner and standardized body, then omit `--dry-run` to file it. The generated
-issue links the exact public finding and includes a resolution handoff back to this repository.
+review the resolved owner and standardized body, then omit `--dry-run` to file it. The generated issue begins with an explicit automated-content notice and a durable
+`generated-by-stellar-raven` marker, links the exact public finding, and includes a resolution
+handoff back to this repository.
 The filer applies the `raven` label when the target repository provides it; every body retains Raven
 provenance when that label is unavailable.
 When upstream work is deployed, maintainers can open the **Upstream improvement ready for
