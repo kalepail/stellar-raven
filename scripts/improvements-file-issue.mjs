@@ -16,6 +16,9 @@ import {
 const args = parseArgs(process.argv.slice(2));
 const RAVEN_REPO = "kalepail/stellar-raven";
 const HANDOFF_TEMPLATE = "upstream-improvement-ready.yml";
+const AUTOMATION_MARKER = "<!-- generated-by-stellar-raven -->";
+const AUTOMATION_NOTICE =
+  "Generated automatically by Stellar Raven to flag a possible documentation or ecosystem-data gap. Please review before relying on it. Findings may be incomplete or incorrect.";
 if (!args.file) {
   console.error("usage: node scripts/improvements-file-issue.mjs --file improvements/...md [--repo owner/name] [--dry-run] [--render-body-file /tmp/body.md]");
   process.exit(2);
@@ -127,6 +130,11 @@ function renderBody(finding) {
     : null;
   const handoffUrl = `https://github.com/${RAVEN_REPO}/issues/new?template=${HANDOFF_TEMPLATE}&title=${encodeURIComponent(`[upstream-ready] ${fm.id}: `)}`;
   return [
+    AUTOMATION_MARKER,
+    "",
+    "> [!NOTE]",
+    `> **Automated notice:** ${AUTOMATION_NOTICE}`,
+    "",
     "## Finding",
     "",
     scrub(section(finding.body, "Finding")),
