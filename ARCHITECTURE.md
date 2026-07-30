@@ -275,10 +275,12 @@ for a runnable skill the callable line is the exact `codemode.skill.run("<id>", 
 `readSkill` advertises; runnable-skill hits carry both). Non-runnable skills and sections
 render no signature — their affordance is `skill.read`, not a call. Search hits render
 signatures in **compact mode**: the input type and callable line are always full, but an
-output type block over `COMPACT_OUTPUT_THRESHOLD` (2,000 chars — measured to trim only the
-three Scout monsters, `searchProjects`/`searchRepos`/`explainRepo`, whose output types ran
-to ~12.7KB and made a limit-10 page ~26KB with the bloat usually attached to an off-target
-hit) is replaced by a stub declaration keeping the type name and the output schema's
+output type block over `COMPACT_OUTPUT_THRESHOLD` (2,000 chars — originally measured to trim
+only the three Scout monsters, `searchProjects`/`searchRepos`/`explainRepo`, whose output
+types ran to ~12.7KB and made a limit-10 page ~26KB with the bloat usually attached to an
+off-target hit; upstream schema growth through Scout 1.8.28/1.8.30 has since carried 15 Scout
+operations over the same unchanged threshold, with the exact set pinned in `test/search.test.ts`)
+is replaced by a stub declaration keeping the type name and the output schema's
 top-level field names (so payload field selection like `r.data.projects` still works from
 the hit alone), pointing at `codemode.describe(id)` for the full shape. The compaction
 wraps *around* the vendored renderer — the vendor file is untouched — and applies to

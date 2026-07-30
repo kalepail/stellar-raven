@@ -70,8 +70,11 @@ measurement contracts controlled by `run-evals`.
 - **Forward-only:** prefer the best current design; do not add compatibility shims, dual formats,
   or deprecation paths merely to preserve deployed behavior. Deviations still need evidence.
 - **The manifest is the exposed surface** (ADR-0003). Model code never owns endpoints, arguments,
-  auth, or exposure. Never emit references to non-exposed operations or retired skills;
-  `assertNoNonExposedRefs` is the build guard.
+  auth, or exposure. Never emit references to non-exposed operations or retired skills. Two guards
+  enforce this: `assertNoNonExposedRefsInText` runs in `prebuild` (via `build-micro-map.mjs`) over
+  emitted text, and `assertNoNonExposedRefs` checks manifest entries when the catalog is rebuilt
+  (`build-catalog.mjs`) and on every `npm test`. `npm run build` alone does NOT rebuild the catalog,
+  so a hand-edited manifest is caught by `npm test`/CI rather than by the build.
 - Keep exact-match resolution for skill/tool IDs. Preserve service distinctions among soft-empty,
   error, and data responses.
 - **Secrets stay host-side:** never print, commit, or expose credentials to the sandbox;
