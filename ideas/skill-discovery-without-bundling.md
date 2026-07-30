@@ -76,18 +76,28 @@ NOT yet have is ORGANIC traffic — the only events so far are the author's own 
 mix was chosen by hand and says nothing about agent behaviour. Do not read a distribution off
 author-generated calls; that is the guessing this instrument exists to replace.
 
-What to ask it, once production traffic has accumulated:
+**Decision rules, pre-registered.** Written down before the data arrives so the outcome is a
+measurement rather than a story told afterwards — the same discipline the `basis` won't-fix taught
+(check what the threshold actually measures before writing the fix). Read when there are >= 100
+`skill_read` events from ORGANIC traffic, or after 2026-09-30, whichever comes first.
 
-- **`shape` distribution.** If `whole` dominates and `sections`/`files` are near zero, 204 section
-  entries are dead weight and question 2 answers itself. If section reads are common, they are
-  earning their place and this question closes the other way.
-- **`id` distribution.** A long tail of never-read skills is evidence for question 1; concentration
-  on a few playbooks suggests the read surface is doing real work for a small set.
-- **`ms` split by `from`.** The live-fetch latency profile nobody had measured. `from` is what makes
-  it interpretable — a memo hit and an upstream fetch differ by orders of magnitude, so a mean over
-  both is meaningless.
-- **`ok: false` rate.** The accepted availability risk (`ARCHITECTURE.md` §6), now actually
-  observable rather than assumed.
+- **`shape` distribution decides question 2.** >= 90% `whole` (sections + files + mixed under 10%)
+  means the 204 section entries are dead weight: delete them, the section builder, and the
+  read-time sectioning invariant. Routing cannot regress — sections are already `searchable: false`.
+  >= 25% section/file reads means they are earning their place: close question 2 and stop
+  revisiting it. Between 10% and 25% is inconclusive; keep them and re-read with more data.
+- **`id` distribution informs question 1.** Rank skills by read count. A long never-read tail is
+  evidence for NARROWING the surface, not for deleting it — "few skills are read" and "reads are
+  unnecessary" are different claims, and conflating them is the easy mistake when you are holding a
+  distribution and want a conclusion. Deleting the read surface stays gated on a full A/B (skills
+  lane + QA battery + agentic); the distribution only decides whether that A/B is worth running.
+- **`ms` split by `from`,** always. A mean over memo and upstream is meaningless. First reading
+  2026-07-30: upstream 61-80 ms, memo 0 ms.
+- **`ok: false` rate** is the accepted availability risk (`ARCHITECTURE.md` §6) made observable
+  instead of assumed. Any sustained non-zero rate deserves a look on its own merits.
+
+Query guidance, including the trap where a filter on a new field VALUE returns zero while the
+events exist, is in `.agents/skills/cloudflare-observability-review/SKILL.md` "Skill Retrieval".
 
 ## What a win would delete
 
@@ -100,15 +110,11 @@ the house rule.
 
 ## When this file can be deleted
 
-Not while both questions are unanswered — but the reading is scheduled rather than hoped for:
-**Solo todo 1284** fires at >= 100 organic `skill_read` events or 2026-09-30, whichever comes first,
-and carries PRE-REGISTERED decision rules (>= 90% whole reads means sections are dead weight;
->= 25% section reads means they are earning their place and the question closes). Pre-registering
-them is the point — it makes the outcome a measurement instead of a story told afterwards.
-
-Delete this file once both questions have been answered by that data and the answers are recorded
-where they belong: a settled "sections stay" in `ARCHITECTURE.md` §6, a deletion in the diff
-itself, or an ADR if the read surface goes.
+Once both questions are answered by the data above, with the answers recorded where they belong:
+a settled "sections stay" in `ARCHITECTURE.md` §6, a deletion in the diff itself, or an ADR if the
+read surface goes. Until then this file is the single home for the questions, the rules, and the
+reasoning — deliberately not split across a doc and a todo, because two copies of a pending
+decision is two things to keep in sync and still nothing that fires.
 
 ## Sources
 
