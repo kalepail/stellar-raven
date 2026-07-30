@@ -83,6 +83,50 @@ export async function logArtifactRead(fields: {
   });
 }
 
+/**
+ * One `codemode.skill.read` call. Exists because the 2026-07-30 de-vendoring
+ * turned skill reads into network reads and nothing measured the result: the
+ * only prior signal was a boolean `sandbox.skillRead` span attribute, which
+ * says a run read SOME skill and nothing else.
+ *
+ * Two questions this is the instrument for, both recorded in
+ * ideas/skill-discovery-without-bundling.md: whether agents use SECTION reads at
+ * all (if they only ever read whole skills, 204 section entries are dead
+ * weight), and what the live-fetch latency profile actually is. `from` makes the
+ * latency interpretable — a memo hit and an upstream fetch differ by orders of
+ * magnitude and a mean over both is meaningless.
+ *
+ * No skill body, section text, or caller identity is logged: the id is a public
+ * catalog id and the rest is shape and timing.
+ */
+export function logSkillRead(fields: {
+  /** Exact catalog id requested, or null when the caller passed a non-id. */
+  id: string | null;
+  /** What was asked for: the whole skill, `##` sections, companion files, or a mix. */
+  shape: "whole" | "sections" | "files" | "mixed";
+  /** How many section keys were requested (0 for a whole read). */
+  requested: number;
+  /** Distinct pinned files this call had to retrieve. */
+  retrievals: number;
+  /** Retrieval provenance, most expensive wins: upstream > cache > memo. */
+  from: "memo" | "cache" | "upstream" | "none";
+  ms: number;
+  ok: boolean;
+  /** Present only on failure; the error message, never body content. */
+  error?: string;
+}): void {
+  logEvent("skill_read", {
+    id: fields.id,
+    shape: fields.shape,
+    requested: fields.requested,
+    retrievals: fields.retrievals,
+    from: fields.from,
+    ms: fields.ms,
+    ok: fields.ok,
+    error: fields.error ?? null
+  });
+}
+
 export function preview(text: string, max = PREVIEW_LOG_MAX): string {
   return text.length > max ? `${text.slice(0, max)}…[+${text.length - max} chars]` : text;
 }

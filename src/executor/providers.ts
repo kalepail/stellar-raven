@@ -84,12 +84,12 @@ import type { AdapterEnv, FetchLike } from "../adapters/types.ts";
 import { guard } from "../policy/guard.ts";
 import { redactSecrets, secretsFromEnv } from "../policy/redact.ts";
 import { readSkill } from "../skills/store.ts";
-import type { SkillSource } from "../skills/source.ts";
+import type { SkillRetrievalFrom, SkillSource } from "../skills/source.ts";
 import { runSkill, assertRunnersWired } from "../skills/run.ts";
 import { RUNNERS } from "../skills/runners/index.ts";
 import type { OpsFacade, SkillRunner } from "../skills/runners/types.ts";
 import { resolveSpecRefs } from "./spec-sandbox.ts";
-import { hashPrefix, logArtifactRead, logEvent } from "../observability.ts";
+import { hashPrefix, logArtifactRead, logEvent, logSkillRead } from "../observability.ts";
 import { searchEventFields } from "../observability-search.ts";
 import { info as artifactInfo, read as artifactRead, type ArtifactMetadata } from "../artifacts/store.ts";
 
@@ -813,11 +813,38 @@ export function buildCodemodeProvider(
       : {}),
 
     skill_read: async (name?: unknown, opts?: unknown) => {
-      const r = await readSkill(catalog, skillSource, name, opts);
+      // Wrap the shared source for THIS call so retrieval provenance and count
+      // are observable without threading a stats sink through readSkill.
+      const t0 = Date.now();
+      const seen: SkillRetrievalFrom[] = [];
+      const instrumented: SkillSource = async (pin) => {
+        const got = await skillSource(pin);
+        seen.push(got.from);
+        return got;
+      };
+      const r = await readSkill(catalog, instrumented, name, opts);
       if (r.ok && typeof name === "string") {
         const entry = catalog.entries.find((candidate) => candidate.id === name);
         hooks?.onSkillRead?.(name, entry?.buildAuthorityRoles ?? []);
       }
+      const requestedKeys = requestedSectionKeys(name, opts);
+      logSkillRead({
+        id: typeof name === "string" ? name : null,
+        shape: readShape(requestedKeys),
+        requested: requestedKeys.length,
+        retrievals: seen.length,
+        // Most expensive wins: one upstream fetch is what the call actually cost.
+        from: seen.includes("upstream")
+          ? "upstream"
+          : seen.includes("cache")
+            ? "cache"
+            : seen.includes("memo")
+              ? "memo"
+              : "none",
+        ms: Date.now() - t0,
+        ok: r.ok,
+        ...(r.ok ? {} : { error: r.error.message })
+      });
       return r;
     },
 
@@ -1000,6 +1027,29 @@ export function buildCodemodeProvider(
     prelude: `${SKILL_PRELUDE}\n${ARTIFACT_PRELUDE}`,
     fns
   };
+}
+
+/**
+ * Section keys a skill_read asked for — from a `#`-qualified id or `{ sections }`.
+ * Telemetry only: readSkill owns validation and rejects anything malformed, so
+ * this stays permissive and never throws.
+ */
+function requestedSectionKeys(name: unknown, opts: unknown): string[] {
+  if (typeof name === "string") {
+    const hash = name.indexOf("#");
+    if (hash >= 0) return [name.slice(hash + 1)];
+  }
+  const sections =
+    opts !== null && typeof opts === "object" ? (opts as { sections?: unknown }).sections : undefined;
+  return Array.isArray(sections) ? sections.filter((k): k is string => typeof k === "string") : [];
+}
+
+/** Whole skill, `##` sections, companion files, or a mix — the shape question
+ *  ideas/skill-discovery-without-bundling.md needs answered. */
+function readShape(keys: string[]): "whole" | "sections" | "files" | "mixed" {
+  if (keys.length === 0) return "whole";
+  const files = keys.filter((k) => k.startsWith("file:")).length;
+  return files === keys.length ? "files" : files === 0 ? "sections" : "mixed";
 }
 
 /** The full provider set `execute` wires into the sandbox. */

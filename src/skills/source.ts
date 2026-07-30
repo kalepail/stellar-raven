@@ -44,9 +44,14 @@ import { scrubRetiredSkillRefs } from "./scrub.ts";
  *  `sha256` is the security digest over the same raw bytes. */
 export type SkillPin = { url: string; sha: string; sha256: string };
 
-/** Resolves a pin to verified, scrubbed markdown. Rejects on transport
- *  failure, either hash mismatch, or a scrub drift-guard trip. */
-export type SkillSource = (pin: SkillPin) => Promise<string>;
+/** Where the served bytes actually came from. Reported so the caller can log a
+ *  latency profile that is interpretable: an upstream read and a memo hit differ
+ *  by two orders of magnitude, and a mean over both says nothing. */
+export type SkillRetrievalFrom = "memo" | "cache" | "upstream";
+
+/** Resolves a pin to verified, scrubbed markdown plus its provenance. Rejects on
+ *  transport failure, either hash mismatch, or a scrub drift-guard trip. */
+export type SkillSource = (pin: SkillPin) => Promise<{ text: string; from: SkillRetrievalFrom }>;
 
 /** Upstream is small markdown over a CDN; a slow fetch is a failed fetch. */
 const FETCH_TIMEOUT_MS = 8000;
@@ -156,10 +161,13 @@ export type SkillSourceDeps = {
 export function createSkillSource(deps: SkillSourceDeps = {}): SkillSource {
   const fetchImpl = deps.fetchImpl ?? fetch;
   const getCache = deps.cacheImpl ?? defaultCache;
-  return (pin) => {
+  return async (pin) => {
     const key = memoKey(pin);
     const hit = memo.get(key);
-    if (hit) return hit;
+    // A memo hit is reported as such even though it resolves the same promise:
+    // the distinction is the whole point of measuring retrieval provenance.
+    if (hit) return { text: await hit, from: "memo" as const };
+    let from: SkillRetrievalFrom = "upstream";
     const pending = (async () => {
       const cache = getCache();
       const request = new Request(pin.url, { headers: { accept: "text/plain" } });
@@ -170,6 +178,7 @@ export function createSkillSource(deps: SkillSourceDeps = {}): SkillSource {
         if (cached) {
           const bytes = await cached.arrayBuffer();
           await verify(bytes, pin);
+          from = "cache";
           return scrubRetiredSkillRefs(new TextDecoder().decode(bytes), pin.url);
         }
       } catch {
@@ -199,6 +208,6 @@ export function createSkillSource(deps: SkillSourceDeps = {}): SkillSource {
       throw e;
     });
     memo.set(key, wrapped);
-    return wrapped;
+    return { text: await wrapped, from };
   };
 }

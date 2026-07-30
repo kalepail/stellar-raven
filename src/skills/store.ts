@@ -253,7 +253,7 @@ async function load(
   id: string
 ): Promise<{ text: string } | SkillReadResult> {
   try {
-    return { text: await withDeadline(source(ref), id) };
+    return { text: (await withDeadline(source(ref), id)).text };
   } catch (e) {
     return err(
       `could not retrieve ${id} from its pinned upstream source (${ref.url}): ` +

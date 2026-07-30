@@ -135,6 +135,27 @@ Wait 30-90 seconds for ingestion before querying.
    events and spans. A null client hash means a pre-attribution grant, not an
    anonymous user.
 
+## Skill Retrieval (`skill_read`)
+
+Skill bodies are fetched from their pinned upstream at read time, not bundled
+(`ARCHITECTURE.md` §6). `evt = "skill_read"` is the only view of that path.
+
+- **Latency profile:** group `ms` by `from` (`memo` | `cache` | `upstream`).
+  Always split by `from` — a memo hit and an upstream fetch differ by orders of
+  magnitude, so a mean over both is meaningless.
+- **Availability:** `evt = "skill_read"` with `ok = false`, grouped by `error`.
+  This is the accepted-risk dependency on raw.githubusercontent.com made
+  observable; a rising `could not fetch` rate is the early signal.
+- **Does anyone read sections?** group by `shape` (`whole` | `sections` |
+  `files` | `mixed`). Feeds the open question in
+  `ideas/skill-discovery-without-bundling.md` — if `whole` dominates, 204
+  section catalog entries are dead weight.
+- **Which skills are actually used?** group by `id`; a long never-read tail is
+  evidence for shrinking the read surface.
+- `retrievals` counts distinct pinned files a call fetched (a `##` section read
+  costs 1; N companion files cost N+1). Fields carry no body text and no caller
+  identity — the id is a public catalog id.
+
 ## Demo Playground Failures
 
 For `/playground/chat` screenshots or user-visible tool cards, do not start only

@@ -1296,3 +1296,70 @@ describe("codemode.skill.run through the provider path (end-to-end, stub adapter
     expect(fetched).toBe(0); // guard/validateArgs — model code never owns the contract
   });
 });
+
+describe("skill_read telemetry (ideas/skill-discovery-without-bundling.md)", () => {
+  /** Capture the JSON lines logEvent writes to console.log. */
+  async function captureSkillReadEvents(run: (fns: Record<string, Function>) => Promise<unknown>) {
+    const events: Record<string, unknown>[] = [];
+    const spy = vi.spyOn(console, "log").mockImplementation((line: unknown) => {
+      try {
+        const parsed = JSON.parse(String(line));
+        if (parsed?.evt === "skill_read") events.push(parsed);
+      } catch {
+        // not a telemetry line
+      }
+    });
+    try {
+      await run(fnsOf(buildSandbox(catalog, skillSource, env), "codemode") as Record<string, Function>);
+    } finally {
+      spy.mockRestore();
+    }
+    return events;
+  }
+
+  it("records a WHOLE read: shape, one retrieval, and a duration", async () => {
+    const events = await captureSkillReadEvents((fns) =>
+      fns.skill_read!("skills.lumenloop.stellar-project-dossier", {})
+    );
+    expect(events).toHaveLength(1);
+    const e = events[0]!;
+    expect(e.id).toBe("skills.lumenloop.stellar-project-dossier");
+    expect(e.shape).toBe("whole");
+    expect(e.requested).toBe(0);
+    expect(e.retrievals).toBe(1);
+    expect(e.ok).toBe(true);
+    expect(e.error).toBeNull();
+    expect(typeof e.ms).toBe("number");
+    expect(["memo", "cache", "upstream"]).toContain(e.from);
+  });
+
+  it("distinguishes SECTION reads from whole reads — the question this exists to answer", async () => {
+    const skillId = "skills.stellar-dev.smart-contracts";
+    const events = await captureSkillReadEvents((fns) =>
+      fns.skill_read!(skillId, { sections: ["project-setup", "contract-anatomy"] })
+    );
+    expect(events).toHaveLength(1);
+    expect(events[0]!.shape).toBe("sections");
+    expect(events[0]!.requested).toBe(2);
+    // `##` sections come out of the SKILL.md body — one retrieval, not two.
+    expect(events[0]!.retrievals).toBe(1);
+  });
+
+  it("counts one retrieval per companion FILE, which is what the concurrency fix bought", async () => {
+    const events = await captureSkillReadEvents((fns) =>
+      fns.skill_read!("skills.stellar-dev.smart-contracts", {
+        sections: ["file:development.md", "file:testing.md"]
+      })
+    );
+    expect(events[0]!.shape).toBe("files");
+    expect(events[0]!.requested).toBe(2);
+    expect(events[0]!.retrievals).toBe(3); // SKILL.md + the two companions
+  });
+
+  it("records failures with the reason and no body content", async () => {
+    const events = await captureSkillReadEvents((fns) => fns.skill_read!("skills.no.such-skill", {}));
+    expect(events[0]!.ok).toBe(false);
+    expect(events[0]!.from).toBe("none");
+    expect(String(events[0]!.error)).toContain("exact catalog ids");
+  });
+});

@@ -64,14 +64,24 @@ Solo scratchpad 608; arm A (sections back in search) stays buildable via
 `node scripts/build-catalog.mjs --skills-form A`.
 
 Cheapest falsification: measure how often agents actually request a section versus a whole read.
-**The telemetry to do this does not exist yet** — correcting an earlier claim in this file. There
-is no `skill_read` log event; the only skill signal in observability is the boolean
-`sandbox.skillRead` span attribute (`src/executor/run.ts`), which records only THAT a run read some
-skill, never which one, whole-vs-section, or how long the fetch took. Answering this question needs
-a small `skill_read` event first — id, whole/section/file, section count, ms, cache hit/miss — at
-the `skill_read` dispatch in `src/executor/providers.ts`, alongside the existing `artifact_read`
-event that is the obvious template. That event is worth having on its own merits: the live-fetch
-change also shipped a latency profile nobody has measured in production.
+**The instrument now exists** — `skill_read` (added 2026-07-30, `src/observability.ts`
+`logSkillRead`, emitted from the `skill_read` dispatch in `src/executor/providers.ts`). Per call it
+records `id`, `shape` (whole | sections | files | mixed), `requested` key count, `retrievals`
+(distinct pinned files fetched), `from` (memo | cache | upstream | none), `ms`, `ok`, and `error`.
+No body text and no caller identity.
+
+What to ask it, once production traffic has accumulated:
+
+- **`shape` distribution.** If `whole` dominates and `sections`/`files` are near zero, 204 section
+  entries are dead weight and question 2 answers itself. If section reads are common, they are
+  earning their place and this question closes the other way.
+- **`id` distribution.** A long tail of never-read skills is evidence for question 1; concentration
+  on a few playbooks suggests the read surface is doing real work for a small set.
+- **`ms` split by `from`.** The live-fetch latency profile nobody had measured. `from` is what makes
+  it interpretable — a memo hit and an upstream fetch differ by orders of magnitude, so a mean over
+  both is meaningless.
+- **`ok: false` rate.** The accepted availability risk (`ARCHITECTURE.md` §6), now actually
+  observable rather than assumed.
 
 ## What a win would delete
 

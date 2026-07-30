@@ -52,7 +52,7 @@ export function pinnedSkillSource(): Promise<SkillSource> {
     return async (pin) => {
       const text = byUrl.get(pin.url);
       if (text === undefined) throw new Error(`no pinned file for ${pin.url}`);
-      return text;
+      return { text, from: "upstream" as const };
     };
   })();
   return pinned;
@@ -70,6 +70,6 @@ export function staticSkillSource(files: Record<string, string>): SkillSource {
   return async (pin) => {
     const text = files[pin.url];
     if (text === undefined) throw new Error(`could not fetch ${pin.url}: HTTP 404`);
-    return text;
+    return { text, from: "upstream" as const };
   };
 }

@@ -320,7 +320,7 @@ describe("builder invariant: read-time sectionize agrees with build-catalog sect
       if (e.kind !== "skill" || e.service !== "skills") continue;
       const t = e.transport as { type?: string; url?: string; sha?: string; sha256?: string };
       if (t?.type !== "file" || typeof t.url !== "string") continue;
-      const raw = await source({ url: t.url, sha: t.sha!, sha256: t.sha256! });
+      const { text: raw } = await source({ url: t.url, sha: t.sha!, sha256: t.sha256! });
       skillsChecked += 1;
       for (const slug of sectionSlugsOf(raw)) {
         expect(
