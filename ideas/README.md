@@ -20,6 +20,7 @@ Research notes and possible future work that are not committed product plans.
 - [Shareable Durable `/playground` Sessions](./shareable-durable-playground-sessions.md) — private
   durable sessions, opt-in public read links, login-gated follow-ups, and atomic private forks on a
   non-author's first send.
-- [Skill Discovery Without a Bundled Skill Corpus](./skill-discovery-without-bundling.md) — revisit
-  whether Raven should own skill bodies at all, compare directory-only and allowlisted on-demand
-  loading against the current mirror, and preserve prior A/B evidence without overstating it.
+- [Skill Discovery: What Is Still Open After De-vendoring](./skill-discovery-without-bundling.md) —
+  the content-ownership question is CLOSED (bodies are served from pinned upstream, never stored).
+  Two measurable questions survive: whether the `skills.*` read surface earns its place at all
+  versus navigation-only, and whether 204 exact-read section entries do.

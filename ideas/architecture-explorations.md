@@ -46,14 +46,16 @@ conviction or a winning A/B on golden Q→A accuracy.
    Vectorize/index/runtime path shipped. Full record:
    `eval/vectorize/README.md`.
 
-3. **MCP 2026-07-28 spec readiness spike** (1 day; TIME-SENSITIVE — final ships ~3 weeks from
-   the review date). PARTIALLY RESOLVED 2026-07-09: the instructions-channel question was
-   researched from primary sources and decided (`research/discovery-redesign.md` §4 P1 step 3
-   — instructions survive in optional `server/discover`; SEARCH_DESCRIPTION is the reliable
-   carrier; served dual-era). REMAINING: the transport-level compat review — `initialize` and
-   `Mcp-Session-Id` removal, required `Mcp-Method`/`Mcp-Name` headers, `subscriptions/listen`
-   replacing GET/SSE — against the McpAgent/createMcpHandler stack once SDKs land the final
-   spec. Re-check client adoption of `server/discover` after July 28.
+3. **MCP 2026-07-28 spec readiness spike — RESOLVED 2026-07-30.** Both halves landed. The
+   instructions-channel question was decided 2026-07-09 (`research/discovery-redesign.md` §4 P1
+   step 3 — instructions survive in optional `server/discover`; SEARCH_DESCRIPTION is the reliable
+   carrier). The transport-level compat work then shipped: the handler serves both wire eras —
+   the 2026-07-28 revision via `server/discover` negotiation, pinned end-to-end by
+   `test/smoke/mcp-modern-client.test.ts` (which asserts a modern client negotiates and fails
+   loudly rather than silently falling back), and the 2025 `initialize` lifecycle through the
+   stateless legacy fallback. See `ARCHITECTURE.md` §1. The one thing this item asked for that is
+   now merely DUE rather than blocked: the spec date has passed, so re-check real client adoption
+   of `server/discover` in production logs when convenient — a telemetry question, not a spike.
 
 4. **Compact operation-card code-shaped search re-test** — ADR-0001's own named next
    experiment: hybrid ranked/code search over op cards with `codemode.search`/`describe`
