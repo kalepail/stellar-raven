@@ -979,9 +979,10 @@ const TERMS_CSS = `
 const TERMS_BODY = `
 <h1>Stellar Raven Terms of Service</h1>
 <p class="eff">Effective ${TERMS_EFFECTIVE_DATE}</p>
-<p class="lead">These Terms of Service ("Terms") govern your access to and use of raven.stellar.buzz and
-agents.stellar.buzz, including the Model Context Protocol endpoint and the public playground
-(collectively, the "Service"), operated by the Stellar Development Foundation ("SDF," "we," or "us").</p>
+<p class="lead">These Terms of Service ("Terms") govern your access to and use of raven.stellar.org,
+raven.stellar.buzz, and agents.stellar.buzz, together with any successor or alias hostname for the
+same service, including the Model Context Protocol endpoint and the public playground (collectively,
+the "Service"), operated by the Stellar Development Foundation ("SDF," "we," or "us").</p>
 <p>By accessing or using the Service, you agree to be bound by the
 <a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Stellar.org Terms of Service</a>
 (the "Stellar ToS") and the
@@ -1064,20 +1065,24 @@ Stellar ToS apply to your use of AI-generated output obtained through or informe
     Service other than as a read-only information-retrieval tool;</li>
   <li>use the Service to overload, disrupt, or interfere with the Service or any third-party service
     reached through it; or</li>
-  <li>reverse engineer, or attempt to extract the underlying models, prompts, or algorithms of, the
-    Service.</li>
+  <li>probe, scan, or test the vulnerability of the Service, breach or circumvent its authentication,
+    rate limiting, or access controls, or otherwise attack the Service or the infrastructure it runs
+    on. This restriction applies to SDF's deployment of the Service, not to the source code, which
+    you may use, modify, and redistribute under its open-source license as described in Section 4.</li>
 </ol>
 
 <h2>9. Data and privacy</h2>
 <p>Your use of the Service is subject to the Privacy Policy. The following describes how the Service
 handles data, and supplements that policy:</p>
-<p><b>Authentication.</b> Sign-in is handled by WorkOS, a third-party authentication provider. The Service
-receives an email address to identify your account. The subject identifier is one-way hashed before
-storage, and authentication tokens issued by WorkOS during sign-in are not retained. The Service does not
-collect names, addresses, payment information, wallet keys, or special-category data.</p>
+<p><b>Authentication.</b> Sign-in is handled by WorkOS, a third-party authentication provider, which
+receives your email address and holds it on SDF's behalf to identify your account. The Service itself
+receives only an account identifier from WorkOS, which is one-way hashed before storage; the Service
+does not store your email address. Authentication tokens issued by WorkOS during sign-in are not
+retained. The Service does not collect names, addresses, payment information, wallet keys, or
+special-category data.</p>
 <p><b>Operational and quality logs.</b> To operate the Service and improve response quality, the Service
-stores observability data, which may include the queries submitted and the responses returned, for 30
-days, after which it is deleted. This data is stored in SDF's Cloudflare environment.</p>
+stores observability data, which may include the queries submitted and the responses returned, for up
+to 30 days, after which it is deleted. This data is stored in SDF's Cloudflare environment.</p>
 <p><b>No sensitive data.</b> You should not submit personal, confidential, or sensitive information to the
 Service. You are solely responsible for the content you or your agent submit, and for any consequences of
 submitting content you should not have submitted.</p>
