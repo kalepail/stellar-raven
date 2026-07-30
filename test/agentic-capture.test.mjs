@@ -145,6 +145,80 @@ describe("reconcile-capture", () => {
     );
     expect(report.rows[0].status).toBe("rejected");
     expect(report.summary.unmatchedMarkers).toEqual(["q-other:medium"]);
+    expect(report.summary.tainted).toBe(true);
+  });
+
+  // The five bypasses a five-model adversarial review reproduced against the
+  // first cut: each returned status ok / tainted false, i.e. a clean
+  // reconciliation certificate over unattributable wire traffic.
+  it("fails closed on marker-strip combined with an empty transcript", () => {
+    const report = reconcile([row([])], [captureEntry(null, "soroban storage")]);
+    expect(report.rows[0]).toMatchObject({ status: "rejected", emptyReportWithTraffic: true });
+    expect(report.summary.anomalies).toBe(1);
+    expect(report.anomalies[0].kind).toBe("unmarked-search");
+    expect(report.summary.tainted).toBe(true);
+  });
+
+  it("fails closed when a row omits searchCalls entirely", () => {
+    const report = reconcile(
+      [{ caseId: "q-fixture", effort: "low" }],
+      [captureEntry(null, "soroban storage")]
+    );
+    expect(report.rows[0].status).toBe("rejected");
+    expect(report.summary.tainted).toBe(true);
+  });
+
+  it("flags a JSON-RPC batch as an anomaly instead of ignoring it", () => {
+    const batch = {
+      ...captureEntry("q-fixture:low", "soroban storage"),
+      request: JSON.stringify([
+        {
+          jsonrpc: "2.0",
+          id: 1,
+          method: "tools/call",
+          params: { name: "search", arguments: { query: "soroban storage", limit: 8 } }
+        }
+      ])
+    };
+    const report = reconcile([row([])], [batch]);
+    expect(report.anomalies[0]).toMatchObject({ kind: "batch" });
+    expect(report.summary.tainted).toBe(true);
+  });
+
+  it("flags execute-routed discovery as an anomaly (codemode.search inside a script)", () => {
+    const exec = {
+      ...captureEntry("q-fixture:low", "soroban storage"),
+      request: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "tools/call",
+        params: { name: "execute", arguments: { code: 'codemode.search("soroban storage")' } }
+      })
+    };
+    const report = reconcile([row([])], [exec]);
+    expect(report.anomalies[0]).toMatchObject({ kind: "non-search-tool", detail: "execute" });
+    expect(report.summary.tainted).toBe(true);
+  });
+
+  it("segregates non-200 exchanges as anomalies rather than phantom omissions", () => {
+    const failed = { ...captureEntry("q-fixture:low", "soroban storage"), status: 502, response: "" };
+    const report = reconcile([row([transcribedCall("soroban storage")])], [
+      captureEntry("q-fixture:low", "soroban storage"),
+      failed
+    ]);
+    // The good exchange still reconciles; the 502 does not manufacture an
+    // omission, but it does taint the run so it cannot pass unnoticed.
+    expect(report.rows[0].status).toBe("ok");
+    expect(report.anomalies[0]).toMatchObject({ kind: "non-200" });
+    expect(report.summary.tainted).toBe(true);
+  });
+
+  it("a fully clean proxied run is not tainted", () => {
+    const report = reconcile(
+      [row([transcribedCall("soroban storage")])],
+      [captureEntry("q-fixture:low", "soroban storage")]
+    );
+    expect(report.summary).toMatchObject({ ok: 1, rejected: 0, anomalies: 0, tainted: false });
   });
 
   it("counts repeated identical queries as distinct exchanges", () => {
@@ -155,9 +229,20 @@ describe("reconcile-capture", () => {
     expect(short.rows[0].status).toBe("rejected");
   });
 
-  it("callKey ignores field order but binds every transcribed field", () => {
+  it("callKey ignores field order — top level AND inside each hit — but binds every value", () => {
     const a = transcribedCall("q");
     const reordered = { widerCandidateIds: a.widerCandidateIds, zeroGated: a.zeroGated, truncated: a.truncated, total: a.total, hits: a.hits, limit: a.limit, query: a.query };
     expect(callKey(reordered)).toBe(callKey(a));
+    // The agent's structured output does not guarantee {id, tier, score} order;
+    // key order inside a hit used to be load-bearing and rejected honest rows.
+    const nestedReorder = { ...a, hits: a.hits.map((h) => ({ score: h.score, tier: h.tier, id: h.id })) };
+    expect(callKey(nestedReorder)).toBe(callKey(a));
+    for (const changed of [
+      { ...a, hits: a.hits.map((h) => ({ ...h, tier: "backfill" })) },
+      { ...a, hits: a.hits.map((h) => ({ ...h, score: h.score + 1 })) },
+      { ...a, hits: a.hits.map((h) => ({ ...h, id: "other" })) }
+    ]) {
+      expect(callKey(changed)).not.toBe(callKey(a));
+    }
   });
 });

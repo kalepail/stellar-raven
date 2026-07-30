@@ -41,6 +41,14 @@ import {
 
 const SERVER_INFO = { name: "stellar-raven-codemode", version: "0.1.0" };
 const DEV_LOCAL_ARTIFACT_OWNER = "dev-local";
+// Keep in sync with wrangler.jsonc routes; loopback entries preserve local dev.
+const MCP_ALLOWED_ORIGIN_HOSTNAMES = [
+  "raven.stellar.buzz",
+  "agents.stellar.buzz",
+  "localhost",
+  "127.0.0.1",
+  "[::1]"
+];
 
 // One runner per isolate (providers + catalog + spec are env-stable); each
 // `execute` call still gets its own fresh Dynamic Worker via LOADER.load().
@@ -101,7 +109,10 @@ export const mcpHandler = {
       modelBoundaryMaxTokens: modelBoundaryMaxTokensFromEnv(env as unknown as Record<string, unknown>)
     });
     try {
-      const response = await createMcpHandler(() => server, { route: "/mcp" })(request, env, ctx);
+      const response = await createMcpHandler(() => server, {
+        route: "/mcp",
+        allowedOriginHostnames: MCP_ALLOWED_ORIGIN_HOSTNAMES
+      })(request, env, ctx);
       logEvent("mcp_request", {
         ...requestTelemetry,
         requestId,

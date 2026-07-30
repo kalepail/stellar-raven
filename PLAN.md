@@ -255,10 +255,15 @@ eval/                    # routing eval + qa/ (execute Q→A battery) + agentic/
 ```
 
 Pins: `@cloudflare/codemode` exact `0.5.1` (vendor `search.ts`/`describe.ts`/`normalize.ts`/
-`json-schema-types.ts` if churn bites), `@modelcontextprotocol/sdk` exact `1.30.0` (matches the
-`agents` exact peer; `@modelcontextprotocol/{server,client}` 2.0 arrive as `agents` peers),
+`json-schema-types.ts` if churn bites), production `@modelcontextprotocol/server` exact `2.0.0`,
+dev-only `@modelcontextprotocol/client` exact `2.0.0` and `@modelcontextprotocol/sdk` exact `1.30.0`,
+and `agents` exact `0.20.1`,
 `zod ^4.4.3`, wrangler `^4.107.0`, compat ≥ 2026-06-11 + `nodejs_compat`, `worker_loaders`
 binding `LOADER`.
+
+MCP reopen gate (re-verified 2026-07-29/30): the non-prerelease 2026-07-28 specification shipped,
+the versioning page designates 2026-07-28 as current, and `agents` pins the stable
+`@modelcontextprotocol` 2.0.0 packages. All three conditions fired.
 
 ## 7. Phased build
 

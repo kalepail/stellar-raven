@@ -45,6 +45,26 @@ const server = http.createServer(async (req, res) => {
   const chunks = [];
   for await (const chunk of req) chunks.push(chunk);
   const requestBody = Buffer.concat(chunks).toString("utf8");
+  // Origin-form only: `new URL(req.url, upstream)` would let an absolute-form
+  // request line (`POST http://elsewhere/x`) override the upstream and turn
+  // this into an open loopback relay for the duration of a run.
+  if (!req.url.startsWith("/")) {
+    appendFileSync(
+      out,
+      JSON.stringify({
+        ts: new Date().toISOString(),
+        marker: req.headers[MARKER_HEADER] ?? null,
+        method: req.method,
+        path: req.url,
+        request: requestBody,
+        status: 400,
+        error: "non-origin-form request URL refused"
+      }) + "\n"
+    );
+    res.writeHead(400, { "content-type": "application/json" });
+    res.end(JSON.stringify({ error: "capture-proxy refuses non-origin-form request URLs" }));
+    return;
+  }
   try {
     const upstreamResponse = await fetch(new URL(req.url, upstream), {
       method: req.method,

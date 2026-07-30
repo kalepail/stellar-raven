@@ -74,8 +74,9 @@ Each authorized request gets a **fresh, stateless `McpServer`** (MCP SDK 2.0,
 the 2026-07-28 revision (`server/discover` negotiation, pinned end-to-end by
 `test/smoke/mcp-modern-client.test.ts`) and the 2025 `initialize` lifecycle via its built-in
 stateless legacy fallback. Custom domains skip the SDK's Host allowlist (Cloudflare routing
-is the authority) and requests without an Origin header — every non-browser MCP client —
-pass Origin validation, so no allowlist configuration is required. Tool
+is the Host authority). Browser Origins are explicitly allowlisted for both production routes and
+the localhost class; foreign Origins are rejected. Requests without an Origin header — ordinary
+non-browser MCP clients — still pass Origin validation. Tool
 registration and all model-facing prose live in `src/mcp/tools.ts`; the initialize-time
 `SERVER_INSTRUCTIONS` (workflow + envelope contract + generated source-family micro-map)
 ride along because clients surface them in the system prompt, where they outlive per-tool

@@ -157,9 +157,12 @@ lifting lumenloop any-hit to 87.5%/75% and medium primary to 37.5%; the boundary
 4. Save the returned `{summary, rows}` under `results/` (git-ignored), then reconcile the
    transcripts against the wire before reading any mechanism forensics:
    `node eval/agentic/reconcile-capture.mjs --capture <capture.jsonl> --results <results.json>`
-   — non-zero exit means at least one row's reported `searchCalls` did not match the captured
-   exchanges (fabricated, mistranscribed, or omitted page) and that row's transcript-derived
-   fields must be treated as rejected. Update the summary tables in this README — the README is
+   — non-zero exit (`summary.tainted`) means the run's transcript forensics are untrustworthy:
+   a row's reported `searchCalls` did not reproduce the captured exchanges (fabricated,
+   mistranscribed, or omitted page), a row reported nothing while the wire showed searches, or
+   the capture holds traffic that cannot be attributed to any row (`summary.anomalies` /
+   `unmatchedMarkers`). Treat every transcript-derived field in that run as rejected; the
+   Grade columns still stand. Update the summary tables in this README — the README is
    the committed record, not the JSON.
 
 ## Results — 2026-07-06 (post-round-5 checkpoint; run `wf_b5be4d53-41f`, local-only)
@@ -338,13 +341,29 @@ measured round. `primaryInHits` caught the off-page pick exactly as designed; `z
 proved unreliable as an agent-reported field and is now derived by the harness from captured
 hit tiers.
 
-**Transcript trust boundary (closed 2026-07-29):** `searchCalls` pages are transcribed by the
-evaluated agent from its own curl output — the harness derives `zeroGated`/`primaryInHits` from
-that transcription. Since 2026-07-29 the runbook closes the loop with harness-owned capture:
-`capture-proxy.mjs` sits in front of `wrangler dev` and logs every exchange (keyed by the
-mandatory `X-Eval-Agent: <caseId>:<effort>` curl header) to a JSONL file the evaluated agent
-never touches, and `reconcile-capture.mjs` rejects any row whose reported `searchCalls` do not
-reproduce the wire (fabricated, mistranscribed, or omitted pages; a stripped marker rejects the
-row wholesale). Runs made without the proxy — including everything before 2026-07-29 — remain
-strong-but-not-tamper-proof evidence. Grading (`primaryService` vs label) is unaffected either
-way.
+**Transcript trust boundary — what the harness actually guarantees (2026-07-30).** `searchCalls`
+pages are transcribed by the evaluated agent from its own curl output, and the harness derives
+`zeroGated`/`primaryInHits` from that transcription. Since 2026-07-29 the runbook adds
+harness-owned capture: `capture-proxy.mjs` sits in front of `wrangler dev` and logs every
+exchange to a JSONL file, keyed by the mandatory `X-Eval-Agent: <caseId>:<effort>` curl header;
+`reconcile-capture.mjs` then compares each row's reported calls against the wire.
+
+Reconciliation **fails closed** (hardened 2026-07-30 after a five-model adversarial review
+reproduced five bypasses of the first cut). A run is `tainted` — non-zero exit — when any row's
+reported calls do not reproduce the wire multiset (fabrication, mistranscription, omission), when
+a row reports no calls at all while the run captured search traffic, when a marker is stray or
+unknown, or when the capture holds any exchange that cannot be attributed to a row: a missing
+marker, a JSON-RPC batch, a `tools/call` for a tool other than `search` (an agent can route
+discovery through `execute`), an unparseable body, or a non-200 status. Anomalies are reported
+with kind + marker rather than silently dropped, and a transient upstream failure is segregated
+as its own class so it taints the run without manufacturing a phantom omission.
+
+**What it is not: adversarial isolation.** The evaluated agent runs as the same user with shell
+access, so it could in principle append to the capture file or reach the upstream port directly,
+bypassing the proxy. The guarantee is wire-versus-transcript reconciliation with fail-closed
+anomaly detection against a non-cooperative-but-not-actively-attacking agent — not
+tamper-proofing. Closing that would need the proxy under a separate user or a write-only channel
+the agent cannot open; judged out of proportion for a local eval harness and recorded here as
+residual risk instead. Runs made without the proxy — including everything before 2026-07-29 —
+carry none of this and remain transcription-trust evidence only. Grading (`primaryService` vs
+label) never consults any of it.

@@ -8,7 +8,7 @@
  * mixed judge tuple, pack-hash drift, already-fully-judged).
  */
 import { createHash } from "node:crypto";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -160,8 +160,10 @@ describe("run-qa --judge-stored", () => {
       expect(written.meta.judgeRubric).toBe(JUDGE_RUBRIC);
       expect(written.meta.totalJudgeCostUsd).toBeCloseTo(0.25);
       expect(written.meta.totalCostUsd).toBeCloseTo(0.6 + 0.25);
+      // judgedIds is spend provenance: only rows that actually reached a paid
+      // judge belong in it. The empty-answer row is stamped without a call.
       expect(written.meta.judgeStored).toMatchObject({
-        judgedIds: ["q-fixture-answered", "q-fixture-empty"],
+        judgedIds: ["q-fixture-answered"],
         toolVersion: "run-qa/judge-stored-v1"
       });
       expect(typeof written.meta.judgeStored.sourceResultsSha256).toBe("string");
@@ -234,6 +236,128 @@ describe("run-qa --judge-stored", () => {
       await expect(
         judgeStoredResults(resultsPath, { judge: stubJudge(), log: () => {} })
       ).rejects.toThrow(/evidence pack/);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("refuses a null recorded pack when the builder now emits one, and a missing evidencePack", async () => {
+    const root = mkdtempSync(join(tmpdir(), "qa-judge-stored-"));
+    try {
+      const { casesPath, resultsPath } = writeFixture(root);
+      // Flip the answered row's case to a freshness the pack builder serves, so
+      // the rebuilt pack is non-empty against the recorded sha256:null. A
+      // truthiness guard skipped exactly this class (14 of 30 rows in the
+      // 2026-07-28 artifact of record).
+      const cases = JSON.parse(readFileSync(casesPath, "utf8"));
+      cases.cases[0].tags.freshness = "live";
+      writeFileSync(casesPath, JSON.stringify(cases, null, 2));
+      const results = JSON.parse(readFileSync(resultsPath, "utf8"));
+      results.rows[0].transcript = [
+        {
+          toolUseId: "t1",
+          tool: "mcp__raven__execute",
+          input: '{"code":"async () => 1"}',
+          result: '{"ok":true,"data":{"items":[{"title":"T","url":"https://e.test","date":"2026-07-01","summary":"s"}]}}',
+          resultChars: 100,
+          isError: false
+        }
+      ];
+      // Keep the snapshot guard satisfied: it hashes the selected cases.
+      results.meta.inputSnapshot.casesSha256 = sha256(
+        JSON.stringify(results.rows.map((row) => cases.cases.find((c) => c.id === row.id)))
+      );
+      writeFileSync(resultsPath, JSON.stringify(results, null, 2));
+      await expect(
+        judgeStoredResults(resultsPath, { judge: stubJudge(), log: () => {} })
+      ).rejects.toThrow(/no longer reproduces/);
+
+      // An absent evidencePack must not pass either.
+      const noPack = JSON.parse(readFileSync(resultsPath, "utf8"));
+      delete noPack.rows[0].evidencePack;
+      writeFileSync(resultsPath, JSON.stringify(noPack, null, 2));
+      await expect(
+        judgeStoredResults(resultsPath, { judge: stubJudge(), log: () => {} })
+      ).rejects.toThrow(/no longer reproduces/);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("keeps paid verdicts + judge tuple on disk when the judge throws mid-run, then resumes and finalizes", async () => {
+    const root = mkdtempSync(join(tmpdir(), "qa-judge-stored-"));
+    try {
+      const { resultsPath } = writeFixture(root);
+      // Two answered rows so row 1 is paid before row 2 fails.
+      const seeded = JSON.parse(readFileSync(resultsPath, "utf8"));
+      seeded.rows[1].answer = "SEP-10 is the web authentication SEP.";
+      seeded.rows[1].agent.error = null;
+      writeFileSync(resultsPath, JSON.stringify(seeded, null, 2));
+
+      let calls = 0;
+      const flaky = async () => {
+        calls += 1;
+        if (calls === 2) throw new Error("judge exploded");
+        return { ...stubVerdict };
+      };
+      await expect(
+        judgeStoredResults(resultsPath, { judgeModel: "stub-judge", judge: flaky, log: () => {} })
+      ).rejects.toThrow(/judge exploded/);
+
+      const afterCrash = JSON.parse(readFileSync(resultsPath, "utf8"));
+      expect(afterCrash.rows[0].verdict.score).toBe("correct");
+      expect(afterCrash.rows[1].verdict).toBeFalsy();
+      expect(afterCrash.meta.judgeModel).toBe("stub-judge");
+      expect(afterCrash.meta.totalJudgeCostUsd).toBeCloseTo(0.25);
+      // Only the row that actually reached a paid judge is recorded.
+      expect(afterCrash.meta.judgeStored.judgedIds).toEqual(["q-fixture-answered"]);
+      const originalHash = afterCrash.meta.judgeStored.sourceResultsSha256;
+
+      const resumed = await judgeStoredResults(resultsPath, {
+        judgeModel: "stub-judge",
+        judge: stubJudge(),
+        log: () => {}
+      });
+      expect(resumed.judgedCount).toBe(1);
+      const final = JSON.parse(readFileSync(resultsPath, "utf8"));
+      expect(final.rows[1].verdict.score).toBe("correct");
+      expect(final.summary.overall).toMatchObject({ correct: 2, total: 2 });
+      // Provenance survives the resume: original collection hash kept, ids merged.
+      expect(final.meta.judgeStored.sourceResultsSha256).toBe(originalHash);
+      expect(final.meta.judgeStored.judgedIds).toEqual(["q-fixture-answered", "q-fixture-empty"]);
+      expect(readdirSync(root).some((name) => name.endsWith(".tmp"))).toBe(false);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("finalizes an interrupted artifact instead of refusing when nothing is left to judge", async () => {
+    const root = mkdtempSync(join(tmpdir(), "qa-judge-stored-"));
+    try {
+      const { resultsPath } = writeFixture(root);
+      // Every row judged but the run died before stamping summary/provenance.
+      const stuck = JSON.parse(readFileSync(resultsPath, "utf8"));
+      stuck.meta.judgeModel = "stub-judge";
+      stuck.meta.judgeRubric = JUDGE_RUBRIC;
+      stuck.rows[0].verdict = { ...stubVerdict };
+      stuck.rows[1].verdict = { ...stubVerdict, costUsd: 0 };
+      stuck.summary = null;
+      writeFileSync(resultsPath, JSON.stringify(stuck, null, 2));
+
+      const out = await judgeStoredResults(resultsPath, {
+        judgeModel: "stub-judge",
+        judge: stubJudge(),
+        log: () => {}
+      });
+      expect(out.judgedCount).toBe(0);
+      const final = JSON.parse(readFileSync(resultsPath, "utf8"));
+      expect(final.summary.overall.total).toBe(2);
+      expect(final.meta.judgeStored.toolVersion).toBe("run-qa/judge-stored-v1");
+
+      // Now that it IS finalized, a further call refuses.
+      await expect(
+        judgeStoredResults(resultsPath, { judgeModel: "stub-judge", judge: stubJudge(), log: () => {} })
+      ).rejects.toThrow(/nothing to judge/);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

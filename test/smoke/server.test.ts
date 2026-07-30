@@ -35,20 +35,32 @@ beforeAll(async () => {
   }
 });
 
-function initializeBody(): string {
+function rpcBody(method: string, params: Record<string, unknown>, id: number): string {
   return JSON.stringify({
     jsonrpc: "2.0",
-    id: 0,
-    method: "initialize",
-    params: {
-      protocolVersion: "2025-06-18",
-      capabilities: {},
-      clientInfo: { name: "smoke-test", version: "0.0.0" }
-    }
+    id,
+    method,
+    params
   });
 }
 
-async function postInitialize(url: string, headers: Record<string, string> = {}): Promise<Response> {
+function initializeBody(): string {
+  return rpcBody(
+    "initialize",
+    {
+      protocolVersion: "2025-06-18",
+      capabilities: {},
+      clientInfo: { name: "smoke-test", version: "0.0.0" }
+    },
+    0
+  );
+}
+
+async function postRpc(
+  url: string,
+  body: string,
+  headers: Record<string, string> = {}
+): Promise<Response> {
   return SELF.fetch(url, {
     method: "POST",
     headers: {
@@ -56,12 +68,23 @@ async function postInitialize(url: string, headers: Record<string, string> = {})
       Accept: "application/json, text/event-stream",
       ...headers
     },
-    body: initializeBody()
+    body
   });
 }
 
+async function postInitialize(url: string, headers: Record<string, string> = {}): Promise<Response> {
+  return postRpc(url, initializeBody(), headers);
+}
+
 /** Streamable HTTP responses arrive as SSE — take the last `data:` payload. */
-async function lastEventJson(res: Response): Promise<{ result?: { serverInfo?: { name?: string }; instructions?: string } }> {
+async function lastEventJson(res: Response): Promise<{
+  result?: {
+    serverInfo?: { name?: string };
+    instructions?: string;
+    tools?: { name: string }[];
+    structuredContent?: { hits?: unknown[] };
+  };
+}> {
   const text = await res.text();
   const data = text
     .split("\n")
@@ -113,6 +136,54 @@ describe("/mcp auth dispatch", () => {
       expect(init.result?.serverInfo?.name).toBe("stellar-raven-codemode");
       expect(init.result?.instructions).toContain("r.data.projects");
     }
+  });
+
+  it("serves the full 2025 legacy tool sequence through the named-key bypass", async () => {
+    const headers = { Authorization: `Bearer admin:${TOKENS.admin}` };
+
+    const initialized = await postInitialize(`${PUBLIC}/mcp`, headers);
+    expect(initialized.status).toBe(200);
+    expect((await lastEventJson(initialized)).result?.serverInfo?.name).toBe(
+      "stellar-raven-codemode"
+    );
+
+    const listed = await postRpc(`${PUBLIC}/mcp`, rpcBody("tools/list", {}, 1), headers);
+    expect(listed.status).toBe(200);
+    expect((await lastEventJson(listed)).result?.tools?.map((tool) => tool.name).sort()).toEqual([
+      "execute",
+      "search"
+    ]);
+
+    const called = await postRpc(
+      `${PUBLIC}/mcp`,
+      rpcBody(
+        "tools/call",
+        { name: "search", arguments: { query: "soroban contract storage", limit: 3 } },
+        2
+      ),
+      headers
+    );
+    expect(called.status).toBe(200);
+    expect((await lastEventJson(called)).result?.structuredContent?.hits?.length).toBeGreaterThan(0);
+  });
+
+  it("allows configured public Origins, rejects foreign Origins, and permits no Origin", async () => {
+    const authorization = `Bearer admin:${TOKENS.admin}`;
+    expect(
+      (await postInitialize(`${PUBLIC}/mcp`, { Authorization: authorization, Origin: PUBLIC }))
+        .status
+    ).toBe(200);
+    expect(
+      (
+        await postInitialize(`${PUBLIC}/mcp`, {
+          Authorization: authorization,
+          Origin: "https://evil.example"
+        })
+      ).status
+    ).toBe(403);
+    expect((await postInitialize(`${PUBLIC}/mcp`, { Authorization: authorization })).status).toBe(
+      200
+    );
   });
 
   it("rejects the old unprefixed bearer and custom header", async () => {

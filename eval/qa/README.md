@@ -310,8 +310,8 @@ documentation — are recorded monitor-only, below the 2-unrelated-cases acting 
 ## 2026-07-28 verification checkpoint (paired vs 07-27; not a re-baseline)
 
 Purpose: verify the day's cumulative service changes (canonical-URL collector fix + dedup,
-zero-gated/zero-hit `nextSteps` copy, provider-error telemetry) caused no end-to-end
-regression. Pre-registered brief with adversarial pre-spend gate (three revisions before
+zero-gated/zero-hit `nextSteps` copy, provider-error telemetry) caused no detectable aggregate
+regression within this sample and noise floor. Pre-registered brief with adversarial pre-spend gate (three revisions before
 LAUNCH-OK); two-phase spend enforcement (`--no-judge` collection → 30/30-row + agent-cost
 checkpoint → judge); runner revision `a77ccb0` (demo-only diff from the brief's `94c1ad8`
 pin — MCP surface identical); v2.4/p3, sonnet-5 both roles.
@@ -330,11 +330,17 @@ conflation — both wrong in baseline too), 1 retracted on re-judge, 1 stable si
 answer-craft slip (`q-sor-scval-conversion`: "bigint or number" for i128 against the
 avoid's unsafe-JS-number trap; monitor-only). Attribution readback found no wrong or
 down-flip involving truncated-URL evidence or zero-hit/all-backfill steering
-(execute-visible; search bodies are not stored — hedge recorded). **Verdict: no
-end-to-end harm from the day's changes; no measured gain claimed; checkpoint shape
+(execute-visible); changed search-body behavior was not attributable from the stored evidence
+because search bodies were not stored. **Verdict: no detectable aggregate regression within this
+sample and noise floor; no measured gain claimed; checkpoint shape
 matches 07-27.** Independent adversarial review of these conclusions (recomputed tables,
 transition matrix, transcript audit): CONCLUSIONS-OK after three packaging revisions.
 Tooling gaps found (judge-stored mode, judge-cost stamping): Solo todo 1261.
+
+Cost-stamp caveat: this results file has `meta.totalJudgeCostUsd: 0` and a
+`meta.judgedStored` stamp because a session-local script judged the stored rows before
+`--judge-stored` was committed. The actual judge spend is the sum of `rows[].verdict.costUsd`,
+about $5.42; reading only the meta total understates the run cost.
 
 ## 2026-07-29 clause-coverage A/B: cancelled at the free-audit gate (todo 1231; no spend)
 
@@ -346,7 +352,7 @@ blocking gate was a **free offline audit fixing the gainable denominator** befor
 token: classify the 16 baseline partials (`2026-07-28T22-52-45-variantA.json`, joined with
 goldens) into coverage-gainable vs not, cancel if fewer than 6 are gainable.
 
-**The audit landed at 1–4 of 16 gainable — the round was cancelled with $0 spent.** Per-row
+**The audit landed at at most 3 of 16 gainable — the round was cancelled with $0 spent.** Per-row
 classification (transcript keyword probes + spot-reads, recorded in scratchpad 737):
 
 - **Framing discipline, untargeted by clause coverage (~6 rows):** missing as-of dating
@@ -371,13 +377,13 @@ classification (transcript keyword probes + spot-reads, recorded in scratchpad 7
 The review had independently shown the brief's original bank threshold (net ≥ +3 paired flips)
 fires on pure judge noise roughly one round in five, and that banking a prompt append forks the
 measurement contract (all stored baselines and the 23.3% floor are unmodified-prompt artifacts)
-while drifting the headline toward measuring answer craft instead of the MCP. With ≤4 gainable
+while drifting the headline toward measuring answer craft instead of the MCP. With at most 3 gainable
 rows, even a perfect treatment cannot clear a noise-safe threshold — underpowered by
 construction. **Measured answer for todo 1231: the sample's partial mass is answer-framing
 discipline and domain-completeness, not clause coverage; no instrument change is banked; no
 production change was ever in scope.** Durable side-products landed instead:
 `meta.promptAppend` {sha256, chars} is now stamped by `run-qa.mjs` so any future prompt-append
-arm is auditable from the artifact alone, and `--judge-stored` gained crash-safe per-row
+arm is identifiable and verifiable against a known arm text, and `--judge-stored` gained crash-safe per-row
 persistence plus re-attemptable judge-side error verdicts (review findings 3 and 10).
 
 ## Current baseline of record

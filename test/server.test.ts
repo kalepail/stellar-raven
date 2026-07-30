@@ -1,8 +1,8 @@
 /**
  * Unit tests for tool registration — no running worker needed.
  *
- * Wires the registered McpServer to an in-memory MCP client (both from
- * @modelcontextprotocol/sdk, already a dependency) and asserts the two
+ * Wires the registered McpServer to an in-memory MCP client (from the
+ * @modelcontextprotocol/server and /client v2 packages) and asserts the two
  * tools exist with the expected schemas and stub behavior.
  *
  * CHANGED for ADR-0001 (research/decisions/0001-search-tool-shape.md,

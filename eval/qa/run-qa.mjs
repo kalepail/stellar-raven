@@ -58,7 +58,7 @@
  */
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdtempSync, readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync, mkdirSync, renameSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -347,8 +347,49 @@ export async function judgeStoredResults(
       typeof row.verdict?.score !== "string" ||
       (row.verdict.score === "error" && Boolean(row.answer))
   );
+
+  // Every persisted state must be internally consistent, so finalize stamps
+  // costs + summary and writes atomically. A resume that finds nothing left to
+  // judge still finalizes: a crash between the last row and the old
+  // end-of-run write used to leave summary:null with stale costs and no way
+  // back (re-running threw "nothing to judge").
+  const paidIds = [];
+  const finalize = () => {
+    meta.judgeModel = judgeModel;
+    meta.judgeRubric = JUDGE_RUBRIC;
+    meta.totalJudgeCostUsd = results.rows.reduce((s, r) => s + (r.verdict?.costUsd ?? 0), 0);
+    meta.totalCostUsd = results.rows.reduce(
+      (s, r) => s + (r.agent?.costUsd ?? 0) + (r.verdict?.costUsd ?? 0),
+      0
+    );
+    const prior = meta.judgeStored ?? {};
+    meta.judgeStored = {
+      judgedAt: new Date().toISOString(),
+      // Keep the ORIGINAL collection-time hash across resumes; re-hashing the
+      // partially judged file would erase the link this block exists to record.
+      sourceResultsSha256: prior.sourceResultsSha256 ?? sha256(sourceText),
+      // Only ids that actually reached a paid judge, merged across resumes.
+      judgedIds: [...new Set([...(prior.judgedIds ?? []), ...paidIds])],
+      toolVersion: "run-qa/judge-stored-v1"
+    };
+    results.meta = meta;
+    results.summary = summarize(results.rows);
+    // Temp-then-rename: a truncate-in-place rewrite of the sole copy holding
+    // every paid verdict is the loss this feature exists to prevent.
+    const tmpPath = `${resultsPath}.tmp`;
+    writeFileSync(tmpPath, JSON.stringify(results, null, 2) + "\n");
+    renameSync(tmpPath, resultsPath);
+  };
+
   if (unjudged.length === 0) {
-    throw new Error("--judge-stored: every row already has a verdict — nothing to judge");
+    if (results.summary && meta.judgeStored) {
+      throw new Error("--judge-stored: every row already has a verdict — nothing to judge");
+    }
+    // Unfinalized artifact from an interrupted run: complete it rather than
+    // leaving a paid file stuck with a null summary.
+    finalize();
+    log(`judge-stored: ${resultsPath} · nothing left to judge · finalized stamps + summary`);
+    return { judgedCount: 0, summary: results.summary, outPath: resultsPath };
   }
   log(
     `judge-stored: ${resultsPath} · ${unjudged.length}/${results.rows.length} unjudged row(s) · judge ${judgeModel}`
@@ -373,18 +414,23 @@ export async function judgeStoredResults(
         transcript: row.transcript
       });
       const packSha = transcriptEvidence ? sha256(transcriptEvidence) : null;
-      if (row.evidencePack?.sha256 && packSha !== row.evidencePack.sha256) {
+      // Compare unconditionally, null included: a stable-freshness row records
+      // sha256:null, so a truthiness guard here skipped the check on exactly
+      // those rows (14 of 30 in the 2026-07-28 artifact) and let deleting one
+      // field disable it on any row.
+      if (!row.evidencePack || packSha !== (row.evidencePack.sha256 ?? null)) {
         throw new Error(
-          `--judge-stored: row ${row.id} evidence pack no longer reproduces its collection-time hash — the pack builder changed since collection; re-collect`
+          `--judge-stored: row ${row.id} evidence pack no longer reproduces its collection-time hash (recorded ${row.evidencePack?.sha256 ?? "absent"}, rebuilt ${packSha ?? "null"}) — the pack builder changed since collection; re-collect`
         );
       }
       row.verdict = await judge(
         { ...kase, candidateAnswer: row.answer, transcript: row.transcript, transcriptEvidence },
         { model: judgeModel }
       );
+      paidIds.push(row.id);
       // Persist after every judged row: a crash on row N keeps rows 1..N-1's
       // paid verdicts on disk (the run resumes as judge-all-unjudged).
-      writeFileSync(resultsPath, JSON.stringify(results, null, 2) + "\n");
+      finalize();
     } else {
       // Mirror the inline no-answer verdict exactly.
       row.verdict = {
@@ -399,20 +445,7 @@ export async function judgeStoredResults(
     }
   }
 
-  meta.totalJudgeCostUsd = results.rows.reduce((s, r) => s + (r.verdict?.costUsd ?? 0), 0);
-  meta.totalCostUsd = results.rows.reduce(
-    (s, r) => s + (r.agent?.costUsd ?? 0) + (r.verdict?.costUsd ?? 0),
-    0
-  );
-  meta.judgeStored = {
-    judgedAt: new Date().toISOString(),
-    sourceResultsSha256: sha256(sourceText),
-    judgedIds: unjudged.map((row) => row.id),
-    toolVersion: "run-qa/judge-stored-v1"
-  };
-  results.meta = meta;
-  results.summary = summarize(results.rows);
-  writeFileSync(resultsPath, JSON.stringify(results, null, 2) + "\n");
+  finalize();
   return { judgedCount: unjudged.length, summary: results.summary, outPath: resultsPath };
 }
 
