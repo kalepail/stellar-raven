@@ -43,6 +43,7 @@ const SERVER_INFO = { name: "stellar-raven-codemode", version: "0.1.0" };
 const DEV_LOCAL_ARTIFACT_OWNER = "dev-local";
 // Keep in sync with wrangler.jsonc routes; loopback entries preserve local dev.
 const MCP_ALLOWED_ORIGIN_HOSTNAMES = [
+  "raven.stellar.org",
   "raven.stellar.buzz",
   "agents.stellar.buzz",
   "localhost",

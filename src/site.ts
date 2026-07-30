@@ -948,7 +948,7 @@ export const LANDING_HEADERS: Record<string, string> = {
   "content-security-policy":
     "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; " +
     "font-src data:; img-src data:; connect-src 'none'; frame-ancestors 'none'; base-uri 'none'; " +
-    "form-action 'self' https://raven.stellar.buzz https://agents.stellar.buzz",
+    "form-action 'self' https://raven.stellar.org https://raven.stellar.buzz https://agents.stellar.buzz",
   "x-content-type-options": "nosniff",
   "referrer-policy": "no-referrer"
 };

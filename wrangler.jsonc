@@ -74,6 +74,14 @@
     {
       "pattern": "raven.stellar.buzz",
       "custom_domain": true
+    },
+    // raven.stellar.org arrives via Cloudflare for SaaS on the stellar.buzz
+    // zone (custom hostname + CNAME to proxy-fallback.stellar.buzz). Without
+    // this route the custom-hostname traffic falls through to the zone's
+    // fallback handling (wisprduck) instead of this worker.
+    {
+      "pattern": "raven.stellar.org/*",
+      "zone_name": "stellar.buzz"
     }
   ],
   "workers_dev": false,
