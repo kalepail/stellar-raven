@@ -472,7 +472,8 @@ function head(
   description: string,
   css: string,
   headExtra: string = "",
-  noindex: boolean = false
+  noindex: boolean = false,
+  path: string = "/"
 ): string {
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/>
@@ -489,7 +490,7 @@ ${noindex ? `<meta name="robots" content="noindex"/>\n` : ""}<meta name="theme-c
 <meta property="og:image:height" content="630"/>
 <meta property="og:image:type" content="image/png"/>
 <meta property="og:image:alt" content="${escapeHtml(OG_ALT)}"/>
-<meta property="og:url" content="https://${HOST}/"/>
+<meta property="og:url" content="https://${HOST}${path}"/>
 <meta property="og:site_name" content="Stellar Raven"/>
 <meta property="og:locale" content="en_US"/>
 <meta name="twitter:card" content="summary_large_image"/>
@@ -499,7 +500,7 @@ ${noindex ? `<meta name="robots" content="noindex"/>\n` : ""}<meta name="theme-c
 <meta name="twitter:image:alt" content="${escapeHtml(OG_ALT)}"/>
 <link rel="icon" href="${FAVICON}"/>
 <link rel="apple-touch-icon" href="${FAVICON}"/>
-<link rel="canonical" href="https://${HOST}/"/>
+<link rel="canonical" href="https://${HOST}${path}"/>
 <style>${FONT_FACE}${TOKENS}${css}</style>${headExtra}
 </head><body>`;
 }
@@ -678,8 +679,9 @@ export function landingPage(): string {
       <span class="tk"><b>Sandboxed</b> — agent code runs with no network</span>
       <span class="tk"><b>Low upkeep</b> — checked against live services daily</span></div>
     <div class="connect-legal">By using Stellar Raven you acknowledge you have read and agreed to the
-      <a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Terms of
-      Service</a> and <a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Privacy
+      <a href="/terms">Stellar Raven Terms of Service</a>, the
+      <a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Stellar.org Terms of
+      Service</a>, and the <a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Privacy
       Policy</a>.</div>
   </div>
 </div></section></main>` +
@@ -770,17 +772,22 @@ export function landingPage(): string {
     <a class="btn btn-outline" href="/playground">Try the playground</a>
   </div>
 </div>` +
-    `<footer><div class="wrap foot">
+    siteFooter() +
+    `<script>${SCRIPT}</script></body></html>`
+  );
+}
+
+function siteFooter(): string {
+  return `<footer><div class="wrap foot">
   <div class="l">${escapeHtml(HOST)} <b>·</b> Stellar context, one connection</div>
   <div class="foot-links">
     <a href="https://github.com/kalepail/stellar-raven" target="_blank" rel="noopener">GitHub</a>
     <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a>
-    <a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Terms</a>
+    <a href="/terms">Raven Terms</a>
+    <a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Stellar Terms</a>
     <a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Privacy</a>
   </div>
-</div></footer>` +
-    `<script>${SCRIPT}</script></body></html>`
-  );
+</div></footer>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -921,8 +928,9 @@ export function consentPage(args: {
       <input type="hidden" name="csrf_token" value="${escapeHtml(args.csrfToken)}"/>
       <label class="consent-row"><input type="checkbox" name="tos_agree" id="tos-agree"/>
         <span>I have read and agree to the
-        <a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Terms of Service</a>
-        and <a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
+        <a href="/terms" target="_blank" rel="noopener">Stellar Raven Terms of Service</a>, the
+        <a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Stellar.org Terms of Service</a>,
+        and the <a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
       <button class="btn btn-primary" type="submit">Approve and continue ${ARROW}</button>
     </form>
     <p class="note">${SHIELD}<span>Only continue if you started this connection. Approving redirects
@@ -932,6 +940,186 @@ export function consentPage(args: {
     `</body></html>`
   );
 }
+
+// ---------------------------------------------------------------------------
+// Terms of Service (GET /terms) — the Raven-specific terms that supplement the
+// Stellar.org ToS. Script-free static prose in the same visual system; the
+// authoritative copy lives here (this file is the source of truth).
+// ---------------------------------------------------------------------------
+
+export const TERMS_EFFECTIVE_DATE = "July 30, 2026";
+
+const TERMS_CSS = `
+.stage{background:var(--green)}
+.stage::after{content:"";position:absolute;inset:0;
+  background-image:url("data:image/png;base64,${CONSENT_GLOBE_PNG_BASE64}");
+  background-position:calc(50vw - 79.9vmin) bottom;background-size:160vmin auto;background-repeat:no-repeat;
+  image-rendering:pixelated;opacity:.5}
+.scrim{background:linear-gradient(180deg,rgba(14,21,13,.86) 0%,rgba(14,21,13,.92) 40%,rgba(14,21,13,.96) 100%)}
+/* header + footer share the prose column so the page reads as one measure */
+.top-in,.foot{max-width:780px;margin:0 auto}
+.legal{max-width:780px;margin:0 auto;padding:8px 32px 80px;position:relative;z-index:2}
+.legal h1{font-family:var(--display);font-weight:700;font-size:clamp(32px,5vw,48px);line-height:1.05;
+  letter-spacing:-.02em;color:var(--fog);margin:0}
+.legal .eff{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--orange);margin:16px 0 0}
+.legal h2{font-family:var(--mono);font-size:12.5px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--orange);margin:44px 0 0;padding-top:22px;border-top:1px solid var(--line)}
+.legal p{font-size:15.5px;color:var(--dim);line-height:1.7;margin:16px 0 0}
+.legal p b{color:var(--fog);font-weight:600}
+.legal p.caps{font-size:13.5px;letter-spacing:.01em}
+.legal a{color:var(--fog);text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+.legal a:hover{color:var(--orange)}
+.legal .lead{font-size:17px;color:var(--fog);opacity:.94}
+.legal ol{margin:16px 0 0;padding-left:22px;color:var(--dim);font-size:15.5px;line-height:1.7}
+.legal li{margin-top:10px}
+`;
+
+/** Section bodies keyed by heading — plain paragraphs unless marked otherwise. */
+const TERMS_BODY = `
+<h1>Stellar Raven Terms of Service</h1>
+<p class="eff">Effective ${TERMS_EFFECTIVE_DATE}</p>
+<p class="lead">These Terms of Service ("Terms") govern your access to and use of raven.stellar.buzz and
+agents.stellar.buzz, including the Model Context Protocol endpoint and the public playground
+(collectively, the "Service"), operated by the Stellar Development Foundation ("SDF," "we," or "us").</p>
+<p>By accessing or using the Service, you agree to be bound by the
+<a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Stellar.org Terms of Service</a>
+(the "Stellar ToS") and the
+<a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Stellar.org Privacy Policy</a>
+(the "Privacy Policy"), each of which is incorporated herein by reference.</p>
+<p>To the extent these Terms address a topic not covered by the Stellar ToS, these Terms apply. To the
+extent of any direct conflict between these Terms and the Stellar ToS, these Terms control with respect
+to your use of the Service.</p>
+
+<h2>1. About Stellar Raven</h2>
+<p>The Service is a remote Model Context Protocol ("MCP") gateway that lets AI coding assistants and
+developers look up Stellar-ecosystem information and reach existing Stellar-ecosystem services through a
+single connection. It exposes two tools: <b>search</b>, which locates relevant operations, documentation,
+and reference material, and <b>execute</b>, which runs assistant-generated code in an isolated sandbox
+with no network access to call third-party services through controlled, host-side adapters.</p>
+<p>The Service is a read-only information-retrieval tool. The execute tool functions solely as a read-only
+proxy to third-party services and does not sign, authorize, or submit transactions, custody assets or
+keys, or move value on any network. The Service does not host its own content; it retrieves content from
+third-party sources and returns results.</p>
+
+<h2>2. Who these Terms apply to</h2>
+<p>The Service is designed to be accessed both directly by you and by AI agents acting on your behalf. You
+are responsible for all activity conducted through your account, including all activity of any AI agent,
+assistant, or automated system you connect to or direct through the Service. References to "you" include
+the human or entity account holder, and you agree that you are accountable for your agents' use of the
+Service and for all content submitted through your account.</p>
+
+<h2>3. Eligibility and permitted use</h2>
+<p>Your use of the Service is subject to the eligibility requirements of the Stellar ToS, including its
+sanctions and export-control representations. Notwithstanding the "personal, non-commercial use only"
+limitation in the Stellar ToS, you may use the Service for developer and commercial purposes, including
+building, testing, and deploying applications on Stellar, subject to these Terms and any applicable
+open-source license.</p>
+
+<h2>4. Content licensing</h2>
+<p>The Service retrieves and returns content from third-party sources, each of which is governed by its own
+license and terms. Any content that is authored and made available by SDF through the Service is provided
+under the <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache
+License 2.0</a>, or such other open-source license as may be indicated in the applicable source
+repository. You may use, copy, modify, and distribute that content in accordance with the applicable
+license terms. For clarity, the intellectual property restrictions in the "Intellectual property rights"
+section of the Stellar ToS do not limit rights expressly granted to you by an applicable open-source
+license.</p>
+
+<h2>5. Third-party services and content</h2>
+<p>The Service acts as a conduit to third-party services and content maintained by projects across the
+Stellar ecosystem. SDF does not host, control, or endorse third-party services or content, and such
+services and content are subject to their own licenses, terms, and privacy practices. When you or your
+agent use the Service, your request may be routed to those third-party services and the results returned
+to you. SDF makes no representation or warranty regarding the accuracy, completeness, security, or
+legality of any third-party service or content, and your use of it is at your own risk. SDF is not
+responsible for the practices of any third-party service that receives or responds to a request routed
+through the Service.</p>
+
+<h2>6. No warranty; use at your own risk</h2>
+<p class="caps">THE SERVICE AND ALL CONTENT AND RESULTS PROVIDED THROUGH IT ARE PROVIDED "AS IS" AND "AS
+AVAILABLE" WITHOUT ANY WARRANTY OF ANY KIND, WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING WARRANTIES
+OF ACCURACY, COMPLETENESS, MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.</p>
+<p>Content and results returned by the Service may be incomplete, outdated, or incorrect. You are solely
+responsible for evaluating, testing, and independently verifying any content or result obtained from the
+Service before relying on it, including any code derived from or informed by such content. SDF is not
+responsible for any harm, loss, or damage resulting from your reliance on content or results provided
+through the Service.</p>
+
+<h2>7. AI-generated output</h2>
+<p>The Service is designed to be used with AI coding assistants. Any code or other output produced by an AI
+assistant using the Service is AI-generated output, not SDF output. You are solely responsible for
+reviewing, testing, and securing any such output before use or deployment, including reviewing it for
+errors, security vulnerabilities, and compliance with applicable licenses. The AI Tools provisions of the
+Stellar ToS apply to your use of AI-generated output obtained through or informed by the Service.</p>
+
+<h2>8. Acceptable use</h2>
+<p>In addition to the prohibited uses in the Stellar ToS, you agree not to:</p>
+<ol type="a">
+  <li>submit personal data, sensitive personal information, confidential information, trade secrets,
+    credentials, private keys, or any content you do not have the right to submit;</li>
+  <li>attempt to circumvent, disable, or escape the sandbox, or use the execute tool to run code intended
+    to exfiltrate data, access credentials, or establish network connections;</li>
+  <li>attempt to cause the Service to sign, authorize, or submit transactions, or otherwise use the
+    Service other than as a read-only information-retrieval tool;</li>
+  <li>use the Service to overload, disrupt, or interfere with the Service or any third-party service
+    reached through it; or</li>
+  <li>reverse engineer, or attempt to extract the underlying models, prompts, or algorithms of, the
+    Service.</li>
+</ol>
+
+<h2>9. Data and privacy</h2>
+<p>Your use of the Service is subject to the Privacy Policy. The following describes how the Service
+handles data, and supplements that policy:</p>
+<p><b>Authentication.</b> Sign-in is handled by WorkOS, a third-party authentication provider. The Service
+receives an email address to identify your account. The subject identifier is one-way hashed before
+storage, and authentication tokens issued by WorkOS during sign-in are not retained. The Service does not
+collect names, addresses, payment information, wallet keys, or special-category data.</p>
+<p><b>Operational and quality logs.</b> To operate the Service and improve response quality, the Service
+stores observability data, which may include the queries submitted and the responses returned, for 30
+days, after which it is deleted. This data is stored in SDF's Cloudflare environment.</p>
+<p><b>No sensitive data.</b> You should not submit personal, confidential, or sensitive information to the
+Service. You are solely responsible for the content you or your agent submit, and for any consequences of
+submitting content you should not have submitted.</p>
+<p><b>Your choices.</b> You may opt out of query and response logging and you may request deletion of data
+associated with your account by contacting us at
+<a href="mailto:frontier@stellar.org">frontier@stellar.org</a>.</p>
+
+<h2>10. Changes; contact</h2>
+<p>We may modify these Terms or the Service at any time without prior notice. Your continued use of the
+Service after any modification constitutes acceptance of the revised Terms. Questions about these Terms
+may be directed to <a href="mailto:legal@stellar.org">legal@stellar.org</a>.</p>
+`;
+
+export function termsPage(): string {
+  return (
+    head(
+      "Terms of Service · Stellar Raven",
+      `The Stellar Raven Terms of Service, effective ${TERMS_EFFECTIVE_DATE} — how the MCP gateway and public playground may be used.`,
+      BASE + TERMS_CSS,
+      "",
+      false,
+      "/terms"
+    ) +
+    `<div class="stage"></div><div class="scrim"></div>` +
+    `<header class="top"><div class="wrap top-in">${brand()}` +
+    `<nav class="top-nav"><a class="btn btn-ghost" href="/">Home</a>` +
+    `<a class="btn btn-ghost" href="/playground">Playground</a></nav></div></header>` +
+    `<main class="legal">${TERMS_BODY}</main>` +
+    siteFooter() +
+    `</body></html>`
+  );
+}
+
+export const TERMS_HEADERS: Record<string, string> = {
+  "content-type": "text/html; charset=utf-8",
+  "cache-control": "public, max-age=300",
+  "content-security-policy":
+    "default-src 'none'; style-src 'unsafe-inline'; font-src data:; img-src data:; " +
+    "frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
+  "x-content-type-options": "nosniff",
+  "referrer-policy": "no-referrer"
+};
 
 // ---------------------------------------------------------------------------
 // Response headers — landing allows inline script (shader + tabs); consent is
@@ -988,6 +1176,7 @@ export function sitemapXml(): string {
     `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
     `  <url><loc>https://${HOST}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>\n` +
+    `  <url><loc>https://${HOST}/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>\n` +
     `</urlset>\n`
   );
 }

@@ -853,7 +853,7 @@ function sampleTrace(): string {
     `<span class="st ok">ok</span></summary><div class="tcard-body">` +
     `<div class="qline">query <b>${esc(SAMPLE_QUERY)}</b><span class="qf">limit=4</span></div>` +
     `<ol class="hits">${hits}</ol>` +
-    `<div class="hmeta">4 of 14 matches &middot; truncated &mdash; more matched than shown</div>` +
+    `<div class="hmeta">4 of 15 matches &middot; truncated &mdash; more matched than shown</div>` +
     `</div></details>` +
     `<details class="tcard" open><summary><span class="tw">execute</span>` +
     `<span class="tlabel">sandboxed JavaScript</span>` +
@@ -932,8 +932,9 @@ function lockedBody(): string {
 <span class="hint">WorkOS sign-in &middot; no service API keys &middot; rate-limited</span></div>\
 <div class="consent"><label class="consent-row"><input type="checkbox" id="tos-agree"/>\
 <span>By using Stellar Raven you acknowledge you have read and agreed to the \
-<a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Terms of Service</a> \
-and <a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.\
+<a href="/terms" target="_blank" rel="noopener">Stellar Raven Terms of Service</a>, the \
+<a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Stellar.org Terms of Service</a>, \
+and the <a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.\
 </span></label></div>\
 </section>\
 <section class="example"><div class="exhead"><p class="eyebrow">Example session</p>\

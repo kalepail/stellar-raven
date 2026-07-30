@@ -37,10 +37,12 @@ import {
   LANDING_HEADERS,
   ROBOTS_HEADERS,
   SITEMAP_HEADERS,
+  TERMS_HEADERS,
   consentPage,
   landingPage,
   robotsTxt,
-  sitemapXml
+  sitemapXml,
+  termsPage
 } from "../site";
 import { OG_PNG_BASE64 } from "../og";
 import { mintDemoCookie, parseDemoParkedState } from "../demo/auth";
@@ -93,6 +95,10 @@ export const WorkOSAuthHandler = {
 
     if (isRead && url.pathname === "/") {
       return new Response(landingPage(), { headers: LANDING_HEADERS });
+    }
+
+    if (isRead && url.pathname === "/terms") {
+      return new Response(termsPage(), { headers: TERMS_HEADERS });
     }
 
     if (isRead && url.pathname === "/og.png") {

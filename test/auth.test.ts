@@ -395,6 +395,24 @@ describe("OAuthProvider wiring (real @cloudflare/workers-oauth-provider)", () =>
 // WorkOSAuthHandler routes (driven directly with stubbed provider helpers)
 
 describe("WorkOSAuthHandler", () => {
+  it("GET /terms serves the Raven terms, linked from the consent page", async () => {
+    const env = testEnv({ OAUTH_PROVIDER: stubHelpers() });
+    const terms = await WorkOSAuthHandler.fetch(new Request("https://mcp.test/terms"), env);
+    expect(terms.status).toBe(200);
+    const page = await terms.text();
+    expect(page).toContain("Stellar Raven Terms of Service");
+    expect(page).toContain(`<link rel="canonical" href="https://raven.stellar.buzz/terms"/>`);
+    // Script-free legal surface: CSP must not allow inline script.
+    expect(terms.headers.get("content-security-policy")).not.toContain("script-src");
+    expect(page).not.toContain("<script");
+
+    const consent = await WorkOSAuthHandler.fetch(
+      new Request("https://mcp.test/authorize?client_id=client-abc"),
+      env
+    );
+    expect(await consent.text()).toContain(`href="/terms"`);
+  });
+
   it("GET /authorize renders a consent page naming the client and scopes, with a CSRF cookie", async () => {
     const env = testEnv({ OAUTH_PROVIDER: stubHelpers() });
     const response = await WorkOSAuthHandler.fetch(
