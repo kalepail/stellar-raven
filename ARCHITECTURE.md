@@ -573,6 +573,20 @@ killing the run. Transport, integrity, provenance, deadline, and scrub failures 
 network (`globalOutbound: null`). The build side uses the same pins and the same verification
 through `scripts/lib/skill-mirror.mjs`, caching into the gitignored `ecosystem-skills/.cache/`.
 
+**The availability posture — an accepted risk, not an unsolved one.** Forwarding instead of
+storing means `skill.read` depends on `raw.githubusercontent.com` at request time. What that
+exposure is NOT: ordinary upstream churn. A commit-pinned URL keeps serving after upstream renames,
+edits, or deletes the file on its default branch (verified against a superseded stellar-scout pin).
+What it IS: repo deletion, rename, or privatization; a history rewrite followed by GC; a GitHub
+outage; shared-egress rate limiting. Mitigations on the forwarding path: the colo cache and
+in-isolate memo keep warm reads off the network, one retry absorbs a transient blip, an 8s
+per-fetch timeout and a 20s whole-read deadline keep a slow upstream from killing `execute`, and
+failure surfaces as an ordinary `skills` error envelope. Detection: `check-mirrors --fetch` runs
+daily in `refresh.yml` and fails the job if any pin stops resolving, so repo-level loss surfaces
+within a day. The residual risk is deliberately **accepted**: the only remaining fix is to hold a
+durable copy of the content, and the serve-do-not-store rule above forbids exactly that. Do not
+"solve" this with an R2 mirror.
+
 **The re-pin review gate.** Bodies are prompt input, and pinning by hash means a re-pin commit
 shows hash changes only — the text never reaches `git diff` the way it did when bodies were
 vendored. Two mechanisms replace that: `ecosystem-skills/update.sh` prints a real old-pin →
