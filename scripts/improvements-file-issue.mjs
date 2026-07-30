@@ -18,7 +18,7 @@ const RAVEN_REPO = "kalepail/stellar-raven";
 const HANDOFF_TEMPLATE = "upstream-improvement-ready.yml";
 const AUTOMATION_MARKER = "<!-- generated-by-stellar-raven -->";
 const AUTOMATION_NOTICE =
-  "Generated automatically by Stellar Raven to flag a possible documentation or ecosystem-data gap. Please review before relying on it. Findings may be incomplete or incorrect.";
+  `This issue was filed from [Stellar Raven](https://github.com/${RAVEN_REPO})'s automated evaluation pipeline. Evidence and a public source record are included below. The finding may still be incomplete or incorrect — please verify against the live surface before acting on it.`;
 if (!args.file) {
   console.error("usage: node scripts/improvements-file-issue.mjs --file improvements/...md [--repo owner/name] [--dry-run] [--render-body-file /tmp/body.md]");
   process.exit(2);

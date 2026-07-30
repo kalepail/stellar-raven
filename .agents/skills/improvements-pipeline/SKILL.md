@@ -109,8 +109,9 @@ Before filing content/code drift, apply three cheap calibration checks:
 - grep adjacent and repeated prose for the same claim so the smallest fix does not leave another page
   or later paragraph contradictory. Keep optional editorial expansion separate from verified defects.
 
-The generated issue body must retain all five sections: `Finding`, `Evidence`, `Recommendation`,
-`Source Record`, and `Resolution Handoff`. `Source Record` links the exact public
+The generated issue body must open with the automated-content notice and its
+`generated-by-stellar-raven` marker, then retain all five sections: `Finding`, `Evidence`,
+`Recommendation`, `Source Record`, and `Resolution Handoff`. `Source Record` links the exact public
 `improvements/...` file on `kalepail/stellar-raven` and, when committed, its immutable blob snapshot;
 `Resolution Handoff` directs the owner to the
 repo's `upstream-improvement-ready.yml` issue form with the finding id, resolving issue/PR, deployed

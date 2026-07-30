@@ -43,11 +43,13 @@ describe("improvements issue filing template", () => {
 
     const marker = "<!-- generated-by-stellar-raven -->";
     const notice =
-      "Generated automatically by Stellar Raven to flag a possible documentation or ecosystem-data gap. Please review before relying on it. Findings may be incomplete or incorrect.";
-    expect(output).toContain(marker);
+      "This issue was filed from [Stellar Raven](https://github.com/kalepail/stellar-raven)'s automated evaluation pipeline. Evidence and a public source record are included below. The finding may still be incomplete or incorrect — please verify against the live surface before acting on it.";
     expect(output).toContain(`> **Automated notice:** ${notice}`);
+    // The disclosure is the first thing in the body, above every substantive section.
+    expect(output).toMatch(
+      new RegExp(`^# [^\\n]+\\n\\n${marker}\\n\\n> \\[!NOTE\\]\\n> \\*\\*Automated notice:\\*\\* `),
+    );
     expect(output.indexOf(marker)).toBeLessThan(output.indexOf("## Finding"));
-    expect(output.indexOf("Automated notice")).toBeLessThan(output.indexOf("## Finding"));
   });
 
   test("omits an immutable snapshot when no matching committed blob exists", () => {
