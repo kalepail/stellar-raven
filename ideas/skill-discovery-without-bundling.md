@@ -70,6 +70,12 @@ records `id`, `shape` (whole | sections | files | mixed), `requested` key count,
 (distinct pinned files fetched), `from` (memo | cache | upstream | none), `ms`, `ok`, and `error`.
 No body text and no caller identity.
 
+Verified end to end in production 2026-07-30 (deploy `64d9db06`): events emit, join to their
+`execute` by request id, and the first reading gives upstream 61-80 ms vs memo 0 ms. What it does
+NOT yet have is ORGANIC traffic — the only events so far are the author's own probes, whose shape
+mix was chosen by hand and says nothing about agent behaviour. Do not read a distribution off
+author-generated calls; that is the guessing this instrument exists to replace.
+
 What to ask it, once production traffic has accumulated:
 
 - **`shape` distribution.** If `whole` dominates and `sections`/`files` are near zero, 204 section

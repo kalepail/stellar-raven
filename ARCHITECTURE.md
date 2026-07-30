@@ -573,6 +573,11 @@ killing the run. Transport, integrity, provenance, deadline, and scrub failures 
 network (`globalOutbound: null`). The build side uses the same pins and the same verification
 through `scripts/lib/skill-mirror.mjs`, caching into the gitignored `ecosystem-skills/.cache/`.
 
+**Measured cost of forwarding (2026-07-30, `skill_read` telemetry).** First production reading:
+upstream fetches 61-80 ms, memo hits 0 ms. Always split latency by `from` — a mean over both is
+meaningless. The `skill_read` event (`src/observability.ts` `logSkillRead`) is the only view of
+this path; query guidance is in `.agents/skills/cloudflare-observability-review/SKILL.md`.
+
 **The availability posture — an accepted risk, not an unsolved one.** Forwarding instead of
 storing means `skill.read` depends on `raw.githubusercontent.com` at request time. What that
 exposure is NOT: ordinary upstream churn. A commit-pinned URL keeps serving after upstream renames,

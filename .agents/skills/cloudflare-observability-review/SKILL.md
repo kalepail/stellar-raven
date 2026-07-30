@@ -155,6 +155,18 @@ Skill bodies are fetched from their pinned upstream at read time, not bundled
 - `retrievals` counts distinct pinned files a call fetched (a `##` section read
   costs 1; N companion files cost N+1). Fields carry no body text and no caller
   identity — the id is a public catalog id.
+- First reading (2026-07-30): upstream 61-80 ms, memo 0 ms.
+
+**A NEW field VALUE is not filterable immediately.** Filtering
+`evt = "skill_read"` returned zero for ~20 minutes after the first one was ever
+emitted, while the events were demonstrably present — joining by
+`$metadata.requestId` showed `skill_read` sitting right next to the `execute`
+line it belonged to. The filter index lags first appearance. This is a sharper
+version of the Field Map warning below: when a filter returns zero for something
+you have good reason to believe exists, do not conclude it is missing. Query
+broadly (service filter only) and filter client-side, or join by
+`$metadata.requestId` from an event you CAN find. Costs one query instead of an
+afternoon of debugging a working emitter.
 
 ## Demo Playground Failures
 
