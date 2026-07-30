@@ -19,12 +19,14 @@ export function sha256(buffer: Uint8Array): string;
 export function readSkillFile(
   source: ManifestSource,
   skillName: string,
-  file: ManifestFile
+  file: ManifestFile,
+  options?: { noCache?: boolean }
 ): Promise<string>;
 export function readSkillFileWithDigest(
   source: ManifestSource,
   skillName: string,
-  file: ManifestFile
+  file: ManifestFile,
+  options?: { noCache?: boolean }
 ): Promise<{ text: string; sha256: string }>;
 export function loadSkillTexts(
   manifest: SkillsManifest,

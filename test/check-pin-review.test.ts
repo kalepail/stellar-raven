@@ -1,0 +1,159 @@
+/**
+ * scripts/check-pin-review.mjs is the CI half of the re-pin review gate: bodies
+ * are not stored, so a change to what gets served shows up in `git diff` as
+ * hashes only, and this is what forces a human attestation anyway.
+ *
+ * The gate is only worth its comment if it cannot be walked around, so these
+ * are the walk-arounds — each one passed some earlier version of the script:
+ *   - move the commit (the case it was written for)
+ *   - retarget a file inside the SAME pinned commit
+ *   - delete a whole source
+ *   - revert to a selection the ledger attested to in the past
+ *   - satisfy it with 12 hex chars that are not a `sel:` token at all
+ *
+ * Driven through a throwaway git repo because the check's whole job is to
+ * compare a working tree against a base ref.
+ */
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { execFileSync, spawnSync } from "node:child_process";
+import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+let repo: string;
+
+const SHA_A = "a".repeat(40);
+const SHA_B = "b".repeat(40);
+const blob = (n: string) => n.repeat(40);
+
+/** Two sources, so a test can move one and leave the other alone. */
+const baseManifest = () => ({
+  sources: [
+    { id: "alpha", commit: SHA_A, skills: [{ name: "one", files: [{ path: "SKILL.md", sha: blob("1") }] }] },
+    { id: "beta", commit: SHA_B, skills: [{ name: "two", files: [{ path: "SKILL.md", sha: blob("2") }] }] },
+  ],
+});
+
+const git = (...args: string[]) => execFileSync("git", args, { cwd: repo, encoding: "utf8" });
+
+function write(manifest: unknown, ledger: string) {
+  writeFileSync(join(repo, "ecosystem-skills/MANIFEST.json"), JSON.stringify(manifest, null, 2));
+  writeFileSync(join(repo, "ecosystem-skills/PIN-REVIEW.md"), ledger);
+}
+
+/** Run the real script against the temp repo; returns its exit code. */
+function check(): number {
+  const r = spawnSync(process.execPath, [join(repo, "scripts/check-pin-review.mjs"), "--base", "HEAD"], {
+    cwd: repo,
+    encoding: "utf8",
+  });
+  return r.status ?? -1;
+}
+
+/** The digest the script itself computes for a source — no reimplementation here. */
+function digestOf(sourceId: string): string {
+  const out = execFileSync(process.execPath, [join(repo, "scripts/check-pin-review.mjs"), "--digests"], {
+    cwd: repo,
+    encoding: "utf8",
+  });
+  const line = out.split("\n").find((l) => l.startsWith(`${sourceId} `));
+  return line!.match(/sel:([0-9a-f]{12})/)![1]!;
+}
+
+const BASE_LEDGER = "# ledger\n\n(no changes yet)\n";
+
+beforeAll(() => {
+  repo = mkdtempSync(join(tmpdir(), "pin-review-"));
+  mkdirSync(join(repo, "scripts"), { recursive: true });
+  mkdirSync(join(repo, "ecosystem-skills"), { recursive: true });
+  cpSync(join(ROOT, "scripts/check-pin-review.mjs"), join(repo, "scripts/check-pin-review.mjs"));
+  write(baseManifest(), BASE_LEDGER);
+  git("init", "-q");
+  git("config", "user.email", "t@t");
+  git("config", "user.name", "t");
+  git("add", "-A");
+  git("commit", "-qm", "base");
+});
+
+afterAll(() => rmSync(repo, { recursive: true, force: true }));
+
+describe("check-pin-review.mjs — the re-pin attestation gate", () => {
+  it("passes when nothing about the served selection changed", () => {
+    write(baseManifest(), BASE_LEDGER);
+    expect(check()).toBe(0);
+  });
+
+  it("fails when a commit moves without a new attestation", () => {
+    const m = baseManifest();
+    m.sources[0]!.commit = "c".repeat(40);
+    write(m, BASE_LEDGER);
+    expect(check()).toBe(1);
+  });
+
+  it("fails when a file is retargeted inside the SAME pinned commit", () => {
+    // The commit-only gate reported "no skill pin moved" here, while the model
+    // would start reading a different file.
+    const m = baseManifest();
+    m.sources[0]!.skills[0]!.files[0]!.path = "references/OTHER.md";
+    write(m, BASE_LEDGER);
+    expect(check()).toBe(1);
+  });
+
+  it("fails when an entire source is deleted", () => {
+    // Iterating only the current manifest meant a deletion moved nothing.
+    const m = baseManifest();
+    m.sources = [m.sources[0]!];
+    write(m, BASE_LEDGER);
+    expect(check()).toBe(1);
+  });
+
+  it("accepts a deletion that the ledger records in this diff", () => {
+    const m = baseManifest();
+    m.sources = [m.sources[0]!];
+    write(m, `${BASE_LEDGER}\nremoved: beta — dropped upstream, reviewed 2026-07-30.\n`);
+    expect(check()).toBe(0);
+  });
+
+  it("accepts a moved selection whose new sel: digest is newly recorded", () => {
+    const m = baseManifest();
+    m.sources[0]!.commit = "c".repeat(40);
+    write(m, BASE_LEDGER);
+    const digest = digestOf("alpha");
+    write(m, `${BASE_LEDGER}\n| \`alpha\` | \`${"c".repeat(40)}\` | \`sel:${digest}\` | reviewed |\n`);
+    expect(check()).toBe(0);
+  });
+
+  it("rejects an attestation that already existed at the base ref (replay)", () => {
+    // Reverting to a previously reviewed selection is still a decision to serve
+    // those bytes again today, so the old line must not satisfy the gate.
+    write(baseManifest(), BASE_LEDGER);
+    const original = digestOf("alpha");
+    const ledgerWithOld = `${BASE_LEDGER}\n| \`alpha\` | \`${SHA_A}\` | \`sel:${original}\` | reviewed |\n`;
+    const moved = baseManifest();
+    moved.sources[0]!.commit = "c".repeat(40);
+    write(moved, ledgerWithOld);
+    git("add", "-A");
+    git("commit", "-qm", "move alpha away, ledger already names the ORIGINAL selection");
+    // Now revert to the original selection. Its digest is in the ledger — but it
+    // was already there at the base ref, so it is not a fresh review.
+    write(baseManifest(), ledgerWithOld);
+    expect(check()).toBe(1);
+    git("reset", "-q", "--hard", "HEAD~1");
+  });
+
+  it("does not accept 12 hex characters that are not a sel: token", () => {
+    // The old `ledger.includes(digest)` matched anywhere — including inside the
+    // 40-hex commit SHAs this file is full of.
+    const m = baseManifest();
+    m.sources[0]!.commit = "c".repeat(40);
+    write(m, BASE_LEDGER);
+    const digest = digestOf("alpha");
+    write(m, `${BASE_LEDGER}\nunrelated prose mentioning ${digest} with no sel: prefix\n`);
+    expect(check()).toBe(1);
+    // Same 12 chars, now as a real token: accepted.
+    write(m, `${BASE_LEDGER}\nsel:${digest} — reviewed\n`);
+    expect(check()).toBe(0);
+  });
+});

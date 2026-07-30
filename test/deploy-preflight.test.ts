@@ -29,6 +29,14 @@ describe("deploy preflight", () => {
     expect(failures[0]).toContain("origin");
   });
 
+  test("fails closed when a ref cannot be resolved", () => {
+    // git rev-parse failing returns "" from the runner's git() helper. Treating
+    // that as "nothing to compare" skipped the only check that proves the tree
+    // equals the pushed commit, so an unresolvable ref passed preflight.
+    expect(preflightFailures({ ...CLEAN, head: "" })).toEqual(["could not resolve HEAD"]);
+    expect(preflightFailures({ ...CLEAN, origin: "" })).toEqual(["could not resolve origin/main"]);
+  });
+
   test("reports every violation at once rather than stopping at the first", () => {
     expect(
       preflightFailures({ dirty: " M a.ts", head: "b".repeat(40), origin: "c".repeat(40), fetchFailed: true })

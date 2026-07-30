@@ -25,6 +25,9 @@
 //     content itself moved (openzeppelin-stellar cherry-picks 3 of a multi-chain
 //     skills/ dir, so repo-path drift can be entirely in non-mirrored skills —
 //     still drift, since re-running update.sh would re-pin, but the note says so).
+//     A cherry-picked source also lists the upstream skill dirs it does NOT pin,
+//     because update.sh's pick list is hard-coded: a newly published sibling
+//     would otherwise never be pinned and nothing would ever mention it.
 //   - stellarlight catalog: GET the live directory and project it through the
 //     same field mapping update.sh's fetch_catalog uses, then deep-compare with
 //     ecosystem-skills/catalog.json. Volatile fields never enter the compare by
@@ -84,13 +87,68 @@ async function latestCommit(owner, repo, ref, path) {
 
 const short = (sha) => (sha ? String(sha).slice(0, 12) : "?");
 
-async function checkGithubSource(source) {
-  const latest = await latestCommit(source.owner, source.repo, source.ref, source.path);
+/**
+ * Upstream skill directories that are neither pinned nor explicitly excluded.
+ *
+ * Only openzeppelin-stellar cherry-picks today (3 Stellar skills out of a
+ * multi-chain repo), and the pick list is hard-coded in update.sh. So a newly
+ * published sibling — the repo already ships setup/upgrade/review per chain,
+ * making a future `review-stellar-contracts` the obvious case — would never be
+ * pinned, and re-running update.sh would not pull it in. Nothing else in the
+ * lifecycle would mention it either.
+ *
+ * Listing every unpinned directory on drift was not enough: it buried the one
+ * new name among eight long-standing out-of-scope ones, and it vanished as soon
+ * as the operator re-pinned (a current commit takes the clean early-return).
+ * So the exclusions are COMMITTED DATA (`groups.json` `unpinnedUpstream`) and
+ * this runs on EVERY check, clean or not: an upstream directory that is neither
+ * pinned nor recorded is unclassified, and unclassified is a failure until a
+ * human pins it or writes down why not.
+ */
+async function unclassifiedSkillDirs(source, unpinnedUpstream) {
+  if (!source.path) return []; // root-mode: the repo IS the skill, nothing to enumerate
+  const pinned = new Set((source.skills ?? []).map((skill) => skill.name));
+  const excluded = new Set(Object.keys(unpinnedUpstream[source.id] ?? {}));
+  if (excluded.size === 0) return []; // not a cherry-picked source: update.sh pins every dir
+  const tree = await fetchJson(
+    `https://api.github.com/repos/${source.owner}/${source.repo}/contents/${source.path}`,
+    { headers: githubHeaders(), label: `github ${source.owner}/${source.repo}/${source.path} contents` },
+  );
+  return (Array.isArray(tree) ? tree : [])
+    .filter((entry) => entry.type === "dir" && !pinned.has(entry.name) && !excluded.has(entry.name))
+    .map((entry) => entry.name)
+    .sort();
+}
+
+async function checkGithubSource(source, unpinnedUpstream) {
+  const [latest, unclassified] = await Promise.all([
+    latestCommit(source.owner, source.repo, source.ref, source.path),
+    unclassifiedSkillDirs(source, unpinnedUpstream),
+  ]);
+
+  // An unclassified sibling is drift in its own right, independent of the
+  // commit: it survives a re-pin that keeps omitting it, which is exactly the
+  // silence this check exists to break.
+  const unclassifiedNote = unclassified.length
+    ? `upstream skill dir(s) neither pinned nor excluded: ${unclassified.join(", ")} — ` +
+      `pin them in ecosystem-skills/update.sh, or record why not under ` +
+      `unpinnedUpstream["${source.id}"] in ecosystem-skills/groups.json`
+    : null;
+
   if (latest.sha === source.commit) {
-    return { id: source.id, status: "ok", pinned: short(source.commit), upstream: short(latest.sha) };
+    return unclassifiedNote
+      ? {
+          id: source.id,
+          status: "DRIFT",
+          pinned: short(source.commit),
+          upstream: short(latest.sha),
+          note: unclassifiedNote,
+        }
+      : { id: source.id, status: "ok", pinned: short(source.commit), upstream: short(latest.sha) };
   }
 
   let note = `pinned ${source.commit_date ?? "?"} → upstream ${latest.date ?? "?"}`;
+  if (unclassifiedNote) note += `; ${unclassifiedNote}`;
   // Annotate which mirrored skill dirs moved since the pin (best-effort; only
   // meaningful for subdir-mode sources — root-mode means the whole repo is the
   // skill). Probes stay sequential (they share the GitHub rate budget), and an
@@ -199,8 +257,8 @@ async function checkStellarlightCatalog(localCatalog) {
 // ---------------------------------------------------------------------------
 // main
 // ---------------------------------------------------------------------------
-async function checkSource(source) {
-  if (source.type === "github") return checkGithubSource(source);
+async function checkSource(source, unpinnedUpstream) {
+  if (source.type === "github") return checkGithubSource(source, unpinnedUpstream);
   // "lumenloop-archive" (the credentialed partner source) is deliberately NOT
   // supported anymore — its reappearance in MANIFEST.json should fail here.
   throw new Error(`unknown source type "${source.type}" — teach scripts/check-skills-drift.mjs about it`);
@@ -209,13 +267,20 @@ async function checkSource(source) {
 async function main() {
   const manifest = JSON.parse(readFileSync(join(ROOT, "ecosystem-skills/MANIFEST.json"), "utf8"));
   const localCatalog = JSON.parse(readFileSync(join(ROOT, "ecosystem-skills/catalog.json"), "utf8"));
+  // Committed decisions about upstream skills we deliberately do not pin.
+  const { unpinnedUpstream = {} } = JSON.parse(
+    readFileSync(join(ROOT, "ecosystem-skills/groups.json"), "utf8"),
+  );
 
   // Independent checks run in parallel (manifest sources + the stellarlight
   // catalog compare); each settles into a per-source result object, and the
   // combined list is sorted by source id so output is deterministic regardless
   // of completion order.
   const checks = [
-    ...manifest.sources.map((source) => ({ id: source.id, run: () => checkSource(source) })),
+    ...manifest.sources.map((source) => ({
+      id: source.id,
+      run: () => checkSource(source, unpinnedUpstream),
+    })),
     { id: "stellarlight-catalog", run: () => checkStellarlightCatalog(localCatalog) },
   ];
   const settled = await Promise.allSettled(checks.map((check) => check.run()));

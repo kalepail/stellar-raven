@@ -78,7 +78,15 @@ for (const [key, next] of after) {
   if (prev && prev.file.sha === next.file.sha) continue;
   changed++;
   if (!prev) {
+    // A brand-new file is the case with the MOST unreviewed prompt input, not
+    // the least: every byte is incoming. Print it in full — a header alone let
+    // an operator "review" an upstream addition or rename without ever seeing
+    // the text, then truthfully attest to it.
     console.log(`\n### NEW ${key} (${next.file.size} bytes)`);
+    console.log("### Entirely new prompt input — review it in full.");
+    for (const line of unified("", await readSkillFile(next.source, next.skill.name, next.file), key)) {
+      console.log(line);
+    }
     continue;
   }
   // The NEW bytes are mandatory — you cannot review what you cannot read. The

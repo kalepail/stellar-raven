@@ -55,9 +55,9 @@ command -v node  >/dev/null || { echo "error: node not found" >&2; exit 1; }
 command -v curl  >/dev/null || { echo "error: curl not found" >&2; exit 1; }
 command -v git   >/dev/null || { echo "error: git not found" >&2; exit 1; }
 
-# Every source is public — the pin set is always complete. (The credentialed
-# partner source and its ALLOW_PARTIAL escape hatch were removed 2026-07-06;
-# see the header note.)
+# Every source is public and every step fails closed, so a run that reaches the
+# swap has pinned everything. (The credentialed partner source and its
+# ALLOW_PARTIAL escape hatch were removed 2026-07-06; see the header note.)
 MIRROR_STATUS="complete"
 MISSING_SOURCES="[]"
 
@@ -158,10 +158,14 @@ pin_github() {
 fetch_catalog() {
   echo "Fetching catalog: stellarlight.xyz/api/skills ..."
   local raw
+  # FAIL CLOSED. Silently keeping the previous snapshot let a run advance every
+  # skill pin, print "Done", and exit 0 while leaving a stale ecosystem catalog
+  # behind — a mixed-age result reported as a complete refresh, which is exactly
+  # what an operator resolving a drift issue would then believe was resolved.
   raw="$(curl -fsS "https://stellarlight.xyz/api/skills")" || {
-    echo "warning: could not fetch stellarlight catalog — keeping previous catalog.json." >&2
-    [ -f "$CATALOG" ] && cp "$CATALOG" "$CATALOG_TMP"
-    return 0
+    echo "error: could not fetch the stellarlight catalog — refusing to re-pin." >&2
+    echo "       Nothing was changed. Retry when the directory is reachable." >&2
+    exit 1
   }
   echo "$raw" | jq --arg now "$NOW" '
     { source: "https://stellarlight.xyz/api/skills",
@@ -222,13 +226,15 @@ fi
 
 # --- Atomic swap: only now do we touch the real MANIFEST + catalog. ---
 mv "$MANIFEST_TMP" "$MANIFEST"
-[ -f "$CATALOG_TMP" ] && mv "$CATALOG_TMP" "$CATALOG"
+mv "$CATALOG_TMP" "$CATALOG"
 
-if [ "$MIRROR_STATUS" = "partial" ]; then
-  echo "Pinned ${TOTAL_SKILLS} skills across $(echo "$SOURCES" | jq length) sources — PARTIAL (missing: $(echo "$MISSING_SOURCES" | jq -r 'join(", ")'))."
-else
-  echo "Pinned ${TOTAL_SKILLS} skills across $(echo "$SOURCES" | jq length) sources — complete."
-fi
+echo "Pinned ${TOTAL_SKILLS} skills across $(echo "$SOURCES" | jq length) sources — complete."
+
+# The exact tokens PIN-REVIEW.md must carry for CI to accept this re-pin.
+echo
+echo "Record these in ecosystem-skills/PIN-REVIEW.md (scripts/check-pin-review.mjs enforces them):"
+node "$SCRIPT_DIR/../scripts/check-pin-review.mjs" --digests | sed 's/^/  /'
+echo
 
 # Regenerate the themed index (fetches each pinned SKILL.md into the gitignored
 # working cache to read its frontmatter).

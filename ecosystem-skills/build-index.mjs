@@ -14,9 +14,10 @@
 //
 // Run automatically by update.sh; safe to run standalone after a sync.
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeFileAtomic } from "../scripts/lib/shared.mjs";
 import { readSkillFile } from "../scripts/lib/skill-mirror.mjs";
 
 const DIR = dirname(fileURLToPath(import.meta.url));
@@ -127,7 +128,8 @@ for (const src of manifest.sources) {
 out.push("");
 out.push(
   "_Every source is public GitHub, pinned to a full commit SHA (independently verifiable); " +
-    "each source's upstream LICENSE/NOTICE files are vendored alongside its skills " +
+    "each source's upstream LICENSE/NOTICE file NAMES are recorded in `MANIFEST.json` as " +
+    "provenance — those files are not fetched, copied, or served " +
     "(see `THIRD-PARTY-NOTICES.md` at the repo root)._",
 );
 out.push("");
@@ -178,7 +180,7 @@ if (manifest.catalog && Array.isArray(manifest.catalog.entries)) {
   out.push(
     `_The broader map of what exists across the Stellar agent-skill ecosystem — ${cat.entries.length} entries from ` +
       `[\`${cat.source}\`](${cat.source}), fetched ${cat.fetched_at}. Only \`skill-md\` entries are downloadable SKILL.md skills; ` +
-      `\`mcp-server\` / \`sdk\` / \`cli\` / \`tool\` entries are pointers to runtime tools, not skills. Not all are mirrored here._`,
+      `\`mcp-server\` / \`sdk\` / \`cli\` / \`tool\` entries are pointers to runtime tools, not skills. Not all are served here._`,
   );
   out.push("");
   out.push("| Entry | Source | Kind |");
@@ -189,7 +191,7 @@ if (manifest.catalog && Array.isArray(manifest.catalog.entries)) {
   out.push("");
 }
 
-writeFileSync(join(DIR, "INDEX.md"), out.join("\n"));
+writeFileAtomic(join(DIR, "INDEX.md"), out.join("\n"));
 
 console.log(`INDEX.md written: ${categorized.size} categorized, ${uncategorized.length} uncategorized.`);
 if (uncategorized.length) console.log("  uncategorized → " + uncategorized.join(", "));

@@ -80,14 +80,21 @@ async function fetchWithRetry(url, attempts = 3) {
  * exposure scrub themselves (the same one src/skills/source.ts applies at
  * read time), because some callers need the pre-scrub bytes for hashing.
  */
-export async function readSkillFile(source, skillName, file) {
-  return (await readSkillFileWithDigest(source, skillName, file)).text;
+export async function readSkillFile(source, skillName, file, options) {
+  return (await readSkillFileWithDigest(source, skillName, file, options)).text;
 }
 
-/** Text plus the SHA-256 the catalog pins for runtime verification. */
-export async function readSkillFileWithDigest(source, skillName, file) {
+/**
+ * Text plus the SHA-256 the catalog pins for runtime verification.
+ *
+ * `{ noCache: true }` skips the working cache and goes to upstream. That is the
+ * difference between "these bytes are the pinned bytes" (any cache hit proves
+ * that) and "this pin still RESOLVES upstream" — only a real request proves the
+ * second, and an availability check that a warm cache can satisfy is not one.
+ */
+export async function readSkillFileWithDigest(source, skillName, file, { noCache = false } = {}) {
   const cachePath = join(CACHE_DIR, file.sha);
-  if (existsSync(cachePath)) {
+  if (!noCache && existsSync(cachePath)) {
     const cached = readFileSync(cachePath);
     if (gitBlobSha(cached) === file.sha) {
       return { text: cached.toString("utf8"), sha256: sha256(cached) };

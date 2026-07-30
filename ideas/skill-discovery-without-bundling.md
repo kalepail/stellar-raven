@@ -24,7 +24,9 @@ property of whenever the fetch happened.
   keywords. The searchable projection was byte-identical across the change, so routing did not move.
 - **The owner rule, 2026-07-30: serve, do not store.** A durable owned mirror (R2, a committed
   copy, a bundled copy) is out of scope by decision — it would make Raven the source of record.
-  Availability is an accepted, monitored risk; see `ARCHITECTURE.md` §6. Do not "solve" it with an
+  Availability is an accepted risk that is OBSERVABLE but not actively monitored: upstream-side
+  loss is caught daily by `check-mirrors --fetch`, while a Cloudflare-side failure shows up only in
+  `skill_read ok=false` when someone looks. See `ARCHITECTURE.md` §6. Do not "solve" it with an
   R2 mirror.
 - Responses forward the content and nothing else — no license text or notice, by decision.
 

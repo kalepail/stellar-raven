@@ -13,7 +13,7 @@ Directory of **19 agent skills** across **4 sources** · pinned 2026-07-30T15:21
 | `stellar-dev` | [`stellar/stellar-dev-skill`](https://github.com/stellar/stellar-dev-skill) `skills/` | [`52baea1d8cb1`](https://github.com/stellar/stellar-dev-skill/tree/52baea1d8cb1aa9441004ce44b723f55cbc90901/skills) | 7 |
 | `stellar-light` | [`Stellar-Light/stellar-scout`](https://github.com/Stellar-Light/stellar-scout) (root) | [`f2659ff63cd8`](https://github.com/Stellar-Light/stellar-scout/tree/f2659ff63cd891d48f6adeb024de7753bd9efb9f) | 1 |
 
-_Every source is public GitHub, pinned to a full commit SHA (independently verifiable); each source's upstream LICENSE/NOTICE files are vendored alongside its skills (see `THIRD-PARTY-NOTICES.md` at the repo root)._
+_Every source is public GitHub, pinned to a full commit SHA (independently verifiable); each source's upstream LICENSE/NOTICE file NAMES are recorded in `MANIFEST.json` as provenance — those files are not fetched, copied, or served (see `THIRD-PARTY-NOTICES.md` at the repo root)._
 
 ## Ecosystem research & routing
 
@@ -57,7 +57,7 @@ _SDF's developer skills for building on Stellar off-chain: dapps/wallets, chain 
 
 ## Ecosystem directory (stellarlight.xyz catalog snapshot)
 
-_The broader map of what exists across the Stellar agent-skill ecosystem — 42 entries from [`https://stellarlight.xyz/api/skills`](https://stellarlight.xyz/api/skills), fetched 2026-07-30T15:21:10Z. Only `skill-md` entries are downloadable SKILL.md skills; `mcp-server` / `sdk` / `cli` / `tool` entries are pointers to runtime tools, not skills. Not all are mirrored here._
+_The broader map of what exists across the Stellar agent-skill ecosystem — 42 entries from [`https://stellarlight.xyz/api/skills`](https://stellarlight.xyz/api/skills), fetched 2026-07-30T15:21:10Z. Only `skill-md` entries are downloadable SKILL.md skills; `mcp-server` / `sdk` / `cli` / `tool` entries are pointers to runtime tools, not skills. Not all are served here._
 
 | Entry | Source | Kind |
 | --- | --- | --- |

@@ -8,8 +8,10 @@
 // duplicates, no ungrouped skills), catalog.json presence.
 //
 // Offline by default. With --fetch it additionally retrieves every pinned file
-// and verifies it against its blob sha — the end-to-end check that the pins the
-// Worker serves from still resolve upstream.
+// FROM UPSTREAM (bypassing the working cache) and verifies it against its blob
+// sha — the end-to-end check that the pins the Worker serves from still
+// resolve. Run it BEFORE any builder, or the builder's cache writes make the
+// check about local bytes instead of upstream availability.
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -110,7 +112,15 @@ function checkEcosystemSkills() {
   assertFile("ecosystem-skills/INDEX.md");
 }
 
-/** --fetch: prove every pin still resolves upstream and hashes as recorded. */
+/**
+ * --fetch: prove every pin still RESOLVES UPSTREAM and hashes as recorded.
+ *
+ * `noCache` is what makes that claim true. Reading through the working cache
+ * proves only that the bytes we already hold match the pin — which a warm
+ * `ecosystem-skills/.cache/` always satisfies, so the check would pass while
+ * upstream was gone. In the daily refresh the builders run first and warm every
+ * exposed file, so a cached `--fetch` there verified essentially nothing.
+ */
 async function checkPinsResolve() {
   const manifest = readJson("ecosystem-skills/MANIFEST.json");
   const jobs = [];
@@ -118,7 +128,7 @@ async function checkPinsResolve() {
     for (const skill of source.skills) {
       for (const file of skill.files) {
         jobs.push(
-          readSkillFile(source, skill.name, file).catch((e) =>
+          readSkillFile(source, skill.name, file, { noCache: true }).catch((e) =>
             fail(`ecosystem-skills pin unusable: ${source.id}/${skill.name}/${file.path} — ${e.message}`),
           ),
         );
@@ -126,15 +136,44 @@ async function checkPinsResolve() {
     }
   }
   await Promise.all(jobs);
-  console.log(`fetched + verified ${jobs.length} pinned skill files`);
+  console.log(`fetched + verified ${jobs.length} pinned skill files (upstream, cache bypassed)`);
 }
 
-checkEcosystemSkills();
-if (process.argv.includes("--fetch")) await checkPinsResolve();
+// Three-way exit contract, matching scripts/check-skills-drift.mjs and consumed
+// as an enum by .github/workflows/refresh.yml:
+//   0 = pins valid (and, with --fetch, all resolving upstream)
+//   1 = a real pin problem — the manifest is malformed, or a pinned file no
+//       longer resolves. With --fetch that is a LIVE user-facing outage.
+//   2 = the CHECK itself failed (crash, unreadable manifest, runner network
+//       fault). Fails the job, but must never be reported as an outage: the
+//       whole point of the classified drift issue is that it asserts a domain
+//       fact, and "our checker broke" is not one.
+try {
+  checkEcosystemSkills();
+  if (process.argv.includes("--fetch")) await checkPinsResolve();
+} catch (err) {
+  console.error(`check-mirrors: check could not complete — ${err?.message ?? err}`);
+  process.exit(2);
+}
 
 if (failures.length) {
   console.error("mirror checks failed:");
   for (const failure of failures) console.error(`- ${failure}`);
+  // A 4xx on an immutable commit-pinned URL is upstream genuinely losing the
+  // content — the domain result. A transport error, a 5xx that survived the
+  // retries, or a 429 says something about THIS runner's network, not about
+  // what users are being served; reporting that as a production outage would
+  // cry wolf on exactly the alert that must stay trustworthy.
+  const transportOnly =
+    process.argv.includes("--fetch") &&
+    failures.every((f) => /could not fetch/.test(f) && !/HTTP 4(?!29)/.test(f));
+  if (transportOnly) {
+    console.error(
+      "\ncheck-mirrors: every failure was a transport/rate error rather than an upstream 4xx — " +
+        "reporting as a CHECK ERROR, not a pin loss.",
+    );
+    process.exit(2);
+  }
   process.exit(1);
 }
 

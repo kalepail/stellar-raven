@@ -1,7 +1,7 @@
 {
   "$comment": "Deterministic stratified sample (N=30, by service) of the owned QA battery.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "17f240f875ba2276f84feefe4f6214f7d14b12c0a9cd1630385e6a8ecd2e0e7a",
+  "corpusContentSha256": "69f0c9e260dab8b15f8bc3ab79a3946c49570b2d4e15fc9b31585774d801a7f7",
   "counts": {
     "total": 30,
     "byCategory": {
@@ -2263,7 +2263,7 @@
     },
     {
       "id": "q-sor-skill-openzeppelin-setup",
-      "question": "What is the best bundled workflow for setting up a Soroban contract project with OpenZeppelin Contracts for Stellar?",
+      "question": "What is the best skill workflow for setting up a Soroban contract project with OpenZeppelin Contracts for Stellar?",
       "surface": [
         "skills.openzeppelin-stellar.setup-stellar-contracts"
       ],
@@ -2277,7 +2277,7 @@
           "Do NOT substitute EVM Solidity setup instructions for the Soroban Rust workflow.",
           "Do NOT guess dependency names or import paths outside the playbook."
         ],
-        "notes": "Best-source case for the bundled OpenZeppelin setup skill."
+        "notes": "Best-source case for the served OpenZeppelin setup skill."
       },
       "tags": {
         "category": "soroban",
@@ -2300,9 +2300,10 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "date": "2026-07-30",
+          "by": "drift-surface audit (solo://proj/49/todo/1285), independent review gpt-5.6-sol xhigh",
           "evidence": [
+            "2026-07-30 de-vendoring wording sweep: this case described Raven's own surface as \"bundled\"/\"mirrored\", which the same block's earlier amendment already contradicted — skill bodies are served from their pinned upstream commit and hash-verified, never stored here. Wording only; the exercised contract, the skill id, and every graded claim are unchanged. Sibling sweep: all 10 skill-surface battery cases carrying the stale wording were corrected in the same commit, so no sibling still asserts the old shape.",
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
             "skills.openzeppelin-stellar.setup-stellar-contracts exists and supports the behavioral golden.",
             "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.openzeppelin-stellar.setup-stellar-contracts'). Same bytes, re-verified by digest; only the pointer notation changed.",

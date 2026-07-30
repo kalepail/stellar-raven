@@ -25,7 +25,7 @@ OpenAPI contract from 1.7.11 through 1.7.26. This is new drift after `sk-008` wa
 earlier 1.7.0 partner and repository fields, so it is a successor rather than a
 reopening of that resolved finding.
 
-The live API now documents three capabilities absent from the mirrored skill:
+The live API now documents three capabilities absent from the served skill:
 
 - `GET /api/projects/search` can return a `semantic` match mode when no keyword
   tier matches; each fallback row is marked `via:"semantic"` and should be
@@ -39,7 +39,7 @@ The live API now documents three capabilities absent from the mirrored skill:
   filters and returns the resolved filter plus metric definitions and data date
   in `meta.filters.type`, `meta.metricDefinitions`, and `meta.dataAsOf`.
 
-Agents that read the bundled skill can therefore misread semantic results as
+Agents that read the served skill can therefore misread semantic results as
 keyword-confirmed, collapse untracked TVL to zero, or omit the new CAP source
 filter, miss SDF organizational research, or overlook leaderboard filtering and
 provenance even though Raven's regenerated operation schemas expose them.
@@ -60,13 +60,16 @@ research source list omits `sdf-org`. Its leaderboard parameters omit `type`,
 and its result documentation omits the filter, metric-definition, and data-date
 metadata:
 
-- `ecosystem-skills/skills/stellar-light/stellar-scout/references/api-reference.md`
-  lines 119-127 (project match modes)
-- the same file around lines 9-14 and 169-186 (leaderboard parameters and research sources)
+- catalog id `skills.stellar-light.stellar-scout#file:references/api-reference.md`, served from
+  the commit pinned in `ecosystem-skills/MANIFEST.json` — read it with
+  `codemode.skill.read`, or fetch the pinned `transport.url` recorded in
+  `catalog/manifest.json`. Sections: project match modes; leaderboard parameters; research
+  sources.
 
-The local mirror must remain read-only; the correction belongs in the upstream
-`Stellar-Light/stellar-scout` source and should arrive here through a new pin and
-the normal bundle/catalog regeneration chain.
+There is no local copy to correct — bodies are served from upstream, not stored here. The
+correction belongs in the upstream `Stellar-Light/stellar-scout` source and reaches Raven only
+through a re-pin (`ecosystem-skills/update.sh` → body-diff review → `PIN-REVIEW.md` attestation →
+catalog/micro-map/spec/op-class rebuild → deploy).
 
 ## Recommendation
 

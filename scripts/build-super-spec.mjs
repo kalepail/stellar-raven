@@ -641,7 +641,7 @@ async function main() {
     {
       name: "skills",
       description:
-        "Bundled agent-skill playbooks (ecosystem-skills mirror): list, targeted section reads, and ranked search. The skill index is embedded in /skills/list_skills x-skill-index. Skills marked runnable also execute host-side via /skills/run_skill (codemode.skill.run)."
+        "Ecosystem agent-skill playbooks, served from their pinned upstream commit and hash-verified at read time: list, targeted section reads, and ranked search. The skill index is embedded in /skills/list_skills x-skill-index. Skills marked runnable also execute host-side via /skills/run_skill (codemode.skill.run)."
     }
   ];
 

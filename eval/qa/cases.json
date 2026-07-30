@@ -1,7 +1,7 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "17f240f875ba2276f84feefe4f6214f7d14b12c0a9cd1630385e6a8ecd2e0e7a",
+  "corpusContentSha256": "69f0c9e260dab8b15f8bc3ab79a3946c49570b2d4e15fc9b31585774d801a7f7",
   "counts": {
     "total": 490,
     "byCategory": {
@@ -9452,7 +9452,7 @@
           "Do NOT declare a sector empty merely because one directory query returned no hits.",
           "Do NOT mix category, region, and tag vocabularies as if they were interchangeable."
         ],
-        "notes": "Best-source case for the bundled Stellar Ecosystem Scout skill."
+        "notes": "Best-source case for the served Stellar Ecosystem Scout skill."
       },
       "tags": {
         "category": "defi-ecosystem",
@@ -9475,9 +9475,10 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "date": "2026-07-30",
+          "by": "drift-surface audit (solo://proj/49/todo/1285), independent review gpt-5.6-sol xhigh",
           "evidence": [
+            "2026-07-30 de-vendoring wording sweep: this case described Raven's own surface as \"bundled\"/\"mirrored\", which the same block's earlier amendment already contradicted — skill bodies are served from their pinned upstream commit and hash-verified, never stored here. Wording only; the exercised contract, the skill id, and every graded claim are unchanged. Sibling sweep: all 10 skill-surface battery cases carrying the stale wording were corrected in the same commit, so no sibling still asserts the old shape.",
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
             "skills.lumenloop.stellar-ecosystem-scout exists and supports the behavioral golden.",
             "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.lumenloop.stellar-ecosystem-scout'). Same bytes, re-verified by digest; only the pointer notation changed.",
@@ -9507,7 +9508,7 @@
           "Do NOT merge similarly named projects without canonical resolution.",
           "Do NOT invent funding, team, or activity facts for fields the corpus does not supply."
         ],
-        "notes": "Best-source case for the bundled Stellar Project Dossier skill."
+        "notes": "Best-source case for the served Stellar Project Dossier skill."
       },
       "tags": {
         "category": "defi-ecosystem",
@@ -9530,9 +9531,10 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "date": "2026-07-30",
+          "by": "drift-surface audit (solo://proj/49/todo/1285), independent review gpt-5.6-sol xhigh",
           "evidence": [
+            "2026-07-30 de-vendoring wording sweep: this case described Raven's own surface as \"bundled\"/\"mirrored\", which the same block's earlier amendment already contradicted — skill bodies are served from their pinned upstream commit and hash-verified, never stored here. Wording only; the exercised contract, the skill id, and every graded claim are unchanged. Sibling sweep: all 10 skill-surface battery cases carrying the stale wording were corrected in the same commit, so no sibling still asserts the old shape.",
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
             "skills.lumenloop.stellar-project-dossier exists and supports the behavioral golden.",
             "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.lumenloop.stellar-project-dossier'). Same bytes, re-verified by digest; only the pointer notation changed.",
@@ -15518,7 +15520,7 @@
           "Uses `listSkills` first for discovery when the name is unknown."
         ],
         "avoid": [
-          "Do NOT treat a getSkill miss as open-world absence of the skill, and do NOT assume all directory entries are mirrored bundled skills."
+          "Do NOT treat a getSkill miss as open-world absence of the skill, and do NOT assume all directory entries are skills this gateway serves."
         ],
         "notes": "N1 live contract probe 2026-07-11: Succeeded for agentic-payments and returned `skill.content` with metadata; catalog contract documents unknown-name guidance.\nCORRECTION 2026-07-28 (todo 1253 Lane B, F2): the exposed adapter maps an unknown-slug 404 to kind 'soft-empty' with a discover-the-slug hint (the Scout adapter source, 404 branch); the earlier 'operation error' classification contradicted both the served contract and sibling q-tool-skill-detail-install, so one grader rewarded and another punished the same true statement."
       },
@@ -15558,9 +15560,10 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 Lane N1 gap-ops authoring",
+          "date": "2026-07-30",
+          "by": "drift-surface audit (solo://proj/49/todo/1285), independent review gpt-5.6-sol xhigh",
           "evidence": [
+            "2026-07-30 de-vendoring wording sweep: this case described Raven's own surface as \"bundled\"/\"mirrored\", which the same block's earlier amendment already contradicted — skill bodies are served from their pinned upstream commit and hash-verified, never stored here. Wording only; the exercised contract, the skill id, and every graded claim are unchanged. Sibling sweep: all 10 skill-surface battery cases carrying the stale wording were corrected in the same commit, so no sibling still asserts the old shape.",
             "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
             "catalog/manifest.json#scout.getSkill",
             "inventory/stellar-light.json",
@@ -15568,7 +15571,8 @@
           ],
           "rootCause": [
             "solo://project/49/scratchpad/p4/n1-gapops",
-            "Eval-authoring flaw: graded the served soft-empty contract as an operation error, contradicting the adapter and the sibling case."
+            "Eval-authoring flaw: graded the served soft-empty contract as an operation error, contradicting the adapter and the sibling case.",
+            "eval-authoring"
           ]
         },
         "origin": "authored 2026-07 (gap-ops)"
@@ -15584,7 +15588,7 @@
         "answer": "Use `scout.listSkills` to browse the live installable directory, optionally filtering by source or kind. The observed SDF-filtered result (a dated 2026-07-11 probe) returned seven entries with slug, install command, source, kind, homepage/raw URL, and compatibility; treat the count and slugs as an observation with its date. Then use `getSkill` for one named entry.",
         "keyFacts": [
           "Uses `listSkills` for discovery and `getSkill` for one known skill.",
-          "Treats the directory as live metadata, not proof that every entry is a bundled skill."
+          "Treats the directory as live metadata, not proof that every entry is a skill this gateway serves."
         ],
         "avoid": [
           "Do NOT use `listSkills` as though it returns the full instructions for every skill."
@@ -15627,16 +15631,18 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 Lane N1 gap-ops authoring",
+          "date": "2026-07-30",
+          "by": "drift-surface audit (solo://proj/49/todo/1285), independent review gpt-5.6-sol xhigh",
           "evidence": [
+            "2026-07-30 de-vendoring wording sweep: this case described Raven's own surface as \"bundled\"/\"mirrored\", which the same block's earlier amendment already contradicted — skill bodies are served from their pinned upstream commit and hash-verified, never stored here. Wording only; the exercised contract, the skill id, and every graded claim are unchanged. Sibling sweep: all 10 skill-surface battery cases carrying the stale wording were corrected in the same commit, so no sibling still asserts the old shape.",
             "http://localhost:8787/mcp JSON-RPC tools/call execute, 2026-07-11",
             "catalog/manifest.json#scout.listSkills",
             "inventory/stellar-light.json",
             "Todo 1253 Lane B review (2026-07-28, F3): the notes named the retired 'soroban' slug as an undated roster fact; date-scoped to the 2026-07-11 probe with the 2026-07-28 'smart-contracts' retirement recorded. Internal-consistency repair — the underlying probe observation is unchanged."
           ],
           "rootCause": [
-            "solo://project/49/scratchpad/p4/n1-gapops"
+            "solo://project/49/scratchpad/p4/n1-gapops",
+            "eval-authoring"
           ]
         },
         "origin": "authored 2026-07 (gap-ops)"
@@ -30772,7 +30778,7 @@
     },
     {
       "id": "q-scf-skill-stellar-scout",
-      "question": "I want to vet a Stellar idea against projects, open RFPs, repos, research, builders, funding, and audits, then choose next steps. Which bundled workflow governs that full scout?",
+      "question": "I want to vet a Stellar idea against projects, open RFPs, repos, research, builders, funding, and audits, then choose next steps. Which skill workflow governs that full scout?",
       "surface": [
         "skills.stellar-light.stellar-scout"
       ],
@@ -30786,7 +30792,7 @@
           "Do NOT declare a full market gap from one zero-result endpoint.",
           "Do NOT invent builders, RFPs, awards, audit evidence, or partner capabilities."
         ],
-        "notes": "Best-source case for the bundled Stellar Scout skill."
+        "notes": "Best-source case for the served Stellar Scout skill."
       },
       "tags": {
         "category": "scf-grants-builders",
@@ -30809,9 +30815,10 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "date": "2026-07-30",
+          "by": "drift-surface audit (solo://proj/49/todo/1285), independent review gpt-5.6-sol xhigh",
           "evidence": [
+            "2026-07-30 de-vendoring wording sweep: this case described Raven's own surface as \"bundled\"/\"mirrored\", which the same block's earlier amendment already contradicted — skill bodies are served from their pinned upstream commit and hash-verified, never stored here. Wording only; the exercised contract, the skill id, and every graded claim are unchanged. Sibling sweep: all 10 skill-surface battery cases carrying the stale wording were corrected in the same commit, so no sibling still asserts the old shape.",
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
             "skills.stellar-light.stellar-scout exists and supports the behavioral golden.",
             "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.stellar-light.stellar-scout'). Same bytes, re-verified by digest; only the pointer notation changed.",
@@ -30841,7 +30848,7 @@
           "Do NOT describe every prior submission as funded.",
           "Do NOT claim the read-only workflow submits an SCF application."
         ],
-        "notes": "Best-source case for the bundled SCF Submission Radar skill."
+        "notes": "Best-source case for the served SCF Submission Radar skill."
       },
       "tags": {
         "category": "scf-grants-builders",
@@ -30864,9 +30871,10 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "date": "2026-07-30",
+          "by": "drift-surface audit (solo://proj/49/todo/1285), independent review gpt-5.6-sol xhigh",
           "evidence": [
+            "2026-07-30 de-vendoring wording sweep: this case described Raven's own surface as \"bundled\"/\"mirrored\", which the same block's earlier amendment already contradicted — skill bodies are served from their pinned upstream commit and hash-verified, never stored here. Wording only; the exercised contract, the skill id, and every graded claim are unchanged. Sibling sweep: all 10 skill-surface battery cases carrying the stale wording were corrected in the same commit, so no sibling still asserts the old shape.",
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
             "skills.lumenloop.scf-submission-radar exists and supports the behavioral golden.",
             "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.lumenloop.scf-submission-radar'). Same bytes, re-verified by digest; only the pointer notation changed.",
@@ -35402,7 +35410,7 @@
     },
     {
       "id": "q-sor-skill-openzeppelin-setup",
-      "question": "What is the best bundled workflow for setting up a Soroban contract project with OpenZeppelin Contracts for Stellar?",
+      "question": "What is the best skill workflow for setting up a Soroban contract project with OpenZeppelin Contracts for Stellar?",
       "surface": [
         "skills.openzeppelin-stellar.setup-stellar-contracts"
       ],
@@ -35416,7 +35424,7 @@
           "Do NOT substitute EVM Solidity setup instructions for the Soroban Rust workflow.",
           "Do NOT guess dependency names or import paths outside the playbook."
         ],
-        "notes": "Best-source case for the bundled OpenZeppelin setup skill."
+        "notes": "Best-source case for the served OpenZeppelin setup skill."
       },
       "tags": {
         "category": "soroban",
@@ -35439,9 +35447,10 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "date": "2026-07-30",
+          "by": "drift-surface audit (solo://proj/49/todo/1285), independent review gpt-5.6-sol xhigh",
           "evidence": [
+            "2026-07-30 de-vendoring wording sweep: this case described Raven's own surface as \"bundled\"/\"mirrored\", which the same block's earlier amendment already contradicted — skill bodies are served from their pinned upstream commit and hash-verified, never stored here. Wording only; the exercised contract, the skill id, and every graded claim are unchanged. Sibling sweep: all 10 skill-surface battery cases carrying the stale wording were corrected in the same commit, so no sibling still asserts the old shape.",
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
             "skills.openzeppelin-stellar.setup-stellar-contracts exists and supports the behavioral golden.",
             "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.openzeppelin-stellar.setup-stellar-contracts'). Same bytes, re-verified by digest; only the pointer notation changed.",
@@ -42161,7 +42170,7 @@
           "Do NOT recommend rebuilding an existing integration without checking prior art.",
           "Do NOT treat LumenLoop directory summaries as contract implementation guidance."
         ],
-        "notes": "Best-source case for the bundled Stellar Builder Quickstart skill."
+        "notes": "Best-source case for the served Stellar Builder Quickstart skill."
       },
       "tags": {
         "category": "tooling-infra",
@@ -42184,9 +42193,10 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "date": "2026-07-30",
+          "by": "drift-surface audit (solo://proj/49/todo/1285), independent review gpt-5.6-sol xhigh",
           "evidence": [
+            "2026-07-30 de-vendoring wording sweep: this case described Raven's own surface as \"bundled\"/\"mirrored\", which the same block's earlier amendment already contradicted — skill bodies are served from their pinned upstream commit and hash-verified, never stored here. Wording only; the exercised contract, the skill id, and every graded claim are unchanged. Sibling sweep: all 10 skill-surface battery cases carrying the stale wording were corrected in the same commit, so no sibling still asserts the old shape.",
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
             "skills.lumenloop.stellar-builder-quickstart exists and supports the behavioral golden.",
             "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.lumenloop.stellar-builder-quickstart'). Same bytes, re-verified by digest; only the pointer notation changed.",
@@ -42216,7 +42226,7 @@
           "Do NOT silently replace an uncertain handle with a guessed one.",
           "Do NOT turn an indexed summary into an unattributed primary-source claim."
         ],
-        "notes": "Best-source case for the bundled Stellar Content Auditor skill."
+        "notes": "Best-source case for the served Stellar Content Auditor skill."
       },
       "tags": {
         "category": "tooling-infra",
@@ -42239,9 +42249,10 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "date": "2026-07-30",
+          "by": "drift-surface audit (solo://proj/49/todo/1285), independent review gpt-5.6-sol xhigh",
           "evidence": [
+            "2026-07-30 de-vendoring wording sweep: this case described Raven's own surface as \"bundled\"/\"mirrored\", which the same block's earlier amendment already contradicted — skill bodies are served from their pinned upstream commit and hash-verified, never stored here. Wording only; the exercised contract, the skill id, and every graded claim are unchanged. Sibling sweep: all 10 skill-surface battery cases carrying the stale wording were corrected in the same commit, so no sibling still asserts the old shape.",
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
             "skills.lumenloop.stellar-content-auditor exists and supports the behavioral golden.",
             "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.lumenloop.stellar-content-auditor'). Same bytes, re-verified by digest; only the pointer notation changed.",
@@ -42271,7 +42282,7 @@
           "Do NOT rank integrations from name recognition alone.",
           "Do NOT claim compatibility, maintenance, or regional support absent from the returned evidence."
         ],
-        "notes": "Best-source case for the bundled Stellar Integration Finder skill."
+        "notes": "Best-source case for the served Stellar Integration Finder skill."
       },
       "tags": {
         "category": "tooling-infra",
@@ -42294,9 +42305,10 @@
           }
         ],
         "verified": {
-          "date": "2026-07-11",
-          "by": "P4 coverage-closure lane (Solo process 3427)",
+          "date": "2026-07-30",
+          "by": "drift-surface audit (solo://proj/49/todo/1285), independent review gpt-5.6-sol xhigh",
           "evidence": [
+            "2026-07-30 de-vendoring wording sweep: this case described Raven's own surface as \"bundled\"/\"mirrored\", which the same block's earlier amendment already contradicted — skill bodies are served from their pinned upstream commit and hash-verified, never stored here. Wording only; the exercised contract, the skill id, and every graded claim are unchanged. Sibling sweep: all 10 skill-surface battery cases carrying the stale wording were corrected in the same commit, so no sibling still asserts the old shape.",
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
             "skills.lumenloop.stellar-integration-finder exists and supports the behavioral golden.",
             "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.lumenloop.stellar-integration-finder'). Same bytes, re-verified by digest; only the pointer notation changed.",

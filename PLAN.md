@@ -6,7 +6,9 @@ directory. The LLM calling this MCP discovers capabilities via `search`, then au
 that `execute` runs inside a **Dynamic Worker isolate** with no network access; all real traffic
 goes through host-side, secret-holding, policy-enforcing adapters.
 
-Grounding research (initially live-verified across 2026-07-01…07-03; service specs refreshed daily by CI, latest 2026-07-26):
+Grounding research (initially live-verified across 2026-07-01…07-03; service specs refreshed daily
+by CI — each snapshot's own `fetchedAt` is the authority on how current it is, so no hand-maintained
+date is repeated here to go stale):
 
 - [`research/services/lumenloop.md`](./research/services/lumenloop.md) (current spec: [`inventory/lumenloop.json`](./inventory/lumenloop.json))
 - [`research/services/stellar-light.md`](./research/services/stellar-light.md) (current spec: [`inventory/stellar-light.json`](./inventory/stellar-light.json))
@@ -225,12 +227,18 @@ inventory stubs so credentialed content cannot re-enter the public repo.
 
 `scripts/refresh-inventory.mjs` (runnable locally, in CI, or as a cron Worker):
 
-| Service | Probe | Drift signal |
-|---|---|---|
-| Lumenloop | `/v1/tools` ∪ `/v1/me` tool list ∪ per-tool detail (partner items hidden from the list!); `/v1/skills` same union trick | keyless `/v1/changelog?since=` |
-| Stellar Light | `/api/openapi.json` (diff), `/api/status` endpoint enumeration | `/api/changelog` |
-| Stellar Docs (Algolia) | `GET /1/indexes/{index}/settings` diff + one smoke query | settings/nbHits diff; MCP `tools/list` checked only as fallback health |
-| Skills | `check-skills-drift.mjs` against pinned SHAs; re-pin with `ecosystem-skills/update.sh` | `check-mirrors.mjs [--fetch]` |
+| Service | Probe | Drift signal | Resolution |
+|---|---|---|---|
+| Lumenloop | `/v1/tools` ∪ `/v1/me` tool list ∪ per-tool detail (partner tools are hidden from `/v1/tools`, so the union is what makes them observable) + the full `/v1/openapi.json`. `/v1/skills` needs **no** union — it already lists partner skills as `available:false`, and `/v1/me` carries no skill count | any non-`fetchedAt` diff in `inventory/lumenloop.json`, classified by `summarize-live-drift.mjs` into tool-surface, tool routing-text, and **OpenAPI** surface/text/schema classes | `live-drift-resolution` |
+| Stellar Light | `/api/openapi.json` (diff), `/api/status` endpoint enumeration | same classifier over `inventory/stellar-light.json`; op path·method **set**, not `operationCount` — a rename holds the count constant | `live-drift-resolution` |
+| Stellar Docs (Algolia) | `GET /1/indexes/{index}/settings` + one `type:lvl1` page-title query (fails closed if `nbHits` exceeds one page) | settings diff and title-set diff; separately, `check-algolia-rule-canary.mjs` runs a read-only rules-on/off behavioral delta on the load-bearing rule | `live-drift-resolution` |
+| Skills (pin set) | `check-skills-drift.mjs` — each source's upstream HEAD vs its pinned commit, plus a re-projection of the live stellarlight directory | pinned commit moved, or the directory snapshot would change | re-pin with `ecosystem-skills/update.sh`, **read the body diff**, record the `sel:` digest in `PIN-REVIEW.md` |
+| Skills (availability) | `check-mirrors.mjs --fetch` — fetches every pinned file from upstream, cache bypassed, before any builder | a pin that no longer resolves. Bodies are served, not stored, so this is a **live user-facing `skill.read` outage**, not a stale snapshot | `ARCHITECTURE.md` §6 "availability posture" — never by mirroring the content |
+
+The two skills rows are different questions and different scripts: `check-skills-drift` asks *has
+upstream moved past our pin* (a snapshot being stale), `check-mirrors --fetch` asks *does our pin
+still resolve* (production being broken). Both run daily in `refresh.yml`, each as its own reported
+class.
 
 Output: regenerated inventory JSONs under `inventory/` + a diff report; `build-catalog`
 then rebuilds the manifest; `test/adapters.test.ts` plus CI's generated-artifacts-sync gate

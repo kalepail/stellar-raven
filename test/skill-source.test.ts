@@ -198,6 +198,20 @@ describe("createSkillSource — memo identity", () => {
     expect((await source(await pinFor(other))).text).toBe(other);
     expect(calls).toHaveLength(2);
   });
+
+  it("does NOT serve a memoized body to a pin whose git blob sha disagrees", async () => {
+    // The case the test above cannot reach: changing the body changes BOTH
+    // digests, so it never exercises a memo key that omits one of them. Here
+    // url and sha256 are identical and only the provenance hash differs — if
+    // the key drops `sha`, the second read is served from memo and `verify`'s
+    // git-blob half never runs, quietly voiding the guarantee that both digests
+    // are checked on every read.
+    const { impl } = fakeFetch([ok(BODY)]);
+    const source = createSkillSource({ fetchImpl: impl });
+    const good = await pinFor(BODY);
+    expect((await source(good)).text).toBe(BODY);
+    await expect(source({ ...good, sha: "0".repeat(40) })).rejects.toThrow(/provenance check failed/);
+  });
 });
 
 describe("retrieval provenance (makes the latency telemetry interpretable)", () => {

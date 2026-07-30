@@ -366,6 +366,7 @@ async function refreshStellarDocs() {
   // taxonomy topic slugs carry. build-catalog.mjs scopes these per docs
   // operation by URL prefix and distills them into the low-weight `keywords`
   // field the scorer blends in.
+  const REQUESTED_HITS_PER_PAGE = 1000;
   const queryPath = `/1/indexes/${encodeURIComponent(STELLAR_DOCS_INDEX)}/query`;
   const titlesRes = await fetchJson(`https://${appId}-dsn.algolia.net${queryPath}`, {
     method: "POST",
@@ -377,7 +378,7 @@ async function refreshStellarDocs() {
     body: {
       query: "",
       filters: "type:lvl1",
-      hitsPerPage: 1000,
+      hitsPerPage: REQUESTED_HITS_PER_PAGE,
       distinct: false,
       attributesToRetrieve: ["hierarchy", "url_without_anchor"],
       attributesToHighlight: [],
@@ -385,6 +386,34 @@ async function refreshStellarDocs() {
     },
     label: "algolia lvl1 page titles",
   });
+  // One page, no pagination. That is fine while the filtered index fits inside
+  // it, and silently wrong the moment it does not: the snapshot would turn page
+  // one into "the complete corpus", record a false `total`, and stop producing
+  // drift for anything past the cut. Fail loudly instead of guessing — the
+  // remedy (paginate, or raise the cap) is a deliberate change, not a default.
+  // Fail closed on a MISSING count too, not just an exceeded one. Accepting an
+  // absent or malformed nbHits would silently restore the exact failure this
+  // guard exists to prevent: an unverifiable page one recorded as the whole
+  // corpus. paginationLimitedTo is an index SETTING and is not echoed in a
+  // query response, so the honest thing to print is what we asked for.
+  const returned = Array.isArray(titlesRes.hits) ? titlesRes.hits.length : null;
+  const nbHits = titlesRes.nbHits;
+  if (returned === null || !Number.isInteger(nbHits) || nbHits < 0) {
+    throw new Error(
+      `algolia lvl1 page titles: cannot verify completeness — hits=${
+        returned === null ? "not an array" : returned
+      }, nbHits=${JSON.stringify(nbHits)}. Refusing to record a corpus total that may be a ` +
+        `truncated first page.`,
+    );
+  }
+  if (nbHits > returned) {
+    throw new Error(
+      `algolia lvl1 page titles truncated: index reports ${nbHits} matching records but only ` +
+        `${returned} were returned (requested hitsPerPage ${REQUESTED_HITS_PER_PAGE}; the index's ` +
+        `own paginationLimitedTo is recorded in inventory/stellar-docs.json). The title snapshot ` +
+        `would claim a complete corpus it does not have — paginate this query before re-running.`,
+    );
+  }
   const seen = new Set();
   const titles = [];
   for (const hit of titlesRes.hits ?? []) {

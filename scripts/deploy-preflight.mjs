@@ -26,6 +26,11 @@ export function preflightFailures({ dirty, head, origin, fetchFailed }) {
   if (dirty) {
     failures.push(`working tree is not clean; wrangler would bundle these changes:\n${dirty}`);
   }
+  // Missing refs fail closed. Treating an unreadable HEAD or origin/main as
+  // "nothing to compare" would silently skip the only check that proves the
+  // tree equals the pushed commit.
+  if (!head) failures.push("could not resolve HEAD");
+  if (!origin) failures.push("could not resolve origin/main");
   if (head && origin && head !== origin) {
     failures.push(`HEAD (${head.slice(0, 8)}) is not origin/main (${origin.slice(0, 8)})`);
   }
@@ -43,11 +48,17 @@ if (process.argv[1] && process.argv[1].endsWith("deploy-preflight.mjs")) {
     console.warn("deploy preflight SKIPPED (DEPLOY_ALLOW_UNCLEAN=1) — deploying the working tree as-is");
     process.exit(0);
   }
+  // Fetch BEFORE resolving origin/main. Object properties evaluate in source
+  // order, so reading the ref first captured the PRE-fetch value: a stale local
+  // origin/main that happened to equal HEAD passed preflight even when the
+  // remote had already moved on, which is exactly the obsolete-deploy this
+  // guard exists to refuse.
+  const fetchFailed = !git("fetch", "--quiet", "origin", "main").ok;
   const failures = preflightFailures({
+    fetchFailed,
     dirty: git("status", "--porcelain").out,
     head: git("rev-parse", "HEAD").out,
-    origin: git("rev-parse", "origin/main").out,
-    fetchFailed: !git("fetch", "--quiet", "origin", "main").ok
+    origin: git("rev-parse", "origin/main").out
   });
 
   if (failures.length) {

@@ -8,9 +8,16 @@ name: Refresh (live drift check)
 #
 # Also checks the load-bearing Stellar Docs Algolia rule through a read-only,
 # analytics:false rules-on/off behavioral delta, and checks the
-# ecosystem-skills/ mirror for upstream drift (pinned commit
-# SHAs / API version ref / stellarlight catalog) via check-skills-drift.mjs —
-# detection only; the mirror is never auto-synced from CI.
+# ecosystem-skills/ pin set for upstream drift (pinned commit SHAs /
+# stellarlight catalog) via check-skills-drift.mjs — detection only; pins are
+# never auto-advanced from CI, because skill bodies are prompt input.
+#
+# Every failure class is an explicit enum captured into the drift issue with its
+# own remediation. Two of them run FIRST, before any builder: pinned-file
+# availability (`check-mirrors --fetch`, cache-bypassing — bodies are served not
+# stored, so an unresolvable pin is a live user-facing outage) and the QA
+# stale-gospel due-date queue. The generic "job crashed" issue is reserved for
+# faults that fit none of the classes.
 
 on:
   schedule:
@@ -33,8 +40,47 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: fail on stale QA gospel
-        run: node eval/qa/lint-corpus.mjs --stale
+      # FIRST, and before any builder: prove every pinned skill file still
+      # resolves upstream. `--fetch` bypasses ecosystem-skills/.cache, but this
+      # still runs first so the answer is recorded even if a later step dies —
+      # and so the class is reported as what it is. A pin that stops resolving
+      # is not a flaky script: bodies are not stored, so production skill.read
+      # is failing for real users right now.
+      - name: check pinned skill files resolve upstream
+        id: pins
+        run: |
+          set -o pipefail
+          ec=0
+          node scripts/check-mirrors.mjs --fetch 2>&1 | tee pin-availability.txt || ec=$?
+          # Three-way, like every other checker here: a runner-side network
+          # fault or a crashed script must NOT file an issue asserting that
+          # production is down. Only exit 1 means the pin itself is gone.
+          case "$ec" in
+            0) echo "state=clean" >> "$GITHUB_OUTPUT" ;;
+            1) echo "state=unresolvable" >> "$GITHUB_OUTPUT" ;;
+            *) echo "state=error" >> "$GITHUB_OUTPUT" ;;
+          esac
+      # Captured, not hard-failed: a past-due reverifyBy is the truth-maintenance
+      # queue firing as designed (a documented lane with a documented owner), not
+      # an automation fault. Failing here would have routed it to the generic
+      # "job crashed" issue with no case ids in it.
+      - name: check for stale QA gospel
+        id: gospel
+        run: |
+          set -o pipefail
+          ec=0
+          node eval/qa/lint-corpus.mjs --stale 2>&1 | tee stale-gospel.txt || ec=$?
+          # lint-corpus exits 1 for BOTH a past-due case and its own parse/lint
+          # faults, so the exit code alone cannot tell the truth-maintenance
+          # queue firing from the linter breaking. The `[stale]` finding it
+          # prints is the discriminator; without one, exit 1 is a check error.
+          if [ "$ec" = "0" ]; then
+            echo "state=clean" >> "$GITHUB_OUTPUT"
+          elif [ "$ec" = "1" ] && grep -q '\[stale\]' stale-gospel.txt; then
+            echo "state=stale" >> "$GITHUB_OUTPUT"
+          else
+            echo "state=error" >> "$GITHUB_OUTPUT"
+          fi
       # refresh-inventory.mjs reads .env at the repo root; the runner is
       # ephemeral and .env is never uploaded anywhere.
       - name: materialize .env from repo secrets
@@ -64,11 +110,6 @@ jobs:
       - run: node scripts/build-catalog.mjs
       - run: npm run micro-map:build
       - run: npm run spec:build
-      # --fetch: prove every pinned skill file still resolves upstream and
-      # hashes as recorded. Bodies are no longer vendored, so a moved or
-      # rewritten upstream file is now a LIVE failure, not just drift — this is
-      # the check that catches it before a user does.
-      - run: node scripts/check-mirrors.mjs --fetch
       # Detection only — never runs ecosystem-skills/update.sh from CI (mirrored
       # skills are prompt input; upstream edits go through human review). Reads
       # LUMENLOOP_API_KEY from the materialized .env like refresh-inventory.mjs.
@@ -112,9 +153,29 @@ jobs:
             clean|drift) ;;
             *) algolia_rule_error=true ;;
           esac
+          # Same ENUM discipline for the two classes captured before the
+          # builders: an empty output means the step never wrote one. That is a
+          # check error — never a silent pass, and never coerced into the domain
+          # state either, because the domain states assert facts ("production is
+          # failing", "a golden is past due") that a broken checker has not
+          # established.
+          pins_state='${{ steps.pins.outputs.state }}'
+          pins_error=false
+          case "$pins_state" in clean|unresolvable) ;; *) pins_error=true; pins_state=error ;; esac
+          gospel_state='${{ steps.gospel.outputs.state }}'
+          gospel_error=false
+          case "$gospel_state" in clean|stale) ;; *) gospel_error=true; gospel_state=error ;; esac
           echo "skills_error=$skills_error" >> "$GITHUB_OUTPUT"
           echo "algolia_rule_error=$algolia_rule_error" >> "$GITHUB_OUTPUT"
-          if [ "$inventory_drift" = "false" ] && [ "$skills_drift" != "true" ] && [ "$algolia_rule_state" != "drift" ]; then
+          echo "pins_error=$pins_error" >> "$GITHUB_OUTPUT"
+          echo "gospel_error=$gospel_error" >> "$GITHUB_OUTPUT"
+          # DOMAIN states only. A check error must not open a drift issue: it
+          # has no section to contribute, so it would file a body that is just a
+          # header — and the dedicated fail-on-*-check-error steps below already
+          # make the job red without asserting something untrue.
+          if [ "$inventory_drift" = "false" ] && [ "$skills_drift" != "true" ] \
+             && [ "$algolia_rule_state" != "drift" ] && [ "$pins_state" != "unresolvable" ] \
+             && [ "$gospel_state" != "stale" ]; then
             echo "drift=false" >> "$GITHUB_OUTPUT"
           else
             echo "drift=true" >> "$GITHUB_OUTPUT"
@@ -122,6 +183,37 @@ jobs:
               echo '### Live service drift detected'
               echo
               echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              if [ "$pins_state" = "unresolvable" ]; then
+                echo
+                echo '#### :rotating_light: Pinned skill file did not resolve upstream — LIVE `skill.read` OUTAGE'
+                echo
+                echo 'Skill bodies are served from their pinned upstream, never stored. A pin that'
+                echo 'stops resolving means production `skill.read` is failing for real users right'
+                echo 'now on any cold read (warm colo caches and isolate memos may still succeed,'
+                echo 'so this can be a PARTIAL outage that looks healthy from one location).'
+                echo '```'
+                cat pin-availability.txt
+                echo '```'
+                echo
+                echo 'Remediation: confirm the upstream repo/commit still exists and is public. If'
+                echo 'the content moved, re-pin (`ecosystem-skills/update.sh`), review the body diff,'
+                echo 'and DEPLOY — a merge alone does not reach production. See `ARCHITECTURE.md` §6'
+                echo '"availability posture". Do not solve this by mirroring the content.'
+              fi
+              if [ "$gospel_state" = "stale" ]; then
+                echo
+                echo '#### QA gospel past its re-verification date'
+                echo
+                echo 'The standing due-date queue fired. This is the truth-maintenance lane working'
+                echo 'as designed, not a script failure.'
+                echo '```'
+                cat stale-gospel.txt
+                echo '```'
+                echo
+                echo 'Remediation: triage each past-due case through the `golden-truth` lane —'
+                echo 're-verify and set a new staggered `reverifyBy`, or record an explicit dated'
+                echo 'extension with a rootCause. Never silently bump a date.'
+              fi
               if [ "$inventory_drift" = "true" ]; then
                 echo
                 echo '#### Inventory drift'
@@ -177,19 +269,34 @@ jobs:
         run: |
           echo "::error::Algolia rule canary errored — see algolia-rule-canary.txt output"
           exit 1
+      # These two fail the job WITHOUT asserting a domain fact. A crashed
+      # check-mirrors or a runner-side network fault is not evidence that
+      # production is down, and a broken corpus linter is not evidence that a
+      # golden is past due — so neither writes a section into the drift issue.
+      - name: fail on pin-availability check error
+        if: steps.drift.outputs.pins_error == 'true'
+        run: |
+          echo "::error::pinned-file availability check errored (not a proven pin loss) — see pin-availability.txt"
+          exit 1
+      - name: fail on stale-gospel check error
+        if: steps.drift.outputs.gospel_error == 'true'
+        run: |
+          echo "::error::QA gospel lint errored with no [stale] finding (not a proven past-due case) — see stale-gospel.txt"
+          exit 1
       - name: fail on drift
         if: steps.drift.outputs.drift == 'true'
         run: |
           echo "::error::live services drifted from the committed inventory and/or skills mirror — see the drift issue"
           exit 1
-      # Crash guard: if refresh-inventory.mjs / build-catalog.mjs / micro-map /
-      # spec:build /
-      # a mirror or drift check DIED before drift detection completed, the job
-      # would otherwise fail silently (just a red scheduled run). Open/update a
-      # labeled issue so the crash is impossible to miss. Gated on the drift step
-      # NOT having succeeded, so the intentional exit-1 steps above (real drift /
-      # skills-check error — already surfaced via the drift issue) don't also
-      # trip this. Static body only — never echoes .env / secret values.
+      # Crash guard for GENUINELY UNCLASSIFIED failures only. Every drift class
+      # with a documented owner — unresolvable pin, stale gospel, inventory,
+      # skills-HEAD, Algolia rule — is captured as an enum above and reported in
+      # the drift issue with its own remediation, so it never lands here. What
+      # remains is a real script fault (refresh-inventory / build-catalog /
+      # micro-map / spec:build) that died before drift detection completed, which
+      # would otherwise be just a red scheduled run. Gated on the drift step NOT
+      # having succeeded, so the intentional exit-1 steps above don't trip this.
+      # Static body only — never echoes .env / secret values.
       - name: open or update refresh-failure issue
         if: failure() && steps.drift.outcome != 'success'
         env:
@@ -198,9 +305,13 @@ jobs:
           {
             echo '### Refresh job crashed'
             echo
-            echo 'The daily refresh failed BEFORE drift detection completed — a script'
-            echo 'error (refresh-inventory / build-catalog / micro-map / spec:build / a mirror or'
-            echo 'skills-drift check), not a normal upstream-drift result.'
+            echo 'The daily refresh failed BEFORE drift detection completed — an UNCLASSIFIED'
+            echo 'script error (refresh-inventory / build-catalog / micro-map / spec:build).'
+            echo
+            echo 'Every known drift class is captured as an enum and reported in the drift issue'
+            echo 'with its own remediation — an unresolvable skill pin, stale QA gospel, inventory'
+            echo 'drift, skills-HEAD drift, and Algolia rule drift all land there, not here. If one'
+            echo 'of those is the real cause, this workflow has a routing bug as well.'
             echo
             echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           } > refresh-failure.md

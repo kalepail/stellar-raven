@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 /**
- * build-catalog.mjs — deterministic catalog builder (PLAN §2, offline).
+ * build-catalog.mjs — deterministic catalog builder (PLAN §2).
  *
- * Reads the three inventory snapshots (inventory/*.json) + the bundled skills
- * mirror (ecosystem-skills/) and emits catalog/manifest.json — the unified
- * index the MCP `search` tool ranks. Zero network, zero dependencies.
+ * Reads the three inventory snapshots (inventory/*.json) + the skill pin set
+ * (ecosystem-skills/MANIFEST.json) and emits catalog/manifest.json — the unified
+ * index the MCP `search` tool ranks. Zero dependencies. NOT offline: skill
+ * bodies are not stored in this repo, so the pinned files are fetched from
+ * upstream and hash-verified (scripts/lib/skill-mirror.mjs), through a
+ * gitignored working cache. Everything else is a committed input.
  *
  * Determinism: entries sorted by id, object keys sorted recursively,
  * generatedAt derived from the NEWEST input snapshot timestamp (never wall
@@ -182,7 +185,7 @@ function stellarDocsTitleExtras(entries, titlesSnapshot) {
 // runtime deny-list of ADR-0002). The manifest IS the exposed surface: an
 // entry is either emitted (callable/readable) or it does not exist to
 // consumers. The exclusion DATA lives in scripts/exposure.mjs, shared by every
-// emitter (manifest, super-spec, description rewrites, skills bundle) so the
+// emitter (manifest, super-spec, description rewrites, skill sectioning) so the
 // surfaces cannot drift; the fail-loud guards that pin that data to the live
 // inventories live here, where the inventory inputs are read. Exclusion
 // reasons live in exposure.mjs and the ADRs — never in emitted entries, never
@@ -828,7 +831,7 @@ function buildSkills(manifest, texts, arm) {
 // Skills-form experiment arms (skills program, Solo scratchpad 608 — R2
 // design). One categorical treatment over the ASSEMBLED entries: which
 // representation of the pinned skill store enters search. Everything else —
-// exposure, exact-id reads/runs, schemas, bundle, scoring constants — is a
+// exposure, exact-id reads/runs, schemas, pins, scoring constants — is a
 // control. Arm B WON the 2026-07-13 A/B (P4 in the scratchpad) and is now
 // the DEFAULT build: buildSkills stamps sections searchable:false at
 // creation, so B is a no-op here. Arm A (sections back in search) is kept
@@ -1088,7 +1091,7 @@ async function main() {
   writeFileAtomic(outPath, manifestBytes);
 
   // Treatment audit (experiment validity record): identical inputs must be
-  // provable across arms — ops byte-identical, bundle pinned, only the
+  // provable across arms — ops byte-identical, skill pins fixed, only the
   // skills search representation moving. Printed for every build; the arm
   // harness records these lines with each result.
   const searchableEntries = entries.filter((e) => e.searchable !== false);

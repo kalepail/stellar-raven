@@ -63,9 +63,11 @@ either the same explicit ids or a disclosed sample-membership change.
    belongs in `expected_any`, not in the strict headline.
 2. **Lanes never merge.** The legacy 338, skills 23 (active; +8 documented-inert
    `retiredCases` in `eval/skills-cases.json` after the 2026-07-03 onboarding-skills
-   retirement, ADR-0002), extended 122, membership-frozen canonical live-data 10, and opt-in live-digest
+   retirement, ADR-0002), extended 122, membership-frozen canonical live-data 15
+   (`live-data-canonical-v3`; the carried v2 ten are a subset of it, and v2-denominated
+   aggregates stay v2-denominated), and opt-in live-digest
    supplement 2 are separate scopes with separate denominators, forever. A historical
-   12-case run means canonical + supplement were run together; it is not a canonical-lane
+   12-case run means canonical v2 + supplement were run together; it is not a canonical-lane
    result. Comparability > bigger n.
 3. **No per-question tuning.** Zero-hit cases stay failing until a *general* mechanism
    fixes them (inherited from the raven ADRs; it has held through three scoring rounds).

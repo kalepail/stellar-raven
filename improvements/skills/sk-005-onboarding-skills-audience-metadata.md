@@ -43,9 +43,11 @@ For gateway/aggregator deployments that re-expose the tools behind their own aut
 and envelope (this repo: sandboxed `lumenloop.*` fns, no network, host-held key,
 `{ok,data}` envelope), the onboarding family is not just redundant but actively
 misleading — it steers agents toward key management and raw HTTP that the sandbox
-forbids. We retired those 7 from exposure on 2026-07-03 (deny-list-as-data;
-bodies retained in the mirror as reference); the playbooks were verified clean and
-kept.
+forbids. We retired those 7 from exposure on 2026-07-03 (deny-list-as-data); the
+playbooks were verified clean and kept. Since 2026-07-30 no skill body is stored in
+this repo at all — retired skills are simply never pinned, fetched, or emitted, so
+"retired" and "absent" are now the same state here. The finding is unaffected: it is
+about upstream metadata, and the upstream bodies are unchanged.
 
 ## Evidence
 

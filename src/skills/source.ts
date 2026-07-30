@@ -66,12 +66,15 @@ export const SKILL_READ_DEADLINE_MS = 20_000;
 /** Immutable by construction (commit-pinned URLs) — cache for a year. */
 const CACHE_CONTROL = "public, max-age=31536000, immutable";
 
-/** "<url>\n<sha256>" -> in-flight or settled body. Keyed by the full verified
- *  identity, never the URL alone: a second entry pinning the same URL to
- *  different bytes must re-verify rather than inherit the first one's body. */
+/** "<url>\n<sha256>\n<sha>" -> in-flight or settled body. Keyed by the full
+ *  verified identity, never the URL alone: a second entry pinning the same URL
+ *  to different bytes must re-verify rather than inherit the first one's body.
+ *  BOTH digests belong in the key. `verify` checks sha256 AND the git blob sha,
+ *  so a key omitting the blob sha would let a pin with a mismatched provenance
+ *  hash be served from memo without that half ever running. */
 const memo = new Map<string, Promise<string>>();
 
-const memoKey = (pin: SkillPin) => `${pin.url}\n${pin.sha256}`;
+const memoKey = (pin: SkillPin) => `${pin.url}\n${pin.sha256}\n${pin.sha}`;
 
 /** Test seam: drop memoized bodies so a test can observe fetch behavior. */
 export function resetSkillSourceMemo(): void {

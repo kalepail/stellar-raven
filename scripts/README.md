@@ -18,6 +18,7 @@ artifact. Delete one only after proving it has no package, workflow, documentati
 | `node eval/compile-routing.mjs` | `eval/routing-cases.json` | yes |
 | `node eval/qa/compile-qa.mjs` | `eval/qa/cases.json` | yes |
 | `node eval/plan/build-op-classes.mjs` | `eval/plan/op-classes.json` | yes |
+| `node ecosystem-skills/build-index.mjs` | `ecosystem-skills/INDEX.md` | yes |
 
 `build-catalog.mjs` and `build-super-spec.mjs` additionally read skill bodies through
 `scripts/lib/skill-mirror.mjs`, the one non-committed build input: it fetches each file pinned in
@@ -32,7 +33,7 @@ hand. Release/operator-only image and font generators are outside that offline C
 ## Typing convention
 
 Scripts stay plain `.mjs` because they run directly under Node. A `.d.mts` sidecar exists only when
-TypeScript source imports that JavaScript module and needs a declaration (`exposure.mjs`,
-`emitted-text-guard.mjs`, and `lib/skill-mirror.mjs`); it is not a visual-uniformity requirement
+TypeScript source imports that JavaScript module and needs a declaration (`build-catalog.mjs`,
+`exposure.mjs`, `emitted-text-guard.mjs`, and `lib/skill-mirror.mjs`); it is not a visual-uniformity requirement
 for every script. Prefer runtime tests for CLI-only scripts and add a declaration only at an
 actual TS import boundary.

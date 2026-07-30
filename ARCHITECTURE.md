@@ -544,8 +544,9 @@ in this repo and **not bundled into the Worker**: the pin is the artifact. The s
 (owner, 2026-07-30) is **serve, do not store** — Raven forwards this content and must never become
 its source of record, so a durable owned mirror (R2, a committed copy, a bundled copy) is out of
 scope by decision. Caches on the forwarding path are transport, not a store. It also deletes
-~390 KB of Worker bundle. `ecosystem-skills/update.sh` re-pins (vendors nothing), `scripts/check-mirrors.mjs` validates the pin set offline (`--fetch` additionally
-proves every pin still resolves upstream, run daily by `refresh.yml`), and
+~390 KB of Worker bundle. `ecosystem-skills/update.sh` re-pins (stores nothing) and fails closed at
+every step, `scripts/check-mirrors.mjs` validates the pin set offline (`--fetch` additionally
+proves every pin still resolves upstream, cache bypassed, run first by `refresh.yml`), and
 `scripts/check-skills-drift.mjs` checks the pins against upstream HEAD in the same refresh
 (detection only — pins are never auto-advanced, because skills are prompt input and an upstream
 edit must be read by a human before it reaches the model). The former credentialed Lumenloop API
@@ -586,9 +587,25 @@ What it IS: repo deletion, rename, or privatization; a history rewrite followed 
 outage; shared-egress rate limiting. Mitigations on the forwarding path: the colo cache and
 in-isolate memo keep warm reads off the network, one retry absorbs a transient blip, an 8s
 per-fetch timeout and a 20s whole-read deadline keep a slow upstream from killing `execute`, and
-failure surfaces as an ordinary `skills` error envelope. Detection: `check-mirrors --fetch` runs
-daily in `refresh.yml` and fails the job if any pin stops resolving, so repo-level loss surfaces
-within a day. The residual risk is deliberately **accepted**: the only remaining fix is to hold a
+failure surfaces as an ordinary `skills` error envelope.
+
+Detection, stated exactly, because the two halves are not equally covered:
+
+- **Upstream-side loss** (repo deleted/renamed/privatized, history rewritten and GC'd) is detected
+  within a day. `check-mirrors --fetch` runs first in `refresh.yml`, before any builder, fetching
+  every pin from upstream with the working cache **bypassed**, and reports an unresolvable pin as
+  its own drift class labelled a live `skill.read` outage. The cache bypass is load-bearing: a
+  cached read proves only that the bytes we already hold match the pin, so a warm
+  `ecosystem-skills/.cache/` would make the check pass while upstream was gone.
+- **Cloudflare-side failure** (egress from the colo, shared-IP rate limiting, a deployed-runtime
+  regression) has **no active repo detector**. GitHub Actions egress is not Worker egress, so the
+  daily check cannot see it, and warm memos and colo caches let it present as a partial outage that
+  looks healthy from anywhere else. Today the only view is passive: `skill_read` with `ok: false`
+  in Workers Logs. Closing this needs either a scheduled authenticated production canary or a
+  Cloudflare alert on that event, each with a named owner — neither exists yet, and saying the
+  daily job covers it would be false.
+
+The residual **upstream** risk is deliberately **accepted**: the only remaining fix is to hold a
 durable copy of the content, and the serve-do-not-store rule above forbids exactly that. Do not
 "solve" this with an R2 mirror.
 
@@ -597,7 +614,17 @@ shows hash changes only — the text never reaches `git diff` the way it did whe
 vendored. Two mechanisms replace that: `ecosystem-skills/update.sh` prints a real old-pin →
 new-pin body diff (`scripts/diff-pins.mjs`) at the moment of re-pinning, and
 `scripts/check-pin-review.mjs` fails CI unless `ecosystem-skills/PIN-REVIEW.md` records an
-attestation naming every newly pinned commit.
+attestation naming the new selection.
+
+Two things that guard makes explicit, because the obvious shape of each is wrong:
+
+- **A brand-new file is reviewed in full, not summarized.** An upstream addition — or the incoming
+  half of a rename — is the case with the most unreviewed prompt input in it, so `diff-pins` prints
+  its whole body rather than a `### NEW <path>` header.
+- **The gate keys on the whole selection, not the commit.** A source's commit is one of several
+  fields that decide which bytes get served; skill names, file paths, and per-file blob shas do
+  too. `check-pin-review` digests all of them into a `sel:` token, so retargeting an entry to a
+  different file inside the same pinned tree cannot ride in under a commit that never moved.
 
 **Build-time sectioning.** `scripts/build-catalog.mjs` emits, per skill: one `kind:
 "skill"` entry (id `skills.<source>.<name>`, description from frontmatter or first
