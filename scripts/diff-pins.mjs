@@ -81,10 +81,25 @@ for (const [key, next] of after) {
     console.log(`\n### NEW ${key} (${next.file.size} bytes)`);
     continue;
   }
-  const [oldText, newText] = await Promise.all([
-    readSkillFile(prev.source, prev.skill.name, prev.file),
-    readSkillFile(next.source, next.skill.name, next.file)
-  ]);
+  // The NEW bytes are mandatory — you cannot review what you cannot read. The
+  // OLD bytes are best-effort: if upstream force-pushed and GC'd the commit we
+  // are pinned to, the old side is simply gone. Aborting there would brick the
+  // re-pin in the exact disaster this tool exists to help recover from (dead
+  // pin, failing reads, and the fix refusing to run because it cannot draw a
+  // two-sided diff). The gate is "a human saw what is coming IN", not "a human
+  // saw a diff".
+  const newText = await readSkillFile(next.source, next.skill.name, next.file);
+  let oldText = null;
+  try {
+    oldText = await readSkillFile(prev.source, prev.skill.name, prev.file);
+  } catch (e) {
+    console.log(`\n### CHANGED ${key}`);
+    console.log(`### ${prev.file.sha.slice(0, 12)} -> ${next.file.sha.slice(0, 12)}`);
+    console.log(`### OLD SIDE UNAVAILABLE (${e.message})`);
+    console.log("### Showing the incoming file in full — review it as if new.");
+    for (const line of unified("", newText, key)) console.log(line);
+    continue;
+  }
   console.log(`\n### CHANGED ${key}`);
   console.log(`### ${prev.file.sha.slice(0, 12)} -> ${next.file.sha.slice(0, 12)}`);
   for (const line of unified(oldText, newText, key)) console.log(line);

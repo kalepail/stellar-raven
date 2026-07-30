@@ -64,8 +64,14 @@ Solo scratchpad 608; arm A (sections back in search) stays buildable via
 `node scripts/build-catalog.mjs --skills-form A`.
 
 Cheapest falsification: measure how often agents actually request a section versus a whole read.
-`skill.read` already distinguishes them and the `skill_read` observability event is the natural
-carrier. Nobody has looked.
+**The telemetry to do this does not exist yet** — correcting an earlier claim in this file. There
+is no `skill_read` log event; the only skill signal in observability is the boolean
+`sandbox.skillRead` span attribute (`src/executor/run.ts`), which records only THAT a run read some
+skill, never which one, whole-vs-section, or how long the fetch took. Answering this question needs
+a small `skill_read` event first — id, whole/section/file, section count, ms, cache hit/miss — at
+the `skill_read` dispatch in `src/executor/providers.ts`, alongside the existing `artifact_read`
+event that is the obvious template. That event is worth having on its own merits: the live-fetch
+change also shipped a latency profile nobody has measured in production.
 
 ## What a win would delete
 
