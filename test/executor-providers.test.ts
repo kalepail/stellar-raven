@@ -11,6 +11,7 @@ import { loadManifest, type Catalog } from "../src/catalog/search.ts";
 import { buildSandbox } from "../src/executor/providers.ts";
 import type { FetchLike } from "../src/adapters/types.ts";
 import { lazyPinnedSkillSource as skillSource } from "./helpers/skill-source.ts";
+import type { SkillSource } from "../src/skills/source.ts";
 import {
   ARTIFACT_CUSTOM_METADATA_MAX_BYTES,
   artifactCustomMetadataByteLength,
@@ -1361,5 +1362,44 @@ describe("skill_read telemetry (ideas/skill-discovery-without-bundling.md)", () 
     expect(events[0]!.ok).toBe(false);
     expect(events[0]!.from).toBe("none");
     expect(String(events[0]!.error)).toContain("exact catalog ids");
+  });
+
+  it("records a TRANSPORT failure — the availability signal the posture depends on", async () => {
+    // The test above fails at id resolution and never reaches the network, so
+    // it cannot prove the case that actually matters: a real, cataloged pin
+    // whose upstream fetch fails. `ARCHITECTURE.md` §6 accepts the availability
+    // risk on the grounds that it is OBSERVABLE — and `skill_read ok:false` is
+    // the entire observation. If a transport failure escaped as a throw, or
+    // logged nothing, the accepted risk would be an unmonitored one and the
+    // only way to notice would be a user complaint.
+    const events: Record<string, unknown>[] = [];
+    const spy = vi.spyOn(console, "log").mockImplementation((line: unknown) => {
+      try {
+        const parsed = JSON.parse(String(line));
+        if (parsed?.evt === "skill_read") events.push(parsed);
+      } catch {
+        // not a telemetry line
+      }
+    });
+    try {
+      // A source that resolves nothing: every pin fetch fails the way upstream
+      // loss or a blocked colo egress would.
+      const dead: SkillSource = async (pin) => {
+        throw new Error(`could not fetch ${pin.url}: fetch failed`);
+      };
+      const fns = fnsOf(buildSandbox(catalog, dead, env), "codemode") as Record<string, Function>;
+      const r = (await fns.skill_read!("skills.lumenloop.stellar-project-dossier", {})) as {
+        ok: boolean;
+      };
+      expect(r.ok).toBe(false); // an ordinary envelope, never a throw
+    } finally {
+      spy.mockRestore();
+    }
+    expect(events).toHaveLength(1);
+    const e = events[0]!;
+    expect(e.ok).toBe(false);
+    expect(e.id).toBe("skills.lumenloop.stellar-project-dossier");
+    expect(String(e.error)).toContain("could not fetch");
+    expect(typeof e.ms).toBe("number");
   });
 });
