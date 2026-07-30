@@ -1,7 +1,7 @@
 {
   "$comment": "Deterministic stratified sample (N=30, by service) of the owned QA battery.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "406deacc444ec78fb6a4ee76478798e7df1595954bd87974bcfc2f2e5bb9babc",
+  "corpusContentSha256": "292ef30e768474f3fa962ee26197e52deaeecaa069c82d7f67a8adc30c903646",
   "counts": {
     "total": 30,
     "byCategory": {
@@ -2290,8 +2290,8 @@
         "sources": [
           {
             "class": "B",
-            "ref": "ecosystem-skills/skills/openzeppelin-stellar/setup-stellar-contracts/SKILL.md",
-            "note": "Fetch-verified local path exists and defines the exercised contract/workflow."
+            "ref": "skills.openzeppelin-stellar.setup-stellar-contracts",
+            "note": "Served skill body (pinned upstream commit, hash-verified) defines the exercised contract/workflow."
           },
           {
             "class": "C",
@@ -2304,7 +2304,7 @@
           "by": "P4 coverage-closure lane (Solo process 3427)",
           "evidence": [
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
-            "ecosystem-skills/skills/openzeppelin-stellar/setup-stellar-contracts/SKILL.md exists and supports the behavioral golden.",
+            "skills.openzeppelin-stellar.setup-stellar-contracts is served and supports the behavioral golden.",
             "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
             "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
