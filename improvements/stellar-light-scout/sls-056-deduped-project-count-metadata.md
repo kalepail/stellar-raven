@@ -1,7 +1,7 @@
 ---
 id: sls-056
 service: stellar-light-scout
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-15
 upstreamTitle: Apply project result counts after canonical deduplication
 evidence:
@@ -11,6 +11,7 @@ evidence:
   - successor residual posted and read back 2026-07-15: https://github.com/Stellar-Light/stellarlight/pull/289#issuecomment-4982310089
   - ref health 2026-07-27: PR 289 merged 2026-07-05, ten days before this finding was discovered, so that comment is context on a closed artifact and never tracked this defect
   - standalone upstream issue filed 2026-07-27, replacing the merged-PR comment as this finding's tracker: https://github.com/Stellar-Light/stellarlight/issues/741
+  - 2026-07-30 live GET /api/projects/search?q=OrbitCDP&limit=100 returned one orbitcdp row with returned=1 and total=1; q=Orbit returned two rows with returned=2 and total=2; the original count mismatch no longer reproduces and upstream issue 741 is closed completed
 ---
 
 ## Finding

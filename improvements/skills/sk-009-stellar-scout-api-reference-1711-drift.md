@@ -14,6 +14,8 @@ evidence:
 recurrences:
   - date: 2026-07-15
     evidence: the 1.7.26 mirror still omits live research source=sdf-org and observedAt plus leaderboard type, meta.filters.type, meta.metricDefinitions, and meta.dataAsOf
+  - date: 2026-07-30
+    evidence: upstream stellar-scout main at f2659ff still names the retired soroban skill in its SDF roster, skills.stellar.org URLs, and exact GET /api/skills/soroban examples, while live OpenAPI 1.8.30 names smart-contracts and production returns 200 for /api/skills/smart-contracts versus 404 for /api/skills/soroban
 ---
 
 ## Finding

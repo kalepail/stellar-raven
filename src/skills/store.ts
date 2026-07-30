@@ -119,8 +119,8 @@ function editDistance(a: string, b: string): number {
 /**
  * Nearest readable skill id for a failed lookup — a SUGGESTION appended to
  * the exact-match error, never a resolution (no fuzzy top-hit acceptance).
- * Terminal-segment equality wins (catches "skills.soroban" for
- * "skills.stellar-dev.soroban"); otherwise smallest edit distance within a
+ * Terminal-segment equality wins (catches "skills.smart-contracts" for
+ * "skills.stellar-dev.smart-contracts"); otherwise smallest edit distance within a
  * typo-sized bound.
  *
  * Exported for src/skills/run.ts (design §6/§11 row 9): skill.run's
@@ -201,7 +201,7 @@ function resolveSkillEntry(catalog: Catalog, name: string): CatalogEntry | Skill
   if (direct) return direct;
   const nearest = nearestSkillId(catalog, name);
   return err(
-    `unknown skill "${name}" — names are exact catalog ids (e.g. "skills.stellar-dev.soroban"); discover them with codemode.search or the search tool (kind: "skill")${nearest ? `. Did you mean "${nearest}"?` : ""}`
+    `unknown skill "${name}" — names are exact catalog ids (e.g. "skills.stellar-dev.smart-contracts"); discover them with codemode.search or the search tool (kind: "skill")${nearest ? `. Did you mean "${nearest}"?` : ""}`
   );
 }
 

@@ -812,13 +812,16 @@ describe("search-hit signature compaction (todo 841)", () => {
       }
     }
     // The threshold trims ONLY the measured monsters. Scout 1.8.28 expanded
-    // several shared response schemas past the line; pin the complete set so a later schema
-    // refresh cannot silently widen compaction coverage.
+    // several shared response schemas past the line, and 1.8.30 added +622 chars of shared
+    // `meta` prose (nullable `total` + `totalBasis`) that carried scout.getHackathon
+    // (1631 -> 2253) and scout.searchResearch (1769 -> 2391) over it too; pin the complete
+    // set so a later schema refresh cannot silently widen compaction coverage.
     expect(compacted.sort()).toEqual([
       "scout.analyzeEcosystem",
       "scout.explainRepo",
       "scout.getBuilders",
       "scout.getClusters",
+      "scout.getHackathon",
       "scout.getHackathons",
       "scout.getLeaderboard",
       "scout.getPartners",
@@ -827,7 +830,8 @@ describe("search-hit signature compaction (todo 841)", () => {
       "scout.listAudits",
       "scout.listSkills",
       "scout.searchProjects",
-      "scout.searchRepos"
+      "scout.searchRepos",
+      "scout.searchResearch"
     ]);
   });
 

@@ -2,7 +2,7 @@
 
 # Stellar/Soroban ecosystem skills — index
 
-Mirror of **19 agent skills** across **4 sources** · synced 2026-07-26T23:35:40Z. Each skill lives under [`skills/<source>/<skill>/`](./skills/). Large SKILL.md files are best **grepped** for the section you need.
+Mirror of **19 agent skills** across **4 sources** · synced 2026-07-30T15:21:10Z. Each skill lives under [`skills/<source>/<skill>/`](./skills/). Large SKILL.md files are best **grepped** for the section you need.
 
 ## Sources (pinned)
 
@@ -57,7 +57,7 @@ _SDF's developer skills for building on Stellar off-chain: dapps/wallets, chain 
 
 ## Ecosystem directory (stellarlight.xyz catalog snapshot)
 
-_The broader map of what exists across the Stellar agent-skill ecosystem — 42 entries from [`https://stellarlight.xyz/api/skills`](https://stellarlight.xyz/api/skills), fetched 2026-07-26T23:35:40Z. Only `skill-md` entries are downloadable SKILL.md skills; `mcp-server` / `sdk` / `cli` / `tool` entries are pointers to runtime tools, not skills. Not all are mirrored here._
+_The broader map of what exists across the Stellar agent-skill ecosystem — 42 entries from [`https://stellarlight.xyz/api/skills`](https://stellarlight.xyz/api/skills), fetched 2026-07-30T15:21:10Z. Only `skill-md` entries are downloadable SKILL.md skills; `mcp-server` / `sdk` / `cli` / `tool` entries are pointers to runtime tools, not skills. Not all are mirrored here._
 
 | Entry | Source | Kind |
 | --- | --- | --- |

@@ -13,7 +13,7 @@ Total findings: 67
 | sk-005 | The Lumenloop skill corpus lacks machine-readable audience and transport metadata             | reported-upstream | 2026-07-03 | 2           |
 | sk-006 | The smart-contracts skill lacks error-keyed troubleshooting for common CLI and build failures | reported-upstream | 2026-07-03 | 3           |
 | sk-007 | The ecosystem-digest skill hard-codes a stale 2026-06-08 recency window                       | reported-upstream | 2026-07-03 | 2           |
-| sk-009 | The pinned Stellar Scout skill API reference has fallen behind the live Scout                 | reported-upstream | 2026-07-10 | 1           |
+| sk-009 | The pinned Stellar Scout skill API reference has fallen behind the live Scout                 | reported-upstream | 2026-07-10 | 2           |
 | sk-011 | The served upstream ZK skill is stale after Protocol 25. It describes BN254 and               | reported-upstream | 2026-07-11 | 0           |
 | sk-012 | The served agentic-payments skill presents "MPP Channel mode" as the public                   | reported-upstream | 2026-07-11 | 0           |
 
@@ -24,14 +24,14 @@ Total findings: 67
 | sls-023 | Scout's broad RWA discovery does not separate entity/project status from the        | reported-upstream | 2026-07-10 | 2           |
 | sls-024 | Scout lifecycle labels lack populated provenance and deployment qualifiers          | reported-upstream | 2026-07-10 | 1           |
 | sls-029 | Oracle discovery collapses provider identity, product family, network, and          | reported-upstream | 2026-07-10 | 2           |
-| sls-033 | Scout does not offer a first-class exact-type wallet enumeration with canonical     | reported-upstream | 2026-07-10 | 3           |
-| sls-036 | The leaderboard does not make the exact activity calculation or repository          | reported-upstream | 2026-07-10 | 3           |
+| sls-033 | Scout does not offer a first-class exact-type wallet enumeration with canonical     | reported-upstream | 2026-07-10 | 4           |
+| sls-036 | The leaderboard does not make the exact activity calculation or repository          | fixed-upstream    | 2026-07-10 | 3           |
 | sls-039 | Scout's project-level tvlUSD/tvlAsOf point cannot answer a trend question           | declined-upstream | 2026-07-10 | 0           |
 | sls-055 | Scout research does not reliably expose quotable canonical SDF organizational pages | reported-upstream | 2026-07-13 | 4           |
-| sls-056 | Scout project search applies canonical deduplication to the returned projects       | reported-upstream | 2026-07-15 | 0           |
+| sls-056 | Scout project search applies canonical deduplication to the returned projects       | fixed-upstream    | 2026-07-15 | 0           |
 | sls-057 | Scout's people-discovery surface does not currently provide a route to              | proposed          | 2026-07-27 | 0           |
 | sls-058 | Scout's structured SCF funding fields disagree with the official SCF submission     | reported-upstream | 2026-07-27 | 0           |
-| sls-059 | The Scout OpenAPI's get-one-skill operation still advertises the retired            | reported-upstream | 2026-07-28 | 0           |
+| sls-059 | The Scout OpenAPI's get-one-skill operation still advertises the retired            | fixed-upstream    | 2026-07-28 | 0           |
 
 ## stellar-docs
 

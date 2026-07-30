@@ -12,7 +12,7 @@
 /**
  * The segment after the final "." of an id, ignoring any `#<section>` suffix.
  * `lumenloop.search_directory` → `search_directory`;
- * `skills.stellar-dev.soroban#storage` → `soroban`.
+ * `skills.stellar-dev.smart-contracts#storage` → `smart-contracts`.
  */
 export function lastIdSegment(id: string): string {
   const base = id.split("#")[0] ?? id;

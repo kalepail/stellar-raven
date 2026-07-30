@@ -1,7 +1,7 @@
 ---
 id: sls-036
 service: stellar-light-scout
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-10
 evidence:
   - live sort=activity range=30d payload did not expose repoScore or commit count
@@ -11,6 +11,7 @@ evidence:
   - upstream issue filed 2026-07-13: https://github.com/Stellar-Light/stellarlight/issues/524
   - 2026-07-15 live recheck on spec 1.7.26 returned explicit metricDefinitions and dataAsOf; repeatable type=DEX&type=Lending used exact whole-element EITHER membership, echoed meta.filters.type, and every returned row matched DEX or Lending; upstream resolution https://github.com/Stellar-Light/stellarlight/issues/524#issuecomment-4974459740
   - 2026-07-15 independent review confirmed the type-filter and general metric-metadata portion fixed, but the original sort=issues issue-only versus pull-request definition and repository-universe evidence remain unverified
+  - 2026-07-30 live GET /api/leaderboard?sort=issues&range=all&limit=100 on OpenAPI 1.8.30 returned 100 rows with github.repos present, sorted, and repoCount === repos.length on every row; issue-only metricDefinitions and dataAsOf remained present; resolving PR https://github.com/Stellar-Light/stellarlight/pull/748
 recurrences:
   - date: 2026-07-11
     evidence: GT-55 reproduced that issues is a cached project/repository-universe backlog rollup, not activity or quality; GitHub repository open_issues_count also cannot corroborate issue-only totals because it includes pull requests
