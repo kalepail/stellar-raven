@@ -6,9 +6,9 @@ source of admission) are still open exploration, not a product decision._
 
 ## What actually shipped (2026-07-30)
 
-Legal asked that upstream skill files not be copied into this repository. The change that
-answered it took the **content-ownership** half of this document and left the **discovery** half
-untouched:
+Legal asked that upstream skill files not be copied into this repository, and the owner settled the
+rule on 2026-07-30: **Raven may serve this content, it may not store it.** The change that answered
+it took the **content-ownership** half of this document and left the **discovery** half untouched:
 
 - `ecosystem-skills/skills/**` (604 KiB) and `src/skills/bundle.json` (380 KiB) are gone.
   `ecosystem-skills/MANIFEST.json` — commit SHA per source, git blob hash per file — is now the
@@ -26,6 +26,12 @@ untouched:
 What this did NOT settle: whether Raven should own skill metadata at all (M1/M2 below), whether
 204 section entries earn their place, or whether upstream directories should drive admission.
 Those remain measurable, and the machinery to test them is now smaller.
+
+What the serve-not-store rule DOES settle for any successor design: a durable owned mirror is out.
+Moving the bytes to R2 (or any Raven-owned store) to escape the upstream availability dependency is
+not an option — it would make Raven the source of record, which is the exact thing the rule forbids.
+Availability has to be solved on the forwarding path (caching, retry, graceful degradation) or
+accepted.
 
 ## Question
 

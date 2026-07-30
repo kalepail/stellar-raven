@@ -540,9 +540,11 @@ The `codemode` provider (`buildCodemodeProvider`, `src/executor/providers.ts`) i
 
 **The pin set.** `ecosystem-skills/MANIFEST.json` pins 19 public skills from 4 upstreams: per
 source a full commit SHA, per file a path, size, and git blob hash. Bodies are **not vendored**
-in this repo and **not bundled into the Worker** (legal position, and it deletes ~390 KB of
-Worker bundle): the pin is the artifact. `ecosystem-skills/update.sh` re-pins (downloads
-nothing), `scripts/check-mirrors.mjs` validates the pin set offline (`--fetch` additionally
+in this repo and **not bundled into the Worker**: the pin is the artifact. The settled rule
+(owner, 2026-07-30) is **serve, do not store** — Raven forwards this content and must never become
+its source of record, so a durable owned mirror (R2, a committed copy, a bundled copy) is out of
+scope by decision. Caches on the forwarding path are transport, not a store. It also deletes
+~390 KB of Worker bundle. `ecosystem-skills/update.sh` re-pins (vendors nothing), `scripts/check-mirrors.mjs` validates the pin set offline (`--fetch` additionally
 proves every pin still resolves upstream, run daily by `refresh.yml`), and
 `scripts/check-skills-drift.mjs` checks the pins against upstream HEAD in the same refresh
 (detection only — pins are never auto-advanced, because skills are prompt input and an upstream

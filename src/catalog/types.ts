@@ -53,7 +53,7 @@ const jsonSchemaShape = z.record(z.string(), z.unknown());
  *               at the commit pinned in ecosystem-skills/MANIFEST.json),
  *               `sha` (git blob hash — provenance) and `sha256` (security
  *               digest). Both are re-verified on every read; skill bodies are
- *               not vendored or bundled. See src/skills/source.ts.
+ *               forwarded from upstream, never stored here. See src/skills/source.ts.
  * Extra transport detail (hosts, retry policy, …) rides along via catchall.
  */
 

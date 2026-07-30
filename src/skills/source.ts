@@ -26,6 +26,13 @@
  *    time now runs on every served body (same implementation the builders
  *    use), so a leak cannot ride in on live content.
  *
+ * Standing rule (owner decision 2026-07-30): **serve, do not store.** Raven
+ * forwards this content and must never become its source of record. The caches
+ * below are transport on a forwarding path; a durable owned mirror (R2, a
+ * committed copy, a bundled copy) is out of scope by decision. Responses carry
+ * the forwarded markdown and nothing else — no license text, notice, or
+ * wrapper is attached.
+ *
  * Caching: an in-isolate memo keyed by (url, sha256) in front of the colo-wide
  * Cache API. Cached bytes are re-verified on every hit — the cache is a
  * transport, not a trust boundary — and cache WRITES are best-effort, so a
