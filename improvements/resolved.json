@@ -994,6 +994,28 @@
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/0306425752a0fb4c1b1965d64236c5a975aafa5b/improvements/stellar-light-scout/sls-035-dex-role-liquidity-taxonomy.md"
     },
     {
+      "id": "sls-036",
+      "title": "The leaderboard does not make the exact activity calculation or repository",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-10",
+      "resolved": "2026-07-30",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/524",
+        "https://github.com/Stellar-Light/stellarlight/issues/742",
+        "https://github.com/Stellar-Light/stellarlight/pull/748"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/524",
+        "https://github.com/Stellar-Light/stellarlight/issues/742",
+        "https://github.com/Stellar-Light/stellarlight/pull/748"
+      ],
+      "liveRecheck": "2026-07-30 the original sort=issues&range=all trigger now returns explicit issue-only metricDefinitions, dataAsOf, and github.repos on all 100 returned rows; repoCount === repos.length, the arrays are sorted, and no returned row omitted repos",
+      "reviewEvidence": "distinct reviewer: gpt-5.6-sol at xhigh effort independently repeated the original live trigger on 2026-07-30 (author was Solo process 4111); resolution comment posted at https://github.com/Stellar-Light/stellarlight/issues/742#issuecomment-5133765754, scoped so the still-reproducing sls-033 wallet residual on that shared thread stays open",
+      "sourceCommit": "b8acfff36ec6a4587b63457efba530350f22c3ee",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/b8acfff36ec6a4587b63457efba530350f22c3ee/improvements/stellar-light-scout/sls-036-leaderboard-metric-filter-semantics.md"
+    },
+    {
       "id": "sls-037",
       "title": "One Live project status cannot represent partial deployment. Rarible has",
       "service": "stellar-light-scout",
@@ -1302,6 +1324,46 @@
       "reviewEvidence": "Independent Fable reviewer Solo 3656 re-derived upstream deploy and live trigger",
       "sourceCommit": "51847b418c377a15ff5fdf48527bc685e123bcfc",
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/51847b418c377a15ff5fdf48527bc685e123bcfc/improvements/stellar-light-scout/sls-054-changelog-rename-identity-shape-mismatch.md"
+    },
+    {
+      "id": "sls-056",
+      "title": "Scout project search applies canonical deduplication to the returned projects",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-15",
+      "resolved": "2026-07-30",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/741",
+        "https://github.com/Stellar-Light/stellarlight/pull/289"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/741",
+        "https://github.com/Stellar-Light/stellarlight/pull/289"
+      ],
+      "liveRecheck": "2026-07-30 the exact original probes now return OrbitCDP: projects.length=1, returned=1, total=1 and Orbit: projects.length=2, returned=2, total=2 — counts are applied after canonical deduplication and match the returned array",
+      "reviewEvidence": "distinct reviewer: gpt-5.6-sol at xhigh effort independently repeated the original live trigger on 2026-07-30 (author was Solo process 4111); resolution comment posted at https://github.com/Stellar-Light/stellarlight/issues/741#issuecomment-5133762436",
+      "sourceCommit": "b8acfff36ec6a4587b63457efba530350f22c3ee",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/b8acfff36ec6a4587b63457efba530350f22c3ee/improvements/stellar-light-scout/sls-056-deduped-project-count-metadata.md"
+    },
+    {
+      "id": "sls-059",
+      "title": "The Scout OpenAPI's get-one-skill operation still advertises the retired",
+      "service": "stellar-light-scout",
+      "discovered": "2026-07-28",
+      "resolved": "2026-07-30",
+      "repo": "Stellar-Light/stellarlight",
+      "upstreamRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/746",
+        "https://github.com/Stellar-Light/stellarlight/pull/747"
+      ],
+      "resolvingRefs": [
+        "https://github.com/Stellar-Light/stellarlight/issues/746",
+        "https://github.com/Stellar-Light/stellarlight/pull/747"
+      ],
+      "liveRecheck": "2026-07-30 live OpenAPI 1.8.30: smart-contracts appears in the path parameter, x-routing exampleQuestions, and keywords with zero stale exact-slug soroban references; GET /api/skills/smart-contracts returned 200 while the retired /api/skills/soroban correctly remained 404",
+      "reviewEvidence": "distinct reviewer: gpt-5.6-sol at xhigh effort independently repeated the original live trigger on 2026-07-30 (author was Solo process 4111); resolution comment posted at https://github.com/Stellar-Light/stellarlight/issues/746#issuecomment-5133759906",
+      "sourceCommit": "b8acfff36ec6a4587b63457efba530350f22c3ee",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/b8acfff36ec6a4587b63457efba530350f22c3ee/improvements/stellar-light-scout/sls-059-get-skill-routing-example-names-retired-soroban-slug.md"
     }
   ]
 }
