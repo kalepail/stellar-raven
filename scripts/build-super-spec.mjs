@@ -53,6 +53,7 @@ import { RETIRED_ONBOARDING_SKILLS, scrubRetiredSkillRefs } from "./exposure.mjs
 // build-catalog.mjs's src/ imports).
 import { RUNNERS } from "../src/skills/runners/index.ts";
 import { lumenloopOutputSchema } from "../src/adapters/lumenloop-shape.ts";
+import { parseFrontmatter, plainText, slugify } from "./lib/skill-markdown.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_PATH = join(ROOT, "specs", "super-spec.json");
@@ -60,7 +61,8 @@ const OUT_PATH = join(ROOT, "specs", "super-spec.json");
 const readJson = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
 
 // ---------------------------------------------------------------------------
-// Shared helpers (kept in sync with scripts/build-catalog.mjs where noted)
+// Local helpers. The three that MUST agree with build-catalog.mjs now come
+// from ./lib/skill-markdown.mjs instead of being copied here.
 // ---------------------------------------------------------------------------
 
 /** Recursively sort object keys (arrays keep order) for stable output. */
@@ -72,46 +74,6 @@ function sortKeysDeep(value) {
     return out;
   }
   return value;
-}
-
-/** MUST match scripts/build-catalog.mjs `plainText` (skills index consistency). */
-function plainText(markdown) {
-  return markdown
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/[`*]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-/** MUST match scripts/build-catalog.mjs `slugify` (section keys must line up). */
-function slugify(text) {
-  return (
-    plainText(text)
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") || "section"
-  );
-}
-
-/** MUST match scripts/build-catalog.mjs `parseFrontmatter`. */
-function parseFrontmatter(content) {
-  if (!content.startsWith("---")) return { attrs: {}, body: content };
-  const end = content.indexOf("\n---", 3);
-  if (end === -1) return { attrs: {}, body: content };
-  const block = content.slice(content.indexOf("\n") + 1, end);
-  const body = content.slice(content.indexOf("\n", end + 1) + 1);
-  const attrs = {};
-  let currentKey = null;
-  for (const line of block.split("\n")) {
-    const keyMatch = line.match(/^([A-Za-z][A-Za-z0-9_-]*):\s?(.*)$/);
-    if (keyMatch) {
-      currentKey = keyMatch[1];
-      attrs[currentKey] = keyMatch[2].trim().replace(/^["']|["']$/g, "");
-    } else if (currentKey && line.trim() !== "") {
-      attrs[currentKey] = `${attrs[currentKey]} ${line.trim()}`.trim();
-    }
-  }
-  return { attrs, body };
 }
 
 function firstSentence(text, max = 120) {

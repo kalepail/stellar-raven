@@ -156,6 +156,18 @@ export type SkillSourceDeps = {
   /** Test seam; production uses `caches.default`. Returning undefined disables
    *  the colo cache entirely, which is what happens under plain Node. */
   cacheImpl?: () => Cache | undefined;
+  /**
+   * Skip BOTH the memo and the colo cache and go to upstream every time.
+   *
+   * Only the availability canary sets this, and it is what makes the canary
+   * mean anything. Pinned URLs are cached `immutable` for a year, so a warm
+   * colo entry answers a read without touching the network — a canary that
+   * used the normal path would report "healthy" indefinitely while egress to
+   * GitHub was dead. (`check-mirrors --fetch` had exactly this bug at the build
+   * layer: 0 network requests against a warm cache.) Never set it on the
+   * serving path; the caches are the reason a read is 0 ms instead of 80.
+   */
+  bypassCaches?: boolean;
 };
 
 /**
@@ -163,10 +175,11 @@ export type SkillSourceDeps = {
  */
 export function createSkillSource(deps: SkillSourceDeps = {}): SkillSource {
   const fetchImpl = deps.fetchImpl ?? fetch;
-  const getCache = deps.cacheImpl ?? defaultCache;
+  const getCache = deps.bypassCaches ? () => undefined : (deps.cacheImpl ?? defaultCache);
+  const bypassMemo = deps.bypassCaches === true;
   return async (pin) => {
     const key = memoKey(pin);
-    const hit = memo.get(key);
+    const hit = bypassMemo ? undefined : memo.get(key);
     // A memo hit is reported as such even though it resolves the same promise:
     // the distinction is the whole point of measuring retrieval provenance.
     if (hit) return { text: await hit, from: "memo" as const };
@@ -206,11 +219,20 @@ export function createSkillSource(deps: SkillSourceDeps = {}): SkillSource {
       return scrubRetiredSkillRefs(text, pin.url);
     })();
     // A failed fetch must not poison the isolate for the rest of its life.
-    const wrapped = pending.catch((e: unknown) => {
-      memo.delete(key);
+    const wrapped: Promise<string> = pending.catch((e: unknown) => {
+      // Delete ONLY an entry this call owns. A bypassing probe never wrote the
+      // memo, so it must never delete one either — its rejection would
+      // otherwise evict a perfectly good serving entry for the same pin,
+      // forcing the next real request back to the network. That is the canary
+      // amplifying the outage it exists to measure. The identity check also
+      // covers the race where another read has already replaced ours.
+      if (!bypassMemo && memo.get(key) === wrapped) memo.delete(key);
       throw e;
     });
-    memo.set(key, wrapped);
+    // The canary must not WRITE the memo either: a shared isolate serves real
+    // traffic, and seeding it from a cache-bypassing probe would hand the next
+    // reader a body it never verified through its own path.
+    if (!bypassMemo) memo.set(key, wrapped);
     return { text: await wrapped, from };
   };
 }

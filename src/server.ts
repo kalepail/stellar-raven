@@ -32,6 +32,8 @@ import { demoLoginRedirect } from "./auth/workos";
 import { verifyDemoCookie } from "./demo/auth";
 import { DEMO_PAGE_HEADERS, demoPage } from "./demo/page";
 import { logEvent } from "./observability";
+import { getCatalog } from "./catalog/load";
+import { runAndStoreSkillCanary } from "./skills/canary";
 import {
   authSubjectFromProps,
   buildMcpRequestObservability,
@@ -141,16 +143,13 @@ function isMcpPath(url: URL): boolean {
 
 // Exact paths only (review finding 6: no startsWith that would catch
 // /playgrounds) — anything else under /playground* falls through to the
-// provider's defaultHandler 404. The legacy /demo{,/} page URL is matched too,
-// solely so handlePlaygroundRoute can 301 it to /playground.
+// provider's defaultHandler 404.
 function isPlaygroundPath(url: URL): boolean {
   return (
     url.pathname === "/playground" ||
     url.pathname === "/playground/" ||
     url.pathname === "/playground/login" ||
-    url.pathname === "/playground/chat" ||
-    url.pathname === "/demo" ||
-    url.pathname === "/demo/"
+    url.pathname === "/playground/chat"
   );
 }
 
@@ -158,7 +157,7 @@ function isPlaygroundPath(url: URL): boolean {
  * /playground routes — a browser surface gated by the signed demo cookie (plus
  * the same loopback dev bypass /mcp honors), never by the OAuth provider.
  * Matched paths with an unsupported method get 405 here; only unmatched paths
- * fall through to the provider. The retired /demo{,/} URL 301s to /playground.
+ * fall through to the provider.
  */
 async function handlePlaygroundRoute(
   request: Request,
@@ -167,13 +166,6 @@ async function handlePlaygroundRoute(
   url: URL
 ): Promise<Response> {
   const isRead = request.method === "GET" || request.method === "HEAD";
-
-  // Retired page URL — permanent redirect to the current /playground path.
-  // Relative Location (RFC 7231 §7.1.2): same-origin, and avoids reconstructing
-  // the host/port from the request URL.
-  if (url.pathname === "/demo" || url.pathname === "/demo/") {
-    return new Response(null, { status: 301, headers: { location: "/playground" } });
-  }
 
   if (url.pathname === "/playground" || url.pathname === "/playground/") {
     if (!isRead) return methodNotAllowed("GET, HEAD");
@@ -245,5 +237,24 @@ export default {
       });
     }
     return response;
+  },
+
+  /**
+   * Skill-availability canary (wrangler.jsonc `triggers.crons`).
+   *
+   * The one check that runs from the Worker's own network position. Everything
+   * else that watches the serve-don't-store path — `check-mirrors --fetch`,
+   * `check-skills-drift` — runs on a GitHub Actions runner and therefore cannot
+   * see a Cloudflare-side egress failure at all. This can, because it IS the
+   * Worker.
+   *
+   * It only records a verdict. `refresh.yml` reads it through `/health/skills`
+   * and decides what it means, so a flaky probe cannot page anyone by itself.
+   */
+  async scheduled(_controller, env, _ctx): Promise<void> {
+    // One task, so await it directly rather than registering it with
+    // ctx.waitUntil — the invocation's result is exactly this promise's result,
+    // and a rejection surfaces in Cron Past Events either way.
+    await runAndStoreSkillCanary(getCatalog(), env.OAUTH_KV);
   }
 } satisfies ExportedHandler<Env>;

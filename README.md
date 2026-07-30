@@ -22,7 +22,8 @@ worker/service name deliberately keeps the `codemode` suffix even though the rep
 ```
 Server URL:   https://raven.stellar.buzz        (live since 2026-07-02; alias: https://agents.stellar.buzz still works)
 MCP endpoint: POST https://raven.stellar.buzz/mcp   (streamable HTTP)  # or https://agents.stellar.buzz/mcp
-Health:       GET  /health
+Health:       GET  /health          # service heartbeat
+              GET  /health/skills   # last skill-retrieval canary verdict (503 = failing/never ran)
 ```
 
 Local dev: use Node 24, run `npm ci`, populate `.dev.vars`, then `npm run dev` and point a client at

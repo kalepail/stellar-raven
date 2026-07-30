@@ -39,7 +39,7 @@ export const DEMO_CAPS = {
   /** execute tool: input.code length ceiling. */
   maxExecuteCodeChars: 8000,
   /**
-   * POST /demo/chat: max chars per user-role message (mirrors the composer's
+   * POST /playground/chat: max chars per user-role message (mirrors the composer's
    * maxlength). Deliberately NOT applied to replayed assistant messages —
    * they can legitimately exceed it, and truncating them corrupts the
    * model's view of its own prior answers; clampHistory bounds the total.

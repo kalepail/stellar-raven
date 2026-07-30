@@ -233,12 +233,15 @@ inventory stubs so credentialed content cannot re-enter the public repo.
 | Stellar Light | `/api/openapi.json` (diff), `/api/status` endpoint enumeration | same classifier over `inventory/stellar-light.json`; op path·method **set**, not `operationCount` — a rename holds the count constant | `live-drift-resolution` |
 | Stellar Docs (Algolia) | `GET /1/indexes/{index}/settings` + one `type:lvl1` page-title query (fails closed if `nbHits` exceeds one page) | settings diff and title-set diff; separately, `check-algolia-rule-canary.mjs` runs a read-only rules-on/off behavioral delta on the load-bearing rule | `live-drift-resolution` |
 | Skills (pin set) | `check-skills-drift.mjs` — each source's upstream HEAD vs its pinned commit, plus a re-projection of the live stellarlight directory | pinned commit moved, or the directory snapshot would change | re-pin with `ecosystem-skills/update.sh`, **read the body diff**, record the `sel:` digest in `PIN-REVIEW.md` |
-| Skills (availability) | `check-mirrors.mjs --fetch` — fetches every pinned file from upstream, cache bypassed, before any builder | a pin that no longer resolves. Bodies are served, not stored, so this is a **live user-facing `skill.read` outage**, not a stale snapshot | `ARCHITECTURE.md` §6 "availability posture" — never by mirroring the content |
+| Skills (availability, upstream) | `check-mirrors.mjs --fetch` — fetches every pinned file from upstream, cache bypassed, before any builder | a pin that no longer resolves *from a GitHub runner*. Bodies are served, not stored, so this is a **live user-facing `skill.read` outage**, not a stale snapshot | `ARCHITECTURE.md` §6 "availability posture" — never by mirroring the content |
+| Skills (availability, Worker-side) | the Worker's **own** hourly cron (`src/skills/canary.ts`) fetching every pinned file with memo + colo cache bypassed, verdict in KV, read via `GET /health/skills` | the deployed Worker cannot reach upstream — or the verdict is **stale**, meaning the cron stopped and the detector is itself down | same; check Worker logs `evt: "skill_canary"` and Cloudflare/GitHub status |
 
-The two skills rows are different questions and different scripts: `check-skills-drift` asks *has
-upstream moved past our pin* (a snapshot being stale), `check-mirrors --fetch` asks *does our pin
-still resolve* (production being broken). Both run daily in `refresh.yml`, each as its own reported
-class.
+The skills rows are three different questions, not one: `check-skills-drift` asks *has upstream
+moved past our pin* (snapshot stale); `check-mirrors --fetch` asks *does the pin still resolve*
+(content gone); the canary asks *can the deployed Worker actually reach it* (our access gone). The
+last one cannot be answered from CI at all — GitHub Actions egress is not Worker egress — which is
+why it runs inside the Worker. Green `check-mirrors` + red canary is the diagnostic pair: the
+content is fine and our access is not. All three report as their own class in `refresh.yml`.
 
 Output: regenerated inventory JSONs under `inventory/` + a diff report; `build-catalog`
 then rebuilds the manifest; `test/adapters.test.ts` plus CI's generated-artifacts-sync gate

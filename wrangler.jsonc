@@ -85,6 +85,18 @@
     }
   ],
   "workers_dev": false,
+  // Skill-availability canary (src/skills/canary.ts). Hourly, because this is
+  // the ONLY detector for a Cloudflare-side failure of the serve-don't-store
+  // path: skill bodies are fetched from raw.githubusercontent.com at request
+  // time, and every other check runs on a GitHub Actions runner, which cannot
+  // observe Worker egress. The `scheduled` handler fetches every pinned file
+  // with the caches deliberately bypassed and stores a verdict; the daily
+  // refresh reads it via GET /health/skills. Hourly keeps the staleness window
+  // well inside that daily read. Cost is ~30 full GETs (~370 KB) per run — no
+  // conditional headers are sent, because the bytes are what gets verified.
+  "triggers": {
+    "crons": ["7 * * * *"]
+  },
   "observability": {
     "enabled": true,
     // Traces (open beta): auto-instruments host-side adapter fetches +

@@ -52,13 +52,7 @@ vi.mock("@cloudflare/codemode", () => ({
 vi.mock("../src/executor/run", () => ({
   createExecuteRunner: vi.fn()
 }));
-vi.mock("../src/executor/run.ts", () => ({
-  createExecuteRunner: vi.fn()
-}));
 vi.mock("../src/demo/chat", () => ({
-  handleDemoChat: vi.fn()
-}));
-vi.mock("../src/demo/chat.ts", () => ({
   handleDemoChat: vi.fn()
 }));
 

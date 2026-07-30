@@ -52,8 +52,9 @@ on that line.
 
 `normalize.ts`, `search-scoring.ts`, and `json-schema-types.ts` are vendored (with documented
 adaptations — see each file's header) from
-[`@cloudflare/codemode`](https://www.npmjs.com/package/@cloudflare/codemode) v0.4.2, which is
-distributed under the MIT license:
+[`@cloudflare/codemode`](https://www.npmjs.com/package/@cloudflare/codemode) **v0.4.2** — the
+frozen snapshot the copies were taken from, not the version the Worker depends on (`package.json`
+pins that separately). It is distributed under the MIT license:
 
 > MIT License Copyright (c) 2025 Cloudflare, Inc.
 >

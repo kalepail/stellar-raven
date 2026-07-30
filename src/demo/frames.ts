@@ -1,5 +1,5 @@
 /**
- * SSE frame schema for `/demo/chat` — our own small vocabulary rather than
+ * SSE frame schema for `/playground/chat` — our own small vocabulary rather than
  * the AI SDK UI-message protocol (design Decision 1: we own both ends, there
  * is no `useChat` client). Trace states loosely mirror the AI SDK's
  * input-streaming -> input-available -> output-available/output-error, but

@@ -1,5 +1,5 @@
 /**
- * POST /demo/chat — the stateless SSE chat turn (design Decisions 1, 4, 5).
+ * POST /playground/chat — the stateless SSE chat turn (design Decisions 1, 4, 5).
  *
  * Gauntlet order: method → CSRF/origin (Origin must equal the request
  * origin; Sec-Fetch-Site, when present, must be "same-origin" — "same-site"
@@ -73,7 +73,7 @@ declare global {
   }
 }
 
-// The 2026-07-07 live /demo/chat gauntlet selected GPT-5.4 primary with
+// The 2026-07-07 live /playground/chat gauntlet selected GPT-5.4 primary with
 // GPT-5.4 Mini fallback. Grok 4.3 and Kimi K2.7 Code remain useful controls,
 // but were slower or less stable in the exact SSE + tool-call path. Sonnet 4.6
 // is viable after the Cloudflare Anthropic system-field normalization below,

@@ -7,5 +7,3 @@ by the Worker. The live site's images and fonts are generated code: `/og.png` is
 ## Contents
 
 - `Gemini_Generated_Image_v5uajdv5uajdv5ua.png` - README hero banner.
-- `Gemini_Generated_Image_klv48lklv48lklv4.png` - retained intentionally as a reserved future
-  repository presentation asset.

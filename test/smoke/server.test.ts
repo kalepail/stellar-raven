@@ -14,6 +14,8 @@
  * an initialize smoke (server info + instructions present).
  */
 import { env, SELF } from "cloudflare:test";
+import { canaryPins } from "../../src/skills/canary.ts";
+import { getCatalog } from "../../src/catalog/load.ts";
 import { beforeAll, describe, expect, it } from "vitest";
 
 const PUBLIC = "https://raven.stellar.buzz";
@@ -98,6 +100,39 @@ describe("defaultHandler routes", () => {
     const res = await SELF.fetch(`${PUBLIC}/health`);
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ status: "ok", service: "stellar-raven-codemode" });
+  });
+
+  it("the cron handler writes a verdict the endpoint then serves", async () => {
+    // The wiring nobody else covers: cron trigger -> scheduled handler ->
+    // canary -> KV -> endpoint. The unit tests exercise each half against
+    // fakes; this proves the assembled Worker actually connects them, with the
+    // real KV binding. Without it, a `scheduled` export that was never wired
+    // (or wired to the wrong binding) would look perfectly healthy until an
+    // outage arrived and the detector had never run.
+    const worker = (await import("../../src/server.ts")).default;
+    await worker.scheduled!(
+      { scheduledTime: Date.now(), cron: "7 * * * *", noRetry() {} } as ScheduledController,
+      env as never,
+      // The handler awaits its own work and never touches ctx, so a stub is
+      // enough — and passing one proves it does not secretly depend on it.
+      { waitUntil() {}, passThroughOnException() {} } as unknown as ExecutionContext
+    );
+    // This lane's outbound wall serves the REAL pinned bodies locally, so the
+    // sweep does genuine fetches and genuine sha256 + git-blob verification —
+    // an honest green, not an offline shrug.
+    const res = await SELF.fetch(`${PUBLIC}/health/skills`);
+    const body = (await res.json()) as { ok: boolean; checked: number; checkedAt: string };
+    expect(res.status).toBe(200);
+    expect(body.ok).toBe(true);
+    // Every pinned file, not a sample — a canary that quietly checked zero
+    // would also report ok:true.
+    expect(body.checked).toBe(canaryPins(getCatalog()).length);
+    expect(body.checked).toBeGreaterThan(0);
+    expect(Number.isFinite(Date.parse(body.checkedAt))).toBe(true);
+    // Public by design (it reports, never probes) — so it must not sit behind
+    // the MCP auth wall, and must not have fallen through to the 404 handler.
+    // Short edge cache bounds the KV reads an unauthenticated route can drive.
+    expect(res.headers.get("cache-control")).toBe("public, max-age=60");
   });
 
   it("GET / serves the landing page", async () => {
@@ -233,14 +268,6 @@ describe("/playground routes", () => {
     expect(await head.text()).toBe("");
   });
 
-  it("GET /demo{,/} 301-redirects to /playground (retired page URL)", async () => {
-    const bare = await SELF.fetch(`${PUBLIC}/demo`, { redirect: "manual" });
-    expect(bare.status).toBe(301);
-    expect(bare.headers.get("location")).toBe("/playground");
-    const slash = await SELF.fetch(`${PUBLIC}/demo/`, { redirect: "manual" });
-    expect(slash.status).toBe(301);
-    expect(slash.headers.get("location")).toBe("/playground");
-  });
 
   it("GET /playground on localhost takes the dev bypass → authenticated chat UI", async () => {
     const res = await SELF.fetch(`${LOCAL}/playground`);

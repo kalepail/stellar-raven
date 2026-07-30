@@ -45,6 +45,7 @@ import {
   termsPage
 } from "../site";
 import { OG_PNG_BASE64 } from "../og";
+import { skillHealthResponse } from "../skills/canary.ts";
 import { mintDemoCookie, parseDemoParkedState } from "../demo/auth";
 
 // env.OAUTH_PROVIDER is injected by OAuthProvider before it invokes the
@@ -115,6 +116,13 @@ export const WorkOSAuthHandler = {
 
     if (isRead && url.pathname === "/health") {
       return Response.json({ status: "ok", service: "stellar-raven-codemode" });
+    }
+
+    // Reports the stored skill-availability verdict; never probes upstream, so
+    // a request cannot drive traffic at GitHub and this needs no auth. 503 when
+    // failing OR never recorded — see src/skills/canary.ts.
+    if (isRead && url.pathname === "/health/skills") {
+      return skillHealthResponse(env.OAUTH_KV);
     }
 
     if (url.pathname === "/authorize" && request.method === "GET") {

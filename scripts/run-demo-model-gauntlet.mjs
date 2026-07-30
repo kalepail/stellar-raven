@@ -167,7 +167,7 @@ async function startWrangler({ model, reasoningEffort, openAiApiMode, port }) {
         `wrangler exited before ready for ${model} reasoning=${reasoningEffortLabel(reasoningEffort)}:\n${output.join("").slice(-4000)}`
       );
     }
-    if (await canGet(`http://localhost:${port}/demo`)) return { child, output, model, port };
+    if (await canGet(`http://localhost:${port}/playground`)) return { child, output, model, port };
     await sleep(500);
   }
   await stopWrangler({ child, output, model, port });

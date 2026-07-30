@@ -1,5 +1,5 @@
 /**
- * AI SDK tool defs for the /demo playground — `search` + `execute` wrapping
+ * AI SDK tool defs for the /playground page — `search` + `execute` wrapping
  * the SAME in-process internals the MCP handlers use (design Decision 2:
  * searchCatalogPage/getCatalog and createExecuteRunner directly, no HTTP
  * round-trip to /mcp), with the exported production descriptions/input
@@ -499,9 +499,6 @@ export function buildDemoTools(opts: { env: Env; emit: (f: DemoFrame) => void; b
         ms: Date.now() - t0,
         codeChars: args.code.length,
         code: preview(args.code, CODE_LOG_MAX),
-        // resultChars is kept for dashboard/back-compat. The explicit
-        // original/returned fields below are the sizing data for cap tuning.
-        resultChars: outcome.ok ? (outcome.resultReturnedChars ?? outcome.result.length) : 0,
         resultOriginalChars: outcome.ok ? (outcome.resultOriginalChars ?? outcome.result.length) : null,
         resultReturnedChars: outcome.ok ? (outcome.resultReturnedChars ?? outcome.result.length) : null,
         resultOriginalApproxTokens: outcome.ok ? outcome.resultApproxOriginalTokens : null,

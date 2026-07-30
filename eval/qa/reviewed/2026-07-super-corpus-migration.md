@@ -19,3 +19,10 @@ Corroboration verdicts were normalized during C4 migration according to the gove
 Result-row migration note: new QA and playground rows preserve `tags` without the retired
 `difficulty`/`confidence` fields and copy the judge-blind `truth.status` plus optional
 `truth.asOf` under `row.truth` for verdict triage.
+
+Artifact retirement 2026-07-30: the one-shot files this record names —
+`scripts/qa-corpus-gt-clusters.json`, `scripts/qa-corpus-verdict-normalization.json`, and
+`scripts/verify-qa-corpus-projection.mjs` — were deleted in the forward-only sweep. They had no
+live caller (no package script, no CI step, no import); the migration they proved is complete and
+its output is the committed corpus under `eval/qa/corpus/`. Recover them from git history at this
+record's commit if the projection ever needs re-deriving.

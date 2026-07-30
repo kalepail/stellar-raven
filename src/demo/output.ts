@@ -1,5 +1,5 @@
 /**
- * Pure fallback helpers for /demo/chat. Keep this separate from chat.ts so
+ * Pure fallback helpers for /playground/chat. Keep this separate from chat.ts so
  * unit tests can cover semantics without importing worker-only modules.
  */
 import type { DemoFrame } from "./frames.ts";

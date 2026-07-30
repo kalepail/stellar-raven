@@ -13,11 +13,18 @@ name: Refresh (live drift check)
 # never auto-advanced from CI, because skill bodies are prompt input.
 #
 # Every failure class is an explicit enum captured into the drift issue with its
-# own remediation. Two of them run FIRST, before any builder: pinned-file
-# availability (`check-mirrors --fetch`, cache-bypassing — bodies are served not
-# stored, so an unresolvable pin is a live user-facing outage) and the QA
-# stale-gospel due-date queue. The generic "job crashed" issue is reserved for
-# faults that fit none of the classes.
+# own remediation. Three run FIRST, before any builder: pinned-file availability
+# (`check-mirrors --fetch`, cache-bypassing — bodies are served not stored, so an
+# unresolvable pin is a live user-facing outage), the deployed Worker's own
+# retrieval verdict (`/health/skills`), and the QA stale-gospel due-date queue.
+# The generic "job crashed" issue is reserved for faults that fit none of them.
+#
+# The first two answer DIFFERENT questions and both are needed: this workflow
+# runs on a GitHub Actions runner, so it can only prove the pins resolve from
+# GitHub's network. Whether the deployed Worker can reach them from a Cloudflare
+# colo is unobservable here — only the Worker can answer that, which is why an
+# hourly cron inside it (src/skills/canary.ts) records a verdict this step reads.
+# Green pins + red canary = the content is fine and our access to it is not.
 
 on:
   schedule:
@@ -60,6 +67,28 @@ jobs:
             1) echo "state=unresolvable" >> "$GITHUB_OUTPUT" ;;
             *) echo "state=error" >> "$GITHUB_OUTPUT" ;;
           esac
+      # The Worker's own verdict on whether IT can still reach the pinned files.
+      # The step above proves the pins resolve from a GitHub Actions runner,
+      # which says nothing about Cloudflare egress; only the Worker can answer
+      # that, so an hourly cron stores a verdict and this reads it. Staleness is
+      # a failure too: a cron that stopped firing is an outage of the detector.
+      - name: check production skill retrieval (Worker-side)
+        id: canary
+        run: |
+          set -o pipefail
+          # Bounded: without a deadline a stalled connection burns the whole
+          # job timeout instead of producing the `error` state, so the
+          # check-error path below would never run.
+          code=$(curl -sS --connect-timeout 5 --max-time 20 -o canary.json \
+            -w '%{http_code}' https://raven.stellar.buzz/health/skills || echo "000")
+          cat canary.json || true
+          echo
+          # Classifier lives in a tested script, not inline here: YAML-embedded
+          # logic cannot be unit tested, and the first inline draft was a
+          # SyntaxError that would have failed every run without ever working.
+          state=$(node scripts/classify-canary.mjs "$code" canary.json)
+          echo "state=$state" >> "$GITHUB_OUTPUT"
+          echo "canary state: $state"
       # Captured, not hard-failed: a past-due reverifyBy is the truth-maintenance
       # queue firing as designed (a documented lane with a documented owner), not
       # an automation fault. Failing here would have routed it to the generic
@@ -165,17 +194,21 @@ jobs:
           gospel_state='${{ steps.gospel.outputs.state }}'
           gospel_error=false
           case "$gospel_state" in clean|stale) ;; *) gospel_error=true; gospel_state=error ;; esac
+          canary_state='${{ steps.canary.outputs.state }}'
+          canary_error=false
+          case "$canary_state" in clean|failing|stale) ;; *) canary_error=true; canary_state=error ;; esac
           echo "skills_error=$skills_error" >> "$GITHUB_OUTPUT"
           echo "algolia_rule_error=$algolia_rule_error" >> "$GITHUB_OUTPUT"
           echo "pins_error=$pins_error" >> "$GITHUB_OUTPUT"
           echo "gospel_error=$gospel_error" >> "$GITHUB_OUTPUT"
+          echo "canary_error=$canary_error" >> "$GITHUB_OUTPUT"
           # DOMAIN states only. A check error must not open a drift issue: it
           # has no section to contribute, so it would file a body that is just a
           # header — and the dedicated fail-on-*-check-error steps below already
           # make the job red without asserting something untrue.
           if [ "$inventory_drift" = "false" ] && [ "$skills_drift" != "true" ] \
              && [ "$algolia_rule_state" != "drift" ] && [ "$pins_state" != "unresolvable" ] \
-             && [ "$gospel_state" != "stale" ]; then
+             && [ "$gospel_state" != "stale" ] && [ "$canary_state" = "clean" ]; then
             echo "drift=false" >> "$GITHUB_OUTPUT"
           else
             echo "drift=true" >> "$GITHUB_OUTPUT"
@@ -183,6 +216,36 @@ jobs:
               echo '### Live service drift detected'
               echo
               echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              if [ "$canary_state" = "stale" ]; then
+                echo
+                echo '#### Skill-retrieval detector is STALE — current state unknown'
+                echo
+                echo 'The hourly canary has not recorded a verdict in over 3 hours. This proves the'
+                echo 'DETECTOR stopped, and says nothing about whether retrieval works: the last'
+                echo 'verdict is simply too old to describe now. Do not read it either way.'
+                echo '```'
+                cat canary.json 2>/dev/null || echo '(no verdict body)'
+                echo '```'
+                echo
+                echo 'Remediation: check the Worker'"'"'s Cron Trigger and its Past Events in the'
+                echo 'Cloudflare dashboard, and `evt: "skill_canary"` in Workers Logs.'
+              fi
+              if [ "$canary_state" = "failing" ]; then
+                echo
+                echo '#### :rotating_light: The deployed Worker cannot retrieve skills — LIVE OUTAGE'
+                echo
+                echo 'This is the Worker'"'"'s own verdict from inside Cloudflare, which is the only'
+                echo 'place a colo-egress failure is visible. The pin-availability step above runs on'
+                echo 'a GitHub runner and can be green while this is red — that combination means the'
+                echo 'content is fine and OUR ACCESS to it is not.'
+                echo '```'
+                cat canary.json 2>/dev/null || echo '(no verdict body)'
+                echo '```'
+                echo
+                echo 'Remediation: check Worker logs for `evt: "skill_canary"` and `skill_read` with'
+                echo 'ok=false, then Cloudflare status and GitHub status. Do not mirror the content to'
+                echo '"fix" it — see `ARCHITECTURE.md` §6.'
+              fi
               if [ "$pins_state" = "unresolvable" ]; then
                 echo
                 echo '#### :rotating_light: Pinned skill file did not resolve upstream — LIVE `skill.read` OUTAGE'
@@ -277,6 +340,11 @@ jobs:
         if: steps.drift.outputs.pins_error == 'true'
         run: |
           echo "::error::pinned-file availability check errored (not a proven pin loss) — see pin-availability.txt"
+          exit 1
+      - name: fail on production-canary check error
+        if: steps.drift.outputs.canary_error == 'true'
+        run: |
+          echo "::error::could not read the Worker canary verdict (not a proven outage) — see canary.json"
           exit 1
       - name: fail on stale-gospel check error
         if: steps.drift.outputs.gospel_error == 'true'

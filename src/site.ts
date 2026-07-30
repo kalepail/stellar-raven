@@ -1167,7 +1167,6 @@ export function robotsTxt(): string {
     "Disallow: /authorize",
     "Disallow: /callback",
     "Disallow: /playground",
-    "Disallow: /demo",
     "Disallow: /mcp",
     `Sitemap: https://${HOST}/sitemap.xml`,
     ""

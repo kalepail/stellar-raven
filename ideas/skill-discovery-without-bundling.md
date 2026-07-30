@@ -24,10 +24,9 @@ property of whenever the fetch happened.
   keywords. The searchable projection was byte-identical across the change, so routing did not move.
 - **The owner rule, 2026-07-30: serve, do not store.** A durable owned mirror (R2, a committed
   copy, a bundled copy) is out of scope by decision — it would make Raven the source of record.
-  Availability is an accepted risk that is OBSERVABLE but not actively monitored: upstream-side
-  loss is caught daily by `check-mirrors --fetch`, while a Cloudflare-side failure shows up only in
-  `skill_read ok=false` when someone looks. See `ARCHITECTURE.md` §6. Do not "solve" it with an
-  R2 mirror.
+  Availability is an accepted risk that is now actively detected from both sides: upstream-side
+  loss by the daily `check-mirrors --fetch`, Cloudflare-side by the hourly in-Worker canary
+  (`src/skills/canary.ts`). See `ARCHITECTURE.md` §6. Do not "solve" it with an R2 mirror.
 - Responses forward the content and nothing else — no license text or notice, by decision.
 
 Also closed by that work: the old M0 (bundled corpus) no longer exists as a baseline, and M3
@@ -95,11 +94,10 @@ measurement rather than a story told afterwards — the same discipline the `bas
   lane + QA battery + agentic); the distribution only decides whether that A/B is worth running.
 - **`ms` split by `from`,** always. A mean over memo and upstream is meaningless. First reading
   2026-07-30: upstream 61-80 ms, memo 0 ms.
-- **`ok: false` rate** is the accepted availability risk made observable instead of assumed. Any
-  sustained non-zero rate deserves a look on its own merits. That item does NOT belong to this
-  file and must not die with it: its durable home is `ARCHITECTURE.md` §6 ("When to close the
-  Cloudflare-side half"), which carries the trigger and the preferred fix. Read it here because
-  the reading is already happening; act on it there.
+- **`ok: false` rate** is the accepted availability risk made observable instead of assumed. It is
+  no longer this file's problem: the hourly canary (`evt = "skill_canary"`) watches the same path
+  continuously and `refresh.yml` classifies its verdict, so nothing here needs to carry the
+  availability question forward. Read the rate while you are in the logs; the detector owns it.
 
 Query guidance, including the trap where a filter on a new field VALUE returns zero while the
 events exist, is in `.agents/skills/cloudflare-observability-review/SKILL.md` "Skill Retrieval".

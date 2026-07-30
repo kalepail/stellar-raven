@@ -145,12 +145,20 @@ Skill bodies are fetched from their pinned upstream at read time, not bundled
   magnitude, so a mean over both is meaningless.
 - **Availability:** `evt = "skill_read"` with `ok = false`, grouped by `error`.
   This is the accepted-risk dependency on raw.githubusercontent.com made
-  observable; a rising `could not fetch` rate is the early signal. It is also
-  the ONLY view of a Cloudflare-side failure — GitHub Actions egress is not
-  Worker egress, so the daily `check-mirrors --fetch` cannot see one. If this
-  rate is **sustained non-zero**, that is the trigger to stop relying on a
-  manual query and add the alert: see `ARCHITECTURE.md` §6 "When to close the
-  Cloudflare-side half". Do not skip it as noise — nobody else is watching.
+  observable; a rising `could not fetch` rate is the early signal from REAL
+  traffic.
+- **Availability, synthetic:** `evt = "skill_canary"` — the hourly cron
+  (`src/skills/canary.ts`) that fetches every pinned file with the caches
+  bypassed. This is the only detector for a Cloudflare-side egress failure, and
+  the only one that works with zero user traffic. Query it when `skill_read`
+  is silent: silence there means "nobody asked", never "everything is fine".
+  Two joint readings worth knowing:
+  - `skill_canary ok=false` while `check-mirrors --fetch` is green in CI →
+    the content is fine and *our access to it* is broken. Cloudflare/network,
+    not upstream.
+  - No `skill_canary` events at all → the cron is not firing. The detector is
+    down, which reads identically to healthy unless you check. `refresh.yml`
+    treats a verdict older than 3h as a failure for exactly this reason.
 - **Does anyone read sections?** group by `shape` (`whole` | `sections` |
   `files` | `mixed`). Feeds the open question in
   `ideas/skill-discovery-without-bundling.md` — if `whole` dominates, 204

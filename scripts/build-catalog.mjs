@@ -315,6 +315,7 @@ import {
   scrubRetiredSkillRefs
 } from "./exposure.mjs";
 import { assertNoNonExposedRefsInText } from "./emitted-text-guard.mjs";
+import { parseFrontmatter, plainText, slugify } from "./lib/skill-markdown.mjs";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -352,24 +353,6 @@ function inlineRefs(schema, root, seen = new Set()) {
   return out;
 }
 
-/** Collapse whitespace, strip markdown links/emphasis/backticks for descriptions. */
-function plainText(markdown) {
-  return markdown
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/[`*]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function slugify(text) {
-  return (
-    plainText(text)
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") || "section"
-  );
-}
-
 /** First paragraph after `startIndex` in `lines` (skips blanks, stops at blank/heading). */
 function firstParagraph(lines, startIndex) {
   let i = startIndex;
@@ -380,27 +363,6 @@ function firstParagraph(lines, startIndex) {
     i++;
   }
   return plainText(para.join(" "));
-}
-
-/** Minimal frontmatter parser — supports the flat `key: value` blocks the mirror uses. */
-function parseFrontmatter(content) {
-  if (!content.startsWith("---")) return { attrs: {}, body: content };
-  const end = content.indexOf("\n---", 3);
-  if (end === -1) return { attrs: {}, body: content };
-  const block = content.slice(content.indexOf("\n") + 1, end);
-  const body = content.slice(content.indexOf("\n", end + 1) + 1);
-  const attrs = {};
-  let currentKey = null;
-  for (const line of block.split("\n")) {
-    const keyMatch = line.match(/^([A-Za-z][A-Za-z0-9_-]*):\s?(.*)$/);
-    if (keyMatch) {
-      currentKey = keyMatch[1];
-      attrs[currentKey] = keyMatch[2].trim().replace(/^["']|["']$/g, "");
-    } else if (currentKey && line.trim() !== "") {
-      attrs[currentKey] = `${attrs[currentKey]} ${line.trim()}`.trim();
-    }
-  }
-  return { attrs, body };
 }
 
 // ---------------------------------------------------------------------------
@@ -1012,7 +974,7 @@ async function main() {
   assertScoutExclusionsResolve(stellarLight.openapi);
   assertSideEffectingOpsExcluded(stellarLight.openapi);
 
-  // Experiment-arm selection (--skills-form A|B|C|D, default B = shipped
+  // Experiment-arm selection (--skills-form A|B|C, default B = shipped
   // since the 2026-07-13 A/B; any non-B arm REQUIRES --out so a variant can
   // never overwrite the shipped manifest).
   const armIdx = process.argv.indexOf("--skills-form");

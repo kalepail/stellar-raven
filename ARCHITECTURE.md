@@ -65,8 +65,6 @@ forward a conditional evidence checkpoint when the latest successful execute use
 operation-scoped lookups. The checkpoint names exact catalog recovery candidates but preserves the
 closed-world stopping rule; a later search cannot erase already-grounded execute evidence.
 
-The retired page URLs `/demo` and `/demo/` return a permanent redirect to `/playground`.
-No legacy login or chat subroutes exist under that prefix.
 
 Each authorized request gets a **fresh, stateless `McpServer`** (MCP SDK 2.0,
 `@modelcontextprotocol/server`) served over streamable HTTP by `createMcpHandler` (from
@@ -128,8 +126,10 @@ in chars (`responseChars` — the measurement that set
 Three layers, strictly separated:
 
 **Vendored lexical scorer** — `src/catalog/vendor/search-scoring.ts`, adapted from
-`@cloudflare/codemode@0.4.2`'s unexported `searchConnectors` (vendored because it is not
-exported and the package's main entry imports `cloudflare:workers`). Field weights: id 12,
+the unexported `searchConnectors` of the vendored `@cloudflare/codemode` snapshot (vendored
+because it is not exported and the package's main entry imports `cloudflare:workers`; the
+snapshot version is recorded per file in `src/catalog/vendor/*` and in `THIRD-PARTY-NOTICES.md`,
+and is deliberately independent of the installed package version in `package.json`). Field weights: id 12,
 name (last id segment) 10, service 8, description 5, kind 2. Per field: exact match ×14,
 prefix ×9, phrase ×6, plus per-token hits (×4 exact token, ×2 prefix-overlap, ×1
 substring). A **coverage gate** returns `null` (no hit) unless matched tokens cover 100% of
@@ -302,8 +302,10 @@ Per call (`src/executor/run.ts`):
    used by the spec-sandbox source generator).
 2. **Fresh isolate** — one Dynamic Worker per call via `env.LOADER.load()`, with
    `globalOutbound: null` pinned explicitly (any `fetch()`/`connect()` in model code
-   throws) and a 60s wall-clock timeout. Known limitation: codemode 0.4.2 doesn't expose
-   Worker `limits` (`cpuMs`/`subRequests`); we rely on its timeout + plan defaults.
+   throws) and a 60s wall-clock timeout. Known limitation: codemode's executor doesn't expose
+   Worker `limits` (`cpuMs`/`subRequests`) — still true on the installed 0.5.1 — so we rely on
+   its timeout + plan defaults. Stated without a version pin so it cannot go stale silently;
+   `src/executor/run.ts` carries the same wording.
 3. **Sandbox globals** (`src/executor/providers.ts`, `buildSandbox`): one namespace global
    per service with one async fn per cataloged operation, named by the id's terminal
    segment (`lumenloop.search_directory(args)`, `scout.getStatus()`,
@@ -598,24 +600,34 @@ Detection, stated exactly, because the two halves are not equally covered:
   cached read proves only that the bytes we already hold match the pin, so a warm
   `ecosystem-skills/.cache/` would make the check pass while upstream was gone.
 - **Cloudflare-side failure** (egress from the colo, shared-IP rate limiting, a deployed-runtime
-  regression) has **no active repo detector**. GitHub Actions egress is not Worker egress, so the
-  daily check cannot see it, and warm memos and colo caches let it present as a partial outage that
-  looks healthy from anywhere else. Today the only view is passive: `skill_read` with `ok: false`
-  in Workers Logs. Closing this needs either a scheduled authenticated production canary or a
-  Cloudflare alert on that event, each with a named owner — neither exists yet, and saying the
-  daily job covers it would be false.
+  regression) is detected within the hour by the Worker checking **itself**. GitHub Actions egress
+  is not Worker egress, so no external check can see this class; the only vantage point that can is
+  the Worker's own. A cron trigger (`wrangler.jsonc` `triggers.crons`, hourly) runs
+  `runSkillCanary` (`src/skills/canary.ts`), which fetches every distinct pinned file **with the
+  memo and colo cache deliberately bypassed** and writes a verdict to KV. `GET /health/skills`
+  reports that stored verdict — projected to a fixed shape, never the raw record, so the
+  unauthenticated endpoint publishes no URLs or digests and cannot be used to drive traffic at
+  upstream. The daily refresh reads it and classifies four states, and keeping them apart is the
+  whole discipline: `clean` (fresh + ok), `failing` (fresh + not ok — the ONLY state that may claim
+  an outage), `stale` (too old to describe now, whatever its boolean: proves the detector stopped,
+  not that retrieval broke), and `error` (no usable verdict at all — including the first deploy
+  before any cron has fired). Collapsing the last three into `failing` cries wolf; collapsing them
+  into `clean` lies.
 
-**When to close the Cloudflare-side half — a trigger, not a date.** Deliberately not built as of
-2026-07-30, and the reasoning is worth keeping because the cost is not obvious: every `skill_read`
-event so far is an author probe, so an alert today would watch a path with no organic traffic; and
-a flaky canary files noise into the same drift issue that carries the `LIVE skill.read OUTAGE`
-class, which is the one alert that has to stay believed. Build it when either fires: a **sustained
-non-zero `ok: false` rate**, or a **first real user report** of a skills error. Prefer the
-**Cloudflare alert on `evt = "skill_read" AND ok = false`** over a GitHub-Actions canary — no repo
-secret, no auth plumbing, and it observes the real Worker rather than a synthetic caller. What is
-guaranteed meanwhile is only that production has something to say when asked:
-`test/executor-providers.test.ts` fails if a transport failure stops emitting `ok: false`, so the
-signal this whole posture rests on cannot be quietly removed.
+  What the canary does NOT prove: Cron Triggers run wherever Cloudflare has spare capacity, not
+  across the colos serving user requests, so each run samples one execution location. It catches
+  global and shared-infrastructure failures — the realistic case — but real-traffic
+  `skill_read ok:false` remains the only signal covering user-selected colos.
+
+The cache bypass is the load-bearing part, for the same reason it was at the build layer: pinned
+URLs are cached `immutable` for a year, so a canary on the normal read path would answer from a
+warm colo entry and report healthy indefinitely after egress died. `check-mirrors --fetch` shipped
+with exactly that bug (0 network requests against a warm cache).
+
+**Reading the two together is the diagnosis.** `check-mirrors --fetch` green + canary red means the
+content is fine and *our access to it* is not — a Cloudflare or network problem, not an upstream
+one. Red + red means upstream actually lost the file. Neither check subsumes the other, which is
+why both run.
 
 The residual **upstream** risk is deliberately **accepted**: the only remaining fix is to hold a
 durable copy of the content, and the serve-do-not-store rule above forbids exactly that. Do not
