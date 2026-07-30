@@ -41,8 +41,10 @@ const pinnedBodies = new Map<string, string>();
 for (const source of manifest.sources) {
   for (const skill of source.skills) {
     for (const file of skill.files ?? []) {
-      const text = skillTexts.get(`${source.id}/${skill.name}/${file.path}`);
-      if (text !== undefined) pinnedBodies.set(skillFileUrl(source, skill.name, file.path), text);
+      const loaded = skillTexts.get(`${source.id}/${skill.name}/${file.path}`);
+      if (loaded !== undefined) {
+        pinnedBodies.set(skillFileUrl(source, skill.name, file.path), loaded.text);
+      }
     }
   }
 }

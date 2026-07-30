@@ -245,13 +245,7 @@ export const SCOUT_DESCRIPTION_NOTES = {
   listSkills:
     "Catalog note: this is the live ecosystem DIRECTORY — skills plus MCP servers, SDKs, and CLIs — for discovering what exists and fetching install metadata; most entries are not mirrored skills.",
   getSkill:
-    // "bundled" is historical: skill bodies stopped being bundled into the
-    // Worker on 2026-07-30 (fetched from their pinned commit instead). Left
-    // alone deliberately — catalog descriptions are embedded cards in the
-    // banked Vectorize artifact, so this adjective costs a re-embed. Parked
-    // with the matching family-line edit in eval/vectorize/README.md
-    // ("Coupling"); fold both into the next intentional re-embed.
-    "Catalog note: returns the full upstream markdown of one directory entry, suited to install/metadata questions. For reading build/integration playbooks, prefer the bundled skills.* catalog entries via codemode.skill.read (sectioned, curated, pinned).",
+    "Catalog note: returns the full upstream markdown of one directory entry, suited to install/metadata questions. For reading build/integration playbooks, prefer the skills.* catalog entries via codemode.skill.read (sectioned, curated, pinned).",
   getStatus:
     "Catalog note: the upstream payload carries its own `ok` health/status flag at `data.ok` — distinct from the envelope call-status `ok`.",
   getChangelog:

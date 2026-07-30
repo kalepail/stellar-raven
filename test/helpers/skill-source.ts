@@ -42,16 +42,16 @@ export function pinnedSkillSource(): Promise<SkillSource> {
     for (const source of manifest.sources) {
       for (const skill of source.skills) {
         for (const file of skill.files ?? []) {
-          const text = texts.get(`${source.id}/${skill.name}/${file.path}`);
-          if (text === undefined) continue;
+          const loaded = texts.get(`${source.id}/${skill.name}/${file.path}`);
+          if (loaded === undefined) continue;
           const url = skillFileUrl(source, skill.name, file.path);
-          byUrl.set(url, scrubRetiredSkillRefs(text, url));
+          byUrl.set(url, scrubRetiredSkillRefs(loaded.text, url));
         }
       }
     }
-    return async (url: string) => {
-      const text = byUrl.get(url);
-      if (text === undefined) throw new Error(`no pinned file for ${url}`);
+    return async (pin) => {
+      const text = byUrl.get(pin.url);
+      if (text === undefined) throw new Error(`no pinned file for ${pin.url}`);
       return text;
     };
   })();
@@ -62,14 +62,14 @@ export function pinnedSkillSource(): Promise<SkillSource> {
  * The pinned source in a form usable at module scope (before any `beforeAll`):
  * each call resolves the shared load promise, so construction never blocks.
  */
-export const lazyPinnedSkillSource: SkillSource = (url, sha) =>
-  pinnedSkillSource().then((s) => s(url, sha));
+export const lazyPinnedSkillSource: SkillSource = (pin) =>
+  pinnedSkillSource().then((s) => s(pin));
 
 /** A source over fixed url -> body pairs; unknown urls reject like upstream 404s. */
 export function staticSkillSource(files: Record<string, string>): SkillSource {
-  return async (url: string) => {
-    const text = files[url];
-    if (text === undefined) throw new Error(`could not fetch ${url}: HTTP 404`);
+  return async (pin) => {
+    const text = files[pin.url];
+    if (text === undefined) throw new Error(`could not fetch ${pin.url}: HTTP 404`);
     return text;
   };
 }

@@ -1,7 +1,7 @@
 {
   "$comment": "Generated owned QA battery. Regenerate with npm run eval:qa:compile.",
   "schema": "qa-case-v1",
-  "corpusContentSha256": "292ef30e768474f3fa962ee26197e52deaeecaa069c82d7f67a8adc30c903646",
+  "corpusContentSha256": "17f240f875ba2276f84feefe4f6214f7d14b12c0a9cd1630385e6a8ecd2e0e7a",
   "counts": {
     "total": 490,
     "byCategory": {
@@ -9479,7 +9479,8 @@
           "by": "P4 coverage-closure lane (Solo process 3427)",
           "evidence": [
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
-            "skills.lumenloop.stellar-ecosystem-scout is served and supports the behavioral golden.",
+            "skills.lumenloop.stellar-ecosystem-scout exists and supports the behavioral golden.",
+            "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.lumenloop.stellar-ecosystem-scout'). Same bytes, re-verified by digest; only the pointer notation changed.",
             "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
             "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
@@ -9533,7 +9534,8 @@
           "by": "P4 coverage-closure lane (Solo process 3427)",
           "evidence": [
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
-            "skills.lumenloop.stellar-project-dossier is served and supports the behavioral golden.",
+            "skills.lumenloop.stellar-project-dossier exists and supports the behavioral golden.",
+            "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.lumenloop.stellar-project-dossier'). Same bytes, re-verified by digest; only the pointer notation changed.",
             "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
             "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
@@ -30811,7 +30813,8 @@
           "by": "P4 coverage-closure lane (Solo process 3427)",
           "evidence": [
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
-            "skills.stellar-light.stellar-scout is served and supports the behavioral golden.",
+            "skills.stellar-light.stellar-scout exists and supports the behavioral golden.",
+            "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.stellar-light.stellar-scout'). Same bytes, re-verified by digest; only the pointer notation changed.",
             "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
             "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
@@ -30865,7 +30868,8 @@
           "by": "P4 coverage-closure lane (Solo process 3427)",
           "evidence": [
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
-            "skills.lumenloop.scf-submission-radar is served and supports the behavioral golden.",
+            "skills.lumenloop.scf-submission-radar exists and supports the behavioral golden.",
+            "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.lumenloop.scf-submission-radar'). Same bytes, re-verified by digest; only the pointer notation changed.",
             "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
             "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
@@ -35439,7 +35443,8 @@
           "by": "P4 coverage-closure lane (Solo process 3427)",
           "evidence": [
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
-            "skills.openzeppelin-stellar.setup-stellar-contracts is served and supports the behavioral golden.",
+            "skills.openzeppelin-stellar.setup-stellar-contracts exists and supports the behavioral golden.",
+            "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.openzeppelin-stellar.setup-stellar-contracts'). Same bytes, re-verified by digest; only the pointer notation changed.",
             "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
             "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
@@ -42183,7 +42188,8 @@
           "by": "P4 coverage-closure lane (Solo process 3427)",
           "evidence": [
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
-            "skills.lumenloop.stellar-builder-quickstart is served and supports the behavioral golden.",
+            "skills.lumenloop.stellar-builder-quickstart exists and supports the behavioral golden.",
+            "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.lumenloop.stellar-builder-quickstart'). Same bytes, re-verified by digest; only the pointer notation changed.",
             "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
             "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
@@ -42237,7 +42243,8 @@
           "by": "P4 coverage-closure lane (Solo process 3427)",
           "evidence": [
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
-            "skills.lumenloop.stellar-content-auditor is served and supports the behavioral golden.",
+            "skills.lumenloop.stellar-content-auditor exists and supports the behavioral golden.",
+            "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.lumenloop.stellar-content-auditor'). Same bytes, re-verified by digest; only the pointer notation changed.",
             "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
             "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],
@@ -42291,7 +42298,8 @@
           "by": "P4 coverage-closure lane (Solo process 3427)",
           "evidence": [
             "2026-07-11 localhost:8787 search→execute probe observed: HTTP 200; codemode.skill.read returned envelope ok=true for the exact skill id and requested sections.",
-            "skills.lumenloop.stellar-integration-finder is served and supports the behavioral golden.",
+            "skills.lumenloop.stellar-integration-finder exists and supports the behavioral golden.",
+            "Amendment 2026-07-30: the line above was recorded when skill bodies were vendored at ecosystem-skills/skills/... ; bodies now live upstream at the commit pinned in ecosystem-skills/MANIFEST.json and are read via codemode.skill.read('skills.lumenloop.stellar-integration-finder'). Same bytes, re-verified by digest; only the pointer notation changed.",
             "Sibling sweep: reviewed existing battery cases sharing the exercised surface; no contradictory behavioral golden found.",
             "solo://proj/49/scratchpad/super-corpus-rebuild--585"
           ],

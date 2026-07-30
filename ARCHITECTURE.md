@@ -550,17 +550,33 @@ edit must be read by a human before it reaches the model). The former credential
 skill source is intentionally absent; partner skills remain visible only as name-only inventory
 stubs.
 
-**Retrieval.** Every skill/section entry carries `transport: { type: "file", url, sha }` — the
-`raw.githubusercontent.com` URL at the pinned commit plus the pinned blob hash.
-`src/skills/source.ts` resolves that pair: in-isolate memo → colo Cache API → upstream fetch,
-then verifies the bytes against the blob hash (`crypto.subtle` SHA-1 over git's
-`blob <len>\0` framing) and applies `scrubRetiredSkillRefs` (`src/skills/scrub.ts`, shared with
-the builders) before returning. Bytes that fail the hash are refused, never served; transport,
-integrity, and scrub failures all surface as ordinary `{ ok: false, error }` envelopes from
-`skill.read`. The URL is commit-pinned, so cache entries never need invalidating. Because the
-fetch is host-side, the sandbox itself still has no network (`globalOutbound: null`). The build
-side uses the same pins and the same verification through `scripts/lib/skill-mirror.mjs`, which
-caches into the gitignored `ecosystem-skills/.cache/`.
+**Retrieval.** Every skill/section entry carries
+`transport: { type: "file", url, sha, sha256 }` — the `raw.githubusercontent.com` URL at the
+pinned commit, the git blob hash, and a SHA-256 over the raw bytes. **SHA-256 is the security
+check; the blob hash is provenance** (SHA-1 has practical chosen-prefix collisions, so it ties
+bytes to the git object a reviewer saw rather than resisting an adversary). Both must match.
+The shape is constrained at catalog load (`transportSchema.superRefine`): https, exactly
+`raw.githubusercontent.com`, a 40-hex commit in the path, 40-hex `sha`, 64-hex `sha256` — a
+mis-built catalog cannot point host-side fetches anywhere else.
+
+`src/skills/source.ts` resolves a pin: in-isolate memo keyed by **(url, sha256)** → colo Cache API
+→ upstream fetch. Cached bytes are re-verified on every hit (the cache is a transport, not a trust
+boundary) and cache reads *and writes* are best-effort, so a cache outage can never fail a read it
+could not have served. `scrubRetiredSkillRefs` (`src/skills/scrub.ts`, shared with the builders)
+runs on every served body. Companion files for a multi-section read are fetched **concurrently**,
+and the whole read is bounded by `SKILL_READ_DEADLINE_MS` (20s) — deliberately under the
+executor's 60s wall clock, so a slow upstream fails as a `skills` error envelope instead of
+killing the run. Transport, integrity, provenance, deadline, and scrub failures are all ordinary
+`{ ok: false, error }` envelopes. Because the fetch is host-side, the sandbox itself still has no
+network (`globalOutbound: null`). The build side uses the same pins and the same verification
+through `scripts/lib/skill-mirror.mjs`, caching into the gitignored `ecosystem-skills/.cache/`.
+
+**The re-pin review gate.** Bodies are prompt input, and pinning by hash means a re-pin commit
+shows hash changes only — the text never reaches `git diff` the way it did when bodies were
+vendored. Two mechanisms replace that: `ecosystem-skills/update.sh` prints a real old-pin →
+new-pin body diff (`scripts/diff-pins.mjs`) at the moment of re-pinning, and
+`scripts/check-pin-review.mjs` fails CI unless `ecosystem-skills/PIN-REVIEW.md` records an
+attestation naming every newly pinned commit.
 
 **Build-time sectioning.** `scripts/build-catalog.mjs` emits, per skill: one `kind:
 "skill"` entry (id `skills.<source>.<name>`, description from frontmatter or first

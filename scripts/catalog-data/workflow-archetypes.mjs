@@ -39,7 +39,7 @@ export const SERVICE_FAMILY_PURPOSES = [
     family: "skills",
     label: "Skills",
     line:
-      "Bundled operational playbooks: tested build, integration, security, recovery, data, wallet, asset, standards, ZK, and agentic-payment procedures.",
+      "Pinned operational playbooks: tested build, integration, security, recovery, data, wallet, asset, standards, ZK, and agentic-payment procedures.",
     authority:
       "Authority for how-to workflows when read by section; pair with Stellar Docs for current reference truth and services for live ecosystem facts."
   }

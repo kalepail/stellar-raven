@@ -167,7 +167,9 @@ inventory stubs so credentialed content cannot re-enter the public repo.
 - **Build-time sectioning:** each `SKILL.md` is split on `##` headings (multi-file skills keep
   their file structure); every skill and every section becomes a catalog entry. A skill entry
   carries its frontmatter description (what routing scores); a section entry carries its heading
-  and its pinned address — no body excerpt, so no skill prose lives in a committed artifact. Since the 2026-07-13 skills-form A/B, section entries carry `searchable: false`:
+  and its pinned address. Body prose, excerpts, and body-derived keywords are NOT committed; the
+  upstream-authored one-line descriptions and `##` headings are (routing needs them) — see
+  `THIRD-PARTY-NOTICES.md`. Since the 2026-07-13 skills-form A/B, section entries carry `searchable: false`:
   `search` returns whole-skill hits (each carrying `availableSections` keys) and sections are
   read exact-id via `skill.read` — the measured arm-B outcome (`eval/README.md`
   "Skills-form A/B").

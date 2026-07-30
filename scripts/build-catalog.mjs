@@ -693,17 +693,18 @@ function buildSkills(manifest, texts, arm) {
   // scores. Arm A is the only arm that puts sections back in search, so it is
   // the only arm that gets them.
   const emitSectionKeywords = arm === "A";
-  const textOf = (sourceId, skillName, filePath) => {
+  const loadedOf = (sourceId, skillName, filePath) => {
     const key = `${sourceId}/${skillName}/${filePath}`;
-    const text = texts.get(key);
-    if (text === undefined) {
+    const loaded = texts.get(key);
+    if (loaded === undefined) {
       throw new Error(
         `skill file ${key} is listed in ecosystem-skills/MANIFEST.json but was not loaded — ` +
           `re-run the build (scripts/lib/skill-mirror.mjs fetches pinned files on demand)`
       );
     }
-    return text;
+    return loaded;
   };
+  const textOf = (sourceId, skillName, filePath) => loadedOf(sourceId, skillName, filePath).text;
 
   for (const source of manifest.sources) {
     for (const skill of source.skills) {
@@ -724,7 +725,11 @@ function buildSkills(manifest, texts, arm) {
       const transportFor = (file) => ({
         type: "file",
         url: skillFileUrl(source, skill.name, file.path),
-        sha: file.sha
+        // sha = git blob hash (provenance, ties bytes to the reviewed git
+        // object); sha256 = the SECURITY digest the Worker verifies, because
+        // SHA-1 has practical chosen-prefix collisions.
+        sha: file.sha,
+        sha256: loadedOf(source.id, skill.name, file.path).sha256
       });
       // Scrub retired-skill cross-references BEFORE deriving descriptions and
       // headings — the same scrub src/skills/source.ts applies to every served

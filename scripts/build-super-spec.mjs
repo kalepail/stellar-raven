@@ -347,8 +347,9 @@ function buildSkillIndex(manifest, exposed, texts) {
       // (scripts/lib/skill-mirror.mjs) — never vendored here. Only the
       // frontmatter description and the `##` headings reach the spec.
       const key = `${source.id}/${skill.name}/SKILL.md`;
-      const raw = texts.get(key);
-      if (raw === undefined) throw new Error(`skill file ${key} was not loaded`);
+      const loaded = texts.get(key);
+      if (loaded === undefined) throw new Error(`skill file ${key} was not loaded`);
+      const raw = loaded.text;
       const { attrs, body } = parseFrontmatter(scrubRetiredSkillRefs(raw, key));
       const sections = [];
       const usedSlugs = new Set();

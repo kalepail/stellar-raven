@@ -15,12 +15,18 @@ type SkillsManifest = { sources: ManifestSource[] };
 export function upstreamPath(source: ManifestSource, skillName: string, filePath: string): string;
 export function skillFileUrl(source: ManifestSource, skillName: string, filePath: string): string;
 export function gitBlobSha(buffer: Uint8Array): string;
+export function sha256(buffer: Uint8Array): string;
 export function readSkillFile(
   source: ManifestSource,
   skillName: string,
   file: ManifestFile
 ): Promise<string>;
+export function readSkillFileWithDigest(
+  source: ManifestSource,
+  skillName: string,
+  file: ManifestFile
+): Promise<{ text: string; sha256: string }>;
 export function loadSkillTexts(
   manifest: SkillsManifest,
   opts?: { skip?: (skillName: string) => boolean }
-): Promise<Map<string, string>>;
+): Promise<Map<string, { text: string; sha256: string }>>;

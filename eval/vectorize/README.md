@@ -27,21 +27,17 @@ state. It uses the same Qwen3-Embedding-0.6B model family Cloudflare exposes as
   prior artifact, no re-embedding), so measured results are unchanged. Each card combines exact id/kind, source-family
   purpose/authority, catalog description, and any generated workflow question shapes that
   reference it. No excluded operation or uncommitted partner detail enters the artifact.
-- **Coupling (read before editing catalog prose).** Card text is built from live catalog entry
-  descriptions plus `SERVICE_FAMILY_PURPOSES` in `scripts/catalog-data/workflow-archetypes.mjs`,
-  and `loadFrontierArtifact` refuses any card-set drift — so editing either one fails
-  `test/eval-discovery-vectorize.test.mjs` until the artifact is re-embedded. Re-embedding is not
-  free: the note below records that a divergent environment once produced a wholly different
-  vector set (mean cosine ~0.90, zero identical vectors), so a rebuild is a deliberate act, not a
-  side effect of a wording fix. Two accuracy edits are deliberately parked on the next intentional
-  re-embed:
-  - `scout.getSkill`'s catalog note says "the bundled skills.* catalog entries"
-    (`scripts/description-notes.mjs`).
-  - the skills family line says "Bundled operational playbooks"
-    (`scripts/catalog-data/workflow-archetypes.mjs`).
-
-  Both were true until 2026-07-30, when skill bodies stopped being bundled into the Worker
-  (fetched from their pinned commit instead). Neither word carries any routing weight.
+- **Coupling with live catalog prose (resolved 2026-07-30).** Card text is built from live catalog
+  entry descriptions plus `SERVICE_FAMILY_PURPOSES` in
+  `scripts/catalog-data/workflow-archetypes.mjs`. `loadFrontierArtifact()` still refuses any
+  card-set drift — correct for anyone RUNNING the experiment, since stale vectors would produce
+  meaningless rankings — but the unit-suite integrity test now calls
+  `loadFrontierArtifact({ requireCatalogMatch: false })` and asserts the artifact's own payload
+  hash and shape instead. Before that split, editing any catalog description failed an unrelated
+  unit suite until a re-embed, and re-embedding is documented below as hazardous; the practical
+  result was that a knowingly-false word ("bundled") shipped to every MCP client rather than pay
+  that cost. A banked no-ship measurement must not hold live model-facing text hostage. Re-embed
+  deliberately when re-running the experiment, not to fix prose.
 - Artifact: `artifacts/qwen3-embedding-0.6b-q8-c25a394.json`, with per-card text hashes, card-set
   hash, model/runtime config, base64 little-endian float32 vectors, and vector payload hash. Tests
   refuse card, model, or payload drift. In the environment verified on 2026-07-27, the pinned q8

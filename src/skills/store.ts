@@ -30,7 +30,7 @@
 import type { Catalog, CatalogEntry } from "../catalog/types.ts";
 import { lastIdSegment } from "../catalog/id.ts";
 import { DEFAULT_MAX_TOKENS, CHARS_PER_TOKEN } from "../policy/truncate.ts";
-import type { SkillSource } from "./source.ts";
+import { SKILL_READ_DEADLINE_MS, type SkillPin, type SkillSource } from "./source.ts";
 
 export type SkillReadResult =
   | {
@@ -214,11 +214,32 @@ function resolveSkillEntry(catalog: Catalog, name: string): CatalogEntry | Skill
 
 /** The pinned upstream location of a catalog entry's bytes, or undefined when
  *  the entry has no readable body (a shape the builders never emit). */
-function fileRef(entry: CatalogEntry | undefined): { url: string; sha: string } | undefined {
+function fileRef(entry: CatalogEntry | undefined): SkillPin | undefined {
   const transport = entry?.transport;
   if (transport?.type !== "file") return undefined;
-  const { url, sha } = transport;
-  return url !== undefined && sha !== undefined ? { url, sha } : undefined;
+  const { url, sha, sha256 } = transport;
+  return url !== undefined && sha !== undefined && sha256 !== undefined
+    ? { url, sha, sha256 }
+    : undefined;
+}
+
+/**
+ * Bound EVERY skill.read against the executor's 60s wall clock. Without this a
+ * multi-file read of a slow upstream (each file retried once at 8s) can outlast
+ * `execute` itself, killing the run instead of returning the `skills` error
+ * envelope this module promises. Not cancellation — in-flight fetches continue
+ * detached and harmlessly populate the cache.
+ */
+function withDeadline<T>(work: Promise<T>, label: string): Promise<T> {
+  return Promise.race([
+    work,
+    new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new Error(`timed out after ${SKILL_READ_DEADLINE_MS}ms retrieving ${label}`)),
+        SKILL_READ_DEADLINE_MS
+      )
+    )
+  ]);
 }
 
 /**
@@ -228,11 +249,11 @@ function fileRef(entry: CatalogEntry | undefined): { url: string; sha: string } 
  */
 async function load(
   source: SkillSource,
-  ref: { url: string; sha: string },
+  ref: SkillPin,
   id: string
 ): Promise<{ text: string } | SkillReadResult> {
   try {
-    return { text: await source(ref.url, ref.sha) };
+    return { text: await withDeadline(source(ref), id) };
   } catch (e) {
     return err(
       `could not retrieve ${id} from its pinned upstream source (${ref.url}): ` +
@@ -319,8 +340,23 @@ export async function readSkill(
   }
 
   if (!requested || requested.length === 0) {
-    // Whole-read: return the full body — notices are advice, content is never
-    // withheld. The ~6k-token cap applies only to what a script RETURNS
+    // Fail-closed on the WHOLE-read path too. Section reads already refuse an
+    // un-cataloged `##` slug; before 2026-07-30 a whole read served the entire
+    // body regardless, so a section the catalog never indexed (build/read
+    // drift, or a body that moved without a catalog rebuild) still reached the
+    // model. Default-deny both shapes: if the parsed slugs and the cataloged
+    // slugs disagree, serve nothing and name the drift.
+    const uncataloged = [...bySlug.keys()].filter(
+      (slug) => !sectionEntryById.has(`${entry.id}#${slug}`)
+    );
+    if (uncataloged.length > 0) {
+      return err(
+        `${entry.id} has ${uncataloged.length} section(s) with no catalog entry ` +
+          `(${uncataloged.join(", ")}) — not exposed (section indexing drift; rebuild the catalog)`
+      );
+    }
+    // Return the full body — notices are advice, content is never withheld.
+    // The ~6k-token cap applies only to what a script RETURNS
     // (run.ts truncateForModel), never to data flowing INTO the sandbox, and
     // scripts legally grep/aggregate full bodies in-sandbox.
     const content = body.trim();
@@ -330,17 +366,35 @@ export async function readSkill(
       : { ok: true, id: entry.id, url: ref.url, content, availableSections };
   }
 
+  // Resolve every requested `file:` companion FIRST, and fetch them
+  // concurrently. Sequentially awaiting each one made an N-file read cost N
+  // round trips (with retries, a 4-file read could outlast the executor's own
+  // 60s timeout and kill the run instead of returning an envelope).
+  const fileWants = requested.filter((w) => w.startsWith("file:"));
+  const filePins = new Map<string, SkillPin>();
+  for (const want of fileWants) {
+    const sectionEntry = sectionEntries.find((e) => e.id === `${entry.id}#${want}`);
+    const pin = fileRef(sectionEntry);
+    if (!sectionEntry || !pin) {
+      return err(`unknown section "${want}" of ${entry.id}. Available: ${availableSections.join(", ")}`);
+    }
+    filePins.set(want, pin);
+  }
+  const fileTexts = new Map<string, string>();
+  if (filePins.size > 0) {
+    const loaded = await Promise.all(
+      [...filePins].map(async ([want, pin]) => [want, await load(source, pin, `${entry.id}#${want}`)] as const)
+    );
+    for (const [want, result] of loaded) {
+      if ("ok" in result) return result; // an error result
+      fileTexts.set(want, result.text);
+    }
+  }
+
   const found: { section: string; content: string }[] = [];
   for (const want of requested) {
     if (want.startsWith("file:")) {
-      const sectionEntry = sectionEntries.find((e) => e.id === `${entry.id}#${want}`);
-      const fileRef_ = fileRef(sectionEntry);
-      if (!sectionEntry || !fileRef_) {
-        return err(`unknown section "${want}" of ${entry.id}. Available: ${availableSections.join(", ")}`);
-      }
-      const fileLoaded = await load(source, fileRef_, sectionEntry.id);
-      if ("ok" in fileLoaded) return fileLoaded; // an error result
-      found.push({ section: want, content: stripFrontmatter(fileLoaded.text).trim() });
+      found.push({ section: want, content: stripFrontmatter(fileTexts.get(want)!).trim() });
       continue;
     }
     // ##-heading section: accept the slug (catalog id form) or exact heading text.

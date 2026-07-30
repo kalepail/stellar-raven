@@ -3,8 +3,10 @@
 # update.sh — re-pin the Stellar/Soroban ecosystem agent skills.
 #
 # This resolves a commit per source, walks its tree, and records the pin
-# (commit + per-file path/size/git-blob-sha) in MANIFEST.json. It downloads
-# NOTHING: skill bodies are not vendored in this repo. The pin is the whole
+# (commit + per-file path/size/git-blob-sha) in MANIFEST.json. It vendors
+# NOTHING: skill bodies never enter the repo. It does FETCH bodies at the end —
+# to print the old-pin -> new-pin body diff for review, and for build-index.mjs
+# to read frontmatter — into the gitignored ecosystem-skills/.cache/. The pin is the whole
 # artifact — the builders and the Worker fetch each file from
 # raw.githubusercontent.com at the pinned commit and verify it against the
 # blob sha recorded here (scripts/lib/skill-mirror.mjs, src/skills/source.ts).
@@ -194,6 +196,29 @@ jq -n --arg now "$NOW" --arg status "$MIRROR_STATUS" --argjson missing "$MISSING
       --argjson sources "$SOURCES" --argjson catalog "$CAT_SUMMARY" --argjson total "$TOTAL_SKILLS" '
   { synced_at:$now, status:$status, missing_sources:$missing,
     skill_count:$total, sources:$sources, catalog:$catalog }' > "$MANIFEST_TMP"
+
+# ---------------------------------------------------------------------------
+# BODY DIFF — the review gate, not a convenience.
+#
+# Skill bodies are prompt input. When they were vendored, a re-pin put the text
+# change straight into `git diff` and a human could not avoid seeing it. Pinning
+# by hash removed that surface: the commit shows sha changes only. So before the
+# swap, print a real unified diff of every file whose sha moved, old pin vs new
+# pin, fetched from upstream. Nothing here is written to the repo — the diff is
+# for the human at the moment of re-pinning.
+# ---------------------------------------------------------------------------
+if [ -f "$MANIFEST" ]; then
+  echo
+  echo "=== SKILL BODY DIFF (old pin -> new pin) ==============================="
+  node "$SCRIPT_DIR/../scripts/diff-pins.mjs" "$MANIFEST" "$MANIFEST_TMP" || {
+    echo "error: body diff failed — refusing to swap pins unreviewed" >&2
+    exit 1
+  }
+  echo "======================================================================="
+  echo "Skills are PROMPT INPUT. Read the diff above before committing."
+  echo "Then record the attestation in ecosystem-skills/PIN-REVIEW.md (CI checks it)."
+  echo
+fi
 
 # --- Atomic swap: only now do we touch the real MANIFEST + catalog. ---
 mv "$MANIFEST_TMP" "$MANIFEST"

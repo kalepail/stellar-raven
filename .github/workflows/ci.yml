@@ -70,6 +70,19 @@ jobs:
           tar -xzf "$RUNNER_TEMP/gitleaks/gitleaks.tar.gz" -C "$RUNNER_TEMP/gitleaks" gitleaks
           echo "$RUNNER_TEMP/gitleaks" >> "$GITHUB_PATH"
           "$RUNNER_TEMP/gitleaks/gitleaks" version
+      # NETWORK NOTE: since skill bodies stopped being vendored, several lanes
+      # fetch the files pinned in ecosystem-skills/MANIFEST.json from
+      # raw.githubusercontent.com and verify them against the recorded digests.
+      # That is NOT confined to the artifact gate below — on a cold checkout it
+      # includes `npm test` (test/skills.test.ts, test/search.test.ts,
+      # test/executor-providers.test.ts via test/helpers/skill-source.ts) and the
+      # smoke lane's config. The cache below makes it one fetch per MANIFEST
+      # revision; the workerd lane itself stays offline behind its outbound wall.
+      - name: cache pinned skill bodies
+        uses: actions/cache@v4
+        with:
+          path: ecosystem-skills/.cache
+          key: skill-bodies-${{ hashFiles('ecosystem-skills/MANIFEST.json') }}
       - run: npm test
       # workerd smoke lane (test/smoke/, Solo todo 833): the assembled router
       # + real Dynamic Worker executor boundary via vitest-pool-workers.
@@ -91,15 +104,16 @@ jobs:
           BASE="$(node -e 'const event = process.env.GITHUB_EVENT_PATH ? JSON.parse(require("node:fs").readFileSync(process.env.GITHUB_EVENT_PATH, "utf8")) : {}; process.stdout.write(event.pull_request?.base?.sha ?? event.before ?? "HEAD^")')"
           node eval/qa/lint-corpus.mjs --live-contract eval/qa/corpus/live/live-cases.json --since "$(git merge-base HEAD "$BASE")"
       - run: npm run improvements:lint
+      # A skill pin cannot move without a recorded human review of the body diff
+      # (skills are prompt input; the text no longer appears in `git diff`).
+      - name: skill pin review ledger
+        run: |
+          BASE="$(node -e 'const e = process.env.GITHUB_EVENT_PATH ? JSON.parse(require("node:fs").readFileSync(process.env.GITHUB_EVENT_PATH, "utf8")) : {}; process.stdout.write(e.pull_request?.base?.sha ?? e.before ?? "HEAD^")')"
+          node scripts/check-pin-review.mjs --base "$BASE"
       - run: npm run eval:routing -- --gate
       # Generated artifacts must match their sources exactly (they are rebuilt,
-      # never hand-edited). Inputs are committed (inventory/, specs/, eval/corpus/,
-      # the globe generator's drawing inputs) with ONE network dependency: skill
-      # bodies are not vendored, so the catalog and spec builds fetch each file
-      # pinned in ecosystem-skills/MANIFEST.json from raw.githubusercontent.com
-      # and verify it against the recorded git blob sha (a mismatch fails the
-      # build). op-classes reads the freshly-rebuilt catalog/manifest.json (so it
-      # runs after build-catalog).
+      # never hand-edited). op-classes reads the freshly-rebuilt
+      # catalog/manifest.json (so it runs after build-catalog).
       - name: generated artifacts in sync
         run: |
           node scripts/build-catalog.mjs

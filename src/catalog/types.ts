@@ -50,22 +50,53 @@ const jsonSchemaShape = z.record(z.string(), z.unknown());
  *  - "http"   → method + path (+ base) against a service origin
  *  - "algolia"→ Algolia REST query (hosts carry an app-id placeholder)
  *  - "file"   → a pinned upstream markdown file: `url` (raw.githubusercontent
- *               at the commit pinned in ecosystem-skills/MANIFEST.json) plus
- *               `sha` (that file's git blob hash, re-verified on every read —
- *               skill bodies are not vendored or bundled; src/skills/source.ts)
+ *               at the commit pinned in ecosystem-skills/MANIFEST.json),
+ *               `sha` (git blob hash — provenance) and `sha256` (security
+ *               digest). Both are re-verified on every read; skill bodies are
+ *               not vendored or bundled. See src/skills/source.ts.
  * Extra transport detail (hosts, retry policy, …) rides along via catchall.
  */
+
+/**
+ * A "file" transport is the ONLY catalog field that makes the host fetch a URL,
+ * so it is constrained here rather than trusted. The catalog is a generated,
+ * committed artifact, but a mis-built or tampered manifest must not be able to
+ * point host-side fetches at an arbitrary destination: the host, the path
+ * shape, and both digests are all pinned to what the skill pipeline can emit.
+ * (`global_fetch_strictly_public` forces public-Internet routing; it is not a
+ * destination allowlist.)
+ */
+const SKILL_FILE_URL_RE =
+  /^https:\/\/raw\.githubusercontent\.com\/[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+\/[0-9a-f]{40}\/\S+\.md$/;
+const HEX40_RE = /^[0-9a-f]{40}$/;
+const HEX64_RE = /^[0-9a-f]{64}$/;
 export const transportSchema = z
   .object({
     type: z.enum(["http", "algolia", "file"]),
     method: z.string().optional(),
     path: z.string().optional(),
     base: z.string().optional(),
-    /** "file" transports: immutable source url + pinned git blob hash. */
+    /** "file" transports: commit-pinned raw URL. */
     url: z.string().optional(),
-    sha: z.string().optional()
+    /** "file" transports: git blob hash (provenance). */
+    sha: z.string().optional(),
+    /** "file" transports: SHA-256 over the raw bytes (security). */
+    sha256: z.string().optional()
   })
-  .catchall(z.unknown());
+  .catchall(z.unknown())
+  .superRefine((t, ctx) => {
+    if (t.type !== "file") return;
+    const fail = (message: string) => ctx.addIssue({ code: "custom", message });
+    if (!t.url || !SKILL_FILE_URL_RE.test(t.url)) {
+      fail(
+        `file transport url must be a commit-pinned https://raw.githubusercontent.com/<owner>/<repo>/<40-hex>/<path>.md — got ${t.url ?? "undefined"}`
+      );
+    }
+    if (!t.sha || !HEX40_RE.test(t.sha)) fail("file transport sha must be a 40-hex git blob hash");
+    if (!t.sha256 || !HEX64_RE.test(t.sha256)) {
+      fail("file transport sha256 must be a 64-hex digest of the raw bytes");
+    }
+  });
 
 export const provenanceSchema = z
   .object({

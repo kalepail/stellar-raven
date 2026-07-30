@@ -19,22 +19,36 @@ function decodeVectors(base64, count) {
   });
 }
 
-export function loadFrontierArtifact() {
-  if (loadedArtifact) return loadedArtifact;
+/**
+ * `requireCatalogMatch` (default true) compares the pinned vectors against the
+ * LIVE catalog and refuses on any drift — correct for anyone RUNNING the
+ * experiment, since stale vectors would silently produce meaningless rankings.
+ * It is deliberately NOT required for integrity checks: this is a banked
+ * no-ship measurement, and holding live model-facing catalog prose hostage to a
+ * re-embed of it (which its own README documents as hazardous) once caused a
+ * knowingly-false word to ship to every MCP client rather than pay that cost.
+ * Tests assert the artifact's SELF-consistency; the experiment asserts both.
+ */
+export function loadFrontierArtifact({ requireCatalogMatch = true } = {}) {
+  if (loadedArtifact && requireCatalogMatch) return loadedArtifact;
   const artifact = JSON.parse(readFileSync(ARTIFACT_PATH, "utf8"));
   if (JSON.stringify(artifact.model) !== JSON.stringify(MODEL)) throw new Error("vector artifact model config drift");
   if (JSON.stringify(artifact.policy) !== JSON.stringify(POLICY)) throw new Error("vector artifact policy drift");
-  const cards = buildCatalogCards();
-  if (artifact.cardSetSha256 !== cardSetHash(cards)) throw new Error("vector artifact card-set drift; rebuild it");
+  const cards = requireCatalogMatch ? buildCatalogCards() : artifact.cards;
+  if (requireCatalogMatch && artifact.cardSetSha256 !== cardSetHash(cards)) {
+    throw new Error("vector artifact card-set drift; rebuild it (npm run eval:vectorize:build)");
+  }
   if (artifact.vectorsSha256 !== sha256(Buffer.from(artifact.vectors, "base64"))) {
     throw new Error("vector artifact payload hash mismatch");
   }
   if (cards.length !== artifact.cards.length) throw new Error("vector artifact card count drift");
-  for (let index = 0; index < cards.length; index += 1) {
-    const card = cards[index];
-    const pinned = artifact.cards[index];
-    if (card.id !== pinned.id || card.service !== pinned.service || sha256(card.text) !== pinned.textSha256) {
-      throw new Error(`vector artifact card drift at ${card.id}`);
+  if (requireCatalogMatch) {
+    for (let index = 0; index < cards.length; index += 1) {
+      const card = cards[index];
+      const pinned = artifact.cards[index];
+      if (card.id !== pinned.id || card.service !== pinned.service || sha256(card.text) !== pinned.textSha256) {
+        throw new Error(`vector artifact card drift at ${card.id}`);
+      }
     }
   }
   loadedArtifact = { artifact, cards, vectors: decodeVectors(artifact.vectors, cards.length) };

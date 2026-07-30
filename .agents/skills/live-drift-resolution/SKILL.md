@@ -56,8 +56,11 @@ If the drift issue also reports an `ecosystem-skills/` pin change, or if you run
 same pass:
 
 ```
-./ecosystem-skills/update.sh              # re-pin (commit SHA + per-file blob sha); downloads nothing
+./ecosystem-skills/update.sh              # re-pin AND print the old->new body diff — READ IT
 node scripts/check-mirrors.mjs --fetch    # every new pin resolves upstream and hashes as recorded
+# then record the attestation (CI fails without it):
+$EDITOR ecosystem-skills/PIN-REVIEW.md
+node scripts/check-pin-review.mjs --base origin/main
 node scripts/build-catalog.mjs
 npm run micro-map:build
 npm run spec:build

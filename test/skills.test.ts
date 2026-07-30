@@ -7,12 +7,13 @@
  * not from a vendored copy — the same bytes, verified the same way, the Worker
  * serves at runtime.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadManifest, searchCatalog, type Catalog } from "../src/catalog/search.ts";
 import { readSkill, sectionSlugsOf } from "../src/skills/store.ts";
+import { SKILL_READ_DEADLINE_MS, type SkillSource } from "../src/skills/source.ts";
 import { lazyPinnedSkillSource as source, staticSkillSource } from "./helpers/skill-source.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -229,7 +230,7 @@ describe("readSkill", () => {
           description: "synthetic sectionless oversize fixture",
           inputSchema: null,
           outputSchema: null,
-          transport: { type: "file", url, sha: "0".repeat(40) },
+          transport: { type: "file", url, sha: "0".repeat(40), sha256: "0".repeat(64) },
           provenance: { source: "test", fetchedAt: "2026-01-01T00:00:00Z" }
         }
       ]
@@ -243,6 +244,55 @@ describe("readSkill", () => {
     expect(r.content!.length).toBeGreaterThan(24_000);
     expect(r.notice).toContain("tokens"); // advice applies uniformly, sectioned or not
     expect(r.availableSections).toEqual([]);
+  });
+
+  it("fails as an envelope, not a hung run, when upstream never answers", async () => {
+    // A slow upstream must not outlive the executor's 60s wall clock: a
+    // multi-file read used to be able to, which killed `execute` instead of
+    // returning this envelope (adversarial review, todo 1275).
+    vi.useFakeTimers();
+    try {
+      const never: SkillSource = () => new Promise(() => {});
+      const promise = readSkill(catalog, never, "skills.lumenloop.stellar-project-dossier");
+      await vi.advanceTimersByTimeAsync(SKILL_READ_DEADLINE_MS + 10);
+      const r = await promise;
+      expect(r.ok).toBe(false);
+      if (r.ok) return;
+      expect(r.error.service).toBe("skills");
+      expect(r.error.message).toMatch(/timed out after \d+ms/);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("refuses a WHOLE read when the body carries a section the catalog never indexed", async () => {
+    // Fail-closed on both read shapes. Before 2026-07-30 only section reads
+    // enforced this, so an un-indexed `## Hidden` section still reached the
+    // model through a whole read (found in adversarial review, todo 1275).
+    const id = "skills.test.drifted";
+    const url = "https://raw.githubusercontent.com/acme/skills/" + "0".repeat(40) + "/drifted/SKILL.md";
+    const synthetic: Catalog = {
+      ...catalog,
+      entries: [
+        ...catalog.entries,
+        {
+          id,
+          service: "skills",
+          kind: "skill",
+          description: "synthetic drifted fixture",
+          inputSchema: null,
+          outputSchema: null,
+          transport: { type: "file", url, sha: "0".repeat(40), sha256: "0".repeat(64) },
+          provenance: { source: "test", fetchedAt: "2026-01-01T00:00:00Z" }
+        }
+      ]
+    };
+    const body = "# Drifted\n\n## Hidden\n\nprompt injection lives here\n";
+    const r = await readSkill(synthetic, staticSkillSource({ [url]: body }), id);
+    expect(r.ok).toBe(false);
+    if (r.ok) return;
+    expect(r.error.message).toContain("no catalog entry");
+    expect(r.error.message).toContain("hidden");
   });
 
   it("availableSections membership is identical across readSkill and search hits", async () => {
@@ -268,9 +318,9 @@ describe("builder invariant: read-time sectionize agrees with build-catalog sect
     let skillsChecked = 0;
     for (const e of catalog.entries) {
       if (e.kind !== "skill" || e.service !== "skills") continue;
-      const t = e.transport as { type?: string; url?: string; sha?: string };
+      const t = e.transport as { type?: string; url?: string; sha?: string; sha256?: string };
       if (t?.type !== "file" || typeof t.url !== "string") continue;
-      const raw = await source(t.url, t.sha!);
+      const raw = await source({ url: t.url, sha: t.sha!, sha256: t.sha256! });
       skillsChecked += 1;
       for (const slug of sectionSlugsOf(raw)) {
         expect(

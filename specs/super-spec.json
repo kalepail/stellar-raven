@@ -5288,7 +5288,7 @@
     },
     "/scout/getSkill": {
       "get": {
-        "description": "Full detail for ONE skill by slug or display name — metadata plus, for SDF official skills, the complete raw SKILL.md text (.skill.content, fetched live from skills.stellar.org). 404s with a hint to list scout.listSkills when unknown. Use when you know the skill and need its actual instructions or install command. Not for discovering which skills exist → use listSkills.\n\nCatalog note: returns the full upstream markdown of one directory entry, suited to install/metadata questions. For reading build/integration playbooks, prefer the bundled skills. catalog entries via codemode.skill.read (sectioned, curated, pinned).",
+        "description": "Full detail for ONE skill by slug or display name — metadata plus, for SDF official skills, the complete raw SKILL.md text (.skill.content, fetched live from skills.stellar.org). 404s with a hint to list scout.listSkills when unknown. Use when you know the skill and need its actual instructions or install command. Not for discovering which skills exist → use listSkills.\n\nCatalog note: returns the full upstream markdown of one directory entry, suited to install/metadata questions. For reading build/integration playbooks, prefer the skills. catalog entries via codemode.skill.read (sectioned, curated, pinned).",
         "operationId": "scout.getSkill",
         "parameters": [
           {

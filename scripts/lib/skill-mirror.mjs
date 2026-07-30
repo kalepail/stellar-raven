@@ -45,6 +45,12 @@ export function skillFileUrl(source, skillName, filePath) {
   return `${RAW_BASE}/${source.owner}/${source.repo}/${source.commit}/${upstreamPath(source, skillName, filePath)}`;
 }
 
+/** SHA-256 over raw bytes — the SECURITY digest the runtime verifies. git's
+ *  SHA-1 has practical chosen-prefix collisions, so it stays provenance-only. */
+export function sha256(buffer) {
+  return createHash("sha256").update(buffer).digest("hex");
+}
+
 /** git blob hash of a buffer — the id MANIFEST.json records per file. */
 export function gitBlobSha(buffer) {
   return createHash("sha1")
@@ -75,10 +81,17 @@ async function fetchWithRetry(url, attempts = 3) {
  * read time), because some callers need the pre-scrub bytes for hashing.
  */
 export async function readSkillFile(source, skillName, file) {
+  return (await readSkillFileWithDigest(source, skillName, file)).text;
+}
+
+/** Text plus the SHA-256 the catalog pins for runtime verification. */
+export async function readSkillFileWithDigest(source, skillName, file) {
   const cachePath = join(CACHE_DIR, file.sha);
   if (existsSync(cachePath)) {
     const cached = readFileSync(cachePath);
-    if (gitBlobSha(cached) === file.sha) return cached.toString("utf8");
+    if (gitBlobSha(cached) === file.sha) {
+      return { text: cached.toString("utf8"), sha256: sha256(cached) };
+    }
   }
   const url = skillFileUrl(source, skillName, file.path);
   const bytes = await fetchWithRetry(url);
@@ -92,13 +105,13 @@ export async function readSkillFile(source, skillName, file) {
   }
   mkdirSync(CACHE_DIR, { recursive: true });
   writeFileSync(cachePath, bytes);
-  return bytes.toString("utf8");
+  return { text: bytes.toString("utf8"), sha256: sha256(bytes) };
 }
 
 /**
  * Every pinned file of every non-excluded skill, fetched (or cache-read) once
- * and returned as `"<source id>/<skill>/<file path>" -> text`. Builders take
- * this map and stay synchronous below it.
+ * and returned as `"<source id>/<skill>/<file path>" -> { text, sha256 }`.
+ * Builders take this map and stay synchronous below it.
  *
  * `skip` receives a skill name and returns true to leave it out entirely —
  * retired skills contribute zero bytes to any build (ADR-0003).
@@ -111,9 +124,9 @@ export async function loadSkillTexts(manifest, { skip = () => false } = {}) {
       for (const file of skill.files ?? []) {
         if (!file.path.endsWith(".md")) continue;
         jobs.push(
-          readSkillFile(source, skill.name, file).then((text) => [
+          readSkillFileWithDigest(source, skill.name, file).then((loaded) => [
             `${source.id}/${skill.name}/${file.path}`,
-            text
+            loaded
           ])
         );
       }
