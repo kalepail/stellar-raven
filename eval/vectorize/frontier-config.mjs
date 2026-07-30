@@ -50,6 +50,11 @@ export function buildCatalogCards(manifest = JSON.parse(readFileSync(path.join(R
     }
   }
   return manifest.entries
+    // Only entries the lexical stage can surface are worth embedding: the
+    // policy reranks searchCatalog's top-N, which never includes
+    // searchable:false entries (skill sections since the 2026-07-13 A/B), so
+    // their vectors are unreachable by construction.
+    .filter((entry) => entry.searchable !== false)
     .map((entry) => ({
       id: entry.id,
       service: entry.service,

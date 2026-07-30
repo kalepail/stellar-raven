@@ -1,13 +1,19 @@
 #!/usr/bin/env node
-// check-mirrors.mjs — validate the ecosystem-skills/ mirror in THIS repo.
+// check-mirrors.mjs — validate the ecosystem-skills/ PIN SET in THIS repo.
 //
-// Adapted from stellar-raven-next/scripts/check-mirrors.mjs; the agents-docs
-// checks were dropped (that mirror is not lifted here). Kept: the skills-mirror
-// validation — manifest completeness, files-on-disk, skill_count, group
-// coverage (no duplicates, no ungrouped skills), catalog.json presence.
+// Skill bodies are not vendored here (they are fetched from upstream at the
+// pinned commit and hash-verified — see ecosystem-skills/README.md), so this
+// validates the pin metadata rather than files on disk: manifest completeness,
+// a resolvable commit + blob sha per file, skill_count, group coverage (no
+// duplicates, no ungrouped skills), catalog.json presence.
+//
+// Offline by default. With --fetch it additionally retrieves every pinned file
+// and verifies it against its blob sha — the end-to-end check that the pins the
+// Worker serves from still resolve upstream.
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { readSkillFile } from "./lib/skill-mirror.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -54,29 +60,29 @@ function checkEcosystemSkills() {
 
   const skillIds = new Set();
   for (const source of manifest.sources) {
+    // A pin is only usable if it names an immutable commit: everything
+    // downstream (transport URLs, integrity checks) is derived from it.
+    if (!/^[0-9a-f]{40}$/.test(source.commit ?? "")) {
+      fail(`ecosystem-skills source "${source.id}" has no full commit SHA (got "${source.commit}")`);
+    }
     for (const skill of source.skills) {
       const id = `${source.id}/${skill.name}`;
       skillIds.add(id);
       for (const file of skill.files) {
-        assertFile(
-          `ecosystem-skills/skills/${id}/${file.path}`,
-          `ecosystem-skills manifest lists missing file: ${id}/${file.path}`,
-        );
+        // The blob sha IS the integrity contract with upstream — a file
+        // without one could be fetched but never verified.
+        if (!/^[0-9a-f]{40}$/.test(file.sha ?? "")) {
+          fail(`ecosystem-skills manifest lists ${id}/${file.path} without a git blob sha`);
+        }
       }
     }
-    // Vendored upstream LICENSE/NOTICE files (redistribution notices) —
-    // THIRD-PARTY-NOTICES.md depends on these being present, so a manifest
-    // entry with no file on disk must fail just like a missing skill file.
-    for (const file of source.license_files ?? []) {
-      assertFile(
-        `ecosystem-skills/skills/${source.id}/${file}`,
-        `ecosystem-skills manifest lists missing license/notice file: ${source.id}/${file}`,
-      );
-    }
+    // Upstream license/notice names are recorded as provenance (nothing is
+    // redistributed) — THIRD-PARTY-NOTICES.md maps each source to its license,
+    // so a source with none recorded means the map cannot be verified.
     if ((source.license_files ?? []).length === 0) {
       fail(
-        `ecosystem-skills source "${source.id}" vendors no upstream LICENSE/NOTICE — ` +
-          `every mirrored source must carry its redistribution notice (see THIRD-PARTY-NOTICES.md)`,
+        `ecosystem-skills source "${source.id}" records no upstream LICENSE/NOTICE — ` +
+          `every source must carry its license provenance (see THIRD-PARTY-NOTICES.md)`,
       );
     }
   }
@@ -104,7 +110,27 @@ function checkEcosystemSkills() {
   assertFile("ecosystem-skills/INDEX.md");
 }
 
+/** --fetch: prove every pin still resolves upstream and hashes as recorded. */
+async function checkPinsResolve() {
+  const manifest = readJson("ecosystem-skills/MANIFEST.json");
+  const jobs = [];
+  for (const source of manifest.sources) {
+    for (const skill of source.skills) {
+      for (const file of skill.files) {
+        jobs.push(
+          readSkillFile(source, skill.name, file).catch((e) =>
+            fail(`ecosystem-skills pin unusable: ${source.id}/${skill.name}/${file.path} — ${e.message}`),
+          ),
+        );
+      }
+    }
+  }
+  await Promise.all(jobs);
+  console.log(`fetched + verified ${jobs.length} pinned skill files`);
+}
+
 checkEcosystemSkills();
+if (process.argv.includes("--fetch")) await checkPinsResolve();
 
 if (failures.length) {
   console.error("mirror checks failed:");

@@ -49,7 +49,10 @@ const jsonSchemaShape = z.record(z.string(), z.unknown());
  * How the host adapter reaches the surface. `type` discriminates:
  *  - "http"   → method + path (+ base) against a service origin
  *  - "algolia"→ Algolia REST query (hosts carry an app-id placeholder)
- *  - "file"   → path inside the bundled ecosystem-skills mirror
+ *  - "file"   → a pinned upstream markdown file: `url` (raw.githubusercontent
+ *               at the commit pinned in ecosystem-skills/MANIFEST.json) plus
+ *               `sha` (that file's git blob hash, re-verified on every read —
+ *               skill bodies are not vendored or bundled; src/skills/source.ts)
  * Extra transport detail (hosts, retry policy, …) rides along via catchall.
  */
 export const transportSchema = z
@@ -57,7 +60,10 @@ export const transportSchema = z
     type: z.enum(["http", "algolia", "file"]),
     method: z.string().optional(),
     path: z.string().optional(),
-    base: z.string().optional()
+    base: z.string().optional(),
+    /** "file" transports: immutable source url + pinned git blob hash. */
+    url: z.string().optional(),
+    sha: z.string().optional()
   })
   .catchall(z.unknown());
 

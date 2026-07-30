@@ -7,8 +7,8 @@
  * property only holds if EVERY emitter draws from one exclusion dataset —
  * build-catalog.mjs (manifest entries + skill sections), build-super-spec.mjs
  * (in-sandbox spec), description-notes.mjs (callable-name rewrites must not
- * mint names for excluded ops), and bundle-skills.mjs (Worker-shipped skill
- * bodies). This module is that dataset; the fail-loud drift guards that pin
+ * mint names for excluded ops), and src/skills/source.ts (the scrub applied to
+ * every skill body served at read time). This module is that dataset; the fail-loud drift guards that pin
  * it to the live inventories stay in build-catalog.mjs, which is the one
  * script that always sees the inventory inputs.
  */
@@ -83,8 +83,8 @@ export const EXCLUDED_SCOUT_OPS = new Set([
 // 2026-07-03 (Solo todo 825) and then REMOVED from the mirror entirely
 // 2026-07-06 (go-public cleanup): their description harvest was complete and
 // partner-tier content must not live in this public repo. Their names live on
-// only in RETIRED_SKILL_REF_RE below, which scrubs the public skills'
-// cross-references to them from emitted text.
+// only in the scrub regex in src/skills/scrub.ts, which removes the public
+// skills' cross-references to them from emitted and served text.
 export const RETIRED_ONBOARDING_SKILLS = new Set(["lumenloop-mcp-connect"]);
 
 export const RETIRED_PARTNER_ONBOARDING_SKILLS = new Set([
@@ -134,58 +134,9 @@ export const SKILL_EXPOSURE_CLASSIFICATION_BY_ID = new Map(
   SKILL_EXPOSURE_CLASSIFICATIONS.map((entry) => [entry.id, entry])
 );
 
-// Matches any reference to a non-exposed skill in prose or a relative markdown
-// link (`../lumenloop-mcp-connect/SKILL.md`, "lumenloop-api-query"). The
-// stellar-developer-activity id is internal-guidance only; Scout upstream links
-// it as a companion skill, but ADR-0003 says non-exposed ids cannot appear in
-// emitted model-facing text.
-const RETIRED_SKILL_REF_RE = /lumenloop-api-[a-z]+|lumenloop-mcp-connect|stellar-developer-activity/;
-
-/**
- * Remove non-exposed skill cross-references from EMITTED skill text (bodies
- * served via codemode.skill.read and the section descriptions derived from
- * them).
- *
- * The exposed lumenloop playbooks were authored for the upstream MCP-connector
- * context and cross-link the retired onboarding skills ("Connect first →
- * ../lumenloop-mcp-connect/SKILL.md", "reconnect the connector"). Through this
- * gateway those links are dead pointers to skills that are never emitted, and
- * the connector-setup advice contradicts the sandbox model (no network; the
- * caller is already connected). Every such reference sits inside a markdown
- * list item, so the scrub drops the WHOLE item (bullet line + indented
- * continuation lines) — never a partial sentence.
- *
- * Fail-loud drift guard: if an upstream re-sync ever introduces a non-exposed
- * skill reference OUTSIDE a list item, the scrub cannot remove it cleanly and
- * throws instead of emitting the leak.
- */
-export function scrubRetiredSkillRefs(text, context) {
-  if (!RETIRED_SKILL_REF_RE.test(text)) return text;
-  const lines = text.split("\n");
-  const out = [];
-  for (let i = 0; i < lines.length; i++) {
-    if (!/^\s*[-*] /.test(lines[i])) {
-      out.push(lines[i]);
-      continue;
-    }
-    // Collect the full list item: the bullet line plus indented, non-bullet,
-    // non-blank continuation lines.
-    const item = [lines[i]];
-    let j = i + 1;
-    while (j < lines.length && /^\s+\S/.test(lines[j]) && !/^\s*[-*] /.test(lines[j])) {
-      item.push(lines[j]);
-      j++;
-    }
-    if (!RETIRED_SKILL_REF_RE.test(item.join("\n"))) out.push(...item);
-    i = j - 1;
-  }
-  const scrubbed = out.join("\n");
-  if (RETIRED_SKILL_REF_RE.test(scrubbed)) {
-    throw new Error(
-      `Non-exposed skill reference survives outside a markdown list item in ${context} — ` +
-        `an upstream re-sync changed the reference shape; extend scrubRetiredSkillRefs ` +
-        `in scripts/exposure.mjs so the leak cannot be emitted.`
-    );
-  }
-  return scrubbed;
-}
+// The retired-skill scrub lives in src/skills/scrub.ts because it now runs at
+// READ time too: skill bodies are fetched from upstream at the pinned commit
+// rather than vendored, so every served body is scrubbed on the way out. One
+// implementation, re-exported here so the builders keep importing exposure
+// data from one place.
+export { scrubRetiredSkillRefs } from "../src/skills/scrub.ts";

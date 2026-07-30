@@ -44,7 +44,7 @@ Grounding research (initially live-verified across 2026-07-01…07-03; service s
    references, not templates: they carry complexity from a different architecture (multi-agent
    research pipeline) that this two-tool service doesn't need. We design our own types, formats,
    and adapters from this project's actual needs and the live research. What we do take:
-   **content/data** (the 25-skill `ecosystem-skills/` mirror, the labeled golden corpus for
+   **content/data** (the pinned `ecosystem-skills/` skill set, the labeled golden corpus for
    evals) and **lessons** (see item 4). `research/prior-art.md` is the map of what exists there —
    consult it to avoid known pitfalls, not to source code.
 4. **The ADR pitfalls carry over:** never let the model own endpoint args/auth (validate against
@@ -143,25 +143,31 @@ Entries additionally carry an `outputSchema` wherever the source declares one.
 Build pipeline: `scripts/build-catalog.mjs` has five snapshot/metadata roots:
 `inventory/lumenloop.json`, `inventory/stellar-light.json`, the authored
 `specs/stellar-docs.json`, `inventory/stellar-docs-titles.json` (page-title vocabulary), and
-`ecosystem-skills/MANIFEST.json`. The skills manifest enumerates additional semantic inputs that
-the builder reads directly from the mirror: each exposed `SKILL.md` and every additional listed
-Markdown file supply skill descriptions, sections, and routing keywords. The imported runner
+`ecosystem-skills/MANIFEST.json`. The skills manifest enumerates additional semantic inputs the
+builder fetches from their pinned upstream commit (hash-verified, cached under the gitignored
+`ecosystem-skills/.cache/`): each exposed `SKILL.md` and every additional listed Markdown file
+supplies that skill's description and section headings. The imported runner
 registry in `src/skills/runners/index.ts` supplies runnable flags and input/output schemas. The
 builder emits only `catalog/manifest.json`; the Worker bundles that manifest and scores its
 entries at request time, with no other search artifact. Catalog assembly is deterministic and
-offline-testable; only inventory refresh and skill-mirror sync touch the network.
+offline-testable except for the pinned skill files it fetches (hash-verified); inventory refresh
+and skill re-pinning are the other network steps.
 
 ## 3. Skills directory — selective + partial exposure
 
-Source: `ecosystem-skills/`, a pinned mirror of 19 public skills across 4 upstreams:
-lumenloop ×8, openzeppelin ×3, stellar-dev ×7, stellar-light ×1. The mirror is synced by
-`ecosystem-skills/update.sh` and verified by `scripts/check-mirrors.mjs`. Lumenloop's partner
-skill set is not mirrored; it is represented only as name-only inventory stubs so credentialed
-content cannot re-enter the public repo.
+Source: `ecosystem-skills/MANIFEST.json`, a pin set for 19 public skills across 4 upstreams:
+lumenloop ×8, openzeppelin ×3, stellar-dev ×7, stellar-light ×1. **Bodies are referenced, not
+vendored** — the repo commits a commit SHA per source and a git blob hash per file; the builders
+and the Worker fetch each file from upstream at that commit and verify it against that hash
+(`scripts/lib/skill-mirror.mjs`, `src/skills/source.ts`). Pins are re-cut by
+`ecosystem-skills/update.sh` and validated by `scripts/check-mirrors.mjs` (`--fetch` proves they
+still resolve). Lumenloop's partner skill set is not pinned; it is represented only as name-only
+inventory stubs so credentialed content cannot re-enter the public repo.
 
 - **Build-time sectioning:** each `SKILL.md` is split on `##` headings (multi-file skills keep
-  their file structure); every skill and every section becomes a catalog entry with its own
-  description. Since the 2026-07-13 skills-form A/B, section entries carry `searchable: false`:
+  their file structure); every skill and every section becomes a catalog entry. A skill entry
+  carries its frontmatter description (what routing scores); a section entry carries its heading
+  and its pinned address — no body excerpt, so no skill prose lives in a committed artifact. Since the 2026-07-13 skills-form A/B, section entries carry `searchable: false`:
   `search` returns whole-skill hits (each carrying `availableSections` keys) and sections are
   read exact-id via `skill.read` — the measured arm-B outcome (`eval/README.md`
   "Skills-form A/B").
@@ -222,7 +228,7 @@ content cannot re-enter the public repo.
 | Lumenloop | `/v1/tools` ∪ `/v1/me` tool list ∪ per-tool detail (partner items hidden from the list!); `/v1/skills` same union trick | keyless `/v1/changelog?since=` |
 | Stellar Light | `/api/openapi.json` (diff), `/api/status` endpoint enumeration | `/api/changelog` |
 | Stellar Docs (Algolia) | `GET /1/indexes/{index}/settings` diff + one smoke query | settings/nbHits diff; MCP `tools/list` checked only as fallback health |
-| Skills | `ecosystem-skills/update.sh` against pinned SHAs | `check-mirrors.mjs` |
+| Skills | `check-skills-drift.mjs` against pinned SHAs; re-pin with `ecosystem-skills/update.sh` | `check-mirrors.mjs [--fetch]` |
 
 Output: regenerated inventory JSONs under `inventory/` + a diff report; `build-catalog`
 then rebuilds the manifest; `test/adapters.test.ts` plus CI's generated-artifacts-sync gate
@@ -246,7 +252,7 @@ src/observability.ts     # structured JSON events → Workers Logs; custom execu
 scripts/                 # refresh-inventory.mjs · build-catalog.mjs · build-super-spec.mjs · smoke checks
 specs/                   # super-spec.json (+ authored stellar-docs.json) — feeds codemode.spec()
 inventory/               # regenerated service inventory JSONs (drift source for build-catalog)
-ecosystem-skills/        # pinned mirror (lifted)
+ecosystem-skills/        # skill PINS (MANIFEST.json) — bodies live upstream, never vendored
 catalog/manifest.json    # generated — the unified index
 assets/repo/             # GitHub-only assets (README hero banner) — NOT served by the Worker
 research/                # this research + ADRs (research/decisions/) as decisions accrue

@@ -47,7 +47,8 @@
  *     stub oversized output types) + inputSchema/outputSchema as data;
  *     skills get availableSections; skill sections get parent id + key —
  *     every kind carries a `usage` line naming the exact next call.
- *   codemode.skill.read(name, {sections?}) — bundled skill content
+ *   codemode.skill.read(name, {sections?}) — pinned skill content, fetched
+ *     from upstream at the pinned commit and hash-verified (src/skills/source.ts)
  *   codemode.skill.run(name, input)   — runnable-skill dispatch (research/
  *     skill-run-design.md §6): exact catalog id, input validated host-side
  *     against the entry's schema, first-party runner executed HOST-side over
@@ -82,7 +83,8 @@ import { callService } from "../adapters/index.ts";
 import type { AdapterEnv, FetchLike } from "../adapters/types.ts";
 import { guard } from "../policy/guard.ts";
 import { redactSecrets, secretsFromEnv } from "../policy/redact.ts";
-import { readSkill, type SkillBundle } from "../skills/store.ts";
+import { readSkill } from "../skills/store.ts";
+import type { SkillSource } from "../skills/source.ts";
 import { runSkill, assertRunnersWired } from "../skills/run.ts";
 import { RUNNERS } from "../skills/runners/index.ts";
 import type { OpsFacade, SkillRunner } from "../skills/runners/types.ts";
@@ -476,7 +478,7 @@ const resolvedSpecCache = new WeakMap<object, unknown>();
 
 export function buildCodemodeProvider(
   catalog: Catalog,
-  bundle: SkillBundle,
+  skillSource: SkillSource,
   superSpec?: unknown,
   hooks?: {
     /**
@@ -811,7 +813,7 @@ export function buildCodemodeProvider(
       : {}),
 
     skill_read: async (name?: unknown, opts?: unknown) => {
-      const r = readSkill(catalog, bundle, name, opts);
+      const r = await readSkill(catalog, skillSource, name, opts);
       if (r.ok && typeof name === "string") {
         const entry = catalog.entries.find((candidate) => candidate.id === name);
         hooks?.onSkillRead?.(name, entry?.buildAuthorityRoles ?? []);
@@ -1003,7 +1005,7 @@ export function buildCodemodeProvider(
 /** The full provider set `execute` wires into the sandbox. */
 export function buildSandbox(
   catalog: Catalog,
-  bundle: SkillBundle,
+  skillSource: SkillSource,
   env: AdapterEnv,
   deps?: {
     fetchImpl?: FetchLike;
@@ -1028,7 +1030,7 @@ export function buildSandbox(
     ...buildProviders(catalog, env, deps, ops),
     buildCodemodeProvider(
       catalog,
-      bundle,
+      skillSource,
       deps?.superSpec,
       {
         onSkillRead: deps?.onSkillRead,

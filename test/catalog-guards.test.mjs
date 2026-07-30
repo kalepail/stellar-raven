@@ -13,7 +13,11 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { attachRunnableSkills, assertNoNonExposedRefs } from "../scripts/build-catalog.mjs";
+import {
+  attachRunnableSkills,
+  assertNoNonExposedRefs,
+  assertBuildAuthorityIdsResolve
+} from "../scripts/build-catalog.mjs";
 import { RUNNERS } from "../src/skills/runners/index.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -101,5 +105,23 @@ describe("assertNoNonExposedRefs — runnable schema JSON is guarded emitted tex
       };
     });
     expect(() => assertNoNonExposedRefs(planted)).toThrow(/ADR-0003 leak/);
+  });
+});
+
+describe("assertBuildAuthorityIdsResolve — role ids are pinned to skills that churn upstream", () => {
+  it("passes on the real catalog", () => {
+    const entries = JSON.parse(
+      readFileSync(join(ROOT, "catalog", "manifest.json"), "utf8")
+    ).entries;
+    expect(() => assertBuildAuthorityIdsResolve(entries)).not.toThrow();
+  });
+
+  it("throws when an upstream rename orphans a role id, instead of dropping the role", () => {
+    const entries = JSON.parse(
+      readFileSync(join(ROOT, "catalog", "manifest.json"), "utf8")
+    ).entries.filter((e) => e.id !== "skills.stellar-dev.dapp");
+    expect(() => assertBuildAuthorityIdsResolve(entries)).toThrow(
+      /BUILD_AUTHORITY_SKILL_ROLES names skills that no longer exist: skills\.stellar-dev\.dapp/
+    );
   });
 });

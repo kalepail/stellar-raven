@@ -45,6 +45,8 @@ import {
   scrubScoutDescription
 } from "./description-notes.mjs";
 import { writeFileAtomic } from "./lib/shared.mjs";
+import { loadSkillTexts } from "./lib/skill-mirror.mjs";
+import { RETIRED_ONBOARDING_SKILLS, scrubRetiredSkillRefs } from "./exposure.mjs";
 // The runnable-skill allowlist-as-data (research/skill-run-design.md §5):
 // the SAME registry scripts/build-catalog.mjs attaches to the manifest, so
 // the two model-facing surfaces cannot drift (native type stripping, as for
@@ -56,7 +58,6 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_PATH = join(ROOT, "specs", "super-spec.json");
 
 const readJson = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
-const readText = (p) => readFileSync(join(ROOT, p), "utf8");
 
 // ---------------------------------------------------------------------------
 // Shared helpers (kept in sync with scripts/build-catalog.mjs where noted)
@@ -331,7 +332,7 @@ function buildStellarDocs(spec, exposed) {
 // discovery via a heading-list index per skill)
 // ---------------------------------------------------------------------------
 
-function buildSkillIndex(manifest, exposed) {
+function buildSkillIndex(manifest, exposed, texts) {
   // Exposure-aware: advertise ONLY skills/sections the catalog contains.
   // Retired skills are never emitted by build-catalog.mjs (ADR-0003), so they
   // drop out here too — codemode.spec()'s index stays consistent with what
@@ -342,8 +343,13 @@ function buildSkillIndex(manifest, exposed) {
     for (const skill of source.skills) {
       const skillId = `skills.${source.id}.${skill.name}`;
       if (!exposed.has(skillId)) continue; // retired skill — not advertised
-      const skillDir = `ecosystem-skills/skills/${source.id}/${skill.name}`;
-      const { attrs, body } = parseFrontmatter(readText(`${skillDir}/SKILL.md`));
+      // Bodies are fetched from the pinned upstream commit and hash-verified
+      // (scripts/lib/skill-mirror.mjs) — never vendored here. Only the
+      // frontmatter description and the `##` headings reach the spec.
+      const key = `${source.id}/${skill.name}/SKILL.md`;
+      const raw = texts.get(key);
+      if (raw === undefined) throw new Error(`skill file ${key} was not loaded`);
+      const { attrs, body } = parseFrontmatter(scrubRetiredSkillRefs(raw, key));
       const sections = [];
       const usedSlugs = new Set();
       for (const line of body.split("\n")) {
@@ -418,7 +424,7 @@ function buildSkillsPaths(skillIndex, runnableIndex) {
     "/skills/list_skills": {
       get: {
         operationId: "skills.list_skills",
-        summary: `List all ${skillIds.length} bundled skills (agent playbooks) with descriptions and section headings.`,
+        summary: `List all ${skillIds.length} pinned skills (agent playbooks) with descriptions and section headings.`,
         description:
           `The full skill index is embedded RIGHT HERE in this operation's x-skill-index: ` +
           `${skillIds.length} skills across ${new Set(skillIndex.map((s) => s.source)).size} pinned upstream sources ` +
@@ -435,7 +441,7 @@ function buildSkillsPaths(skillIndex, runnableIndex) {
     "/skills/read_skill": {
       post: {
         operationId: "skills.read_skill",
-        summary: "Read one bundled skill's full SKILL.md, or only the requested sections.",
+        summary: "Read one pinned skill's full SKILL.md, or only the requested sections.",
         description:
           "Delivers skill context when and as relevant: pass the exact skill id (see the enum / x-skill-index on " +
           "/skills/list_skills) and optionally a `sections` array of section headings (or their slugs) and/or " +
@@ -470,7 +476,7 @@ function buildSkillsPaths(skillIndex, runnableIndex) {
         responses: {
           200: {
             description:
-              "{ ok: true, id, path, content? (whole skill) | sections?: [{section, content}], availableSections } or { ok: false, error }."
+              "{ ok: true, id, url (pinned upstream source), content? (whole skill) | sections?: [{section, content}], availableSections } or { ok: false, error }."
           }
         },
         "x-service": "skills",
@@ -483,7 +489,7 @@ function buildSkillsPaths(skillIndex, runnableIndex) {
         summary:
           "Execute a runnable skill's data-gathering pipeline host-side and get one compact composed result.",
         description:
-          `${runnableIds.length} of the bundled skills are RUNNABLE: their mechanical fetch-and-project ` +
+          `${runnableIds.length} of the pinned skills are RUNNABLE: their mechanical fetch-and-project ` +
           `core also executes as vetted host-side code, composing several service calls into one compact, ` +
           `typed result. Pass the exact skill id (enum below — ids are exact-match, never fuzzy) and an ` +
           `input object; input is validated host-side against the skill's inputSchema in x-runnable-index ` +
@@ -575,7 +581,7 @@ function buildSkillsPaths(skillIndex, runnableIndex) {
 // Assemble
 // ---------------------------------------------------------------------------
 
-function main() {
+async function main() {
   const lumenloop = readJson("inventory/lumenloop.json");
   const stellarLight = readJson("inventory/stellar-light.json");
   const stellarDocsSpec = readJson("specs/stellar-docs.json");
@@ -584,7 +590,10 @@ function main() {
   const exposed = exposedIds(catalogManifest);
 
   const scout = buildScout(stellarLight, exposed);
-  const skillIndex = buildSkillIndex(skillsManifest, exposed);
+  const skillTexts = await loadSkillTexts(skillsManifest, {
+    skip: (name) => RETIRED_ONBOARDING_SKILLS.has(name)
+  });
+  const skillIndex = buildSkillIndex(skillsManifest, exposed, skillTexts);
   const runnableIndex = buildRunnableIndex(catalogManifest);
 
   const paths = {
@@ -642,7 +651,7 @@ function main() {
       version: "1.0.0",
       description:
         "One spec covering every operation this MCP server can execute, across four services: lumenloop, scout " +
-        "(Stellar Light), stellarDocs (Algolia-backed docs search), and skills (bundled agent playbooks). " +
+        "(Stellar Light), stellarDocs (Algolia-backed docs search), and skills (pinned agent playbooks). " +
         "Paths are keyed '/{service}/{operation}' and each operationId is the exact callable name: an operation " +
         "with operationId 'lumenloop.search_directory' is invoked inside the execute tool's sandbox as " +
         "`await lumenloop.search_directory(args)` — args is ONE object matching the operation's requestBody schema " +
@@ -718,4 +727,4 @@ function main() {
   console.log(`  pretty: ${prettyBytes} bytes; compact (ships into sandbox): ${compactBytes} bytes ≈ ${Math.ceil(compactBytes / 4).toLocaleString()} tokens`);
 }
 
-main();
+await main();

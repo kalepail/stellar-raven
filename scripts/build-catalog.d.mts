@@ -3,6 +3,7 @@
 // `tsc --noEmit`. Declares only the subset of exports the tests import,
 // not the module's full exported surface.
 export function assertNoNonExposedRefs(entries: readonly unknown[]): void;
+export function assertBuildAuthorityIdsResolve(entries: readonly unknown[]): void;
 export function assertSideEffectingOpsExcluded(
   openapi: unknown,
   excluded?: ReadonlySet<string>

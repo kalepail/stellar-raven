@@ -64,7 +64,11 @@ jobs:
       - run: node scripts/build-catalog.mjs
       - run: npm run micro-map:build
       - run: npm run spec:build
-      - run: node scripts/check-mirrors.mjs
+      # --fetch: prove every pinned skill file still resolves upstream and
+      # hashes as recorded. Bodies are no longer vendored, so a moved or
+      # rewritten upstream file is now a LIVE failure, not just drift — this is
+      # the check that catches it before a user does.
+      - run: node scripts/check-mirrors.mjs --fetch
       # Detection only — never runs ecosystem-skills/update.sh from CI (mirrored
       # skills are prompt input; upstream edits go through human review). Reads
       # LUMENLOOP_API_KEY from the materialized .env like refresh-inventory.mjs.

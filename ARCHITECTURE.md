@@ -536,34 +536,45 @@ The `codemode` provider (`buildCodemodeProvider`, `src/executor/providers.ts`) i
     facade is built from emitted entries only, and runners receive exactly
     `(input, ops)` — no env parameter exists to leak.
 
-## 6. Skill splitting — mirror → sections → reads
+## 6. Skill splitting — pins → sections → reads
 
-**The mirror.** `ecosystem-skills/` is a pinned mirror of 19 public skills from 4 upstreams
-(commit-SHA-pinned in `ecosystem-skills/MANIFEST.json`); `scripts/check-mirrors.mjs`
-verifies integrity offline, `scripts/check-skills-drift.mjs` checks the pins against
-upstream in the daily refresh (detection only — the mirror is never auto-synced). The former
-credentialed Lumenloop API skill source is intentionally absent; partner skills remain visible
-only as name-only inventory stubs.
+**The pin set.** `ecosystem-skills/MANIFEST.json` pins 19 public skills from 4 upstreams: per
+source a full commit SHA, per file a path, size, and git blob hash. Bodies are **not vendored**
+in this repo and **not bundled into the Worker** (legal position, and it deletes ~390 KB of
+Worker bundle): the pin is the artifact. `ecosystem-skills/update.sh` re-pins (downloads
+nothing), `scripts/check-mirrors.mjs` validates the pin set offline (`--fetch` additionally
+proves every pin still resolves upstream, run daily by `refresh.yml`), and
+`scripts/check-skills-drift.mjs` checks the pins against upstream HEAD in the same refresh
+(detection only — pins are never auto-advanced, because skills are prompt input and an upstream
+edit must be read by a human before it reaches the model). The former credentialed Lumenloop API
+skill source is intentionally absent; partner skills remain visible only as name-only inventory
+stubs.
 
-**The bundle.** Workers have no filesystem, so `scripts/bundle-skills.mjs` packs every
-exposed skill's `.md` files (markdown only — that's the exposed surface; 30 files, with
-retired-skill cross-references scrubbed from the packed bodies via `scrubRetiredSkillRefs`
-in `scripts/exposure.mjs`) into
-`src/skills/bundle.json`, keyed by repo-root-relative path — chosen to equal catalog
-entries' `transport.path` exactly, so the store resolves transport → content with no path
-arithmetic. `generatedAt` comes from the mirror manifest's `synced_at`, never wall clock.
+**Retrieval.** Every skill/section entry carries `transport: { type: "file", url, sha }` — the
+`raw.githubusercontent.com` URL at the pinned commit plus the pinned blob hash.
+`src/skills/source.ts` resolves that pair: in-isolate memo → colo Cache API → upstream fetch,
+then verifies the bytes against the blob hash (`crypto.subtle` SHA-1 over git's
+`blob <len>\0` framing) and applies `scrubRetiredSkillRefs` (`src/skills/scrub.ts`, shared with
+the builders) before returning. Bytes that fail the hash are refused, never served; transport,
+integrity, and scrub failures all surface as ordinary `{ ok: false, error }` envelopes from
+`skill.read`. The URL is commit-pinned, so cache entries never need invalidating. Because the
+fetch is host-side, the sandbox itself still has no network (`globalOutbound: null`). The build
+side uses the same pins and the same verification through `scripts/lib/skill-mirror.mjs`, which
+caches into the gitignored `ecosystem-skills/.cache/`.
 
 **Build-time sectioning.** `scripts/build-catalog.mjs` emits, per skill: one `kind:
 "skill"` entry (id `skills.<source>.<name>`, description from frontmatter or first
 paragraph); one `kind: "skill-section"` entry per `##` heading (id `<skillId>#<slug>`,
-duplicate slugs deduped `-2`, `-3`…; description = heading + first paragraph, truncated to
-200 chars; `keywords` extracted from the *section body*); and one section-kind entry
-per extra `.md` file (id `<skillId>#file:<relpath>`). Every section entry carries
+duplicate slugs deduped `-2`, `-3`…; description = the heading, and nothing more); and one
+section-kind entry per extra `.md` file (id `<skillId>#file:<relpath>`, description = its
+title). A section entry is an ADDRESS, not a copy: no body excerpt, and no body-derived
+`keywords` (they only exist under experiment arm A, which is the only arm that puts sections
+back in search — see `emitSectionKeywords`). Every section entry carries
 `searchable: false` since the 2026-07-13 skills-form A/B: sections stay exposed for
 exact-id `skill.read` and `availableSections` navigation but never enter search — the
 measured A/B showed the 204 section cards crowded operations while whole-skill entries
 carried every discovery need (`eval/README.md` "Skills-form A/B"; Solo scratchpad 608). Retired onboarding skills are never
-emitted — no skill entry, no sections, no bundle bytes (ADR-0003; the retirement record is
+emitted — no skill entry, no sections, and never even fetched (ADR-0003; the retirement record is
 `RETIRED_ONBOARDING_SKILLS` in `scripts/exposure.mjs` plus the ADR). Lumenloop-API-served
 skill metadata (14 skills as zips) is likewise never emitted: public skills duplicate
 canonical `skills.*` mirror entries, and partner skills are deliberately non-mirrored.
@@ -573,10 +584,10 @@ nearest-id suggestion.
 
 **The read path** (`readSkill`, `src/skills/store.ts`) resolves through the **catalog**,
 not the filesystem: `name` must be an exact catalog id (a `#slug` suffix reads that one
-section), the entry must be `kind: "skill"`, and content comes from the
-bundle. The body is re-sectioned at read time with the same slugify as the builder — the
-builder-invariant test (`test/skills.test.ts`, via the exported `sectionSlugsOf`) asserts
-the two sectionings agree for every bundled skill. Both read shapes are fail-closed on
+section), the entry must be `kind: "skill"`, and content comes from the entry's pinned
+`transport` via `src/skills/source.ts`. The body is re-sectioned at read time with the same
+slugify as the builder — the builder-invariant test (`test/skills.test.ts`, via the exported
+`sectionSlugsOf`) asserts the two sectionings agree for every pinned skill. Both read shapes are fail-closed on
 drift:
 
 - **Whole reads** return the full body — content is never withheld for *size* (the ~6k cap
@@ -690,11 +701,11 @@ scripts/refresh-inventory.mjs   (live inventory network step)
    → inventory/lumenloop.json  inventory/stellar-light.json  inventory/stellar-docs.json
      inventory/stellar-docs-titles.json
 specs/stellar-docs.json         (authored spec-as-data, not fetched)
-ecosystem-skills/MANIFEST.json  (written by separate networked skill-mirror sync)
-scripts/build-catalog.mjs       → catalog/manifest.json        (offline, deterministic)
+ecosystem-skills/MANIFEST.json  (skill PINS, written by ecosystem-skills/update.sh)
+scripts/build-catalog.mjs       → catalog/manifest.json        (deterministic; fetches pinned
+                                                                skill files, hash-verified)
 scripts/build-micro-map.mjs     → src/mcp/micro-map.ts          (offline, deterministic)
 scripts/build-super-spec.mjs    → specs/super-spec.json        (npm run spec:build)
-scripts/bundle-skills.mjs       → src/skills/bundle.json       (npm run skills:bundle)
 ```
 
 `scripts/build-catalog.mjs` has five snapshot/metadata roots: `inventory/lumenloop.json`,
@@ -731,11 +742,14 @@ CI (`.github/workflows/ci.yml`, Node 24 — build-catalog relies on native TS
 type-stripping): types → tsc → vitest → workerd smoke lane (`npm run test:smoke`,
 `test/smoke/` via vitest-pool-workers: the assembled router through `SELF` and the real
 Dynamic Worker executor boundary through the LOADER binding; offline enforced by a
-miniflare `outboundService` wall, auth values are test-only fakes) → eval self-test →
+miniflare `outboundService` wall that also serves the pinned skill files from a local map, so
+`skill.read` and its integrity check run for real inside workerd; auth values are test-only
+fakes) → eval self-test →
 routing gate
 (`eval/run-routing.mjs --gate` against `eval/gates.json`) → the **artifact-sync gate**,
-which rebuilds catalog, super spec, skills bundle, mirror check, both eval compiles, and
-the plan op-classes, then fails on any diff. The daily drift job
+which rebuilds catalog, super spec, micro-map, globes, mirror check, both eval compiles, and
+the plan op-classes, then fails on any diff. (The catalog/spec rebuilds fetch the pinned skill
+files — the one network dependency in that gate; a hash mismatch fails the build.) The daily drift job
 (`.github/workflows/refresh.yml`, 06:17 UTC) re-fetches the live surfaces, rebuilds, and on
 any diff opens/updates an issue and fails the run — op-id sets are the drift signal, not
 `info.version` (Scout has shipped ops without bumping it). The refresh also runs the

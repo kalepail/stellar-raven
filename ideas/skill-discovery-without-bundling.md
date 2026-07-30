@@ -1,6 +1,31 @@
 # Skill discovery without a bundled skill corpus
 
-_Status: open exploration, 2026-07-15. This is not a product decision or implementation plan._
+_Status: PARTIALLY RESOLVED 2026-07-30 — see "What actually shipped" below. The remaining open
+questions (metadata-only discovery, dropping section entries, live upstream directories as the
+source of admission) are still open exploration, not a product decision._
+
+## What actually shipped (2026-07-30)
+
+Legal asked that upstream skill files not be copied into this repository. The change that
+answered it took the **content-ownership** half of this document and left the **discovery** half
+untouched:
+
+- `ecosystem-skills/skills/**` (604 KiB) and `src/skills/bundle.json` (380 KiB) are gone.
+  `ecosystem-skills/MANIFEST.json` — commit SHA per source, git blob hash per file — is now the
+  whole artifact.
+- `codemode.skill.read` fetches each file from `raw.githubusercontent.com` at the pinned commit
+  and verifies it against the pinned blob hash before serving (`src/skills/source.ts`), behind an
+  in-isolate memo and the colo Cache API. The builders use the same pins and the same check.
+- Section entries were NOT dropped: they lost their body excerpts and body-derived keywords
+  (heading + pinned address only, −155 KiB of catalog) but remain exact-readable. The searchable
+  projection is byte-identical to before, so routing did not move — this was explicitly not a
+  discovery experiment.
+- Commit-pinning, not HEAD-following, is what keeps this safe: an upstream edit still cannot reach
+  the model until a human re-pins and reads the diff.
+
+What this did NOT settle: whether Raven should own skill metadata at all (M1/M2 below), whether
+204 section entries earn their place, or whether upstream directories should drive admission.
+Those remain measurable, and the machinery to test them is now smaller.
 
 ## Question
 

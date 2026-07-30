@@ -2341,7 +2341,7 @@
     }
   },
   "info": {
-    "description": "One spec covering every operation this MCP server can execute, across four services: lumenloop, scout (Stellar Light), stellarDocs (Algolia-backed docs search), and skills (bundled agent playbooks). Paths are keyed '/{service}/{operation}' and each operationId is the exact callable name: an operation with operationId 'lumenloop.search_directory' is invoked inside the execute tool's sandbox as `await lumenloop.search_directory(args)` — args is ONE object matching the operation's requestBody schema (POST ops) or its parameter names (GET ops). The exact call line is on each operation as x-execute. Every call resolves (never throws) to { ok: true, data } or { ok: false, error: { service, kind, message } }; the 200 response schema documents `data`. Every path in this spec is callable — exposure is filtered at build time, so nothing uncallable is described. Auth is handled host-side — code never sees keys.",
+    "description": "One spec covering every operation this MCP server can execute, across four services: lumenloop, scout (Stellar Light), stellarDocs (Algolia-backed docs search), and skills (pinned agent playbooks). Paths are keyed '/{service}/{operation}' and each operationId is the exact callable name: an operation with operationId 'lumenloop.search_directory' is invoked inside the execute tool's sandbox as `await lumenloop.search_directory(args)` — args is ONE object matching the operation's requestBody schema (POST ops) or its parameter names (GET ops). The exact call line is on each operation as x-execute. Every call resolves (never throws) to { ok: true, data } or { ok: false, error: { service, kind, message } }; the 200 response schema documents `data`. Every path in this spec is callable — exposure is filtered at build time, so nothing uncallable is described. Auth is handled host-side — code never sees keys.",
     "title": "stellar-raven-codemode — unified super spec",
     "version": "1.0.0",
     "x-generatedAt": "2026-07-30T15:21:10Z"
@@ -6166,7 +6166,7 @@
             "description": "The x-skill-index array on this operation."
           }
         },
-        "summary": "List all 18 bundled skills (agent playbooks) with descriptions and section headings.",
+        "summary": "List all 18 pinned skills (agent playbooks) with descriptions and section headings.",
         "tags": [
           "skills"
         ],
@@ -6559,10 +6559,10 @@
         },
         "responses": {
           "200": {
-            "description": "{ ok: true, id, path, content? (whole skill) | sections?: [{section, content}], availableSections } or { ok: false, error }."
+            "description": "{ ok: true, id, url (pinned upstream source), content? (whole skill) | sections?: [{section, content}], availableSections } or { ok: false, error }."
           }
         },
-        "summary": "Read one bundled skill's full SKILL.md, or only the requested sections.",
+        "summary": "Read one pinned skill's full SKILL.md, or only the requested sections.",
         "tags": [
           "skills"
         ],
@@ -6572,7 +6572,7 @@
     },
     "/skills/run_skill": {
       "post": {
-        "description": "1 of the bundled skills are RUNNABLE: their mechanical fetch-and-project core also executes as vetted host-side code, composing several service calls into one compact, typed result. Pass the exact skill id (enum below — ids are exact-match, never fuzzy) and an input object; input is validated host-side against the skill's inputSchema in x-runnable-index on this operation, which also carries each skill's outputSchema (the `data` payload contract). The result rides the standard service-call envelope, and `data.calls` is a host-recorded audit trail of every constituent call ({ op, ok, errorKind?, ms }). Judgment steps (quote selection, synthesis) stay with you — the same skills remain readable via codemode.skill.read(id, { sections }).",
+        "description": "1 of the pinned skills are RUNNABLE: their mechanical fetch-and-project core also executes as vetted host-side code, composing several service calls into one compact, typed result. Pass the exact skill id (enum below — ids are exact-match, never fuzzy) and an input object; input is validated host-side against the skill's inputSchema in x-runnable-index on this operation, which also carries each skill's outputSchema (the `data` payload contract). The result rides the standard service-call envelope, and `data.calls` is a host-recorded audit trail of every constituent call ({ op, ok, errorKind?, ms }). Judgment steps (quote selection, synthesis) stay with you — the same skills remain readable via codemode.skill.read(id, { sections }).",
         "operationId": "skills.run_skill",
         "requestBody": {
           "content": {

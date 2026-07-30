@@ -11,6 +11,10 @@ eval/corpus/raven-golden-qa/jutsu/
 node_modules/
 dist/
 .wrangler/
+# skill bodies are never vendored (legal: fetched live from upstream at the
+# pinned commit, hash-verified) — this is only the builders' working cache,
+# content-addressed by git blob sha. Safe to delete; the next build refetches.
+ecosystem-skills/.cache/
 
 # local OS/editor noise
 .DS_Store

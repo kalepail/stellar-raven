@@ -27,6 +27,7 @@ import { tokenize } from "../src/catalog/vendor/search-scoring.ts";
 // so the exposed runnable surface cannot drift between emitters.
 import { RUNNERS } from "../src/skills/runners/index.ts";
 import { writeFileAtomic } from "./lib/shared.mjs";
+import { loadSkillTexts, skillFileUrl } from "./lib/skill-mirror.mjs";
 import { RETRIEVAL_PROFILES } from "./catalog-data/retrieval-profiles.mjs";
 import { lumenloopOutputSchema } from "../src/adapters/lumenloop-shape.ts";
 
@@ -34,7 +35,6 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_PATH = join(ROOT, "catalog", "manifest.json");
 
 const readJson = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
-const readText = (p) => readFileSync(join(ROOT, p), "utf8");
 
 // ---------------------------------------------------------------------------
 // Operation keywords (todo 824 items 4+5, M3/M4): descriptions are prose, so
@@ -358,13 +358,6 @@ function plainText(markdown) {
     .trim();
 }
 
-function truncate(text, max = 200) {
-  if (text.length <= max) return text;
-  const cut = text.slice(0, max);
-  const lastSpace = cut.lastIndexOf(" ");
-  return `${cut.slice(0, lastSpace > max * 0.6 ? lastSpace : max).trimEnd()}…`;
-}
-
 function slugify(text) {
   return (
     plainText(text)
@@ -675,24 +668,71 @@ export const BUILD_AUTHORITY_SKILL_ROLES = Object.freeze({
   "skills.stellar-dev.data": ["infrastructure"]
 });
 
-function buildSkills(manifest) {
+// Same refresh-safety problem as the retirement list, one layer up: the roles
+// above are pinned to exact skill IDs, and all four live in stellar-dev, which
+// churns. An upstream rename would silently drop a skill's build-authority role
+// (no error, just a quietly weaker prior-art cue). Fail the build instead.
+export function assertBuildAuthorityIdsResolve(entries) {
+  const skillIds = new Set(entries.filter((e) => e.kind === "skill").map((e) => e.id));
+  const stale = Object.keys(BUILD_AUTHORITY_SKILL_ROLES).filter((id) => !skillIds.has(id));
+  if (stale.length > 0) {
+    throw new Error(
+      `BUILD_AUTHORITY_SKILL_ROLES names skills that no longer exist: ${stale.join(", ")}. ` +
+        `An upstream re-pin renamed or removed them — reconcile the role map in build-catalog.mjs ` +
+        `(move the role to the new id, or drop it) so a build-authority role cannot silently vanish.`
+    );
+  }
+}
+
+function buildSkills(manifest, texts, arm) {
   const entries = [];
   const syncedAt = manifest.synced_at;
+  // Section-level `keywords` are distilled from BODY text, and sections are
+  // out of search in the shipped arm (searchable:false), so emitting them
+  // would put upstream-derived prose in a committed artifact that nothing
+  // scores. Arm A is the only arm that puts sections back in search, so it is
+  // the only arm that gets them.
+  const emitSectionKeywords = arm === "A";
+  const textOf = (sourceId, skillName, filePath) => {
+    const key = `${sourceId}/${skillName}/${filePath}`;
+    const text = texts.get(key);
+    if (text === undefined) {
+      throw new Error(
+        `skill file ${key} is listed in ecosystem-skills/MANIFEST.json but was not loaded — ` +
+          `re-run the build (scripts/lib/skill-mirror.mjs fetches pinned files on demand)`
+      );
+    }
+    return text;
+  };
 
   for (const source of manifest.sources) {
     for (const skill of source.skills) {
       // Retired skills are not emitted at all — no skill entry, no sections
       // (ADR-0003; the auditable record is RETIRED_ONBOARDING_SKILLS in
-      // scripts/exposure.mjs + the ADR, not a manifest entry). Bodies stay in
-      // the mirror as the description-harvest source.
+      // scripts/exposure.mjs + the ADR, not a manifest entry). They are not
+      // even fetched (loadSkillTexts skips them).
       if (RETIRED_ONBOARDING_SKILLS.has(skill.name)) continue;
 
-      const skillDir = `ecosystem-skills/skills/${source.id}/${skill.name}`;
       const skillId = `skills.${source.id}.${skill.name}`;
-      // Scrub retired-skill cross-references BEFORE deriving descriptions/
-      // keywords — the same scrub bundle-skills.mjs applies to the served
-      // bodies, so what search surfaces and what skill.read returns agree.
-      const raw = scrubRetiredSkillRefs(readText(`${skillDir}/SKILL.md`), `${skillDir}/SKILL.md`);
+      const skillFile = (skill.files ?? []).find((f) => f.path === "SKILL.md");
+      if (!skillFile) {
+        throw new Error(`skill ${source.id}/${skill.name} has no SKILL.md in MANIFEST.json`);
+      }
+      // Every entry names the immutable upstream location of its bytes plus
+      // the pinned blob hash: that pair IS the transport (src/skills/store.ts
+      // resolves it through src/skills/source.ts, which re-verifies the hash).
+      const transportFor = (file) => ({
+        type: "file",
+        url: skillFileUrl(source, skill.name, file.path),
+        sha: file.sha
+      });
+      // Scrub retired-skill cross-references BEFORE deriving descriptions and
+      // headings — the same scrub src/skills/source.ts applies to every served
+      // body, so what search surfaces and what skill.read returns agree.
+      const raw = scrubRetiredSkillRefs(
+        textOf(source.id, skill.name, "SKILL.md"),
+        `${source.id}/${skill.name}/SKILL.md`
+      );
       const { attrs, body } = parseFrontmatter(raw);
       const bodyLines = body.split("\n");
 
@@ -705,10 +745,13 @@ function buildSkills(manifest) {
         ...(BUILD_AUTHORITY_SKILL_ROLES[skillId]
           ? { buildAuthorityRoles: [...BUILD_AUTHORITY_SKILL_ROLES[skillId]] }
           : {}),
-        transport: { type: "file", path: `${skillDir}/SKILL.md` }
+        transport: transportFor(skillFile)
       });
 
-      // 2) one entry per `##` section of SKILL.md
+      // 2) one entry per `##` section of SKILL.md. The entry is an ADDRESS,
+      // not a copy: heading + pinned location, no body excerpt. Sections are
+      // out of search (below), so a description beyond the heading would be
+      // upstream prose in a committed file that nothing reads.
       const usedSlugs = new Set();
       for (let i = 0; i < bodyLines.length; i++) {
         const line = bodyLines[i];
@@ -717,24 +760,21 @@ function buildSkills(manifest) {
         let slug = slugify(heading);
         for (let n = 2; usedSlugs.has(slug); n++) slug = `${slugify(heading)}-${n}`;
         usedSlugs.add(slug);
-        const para = firstParagraph(bodyLines, i + 1);
-        // Section body = everything until the next `##` heading; distilled
-        // into low-weight `keywords` so mid-section content (error codes,
-        // flags, function names) is lexically searchable (todo 810).
+        const sectionId = `${skillId}#${slug}`;
         let sectionEnd = i + 1;
         while (sectionEnd < bodyLines.length && !bodyLines[sectionEnd].startsWith("## ")) {
           sectionEnd++;
         }
-        const sectionId = `${skillId}#${slug}`;
-        const description = truncate(para ? `${heading} — ${para}` : heading, 200);
-        const keywords = extractKeywords(bodyLines.slice(i + 1, sectionEnd).join("\n"), {
-          exclude: [sectionId, description, "skills", "skill-section"]
-        });
+        const keywords = emitSectionKeywords
+          ? extractKeywords(bodyLines.slice(i + 1, sectionEnd).join("\n"), {
+              exclude: [sectionId, heading, "skills", "skill-section"]
+            })
+          : [];
         entries.push({
           ...skillEntryBase(source, syncedAt),
           id: sectionId,
           kind: "skill-section",
-          description,
+          description: heading,
           ...(keywords.length > 0 ? { keywords } : {}),
           // Sections are exposed (exact-id skill.read, availableSections)
           // but OUT of search since the 2026-07-13 skills-form A/B: 204
@@ -743,7 +783,7 @@ function buildSkills(manifest) {
           // P4: QA 41C/7W vs 39C/9W, stable wins 3-1, OpenZeppelin case
           // correct 6/6 via whole-skill discovery alone).
           searchable: false,
-          transport: { type: "file", path: `${skillDir}/SKILL.md`, section: heading }
+          transport: { ...transportFor(skillFile), section: heading }
         });
       }
 
@@ -751,29 +791,27 @@ function buildSkills(manifest) {
       for (const file of skill.files ?? []) {
         if (file.path === "SKILL.md" || !file.path.endsWith(".md")) continue;
         const fileRaw = scrubRetiredSkillRefs(
-          readText(`${skillDir}/${file.path}`),
-          `${skillDir}/${file.path}`
+          textOf(source.id, skill.name, file.path),
+          `${source.id}/${skill.name}/${file.path}`
         );
         const fileLines = parseFrontmatter(fileRaw).body.split("\n");
         const headingLine = fileLines.find((l) => /^#{1,2} /.test(l));
         const heading = headingLine ? plainText(headingLine.replace(/^#+ /, "")) : file.path;
-        const headingIndex = headingLine ? fileLines.indexOf(headingLine) + 1 : 0;
-        const para = firstParagraph(fileLines, headingIndex);
         const fileEntryId = `${skillId}#file:${file.path}`;
-        const fileDescription = truncate(para ? `${heading} — ${para}` : heading, 200);
-        // Whole file body → low-weight keywords (same rationale as sections).
-        const fileKeywords = extractKeywords(fileLines.join("\n"), {
-          exclude: [fileEntryId, fileDescription, "skills", "skill-section"]
-        });
+        const fileKeywords = emitSectionKeywords
+          ? extractKeywords(fileLines.join("\n"), {
+              exclude: [fileEntryId, heading, "skills", "skill-section"]
+            })
+          : [];
         entries.push({
           ...skillEntryBase(source, syncedAt),
           id: fileEntryId,
           kind: "skill-section",
-          description: fileDescription,
+          description: heading,
           ...(fileKeywords.length > 0 ? { keywords: fileKeywords } : {}),
           // Same search exclusion as ## sections (2026-07-13 A/B; see above).
           searchable: false,
-          transport: { type: "file", path: `${skillDir}/${file.path}` }
+          transport: transportFor(file)
         });
       }
     }
@@ -954,7 +992,7 @@ export function assertNoNonExposedRefs(entries) {
   }
 }
 
-function main() {
+async function main() {
   const lumenloop = readJson("inventory/lumenloop.json");
   const stellarLight = readJson("inventory/stellar-light.json");
   const stellarDocsSpec = readJson("specs/stellar-docs.json");
@@ -980,6 +1018,14 @@ function main() {
     throw new Error(`--skills-form ${arm} requires --out <path>: variant manifests never overwrite ${OUT_PATH}`);
   }
 
+  // Skill bodies are not vendored here: loadSkillTexts fetches each pinned
+  // file (or reads the gitignored working cache) and verifies it against the
+  // git blob hash in MANIFEST.json — the same bytes, checked the same way, the
+  // Worker verifies at read time.
+  const skillTexts = await loadSkillTexts(skillsManifest, {
+    skip: (name) => RETIRED_ONBOARDING_SKILLS.has(name)
+  });
+
   const stellarDocsEntries = buildStellarDocs(stellarDocsSpec);
   const scout = buildScout(stellarLight);
   // Runnable attachment runs over the FULLY assembled set: its declared-op
@@ -999,7 +1045,7 @@ function main() {
           stellarDocsTitleExtras(stellarDocsEntries, stellarDocsTitles),
           { cap: 256 }
         ),
-        ...buildSkills(skillsManifest)
+        ...buildSkills(skillsManifest, skillTexts, arm)
       ].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
     )),
     arm
@@ -1010,6 +1056,8 @@ function main() {
     if (ids.has(entry.id)) throw new Error(`duplicate catalog id: ${entry.id}`);
     ids.add(entry.id);
   }
+
+  assertBuildAuthorityIdsResolve(entries);
 
   assertNoNonExposedRefs(entries);
 
@@ -1052,7 +1100,6 @@ function main() {
       `  manifest sha256 ${sha256Json(catalog)}\n` +
       `  searchable-projection sha256 ${sha256Json(searchableEntries.map((e) => e.id).sort())}\n` +
       `  operation-records sha256 ${sha256Json(entries.filter((e) => e.kind === "operation"))}\n` +
-      `  bundle sha256 ${createHash("sha256").update(readFileSync(join(ROOT, "src", "skills", "bundle.json"))).digest("hex")}\n` +
       `  searchable skills ${searchableCounts.skill} whole + ${searchableCounts["skill-section"]} sections ` +
       `(exposed in every arm: ${exposedCounts.skill} whole + ${exposedCounts["skill-section"]} sections)`
   );
@@ -1081,4 +1128,4 @@ function main() {
 // Gated so the guard tests (test/catalog.test.ts) can import the exported
 // functions above without triggering a build; `node scripts/build-catalog.mjs`
 // still builds exactly as before.
-if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) main();
+if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) await main();

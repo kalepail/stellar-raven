@@ -214,7 +214,6 @@ describe("skill exposure inventory artifact", () => {
     const emittedFiles = [
       "catalog/manifest.json",
       "specs/super-spec.json",
-      "src/skills/bundle.json",
       "src/demo/page.ts",
       "src/demo/prompt.ts",
       "src/demo/tools.ts",

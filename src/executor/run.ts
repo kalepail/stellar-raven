@@ -26,7 +26,6 @@
 import { tracing } from "cloudflare:workers";
 import { DynamicWorkerExecutor } from "@cloudflare/codemode";
 import superSpecJson from "../../specs/super-spec.json";
-import bundleJson from "../skills/bundle.json";
 import { getCatalog } from "../catalog/load.ts";
 import { recoveryCandidatesFromSources } from "../catalog/search.ts";
 import type { BuildAuthorityRole } from "../catalog/types.ts";
@@ -36,7 +35,7 @@ import {
   sandboxResponseText,
   serializeSpecForSandbox
 } from "./spec-sandbox.ts";
-import type { SkillBundle } from "../skills/store.ts";
+import { createSkillSource } from "../skills/source.ts";
 import { redactSecrets, secretsFromEnv } from "../policy/redact.ts";
 import { truncateForModel, modelBoundaryMaxTokensFromEnv } from "../policy/truncate.ts";
 import {
@@ -211,6 +210,15 @@ export type SpecSearchRunner = (code: string) => Promise<SpecSearchOutcome>;
 
 const EXECUTE_TIMEOUT_MS = 60_000;
 
+/**
+ * One skill source per isolate. Skill bodies are fetched from upstream at the
+ * commit pinned in ecosystem-skills/MANIFEST.json rather than shipped in the
+ * bundle; the source's in-isolate memo (in front of the colo cache) is what
+ * makes repeated reads within a run, and across runs on a warm isolate, free.
+ * Host-side only — the sandbox itself still has no network.
+ */
+const skillSource = createSkillSource();
+
 function serializedResult(value: unknown): { body: string; mime: ArtifactMime } {
   if (typeof value === "string") return { body: value, mime: "text/plain; charset=utf-8" };
   if (value === undefined) return { body: "undefined", mime: "application/x.raven.undefined" };
@@ -313,7 +321,7 @@ export function createExecuteRunner(env: Env, options: ExecuteRunnerOptions = {}
     let skillRuns = 0;
     const opLedger: OpLedgerCall[] = [];
     let artifactReadStats: ArtifactReadStats = { count: 0, bytes: 0 };
-    const providers = buildSandbox(getCatalog(), bundleJson as SkillBundle, env, {
+    const providers = buildSandbox(getCatalog(), skillSource, env, {
       superSpec: superSpecJson,
       onSkillRead: (skillId, roles) => {
         skillRead = true;

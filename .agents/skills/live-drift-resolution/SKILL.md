@@ -51,23 +51,24 @@ npm run spec:build                       # catalog → specs/super-spec.json (sh
 node eval/plan/build-op-classes.mjs     # catalog → eval/plan/op-classes.json (broad/detail/meta)
 ```
 
-If the drift issue also reports an `ecosystem-skills/` mirror change, or if you run
-`ecosystem-skills/update.sh` while resolving the issue, regenerate the Worker's
-runtime skill bundle in the same pass:
+If the drift issue also reports an `ecosystem-skills/` pin change, or if you run
+`ecosystem-skills/update.sh` while resolving the issue, rebuild the generated artifacts in the
+same pass:
 
 ```
-./ecosystem-skills/update.sh
-npm run skills:bundle                    # ecosystem-skills mirror → src/skills/bundle.json
+./ecosystem-skills/update.sh              # re-pin (commit SHA + per-file blob sha); downloads nothing
+node scripts/check-mirrors.mjs --fetch    # every new pin resolves upstream and hashes as recorded
 node scripts/build-catalog.mjs
 npm run micro-map:build
 npm run spec:build
 node eval/plan/build-op-classes.mjs
 ```
 
-`src/skills/bundle.json` is generated but it is runtime source: Workers cannot read the
-filesystem, so `codemode.skill.read` and `codemode.skill.run` serve bundled markdown from
-this file. When `ecosystem-skills/**` changes, either commit the regenerated bundle or
-prove every changed exposed markdown file is unchanged after exposure scrubbing.
+Skill bodies are NOT vendored and NOT bundled into the Worker: `MANIFEST.json` pins each file by
+commit + git blob hash, and `codemode.skill.read` fetches and verifies it at read time
+(`src/skills/source.ts`). So a re-pin ships the moment `catalog/manifest.json` carries the new
+`transport.url`/`sha` — there is no separate bundle to regenerate, and **a re-pin changes what
+the model reads**. Read the skill diffs before committing one.
 
 `refresh-inventory.mjs` only rewrites a service file when its live surface actually moved (it
 prints `unchanged (kept fetchedAt …)` otherwise), so the working tree isolates the real drift.
@@ -87,8 +88,9 @@ facts. Do this after regeneration and again after any corrective edits:
 - **Inventory/catalog/spec/op classes:** confirm regenerated files match the upstream
   surface and ADR-0003 exposure policy.
 - **Runtime source:** check relevant adapters, runners, tests, and generated runtime
-  payloads. Skill mirror drift specifically requires `src/skills/bundle.json`; runner
-  drift may require `src/skills/runners/**` and `test/fixtures/skill-runners/**`.
+  payloads. Skill pin drift changes served content the moment the catalog transports move, so
+  read the skill diffs; runner drift may require `src/skills/runners/**` and
+  `test/fixtures/skill-runners/**`.
 - **Golden/eval files:** search active eval sources (`eval/qa/**`, `eval/corpus/**`,
   `eval/*cases*.json`, `eval/plan/**`, `eval/gates.json`) for facts, terms, operation
   names, or expected answers made stale by the upstream change. Update only when the
@@ -297,9 +299,9 @@ Run the guards that would catch a bad absorb, and confirm the scope:
   guard green).
 - Routing gate result matches the Step 2/4 expectation (PASS unchanged for provenance/data;
   intended movement for a re-baselined text change).
-- If `ecosystem-skills/**` changed, `npm run skills:bundle` has been run and
-  `src/skills/bundle.json` contains the updated exposed markdown for every changed exposed
-  skill file.
+- If `ecosystem-skills/**` changed, `node scripts/check-mirrors.mjs --fetch` passes and the
+  rebuilt `catalog/manifest.json` carries the new `transport.url`/`sha` for every changed skill
+  file — and the skill diffs themselves were read (they are prompt input).
 - If golden/eval files changed, run their focused lint/gate (`npm run eval:qa:lint` and the
   relevant eval lane) in addition to the routing gate.
 - If improvements changed, run `npm run improvements:index`,
@@ -376,10 +378,10 @@ deploy Version ID, and evidence from the guards/review/live check (`gh issue clo
   re-verify projections against observed shapes before closing (Step 4b). Never close on the
   runner's own output schema as evidence — it is self-authored.
 - Generated artifacts (`catalog/manifest.json`, `inventory/*.json`, `specs/super-spec.json`,
-  `eval/plan/op-classes.json`, `src/skills/bundle.json`, `improvements/INDEX.md`) are rebuilt
-  by scripts, never hand-edited.
-- Skill mirror drift is runtime drift until `src/skills/bundle.json` is regenerated or proved
-  unaffected by exposure filtering.
+  `eval/plan/op-classes.json`, `improvements/INDEX.md`) are rebuilt by scripts, never
+  hand-edited.
+- Skill pin drift is runtime drift the moment the catalog transports advance — a re-pin is a
+  content change to the model surface, not a metadata bump.
 - Every drift resolution includes an impact audit for golden/eval files, improvements,
   inventory/catalog/spec, runtime source, and relevant docs/examples; use Solo category
   reviewers for non-trivial drift and record their evidence.

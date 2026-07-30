@@ -12,7 +12,6 @@ artifact. Delete one only after proving it has no package, workflow, documentati
 | `node scripts/build-catalog.mjs` | `catalog/manifest.json` | yes |
 | `npm run micro-map:build` | `src/mcp/micro-map.ts` | yes |
 | `npm run spec:build` | `specs/super-spec.json` | yes |
-| `npm run skills:bundle` | `src/skills/bundle.json` | yes |
 | `npm run site:globes` | `src/demo/globe.ts`, `src/consent-globe.ts` | yes |
 | `npm run site:fonts` | `src/fonts.ts` | release/operator generated; source fonts are local-only |
 | `npm run site:og` | `src/og.ts` | release/operator generated; requires ImageMagick and local fonts |

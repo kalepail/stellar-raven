@@ -1,16 +1,22 @@
 /**
- * Skills store — exact-match, partial retrieval over the bundled
- * ecosystem-skills mirror (PLAN §3).
+ * Skills store — exact-match, partial retrieval over the pinned ecosystem
+ * skills (PLAN §3).
  *
  * `codemode.skill.read(name, { sections? })` resolves through the CATALOG,
  * not the filesystem: `name` must be an exact catalog id (a `skills.*` skill
  * id — the form `search` returns — or a skill-section id from a hit's
  * `availableSections`; sections left search at the 2026-07-13 skills-form
- * A/B but stay exact-id readable), and content comes from
- * src/skills/bundle.json (built by scripts/bundle-skills.mjs; keys equal
- * each entry's transport.path). Exposure is decided at build time (ADR-0003):
+ * A/B but stay exact-id readable), and content comes from the entry's
+ * `transport: { url, sha }` — the upstream file at the commit pinned in
+ * ecosystem-skills/MANIFEST.json, fetched and hash-verified by
+ * src/skills/source.ts (bodies are neither vendored in this repo nor shipped
+ * in the Worker bundle). Exposure is decided at build time (ADR-0003):
  * everything in the catalog is readable; anything excluded simply has no
  * entry and fails exact-match resolution here.
+ *
+ * Retrieval failure (upstream down, pin no longer resolvable, hash mismatch,
+ * scrub drift-guard trip) is an ordinary error envelope — this module never
+ * throws toward the sandbox, and never serves bytes that failed a check.
  *
  * Exact-match discipline (ADR wrong-entity lesson, CLAUDE.md rules): no
  * fuzzy resolution and no aliases anywhere — unknown ids fail with a
@@ -24,14 +30,15 @@
 import type { Catalog, CatalogEntry } from "../catalog/types.ts";
 import { lastIdSegment } from "../catalog/id.ts";
 import { DEFAULT_MAX_TOKENS, CHARS_PER_TOKEN } from "../policy/truncate.ts";
-
-export type SkillBundle = { generatedAt: string; files: Record<string, string> };
+import type { SkillSource } from "./source.ts";
 
 export type SkillReadResult =
   | {
       ok: true;
       id: string;
-      path: string;
+      /** Upstream provenance of the bytes served: the raw file URL at the
+       *  pinned commit (also what the integrity check was made against). */
+      url: string;
       /**
        * Full SKILL.md body (frontmatter stripped). ALWAYS present on ok
        * whole-reads regardless of size — content is never withheld, so
@@ -205,12 +212,41 @@ function resolveSkillEntry(catalog: Catalog, name: string): CatalogEntry | Skill
   );
 }
 
-export function readSkill(
+/** The pinned upstream location of a catalog entry's bytes, or undefined when
+ *  the entry has no readable body (a shape the builders never emit). */
+function fileRef(entry: CatalogEntry | undefined): { url: string; sha: string } | undefined {
+  const transport = entry?.transport;
+  if (transport?.type !== "file") return undefined;
+  const { url, sha } = transport;
+  return url !== undefined && sha !== undefined ? { url, sha } : undefined;
+}
+
+/**
+ * Fetch one pinned file, or an error envelope. Every failure mode of live
+ * retrieval — transport, integrity, scrub drift-guard — lands here and is
+ * reported as an ordinary `skills` error the sandbox can branch on.
+ */
+async function load(
+  source: SkillSource,
+  ref: { url: string; sha: string },
+  id: string
+): Promise<{ text: string } | SkillReadResult> {
+  try {
+    return { text: await source(ref.url, ref.sha) };
+  } catch (e) {
+    return err(
+      `could not retrieve ${id} from its pinned upstream source (${ref.url}): ` +
+        `${e instanceof Error ? e.message : String(e)}`
+    );
+  }
+}
+
+export async function readSkill(
   catalog: Catalog,
-  bundle: SkillBundle,
+  source: SkillSource,
   name: unknown,
   opts?: unknown
-): SkillReadResult {
+): Promise<SkillReadResult> {
   if (typeof name !== "string" || name.length === 0) {
     return err("skill name must be a non-empty string (an exact catalog id)");
   }
@@ -246,16 +282,14 @@ export function readSkill(
   if (entry.kind !== "skill") {
     return err(`"${entry.id}" is a ${entry.kind}, not a skill — pass the skill id (before the #) plus sections`);
   }
-  const path = entry.transport?.type === "file" ? entry.transport.path : undefined;
-  if (!path) {
+  const ref = fileRef(entry);
+  if (!ref) {
     return err(`${entry.id} has no readable body on this server`);
   }
-  const raw = bundle.files[path];
-  if (raw === undefined) {
-    return err(`${entry.id} is cataloged but its body is missing from the bundle (${path}) — rebuild with npm run skills:bundle`);
-  }
+  const loaded = await load(source, ref, entry.id);
+  if ("ok" in loaded) return loaded; // an error result
 
-  const body = stripFrontmatter(raw);
+  const body = stripFrontmatter(loaded.text);
   const bySlug = sectionize(body);
   const sectionEntries = sectionEntriesOf(catalog, entry.id);
   const sectionEntryById = new Map(sectionEntries.map((e) => [e.id, e]));
@@ -292,21 +326,21 @@ export function readSkill(
     const content = body.trim();
     const notice = sizeNotice(entry.id, content.length);
     return notice
-      ? { ok: true, id: entry.id, path, content, notice, availableSections }
-      : { ok: true, id: entry.id, path, content, availableSections };
+      ? { ok: true, id: entry.id, url: ref.url, content, notice, availableSections }
+      : { ok: true, id: entry.id, url: ref.url, content, availableSections };
   }
 
   const found: { section: string; content: string }[] = [];
   for (const want of requested) {
     if (want.startsWith("file:")) {
-      const relPath = want.slice("file:".length);
       const sectionEntry = sectionEntries.find((e) => e.id === `${entry.id}#${want}`);
-      const filePath = sectionEntry?.transport?.type === "file" ? sectionEntry.transport.path : undefined;
-      const fileRaw = filePath ? bundle.files[filePath] : undefined;
-      if (!sectionEntry || fileRaw === undefined) {
+      const fileRef_ = fileRef(sectionEntry);
+      if (!sectionEntry || !fileRef_) {
         return err(`unknown section "${want}" of ${entry.id}. Available: ${availableSections.join(", ")}`);
       }
-      found.push({ section: want, content: stripFrontmatter(fileRaw).trim() });
+      const fileLoaded = await load(source, fileRef_, sectionEntry.id);
+      if ("ok" in fileLoaded) return fileLoaded; // an error result
+      found.push({ section: want, content: stripFrontmatter(fileLoaded.text).trim() });
       continue;
     }
     // ##-heading section: accept the slug (catalog id form) or exact heading text.
@@ -343,6 +377,6 @@ export function readSkill(
     found.reduce((n, s) => n + s.content.length, 0)
   );
   return notice
-    ? { ok: true, id: entry.id, path, sections: found, notice, availableSections }
-    : { ok: true, id: entry.id, path, sections: found, availableSections };
+    ? { ok: true, id: entry.id, url: ref.url, sections: found, notice, availableSections }
+    : { ok: true, id: entry.id, url: ref.url, sections: found, availableSections };
 }

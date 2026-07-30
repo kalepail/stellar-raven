@@ -82,7 +82,8 @@ and the log event names to query.
 
 ## License
 
-[Apache-2.0](./LICENSE) © 2026 Tyler van der Hoeven — **except** vendored third-party content
-(the `ecosystem-skills/skills/<source>/` mirrors and `src/catalog/vendor/`), which retains its
-upstream licenses: see [`THIRD-PARTY-NOTICES.md`](./THIRD-PARTY-NOTICES.md). Notably, the
-`openzeppelin-stellar` skills subtree is AGPL-3.0.
+[Apache-2.0](./LICENSE) © 2026 Tyler van der Hoeven — **except** vendored third-party code in
+`src/catalog/vendor/`, which retains its upstream license. Ecosystem skill bodies are not
+vendored here at all: this repo commits only their pinned addresses (upstream commit + git blob
+hash) and fetches each file from its own upstream, verified, at build and read time. See
+[`THIRD-PARTY-NOTICES.md`](./THIRD-PARTY-NOTICES.md).

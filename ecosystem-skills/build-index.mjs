@@ -2,9 +2,11 @@
 //
 // build-index.mjs — regenerate INDEX.md from MANIFEST.json + groups.json.
 //
-// For each synced skill it reads the local SKILL.md and extracts the skill
-// `name` + `description` straight from its YAML frontmatter, so the index stays
-// fresh without hand-maintained copy. Skills are grouped by theme (groups.json);
+// For each pinned skill it reads SKILL.md from the pinned upstream commit
+// (scripts/lib/skill-mirror.mjs — fetched once into the gitignored working
+// cache, hash-verified; bodies are never vendored in this repo) and extracts
+// the skill `name` + `description` straight from its YAML frontmatter, so the
+// index stays fresh without hand-maintained copy. Skills are grouped by theme (groups.json);
 // any skill present in the manifest but not filed in a group lands in an
 // "Uncategorized" section so newly synced skills are impossible to miss. The
 // stellarlight.xyz ecosystem DIRECTORY (manifest.catalog) is rendered as a
@@ -15,9 +17,9 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { readSkillFile } from "../scripts/lib/skill-mirror.mjs";
 
 const DIR = dirname(fileURLToPath(import.meta.url));
-const SKILLS = join(DIR, "skills");
 
 const manifest = JSON.parse(readFileSync(join(DIR, "MANIFEST.json"), "utf8"));
 const { groups } = JSON.parse(readFileSync(join(DIR, "groups.json"), "utf8"));
@@ -30,26 +32,29 @@ for (const src of manifest.sources) {
   for (const skill of src.skills) {
     const id = `${src.id}/${skill.name}`;
     const totalSize = skill.files.reduce((n, f) => n + f.size, 0);
-    skillById.set(id, { id, source: src.id, name: skill.name, files: skill.files, totalSize });
+    // Upstream browse URL at the pinned commit — the index links to the source
+    // of truth, not to a local copy.
+    const url = src.path ? `${src.url}/${skill.name}` : src.url;
+    skillById.set(id, { id, source: src.id, name: skill.name, files: skill.files, totalSize, url });
   }
 }
 
+/** SKILL.md text per skill id, from the pinned upstream commit. */
+const textById = new Map(
+  await Promise.all(
+    [...skillById.values()].map(async (skill) => {
+      const file = skill.files.find((f) => f.path === "SKILL.md") || skill.files[0];
+      const source = sourceById.get(skill.source);
+      if (!file || !source) return [skill.id, ""];
+      return [skill.id, await readSkillFile(source, skill.name, file)];
+    })
+  )
+);
+
 /** Extract `name` + `description` from a SKILL.md YAML frontmatter block. */
-function frontmatter(relSkillDir, skillName) {
-  // Prefer a SKILL.md; fall back to the first .md file.
-  const skill = skillById.get(`${relSkillDir}`);
-  let mdPath;
-  if (skill) {
-    const f = skill.files.find((x) => x.path === "SKILL.md") || skill.files[0];
-    mdPath = f && join(SKILLS, skill.source, skillName, f.path);
-  }
-  if (!mdPath) return { name: skillName, description: "" };
-  let text;
-  try {
-    text = readFileSync(mdPath, "utf8");
-  } catch {
-    return { name: skillName, description: "" };
-  }
+function frontmatter(id, skillName) {
+  const text = textById.get(id);
+  if (!text) return { name: skillName, description: "" };
   const m = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!m) return { name: skillName, description: "" };
   const body = m[1];
@@ -85,8 +90,9 @@ out.push("");
 out.push("# Stellar/Soroban ecosystem skills — index");
 out.push("");
 out.push(
-  `Mirror of **${manifest.skill_count} agent skills** across **${manifest.sources.length} sources** · synced ${manifest.synced_at}. ` +
-    `Each skill lives under [\`skills/<source>/<skill>/\`](./skills/). Large SKILL.md files are best **grepped** for the section you need.`,
+  `Directory of **${manifest.skill_count} agent skills** across **${manifest.sources.length} sources** · pinned ${manifest.synced_at}. ` +
+    `Bodies are NOT vendored here: each row links to the upstream file at the commit pinned in ` +
+    `[\`MANIFEST.json\`](./MANIFEST.json), which is what this server fetches and hash-verifies at read time.`,
 );
 out.push("");
 if (manifest.status && manifest.status !== "complete") {
@@ -144,7 +150,7 @@ for (const g of groups) {
     categorized.add(id);
     const skill = skillById.get(id);
     const { description } = meta(id);
-    out.push(`| [\`${skill.name}\`](./skills/${id}/) | \`${skill.source}\` | ${kb(skill.totalSize)} | ${description} |`);
+    out.push(`| [\`${skill.name}\`](${skill.url}) | \`${skill.source}\` | ${kb(skill.totalSize)} | ${description} |`);
   }
   out.push("");
 }
@@ -159,7 +165,7 @@ if (uncategorized.length) {
   for (const id of uncategorized) {
     const skill = skillById.get(id);
     const { description } = meta(id);
-    out.push(`| [\`${skill.name}\`](./skills/${id}/) | \`${skill.source}\` | ${kb(skill.totalSize)} | ${description} |`);
+    out.push(`| [\`${skill.name}\`](${skill.url}) | \`${skill.source}\` | ${kb(skill.totalSize)} | ${description} |`);
   }
   out.push("");
 }

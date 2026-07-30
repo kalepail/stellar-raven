@@ -26,7 +26,8 @@ import {
   sanitizeToolName,
   type JsonSchema
 } from "../src/catalog/vendor/json-schema-types.ts";
-import { readSkill, type SkillBundle } from "../src/skills/store.ts";
+import { readSkill } from "../src/skills/store.ts";
+import { lazyPinnedSkillSource as skillSource } from "./helpers/skill-source.ts";
 import { RUNNERS } from "../src/skills/runners/index.ts";
 import { scoreEntryWeighted, canonicalizeQuery } from "../src/catalog/scoring.ts";
 import { lastIdSegment } from "../src/catalog/id.ts";
@@ -34,11 +35,9 @@ import { lastIdSegment } from "../src/catalog/id.ts";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 let catalog: Catalog;
-let bundle: SkillBundle;
 
 beforeAll(() => {
   catalog = loadManifest(JSON.parse(readFileSync(join(ROOT, "catalog", "manifest.json"), "utf8")));
-  bundle = JSON.parse(readFileSync(join(ROOT, "src", "skills", "bundle.json"), "utf8"));
 });
 
 describe("searchCatalog — contract shape", () => {
@@ -659,7 +658,7 @@ describe("searchCatalogPage — tier marker + total/truncated (todos 838/840)", 
 });
 
 describe("searchCatalog — availableSections on skill hits (todo 812)", () => {
-  it("skill hits carry availableSections matching the skills store's key set, slugs before file: keys", () => {
+  it("skill hits carry availableSections matching the skills store's key set, slugs before file: keys", async () => {
     const hit = searchCatalog(catalog, {
       query: "skills.lumenloop-api.lumenloop-api-billing"
     })[0] as SearchHit;
@@ -672,7 +671,7 @@ describe("searchCatalog — availableSections on skill hits (todo 812)", () => {
     // Membership identical to readSkill's availableSections for the same
     // skill (order may differ: the catalog is id-sorted, the store follows
     // document order).
-    const r = readSkill(catalog, bundle, hit.id);
+    const r = await readSkill(catalog, skillSource, hit.id);
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect([...hit.availableSections!].sort()).toEqual([...r.availableSections].sort());
@@ -702,16 +701,17 @@ describe("searchCatalog — availableSections on skill hits (todo 812)", () => {
   });
 });
 
-describe("searchCatalog — keyword-indexed section bodies (todo 810)", () => {
-  it("keeps section keyword extraction intact while sections stay OUT of search", () => {
-    // The build-time extraction machinery still runs (section entries remain
-    // exposed for exact-id reads and future arms), but searchable:false keeps
-    // the entry out of every result page (2026-07-13 A/B).
+describe("searchCatalog — section entries are addresses, not content (todo 810)", () => {
+  it("carries no body-derived keywords for out-of-search sections, and still answers from elsewhere", () => {
+    // Sections are searchable:false since the 2026-07-13 A/B, so body-derived
+    // keywords would be upstream-derived text in a committed artifact that
+    // nothing scores. The extraction machinery still exists for arm A
+    // (scripts/build-catalog.mjs emitSectionKeywords) — it just is not shipped.
     const sectionId = "skills.stellar-dev.smart-contracts#file:testing.md";
     const entry = catalog.entries.find((e) => e.id === sectionId)!;
     expect(entry).toBeDefined();
-    expect(entry.description.toLowerCase()).not.toContain("fuzz"); // precondition
-    expect(entry.keywords).toContain("fuzz"); // build-time extraction carried it
+    expect(entry.description.toLowerCase()).not.toContain("fuzz");
+    expect(entry.keywords).toBeUndefined();
     expect(entry.searchable).toBe(false);
     const hits = searchCatalog(catalog, { query: "fuzz testing smart contracts" });
     expect(hits.map((h) => h.id)).not.toContain(sectionId);

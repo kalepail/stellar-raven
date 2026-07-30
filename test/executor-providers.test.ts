@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import { loadManifest, type Catalog } from "../src/catalog/search.ts";
 import { buildSandbox } from "../src/executor/providers.ts";
 import type { FetchLike } from "../src/adapters/types.ts";
-import type { SkillBundle } from "../src/skills/store.ts";
+import { lazyPinnedSkillSource as skillSource } from "./helpers/skill-source.ts";
 import {
   ARTIFACT_CUSTOM_METADATA_MAX_BYTES,
   artifactCustomMetadataByteLength,
@@ -22,9 +22,8 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const catalog: Catalog = loadManifest(
   JSON.parse(readFileSync(join(ROOT, "catalog", "manifest.json"), "utf8"))
 );
-const bundle: SkillBundle = JSON.parse(
-  readFileSync(join(ROOT, "src", "skills", "bundle.json"), "utf8")
-);
+// Skill bodies come from the pinned upstream commit, not a vendored copy — the
+// providers only ever see a SkillSource (test/helpers/skill-source.ts).
 
 const env = {
   LUMENLOOP_API_KEY: "test-key-not-real-1234",
@@ -109,7 +108,7 @@ function fnsOf(providers: Sandbox, name: string) {
 }
 
 describe("sandbox surface shape", () => {
-  const providers = buildSandbox(catalog, bundle, env);
+  const providers = buildSandbox(catalog, skillSource, env);
 
   it("exposes exactly the three service namespaces plus codemode", () => {
     expect(providers.map((p) => p.name).sort()).toEqual([
@@ -150,7 +149,7 @@ describe("sandbox surface shape", () => {
   });
 
   it("can disable codemode discovery helpers for the public demo while leaving skills wired", () => {
-    const demoProviders = buildSandbox(catalog, bundle, env, { codemodeDiscovery: false });
+    const demoProviders = buildSandbox(catalog, skillSource, env, { codemodeDiscovery: false });
     const codemode = demoProviders.find((p) => p.name === "codemode")!;
     expect(Object.keys(codemode.fns).sort()).toEqual(["artifact_info", "artifact_read", "skill_read", "skill_run"]);
     expect(codemode.prelude).toContain("codemode.skill =");
@@ -158,7 +157,7 @@ describe("sandbox surface shape", () => {
   });
 
   it("can expose exact-id describe without broader codemode discovery", async () => {
-    const demoProviders = buildSandbox(catalog, bundle, env, {
+    const demoProviders = buildSandbox(catalog, skillSource, env, {
       codemodeDiscovery: false,
       codemodeDescribe: true
     });
@@ -175,7 +174,7 @@ describe("sandbox surface shape", () => {
   });
 
   it("keeps broad codemode discovery enabled by default when describeOnly is omitted", () => {
-    const defaultProviders = buildSandbox(catalog, bundle, env);
+    const defaultProviders = buildSandbox(catalog, skillSource, env);
     const codemode = defaultProviders.find((p) => p.name === "codemode")!;
     expect(codemode.fns.search).toBeTypeOf("function");
     expect(codemode.fns.catalog).toBeTypeOf("function");
@@ -197,7 +196,7 @@ describe("sandbox surface shape", () => {
 describe("codemode.artifact provider", () => {
   it("ownerless sessions get a generic unavailable envelope", async () => {
     const bucket = new MemoryR2Bucket() as unknown as R2Bucket;
-    const codemode = fnsOf(buildSandbox(catalog, bundle, env, { artifact: { bucket } }), "codemode");
+    const codemode = fnsOf(buildSandbox(catalog, skillSource, env, { artifact: { bucket } }), "codemode");
 
     await expect(codemode.artifact_info!("not-an-id")).resolves.toMatchObject({
       ok: false,
@@ -221,7 +220,7 @@ describe("codemode.artifact provider", () => {
     if (!expired.ok) throw new Error("unexpected skip");
 
     const codemode = fnsOf(
-      buildSandbox(catalog, bundle, env, { artifact: { bucket, owner: "owner-b" } }),
+      buildSandbox(catalog, skillSource, env, { artifact: { bucket, owner: "owner-b" } }),
       "codemode"
     );
     const notFound = { ok: false, error: { service: "artifact", kind: "error", message: "artifact not found" } };
@@ -238,7 +237,7 @@ describe("codemode.artifact provider", () => {
     if (!written.ok) throw new Error("unexpected skip");
     const stats: Array<{ count: number; bytes: number }> = [];
     const codemode = fnsOf(
-      buildSandbox(catalog, bundle, env, {
+      buildSandbox(catalog, skillSource, env, {
         artifact: {
           bucket,
           owner: "owner-a",
@@ -266,7 +265,7 @@ describe("codemode.artifact provider", () => {
     const written = await putArtifact(bucket, "owner-a", artifactInput({ requestId: "req-info", rayId: "ray-info" }));
     if (!written.ok) throw new Error("unexpected skip");
     const codemode = fnsOf(
-      buildSandbox(catalog, bundle, env, {
+      buildSandbox(catalog, skillSource, env, {
         artifact: {
           bucket,
           owner: "owner-a"
@@ -326,7 +325,7 @@ describe("codemode.artifact provider", () => {
     if (!written.ok) throw new Error("unexpected skip");
     const stats: Array<{ count: number; bytes: number }> = [];
     const codemode = fnsOf(
-      buildSandbox(catalog, bundle, env, {
+      buildSandbox(catalog, skillSource, env, {
         artifact: {
           bucket,
           owner: "owner-a",
@@ -360,7 +359,7 @@ describe("codemode.artifact provider", () => {
 
 describe("dispatch behavior (error-as-data, exposure, parallelism)", () => {
   it("build-excluded ops have NO sandbox fn at all (ADR-0003: nothing uncallable exists)", () => {
-    const providers = buildSandbox(catalog, bundle, env);
+    const providers = buildSandbox(catalog, skillSource, env);
     const scout = fnsOf(providers, "scout");
     expect(scout.submitPartnerListing).toBeUndefined();
     expect(scout.submitFeedback).toBeUndefined();
@@ -375,7 +374,7 @@ describe("dispatch behavior (error-as-data, exposure, parallelism)", () => {
       fetched += 1;
       return new Response("{}", { status: 200 });
     };
-    const providers = buildSandbox(catalog, bundle, env, { fetchImpl });
+    const providers = buildSandbox(catalog, skillSource, env, { fetchImpl });
     const r = (await fnsOf(providers, "lumenloop").search_directory!({ limit: 2 })) as {
       ok: boolean;
       error: { kind: string; message: string };
@@ -398,7 +397,7 @@ describe("dispatch behavior (error-as-data, exposure, parallelism)", () => {
         : JSON.stringify({ success: true, data: { count: 0, projects: [] }, error: null, meta: { format: "json" } });
       return new Response(body, { status: 200, headers: { "content-type": "application/json" } });
     };
-    const providers = buildSandbox(catalog, bundle, env, { fetchImpl });
+    const providers = buildSandbox(catalog, skillSource, env, { fetchImpl });
     const [a, b, c] = (await Promise.all([
       fnsOf(providers, "lumenloop").search_directory!({ query: "x" }),
       fnsOf(providers, "scout").getStatus!({}),
@@ -419,7 +418,7 @@ describe("dispatch behavior (error-as-data, exposure, parallelism)", () => {
         }),
         { status: 200, headers: { "content-type": "application/json" } }
       );
-    const providers = buildSandbox(catalog, bundle, env, { fetchImpl });
+    const providers = buildSandbox(catalog, skillSource, env, { fetchImpl });
     const r = await fnsOf(providers, "lumenloop").get_categories!({});
     expect(JSON.stringify(r)).not.toContain("test-key-not-real-1234");
     expect(JSON.stringify(r)).toContain("[REDACTED]");
@@ -434,7 +433,7 @@ describe("dispatch behavior (error-as-data, exposure, parallelism)", () => {
 // envelope-guard and skill.read-guard suites so the scope reconstruction
 // cannot drift from itself.
 function guardedNamespaces(fetchImpl?: FetchLike) {
-  const providers = buildSandbox(catalog, bundle, env, fetchImpl ? { fetchImpl } : undefined);
+  const providers = buildSandbox(catalog, skillSource, env, fetchImpl ? { fetchImpl } : undefined);
   const ns: Record<string, Record<string, unknown>> = {};
   for (const p of providers) ns[p.name] = { ...p.fns };
   const preludes = providers.map((p) => p.prelude ?? "").join("\n");
@@ -700,7 +699,7 @@ describe("skill.read result-shape guard (.data points at top-level content)", ()
 });
 
 describe("codemode fns", () => {
-  const providers = buildSandbox(catalog, bundle, env);
+  const providers = buildSandbox(catalog, skillSource, env);
   const codemode = fnsOf(providers, "codemode");
 
   it("search accepts a bare string or options; excluded ops cannot surface", async () => {
@@ -1132,7 +1131,7 @@ describe("codemode fns", () => {
       },
       components: { parameters: { q: { name: "q", in: "query" } } }
     };
-    const withSpec = buildSandbox(catalog, bundle, env, { superSpec });
+    const withSpec = buildSandbox(catalog, skillSource, env, { superSpec });
     const spec = (await fnsOf(withSpec, "codemode").spec!()) as typeof superSpec;
     expect(spec.paths["/scout/getThing"]!.get.parameters[0]).toEqual({ name: "q", in: "query" });
     // Lazily resolved once, then cached — same object back on the second call.
@@ -1161,7 +1160,7 @@ describe("codemode fns", () => {
 
   it("skill_read reports only exact catalog-declared build-authority roles", async () => {
     const reads: Array<{ id: string; roles: readonly string[] }> = [];
-    const providers = buildSandbox(catalog, bundle, env, {
+    const providers = buildSandbox(catalog, skillSource, env, {
       onSkillRead: (id, roles) => {
         reads.push({ id, roles });
       }
@@ -1181,7 +1180,7 @@ describe("codemode fns", () => {
 
   it("skill_run fires the onSkillRun hook on every dispatch (usage count, not success count)", async () => {
     let fired = 0;
-    const providers = buildSandbox(catalog, bundle, env, {
+    const providers = buildSandbox(catalog, skillSource, env, {
       onSkillRun: () => {
         fired += 1;
       }

@@ -1,25 +1,35 @@
 # Third-party notices
 
 This repository is licensed under [Apache-2.0](./LICENSE) (see `LICENSE`), **except** the
-vendored third-party content below, which retains its upstream license. Each mirrored source's
-license text is vendored alongside the content and re-fetched at the pinned upstream commit on
-every sync (`ecosystem-skills/update.sh`), so the notices below can never drift from the mirror.
+third-party content noted below.
 
-## Mirrored ecosystem skills (`ecosystem-skills/skills/<source>/`)
+## Ecosystem skills — referenced, not vendored
 
-| Subtree | Upstream | License | Vendored notice files |
-| --- | --- | --- | --- |
-| `ecosystem-skills/skills/lumenloop/` | [lumenloop/lumenloop-skills](https://github.com/lumenloop/lumenloop-skills) | MIT (© 2026 LumenLoop) | `skills/lumenloop/LICENSE` |
-| `ecosystem-skills/skills/openzeppelin-stellar/` | [OpenZeppelin/openzeppelin-skills](https://github.com/OpenZeppelin/openzeppelin-skills) | **AGPL-3.0** (© 2026 Zeppelin Group Ltd) | `skills/openzeppelin-stellar/LICENSE` + `NOTICE` |
-| `ecosystem-skills/skills/stellar-dev/` | [stellar/stellar-dev-skill](https://github.com/stellar/stellar-dev-skill) | Apache-2.0 (SDF) | `skills/stellar-dev/LICENSE` |
-| `ecosystem-skills/skills/stellar-light/` | [Stellar-Light/stellar-scout](https://github.com/Stellar-Light/stellar-scout) | MIT | `skills/stellar-light/LICENSE` |
+Ecosystem skill bodies (`SKILL.md` playbooks and their companion files) are **not copied into
+this repository and not shipped inside the Worker**. What this repository commits is an
+*address*: `ecosystem-skills/MANIFEST.json` records, per source, the upstream repository and a
+full commit SHA, and per file a path and git blob hash. At build time and at read time the file
+is fetched from `raw.githubusercontent.com` at that pinned commit and verified against that blob
+hash (`scripts/lib/skill-mirror.mjs`, `src/skills/source.ts`); bytes that do not match are
+refused rather than served.
 
-The `openzeppelin-stellar` subtree is redistributed **unmodified** under AGPL-3.0 with its
-upstream NOTICE preserved; it is not covered by this repository's Apache-2.0 license. If this
-repository ever modifies those skills, the modified versions remain AGPL-3.0.
+Each skill therefore reaches a user from its own upstream, under its own license, unmodified.
 
-Exact per-file provenance (pinned commit SHAs, file hashes) is recorded in
-`ecosystem-skills/MANIFEST.json`.
+| Source | Upstream | License |
+| --- | --- | --- |
+| `lumenloop` | [lumenloop/lumenloop-skills](https://github.com/lumenloop/lumenloop-skills) | MIT (© 2026 LumenLoop) |
+| `openzeppelin-stellar` | [OpenZeppelin/openzeppelin-skills](https://github.com/OpenZeppelin/openzeppelin-skills) | **AGPL-3.0** (© 2026 Zeppelin Group Ltd) |
+| `stellar-dev` | [stellar/stellar-dev-skill](https://github.com/stellar/stellar-dev-skill) | Apache-2.0 (SDF) |
+| `stellar-light` | [Stellar-Light/stellar-scout](https://github.com/Stellar-Light/stellar-scout) | MIT |
+
+Each source's own `LICENSE`/`NOTICE` file names are recorded in `MANIFEST.json`
+(`license_files`) and live at the same pinned commit as the content.
+
+Two derived facts about a skill ARE committed, because routing needs them and neither reproduces
+the work: the one-line `description` from a skill's YAML frontmatter (what `search` scores) and
+its `##` section headings (how `skill.read` addresses parts of a body). Section prose, body
+excerpts, and body-derived keyword bags are not committed —
+`test/skill-content-not-vendored.test.ts` is the standing guard on that line.
 
 ## Vendored code: `src/catalog/vendor/`
 

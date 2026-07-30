@@ -77,10 +77,13 @@ describe("pinned Vectorize frontier artifact", () => {
     expect(shouldFailFrontier(true)).toBe(false);
   });
 
-  it("matches every exposed catalog card and decodes fixed-width vectors", () => {
+  it("matches every rerankable catalog card and decodes fixed-width vectors", () => {
     const loaded = loadFrontierArtifact();
     const cards = buildCatalogCards();
-    expect(loaded.cards).toHaveLength(276);
+    // Only searchable entries are embedded: the policy reranks searchCatalog
+    // candidates, so a searchable:false card could never be reached.
+    expect(loaded.cards).toHaveLength(72);
+    expect(loaded.cards.every((card) => card.kind !== "skill-section")).toBe(true);
     expect(loaded.artifact.cardSetSha256).toBe(cardSetHash(cards));
     expect(loaded.vectors).toHaveLength(cards.length);
     expect(loaded.vectors.every((vector) => vector.length === MODEL.dimensions)).toBe(true);

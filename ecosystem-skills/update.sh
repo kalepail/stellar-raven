@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 #
-# update.sh — sync the Stellar/Soroban ecosystem agent skills into ./skills.
+# update.sh — re-pin the Stellar/Soroban ecosystem agent skills.
 #
-# This mirrors the agents-docs/ machinery (resolve a commit, recursive tree,
-# raw download, pinned MANIFEST.json, regenerate INDEX.md) but across MULTIPLE
-# heterogeneous sources, each grouped under skills/<source>/<skill>/:
+# This resolves a commit per source, walks its tree, and records the pin
+# (commit + per-file path/size/git-blob-sha) in MANIFEST.json. It downloads
+# NOTHING: skill bodies are not vendored in this repo. The pin is the whole
+# artifact — the builders and the Worker fetch each file from
+# raw.githubusercontent.com at the pinned commit and verify it against the
+# blob sha recorded here (scripts/lib/skill-mirror.mjs, src/skills/source.ts).
+#
+# Sources, each grouped under <source>/<skill>/ in the manifest:
 #
 #   lumenloop            github  lumenloop/lumenloop-skills        (8 public skills)
 #   openzeppelin-stellar github  OpenZeppelin/openzeppelin-skills  (3 Stellar skills, cherry-picked)
@@ -21,10 +26,9 @@
 # keyless is what guarantees future agent-run syncs can never pull
 # partner-confidential content into the repo.
 #
-# Each GitHub source also vendors its upstream LICENSE/NOTICE files (fetched
-# at the same pinned commit) into skills/<source>/ so redistribution notices
-# survive every sync. See THIRD-PARTY-NOTICES.md at the repo root for the
-# source-by-source license map.
+# Each GitHub source's upstream LICENSE/NOTICE file NAMES are recorded in the
+# manifest (provenance, not redistribution — nothing is copied here). See
+# THIRD-PARTY-NOTICES.md at the repo root for the source-by-source license map.
 #
 # It also snapshots the stellarlight.xyz/api/skills DIRECTORY (≈30 ecosystem
 # entries across sources/kinds) into catalog.json + MANIFEST.catalog — the
@@ -34,13 +38,12 @@
 # regenerated via build-index.mjs.
 #
 # Usage:
-#   ./update.sh            # sync every source at its default branch
+#   ./update.sh            # re-pin every source at its default branch
 #
 # Requires: gh (authenticated), jq, node, curl, git. No API keys.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILLS_DIR="$SCRIPT_DIR/skills"
 MANIFEST="$SCRIPT_DIR/MANIFEST.json"
 CATALOG="$SCRIPT_DIR/catalog.json"
 
@@ -50,7 +53,7 @@ command -v node  >/dev/null || { echo "error: node not found" >&2; exit 1; }
 command -v curl  >/dev/null || { echo "error: curl not found" >&2; exit 1; }
 command -v git   >/dev/null || { echo "error: git not found" >&2; exit 1; }
 
-# Every source is public — the mirror is always complete. (The credentialed
+# Every source is public — the pin set is always complete. (The credentialed
 # partner source and its ALLOW_PARTIAL escape hatch were removed 2026-07-06;
 # see the header note.)
 MIRROR_STATUS="complete"
@@ -58,31 +61,29 @@ MISSING_SOURCES="[]"
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
-SRC_DIR="$WORK/sources"   # one <id>.json per synced source
-# BUILD_DIR is the staging tree. Every source writes here; we only swap it into
-# place (skills/) AFTER all sources + the manifest succeed, so a mid-run failure
-# never leaves a clobbered or partial skills/ tree.
-BUILD_DIR="$WORK/skills"
+SRC_DIR="$WORK/sources"   # one <id>.json per re-pinned source
+# Everything is staged under $WORK and only moved into place AFTER all sources
+# succeed, so a mid-run failure never leaves a half-written MANIFEST.json.
 MANIFEST_TMP="$WORK/MANIFEST.json"
 CATALOG_TMP="$WORK/catalog.json"
-mkdir -p "$SRC_DIR" "$BUILD_DIR"
+mkdir -p "$SRC_DIR"
 
 NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 # ---------------------------------------------------------------------------
-# sync_github <id> <owner> <repo> <src_path> <ref> [skill ...]
+# pin_github <id> <owner> <repo> <src_path> <ref> [skill ...]
 #
 #   src_path  ""            -> the repo root is ONE skill (named by the 6th arg)
 #             "skills" etc. -> each child dir under it is a skill
 #   skill...  optional allow-list of skill names to cherry-pick (subdir mode)
 #             OR, when src_path is "", the single skill name for the repo root.
-# Downloads every *.md blob under the selected skill(s) at the pinned commit.
+# Records every *.md blob under the selected skill(s) at the pinned commit.
 # ---------------------------------------------------------------------------
-sync_github() {
+pin_github() {
   local id=$1 owner=$2 repo=$3 src_path=$4 ref=$5; shift 5
   local pick=("$@")
   local prefix=""; [ -n "$src_path" ] && prefix="$src_path/"
-  echo "Syncing ${id}: ${owner}/${repo}${src_path:+/$src_path} @ ${ref} ..."
+  echo "Pinning ${id}: ${owner}/${repo}${src_path:+/$src_path} @ ${ref} ..."
 
   local cq="repos/${owner}/${repo}/commits?sha=${ref}&per_page=1"
   [ -n "$src_path" ] && cq="${cq}&path=${src_path}"
@@ -118,26 +119,12 @@ sync_github() {
       | sort_by(.skill+"/"+.relpath)')"
   fi
 
-  # Download each blob at the pinned commit.
-  echo "$files" | jq -r '.[] | [.skill, .relpath, .src] | @tsv' \
-  | while IFS=$'\t' read -r skill relpath src; do
-      local dest="$BUILD_DIR/$id/$skill/$relpath"
-      mkdir -p "$(dirname "$dest")"
-      echo "  + $id/$skill/$relpath"
-      curl -fsSL "https://raw.githubusercontent.com/${owner}/${repo}/${commit}/${src}" -o "$dest"
-    done
-
-  # Vendor the upstream LICENSE/NOTICE files (repo root, same pinned commit)
-  # into skills/<id>/ so redistribution notices ship with the mirrored content
-  # and survive every sync. Which names exist varies per repo; absent files are
-  # simply skipped (THIRD-PARTY-NOTICES.md at the repo root is the summary).
+  # Record which upstream LICENSE/NOTICE files exist at the pinned commit.
+  # Names only — nothing is downloaded (THIRD-PARTY-NOTICES.md maps each source
+  # to its license and links to the file upstream).
   local license_files="[]" notice_name
   for notice_name in LICENSE LICENSE.md LICENSE.txt LICENSE-APACHE LICENSE-MIT NOTICE NOTICE.md COPYING; do
     if echo "$tree" | jq -e --arg n "$notice_name" '.tree[] | select(.type=="blob" and .path==$n)' >/dev/null; then
-      mkdir -p "$BUILD_DIR/$id"
-      echo "  + $id/$notice_name (upstream license/notice)"
-      curl -fsSL "https://raw.githubusercontent.com/${owner}/${repo}/${commit}/${notice_name}" \
-        -o "$BUILD_DIR/$id/$notice_name"
       license_files="$(echo "$license_files" | jq --arg n "$notice_name" '. + [$n]')"
     fi
   done
@@ -187,14 +174,14 @@ fetch_catalog() {
 }
 
 # ===========================================================================
-# Run every source into the staging tree. With `set -e`, any failure here aborts
-# BEFORE the swap below, so skills/ + MANIFEST.json are never left clobbered.
+# Re-pin every source. With `set -e`, any failure here aborts BEFORE the swap
+# below, so MANIFEST.json is never left clobbered.
 # ===========================================================================
-sync_github lumenloop            lumenloop   lumenloop-skills    skills main
-sync_github openzeppelin-stellar OpenZeppelin openzeppelin-skills skills main \
+pin_github lumenloop            lumenloop   lumenloop-skills    skills main
+pin_github openzeppelin-stellar OpenZeppelin openzeppelin-skills skills main \
             setup-stellar-contracts upgrade-stellar-contracts develop-secure-contracts
-sync_github stellar-dev          stellar     stellar-dev-skill   skills main
-sync_github stellar-light        Stellar-Light stellar-scout     ""     main stellar-scout
+pin_github stellar-dev          stellar     stellar-dev-skill   skills main
+pin_github stellar-light        Stellar-Light stellar-scout     ""     main stellar-scout
 
 fetch_catalog
 
@@ -208,19 +195,18 @@ jq -n --arg now "$NOW" --arg status "$MIRROR_STATUS" --argjson missing "$MISSING
   { synced_at:$now, status:$status, missing_sources:$missing,
     skill_count:$total, sources:$sources, catalog:$catalog }' > "$MANIFEST_TMP"
 
-# --- Atomic swap: only now do we touch the real skills/, MANIFEST, catalog. ---
-rm -rf "$SKILLS_DIR"
-mv "$BUILD_DIR" "$SKILLS_DIR"
+# --- Atomic swap: only now do we touch the real MANIFEST + catalog. ---
 mv "$MANIFEST_TMP" "$MANIFEST"
 [ -f "$CATALOG_TMP" ] && mv "$CATALOG_TMP" "$CATALOG"
 
 if [ "$MIRROR_STATUS" = "partial" ]; then
-  echo "Synced ${TOTAL_SKILLS} skills across $(echo "$SOURCES" | jq length) sources — PARTIAL (missing: $(echo "$MISSING_SOURCES" | jq -r 'join(", ")'))."
+  echo "Pinned ${TOTAL_SKILLS} skills across $(echo "$SOURCES" | jq length) sources — PARTIAL (missing: $(echo "$MISSING_SOURCES" | jq -r 'join(", ")'))."
 else
-  echo "Synced ${TOTAL_SKILLS} skills across $(echo "$SOURCES" | jq length) sources — complete."
+  echo "Pinned ${TOTAL_SKILLS} skills across $(echo "$SOURCES" | jq length) sources — complete."
 fi
 
-# Regenerate the themed index (reads the now-final skills/ + MANIFEST.json).
+# Regenerate the themed index (fetches each pinned SKILL.md into the gitignored
+# working cache to read its frontmatter).
 node "$SCRIPT_DIR/build-index.mjs"
 
 echo "Done. Manifest: $MANIFEST (status: ${MIRROR_STATUS})"
