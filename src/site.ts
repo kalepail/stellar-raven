@@ -679,9 +679,8 @@ export function landingPage(): string {
       <span class="tk"><b>Sandboxed</b> — agent code runs with no network</span>
       <span class="tk"><b>Low upkeep</b> — checked against live services daily</span></div>
     <div class="connect-legal">By using Stellar Raven you acknowledge you have read and agreed to the
-      <a href="/terms">Stellar Raven Terms of Service</a>, the
-      <a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Stellar.org Terms of
-      Service</a>, and the <a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Privacy
+      <a href="/terms">Terms of Service</a> and the
+      <a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Privacy
       Policy</a>.</div>
   </div>
 </div></section></main>` +
@@ -928,8 +927,7 @@ export function consentPage(args: {
       <input type="hidden" name="csrf_token" value="${escapeHtml(args.csrfToken)}"/>
       <label class="consent-row"><input type="checkbox" name="tos_agree" id="tos-agree"/>
         <span>I have read and agree to the
-        <a href="/terms" target="_blank" rel="noopener">Stellar Raven Terms of Service</a>, the
-        <a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Stellar.org Terms of Service</a>,
+        <a href="/terms" target="_blank" rel="noopener">Terms of Service</a>
         and the <a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
       <button class="btn btn-primary" type="submit">Approve and continue ${ARROW}</button>
     </form>

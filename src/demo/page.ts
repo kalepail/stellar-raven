@@ -932,8 +932,7 @@ function lockedBody(): string {
 <span class="hint">WorkOS sign-in &middot; no service API keys &middot; rate-limited</span></div>\
 <div class="consent"><label class="consent-row"><input type="checkbox" id="tos-agree"/>\
 <span>By using Stellar Raven you acknowledge you have read and agreed to the \
-<a href="/terms" target="_blank" rel="noopener">Stellar Raven Terms of Service</a>, the \
-<a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Stellar.org Terms of Service</a>, \
+<a href="/terms" target="_blank" rel="noopener">Terms of Service</a> \
 and the <a href="https://stellar.org/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.\
 </span></label></div>\
 </section>\
