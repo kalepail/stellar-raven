@@ -357,7 +357,10 @@ keeps fetching the OLD commit until you deploy the new one. Closing the drift lo
 - `npm run deploy` (`wrangler deploy`) — pushes the new catalog live to the production routes.
   Deploying to production is outward-facing: get the owner's go-ahead unless durably authorized.
 - Verify live: the deploy prints a new Version ID and the updated routes; a quick liveness check
-  confirms the roll-out. The public landing pages should return `200`; unauthenticated `/mcp`
+  confirms the roll-out. **Give the edge ~1 minute first.** A just-deployed route can 404 for about
+  a minute, including on cache-busted URLs — that is propagation, not a routing bug. Re-check before
+  debugging it; the 2026-07-30 `/terms` deploy burned time on exactly that. The public landing pages
+  should return `200`; unauthenticated `/mcp`
   should return the expected auth error (`401` JSON), unless the check includes a valid bearer
   token. Note the Version ID in the close-out record.
 

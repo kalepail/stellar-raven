@@ -350,6 +350,18 @@ For each miss/wrong/partial (and each surprising pass), classify and route:
 | **Upstream semantics/spec gap**: response contracts, error shapes, vocabulary, index tokenization/ranking | the service works but its self-description or behavior misleads any consumer, not just us | **`improvements/` finding** |
 | Corpus-coverage diagnostic: canonical truth exists elsewhere and no tested surface undertakes to host it | the answer is verifiable from its canonical owner, while the miss only proves that one corpus/index does not carry it | keep truth and provenance in the golden; record a local coverage/monitoring result, not a manufactured Docs/site issue |
 
+**Before accepting a reported "regression", check whether the mechanism is a threshold doing its
+job.** A reviewer (or a later you) reporting that a change dropped a keyword, a hit, or a rank is
+reporting an OUTCOME, not a cause. Find where the input came from and what the threshold actually
+measures before writing a fix. Worked example, 2026-07-30: an upstream release added a shared
+`totalBasis` envelope property, and a review reported the resulting loss of the `basis` keyword
+from six Scout ops as a routing regression. Measured, the token's document frequency went 7/24
+(29.2%) to 14/24 (58.3%) — it had never been op-distinguishing and had survived only just under
+the 30% cut. The DF filter dropping it was the filter doing exactly what it was measured to do (the
+naive no-filter variant regressed extended top-1 74->71). The proposed fix would have special-cased
+one envelope property to preserve a keyword present on 58% of the service. Closed won't-fix on the
+measurement, not on argument.
+
 Anti-overfitting rules bind here: zero-hit routing cases stay failing until a *general*
 mechanism fixes them; no query→service maps, no per-question vocabulary. If the only fix
 you can imagine is case-specific, the case stays red and the note says why. **This binds harder
