@@ -145,7 +145,12 @@ Skill bodies are fetched from their pinned upstream at read time, not bundled
   magnitude, so a mean over both is meaningless.
 - **Availability:** `evt = "skill_read"` with `ok = false`, grouped by `error`.
   This is the accepted-risk dependency on raw.githubusercontent.com made
-  observable; a rising `could not fetch` rate is the early signal.
+  observable; a rising `could not fetch` rate is the early signal. It is also
+  the ONLY view of a Cloudflare-side failure — GitHub Actions egress is not
+  Worker egress, so the daily `check-mirrors --fetch` cannot see one. If this
+  rate is **sustained non-zero**, that is the trigger to stop relying on a
+  manual query and add the alert: see `ARCHITECTURE.md` §6 "When to close the
+  Cloudflare-side half". Do not skip it as noise — nobody else is watching.
 - **Does anyone read sections?** group by `shape` (`whole` | `sections` |
   `files` | `mixed`). Feeds the open question in
   `ideas/skill-discovery-without-bundling.md` — if `whole` dominates, 204

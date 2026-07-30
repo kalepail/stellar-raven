@@ -95,8 +95,11 @@ measurement rather than a story told afterwards — the same discipline the `bas
   lane + QA battery + agentic); the distribution only decides whether that A/B is worth running.
 - **`ms` split by `from`,** always. A mean over memo and upstream is meaningless. First reading
   2026-07-30: upstream 61-80 ms, memo 0 ms.
-- **`ok: false` rate** is the accepted availability risk (`ARCHITECTURE.md` §6) made observable
-  instead of assumed. Any sustained non-zero rate deserves a look on its own merits.
+- **`ok: false` rate** is the accepted availability risk made observable instead of assumed. Any
+  sustained non-zero rate deserves a look on its own merits. That item does NOT belong to this
+  file and must not die with it: its durable home is `ARCHITECTURE.md` §6 ("When to close the
+  Cloudflare-side half"), which carries the trigger and the preferred fix. Read it here because
+  the reading is already happening; act on it there.
 
 Query guidance, including the trap where a filter on a new field VALUE returns zero while the
 events exist, is in `.agents/skills/cloudflare-observability-review/SKILL.md` "Skill Retrieval".

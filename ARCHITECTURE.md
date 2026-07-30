@@ -605,6 +605,18 @@ Detection, stated exactly, because the two halves are not equally covered:
   Cloudflare alert on that event, each with a named owner — neither exists yet, and saying the
   daily job covers it would be false.
 
+**When to close the Cloudflare-side half — a trigger, not a date.** Deliberately not built as of
+2026-07-30, and the reasoning is worth keeping because the cost is not obvious: every `skill_read`
+event so far is an author probe, so an alert today would watch a path with no organic traffic; and
+a flaky canary files noise into the same drift issue that carries the `LIVE skill.read OUTAGE`
+class, which is the one alert that has to stay believed. Build it when either fires: a **sustained
+non-zero `ok: false` rate**, or a **first real user report** of a skills error. Prefer the
+**Cloudflare alert on `evt = "skill_read" AND ok = false`** over a GitHub-Actions canary — no repo
+secret, no auth plumbing, and it observes the real Worker rather than a synthetic caller. What is
+guaranteed meanwhile is only that production has something to say when asked:
+`test/executor-providers.test.ts` fails if a transport failure stops emitting `ok: false`, so the
+signal this whole posture rests on cannot be quietly removed.
+
 The residual **upstream** risk is deliberately **accepted**: the only remaining fix is to hold a
 durable copy of the content, and the serve-do-not-store rule above forbids exactly that. Do not
 "solve" this with an R2 mirror.
