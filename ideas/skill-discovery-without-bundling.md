@@ -98,6 +98,18 @@ section builder, and the read-time sectioning invariant.
 Neither is a deletion worth making on taste. Both need a measured win on golden Q→A accuracy, per
 the house rule.
 
+## When this file can be deleted
+
+Not while both questions are unanswered — but the reading is scheduled rather than hoped for:
+**Solo todo 1284** fires at >= 100 organic `skill_read` events or 2026-09-30, whichever comes first,
+and carries PRE-REGISTERED decision rules (>= 90% whole reads means sections are dead weight;
+>= 25% section reads means they are earning their place and the question closes). Pre-registering
+them is the point — it makes the outcome a measurement instead of a story told afterwards.
+
+Delete this file once both questions have been answered by that data and the answers are recorded
+where they belong: a settled "sections stay" in `ARCHITECTURE.md` §6, a deletion in the diff
+itself, or an ADR if the read surface goes.
+
 ## Sources
 
 - [ADR-0002: retire onboarding skills and twins](../research/decisions/0002-skills-retirement-twin-dedup.md)
