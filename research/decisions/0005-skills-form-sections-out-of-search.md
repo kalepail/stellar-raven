@@ -59,3 +59,11 @@ completed (reviewer ≠ author).
   rounds can rerun the control; arm C's evidence is banked in scratchpad 608.
 - Emitted text (instructions, demo, micro-map) may reference section *reads* but must not
   imply sections appear as search hits.
+
+## Amendment (2026-07-30)
+
+The "bundle pinned" control in this round's validity record meant "skill content held constant",
+which still describes what was measured. The bundle itself no longer exists (bodies are fetched
+from their pinned commit — see the amendment on ADR-0003), and section entries now carry their
+heading alone with no body excerpt or body-derived keywords, since nothing scores them in the
+shipped arm. Arm A still re-enables both. The arm-B decision and its evidence are unchanged.

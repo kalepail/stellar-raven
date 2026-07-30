@@ -433,7 +433,7 @@ Quality bar (match the existing findings, e.g. `sls-005`):
 - The Recommendation is written for the **service owner**: concrete, self-describing-data
   biased, with the consumer-side workaround this repo shipped noted (commit ref) so they
   see the cost of not fixing it.
-- Skills findings target the **source repos**; never "fix" the mirror in this repo.
+- Skills findings target the **source repos**. Bodies are not vendored here (pinned + fetched), so there is nothing local to patch and re-pinning is not a fix.
 - Update existing findings rather than filing near-duplicates; refresh statuses when the
   daily drift refresh lands (a fix upstream → live re-check → `fixed-upstream`, residuals
   become successor findings, as sls-001 → sls-005).

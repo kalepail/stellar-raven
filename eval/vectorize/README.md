@@ -20,9 +20,28 @@ state. It uses the same Qwen3-Embedding-0.6B model family Cloudflare exposes as
   normalized 1,024-dimensional vectors; cosine/dot-product ranking.
 - Query instruction: `Given a Stellar ecosystem search query, retrieve the exposed operation
   routing card that can ground it`.
-- Cards: all 276 exposed manifest entries. Each card combines exact id/kind, source-family
+- Cards: the 72 SEARCHABLE manifest entries (54 operations + 18 whole skills). Narrowed from
+  all 276 exposed entries on 2026-07-30: the policy reranks `searchCatalog` candidates, which
+  never include `searchable: false` entries, so the 204 skill-section vectors were unreachable
+  by construction. The surviving cards kept their original vectors bit-for-bit (sliced from the
+  prior artifact, no re-embedding), so measured results are unchanged. Each card combines exact id/kind, source-family
   purpose/authority, catalog description, and any generated workflow question shapes that
   reference it. No excluded operation or uncommitted partner detail enters the artifact.
+- **Coupling (read before editing catalog prose).** Card text is built from live catalog entry
+  descriptions plus `SERVICE_FAMILY_PURPOSES` in `scripts/catalog-data/workflow-archetypes.mjs`,
+  and `loadFrontierArtifact` refuses any card-set drift — so editing either one fails
+  `test/eval-discovery-vectorize.test.mjs` until the artifact is re-embedded. Re-embedding is not
+  free: the note below records that a divergent environment once produced a wholly different
+  vector set (mean cosine ~0.90, zero identical vectors), so a rebuild is a deliberate act, not a
+  side effect of a wording fix. Two accuracy edits are deliberately parked on the next intentional
+  re-embed:
+  - `scout.getSkill`'s catalog note says "the bundled skills.* catalog entries"
+    (`scripts/description-notes.mjs`).
+  - the skills family line says "Bundled operational playbooks"
+    (`scripts/catalog-data/workflow-archetypes.mjs`).
+
+  Both were true until 2026-07-30, when skill bodies stopped being bundled into the Worker
+  (fetched from their pinned commit instead). Neither word carries any routing weight.
 - Artifact: `artifacts/qwen3-embedding-0.6b-q8-c25a394.json`, with per-card text hashes, card-set
   hash, model/runtime config, base64 little-endian float32 vectors, and vector payload hash. Tests
   refuse card, model, or payload drift. In the environment verified on 2026-07-27, the pinned q8

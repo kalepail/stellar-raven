@@ -19,6 +19,12 @@ artifact. Delete one only after proving it has no package, workflow, documentati
 | `node eval/qa/compile-qa.mjs` | `eval/qa/cases.json` | yes |
 | `node eval/plan/build-op-classes.mjs` | `eval/plan/op-classes.json` | yes |
 
+`build-catalog.mjs` and `build-super-spec.mjs` additionally read skill bodies through
+`scripts/lib/skill-mirror.mjs`, the one non-committed build input: it fetches each file pinned in
+`ecosystem-skills/MANIFEST.json` from its upstream commit, verifies it against the recorded git
+blob hash, and caches it under the gitignored `ecosystem-skills/.cache/`. A hash mismatch fails
+the build rather than baking unreviewed upstream bytes into a generated artifact.
+
 Every CI-gated generator in the table uses `writeFileAtomic` from `scripts/lib/shared.mjs` so an
 interrupted process cannot leave a truncated tracked artifact. Generated modules are never edited by
 hand. Release/operator-only image and font generators are outside that offline CI contract.
@@ -26,6 +32,7 @@ hand. Release/operator-only image and font generators are outside that offline C
 ## Typing convention
 
 Scripts stay plain `.mjs` because they run directly under Node. A `.d.mts` sidecar exists only when
-TypeScript source imports that JavaScript module and needs a declaration (`exposure.mjs` and
-`emitted-text-guard.mjs`); it is not a visual-uniformity requirement for every script. Prefer runtime
-tests for CLI-only scripts and add a declaration only at an actual TS import boundary.
+TypeScript source imports that JavaScript module and needs a declaration (`exposure.mjs`,
+`emitted-text-guard.mjs`, and `lib/skill-mirror.mjs`); it is not a visual-uniformity requirement
+for every script. Prefer runtime tests for CLI-only scripts and add a declaration only at an
+actual TS import boundary.

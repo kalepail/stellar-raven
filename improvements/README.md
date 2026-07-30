@@ -22,9 +22,10 @@ that collection.
   `research/services/stellar-docs-algolia.md`), so some `stellar-docs` findings now have
   a **direct-remediation** path in addition to filing upstream; see "Resolution paths"
   below for which findings that applies to and the bar it must clear.
-- `skills/` — findings about the **upstream skill sources** mirrored here as
-  ecosystem-skills. Recommendations target the source repos; never edit the mirror
-  in this repo to "fix" a finding.
+- `skills/` — findings about the **upstream skill sources** pinned in
+  `ecosystem-skills/MANIFEST.json`. Recommendations target the source repos. Bodies are not
+  vendored here (they are fetched from the pinned commit and hash-verified), so there is no
+  local copy to patch — and re-pinning to a fork or a patched branch is not a fix either.
 
 Web findings are classified before filing as `docs-content`, `docs-search`, `site-content`,
 `site-search`, or `canonical-source`. The two search categories include the corresponding Algolia

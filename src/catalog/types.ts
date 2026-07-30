@@ -69,9 +69,9 @@ export const transportSchema = z
 
 export const provenanceSchema = z
   .object({
-    /** Upstream origin of this entry (inventory endpoint URL or mirror URL). */
+    /** Upstream origin of this entry (inventory endpoint URL, or the pinned source tree URL for skills). */
     source: z.string().min(1),
-    /** ISO timestamp of the inventory/mirror snapshot the entry was built from. */
+    /** ISO timestamp of the inventory snapshot / skill pin the entry was built from. */
     fetchedAt: z.string().min(1)
   })
   .catchall(z.unknown());

@@ -79,7 +79,7 @@ Host Worker  (Workers Paid · wrangler: worker_loaders LOADER · nodejs_compat)
         adapters/   per-service clients, designed fresh per the live service research
         policy/     arg validation vs manifest · redaction (exposure filtered at build, ADR-0003)
         catalog/    bundled manifest → validated in-memory catalog, cached per isolate
-        skills/     bundled skill store, section-indexed at build time
+        skills/     skill store over pinned upstream files, section-indexed at build time
 ```
 
 **Search shape — settled 2026-07-02 (`research/decisions/0001-search-tool-shape.md`, accepted).**

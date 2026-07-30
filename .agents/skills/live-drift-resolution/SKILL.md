@@ -117,7 +117,7 @@ example:
 - `improvements reviewer`: inspect fixed/recurring/new upstream findings and lint/index
   state.
 - `runtime/source reviewer`: inspect `src/**`, runner declarations/projections, fixtures,
-  and generated runtime bundles.
+  and generated runtime modules.
 - `exposure/routing reviewer`: inspect inventory/catalog/spec/op classes, ADR-0003
   exposure policy, and routing gate evidence.
 - `upstream follow-up reviewer`: inspect affected `improvements/` findings and their
@@ -345,7 +345,9 @@ before committing. This mirrors the repo's independent-review rule in
 Committing and pushing does NOT update the live service. The catalog and spec are compiled *into*
 the Worker bundle (`catalog/manifest.json` → `src/catalog/load.ts`, `specs/super-spec.json` →
 `src/executor/run.ts`), and CI does **not** deploy — so production keeps serving the OLD upstream
-version until a manual deploy. Closing the drift loop requires shipping:
+version until a manual deploy. That includes skills: a re-pin does NOT reach users on merge,
+because the pinned `transport.url`/`sha` pairs live in the compiled catalog — deployed production
+keeps fetching the OLD commit until you deploy the new one. Closing the drift loop requires shipping:
 
 - `npm run build` (`wrangler deploy --dry-run`) first — confirm the bundle builds and bindings are
   intact; it's the same check the review step ran.

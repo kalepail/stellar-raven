@@ -711,9 +711,10 @@ scripts/build-super-spec.mjs    → specs/super-spec.json        (npm run spec:b
 `scripts/build-catalog.mjs` has five snapshot/metadata roots: `inventory/lumenloop.json`,
 `inventory/stellar-light.json`, `specs/stellar-docs.json`,
 `inventory/stellar-docs-titles.json`, and `ecosystem-skills/MANIFEST.json`. The manifest-enumerated
-mirror Markdown files are semantic inputs too: the builder reads each exposed `SKILL.md` and
-listed additional Markdown file to derive skill descriptions, sections, and routing keywords
-(§6). The imported registry in `src/skills/runners/index.ts` supplies emitted runnable flags and
+Markdown files are semantic inputs too, and they are the chain's one non-committed input: the
+builder fetches each exposed `SKILL.md` and listed additional Markdown file from its pinned
+upstream commit (hash-verified, cached under the gitignored `ecosystem-skills/.cache/`) to derive
+each skill's description and section headings (§6). The imported registry in `src/skills/runners/index.ts` supplies emitted runnable flags and
 input/output schemas. The refreshed `inventory/stellar-docs.json` is the live Algolia
 settings/drift snapshot; it is not a catalog builder input. The title snapshot contributes
 per-operation routing vocabulary and its `fetchedAt` participates in the catalog's deterministic
@@ -731,12 +732,16 @@ Lumenloop-served skill metadata), consumed by `scripts/build-catalog.mjs` and th
 emitters. The super spec emits exactly the manifest's
 operations (a completeness assert catches a cataloged op the spec builders miss). Loud-
 failure guards keep refreshes from silently changing exposure: `assertRetirementNamesResolve`
-(a mirror sync renaming/removing a retired skill would otherwise un-retire it),
+(a re-pin renaming/removing a retired skill would otherwise un-retire it),
+`assertBuildAuthorityIdsResolve` (a re-pin renaming a build-authority skill would otherwise
+silently drop its role),
 `assertLumenloopExclusionsResolve` / `assertScoutExclusionsResolve` (a stale exclusion means
 an excluded surface may have moved upstream), `assertLumenloopSkillsMirrored` (a NEW
-upstream-served skill must be mirrored or excluded, never silently invisible), and the
-orphaned-note checks in both builders for stranded `description-notes.mjs` entries. See
-`ecosystem-skills/README.md` "After a sync" for the operator chain.
+upstream-served skill must be pinned or excluded, never silently invisible), and the
+orphaned-note checks in both builders for stranded `description-notes.mjs` entries. Integrity is
+its own guard class: every fetched skill file must match its pinned git blob hash, at build time
+and at read time. See `ecosystem-skills/README.md` "After a re-pin: rebuild the generated
+surfaces" for the operator chain.
 
 CI (`.github/workflows/ci.yml`, Node 24 — build-catalog relies on native TS
 type-stripping): types → tsc → vitest → workerd smoke lane (`npm run test:smoke`,

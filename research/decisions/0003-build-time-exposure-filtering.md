@@ -124,3 +124,22 @@ in the model-facing world.
   guard it; enabling it is the PLAN §8 budget-gate feature.
 - The upstream skill source adds machine-readable audience/transport metadata (sk-005) — the
   retirement list could become a mechanical filter.
+
+## Amendment (2026-07-30): skill bodies are fetched, not bundled
+
+The decision is unchanged — the manifest is still the exposed surface, and exclusion is still
+build-time data in `scripts/exposure.mjs`. Two mechanism details in this ADR are now stale:
+
+- The emitter list no longer includes `scripts/bundle-skills.mjs` / `src/skills/bundle.json`.
+  Skill bodies are not vendored in this repo and not shipped in the Worker; each catalog entry
+  carries `transport: { type: "file", url, sha }` (upstream file at the commit pinned in
+  `ecosystem-skills/MANIFEST.json` + its git blob hash) and `src/skills/source.ts` fetches and
+  verifies it at read time. Retired skills are still never emitted — they now have no catalog
+  entry AND are never fetched.
+- "The Worker bundle no longer ships retired-skill bytes at all" is now trivially true: it ships
+  no skill bytes at all.
+
+The exposure property that matters is unaffected: an excluded skill has no entry, so exact-match
+resolution fails and there is nothing to serve. The retired-reference scrub moved from bundle
+time to read time (`src/skills/scrub.ts`, shared with the builders) so live content cannot carry
+a leak in.

@@ -46,7 +46,7 @@ const runnableEntry = (id: string, runner: SkillRunner): CatalogEntry =>
     description: `runnable test skill ${id}`,
     inputSchema: runner.inputSchema,
     outputSchema: runner.outputSchema,
-    transport: { type: "file", path: `skills/${id}/SKILL.md` },
+    transport: { type: "file", url: `https://raw.githubusercontent.test/${id}/SKILL.md`, sha: "0".repeat(40) },
     provenance,
     runnable: true
   }) as CatalogEntry;
@@ -58,7 +58,7 @@ const proseSkillEntry = (id: string): CatalogEntry => ({
   description: `prose skill ${id}`,
   inputSchema: null,
   outputSchema: null,
-  transport: { type: "file", path: `skills/${id}/SKILL.md` },
+  transport: { type: "file", url: `https://raw.githubusercontent.test/${id}/SKILL.md`, sha: "0".repeat(40) },
   provenance
 });
 

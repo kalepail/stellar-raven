@@ -53,7 +53,7 @@ GitHub repo) and 6 partner-set ones. Only the public set is mirrored. The partne
 `lumenloop-api-*` onboarding family, served from a private repo via a credentialed archive
 endpoint) was retired from catalog exposure 2026-07-03 and its mirror source was **removed
 entirely 2026-07-06**: partner-tier content must not live in this public repo, and this mirror
-staying credential-free is what guarantees future (including agent-run) syncs can never pull it
+staying credential-free is what guarantees future (including agent-run) re-pins can never pull it
 back in. The partner skills survive only as name-only stubs in `inventory/lumenloop.json` so the
 `/v1/skills` union stays observable.
 
@@ -101,7 +101,7 @@ This fails if any skill is uncategorized, if `groups.json` references skills mis
 `MANIFEST.json`, if a source has no commit SHA or a file has no blob hash, or if the pin set is
 partial.
 
-### After a sync: rebuild the generated surfaces (repo root)
+### After a re-pin: rebuild the generated surfaces (repo root)
 
 The pin set is an *input*; the model-facing artifacts are generated from it (fetching each pinned
 file once into `.cache/`) and must be rebuilt in this order after every re-pin (CI runs the same

@@ -84,3 +84,10 @@ Catalog counts moved (before → after):
 - A retired onboarding skill is rewritten upstream to be transport-agnostic — re-expose it.
 - The routing/skills-lane gates (`eval/gates.json`, re-baselined this round — skills lane
   31 → 23 cases, 8 onboarding cases moved to `retiredCases`) move materially.
+
+## Amendment (2026-07-30)
+
+"A retired skill's body is still in the bundle" no longer holds: skill bodies are neither
+vendored in this repo nor bundled into the Worker (fetched from the pinned commit and
+hash-verified — see the amendment on ADR-0003). Retired skills have no catalog entry and are
+never fetched. The retirement decision and its name-pinned drift guard are unchanged.

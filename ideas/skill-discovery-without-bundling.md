@@ -49,8 +49,11 @@ Existing evidence supports (1), gives partial support to (2), does not establish
 
 ## Why revisit this now
 
-Raven currently mirrors 19 public skills from four repositories, exposes 18 whole skills, retains
-204 exact-readable sections, and bundles 30 Markdown files into the Worker. In the current tree:
+_(State as of 2026-07-15, when this was written. The content-ownership half has since changed —
+see "What actually shipped" above; the numbers below are the pre-change baseline.)_
+
+Raven then mirrored 19 public skills from four repositories, exposed 18 whole skills, retained
+204 exact-readable sections, and bundled 30 Markdown files into the Worker. In that tree:
 
 - `ecosystem-skills/` occupies about 588 KiB;
 - `src/skills/bundle.json` is 380,016 bytes;
@@ -354,6 +357,10 @@ whether the runner remains under its current exact ID, becomes an ordinary Raven
 retired. Do not rename or generalize it as part of the content-source experiment.
 
 ## What a winning change could delete
+
+_(The first two bullets were delivered by the 2026-07-30 legal-driven change above, without
+M1/M2 — dropping the copies did not require dropping the metadata. The rest still depend on an
+M1/M2 win.)_
 
 Only after M1 or M2 wins:
 
