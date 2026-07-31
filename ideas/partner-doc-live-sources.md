@@ -1,7 +1,7 @@
 # Live ecosystem-partner documentation as a Raven source
 
 Status: held product idea. Re-evaluate on or after **2026-10-31**, or earlier only if one of the
-triggers below fires. Raised as [issue #18](https://github.com/kalepail/stellar-raven/issues/18);
+triggers below fires. Raised as [issue #1](https://github.com/stellar-experimental/stellar-raven/issues/1);
 the dated evidence and the full admission contract live in
 [`research/partner-doc-source-onboarding.md`](../research/partner-doc-source-onboarding.md).
 

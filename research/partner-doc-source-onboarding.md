@@ -27,7 +27,7 @@ and this design; defer manifest and adapter code until the paired headline gate 
 GitHub issue #18 correctly identifies two different gaps: Alchemy's new Stellar products were
 absent from Raven, while OpenZeppelin was represented by periodically synced skills rather than a
 live docs surface. The issue's suggestion to use partner MCPs is directionally useful but too broad
-as an integration rule ([issue #18](https://github.com/kalepail/stellar-raven/issues/18)).
+as an integration rule ([issue #1](https://github.com/stellar-experimental/stellar-raven/issues/1)).
 
 | Partner | Public docs surface | MCP surface | Finding |
 | --- | --- | --- | --- |
@@ -279,7 +279,7 @@ work through this bounded general mechanism, not a bespoke query hack and not pa
 
 ## Sources
 
-- [Raven issue #18](https://github.com/kalepail/stellar-raven/issues/18)
+- [Raven issue #1](https://github.com/stellar-experimental/stellar-raven/issues/1)
 - [stellar/stellar-docs PR #2573](https://github.com/stellar/stellar-docs/pull/2573)
 - [PR #2573 patch](https://patch-diff.githubusercontent.com/raw/stellar/stellar-docs/pull/2573.patch)
 - [Alchemy root llms.txt](https://www.alchemy.com/docs/llms.txt)
