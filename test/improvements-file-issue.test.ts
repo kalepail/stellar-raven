@@ -269,7 +269,70 @@ Follow up on the open successor, do not file again.
         { cwd: ROOT, encoding: "utf8", env: { ...process.env, PATH: `${bin}:${process.env.PATH}` } },
       );
       expect(result.status).toBe(2);
-      expect(result.stderr).toContain("still OPEN");
+      expect(result.stderr).toContain("not closed");
+      expect(result.stderr).not.toContain("STUB_GH_REACHED_FILING");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  // The sibling loop must fail CLOSED too. Blocking only on literal "open" let an UNREADABLE
+  // sibling through — a transient gh failure is not evidence that a live report closed.
+  test("an unreadable recorded ref blocks a successor rather than being waved through", () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "improvement-unreadable-test-"));
+    try {
+      const bin = path.join(dir, "bin");
+      mkdirSync(bin);
+      // 1234 (the named ref) reads CLOSED; 4321 (the sibling) is unreadable from both endpoints.
+      writeFileSync(
+        path.join(bin, "gh"),
+        `#!/bin/sh
+if [ "$2" = "view" ]; then
+  case "$3" in *4321) exit 1 ;; *) echo CLOSED; exit 0 ;; esac
+fi
+echo "STUB_GH_REACHED_FILING $*" >&2
+exit 42
+`,
+        { mode: 0o755 },
+      );
+      const finding = path.join(dir, "sd-993-unreadable.md");
+      writeFileSync(
+        finding,
+        `---
+id: sd-993
+service: stellar-docs
+status: reported-upstream
+discovered: 2026-07-14
+upstreamTitle: An unreadable sibling must not authorise a filing
+evidence:
+  - filed upstream: https://github.com/stellar/stellar-docs/issues/1234
+  - successor filed: https://github.com/stellar/stellar-docs/issues/4321
+---
+
+## Finding
+
+One recorded ref cannot be read.
+
+## Recommendation
+
+Refuse until it can be.
+`,
+      );
+      const result = spawnSync(
+        process.execPath,
+        [
+          "scripts/improvements-file-issue.mjs",
+          "--file",
+          finding,
+          "--repo",
+          "stellar/stellar-docs",
+          "--successor-to",
+          "https://github.com/stellar/stellar-docs/issues/1234",
+        ],
+        { cwd: ROOT, encoding: "utf8", env: { ...process.env, PATH: `${bin}:${process.env.PATH}` } },
+      );
+      expect(result.status).toBe(2);
+      expect(result.stderr).toContain("not closed");
       expect(result.stderr).not.toContain("STUB_GH_REACHED_FILING");
     } finally {
       rmSync(dir, { recursive: true, force: true });

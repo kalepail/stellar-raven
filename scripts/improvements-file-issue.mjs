@@ -14,9 +14,11 @@ import {
 } from "./improvements-lib.mjs";
 
 const args = parseArgs(process.argv.slice(2));
-// Anchored and canonical: matches a whole issue/PR URL, so a successor ref is compared as a ref
-// rather than as a substring of one. `issues/2` must not "match" `issues/2593`.
-const GITHUB_REF_RE = /https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/(?:issues|pull)\/\d+(?![0-9])/g;
+// Canonical whole-ref match, so a successor ref is compared as a ref and never as a substring of
+// one: `issues/2` must not "match" `issues/2593`. The trailing class excludes letters, `_` and `-`
+// as well as digits — a digits-only lookahead still parsed the malformed `issues/99evil` as issue
+// 99, which would let a token that is not a real ref satisfy the guard.
+const GITHUB_REF_RE = /https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/(?:issues|pull)\/\d+(?![\w-])/g;
 const RAVEN_REPO = "kalepail/stellar-raven";
 const HANDOFF_TEMPLATE = "upstream-improvement-ready.yml";
 const AUTOMATION_MARKER = "<!-- generated-by-stellar-raven -->";
@@ -116,10 +118,17 @@ if (["reported-upstream", "declined-upstream", "fixed-upstream"].includes(findin
   // ref must be closed before another is opened.
   for (const ref of citedRefs) {
     if (ref === args.successorTo) continue;
-    if (readIssueState(ref) === "open") {
-      console.error(`${finding.frontmatter.id}: ${ref} is still OPEN`);
+    // Require a confident "closed", exactly as for the named ref. Blocking only on literal
+    // "open" would let an UNREADABLE sibling through — a transient gh failure, a deleted or
+    // private ref, or junk output — and an unreadable live report is not evidence that it closed.
+    // This is the same fail-open shape that was just repaired above; it must not survive here.
+    const refState = readIssueState(ref);
+    if (refState !== "closed") {
+      console.error(`${finding.frontmatter.id}: recorded ref ${ref} is ${refState}, not closed`);
       console.error(
-        "This finding already has a live report. Follow up there rather than filing another successor.",
+        refState === "open"
+          ? "This finding already has a live report. Follow up there rather than filing another successor."
+          : "Could not prove that report is closed, so a successor cannot be authorised. Re-check it by hand.",
       );
       process.exit(2);
     }
