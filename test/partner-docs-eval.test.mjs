@@ -1,12 +1,23 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
+  PHASE1_MIN_INDEPENDENT_CASES,
   allowedCandidateUrl,
+  baselineCode as buildBaselineCode,
   matchFacts,
   parseSseJson,
   resolvedCommitForUrl,
   summarize,
   validateSuite
 } from "../scripts/eval-partner-docs.mjs";
+
+const passingScore = { matched: 1, total: 1, recall: 1, detail: [] };
+const losingScore = { matched: 0, total: 1, recall: 0, detail: [] };
+const winningRow = (caseType) => ({
+  caseType,
+  baseline: { score: losingScore, error: null },
+  candidate: { score: passingScore, errors: [], allowlistViolations: 0, documents: [] }
+});
 
 describe("partner docs eval harness", () => {
   it("accepts only the two bounded public source families", () => {
@@ -53,7 +64,6 @@ describe("partner docs eval harness", () => {
   });
 
   it("makes a baseline error gate-inconclusive instead of dropping the row", () => {
-    const passingScore = { matched: 1, total: 1, recall: 1, detail: [] };
     const rows = [
       {
         baseline: { score: passingScore, error: null },
@@ -74,15 +84,73 @@ describe("partner docs eval harness", () => {
     const baseCase = {
       id: "case-a",
       partner: "alchemy",
+      caseType: "page-derived",
       question: "question",
-      baseline: { type: "operation", id: "stellarDocs.search_docs" },
+      baseline: [{ type: "operation", id: "stellarDocs.search_docs" }],
       candidateUrls: ["https://www.alchemy.com/docs/reference/page.md"],
       facts: [["fact"]]
     };
     expect(() => validateSuite({ contract: "partner-docs-retrieval-v1", cases: [baseCase, { ...baseCase }] })).toThrow(/duplicate/);
     expect(() => validateSuite({
       contract: "partner-docs-retrieval-v1",
-      cases: [{ ...baseCase, baseline: { type: "operation", id: "partner.fetch_url" } }]
+      cases: [{ ...baseCase, baseline: [{ type: "operation", id: "partner.fetch_url" }] }]
     })).toThrow(/unsupported baseline/);
+    expect(() => validateSuite({
+      contract: "partner-docs-retrieval-v1",
+      cases: [{ ...baseCase, caseType: "page derived" }]
+    })).toThrow(/invalid caseType/);
+    expect(() => validateSuite({
+      contract: "partner-docs-retrieval-v1",
+      cases: [{ ...baseCase, caseType: "conflict" }]
+    })).toThrow(/needs provenance/);
+    // Forward-only: the single-object form is gone, not tolerated alongside the array.
+    expect(() => validateSuite({
+      contract: "partner-docs-retrieval-v1",
+      cases: [{ ...baseCase, baseline: { type: "operation", id: "stellarDocs.search_docs" } }]
+    })).toThrow(/non-empty array/);
+    expect(() => validateSuite({
+      contract: "partner-docs-retrieval-v1",
+      cases: [{ ...baseCase, baseline: [] }]
+    })).toThrow(/non-empty array/);
+  });
+
+  it("composes every baseline source in one execute run, like the candidate arm unions its pages", () => {
+    const suite = validateSuite(JSON.parse(readFileSync(new URL("../eval/partner-docs/cases.json", import.meta.url), "utf8")));
+    const alchemy = suite.cases.filter((testCase) => testCase.partner === "alchemy");
+
+    // #657 anchored the provider-roster docs on the research lane for exactly these questions, so
+    // excluding it would measure Raven minus the lane that answers them.
+    expect(alchemy.length).toBeGreaterThan(0);
+    for (const testCase of alchemy) {
+      expect(testCase.baseline.map((source) => source.id)).toContain("scout.searchResearch");
+    }
+
+    // Scout takes q/limit; reusing the stellarDocs envelope would silently mis-page it.
+    const composed = buildBaselineCode(suite.cases.find((testCase) => testCase.id === "alchemy-stellar-data-overview"));
+    expect(composed).toContain("Promise.all([");
+    expect(composed).toContain("scout.searchResearch({ q:");
+    expect(composed).not.toContain("scout.searchResearch({ query:");
+    expect(composed).toContain("stellarDocs.search_rpc_horizon_data_docs({ query:");
+  });
+
+  it("holds the phase-1 floor: independent cases are what admit the retrieval gate", () => {
+    const independent = Array.from({ length: PHASE1_MIN_INDEPENDENT_CASES }, () => winningRow("conflict"));
+    expect(summarize(independent).retrievalAdmissionGate).toBe("pass");
+    expect(summarize(independent).independentCases).toBe(PHASE1_MIN_INDEPENDENT_CASES);
+
+    // One short of the floor fails, and page-derived cases cannot backfill it — that substitution
+    // is exactly what the gate exists to forbid.
+    expect(summarize(independent.slice(1)).retrievalAdmissionGate).toBe("fail");
+    expect(summarize([...independent.slice(1), winningRow("page-derived")]).retrievalAdmissionGate).toBe("fail");
+  });
+
+  it("keeps the committed suite above the phase-1 floor", () => {
+    const suite = validateSuite(JSON.parse(readFileSync(new URL("../eval/partner-docs/cases.json", import.meta.url), "utf8")));
+    const independent = suite.cases.filter((testCase) => testCase.caseType !== "page-derived");
+    expect(independent.length).toBeGreaterThanOrEqual(PHASE1_MIN_INDEPENDENT_CASES);
+    // The gate asks for paraphrase/negative/conflict coverage, not four of one kind.
+    expect(new Set(independent.map((testCase) => testCase.caseType))).toEqual(
+      new Set(["paraphrase", "negative", "conflict"])
+    );
   });
 });
