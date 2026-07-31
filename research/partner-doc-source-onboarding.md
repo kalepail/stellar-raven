@@ -3,6 +3,10 @@
 _Todo 910 / GitHub issue #18 design-and-measure spike. Evidence fetched 2026-07-09 through
 2026-07-10. Decision: retain a bounded harness and design; do not add a runtime adapter yet._
 
+_Updated 2026-07-31: four independent cases authored, the phase-1 floor enforced in the harness
+rather than promised here, the baseline widened to reach the Scout research lane, and the candidate
+arm re-measured. See the phase 1 note below for what that does and does not establish._
+
 ## Decision
 
 Public partner Markdown is a credible fourth **authority class**, but arbitrary MCP federation is
@@ -44,11 +48,17 @@ covers the T-REX-derived compliance and identity modules. This is evidence for a
 decision about whether Raven should keep whole skills; todo 890 owns that broader form-factor
 question.
 
-The open `stellar/stellar-docs#2573` corrects one stale paragraph in the official Indexers page and
-links Alchemy's two first-party product pages ([PR #2573](https://github.com/stellar/stellar-docs/pull/2573),
+`stellar/stellar-docs#2573` corrects one stale paragraph in the official Indexers page and links
+Alchemy's two first-party product pages ([PR #2573](https://github.com/stellar/stellar-docs/pull/2573),
 [patch](https://patch-diff.githubusercontent.com/raw/stellar/stellar-docs/pull/2573.patch)). It is a
-good upstream correction and eventual corroborating source. It does not solve the systemic cadence
-problem, and until it merges, deploys, and is crawled it is not live Raven evidence.
+good upstream correction, and it does not solve the systemic cadence problem.
+
+_Superseded 2026-07-31 — this paragraph originally read "until it merges, deploys, and is crawled it
+is not live Raven evidence." All three happened: the PR merged, deployed, and was live-verified on
+2026-07-15 (`sd-010` in `improvements/resolved.json`, cache-busted rendered page plus agent-visible
+`stellarDocs` search). It is therefore now live Raven evidence, in the same lane the baseline arm
+calls — which is why the 2026-07-10 baseline is stale in time, not only narrow in scope. See the
+phase 1 note below._
 
 ## Authority and conflict handling
 
@@ -219,6 +229,38 @@ The current harness is phase zero. A runtime change may ship only after every ph
    improve by at least 20 percentage points, win at least three cases, regress zero cases, return
    only allowlisted cited URLs, and have zero fetch/policy errors. The 2026-07-10 run passes this
    phase on the original eight only (+87.5 points, eight wins, zero regressions).
+
+   *2026-07-31:* the four independent cases now exist (one paraphrase, one negative, two conflict —
+   including a live scope conflict between two first-party OpenZeppelin surfaces), and the
+   four-case floor moved out of this paragraph and into `summarize()`
+   (`PHASE1_MIN_INDEPENDENT_CASES`), where a suite that has not been expanded cannot report `pass`
+   and page-derived cases cannot backfill the count. The candidate arm scored 95/96 (99.0%) over
+   the 12 cases with zero fetch, allowlist, or prompt-signal violations, and the original cohort
+   reproduced 63/64 exactly. **Phase 1 is still unmet**, for two reasons rather than one:
+
+   - That run had no local Raven, so the baseline arm did not execute and the gate is
+     `inconclusive`, not `pass`.
+   - The baseline arm is scoped too narrowly to carry the claim. It calls one operation per case
+     from three `stellarDocs.search_*` operations plus two mirrored skill reads; the whole Scout
+     family — including `scout.searchResearch` and `scout.getPartners` — is outside that set. The
+     7/64 figure is therefore *Raven minus its research lane*. It also predates
+     [`stellarlight#657`](https://github.com/Stellar-Light/stellarlight/pull/657) (2026-07-21),
+     which added a `data-providers` research anchor for this issue's exact Alchemy case. The
+     +87.5-point delta is an upper bound, not a measurement, and the baseline set should be
+     widened before the paired run is treated as a phase-1 result.
+   - **The baseline is also stale inside the lane it already calls.** Both of its corpora were
+     replaced after 2026-07-10. The corrected Alchemy text from `#2573` lives at
+     `/docs/data/indexers`, inside `search_rpc_horizon_data_docs`'s `/docs/data` prefix, and five
+     of the eight fact groups for `alchemy-stellar-data-overview` — a case recorded at 0/8 — now
+     appear verbatim in that one bullet. (That is rendered-HTML scoring, an indication of
+     staleness; only the baseline operation can measure it.) Separately, the mirrored skill pin
+     moved from `d72005b5` (2026-04-14) to `6f215af6` (2026-07-15): `develop-secure-contracts`
+     `SKILL.md` went 13,227 → 14,509 bytes, so `openzeppelin-stellar-rwa`'s baseline is no longer
+     comparable to its recorded value, while `setup-stellar-contracts` is byte-identical and its
+     two cases stay reproducible.
+   - Consequence for the gate: the paired `--raven-url` run must **re-measure the current-Raven arm
+     live across all 12 cases** and must not reuse the 2026-07-10 per-case numbers as the
+     comparison arm. Widening the baseline to reach the Scout lane is necessary but not sufficient.
 2. **Reliability:** at least 100 read-only probes across cold/warm cache and both partners over a
    24-hour window: >=99% success, p95 live-fetch <=1 second, zero redirect/type/size violations,
    and verified 304/stale-if-error behavior. Not run.

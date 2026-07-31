@@ -18,10 +18,35 @@ const CASES_PATH = resolve(ROOT, "eval/partner-docs/cases.json");
 const MAX_DOC_BYTES = 256 * 1024;
 const DEFAULT_TIMEOUT_MS = 8_000;
 
+/**
+ * Phase 1 of the ship gate in research/partner-doc-source-onboarding.md requires the original
+ * page-derived cohort to be expanded with at least four INDEPENDENT cases whose information need
+ * did not come from reading the candidate page.
+ *
+ * What this constant checks is the COUNT, and only the count: a suite that has not been expanded
+ * cannot report `pass`. It does NOT check independence itself. `caseType` classifies the
+ * information need behind the question; the scoring rubric is unchanged, and every fact group in
+ * both cohorts is still a literal string drawn from the candidate page. So a high candidate score
+ * on an independent case is expected by construction and is not evidence of generalisation —
+ * `provenance` is a human-reviewable claim, not a machine-checked one, and phase 3 is where
+ * generalisation is actually measured.
+ */
+export const PHASE1_MIN_INDEPENDENT_CASES = 4;
+const CASE_TYPES = new Set(["page-derived", "paraphrase", "negative", "conflict"]);
+const INDEPENDENT_CASE_TYPES = new Set(["paraphrase", "negative", "conflict"]);
+
+/**
+ * Per-operation argument builders, NOT a name map. Each service takes its own envelope, and the
+ * Scout adapter forwards unrecognised args straight into the query string — so reusing the
+ * stellarDocs shape for `scout.searchResearch` would send `hitsPerPage`/`includeContent` as dead
+ * query params and silently fall back to Scout's default page size, making the arms unequal
+ * without anything failing.
+ */
 const OPERATION_CALLS = new Map([
-  ["stellarDocs.search_docs", "stellarDocs.search_docs"],
-  ["stellarDocs.search_rpc_horizon_data_docs", "stellarDocs.search_rpc_horizon_data_docs"],
-  ["stellarDocs.search_sdk_cli_tools_docs", "stellarDocs.search_sdk_cli_tools_docs"]
+  ["stellarDocs.search_docs", (q) => `stellarDocs.search_docs({ query: ${q}, hitsPerPage: 10, includeContent: true })`],
+  ["stellarDocs.search_rpc_horizon_data_docs", (q) => `stellarDocs.search_rpc_horizon_data_docs({ query: ${q}, hitsPerPage: 10, includeContent: true })`],
+  ["stellarDocs.search_sdk_cli_tools_docs", (q) => `stellarDocs.search_sdk_cli_tools_docs({ query: ${q}, hitsPerPage: 10, includeContent: true })`],
+  ["scout.searchResearch", (q) => `scout.searchResearch({ q: ${q}, limit: 10 })`]
 ]);
 const SKILL_IDS = new Set([
   "skills.openzeppelin-stellar.setup-stellar-contracts",
@@ -180,17 +205,32 @@ export function parseSseJson(text) {
   return JSON.parse(data);
 }
 
-function baselineCode(testCase) {
+function baselineSourceCall(source, query) {
+  if (source?.type === "operation") {
+    const buildCall = OPERATION_CALLS.get(source.id);
+    if (!buildCall) throw new Error(`unsupported baseline operation ${source.id}`);
+    return buildCall(query);
+  }
+  if (source?.type === "skill" && SKILL_IDS.has(source.id)) {
+    return `codemode.skill.read(${JSON.stringify(source.id)}, {})`;
+  }
+  throw new Error(`unsupported baseline source ${JSON.stringify(source)}`);
+}
+
+/**
+ * `baseline` is an array because the candidate arm already is: it union-scores every document in
+ * `candidateUrls`. Scoring three concatenated partner pages against a single Raven call measured
+ * arity, not coverage — and a conflict case is by construction unanswerable from one lane, on
+ * either side. The emitted script composes its sources in ONE execute run, which is also how
+ * Raven's own contract tells an agent to work.
+ */
+export function baselineCode(testCase) {
   const query = JSON.stringify(testCase.question);
-  if (testCase.baseline.type === "operation") {
-    const call = OPERATION_CALLS.get(testCase.baseline.id);
-    if (!call) throw new Error(`unsupported baseline operation ${testCase.baseline.id}`);
-    return `async () => { const r = await ${call}({ query: ${query}, hitsPerPage: 10, includeContent: true }); return r; }`;
+  if (!Array.isArray(testCase.baseline) || testCase.baseline.length === 0) {
+    throw new Error(`baseline must be a non-empty array: ${testCase.id}`);
   }
-  if (testCase.baseline.type === "skill" && SKILL_IDS.has(testCase.baseline.id)) {
-    return `async () => { const r = await codemode.skill.read(${JSON.stringify(testCase.baseline.id)}, {}); return r; }`;
-  }
-  throw new Error(`unsupported baseline source ${JSON.stringify(testCase.baseline)}`);
+  const calls = testCase.baseline.map((source) => baselineSourceCall(source, query));
+  return `async () => { const r = await Promise.all([${calls.join(", ")}]); return r; }`;
 }
 
 async function ravenExecute(ravenUrl, code, timeoutMs) {
@@ -222,6 +262,11 @@ export function validateSuite(suite) {
   for (const testCase of suite.cases) {
     if (typeof testCase.id !== "string" || ids.has(testCase.id)) throw new Error(`invalid or duplicate case id: ${testCase.id}`);
     ids.add(testCase.id);
+    if (!CASE_TYPES.has(testCase.caseType)) throw new Error(`invalid caseType: ${testCase.id}`);
+    if (INDEPENDENT_CASE_TYPES.has(testCase.caseType)
+      && (typeof testCase.provenance !== "string" || !testCase.provenance.trim())) {
+      throw new Error(`independent case needs provenance: ${testCase.id}`);
+    }
     if (typeof testCase.question !== "string" || !testCase.question.trim()) throw new Error(`missing question: ${testCase.id}`);
     if (!Array.isArray(testCase.facts) || testCase.facts.length === 0 || testCase.facts.some((group) => !Array.isArray(group) || group.length === 0)) {
       throw new Error(`invalid facts: ${testCase.id}`);
@@ -249,6 +294,15 @@ export function summarize(rows) {
   const promptSignalCount = rows.reduce((sum, row) => sum + row.candidate.documents.reduce((n, doc) => n + doc.promptSignals.length, 0), 0);
   const baselineRecall = baselineFacts ? baselineMatched / baselineFacts : null;
   const candidateRecall = totalFacts ? candidateMatched / totalFacts : 0;
+  const independentCases = rows.filter((row) => INDEPENDENT_CASE_TYPES.has(row.caseType)).length;
+  // Fact groups repeat across cases (a conflict case re-checks strings its single-page siblings
+  // already cover), so the pooled `totalFacts` counts some evidence twice. Report the distinct
+  // count beside it: a pooled recall that looks like N independent measurements is the exact way
+  // this kind of suite flatters itself.
+  const distinctFactGroups = new Set(
+    rows.flatMap((row) => (row.candidate.score.detail ?? [])
+      .map((group) => JSON.stringify([...group.alternatives].sort())))
+  ).size;
   const retrievalGate = baselineErrors > 0 || available.length !== rows.length
     ? "inconclusive"
     : candidateRecall >= baselineRecall + 0.20
@@ -256,10 +310,14 @@ export function summarize(rows) {
       && regressions === 0
       && fetchErrors === 0
       && allowlistViolations === 0
+      && independentCases >= PHASE1_MIN_INDEPENDENT_CASES
         ? "pass"
         : "fail";
   return {
     cases: rows.length,
+    independentCases,
+    phase1MinIndependentCases: PHASE1_MIN_INDEPENDENT_CASES,
+    distinctFactGroups,
     baselineCases: available.length,
     baselineErrors,
     totalFacts,
@@ -308,6 +366,7 @@ async function run(args) {
     rows.push({
       id: testCase.id,
       partner: testCase.partner,
+      caseType: testCase.caseType,
       question: testCase.question,
       baseline: {
         source: testCase.baseline,
@@ -331,9 +390,11 @@ function printHuman(result) {
   for (const row of result.rows) {
     const baseline = row.baseline.score ? `${row.baseline.score.matched}/${row.baseline.score.total}` : "n/a";
     const candidate = `${row.candidate.score.matched}/${row.candidate.score.total}`;
-    console.log(`- ${row.id}: Raven ${baseline}; candidate ${candidate}; errors=${row.candidate.errors.length}`);
+    console.log(`- ${row.id} [${row.caseType}]: Raven ${baseline}; candidate ${candidate}; errors=${row.candidate.errors.length}`);
   }
   const s = result.summary;
+  console.log(`independent cases: ${s.independentCases}/${s.phase1MinIndependentCases} required`);
+  console.log(`fact groups: ${s.totalFacts} scored, ${s.distinctFactGroups} distinct`);
   console.log(`baseline recall: ${s.baselineRecall === null ? "n/a" : (100 * s.baselineRecall).toFixed(1) + "%"}`);
   console.log(`candidate recall: ${(100 * s.candidateRecall).toFixed(1)}%`);
   console.log(`retrieval admission: ${s.retrievalAdmissionGate}; headline QA: ${s.headlineQaGate}; ${s.shipDecision}`);
@@ -360,6 +421,15 @@ function selfTest() {
   });
   assert.deepEqual(parseSseJson("event: message\ndata: {\"result\":{\"ok\":true}}\n\n"), { result: { ok: true } });
   assert.equal(matchFacts("posted data", [["POST"]]).matched, 0);
+  const winningRow = (caseType) => ({
+    caseType,
+    baseline: { score: { matched: 0, total: 1, recall: 0, detail: [] }, error: null },
+    candidate: { score: { matched: 1, total: 1, recall: 1, detail: [] }, errors: [], allowlistViolations: 0, documents: [] }
+  });
+  const independent = Array.from({ length: PHASE1_MIN_INDEPENDENT_CASES }, () => winningRow("conflict"));
+  assert.equal(summarize(independent).retrievalAdmissionGate, "pass");
+  assert.equal(summarize(independent.slice(1)).retrievalAdmissionGate, "fail");
+  assert.equal(summarize([...independent.slice(1), winningRow("page-derived")]).retrievalAdmissionGate, "fail");
   console.log("partner-docs eval self-test ok");
 }
 

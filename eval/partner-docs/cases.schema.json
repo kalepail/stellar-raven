@@ -12,43 +12,59 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "partner", "question", "baseline", "candidateUrls", "facts"],
+        "required": ["id", "partner", "caseType", "question", "baseline", "candidateUrls", "facts"],
         "properties": {
           "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
           "partner": { "enum": ["alchemy", "openzeppelin"] },
+          "caseType": {
+            "description": "Classifies the information need behind the QUESTION, not the scoring rubric: fact groups in every cohort are still literal strings drawn from the candidate page, so a high candidate score is expected for any case. page-derived questions were written by reading the candidate page; the other three are independent needs and are the only ones counted toward the phase-1 ship gate.",
+            "enum": ["page-derived", "paraphrase", "negative", "conflict"]
+          },
+          "addedAt": { "type": "string", "format": "date" },
+          "provenance": {
+            "description": "Required for independent cases: where the information need came from, so a reviewer can check it was not lifted from the candidate page.",
+            "type": "string",
+            "minLength": 1
+          },
           "question": { "type": "string", "minLength": 1 },
           "baseline": {
-            "oneOf": [
-              {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["type", "id"],
-                "properties": {
-                  "type": { "const": "operation" },
-                  "id": {
-                    "enum": [
-                      "stellarDocs.search_docs",
-                      "stellarDocs.search_rpc_horizon_data_docs",
-                      "stellarDocs.search_sdk_cli_tools_docs"
-                    ]
+            "description": "Sources the current-Raven arm composes in one execute run, union-scored the same way the candidate arm unions candidateUrls. An array because a single call measures arity, not coverage.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["type", "id"],
+                  "properties": {
+                    "type": { "const": "operation" },
+                    "id": {
+                      "enum": [
+                        "stellarDocs.search_docs",
+                        "stellarDocs.search_rpc_horizon_data_docs",
+                        "stellarDocs.search_sdk_cli_tools_docs",
+                        "scout.searchResearch"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["type", "id"],
+                  "properties": {
+                    "type": { "const": "skill" },
+                    "id": {
+                      "enum": [
+                        "skills.openzeppelin-stellar.setup-stellar-contracts",
+                        "skills.openzeppelin-stellar.develop-secure-contracts"
+                      ]
+                    }
                   }
                 }
-              },
-              {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["type", "id"],
-                "properties": {
-                  "type": { "const": "skill" },
-                  "id": {
-                    "enum": [
-                      "skills.openzeppelin-stellar.setup-stellar-contracts",
-                      "skills.openzeppelin-stellar.develop-secure-contracts"
-                    ]
-                  }
-                }
-              }
-            ]
+              ]
+            }
           },
           "candidateUrls": {
             "type": "array",
