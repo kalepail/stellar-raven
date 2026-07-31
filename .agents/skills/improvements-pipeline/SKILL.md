@@ -194,6 +194,18 @@ or when a user asks whether previous improvements were resolved.
    A locally printed URL is not durable evidence until it has been read back from GitHub. Remove or
    correct dangling refs; never describe an unposted draft as a public comment.
 
+   **Check WHO wrote a comment you cite, not just that it resolves.** A comment URL resolving proves
+   the comment exists, not that it says what the evidence line claims. An evidence bullet reading
+   "maintainer triage accepted …" that links one of *our own* comments inverts who validated whom,
+   and it carries that inversion into every issue body generated from the finding. Record the author
+   and the direction: who corrected whom.
+
+   **For byte-exact claims, use `gh api … --jq .body`, not the GitHub MCP `issue_read` tool.** That
+   tool HTML-escapes bodies and strips autolinks and HTML comments, so a lane checking exact text
+   through it will report phantom missing URLs and phantom `&gt;`/`&#39;` entities that are not in
+   the real body. Two such false positives were raised and disproved during the 2026-07-31
+   verification round.
+
    **Silence is the default on untouched open issues.** Do not add reminder, status-chasing,
    backlink-only, recurrence-only, or "still reproducible" comments when there is no indication that
    anyone has attempted to act on the issue. Keep routine recurrences local. Comment only for:
