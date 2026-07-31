@@ -32,6 +32,28 @@ mint/clawback, added muxed payloads, and unified Classic events. Existing
 payment guidance already documents SAC transfer's fourth topic, so the gap is
 one consolidated, accurate schema—not total absence.
 
+## Evidence
+
+**This is a successor to `stellar/stellar-docs#2593`, which was closed correctly.**
+That issue was resolved by PR #2704, which synced the three `StellarAssetInterface`
+doc-comments to their CAP-67 shapes. That work is done, verified live, and not
+being re-litigated here — it was the SDK-copy half, tracked separately and
+already fixed in `rs-soroban-sdk#1956`. What follows is the part of the original
+report that the sync did not reach.
+
+Live recheck 2026-07-31 of
+<https://developers.stellar.org/docs/tokens/token-interface> — the page this
+report is actually about: zero occurrences of `sep0011_asset`, `CAP-67`,
+`clawback`, or `set_authorized`. It still presents generic three-topic
+`transfer` and two-topic `burn`, with nothing indicating that direct SAC events
+carry a trailing SEP-11 asset topic. A reader following that page alone will
+decode a direct SAC event with the generic schema and mis-parse it.
+
+The corrected shapes are now visible on the SAC page, so the information exists
+on the site — but it is split across two pages with no cross-reference, and the
+generic page never signals that a different schema applies. CAP-0067 is the
+normative source for the SAC `transfer`/`burn` shapes and Classic unification.
+
 ## Status as of 2026-07-31
 
 Upstream closed `stellar/stellar-docs#2593` as COMPLETED, but the merged work
@@ -65,10 +87,17 @@ instead of the original issue's.
 
 ## Recommendation
 
-Add an event-schema table distinguishing custom SEP-41 from current SAC/CAP-67
-transfer, mint, burn, and clawback events, including topic counts and data
-payloads. Explain that direct SAC and Classic
-unified events share the SAC schema and require transaction/operation metadata
-to distinguish their path. Cross-link existing payment/event-indexing guidance.
-Correct the same stale mint/clawback comments in `rs-soroban-sdk` `token.rs` or
-the Docs copies will drift again.
+On the generic token-interface page, add an event-schema table distinguishing
+custom SEP-41 from current SAC/CAP-67 `transfer`, `mint`, `burn`, and `clawback`
+events, including topic counts and data payloads. Explain that direct SAC and
+Classic unified events share the SAC schema and require transaction/operation
+metadata to distinguish their path. Cross-link the existing payment and
+event-indexing guidance, and the SAC page that now carries the corrected
+`StellarAssetInterface` comments.
+
+The original report also asked that the stale `mint`/`clawback` comments be
+corrected in `rs-soroban-sdk` `token.rs`, since the Docs copy is generated from
+it and would otherwise re-drift. **That is done** — `rs-soroban-sdk#1956` merged
+2026-07-27 and `stellar-docs#2704` re-synced the embedded copy 2026-07-28, both
+verified live 2026-07-31. It is listed here only so the scope of what remains is
+unambiguous; no further action is needed on that half.
