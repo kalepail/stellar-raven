@@ -1,10 +1,19 @@
 #!/usr/bin/env node
 import { appendFileSync } from "node:fs";
-import { ALLOWED_SERVICES, listFindingFiles, parseFinding } from "./improvements-lib.mjs";
+import { join } from "node:path";
+import { ALLOWED_SERVICES, listFindingFiles, parseFinding, ROOT } from "./improvements-lib.mjs";
+import { parseEnvFile } from "./lib/shared.mjs";
 
 const AUTH_PROBE_HOSTS = {
   LUMENLOOP_API_KEY: "api.lumenloop.com",
 };
+
+// Same .env overlay as scripts/refresh-inventory.mjs and scripts/check-skills-drift.mjs.
+// Without it an authenticated probe reads process.env only, so a developer who has the
+// credential sitting in .env still gets `inconclusive` — which reads identically to "we
+// checked and could not tell". CI passes the credential as a step env var instead, because
+// the drift step deletes .env before this script runs.
+const ENV = { ...parseEnvFile(join(ROOT, ".env")), ...process.env };
 
 const today = new Date().toISOString().slice(0, 10);
 const appendDrafts = process.argv.includes("--append-drafts");
@@ -75,7 +84,7 @@ async function runProbe(probe) {
     if (!expectedHost || target.origin !== `https://${expectedHost}`) {
       throw new Error(`auth probe target is not approved for ${probe.authEnv}`);
     }
-    const token = process.env[probe.authEnv];
+    const token = ENV[probe.authEnv];
     if (!token) {
       return {
         ok: false,

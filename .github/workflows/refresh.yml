@@ -306,7 +306,14 @@ jobs:
               fi
             } > drift-report.md
           fi
+      # The credential comes in as a step env var, not from .env: the drift step above
+      # deletes .env before this runs. Without it every authenticated probe reports
+      # `inconclusive (missing host credential …)`, which is indistinguishable in the log
+      # from a probe that ran and could not decide — so the recurrence lane looks alive
+      # while silently never probing.
       - name: run improvement recurrence probes
+        env:
+          LUMENLOOP_API_KEY: ${{ secrets.LUMENLOOP_API_KEY }}
         run: npm run improvements:probes
       - name: open or update drift issue
         if: always() && steps.drift.outputs.drift == 'true'
