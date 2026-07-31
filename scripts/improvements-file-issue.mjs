@@ -44,12 +44,30 @@ if (args.renderBodyFile) {
   process.exit(0);
 }
 
+// The dedupe guard and the lint's "a cited GitHub URL implies a filing" rule are both correct,
+// but together they deadlock one real case: a finding that WAS filed, whose issue then closed
+// covering something else, and whose residual now needs a fresh report. It cannot stay
+// reported-upstream (the filer refuses) and it cannot drop to verified (the lint refuses).
+// --successor-to records the dedupe judgement the guard is already asking for, instead of a
+// blanket --force: it must name a ref this finding actually cites, so it can only ever supersede
+// a report already on the record, never open an unrelated duplicate.
 if (["reported-upstream", "declined-upstream", "fixed-upstream"].includes(finding.frontmatter.status)) {
-  console.error(
-    `${finding.frontmatter.id}: status is ${finding.frontmatter.status}; dedupe and live-recheck before filing a new issue`,
-  );
-  console.error("Use --dry-run or --render-body-file to inspect the issue body without posting.");
-  process.exit(2);
+  if (!args.successorTo) {
+    console.error(
+      `${finding.frontmatter.id}: status is ${finding.frontmatter.status}; dedupe and live-recheck before filing a new issue`,
+    );
+    console.error("If the cited report closed without covering this finding, pass --successor-to <that issue/PR URL>.");
+    console.error("Use --dry-run or --render-body-file to inspect the issue body without posting.");
+    process.exit(2);
+  }
+  const cited = (finding.frontmatter.evidence ?? []).some((entry) => String(entry).includes(args.successorTo));
+  if (!cited) {
+    console.error(
+      `${finding.frontmatter.id}: --successor-to ${args.successorTo} is not cited in this finding's evidence`,
+    );
+    console.error("A successor may only supersede a report this finding already records.");
+    process.exit(2);
+  }
 }
 
 const dir = mkdtempSync(path.join(tmpdir(), "improvement-issue-"));
@@ -218,6 +236,7 @@ function parseArgs(argv) {
     else if (arg === "--file") out.file = argv[++i];
     else if (arg === "--repo") out.repo = argv[++i];
     else if (arg === "--render-body-file") out.renderBodyFile = argv[++i];
+    else if (arg === "--successor-to") out.successorTo = argv[++i];
   }
   return out;
 }

@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -87,6 +87,66 @@ describe("improvements issue filing template", () => {
       new RegExp(`^# [^\\n]+\\n\\n${marker}\\n\\n> \\[!NOTE\\]\\n> \\*\\*Automated notice:\\*\\* `),
     );
     expect(output.indexOf(marker)).toBeLessThan(output.indexOf("## Finding"));
+  });
+
+  test("a successor filing may only supersede a ref the finding already cites", () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "improvement-successor-test-"));
+    try {
+      const finding = path.join(dir, "sd-997-successor.md");
+      writeFileSync(
+        finding,
+        `---
+id: sd-997
+service: stellar-docs
+status: reported-upstream
+discovered: 2026-07-14
+upstreamTitle: Supersede a closed report that covered something else
+evidence:
+  - filed upstream: https://github.com/stellar/stellar-docs/issues/1234
+---
+
+## Finding
+
+The cited report closed without covering this residual.
+
+## Recommendation
+
+File a successor rather than reopening it.
+`,
+      );
+      const run = (extra: string[]) =>
+        spawnSync(
+          process.execPath,
+          [
+            "scripts/improvements-file-issue.mjs",
+            "--file",
+            finding,
+            "--repo",
+            "stellar/stellar-docs",
+            ...extra,
+          ],
+          { cwd: ROOT, encoding: "utf8" },
+        );
+
+      // reported-upstream still refuses by default — the dedupe guard is the point
+      expect(run([]).status).toBe(2);
+
+      // a ref this finding never cited cannot be superseded, so the flag is not a blanket force
+      expect(
+        run(["--successor-to", "https://github.com/stellar/stellar-docs/issues/9999"]).status,
+      ).toBe(2);
+
+      // the cited ref is accepted
+      const ok = run([
+        "--successor-to",
+        "https://github.com/stellar/stellar-docs/issues/1234",
+        "--dry-run",
+      ]);
+      expect(ok.status).toBe(0);
+      expect(ok.stdout).toMatch(/^# Supersede a closed report that covered something else$/m);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 
   test("omits an immutable snapshot when no matching committed blob exists", () => {
