@@ -20,7 +20,9 @@ in a networkless Dynamic Worker; host adapters own all service traffic, policy, 
 
 ## Commands and verification
 
-- Install reproducibly: `npm ci`.
+- Install reproducibly: `npm ci`. On a fresh clone also run `npm run typegen` once — `env.d.ts` is
+  generated and gitignored, so `npm run typecheck` reports spurious `Env` errors without it (CI
+  does this for you; a contributor reading only the list below will not).
 - Baseline validation for code changes: `npm run typecheck`, `npm test`, and `npm run build`.
   `npm test` excludes `test/smoke/**`; add `npm run test:smoke` when touching `src/executor` or
   `src/demo` — it is the only lane exercising those paths against the assembled worker
