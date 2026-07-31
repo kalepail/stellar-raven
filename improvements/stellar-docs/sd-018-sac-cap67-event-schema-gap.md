@@ -3,7 +3,7 @@ id: sd-018
 service: stellar-docs
 status: reported-upstream
 discovered: 2026-07-11
-upstreamTitle: Document the SAC and CAP-67 asset event schema
+upstreamTitle: Distinguish generic SEP-41 from current SAC/CAP-67 asset events in one schema
 evidence:
   - token-interface page presents generic SEP-41 transfer/mint topic shapes
   - released/current rs-soroban-env appends sep0011_asset to direct SAC events; transfer has four topics, while mint/burn/clawback have three topics with the asset last
@@ -52,6 +52,16 @@ stays active with its scope narrowed to what genuinely did not ship:
 
 A successor upstream report should name that residual directly rather than
 reopening 2593, whose thread is now about the doc-comment sync.
+
+Read the `reported-upstream` status with that in mind. It is historically true —
+this was filed, as 2593 — but **both** refs on this record are now closed, and
+they closed covering the `sd-038` half, so no owner is currently tracking the
+residual above. The status cannot be walked back to `verified` while those refs
+are cited (the lint enforces that citing an upstream URL implies a filing, which
+is the right invariant), so the honest resolution is to make the status true
+again by filing the successor rather than by relabelling. `upstreamTitle` is
+already retitled to the residual so a filing generates the successor's heading
+instead of the original issue's.
 
 ## Recommendation
 
