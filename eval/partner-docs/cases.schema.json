@@ -12,10 +12,20 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "partner", "question", "baseline", "candidateUrls", "facts"],
+        "required": ["id", "partner", "caseType", "question", "baseline", "candidateUrls", "facts"],
         "properties": {
           "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
           "partner": { "enum": ["alchemy", "openzeppelin"] },
+          "caseType": {
+            "description": "page-derived cases were written by reading the candidate page. The other three are independent information needs and are the only ones that count toward the phase-1 ship gate.",
+            "enum": ["page-derived", "paraphrase", "negative", "conflict"]
+          },
+          "addedAt": { "type": "string", "format": "date" },
+          "provenance": {
+            "description": "Required for independent cases: where the information need came from, so a reviewer can check it was not lifted from the candidate page.",
+            "type": "string",
+            "minLength": 1
+          },
           "question": { "type": "string", "minLength": 1 },
           "baseline": {
             "oneOf": [

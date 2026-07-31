@@ -2,11 +2,12 @@
   "$schema": "./cases.schema.json",
   "contract": "partner-docs-retrieval-v1",
   "authoredAt": "2026-07-09",
-  "note": "Hand-authored retrieval cases for todo 910. This is a diagnostic spike lane, not a headline QA gate and not a production routing map.",
+  "note": "Hand-authored retrieval cases for todo 910 / issue #18. This is a diagnostic spike lane, not a headline QA gate and not a production routing map. The eight `page-derived` cases are the 2026-07-09 cohort; the four independent paraphrase/negative/conflict cases added 2026-07-31 are the ones the phase-1 ship gate counts.",
   "cases": [
     {
       "id": "alchemy-stellar-data-overview",
       "partner": "alchemy",
+      "caseType": "page-derived",
       "question": "Is Alchemy's Stellar Data API live, what data does it index, and how does pagination work?",
       "baseline": { "type": "operation", "id": "stellarDocs.search_rpc_horizon_data_docs" },
       "candidateUrls": [
@@ -26,6 +27,7 @@
     {
       "id": "alchemy-stellar-transfers",
       "partner": "alchemy",
+      "caseType": "page-derived",
       "question": "How do I query Alchemy for Stellar transfer history across native, classic, and Soroban assets?",
       "baseline": { "type": "operation", "id": "stellarDocs.search_rpc_horizon_data_docs" },
       "candidateUrls": [
@@ -45,6 +47,7 @@
     {
       "id": "alchemy-stellar-balances",
       "partner": "alchemy",
+      "caseType": "page-derived",
       "question": "How does Alchemy's Stellar balances endpoint combine XLM, trustline assets, and Soroban tokens?",
       "baseline": { "type": "operation", "id": "stellarDocs.search_rpc_horizon_data_docs" },
       "candidateUrls": [
@@ -64,6 +67,7 @@
     {
       "id": "alchemy-stellar-rpc-quickstart",
       "partner": "alchemy",
+      "caseType": "page-derived",
       "question": "What is the first JSON-RPC request for Alchemy's Stellar RPC and what endpoint does it use?",
       "baseline": { "type": "operation", "id": "stellarDocs.search_docs" },
       "candidateUrls": [
@@ -83,6 +87,7 @@
     {
       "id": "openzeppelin-stellar-suite",
       "partner": "openzeppelin",
+      "caseType": "page-derived",
       "question": "What is in the current OpenZeppelin Stellar smart-contract suite?",
       "baseline": { "type": "skill", "id": "skills.openzeppelin-stellar.setup-stellar-contracts" },
       "candidateUrls": [
@@ -102,6 +107,7 @@
     {
       "id": "openzeppelin-smart-account",
       "partner": "openzeppelin",
+      "caseType": "page-derived",
       "question": "How do OpenZeppelin Stellar smart accounts compose context rules, signers, verifiers, and policies?",
       "baseline": { "type": "skill", "id": "skills.openzeppelin-stellar.setup-stellar-contracts" },
       "candidateUrls": [
@@ -121,6 +127,7 @@
     {
       "id": "openzeppelin-stellar-rwa",
       "partner": "openzeppelin",
+      "caseType": "page-derived",
       "question": "How does OpenZeppelin's Stellar RWA suite implement regulated security tokens and identity checks?",
       "baseline": { "type": "skill", "id": "skills.openzeppelin-stellar.develop-secure-contracts" },
       "candidateUrls": [
@@ -140,6 +147,7 @@
     {
       "id": "openzeppelin-stellar-relayer",
       "partner": "openzeppelin",
+      "caseType": "page-derived",
       "question": "What do the current OpenZeppelin Relayer docs say about Stellar sponsored transactions and fee-token policy?",
       "baseline": { "type": "operation", "id": "stellarDocs.search_sdk_cli_tools_docs" },
       "candidateUrls": [
@@ -154,6 +162,97 @@
         ["classic Stellar assets", "credit_alphanum4"],
         ["Soroban token support will be available", "future release"],
         ["concurrent_transactions"]
+      ]
+    },
+    {
+      "id": "alchemy-stellar-nfts-filter-exclusivity",
+      "partner": "alchemy",
+      "caseType": "negative",
+      "addedAt": "2026-07-31",
+      "provenance": "An API-usage constraint question, not a page summary: an agent writing a first integration naturally tries to narrow an NFT query by Soroban contract and classic asset at once. The correct answer is a refusal the partner documents and no Stellar-side source states.",
+      "question": "Can one Alchemy Stellar NFT request filter by a Soroban contract id and a classic asset code at the same time, and what page size and cursor rules apply?",
+      "baseline": { "type": "operation", "id": "stellarDocs.search_rpc_horizon_data_docs" },
+      "candidateUrls": [
+        "https://www.alchemy.com/docs/data/stellar-data-api/stellar-data-api-endpoints/nf-ts/get-stellar-nfts.md"
+      ],
+      "facts": [
+        ["/data/stellar/nfts"],
+        ["mutually exclusive", "Setting both is rejected"],
+        ["contractId"],
+        ["assetIssuer"],
+        ["asOfLedger"],
+        ["Invalid pageKey"],
+        ["Max holdings per page"],
+        ["Bearer"]
+      ]
+    },
+    {
+      "id": "alchemy-data-api-versus-rpc-product-split",
+      "partner": "alchemy",
+      "caseType": "conflict",
+      "addedAt": "2026-07-31",
+      "provenance": "The conflation risk named in research/partner-doc-source-onboarding.md: Alchemy ships two distinct Stellar products. A source that blends them answers with the wrong host, auth scheme, and protocol. The case requires holding both apart.",
+      "question": "Alchemy has both a Stellar RPC endpoint and a Stellar Data API — which one serves indexed history, and are they the same host and protocol?",
+      "baseline": { "type": "operation", "id": "stellarDocs.search_docs" },
+      "candidateUrls": [
+        "https://www.alchemy.com/docs/reference/stellar-data-api-overview.md",
+        "https://www.alchemy.com/docs/data/stellar-data-api/stellar-data-api-endpoints/transfers/get-stellar-transfers.md",
+        "https://www.alchemy.com/docs/reference/stellar-api-quickstart.md"
+      ],
+      "facts": [
+        ["Looking for Stellar JSON-RPC methods instead"],
+        ["api.g.alchemy.com"],
+        ["stellar-mainnet.g.alchemy.com"],
+        ["/v2/"],
+        ["without running your own indexer"],
+        ["getLatestLedger"],
+        ["results under a data envelope", "data envelope"],
+        ["pageKey"]
+      ]
+    },
+    {
+      "id": "openzeppelin-fee-abstraction-token-fees",
+      "partner": "openzeppelin",
+      "caseType": "paraphrase",
+      "addedAt": "2026-07-31",
+      "provenance": "A product-capability question phrased the way a dapp team asks it (\"can my users pay in USDC?\"), covering an OpenZeppelin package that none of the three mirrored skills document.",
+      "question": "Can my users pay Stellar transaction fees in USDC instead of XLM using OpenZeppelin, and what stops a relayer from charging more than they agreed to?",
+      "baseline": { "type": "skill", "id": "skills.openzeppelin-stellar.develop-secure-contracts" },
+      "candidateUrls": [
+        "https://raw.githubusercontent.com/OpenZeppelin/docs/f304ed55579dedf7ee0d2cc46982cca67c48e700/content/stellar-contracts/fee-abstraction.mdx"
+      ],
+      "facts": [
+        ["FeeForwarder"],
+        ["max_fee_amount"],
+        ["collect_fee_and_invoke"],
+        ["Lazy"],
+        ["Eager"],
+        ["set_allowed_fee_token"],
+        ["sweep_token"],
+        ["simulate the transaction off-chain"]
+      ]
+    },
+    {
+      "id": "openzeppelin-sponsored-fee-token-scope-conflict",
+      "partner": "openzeppelin",
+      "caseType": "conflict",
+      "addedAt": "2026-07-31",
+      "provenance": "A live scope conflict between two first-party OpenZeppelin surfaces: the fee-abstraction package allowlists arbitrary fungible fee tokens, while Relayer 1.4.x supports only classic assets for sponsored transactions today. Answering from either page alone is wrong; the pinned skill mirror carries neither.",
+      "question": "If I run OpenZeppelin Relayer on Stellar today, can a Soroban token be used as the fee token for sponsored transactions, or only classic assets?",
+      "baseline": { "type": "skill", "id": "skills.openzeppelin-stellar.setup-stellar-contracts" },
+      "candidateUrls": [
+        "https://raw.githubusercontent.com/OpenZeppelin/docs/f304ed55579dedf7ee0d2cc46982cca67c48e700/content/stellar-contracts/fee-abstraction.mdx",
+        "https://raw.githubusercontent.com/OpenZeppelin/docs/f304ed55579dedf7ee0d2cc46982cca67c48e700/content/relayer/1.4.x/stellar.mdx"
+      ],
+      "facts": [
+        ["only classic Stellar assets"],
+        ["credit_alphanum4"],
+        ["credit_alphanum12"],
+        ["Soroban token support will be available"],
+        ["future release"],
+        ["fee_payment_strategy"],
+        ["allowed_tokens"],
+        ["set_allowed_fee_token"]
       ]
     }
   ]

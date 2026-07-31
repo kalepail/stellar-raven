@@ -18,6 +18,16 @@ const CASES_PATH = resolve(ROOT, "eval/partner-docs/cases.json");
 const MAX_DOC_BYTES = 256 * 1024;
 const DEFAULT_TIMEOUT_MS = 8_000;
 
+/**
+ * Phase 1 of the ship gate in research/partner-doc-source-onboarding.md requires the original
+ * page-derived cohort to be expanded with at least four INDEPENDENT cases whose information need
+ * did not come from reading the candidate page. Counting them here makes that half of the gate a
+ * code check instead of a prose promise: a suite that has not been expanded cannot report `pass`.
+ */
+export const PHASE1_MIN_INDEPENDENT_CASES = 4;
+const CASE_TYPES = new Set(["page-derived", "paraphrase", "negative", "conflict"]);
+const INDEPENDENT_CASE_TYPES = new Set(["paraphrase", "negative", "conflict"]);
+
 const OPERATION_CALLS = new Map([
   ["stellarDocs.search_docs", "stellarDocs.search_docs"],
   ["stellarDocs.search_rpc_horizon_data_docs", "stellarDocs.search_rpc_horizon_data_docs"],
@@ -222,6 +232,11 @@ export function validateSuite(suite) {
   for (const testCase of suite.cases) {
     if (typeof testCase.id !== "string" || ids.has(testCase.id)) throw new Error(`invalid or duplicate case id: ${testCase.id}`);
     ids.add(testCase.id);
+    if (!CASE_TYPES.has(testCase.caseType)) throw new Error(`invalid caseType: ${testCase.id}`);
+    if (INDEPENDENT_CASE_TYPES.has(testCase.caseType)
+      && (typeof testCase.provenance !== "string" || !testCase.provenance.trim())) {
+      throw new Error(`independent case needs provenance: ${testCase.id}`);
+    }
     if (typeof testCase.question !== "string" || !testCase.question.trim()) throw new Error(`missing question: ${testCase.id}`);
     if (!Array.isArray(testCase.facts) || testCase.facts.length === 0 || testCase.facts.some((group) => !Array.isArray(group) || group.length === 0)) {
       throw new Error(`invalid facts: ${testCase.id}`);
@@ -249,6 +264,7 @@ export function summarize(rows) {
   const promptSignalCount = rows.reduce((sum, row) => sum + row.candidate.documents.reduce((n, doc) => n + doc.promptSignals.length, 0), 0);
   const baselineRecall = baselineFacts ? baselineMatched / baselineFacts : null;
   const candidateRecall = totalFacts ? candidateMatched / totalFacts : 0;
+  const independentCases = rows.filter((row) => INDEPENDENT_CASE_TYPES.has(row.caseType)).length;
   const retrievalGate = baselineErrors > 0 || available.length !== rows.length
     ? "inconclusive"
     : candidateRecall >= baselineRecall + 0.20
@@ -256,10 +272,13 @@ export function summarize(rows) {
       && regressions === 0
       && fetchErrors === 0
       && allowlistViolations === 0
+      && independentCases >= PHASE1_MIN_INDEPENDENT_CASES
         ? "pass"
         : "fail";
   return {
     cases: rows.length,
+    independentCases,
+    phase1MinIndependentCases: PHASE1_MIN_INDEPENDENT_CASES,
     baselineCases: available.length,
     baselineErrors,
     totalFacts,
@@ -308,6 +327,7 @@ async function run(args) {
     rows.push({
       id: testCase.id,
       partner: testCase.partner,
+      caseType: testCase.caseType,
       question: testCase.question,
       baseline: {
         source: testCase.baseline,
@@ -331,9 +351,10 @@ function printHuman(result) {
   for (const row of result.rows) {
     const baseline = row.baseline.score ? `${row.baseline.score.matched}/${row.baseline.score.total}` : "n/a";
     const candidate = `${row.candidate.score.matched}/${row.candidate.score.total}`;
-    console.log(`- ${row.id}: Raven ${baseline}; candidate ${candidate}; errors=${row.candidate.errors.length}`);
+    console.log(`- ${row.id} [${row.caseType}]: Raven ${baseline}; candidate ${candidate}; errors=${row.candidate.errors.length}`);
   }
   const s = result.summary;
+  console.log(`independent cases: ${s.independentCases}/${s.phase1MinIndependentCases} required`);
   console.log(`baseline recall: ${s.baselineRecall === null ? "n/a" : (100 * s.baselineRecall).toFixed(1) + "%"}`);
   console.log(`candidate recall: ${(100 * s.candidateRecall).toFixed(1)}%`);
   console.log(`retrieval admission: ${s.retrievalAdmissionGate}; headline QA: ${s.headlineQaGate}; ${s.shipDecision}`);
@@ -360,6 +381,15 @@ function selfTest() {
   });
   assert.deepEqual(parseSseJson("event: message\ndata: {\"result\":{\"ok\":true}}\n\n"), { result: { ok: true } });
   assert.equal(matchFacts("posted data", [["POST"]]).matched, 0);
+  const winningRow = (caseType) => ({
+    caseType,
+    baseline: { score: { matched: 0, total: 1, recall: 0, detail: [] }, error: null },
+    candidate: { score: { matched: 1, total: 1, recall: 1, detail: [] }, errors: [], allowlistViolations: 0, documents: [] }
+  });
+  const independent = Array.from({ length: PHASE1_MIN_INDEPENDENT_CASES }, () => winningRow("conflict"));
+  assert.equal(summarize(independent).retrievalAdmissionGate, "pass");
+  assert.equal(summarize(independent.slice(1)).retrievalAdmissionGate, "fail");
+  assert.equal(summarize([...independent.slice(1), winningRow("page-derived")]).retrievalAdmissionGate, "fail");
   console.log("partner-docs eval self-test ok");
 }
 

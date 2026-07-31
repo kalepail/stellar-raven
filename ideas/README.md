@@ -14,6 +14,9 @@ Research notes and possible future work that are not committed product plans.
   agent-visible metadata or a measured experiment rather than a default ranking boost.
 - [Direct Stellar.org Source Coverage](./stellar-org-source-lane.md) — revisit the held
   `stellarOrg` root-service proposal only after its dated review or explicit source-gap trigger.
+- [Live Ecosystem-Partner Documentation](./partner-doc-live-sources.md) — why partner MCP servers
+  are not a docs source, why allowlisted first-party partner Markdown is, and the four-phase gate
+  that keeps it held.
 - [ChatGPT Subscription Login for `/playground`](./playground-chatgpt-subscription-login.md) —
   optional user-funded playground inference via ChatGPT/Codex OAuth, with hosted-token custody,
   consistency, budget, and upstream-support gates recorded before any spike.

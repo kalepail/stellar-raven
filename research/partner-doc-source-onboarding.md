@@ -3,6 +3,12 @@
 _Todo 910 / GitHub issue #18 design-and-measure spike. Evidence fetched 2026-07-09 through
 2026-07-10. Decision: retain a bounded harness and design; do not add a runtime adapter yet._
 
+_Updated 2026-07-31: the four independent cases phase 1 asked for were authored, the floor is now
+enforced in the harness rather than promised here, and the candidate arm was re-measured. The
+decision is unchanged — see the phase 1 note below for what the re-measurement does and does not
+establish. The held-lane record, with its dated review and reopen triggers, is
+[`ideas/partner-doc-live-sources.md`](../ideas/partner-doc-live-sources.md)._
+
 ## Decision
 
 Public partner Markdown is a credible fourth **authority class**, but arbitrary MCP federation is
@@ -219,6 +225,16 @@ The current harness is phase zero. A runtime change may ship only after every ph
    improve by at least 20 percentage points, win at least three cases, regress zero cases, return
    only allowlisted cited URLs, and have zero fetch/policy errors. The 2026-07-10 run passes this
    phase on the original eight only (+87.5 points, eight wins, zero regressions).
+
+   *2026-07-31:* the four independent cases now exist (one paraphrase, one negative, two conflict —
+   including a live scope conflict between two first-party OpenZeppelin surfaces), and the
+   four-case floor moved out of this paragraph and into `summarize()`
+   (`PHASE1_MIN_INDEPENDENT_CASES`), where a suite that has not been expanded cannot report `pass`
+   and page-derived cases cannot backfill the count. The candidate arm scored 95/96 (99.0%) over
+   the 12 cases with zero fetch, allowlist, or prompt-signal violations, and the original cohort
+   reproduced 63/64 exactly. **Phase 1 is still unmet:** that run had no local Raven, so the
+   baseline arm did not execute and the gate is `inconclusive`, not `pass`. It needs one paired
+   `--raven-url` run over all 12 cases.
 2. **Reliability:** at least 100 read-only probes across cold/warm cache and both partners over a
    24-hour window: >=99% success, p95 live-fetch <=1 second, zero redirect/type/size violations,
    and verified 304/stale-if-error behavior. Not run.
@@ -238,6 +254,7 @@ work through this bounded general mechanism, not a bespoke query hack and not pa
 ## Sources
 
 - [Raven issue #18](https://github.com/kalepail/stellar-raven/issues/18)
+- [Held-lane record with dated review and reopen triggers](../ideas/partner-doc-live-sources.md)
 - [stellar/stellar-docs PR #2573](https://github.com/stellar/stellar-docs/pull/2573)
 - [PR #2573 patch](https://patch-diff.githubusercontent.com/raw/stellar/stellar-docs/pull/2573.patch)
 - [Alchemy root llms.txt](https://www.alchemy.com/docs/llms.txt)

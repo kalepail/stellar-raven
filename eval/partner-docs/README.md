@@ -49,3 +49,53 @@ arm did not get an answering agent or multi-query recovery, one run does not est
 and the narrow prompt-signal scanner is not a security proof. The paired end-to-end QA, resilience,
 drift, and security gates in `research/partner-doc-source-onboarding.md` remain unrun, so the harness
 reports `headlineQaGate: not-run` and `shipDecision: do-not-ship-runtime-adapter`.
+
+## Case cohorts and the phase-1 floor
+
+Every case carries a `caseType`. `page-derived` marks the 2026-07-09 cohort, written by reading the
+candidate page — the weakness the ship gate calls out by name. `paraphrase`, `negative`, and
+`conflict` mark **independent** cases, whose information need came from somewhere other than the
+candidate page; each records that origin in `provenance` so a reviewer can check the claim instead
+of trusting it.
+
+Phase 1 asks for at least four independent cases. That floor is now enforced in
+`summarize()` (`PHASE1_MIN_INDEPENDENT_CASES`), not just written down here: a suite that has not
+been expanded reports `fail`, and page-derived cases cannot backfill the count. `npm test` also
+asserts the committed suite stays above the floor and keeps all three independent kinds present.
+
+## 2026-07-31 expansion and candidate re-measurement
+
+Four independent cases were added, taking the suite to 12 cases / 96 fact groups:
+
+| Case | Kind | Why it is independent |
+| --- | --- | --- |
+| `alchemy-stellar-nfts-filter-exclusivity` | negative | The correct answer is a refusal — `contractId` and `assetCode`/`assetIssuer` are mutually exclusive — that no Stellar-side source states. |
+| `alchemy-data-api-versus-rpc-product-split` | conflict | The two-product conflation this lane's design doc warns about: different host, auth scheme, and protocol. |
+| `openzeppelin-fee-abstraction-token-fees` | paraphrase | A dapp-team capability question about a package none of the three mirrored skills document. |
+| `openzeppelin-sponsored-fee-token-scope-conflict` | conflict | Two first-party OpenZeppelin surfaces with different scopes; answering from either alone is wrong. |
+
+Candidate-arm run `2026-07-31T14:26:33.718Z`, 15 documents / 144,396 bytes fetched:
+
+| Cohort | Candidate docs |
+| --- | ---: |
+| Eight page-derived cases | 63/64 (98.4%) |
+| Four independent cases | 32/32 (100%) |
+| **Total** | **95/96 (99.0%)** |
+
+Zero fetch errors, zero allowlist violations, zero prompt-signal matches. Median document fetch
+47.3 ms, p95 480 ms — measured over a larger and more multi-page document set than the eight-case
+run above, so the two p95 figures are not comparable.
+
+The page-derived cohort reproduced its 2026-07-10 score **exactly**, 21 days later, with every
+pinned and unpinned URL still resolving. That is a stability observation about the sources, not
+evidence for shipping.
+
+**This run does not advance the gate.** No local Raven was available, so the baseline arm did not
+run: `baselineCases: 0` and the gate is `inconclusive` by design, never a silently shrunken
+comparison. Phase 1 stays unmet until someone re-runs the paired arms with
+`--raven-url` over all 12 cases. Phases 2–4 remain unrun.
+
+One limitation worth stating plainly: a literal fact matcher can only show that both sides of a
+`conflict` case are *retrievable*. Whether an answering agent keeps them apart — rather than
+merging them into one synthetic claim — is exactly what phase 3 measures, and this harness cannot
+stand in for it.
