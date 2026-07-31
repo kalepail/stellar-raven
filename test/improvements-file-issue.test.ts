@@ -6,39 +6,76 @@ import { describe, expect, test } from "vitest";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 
+// These two assertions are about the TEMPLATE, not about any particular finding, so they run
+// against a fixture. Pointing them at a live finding file coupled the suite to the improvements
+// queue: retiring that finding — the normal, expected end of its lifecycle — turned the build red
+// for a reason that had nothing to do with the template.
+function withFixtureFinding<T>(body: (findingPath: string) => T): T {
+  const dir = mkdtempSync(path.join(tmpdir(), "improvement-template-test-"));
+  try {
+    const finding = path.join(dir, "sd-998-template-fixture.md");
+    writeFileSync(
+      finding,
+      `---
+id: sd-998
+service: stellar-docs
+status: verified
+discovered: 2026-07-14
+upstreamTitle: Correct multi-entry ExtendFootprintTTLOp guidance
+evidence:
+  - isolated template fixture
+---
+
+## Finding
+
+A reader-first upstream title must become the issue heading.
+
+## Recommendation
+
+Use the upstreamTitle, never the bare finding id.
+`,
+    );
+    return body(finding);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
 describe("improvements issue filing template", () => {
   test("uses an explicit reader-first upstream title for an unreported finding", () => {
-    const finding = "improvements/stellar-docs/sd-019-extend-footprint-multiple-entry-wording.md";
-    const output = execFileSync(
-      process.execPath,
-      [
-        "scripts/improvements-file-issue.mjs",
-        "--file",
-        finding,
-        "--repo",
-        "stellar/stellar-docs",
-        "--dry-run",
-      ],
-      { cwd: ROOT, encoding: "utf8" },
+    const output = withFixtureFinding((finding) =>
+      execFileSync(
+        process.execPath,
+        [
+          "scripts/improvements-file-issue.mjs",
+          "--file",
+          finding,
+          "--repo",
+          "stellar/stellar-docs",
+          "--dry-run",
+        ],
+        { cwd: ROOT, encoding: "utf8" },
+      ),
     );
 
     expect(output).toMatch(/^# Correct multi-entry ExtendFootprintTTLOp guidance$/m);
-    expect(output).not.toMatch(/^# sd-019:/m);
+    expect(output).not.toMatch(/^# sd-998:/m);
   });
 
   test("opens with a visible automation disclaimer and durable marker", () => {
-    const finding = "improvements/stellar-docs/sd-019-extend-footprint-multiple-entry-wording.md";
-    const output = execFileSync(
-      process.execPath,
-      [
-        "scripts/improvements-file-issue.mjs",
-        "--file",
-        finding,
-        "--repo",
-        "stellar/stellar-docs",
-        "--dry-run",
-      ],
-      { cwd: ROOT, encoding: "utf8" },
+    const output = withFixtureFinding((finding) =>
+      execFileSync(
+        process.execPath,
+        [
+          "scripts/improvements-file-issue.mjs",
+          "--file",
+          finding,
+          "--repo",
+          "stellar/stellar-docs",
+          "--dry-run",
+        ],
+        { cwd: ROOT, encoding: "utf8" },
+      ),
     );
 
     const marker = "<!-- generated-by-stellar-raven -->";
