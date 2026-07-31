@@ -71,7 +71,8 @@ a synthetic fact, and never resolved by letting the newer timestamp silently win
   construction — a missing baseline never shrinks the denominator quietly.
 - **The issue's concrete example healed from two directions at once.** Alchemy's Stellar Data API
   was missing from the official docs when the issue was filed; the same gap was tracked as
-  `sd-010`, and `stellar/stellar-docs#2573` merged and was live-verified on 2026-07-15. In
+  `sd-010`, and `stellar/stellar-docs#2573` merged on 2026-07-14 and was live-verified on
+  2026-07-15. In
   parallel, [stellarlight#446](https://github.com/Stellar-Light/stellarlight/pull/446) (merged
   2026-07-10) corrected the ecosystem `alchemy` record to name both products and add the `Indexer`
   type — four days *before* `#2573` merged, grounded in the language SDF was then merging. The
@@ -79,13 +80,20 @@ a synthetic fact, and never resolved by letting the newer timestamp silently win
 
   The systemic point survives it: both fixes took humans noticing, filing, and shipping, which is
   exactly the cadence problem the issue names.
-- **This hold is corroborated, not novel.**
+- **This hold is partly corroborated — but read the overlap precisely, because it is narrower
+  than it first looks.**
   [stellarlight#448](https://github.com/Stellar-Light/stellarlight/pull/448) (merged 2026-07-10)
-  reached the same "no" on the same grounds three weeks earlier — provider reference docs are
-  already agent-readable at source, a corpus copy goes stale and duplicates what the provider
-  serves — and chose "the structured record plus a first-class pointer to the living source" over
-  ingestion. Two independent analyses converging is the strongest evidence here; it also means
-  this record should not be read as a new finding.
+  answered "should we ingest partner docs?" with NO, on the grounds that provider reference docs
+  are already agent-readable at source (Alchemy ships `llms.txt`) and "a corpus copy would go
+  stale and duplicate what the provider serves", choosing "the structured record + a first-class
+  pointer to the living source" instead.
+
+  That is corroboration for declining **ingestion**, and this lane declines ingestion too. It is
+  *not* corroboration for declining the mechanism actually held here: request-time allowlisted
+  fetch under serve-do-not-store is not a corpus copy, so #448's staleness objection does not
+  reach it — if anything that design sits nearer to what #448 *chose* than to what it rejected.
+  Treat #448 as an independent "no" to the copy, not as a second vote against this lane, and do
+  not cite it as though two analyses converged on the same question.
 - **The residue is already being measured upstream — but ingestion is not retrieval.** Partner-side
   movement that reaches official docs is caught by the improvements pipeline, and
   `check-skills-drift` detects upstream skill drift. More directly, the Stellar Light upstream

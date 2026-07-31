@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
@@ -89,9 +89,33 @@ describe("improvements issue filing template", () => {
     expect(output.indexOf(marker)).toBeLessThan(output.indexOf("## Finding"));
   });
 
-  test("a successor filing may only supersede a ref the finding already cites", () => {
+  // This guards a PUBLIC-WRITE boundary, so the test must never be able to reach real `gh`.
+  // A stub `gh` is prepended to PATH: it answers the state query the guard makes and exits 42
+  // for anything else, so "did we reach the filing call?" is observable and a regression posts
+  // nothing. The first version of this test used --dry-run for the accept case, which exits
+  // BEFORE the guard runs and therefore asserted nothing at all.
+  function withSuccessorFixture<T>(
+    body: (ctx: {
+      run: (extra: string[], citedState?: string) => ReturnType<typeof spawnSync>;
+      findingPath: string;
+      stubPath: string;
+    }) => T,
+  ): T {
     const dir = mkdtempSync(path.join(tmpdir(), "improvement-successor-test-"));
     try {
+      const bin = path.join(dir, "bin");
+      mkdirSync(bin);
+      writeFileSync(
+        path.join(bin, "gh"),
+        `#!/bin/sh
+# stub gh: answer the successor state probe, refuse to do anything else
+if [ "$1" = "issue" ] && [ "$2" = "view" ]; then echo "\${STUB_STATE-CLOSED}"; exit 0; fi
+if [ "$1" = "pr" ] && [ "$2" = "view" ]; then echo "\${STUB_STATE-CLOSED}"; exit 0; fi
+echo "STUB_GH_REACHED_FILING $*" >&2
+exit 42
+`,
+        { mode: 0o755 },
+      );
       const finding = path.join(dir, "sd-997-successor.md");
       writeFileSync(
         finding,
@@ -114,7 +138,7 @@ The cited report closed without covering this residual.
 File a successor rather than reopening it.
 `,
       );
-      const run = (extra: string[]) =>
+      const run = (extra: string[], citedState = "CLOSED") =>
         spawnSync(
           process.execPath,
           [
@@ -125,27 +149,189 @@ File a successor rather than reopening it.
             "stellar/stellar-docs",
             ...extra,
           ],
-          { cwd: ROOT, encoding: "utf8" },
+          {
+            cwd: ROOT,
+            encoding: "utf8",
+            env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, STUB_STATE: citedState },
+          },
         );
+      return body({ run, findingPath: finding, stubPath: `${bin}:${process.env.PATH}` });
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  test("a successor filing may only supersede a CLOSED ref the finding cites exactly", () => {
+    withSuccessorFixture(({ run, findingPath, stubPath }) => {
+      const CITED = "https://github.com/stellar/stellar-docs/issues/1234";
 
       // reported-upstream still refuses by default — the dedupe guard is the point
       expect(run([]).status).toBe(2);
 
-      // a ref this finding never cited cannot be superseded, so the flag is not a blanket force
-      expect(
-        run(["--successor-to", "https://github.com/stellar/stellar-docs/issues/9999"]).status,
-      ).toBe(2);
+      // a ref this finding never cited cannot be superseded
+      expect(run(["--successor-to", "https://github.com/stellar/stellar-docs/issues/9999"]).status).toBe(2);
 
-      // the cited ref is accepted
-      const ok = run([
-        "--successor-to",
-        "https://github.com/stellar/stellar-docs/issues/1234",
-        "--dry-run",
-      ]);
-      expect(ok.status).toBe(0);
-      expect(ok.stdout).toMatch(/^# Supersede a closed report that covered something else$/m);
+      // EXACT ref match: a bare scheme, or a numeric prefix of the cited ref, must not satisfy it
+      expect(run(["--successor-to", "https"]).status).toBe(2);
+      expect(run(["--successor-to", "https://github.com/stellar/stellar-docs/issues/123"]).status).toBe(2);
+
+      // a cited ref that is still OPEN is a duplicate, not a successor
+      expect(run(["--successor-to", CITED], "OPEN").status).toBe(2);
+
+      // FAIL CLOSED: empty or junk state must block. Asserting `!== 0` here is too weak — a
+      // fail-open bug reaches the stub and exits 42, which is also non-zero. Assert the guard's
+      // own exit code, and that the filing call was never reached.
+      for (const junk of ["", "   ", "banana", "OPENISH"]) {
+        const blocked = run(["--successor-to", CITED], junk);
+        expect(blocked.status).toBe(2);
+        expect(blocked.stderr).not.toContain("STUB_GH_REACHED_FILING");
+      }
+
+      // a closed ref in a DIFFERENT repo must not authorise a filing into this one
+      const crossRepo = spawnSync(
+        process.execPath,
+        [
+          "scripts/improvements-file-issue.mjs",
+          "--file",
+          findingPath,
+          "--repo",
+          "stellar/rs-soroban-sdk",
+          "--successor-to",
+          CITED,
+        ],
+        { cwd: ROOT, encoding: "utf8", env: { ...process.env, PATH: stubPath } },
+      );
+      expect(crossRepo.status).toBe(2);
+      expect(crossRepo.stderr).not.toContain("STUB_GH_REACHED_FILING");
+
+      // the accept path: cited + exact + closed + same repo reaches the filing call
+      // (stub exits 42, so a regression here still posts nothing)
+      const ok = run(["--successor-to", CITED]);
+      expect(ok.status).toBe(42);
+      expect(ok.stderr).toContain("STUB_GH_REACHED_FILING");
+    });
+  });
+
+  // Checking only the named ref is not dedupe: once a successor is filed it joins the evidence,
+  // so naming the ORIGINAL closed ref again would open a third issue while the second is live.
+  test("a finding with any still-open recorded ref cannot file another successor", () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "improvement-openref-test-"));
+    try {
+      const bin = path.join(dir, "bin");
+      mkdirSync(bin);
+      // 4321 is the already-filed successor and is still OPEN; 1234 is the original, closed.
+      writeFileSync(
+        path.join(bin, "gh"),
+        `#!/bin/sh
+if [ "$1" = "issue" ] && [ "$2" = "view" ]; then
+  case "$3" in *4321) echo OPEN; exit 0 ;; *) echo CLOSED; exit 0 ;; esac
+fi
+if [ "$1" = "pr" ] && [ "$2" = "view" ]; then echo CLOSED; exit 0; fi
+echo "STUB_GH_REACHED_FILING $*" >&2
+exit 42
+`,
+        { mode: 0o755 },
+      );
+      const finding = path.join(dir, "sd-994-openref.md");
+      writeFileSync(
+        finding,
+        `---
+id: sd-994
+service: stellar-docs
+status: reported-upstream
+discovered: 2026-07-14
+upstreamTitle: Must not open a third issue while the second is live
+evidence:
+  - filed upstream: https://github.com/stellar/stellar-docs/issues/1234
+  - successor filed: https://github.com/stellar/stellar-docs/issues/4321
+---
+
+## Finding
+
+The original closed; a successor is already open.
+
+## Recommendation
+
+Follow up on the open successor, do not file again.
+`,
+      );
+      const result = spawnSync(
+        process.execPath,
+        [
+          "scripts/improvements-file-issue.mjs",
+          "--file",
+          finding,
+          "--repo",
+          "stellar/stellar-docs",
+          "--successor-to",
+          "https://github.com/stellar/stellar-docs/issues/1234",
+        ],
+        { cwd: ROOT, encoding: "utf8", env: { ...process.env, PATH: `${bin}:${process.env.PATH}` } },
+      );
+      expect(result.status).toBe(2);
+      expect(result.stderr).toContain("still OPEN");
+      expect(result.stderr).not.toContain("STUB_GH_REACHED_FILING");
     } finally {
       rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  test("declined and fixed findings are never re-filable, even with --successor-to", () => {
+    for (const status of ["declined-upstream", "fixed-upstream"]) {
+      const dir = mkdtempSync(path.join(tmpdir(), "improvement-terminal-test-"));
+      try {
+        const finding = path.join(dir, "sd-996-terminal.md");
+        writeFileSync(
+          finding,
+          `---
+id: sd-996
+service: stellar-docs
+status: ${status}
+discovered: 2026-07-14
+upstreamTitle: A terminal finding must not be re-filed
+evidence:
+  - filed upstream: https://github.com/stellar/stellar-docs/issues/1234
+---
+
+## Finding
+
+Terminal for filing.
+
+## Recommendation
+
+Do not re-file.
+`,
+        );
+        // Stub `gh` here too. Without it, deleting the guard would send this test to the real
+        // `gh issue create` on an authenticated machine — a test that can post a public issue
+        // when it regresses is worse than no test. This is the same hazard the successor test
+        // above was rewritten to remove; it must not come back through the side door.
+        const bin = path.join(dir, "bin");
+        mkdirSync(bin);
+        writeFileSync(
+          path.join(bin, "gh"),
+          `#!/bin/sh\necho "STUB_GH_REACHED_FILING $*" >&2\nexit 42\n`,
+          { mode: 0o755 },
+        );
+        const result = spawnSync(
+          process.execPath,
+          [
+            "scripts/improvements-file-issue.mjs",
+            "--file",
+            finding,
+            "--repo",
+            "stellar/stellar-docs",
+            "--successor-to",
+            "https://github.com/stellar/stellar-docs/issues/1234",
+          ],
+          { cwd: ROOT, encoding: "utf8", env: { ...process.env, PATH: `${bin}:${process.env.PATH}` } },
+        );
+        expect(result.status).toBe(2);
+        expect(result.stderr).toContain("not re-filable");
+        expect(result.stderr).not.toContain("STUB_GH_REACHED_FILING");
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
+      }
     }
   });
 

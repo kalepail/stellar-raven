@@ -98,7 +98,26 @@ event-indexing guidance, and the SAC page that now carries the corrected
 
 The original report also asked that the stale `mint`/`clawback` comments be
 corrected in `rs-soroban-sdk` `token.rs`, since the Docs copy is generated from
-it and would otherwise re-drift. **That is done** — `rs-soroban-sdk#1956` merged
-2026-07-27 and `stellar-docs#2704` re-synced the embedded copy 2026-07-28, both
-verified live 2026-07-31. It is listed here only so the scope of what remains is
-unambiguous; no further action is needed on that half.
+it and would otherwise re-drift. That is done **for the three functions
+`sd-038` scoped** — `rs-soroban-sdk#1956` merged 2026-07-27 and
+`stellar-docs#2704` re-synced the embedded copy 2026-07-28, both verified live
+2026-07-31.
+
+**Correction 2026-07-31: the SDK half is NOT wholly done, and an earlier version
+of this section wrongly said it was.** `pub trait StellarAssetInterface`
+re-declares `transfer` (~`token.rs:296`) and `burn` (~`token.rs:340`) with its
+own doc-comments, and those still carry the generic SEP-41 shapes
+`["transfer", from, to]` and `["burn", from]` — omitting the trailing
+`sep0011_asset` topic. CAP-0067 specifies
+`["transfer", from:Address, to:Address, sep0011_asset:String]` and
+`["burn", from:Address, sep0011_asset:String]` for SAC events, and this
+finding's own host-test evidence says the same. The live SAC docs page embeds
+that block, so `sep0011_asset` appears there exactly three times — only the
+three functions `sd-038` covered.
+
+That residual is currently owned by nobody: `sd-038` retired against its own
+deliberately narrow three-function scope, and this finding plus `#2715` cover
+the Docs `token-interface` page. It was missed because the reviewer read only
+the line range `sd-038` named rather than the whole trait — a correct verdict on
+a cherry-picked evidence window. Filing it upstream is tracked separately; do
+not read the paragraph above as "the SDK is now SAC-accurate".

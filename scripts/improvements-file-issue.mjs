@@ -14,6 +14,9 @@ import {
 } from "./improvements-lib.mjs";
 
 const args = parseArgs(process.argv.slice(2));
+// Anchored and canonical: matches a whole issue/PR URL, so a successor ref is compared as a ref
+// rather than as a substring of one. `issues/2` must not "match" `issues/2593`.
+const GITHUB_REF_RE = /https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/(?:issues|pull)\/\d+(?![0-9])/g;
 const RAVEN_REPO = "kalepail/stellar-raven";
 const HANDOFF_TEMPLATE = "upstream-improvement-ready.yml";
 const AUTOMATION_MARKER = "<!-- generated-by-stellar-raven -->";
@@ -48,10 +51,22 @@ if (args.renderBodyFile) {
 // but together they deadlock one real case: a finding that WAS filed, whose issue then closed
 // covering something else, and whose residual now needs a fresh report. It cannot stay
 // reported-upstream (the filer refuses) and it cannot drop to verified (the lint refuses).
-// --successor-to records the dedupe judgement the guard is already asking for, instead of a
-// blanket --force: it must name a ref this finding actually cites, so it can only ever supersede
-// a report already on the record, never open an unrelated duplicate.
+// --successor-to is the narrow way through, and every clause below is load-bearing. The first
+// version of this guard was substring-only over the whole evidence list, which meant
+// `--successor-to https` satisfied it for any finding citing any URL — including declined and
+// fixed ones the lifecycle says must never be re-filed. That was a duplicate-filing hole, not a
+// containment.
 if (["reported-upstream", "declined-upstream", "fixed-upstream"].includes(finding.frontmatter.status)) {
+  // declined and fixed are never re-filable. Declined means an owner said no and the pipeline
+  // says do not pester; fixed means there is nothing left to report. Only a live report that
+  // closed without covering its finding can have a successor.
+  if (finding.frontmatter.status !== "reported-upstream") {
+    console.error(
+      `${finding.frontmatter.id}: status is ${finding.frontmatter.status}; this finding is not re-filable`,
+    );
+    console.error("declined-upstream and fixed-upstream are terminal for filing — do not re-file them.");
+    process.exit(2);
+  }
   if (!args.successorTo) {
     console.error(
       `${finding.frontmatter.id}: status is ${finding.frontmatter.status}; dedupe and live-recheck before filing a new issue`,
@@ -60,13 +75,54 @@ if (["reported-upstream", "declined-upstream", "fixed-upstream"].includes(findin
     console.error("Use --dry-run or --render-body-file to inspect the issue body without posting.");
     process.exit(2);
   }
-  const cited = (finding.frontmatter.evidence ?? []).some((entry) => String(entry).includes(args.successorTo));
-  if (!cited) {
+  // EXACT match against canonical refs parsed out of the evidence — not a substring of the raw
+  // text. Substring matching accepted a bare scheme, and `issues/2` also "matches" `issues/2593`.
+  const citedRefs = new Set(
+    (finding.frontmatter.evidence ?? []).flatMap((entry) => String(entry).match(GITHUB_REF_RE) ?? []),
+  );
+  if (!citedRefs.has(args.successorTo)) {
     console.error(
-      `${finding.frontmatter.id}: --successor-to ${args.successorTo} is not cited in this finding's evidence`,
+      `${finding.frontmatter.id}: --successor-to ${args.successorTo} is not an exact issue/PR ref recorded in this finding's evidence`,
     );
-    console.error("A successor may only supersede a report this finding already records.");
+    console.error(`recorded refs: ${[...citedRefs].join(", ") || "(none)"}`);
     process.exit(2);
+  }
+  // The superseded report must live in the repo we are filing into. Without this, a closed ref in
+  // ANY cited repo would authorise a new issue in a DIFFERENT one — a finding citing several
+  // upstreams could be used to open an issue somewhere that never had a predecessor at all. A
+  // successor supersedes a report where that report actually lives; anything else is a new finding.
+  const successorRepo = args.successorTo.split("/").slice(3, 5).join("/");
+  if (successorRepo !== repo) {
+    console.error(
+      `${finding.frontmatter.id}: --successor-to points at ${successorRepo} but this filing targets ${repo}`,
+    );
+    console.error("A successor must supersede a report in the same repository it is filed into.");
+    process.exit(2);
+  }
+  // A ref that is still OPEN has an owner tracking it, so a second issue is a duplicate by
+  // definition. Read live state rather than trusting the caller — this is the condition the whole
+  // flag exists to assert, so it is the one thing not taken on faith.
+  const state = readIssueState(args.successorTo);
+  if (state !== "closed") {
+    console.error(
+      `${finding.frontmatter.id}: --successor-to ${args.successorTo} is ${state}; only a CLOSED report can have a successor`,
+    );
+    console.error("An open report already has an owner — follow up there instead of filing a duplicate.");
+    process.exit(2);
+  }
+  // Checking only the NAMED ref is not dedupe. Once a successor has been filed it joins the
+  // evidence, so the finding can cite an old closed report AND a live open one — and naming the
+  // old one again would open a third issue while the second is still being worked. Every recorded
+  // ref must be closed before another is opened.
+  for (const ref of citedRefs) {
+    if (ref === args.successorTo) continue;
+    if (readIssueState(ref) === "open") {
+      console.error(`${finding.frontmatter.id}: ${ref} is still OPEN`);
+      console.error(
+        "This finding already has a live report. Follow up there rather than filing another successor.",
+      );
+      process.exit(2);
+    }
   }
 }
 
@@ -226,6 +282,35 @@ function scrub(text) {
     .join("\n")
     .replace(/solo:\/\/\S+/gi, "[internal coordination record]")
     .replace(/\/Users\/[^\s)]+/g, "[local path elided]");
+}
+
+// Live state of a GitHub issue/PR, read-only. Returns "open" | "closed" | "unknown". Anything
+// other than a confident "closed" must block the successor path: an unreadable ref is not
+// evidence that the report closed, and this guard exists to stop a duplicate filing.
+function readIssueState(url) {
+  // Fail CLOSED, in the safety sense: only the literal strings GitHub actually returns count.
+  // An earlier draft mapped "anything that isn't 'open'" to closed, which meant empty or junk
+  // stdout on a zero exit read as "closed" and ALLOWED the filing — precisely backwards for a
+  // guard whose whole job is to refuse when it cannot prove closure.
+  const classify = (raw) => {
+    const state = String(raw).trim().toLowerCase();
+    if (state === "open") return "open";
+    if (state === "closed" || state === "merged") return "closed";
+    return "unknown";
+  };
+  const asIssue = spawnSync("gh", ["issue", "view", url, "--json", "state", "--jq", ".state"], {
+    encoding: "utf8",
+  });
+  if (asIssue.status === 0) {
+    const state = classify(asIssue.stdout);
+    if (state !== "unknown") return state;
+  }
+  // Fall back to the PR endpoint — `--successor-to` accepts a pull ref too.
+  const asPr = spawnSync("gh", ["pr", "view", url, "--json", "state", "--jq", ".state"], {
+    encoding: "utf8",
+  });
+  if (asPr.status !== 0) return "unknown";
+  return classify(asPr.stdout);
 }
 
 function parseArgs(argv) {

@@ -61,8 +61,8 @@ So the figure measures *Raven minus its research lane*, not Raven. Three consequ
   its own words, at "stellar-raven#18's exact case" — the `alchemy` query that surfaced
   event-ingest guides instead of the Providers and Indexers roster docs. The lane it improved is
   the one this arm never calls.
-- **It is stale inside the lane it does call.** `stellar/stellar-docs#2573` merged and was
-  live-verified 2026-07-15 (`sd-010`), five days after this run. Its corrected Alchemy text sits at
+- **It is stale inside the lane it does call.** `stellar/stellar-docs#2573` merged 2026-07-14 and
+  was live-verified 2026-07-15 (`sd-010`), four and five days after this run. Its corrected Alchemy text sits at
   `/docs/data/indexers`, inside `search_rpc_horizon_data_docs`'s `/docs/data` prefix, and five of
   the eight fact groups for `alchemy-stellar-data-overview` — recorded here at 0/8 — now appear
   verbatim in that single bullet. That is rendered-HTML scoring, so read it as an indication of

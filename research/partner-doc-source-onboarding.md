@@ -54,8 +54,8 @@ Alchemy's two first-party product pages ([PR #2573](https://github.com/stellar/s
 good upstream correction, and it does not solve the systemic cadence problem.
 
 _Superseded 2026-07-31 — this paragraph originally read "until it merges, deploys, and is crawled it
-is not live Raven evidence." All three happened: the PR merged, deployed, and was live-verified on
-2026-07-15 (`sd-010` in `improvements/resolved.json`, cache-busted rendered page plus agent-visible
+is not live Raven evidence." All three happened: the PR merged 2026-07-14, deployed, and was
+live-verified 2026-07-15 (`sd-010` in `improvements/resolved.json`, cache-busted rendered page plus agent-visible
 `stellarDocs` search). It is therefore now live Raven evidence, in the same lane the baseline arm
 calls — which is why the 2026-07-10 baseline is stale in time, not only narrow in scope. See the
 phase 1 note below._

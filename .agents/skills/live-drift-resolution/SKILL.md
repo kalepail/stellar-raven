@@ -137,10 +137,37 @@ into one of three classes **per service**:
 
 | Class | What changed | What it needs |
 |---|---|---|
-| **Provenance/data** | `fetchedAt`, version strings, changelog entries, data-source counts, snapshot dates | Absorb as-is. No policy, no routing decision. |
+| **Provenance/data** | `fetchedAt`, version strings, changelog entries, data-source counts, snapshot dates — **and nothing else**: every operation object must be identical, not merely its four routing text fields (see the warning below) | Absorb as-is. No policy, no routing decision. |
 | **Operation surface** | An operation was **added, removed, or renamed** in `openapi.paths` (check the path/method set, NOT just `operationCount` — a rename holds the count constant) | **Policy decision** (Step 3) before commit. |
 | **Routing-relevant text** | An operation `summary`/`description`/`operationId`/`x-routing` changed | **Routing-baseline decision** (Step 4) before commit. |
 | **Runner-affecting** | ANY of the above touches an operation that a runnable-skill runner declares in its `ops` (schema/response-shape drift on such an op counts too — runners project those payloads) | **Runner re-verification** (Step 4b) before closing. This class stacks on top of the others, it never replaces them. |
+
+> **The four text fields are necessary, not sufficient — do not classify on them alone.**
+> `specs/super-spec.json` is serialized in full into the sandbox (`src/executor/run.ts` →
+> `serializeSpecForSandbox`), so an operation's `parameters`, `requestBody`, `responses`,
+> `x-execute`, and the shared `components` are all model-visible contract. A Scout-only schema
+> change that left `operationId`/`summary`/`description`/`x-routing` untouched would pass a
+> four-field check and be absorbed as "pure provenance" while genuinely changing what the sandbox
+> can call and what it gets back. Step 4b catches schema drift **only** for ops a runner declares,
+> and most services have no runner at all — so it is not a backstop for this.
+>
+> Before claiming provenance/data, diff the **whole** operation object and the components section,
+> not just the routing tuple:
+>
+> ```
+> node -e '
+> const cp=require("child_process");
+> const sortDeep=v=>Array.isArray(v)?v.map(sortDeep):v&&typeof v==="object"
+>   ?Object.fromEntries(Object.keys(v).sort().map(k=>[k,sortDeep(v[k])])):v;
+> const load=(rev,p)=>JSON.parse(cp.execFileSync("git",["show",`${rev}:${p}`],{encoding:"utf8",maxBuffer:1e9}));
+> const [a,b]=[load(process.argv[1],process.argv[3]),load(process.argv[2],process.argv[3])];
+> const eq=(x,y)=>JSON.stringify(sortDeep(x))===JSON.stringify(sortDeep(y));
+> console.log("paths identical:",eq(a.openapi.paths,b.openapi.paths));
+> console.log("components identical:",eq(a.openapi.components,b.openapi.components));
+> ' HEAD WORKING inventory/<service>.json
+> ```
+>
+> Both must print `true`. Anything else is at least routing-relevant and may be operation-surface.
 
 Runner-affecting is machine-checkable, never eyeballed — the runner registry
 (`src/skills/runners/index.ts`, `RUNNERS`) is the allowlist-as-data:

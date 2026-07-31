@@ -20,9 +20,13 @@ in a networkless Dynamic Worker; host adapters own all service traffic, policy, 
 
 ## Commands and verification
 
-- Install reproducibly: `npm ci`. On a fresh clone also run `npm run typegen` once — `env.d.ts` is
-  generated and gitignored, so `npm run typecheck` reports spurious `Env` errors without it (CI
-  does this for you; a contributor reading only the list below will not).
+- Install reproducibly: `npm ci`. A fresh clone then needs **both** of the following before
+  `npm run typecheck` is usable, because `env.d.ts` *and* `.dev.vars` are generated/gitignored:
+  create a placeholder `.dev.vars` carrying the names CI uses (see the `.dev.vars` step in
+  [`ci.yml`](.github/workflows/ci.yml) — values are irrelevant, the names define `Env`'s secret
+  members), then run `npm run typegen`. `typegen` alone is not enough: without `.dev.vars` it
+  emits an `Env` missing every secret and typecheck still fails on `WORKOS_*`,
+  `MCP_SERVER_SECRET`, and `DEV_ALLOW_UNAUTHENTICATED`.
 - Baseline validation for code changes: `npm run typecheck`, `npm test`, and `npm run build`.
   `npm test` excludes `test/smoke/**`; add `npm run test:smoke` when touching `src/executor` or
   `src/demo` — it is the only lane exercising those paths against the assembled worker
