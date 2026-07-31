@@ -14,6 +14,9 @@ evidence:
   - corrected implementation scope posted and read back 2026-07-15: https://github.com/stellar/stellar-docs/issues/2593#issuecomment-4981955633
   - maintainer triage accepted and corrections confirmed 2026-07-27: https://github.com/stellar/stellar-docs/issues/2593#issuecomment-5091974420
   - SDK-side re-drift owner split into sd-038 and filed upstream 2026-07-27: https://github.com/stellar/rs-soroban-sdk/issues/1955
+  - issue 2593 closed COMPLETED 2026-07-28 by https://github.com/stellar/stellar-docs/pull/2704 — but that PR changed six lines and scoped itself to the three StellarAssetInterface doc-comments, which is the sd-038 half, not this finding's recommendation
+  - author-side live recheck 2026-07-31 — PARTIAL. Shipped: the SAC page now carries the corrected CAP-67 comment shapes, so the trailing sep0011_asset topic is at least visible somewhere. Still missing on https://developers.stellar.org/docs/tokens/token-interface: zero occurrences of sep0011_asset, CAP-67, clawback, or set_authorized; it still presents generic three-topic transfer and two-topic burn with nothing telling a reader that direct SAC events differ
+  - independent adversarial reviewer (gpt-5.6-sol xhigh, Solo 4137, 2026-07-31) was briefed to argue the opposite — that this finding IS fully resolved and should be retired — and could not sustain it: "PARTIAL is the only defensible verdict". solo://proj/49/scratchpad/sol-review-2026-07-3--746
 ---
 
 ## Finding
@@ -28,6 +31,27 @@ The trailing asset topic predates CAP-67. CAP-67 removed the admin topic from
 mint/clawback, added muxed payloads, and unified Classic events. Existing
 payment guidance already documents SAC transfer's fourth topic, so the gap is
 one consolidated, accurate schema—not total absence.
+
+## Status as of 2026-07-31
+
+Upstream closed `stellar/stellar-docs#2593` as COMPLETED, but the merged work
+covered the SDK-copy sync tracked as `sd-038`, not the recommendation below. A
+closed issue is evidence to inspect, not proof of resolution, so this finding
+stays active with its scope narrowed to what genuinely did not ship:
+
+- **Shipped** — the three `StellarAssetInterface` doc-comments are correct on
+  both the SDK and the embedded SAC-page copy, which makes the trailing
+  `sep0011_asset` topic visible for `mint`, `clawback`, and `set_authorized`.
+- **Not shipped** — a consolidated SEP-41-versus-SAC event table covering
+  `transfer`, `mint`, `burn`, and `clawback` with topic counts and payload
+  variants; the direct-SAC versus Classic-unified distinction; the note that
+  transaction/operation metadata is what separates those two paths; and the
+  cross-links to the existing payment and event-indexing guidance. The generic
+  token-interface page — the page this finding is actually about — is unchanged
+  and still teaches only the generic shapes.
+
+A successor upstream report should name that residual directly rather than
+reopening 2593, whose thread is now about the doc-comment sync.
 
 ## Recommendation
 

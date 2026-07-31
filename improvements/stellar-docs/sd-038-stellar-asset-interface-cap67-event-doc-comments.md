@@ -1,7 +1,7 @@
 ---
 id: sd-038
 service: stellar-docs
-status: reported-upstream
+status: fixed-upstream
 discovered: 2026-07-27
 upstreamTitle: Update StellarAssetInterface event doc-comments to the CAP-67 shapes
 evidence:
@@ -13,6 +13,11 @@ evidence:
   - surfaced by docs maintainer triage on stellar/stellar-docs#2593 (ElliotFriend, 2026-07-21), which identified the SDK copy as the re-drift source for the docs-side fix
   - upstream issue filed 2026-07-27: https://github.com/stellar/rs-soroban-sdk/issues/1955
   - docs-side counterpart remains https://github.com/stellar/stellar-docs/issues/2593; the calibrated per-function scope was posted there 2026-07-27: https://github.com/stellar/stellar-docs/issues/2593#issuecomment-5091974420
+  - resolved by https://github.com/stellar/rs-soroban-sdk/pull/1956, merged 2026-07-27; the embedded docs copy was re-synced by https://github.com/stellar/stellar-docs/pull/2704, merged 2026-07-28
+  - author-side live recheck 2026-07-31 of soroban-sdk/src/token.rs on rs-soroban-sdk main: set_authorized reads ["set_authorized", id: Address, sep0011_asset: String], mint reads ["mint", to: Address, sep0011_asset: String], and clawback reads ["clawback", from: Address, sep0011_asset: String] — the removed admin topic is gone and the address topic is renamed to match the parameter; generic TokenInterface was correctly left unchanged
+  - independent adversarial reviewer (gpt-5.6-sol xhigh, Solo 4137, 2026-07-31) confirmed both halves against CAP-0067's normative shapes, pinned at rs-soroban-sdk 3715435b and stellar-docs c933da48: solo://proj/49/scratchpad/sol-review-2026-07-3--746
+  - correction not to carry into a receipt: this record's Finding section loosely says CAP-67 "appended" the trailing asset topic. It did not — the asset topic predates CAP-67, which removed the admin topic and changed other event semantics. sd-018 states the history correctly.
+  - RETIREMENT BLOCKED: dated live result + commit-pinned snapshot not yet posted on rs-soroban-sdk issue 1955 (zero comments) or stellar-docs issue 2593; active sd-018 names this finding as the SDK-side owner, so that relationship must be preserved or updated first
 ---
 
 ## Finding
