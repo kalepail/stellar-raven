@@ -135,18 +135,6 @@
       "repo": "stellar/stellar-docs",
       "reason": "Token-interface docs omit the current SAC/CAP-67 asset-appended event schema, leading direct SAC events to be misclassified as generic SEP-41."
     },
-    "sd-019": {
-      "repo": "stellar/stellar-docs",
-      "reason": "The TTL extension guide incorrectly says one ExtendFootprintTTLOp cannot cover multiple read-only footprint entries."
-    },
-    "sd-020": {
-      "repo": "stellar/stellar-docs",
-      "reason": "SAC docs retain obsolete XDR/executable terminology and omit executable-based identity, public name metadata, and mutable-admin boundaries."
-    },
-    "sd-024": {
-      "repo": "stellar/stellar-docs",
-      "reason": "Transaction-resource prose retains older field names and blurs validation/preflight/apply-time enforcement and transaction-vs-ledger limits."
-    },
     "sd-025": {
       "repo": "stellar/stellar-docs",
       "reason": "The Horizon-to-RPC migration guide still describes CAP-67 unified asset events as near-future despite Protocol 23 finality and live Protocol 27."
@@ -178,10 +166,6 @@
     "sd-037": {
       "repo": "stellar/stellar-protocol",
       "reason": "SLP proposal-family discoverability is rooted in the normative stellar-protocol limits/ source and needs canonical family metadata/cross-links."
-    },
-    "sd-038": {
-      "repo": "stellar/rs-soroban-sdk",
-      "reason": "The defective StellarAssetInterface event doc-comments live in the SDK source; the stellar-docs page embeds a verbatim copy, so the SDK is the re-drift owner."
     },
     "sk-003": {
       "repo": "stellar/stellar-dev-skill"

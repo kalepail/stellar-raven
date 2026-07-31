@@ -192,6 +192,46 @@
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-017-horizon-lifecycle-wording-conflict.md"
     },
     {
+      "id": "sd-019",
+      "title": "The JavaScript persistent-entry extension guide says a single",
+      "service": "stellar-docs",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-31",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2597",
+        "https://github.com/stellar/stellar-docs/pull/2655"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2597",
+        "https://github.com/stellar/stellar-docs/pull/2655"
+      ],
+      "liveRecheck": "2026-07-31 GET https://developers.stellar.org/docs/build/guides/archival/extend-persistent-entry-js — no sentence claims different ledger entries need separate transactions; extendContractAndPersistentEntry passes three keys (persistent entry, contract.getFootprint(), contract-code entry) to one setReadOnly([...]) under a single extendFootprintTtl; the page states the shared extendTo is the one real constraint; TTL redefined as ledgers-remaining with liveUntilLedger as the absolute cutoff",
+      "reviewEvidence": "distinct reviewer: gpt-5.6-sol xhigh (Solo 4137, scratchpad sol-review-2026-07-31) independently re-derived each trigger from the finding rather than the reporter-supplied greps, re-ran it against the live surface and normative sources, and returned CONFIRMED-FIXED; resolution posted and read back 2026-07-31: https://github.com/stellar/stellar-docs/issues/2597#issuecomment-5145421105",
+      "sourceCommit": "f5260f91537c83998658149dd03d24b4565bc968",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/f5260f91537c83998658149dd03d24b4565bc968/improvements/stellar-docs/sd-019-extend-footprint-multiple-entry-wording.md"
+    },
+    {
+      "id": "sd-020",
+      "title": "SAC documentation and derived guidance retain design-era XDR names and omit the",
+      "service": "stellar-docs",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-31",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2613",
+        "https://github.com/stellar/stellar-docs/pull/2655"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2613",
+        "https://github.com/stellar/stellar-docs/pull/2655"
+      ],
+      "liveRecheck": "2026-07-31 stellar-transaction shows CONTRACT_EXECUTABLE_STELLAR_ASSET, CONTRACT_ID_PREIMAGE_FROM_ASSET and ENVELOPE_TYPE_CONTRACT_ID with zero CONTRACT_EXECUTABLE_TOKEN/CONTRACT_ID_FROM_ASSET; stellar-asset-contract identifies a SAC from SCContractInstance.executable, gates name()/symbol() on it, states there is no generic SEP-41 asset()/issuer(), calls the issuer the initial administrator with set_admin mutability, and carries the provenance caveat. Corroborated against stellar-xdr@curr Stellar-contract.x, which enumerates CONTRACT_EXECUTABLE_STELLAR_ASSET = 1 — so the docs are correct, not merely changed",
+      "reviewEvidence": "distinct reviewer: gpt-5.6-sol xhigh (Solo 4137, scratchpad sol-review-2026-07-31) independently re-derived each trigger from the finding rather than the reporter-supplied greps, re-ran it against the live surface and normative sources, and returned CONFIRMED-FIXED; resolution posted and read back 2026-07-31: https://github.com/stellar/stellar-docs/issues/2613#issuecomment-5145421218",
+      "sourceCommit": "f5260f91537c83998658149dd03d24b4565bc968",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/f5260f91537c83998658149dd03d24b4565bc968/improvements/stellar-docs/sd-020-sac-xdr-introspection-admin-drift.md"
+    },
+    {
       "id": "sd-021",
       "title": "Current official P25/ZK documentation links the wrong CAP for BN254 and does",
       "service": "stellar-docs",
@@ -250,6 +290,26 @@
       "reviewEvidence": "distinct reviewer: Lane C read-only review 2026-07-27 (Solo todo 1205, scratchpad improvements-upstream-review-2026-07-27) independently re-ran each trigger against the live surface rather than accepting the maintainer handoff; Lane E (todo 1208) re-verified before retirement",
       "sourceCommit": "773857262d462506947a324b7437b8499f886287",
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/773857262d462506947a324b7437b8499f886287/improvements/stellar-docs/sd-023-rpc-event-retention-config-drift.md"
+    },
+    {
+      "id": "sd-024",
+      "title": "The transaction-resource documentation contains a runtime-broken JavaScript",
+      "service": "stellar-docs",
+      "discovered": "2026-07-11",
+      "resolved": "2026-07-31",
+      "repo": "stellar/stellar-docs",
+      "upstreamRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2596",
+        "https://github.com/stellar/stellar-docs/pull/2655"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/stellar-docs/issues/2596",
+        "https://github.com/stellar/stellar-docs/pull/2655"
+      ],
+      "liveRecheck": "2026-07-31 the stellar-transaction SorobanTransactionData block matches stellar-xdr@curr exactly (ext union, resources, int64 resourceFee) and declares uint32 diskReadBytes with SorobanResourcesExtV0; refundableFee and bare readBytes are gone; create-restoration-footprint-js builds xdr.SorobanTransactionDataExt(0) with diskReadBytes and no ExtensionPoint; the fees page names txSOROBAN_INVALID for pre-execution rejection separately from apply-time reconciliation. Verified by execution, not grep: against @stellar/stellar-base 15.0.0 the old ext union throws 'union name undefined, not SorobanTransactionDataExt', the corrected ext with readBytes throws 'invalid u32 value', and the shipped field set builds — both original failure modes reproduced and fixed. The optional ledger-aggregate half did not ship and was expressly optional absent a cited sentence",
+      "reviewEvidence": "distinct reviewer: gpt-5.6-sol xhigh (Solo 4137, scratchpad sol-review-2026-07-31) independently re-derived each trigger from the finding rather than the reporter-supplied greps, re-ran it against the live surface and normative sources, and returned CONFIRMED-FIXED; resolution posted and read back 2026-07-31: https://github.com/stellar/stellar-docs/issues/2596#issuecomment-5145421504",
+      "sourceCommit": "f5260f91537c83998658149dd03d24b4565bc968",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/f5260f91537c83998658149dd03d24b4565bc968/improvements/stellar-docs/sd-024-transaction-resource-xdr-drift.md"
     },
     {
       "id": "sd-026",
@@ -352,6 +412,29 @@
       "reviewEvidence": "Independent Solo reviewer process 3770 re-ran rendered-page and agent-visible search triggers, inspected issue 2600, merged approved PR 2616, Raven handoff 25, adjacent content, and repo references on 2026-07-15.",
       "sourceCommit": "bb8731b3e09ac56fe0a2429e56beb583b84158b3",
       "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/bb8731b3e09ac56fe0a2429e56beb583b84158b3/improvements/stellar-docs/sd-033-python-sdk-rpc-capability-omitted.md"
+    },
+    {
+      "id": "sd-038",
+      "title": "The StellarAssetInterface doc-comments in soroban-sdk/src/token.rs describe",
+      "service": "stellar-docs",
+      "discovered": "2026-07-27",
+      "resolved": "2026-07-31",
+      "repo": "stellar/rs-soroban-sdk",
+      "upstreamRefs": [
+        "https://github.com/stellar/rs-soroban-sdk/issues/1955",
+        "https://github.com/stellar/rs-soroban-sdk/pull/1956",
+        "https://github.com/stellar/stellar-docs/issues/2593",
+        "https://github.com/stellar/stellar-docs/pull/2704"
+      ],
+      "resolvingRefs": [
+        "https://github.com/stellar/rs-soroban-sdk/issues/1955",
+        "https://github.com/stellar/rs-soroban-sdk/pull/1956",
+        "https://github.com/stellar/stellar-docs/pull/2704"
+      ],
+      "liveRecheck": "2026-07-31 soroban-sdk/src/token.rs on rs-soroban-sdk main: set_authorized is [\"set_authorized\", id: Address, sep0011_asset: String], mint is [\"mint\", to: Address, sep0011_asset: String], clawback is [\"clawback\", from: Address, sep0011_asset: String] — admin topic removed and the address topic renamed to match the from parameter; generic TokenInterface correctly unchanged; the embedded stellar-docs copy was re-synced by PR 2704, closing the re-drift path. NOTE: this finding's own body wrongly said CAP-67 appended the trailing asset topic — that topic predates CAP-67; the recommended shapes were right, the historical framing was not",
+      "reviewEvidence": "distinct reviewer: gpt-5.6-sol xhigh (Solo 4137, scratchpad sol-review-2026-07-31) independently re-derived each trigger from the finding rather than the reporter-supplied greps, re-ran it against the live surface and normative sources, and returned CONFIRMED-FIXED, matching CAP-0067's normative shapes; resolution posted and read back 2026-07-31: https://github.com/stellar/rs-soroban-sdk/issues/1955#issuecomment-5145421677",
+      "sourceCommit": "f5260f91537c83998658149dd03d24b4565bc968",
+      "sourceUrl": "https://github.com/kalepail/stellar-raven/blob/f5260f91537c83998658149dd03d24b4565bc968/improvements/stellar-docs/sd-038-stellar-asset-interface-cap67-event-doc-comments.md"
     },
     {
       "id": "sk-001",
