@@ -381,8 +381,21 @@ Keep the main link and omit the immutable snapshot.
     }
   });
 
+  // This one genuinely needs a real, committed finding — it asserts the commit-pinned blob URL,
+  // which a temp fixture cannot have. So it picks whichever committed finding exists rather than
+  // naming one: hardcoding an id re-arms the trap that turned the suite red when sd-019 was
+  // retired, and every finding in this directory is expected to be retired eventually.
   test("links the exact source record and gives upstream a resolution handoff", () => {
-    const finding = "improvements/skills/sk-012-mpp-session-mode-terminology.md";
+    const finding = execFileSync(
+      "git",
+      ["ls-files", "improvements/*/*.md"],
+      { cwd: ROOT, encoding: "utf8" },
+    )
+      .split("\n")
+      .filter(Boolean)
+      .sort()
+      .at(0);
+    if (!finding) throw new Error("no committed finding available to exercise blob-URL rendering");
     const output = execFileSync(
       process.execPath,
       ["scripts/improvements-file-issue.mjs", "--file", finding, "--dry-run"],
