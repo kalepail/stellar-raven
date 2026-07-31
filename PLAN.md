@@ -294,7 +294,8 @@ the versioning page designates 2026-07-28 as current, and `agents` pins the stab
 > `research/decisions/0002-skills-retirement-twin-dedup.md`,
 > `research/decisions/0003-build-time-exposure-filtering.md`, `research/auth-workos.md`,
 > README.md “Connect”). CI + daily drift refresh run in
-> github.com/kalepail/stellar-raven (renamed from stellar-raven-codemode 2026-07-02). WorkOS
+> github.com/stellar-experimental/stellar-raven (renamed from stellar-raven-codemode 2026-07-02;
+> moved from kalepail/stellar-raven 2026-07-31). WorkOS
 > OAuth verified end-to-end incl. human
 > AuthKit sign-in (Tyler, 2026-07-02); CIMD enabled.
 > - **Public site + SEO surface shipped 2026-07-02/03** (`src/site.ts`): landing page, OAuth

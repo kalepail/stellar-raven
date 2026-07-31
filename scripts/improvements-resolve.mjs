@@ -12,7 +12,7 @@ import {
   resolveIntake,
 } from "./improvements-lib.mjs";
 
-const RAVEN_REPO = "kalepail/stellar-raven";
+const RAVEN_REPO = "stellar-experimental/stellar-raven";
 const githubRefRe = /https:\/\/github\.com\/[^/\s)]+\/[^/\s)]+\/(?:issues|pull)\/\d+/gi;
 const githubRefExactRe = /^https:\/\/github\.com\/[^/\s)]+\/[^/\s)]+\/(?:issues|pull)\/\d+$/i;
 const args = parseArgs(process.argv.slice(2));

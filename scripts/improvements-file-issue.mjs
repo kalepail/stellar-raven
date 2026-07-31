@@ -19,7 +19,7 @@ const args = parseArgs(process.argv.slice(2));
 // as well as digits — a digits-only lookahead still parsed the malformed `issues/99evil` as issue
 // 99, which would let a token that is not a real ref satisfy the guard.
 const GITHUB_REF_RE = /https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/(?:issues|pull)\/\d+(?![\w-])/g;
-const RAVEN_REPO = "kalepail/stellar-raven";
+const RAVEN_REPO = "stellar-experimental/stellar-raven";
 const HANDOFF_TEMPLATE = "upstream-improvement-ready.yml";
 const AUTOMATION_MARKER = "<!-- generated-by-stellar-raven -->";
 const AUTOMATION_NOTICE =

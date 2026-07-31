@@ -152,7 +152,7 @@ function validateResolvedLedger(findings) {
     if (!/^[0-9a-f]{40}$/.test(entry.sourceCommit ?? "")) {
       errors.push(`${label}: sourceCommit must be a full git SHA`);
     }
-    const expectedSource = `https://github.com/kalepail/stellar-raven/blob/${entry.sourceCommit}/improvements/`;
+    const expectedSource = `https://github.com/stellar-experimental/stellar-raven/blob/${entry.sourceCommit}/improvements/`;
     if (!String(entry.sourceUrl ?? "").startsWith(expectedSource)) {
       errors.push(`${label}: sourceUrl must be a commit-pinned improvements/ permalink`);
     }

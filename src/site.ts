@@ -780,7 +780,7 @@ function siteFooter(): string {
   return `<footer><div class="wrap foot">
   <div class="l">${escapeHtml(HOST)} <b>·</b> Stellar context, one connection</div>
   <div class="foot-links">
-    <a href="https://github.com/kalepail/stellar-raven" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/stellar-experimental/stellar-raven" target="_blank" rel="noopener">GitHub</a>
     <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a>
     <a href="/terms">Raven Terms</a>
     <a href="https://stellar.org/terms-of-service" target="_blank" rel="noopener">Stellar Terms</a>

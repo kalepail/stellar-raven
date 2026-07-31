@@ -15,7 +15,7 @@ describe("improvements resolution lifecycle", () => {
     expect(existsSync(path.join(ROOT, finding))).toBe(false);
     expect(entry.sourceCommit).toMatch(/^[0-9a-f]{40}$/);
     expect(entry.sourceUrl).toBe(
-      `https://github.com/kalepail/stellar-raven/blob/${entry.sourceCommit}/${finding}`,
+      `https://github.com/stellar-experimental/stellar-raven/blob/${entry.sourceCommit}/${finding}`,
     );
     expect(execFileSync("git", ["show", `${entry.sourceCommit}:${finding}`], {
       cwd: ROOT,

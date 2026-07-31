@@ -80,7 +80,7 @@ describe("improvements issue filing template", () => {
 
     const marker = "<!-- generated-by-stellar-raven -->";
     const notice =
-      "This issue was filed from [Stellar Raven](https://github.com/kalepail/stellar-raven)'s automated evaluation pipeline. Evidence and a public source record are included below. The finding may still be incomplete or incorrect — please verify against the live surface before acting on it.";
+      "This issue was filed from [Stellar Raven](https://github.com/stellar-experimental/stellar-raven)'s automated evaluation pipeline. Evidence and a public source record are included below. The finding may still be incomplete or incorrect — please verify against the live surface before acting on it.";
     expect(output).toContain(`> **Automated notice:** ${notice}`);
     // The disclosure is the first thing in the body, above every substantive section.
     expect(output).toMatch(
@@ -466,8 +466,8 @@ Keep the main link and omit the immutable snapshot.
     );
 
     expect(output).toContain("## Source Record");
-    expect(output).toContain(`https://github.com/kalepail/stellar-raven/blob/main/${finding}`);
-    expect(output).toMatch(new RegExp(`https://github\\.com/kalepail/stellar-raven/blob/[0-9a-f]{40}/${finding}`));
+    expect(output).toContain(`https://github.com/stellar-experimental/stellar-raven/blob/main/${finding}`);
+    expect(output).toMatch(new RegExp(`https://github\\.com/stellar-experimental/stellar-raven/blob/[0-9a-f]{40}/${finding}`));
     expect(output).toContain("## Resolution Handoff");
     expect(output).toContain("template=upstream-improvement-ready.yml");
     expect(output).toContain("Raven independently verifies the upstream surface");

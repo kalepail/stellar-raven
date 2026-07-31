@@ -112,7 +112,7 @@ Before filing content/code drift, apply three cheap calibration checks:
 The generated issue body must open with the automated-content notice and its
 `generated-by-stellar-raven` marker, then retain all five sections: `Finding`, `Evidence`,
 `Recommendation`, `Source Record`, and `Resolution Handoff`. `Source Record` links the exact public
-`improvements/...` file on `kalepail/stellar-raven` and, when committed, its immutable blob snapshot;
+`improvements/...` file on `stellar-experimental/stellar-raven` and, when committed, its immutable blob snapshot;
 `Resolution Handoff` directs the owner to the
 repo's `upstream-improvement-ready.yml` issue form with the finding id, resolving issue/PR, deployed
 version or timestamp, and smallest live recheck. Do not hand-file a shortened body that drops either
@@ -176,7 +176,7 @@ or when a user asks whether previous improvements were resolved.
    - `rg -n "github.com/.+/(issues|pull)/" improvements`
    - include `reported-upstream` and non-fixed `verified` findings first, then fixed findings
      if a regression/recurrence is suspected.
-   - also enumerate inbound `upstream-improvement-ready.yml` issues in `kalepail/stellar-raven`;
+   - also enumerate inbound `upstream-improvement-ready.yml` issues in `stellar-experimental/stellar-raven`;
      they are notification signals to verify, not proof of a fix.
 2. Build a deterministic state table in a Solo scratchpad:
 
